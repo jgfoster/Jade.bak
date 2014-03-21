@@ -3,7 +3,7 @@ package := Package name: 'Jade Autocompletation'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.011'.
+package basicPackageVersion: '0.012'.
 
 
 package classNames
@@ -1351,24 +1351,23 @@ onKeyPressed: aKeyEvent
 	[self processKeyPressed: aKeyEvent] forkAt: 4!
 
 processKeyPressed: aKeyEvent
-	"This is the main method for autocompletation, each key stroke is registered and analyzed here"
-	| keyName |
+   "This is the main method for autocompletation, each key stroke is registered and analyzed here"
+   | keyName |
 
-	keyName := Keyboard keyNameFromLParam: aKeyEvent lParam. "get the name of the pressed Key "
-	(keyName = 'F2') ifTrue: [^JadeAutocompletationConfigurationShell show].
+   keyName := Keyboard keyNameFromLParam: aKeyEvent lParam. "get the name of the pressed Key "
+   (keyName = 'F2') ifTrue: [^JadeAutocompletationConfigurationShell show].
 
-	self logMethodName: 'processKeyPressed: ' info: (Array with: keyName).
+   self logMethodName: 'processKeyPressed: ' info: (Array with: keyName).
 
-	(self controlKeys includes: keyName asUppercase) ifFalse: [self updateAutocompletationTextWith: aKeyEvent]. "we update the <currentWord> with the key pressed if is not a control key"
-	aKeyEvent wParam = 32 "space" ifTrue: [self autocompleteForSpace].
+   (keyName size = 1) ifTrue: [self updateAutocompletationTextWith: aKeyEvent]. "we update the <currentWord> with the key pressed if is not a control key"
 
-	aKeyEvent wParam = 13 "enter" ifTrue: [self autocompleteForEnter].
+   aKeyEvent wParam = 32 "space" ifTrue: [self autocompleteForSpace].
 
-	((Keyboard keyNameFromLParam: aKeyEvent lParam) = 'RIGHT ALT') ifTrue: [self autocompleteForRightAlt].
+   aKeyEvent wParam = 13 "enter" ifTrue: [self autocompleteForEnter].
 
-	"aKeyEvent wParam = 9 ifTrue: [self autocompleteForTab]." "tab" 
+   (Keyboard default isKeyDown: 165) "right alt" ifTrue: [self autocompleteForRightAlt].
 
-	(Character value: aKeyEvent wParam) isAlphaNumeric ifTrue: [self autocompleteForAlphaNumeric]!
+   (Character value: aKeyEvent wParam) isAlphaNumeric ifTrue: [self autocompleteForAlphaNumeric]!
 
 registry
 
