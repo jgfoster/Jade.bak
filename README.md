@@ -55,3 +55,16 @@ PackageManager current
 	install: 'Jade\Jade Deployment.pac';
 	yourself.
 ```
+#### Dolphin Community Edition
+
+Dolphin CE is on version 6.0 while the main development work 
+has been done on Dolphin Pro 6.1b2. This means that things don't
+really work. You can, however, load things without errors and 
+look at the code if you start with the following:
+```
+PackageManager current
+    install: 'Jade\Jade in Dolphin CE.pac';
+    install: 'Steve Waring\YAXO Base.pac';
+    install: 'Steve Waring\YAXO DOM.pac';
+    yourself.
+```
