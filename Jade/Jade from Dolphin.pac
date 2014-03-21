@@ -3,7 +3,7 @@ package := Package name: 'Jade from Dolphin'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.008'.
+package basicPackageVersion: '0.009'.
 
 
 package classNames
@@ -471,7 +471,7 @@ lastToken
 	^view plainTextRange: last key!
 
 literalArrayIndicatorId
-	^INDIC_CONTAINER - 1!
+	^8 "INDIC_CONTAINER" - 1!
 
 prepareToStyleView: aScintillaView 
 	"The receiver has been set up as the styler for the specified <ScintillaView>. This is an

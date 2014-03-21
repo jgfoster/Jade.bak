@@ -3,9 +3,9 @@ package := Package name: 'JGF Dolphin MVP Base'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.013'.
+package basicPackageVersion: '0.015'.
 
-package basicScriptAt: #postinstall put: '| viewComposer subView |
+package basicScriptAt: #postinstall put: '| viewComposer subView class |
 
 SmalltalkSystem current 
 	defaultFont: (Font  name: ''Arial'' pointSize: 9);
@@ -15,7 +15,6 @@ SmalltalkSystemShell
 	showTipsAtStartup: false;
 	playSystemSounds: false;
 	yourself.
-ApplicationDeploymentWizard saveImageOnDeploy: false.
 SmalltalkWorkspace 
 	defaultFont:  (Font  name: ''Times New Roman'' pointSize: 11);
 	defaultTabWidth: 4;
@@ -31,11 +30,6 @@ viewComposer := ViewComposer show: ''Vertical view''.
 viewComposer openOn: (ResourceIdentifier class: ResourceToolboxPresenter name: ''Default view''). 
 subView := viewComposer composingView viewNamed: ''categories''. 
 subView viewMode: #list. 
-viewComposer fileSave. 
-
-viewComposer openOn: (ResourceIdentifier class: CodeMentorPlugin name: ''Default view''). 
-subView := viewComposer composingView subViews second subViews third. 
-subView preferredExtent: 80@21. 
 viewComposer fileSave. 
 
 viewComposer openOn: (ResourceIdentifier class: AdvancedFindDialog name: ''Default view''). 
@@ -59,7 +53,18 @@ subView := viewComposer composingView subViews first subViews third subViews fir
 subView extent: 143@87. 
 viewComposer fileSave. 
 
+(Smalltalk at: #''CodeMentorPlugin'' ifAbsent: [nil]) ifNotNil: [:class | 
+	viewComposer openOn: (ResourceIdentifier class: class name: ''Default view''). 
+	subView := viewComposer composingView subViews second subViews third. 
+	subView preferredExtent: 80@21. 
+	viewComposer fileSave. 
+].
+
 viewComposer exit. 
+
+(Smalltalk at: #''ApplicationDeploymentWizard'' ifAbsent: [nil]) 
+	ifNotNil: [:class | class saveImageOnDeploy: false].
+
 
 ''JGF Dolphin MVP Base'' yourself.'.
 

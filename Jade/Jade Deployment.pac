@@ -3,7 +3,7 @@ package := Package name: 'Jade Deployment'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.034'.
+package basicPackageVersion: '0.035'.
 
 package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
 bnRSAAAAEAAAAHJ1bnRpbWVcSmFkZS5leGWaAAAAUgAAAA8AAABKYWRlIERlcGxveW1lbnRSAAAA
@@ -18,7 +18,8 @@ ZURlc2NyaXB0aW9uUgAAAB0AAABEb2xwaGluIFg2LjEgVG9HbyBBcHBsaWNhdGlvblIAAAALAAAA
 RmlsZVZlcnNpb25SAAAACgAAADEsIDAsIDAsIDFSAAAACAAAAENvbW1lbnRzUgAAABwAAABQb3dl
 cmVkIGJ5IERvbHBoaW4gU21hbGx0YWxrygAAANAAAABiAAAAAQAAAAYCCgBEV09SREFycmF5cgAA
 AAQAAAAJBLAEAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA').
-package basicScriptAt: #postinstall put: 'SessionManager current 
+package basicScriptAt: #postinstall put: 'ApplicationDeploymentWizard saveImageOnDeploy: false.
+SessionManager current 
 	when: #''sessionStarted'' 
 	send: #''sessionStarted'' 
 	to: JadeSessionManager.
