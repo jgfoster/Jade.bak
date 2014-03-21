@@ -3,16 +3,19 @@ Jade
 
 Jade is an Alternative Development Environment (IDE) for GemStone/S that runs on Microsoft Windows.
 
-Jade is built in (and inspired by) Dolphin Smalltalk from Object-Arts [http://www.object-arts.com/].
+Jade is built in (and inspired by) Dolphin Smalltalk from [Object-Arts](http://www.object-arts.com/).
 
 ### Installation
 To install Jade, follow the following steps:
-1. Clone https://github.com/jgfoster/Jade to Documents\Dolphin\Jade.
-2. Do a Fresh Install of Dolphin into Documents\Dolphin\Jade as Jade.img.
-3. Run the Package Install Script (below).
-4. Finally, open a login window:
-    JadeLoginShell show.
 
+1. Install a Github client such as [SourceTree](http://www.sourcetreeapp.com/)
+2. Clone https://github.com/jgfoster/Jade to Documents\Dolphin\Jade.
+3. Do a Fresh Install of Dolphin into Documents\Dolphin\Jade as 'Jade.img'.
+4. Run the Package Install Script (below).
+5. Finally, open a login window:
+```
+    JadeLoginShell show.
+```
 
 #### Package Installation Script
 ```
