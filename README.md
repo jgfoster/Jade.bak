@@ -45,11 +45,13 @@ PackageManager current
 	install: 'Jade\Jade Process Browser.pac';
 	install: 'Jade\Object Log Browser.pac';
 	install: 'Jade\Jade Login.pac';
-	install: 'Jade\Jade Deployment.pac';
-	install: 'Jade\Contacts Demo.pac';
 	yourself.
-[PackageManager current install: 'Jade\Jade from Dolphin.pac'] on: Package clashSignal  do: [:ex | ex resume].
+[PackageManager current install: 'Jade\Jade from Dolphin.pac'] 
+	on: Package clashSignal  do: [:ex | ex resume].
+
+"If you want to integrate Jade in Dolphin Professional"
 PackageManager current
 	install: 'Jade\Jade in Dolphin.pac';
+	install: 'Jade\Jade Deployment.pac';
 	yourself.
 ```
