@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.178'.
+package basicPackageVersion: '0.181'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -55,7 +55,7 @@ package!
 "Class Definitions"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders delaySemaphore eventCount gciSessionID gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask objectCache resultSemaphore server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID waitDialog waitDialogClass waitDialogSemaphore'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionID gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask objectCache server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: 'GemCursor'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -222,7 +222,7 @@ begin
 
 briefDescription
 
-	briefDescription isNil ifTrue: [
+	briefDescription ifNil: [
 		| stream list |
 		stream := WriteStream on: String new.
 		stream 
@@ -408,6 +408,26 @@ heartbeat: receiver arguments: arguments
 				session: gciSessionID.
 		].
 	].
+!
+
+incrementEventCount
+	"Without a GC, we get a very strange stack corruption!!"
+
+	(eventCount := eventCount + 1) \\ 1000 == 0 ifTrue: [MemoryManager current collectGarbage; compact].
+
+"
+MemoryManager current collectGarbage; compact.
+1 to: 10000 do: [:i |
+	| semaphore |
+	semaphore := Semaphore new.
+	[
+		(Delay forMilliseconds: 1) wait.
+		semaphore signal.
+	] fork.
+	semaphore wait.
+	i \\ 1000 == 0 ifTrue: [MemoryManager current collectGarbage; compact].
+].
+"
 !
 
 indexOfClientForwarder: anObject
@@ -951,7 +971,7 @@ withExplanation: aString do: aBlock
 	result := self
 		withExplanation: aString 
 		doA: aBlock.
-	eventCount := eventCount + 1.
+	self incrementEventCount.
 	(result isKindOf: GsError) ifFalse: [^result].
 
 	error := result.
@@ -1061,6 +1081,7 @@ withOopForString1: aString1 string2: aString2 do: aBlock
 !GciSession categoriesFor: #hardBreak!Jade!public! !
 !GciSession categoriesFor: #hasServer!public! !
 !GciSession categoriesFor: #heartbeat:arguments:!heartbeat!private! !
+!GciSession categoriesFor: #incrementEventCount!long running!private! !
 !GciSession categoriesFor: #indexOfClientForwarder:!public! !
 !GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:!private! !
 !GciSession categoriesFor: #initializeServer!private! !
