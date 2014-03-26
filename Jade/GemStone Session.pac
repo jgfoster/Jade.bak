@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.181'.
+package basicPackageVersion: '0.182'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -989,24 +989,26 @@ withExplanation: aString do: aBlock
 withExplanation: aString doA: aBlock
 	"Here we manage the UI feedback"
 
-	| result haveResult semaphore dialog |
-	semaphore := Semaphore new.
+	| result haveResult shouldRunEventLoop dialog |
+	shouldRunEventLoop := true.
 	haveResult := false.
 	[
 		result := self handlingClientForwarderSendDo: aBlock.
 		haveResult := true.
-		semaphore signal.
+		shouldRunEventLoop := false.
 	] fork.
 	[
 		[
 			(Delay forSeconds: 1) wait.
-			semaphore signal.
+			shouldRunEventLoop := false.
 		] fork.
 		isHandlingClientForwarderSend ifTrue: [
-			semaphore wait.
+			SessionManager inputState loopWhile: [shouldRunEventLoop].
+			shouldRunEventLoop := true.
 		] ifFalse: [
 			self class cursor showWhile: [
-				semaphore wait.
+				SessionManager inputState loopWhile: [shouldRunEventLoop].
+				shouldRunEventLoop := true.
 			].
 		].
 		haveResult ifTrue: [^result].
@@ -1017,7 +1019,8 @@ withExplanation: aString doA: aBlock
 		message: aString
 		havingWaited: 1.
 	[
-		semaphore wait.
+		SessionManager inputState loopWhile: [shouldRunEventLoop].
+		shouldRunEventLoop := true.
 		dialog view close.
 	] fork.
 	dialog showModal.
