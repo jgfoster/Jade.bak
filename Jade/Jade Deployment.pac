@@ -3,7 +3,7 @@ package := Package name: 'Jade Deployment'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.036'.
+package basicPackageVersion: '0.037'.
 
 package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
 bnRSAAAAEAAAAHJ1bnRpbWVcSmFkZS5leGWaAAAAUgAAAA8AAABKYWRlIERlcGxveW1lbnRSAAAA
@@ -255,6 +255,15 @@ version
 
 !JadeSessionManager class methodsFor!
 
+getVersion
+
+	| list |
+	list := [Package manager sourceControl getProjectEditionsFor: 'Jade'] on: Error do: [:ex | ^Date today printString].
+	^(list at: 1) projectVersion
+		ifNotNil: [:x | x]
+		ifNil: [(list at: 2) projectVersion , '+'].
+!
+
 mainShellClass
 
 	^JadeLoginShell.
@@ -267,12 +276,7 @@ sessionStarted
 
 setVersion
 
-	| list |
-	list := Package manager sourceControl getProjectEditionsFor: 'Jade'.
-	Version := (list at: 1) projectVersion
-		ifNotNil: [:x | x]
-		ifNil: [(list at: 2) projectVersion , '+'].
-!
+	Version := self getVersion.!
 
 version
 
@@ -280,6 +284,7 @@ version
 		ifTrue: [Version]
 		ifFalse: ['(Development)'].
 ! !
+!JadeSessionManager class categoriesFor: #getVersion!public! !
 !JadeSessionManager class categoriesFor: #mainShellClass!public! !
 !JadeSessionManager class categoriesFor: #sessionStarted!public! !
 !JadeSessionManager class categoriesFor: #setVersion!public! !

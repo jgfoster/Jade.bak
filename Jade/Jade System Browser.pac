@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.251'.
+package basicPackageVersion: '0.252'.
 
 
 package classNames
@@ -1184,7 +1184,7 @@ sbUpdateClasses
 
 sbUpdateClassHierarchy
 
-	| currentSelection currentClass allClasses override |
+	| currentSelection currentClass allClasses override testCaseClass |
 	allClasses := IdentitySet new.
 	"Add each class in dictionary/package to stream on a line with the superclass chain"
 	classList do: [:each | 
@@ -1226,7 +1226,9 @@ sbUpdateClassHierarchy
 		self sbAddNameOf: currentClass.
 		currentClass := currentClass superclass.
 	].
-	writeStream lf.
+	writeStream lf;
+		nextPutAll: (selectedClass notNil and: [(testCaseClass := self objectNamed: #'TestCase') notNil and: [selectedClass inheritsFrom: testCaseClass]]) printString; tab;
+		lf.
 !
 
 sbUpdateClassInfo
@@ -4357,9 +4359,12 @@ updateClassCategoryTree
 
 updateClassHierarchy
 
-	| list paths treeModel x y currentSelection newSelection |
-	classHierarchyPresenter ensureVisible.
+	| list paths treeModel x y currentSelection newSelection flags |
 	list := self nextList.
+	newSelection := self nextLineAsList reverse.
+	flags := self nextLineAsList.
+
+	classHierarchyPresenter ensureVisible.
 	list := list collect: [:each | each reverse].
 	paths := Set new.
 	list do: [:eachClass | 
@@ -4391,7 +4396,6 @@ updateClassHierarchy
 			yourself.
 	].
 	currentSelection := classHierarchyPresenter selectionIfNone: [#()].
-	newSelection := self nextLineAsList reverse.
 	(currentSelection isEmpty and: [newSelection isEmpty and: [classListPresenter selections size = 1]]) ifTrue: [
 		x := classListPresenter selection.
 		newSelection := classHierarchyPresenter model asBag asArray
@@ -4406,7 +4410,8 @@ updateClassHierarchy
 	].
 	self selectedClassName: (newSelection notEmpty ifTrue: [newSelection last] ifFalse: ['']).
 	classListPresenter selectionOrNil: nil.
-!
+
+	selectedClassesAreTestCases := (flags at: 1) = 'true'.!
 
 updateClassInfo
 

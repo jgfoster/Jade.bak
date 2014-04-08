@@ -3,7 +3,7 @@ package := Package name: 'Jade Inspector'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.012'.
+package basicPackageVersion: '0.013'.
 
 
 package classNames
@@ -53,7 +53,7 @@ JadeTextDocument subclass: #JadeInspector
 
 inspect: anObject
 
-	| stream list string size |
+	| stream string |
 	(stream := WriteStream on: String new)
 		nextPutAll: anObject class name; tab;
 		yourself.
