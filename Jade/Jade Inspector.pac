@@ -3,7 +3,7 @@ package := Package name: 'Jade Inspector'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.011'.
+package basicPackageVersion: '0.012'.
 
 
 package classNames
@@ -13,7 +13,10 @@ package classNames
 package methodNames
 	add: #JadeServer -> #inspect:;
 	add: #JadeServer -> #inspectDictionary:on:;
+	add: #JadeServer -> #inspectNamedInstanceVariablesOf:on:;
 	add: #JadeServer -> #printStringTo500:;
+	add: #JadeServer64bit3x -> #inspect:;
+	add: #JadeServer64bit3x -> #inspectNamedInstanceVariablesOf:on:;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -57,18 +60,7 @@ inspect: anObject
 	(self oopOf: anObject) printOn: stream.
 	stream lf.
 	(anObject isKindOf: Dictionary superclass) ifTrue: [^self inspectDictionary: anObject on: stream].
-	list := anObject class allInstVarNames.
-	size := list size.
-	anObject class format > 0 ifTrue: [
-		size := size + (anObject _basicSize min: 100).
-	].
-	size printOn: stream.
-	stream lf.
-	1 to: list size do: [:i | 
-		stream nextPutAll: (list at: i); tab.
-		(self oopOf: (anObject instVarAt: i)) printOn: stream.
-		stream lf.
-	].
+	self inspectNamedInstanceVariablesOf: anObject on: stream.
 	anObject class format > 0 ifTrue: [
 		1 to: (anObject _basicSize min: 100) do: [:i | 
 			i printOn: stream.
@@ -116,6 +108,23 @@ inspectDictionary: aDictionary on: aStream
 		contents.
 !
 
+inspectNamedInstanceVariablesOf: anObject on: aStream
+
+	| list size |
+	list := anObject class allInstVarNames.
+	size := list size.
+	anObject class format > 0 ifTrue: [
+		size := size + (anObject _basicSize min: 100).
+	].
+	size printOn: aStream.
+	aStream lf.
+	1 to: list size do: [:i | 
+		aStream nextPutAll: (list at: i); tab.
+		(self oopOf: (anObject instVarAt: i)) printOn: aStream.
+		aStream lf.
+	].
+!
+
 printStringTo500: anObject
 
 	| string |
@@ -124,7 +133,76 @@ printStringTo500: anObject
 ! !
 !JadeServer categoriesFor: #inspect:!Inspector!public! !
 !JadeServer categoriesFor: #inspectDictionary:on:!Inspector!public! !
+!JadeServer categoriesFor: #inspectNamedInstanceVariablesOf:on:!Inspector!public! !
 !JadeServer categoriesFor: #printStringTo500:!Inspector!public! !
+
+!JadeServer64bit3x methodsFor!
+
+inspect: anObject
+
+	| stream list dynamic string size |
+	(stream := WriteStream on: String new)
+		nextPutAll: anObject class name; tab;
+		yourself.
+	(self oopOf: anObject) printOn: stream.
+	stream lf.
+	(anObject isKindOf: Dictionary superclass) ifTrue: [^self inspectDictionary: anObject on: stream].
+	list := anObject class allInstVarNames.
+	dynamic := anObject dynamicInstanceVariables.
+	size := list size + dynamic size.
+	anObject class format > 0 ifTrue: [
+		size := size + (anObject _basicSize min: 100).
+	].
+	size printOn: stream.
+	stream lf.
+	1 to: list size do: [:i | 
+		stream nextPutAll: (list at: i); tab.
+		(self oopOf: (anObject instVarAt: i)) printOn: stream.
+		stream lf.
+	].
+	1 to: dynamic size do: [:i | 
+		stream nextPutAll: (dynamic at: i); tab.
+		(self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) printOn: stream.
+		stream lf.
+	].
+	anObject class format > 0 ifTrue: [
+		1 to: (anObject _basicSize min: 100) do: [:i | 
+			i printOn: stream.
+			stream tab.
+			(self oopOf: (anObject _at: i)) printOn: stream.
+			stream lf.
+		].
+	].
+	(string := anObject printString) size > 5000 ifTrue: [string := (string copyFrom: 1 to: 5000) , '...'].
+	^stream 
+		nextPutAll: string; 
+		contents.
+!
+
+inspectNamedInstanceVariablesOf: anObject on: aStream
+
+	| list dynamic size |
+	list := anObject class allInstVarNames.
+	dynamic := anObject dynamicInstanceVariables.
+	size := list size + dynamic size.
+	anObject class format > 0 ifTrue: [
+		size := size + (anObject _basicSize min: 100).
+	].
+	size printOn: aStream.
+	aStream lf.
+	1 to: list size do: [:i | 
+		aStream nextPutAll: (list at: i); tab.
+		(self oopOf: (anObject instVarAt: i)) printOn: aStream.
+		aStream lf.
+	].
+	1 to: dynamic size do: [:i | 
+		aStream nextPutAll: (dynamic at: i); tab.
+		(self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) printOn: aStream.
+		aStream lf.
+	].
+! !
+!JadeServer64bit3x categoriesFor: #inspect:!Inspector!public!Transcript! !
+!JadeServer64bit3x categoriesFor: #inspectNamedInstanceVariablesOf:on:!Inspector!public!Transcript! !
 
 "End of package definition"!
 

@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.250'.
+package basicPackageVersion: '0.251'.
 
 
 package classNames
@@ -161,7 +161,7 @@ package!
 "Class Definitions"!
 
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
-	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classDefinition classDefinitionPresenter classDocumentationPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter eventCount globalsPresenter ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs updateCount updateProcess variableListPresenter'
+	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classDefinition classDefinitionPresenter classDocumentationPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter eventCount globalsPresenter ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs updateCount updateProcess variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1264,7 +1264,7 @@ sbUpdateClassInfo
 
 sbUpdateClassList
 
-	| mySelections override |
+	| mySelections override testCaseClass |
 	(classList asSortedCollection: [:a :b | a name <= b name]) do: [:eachClass | 
 		self sbAddNameOf: eachClass.
 	].
@@ -1273,6 +1273,10 @@ sbUpdateClassList
 	(override := selections at: #'className' ifAbsent: [nil]) notNil ifTrue: [mySelections := Array with: override].
 	mySelections := classList select: [:eachClass | mySelections includes: eachClass name].
 	mySelections do: [:each | self sbAddNameOf: each].
+	writeStream lf.
+	(testCaseClass := self objectNamed: #'TestCase') notNil ifTrue: [
+		(mySelections allSatisfy: [:each | each  inheritsFrom: testCaseClass]) printOn: writeStream.
+	].
 	writeStream lf.
 	selectedClass := mySelections size = 1
 		ifTrue: [mySelections first]
@@ -2970,6 +2974,7 @@ initialize
 	selectedClassName := ''.
 	eventCount := 0.
 	selectedClassChanged := false.
+	selectedClassesAreTestCases := false.
 	keystrokeTime := 0.
 	updateCount := 0.
 !
@@ -3792,9 +3797,10 @@ queryCommand: aCommandQuery
 	(#(#'runMethodTests') includes: command) ifTrue: [aCommandQuery isEnabled: (methodListPresenter selections notEmpty and: [methodListPresenter selections first at: 3]). ^true].
 	(#(#'loadLatestVersion') includes: command) ifTrue: [
 		aCommandQuery isEnabled: (packageListPresenter selections notEmpty and: [packageListPresenter selections allSatisfy: [:each | each key beginsWith: 'ConfigurationOf']]). ^true].
-	(#(#'browseClassReferences' #'fileOutClass' #'addSubclass' #'addMissingAccessors' #'removeClass' #'removePriorVersions' #'runClassTests') includes: command) ifTrue: [
+	(#(#'browseClassReferences' #'fileOutClass' #'addSubclass' #'addMissingAccessors' #'removeClass' #'removePriorVersions') includes: command) ifTrue: [
 		aCommandQuery isEnabled: self selectedClasses size == 1. ^true.
 	].
+	(#(#'runClassTests') includes: command) ifTrue: [aCommandQuery isEnabled: selectedClassesAreTestCases. ^true].
 	^super queryCommand: aCommandQuery.
 !
 
@@ -4439,13 +4445,16 @@ updateClassInfo
 
 updateClassList
 
-	| fullList newSelections |
+	| fullList newSelections flags |
 	classListPresenter ensureVisible.
 	fullList := self nextLineAsList.
+	newSelections := self nextLineAsList.
+	flags := self nextLineAsList.
+
 	fullList = classListPresenter list ifFalse: [
 		classListPresenter list: fullList.
 	].
-	newSelections := self nextLineAsList.
+
 	newSelections := classListPresenter list select: [:each | newSelections includes: each].
 	newSelections = classListPresenter selections ifFalse: [
 		classListPresenter selections: newSelections.
@@ -4459,7 +4468,8 @@ updateClassList
 			classListPresenter view ensureVisible: 1.
 		].
 	].
-!
+
+	selectedClassesAreTestCases := (flags at: 1) = 'true'.!
 
 updateClassListOrHierarchy
 

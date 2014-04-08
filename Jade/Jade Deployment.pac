@@ -3,7 +3,7 @@ package := Package name: 'Jade Deployment'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.035'.
+package basicPackageVersion: '0.036'.
 
 package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
 bnRSAAAAEAAAAHJ1bnRpbWVcSmFkZS5leGWaAAAAUgAAAA8AAABKYWRlIERlcGxveW1lbnRSAAAA
@@ -18,8 +18,7 @@ ZURlc2NyaXB0aW9uUgAAAB0AAABEb2xwaGluIFg2LjEgVG9HbyBBcHBsaWNhdGlvblIAAAALAAAA
 RmlsZVZlcnNpb25SAAAACgAAADEsIDAsIDAsIDFSAAAACAAAAENvbW1lbnRzUgAAABwAAABQb3dl
 cmVkIGJ5IERvbHBoaW4gU21hbGx0YWxrygAAANAAAABiAAAAAQAAAAYCCgBEV09SREFycmF5cgAA
 AAQAAAAJBLAEAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA').
-package basicScriptAt: #postinstall put: 'ApplicationDeploymentWizard saveImageOnDeploy: false.
-SessionManager current 
+package basicScriptAt: #postinstall put: 'SessionManager current 
 	when: #''sessionStarted'' 
 	send: #''sessionStarted'' 
 	to: JadeSessionManager.
@@ -90,7 +89,7 @@ copyRuntimeFiles
 
 	| basePath |
 	basePath := SessionManager current imageBase.
-	#('bin' 'icons') do: [:eachDir | 
+	#('bin' 'connections' 'icons') do: [:eachDir | 
 		(File exists: basePath , 'runtime\' , eachDir) ifTrue: [
 			(File isDirectory: basePath , 'runtime\' , eachDir) ifFalse: [eachDir error: 'not a directory'].
 			File deleteDirectory: basePath , 'runtime\' , eachDir.
@@ -124,6 +123,17 @@ loadJadeServerSourceCache
 
 	JadeServer withAllSubclassesDo: [:each | each gsString].
 !
+
+logRemainingClasses
+
+	10 timesRepeat: [
+		[
+			super logRemainingClasses.
+			^self.
+		] on: Error do: [:ex | 
+			MemoryManager current collectGarbage; compact.
+		].
+	].!
 
 prepareToStrip
 
@@ -185,6 +195,7 @@ requiredPackageNames
 !JadeImageStripper categoriesFor: #exeIconFile!operations!public! !
 !JadeImageStripper categoriesFor: #finishedWith:!public! !
 !JadeImageStripper categoriesFor: #loadJadeServerSourceCache!public! !
+!JadeImageStripper categoriesFor: #logRemainingClasses!public! !
 !JadeImageStripper categoriesFor: #prepareToStrip!public! !
 !JadeImageStripper categoriesFor: #requiredClasses!public! !
 !JadeImageStripper categoriesFor: #requiredPackageNames!public! !
