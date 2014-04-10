@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.107'.
+package basicPackageVersion: '0.109'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -409,16 +409,16 @@ fetchByteArray: anOopType
 fetchBytes: anOopType
 
 	| oopClass |
-	(oopClass := self fetchClass: anOopType) = self oopClassString ifTrue: [
-		^self fetchChars: anOopType.
-	].
-	oopClass = self oopClassSymbol ifTrue: [
-		^(self fetchChars: anOopType) asSymbol.
-	].
-	oopClass = self oopClassByteArray ifTrue: [
-		^self fetchByteArray: anOopType.
-	].
-	^anOopType.
+	oopClass := self fetchClass: anOopType.
+	oopClass = self oopClassString 						ifTrue: [^self fetchChars: anOopType].
+	oopClass = self oopClassSymbol 					ifTrue: [^(self fetchChars: anOopType) asSymbol].
+	oopClass = self oopClassByteArray 				ifTrue: [^self fetchByteArray: anOopType].
+	oopClass = self oopClassUnicode7 				ifTrue: [^self fetchByteArray: anOopType].
+	oopClass = self oopClassUnicode16 				ifTrue: [^self fetchByteArray: anOopType].
+	oopClass = self oopClassUnicode32 				ifTrue: [^self fetchByteArray: anOopType].
+	oopClass = self oopClassDoubleByteString 	ifTrue: [^self fetchByteArray: anOopType].
+	oopClass = self oopClassQuadByteString		ifTrue: [^self fetchByteArray: anOopType].
+	^self fetchByteArray: anOopType.
 !
 
 fetchBytes: anOopType session: anInteger
@@ -815,6 +815,16 @@ oopClassArray
 	self subclassResponsibility.
 !
 
+oopClassDoubleByteString
+
+	self subclassResponsibility.
+!
+
+oopClassQuadByteString
+
+	self subclassResponsibility.
+!
+
 oopClassString
 
 	self subclassResponsibility.
@@ -826,6 +836,21 @@ oopClassSymbol
 !
 
 oopClassSystem
+
+	self subclassResponsibility.
+!
+
+oopClassUnicode16
+
+	self subclassResponsibility.
+!
+
+oopClassUnicode32
+
+	self subclassResponsibility.
+!
+
+oopClassUnicode7
 
 	self subclassResponsibility.
 !
@@ -1070,9 +1095,14 @@ valueOfOop: anOopType
 !GciLibrary categoriesFor: #oopAsciiNul!public!Reserved OOPs! !
 !GciLibrary categoriesFor: #oopAt:!public! !
 !GciLibrary categoriesFor: #oopClassArray!public!Reserved OOPs! !
+!GciLibrary categoriesFor: #oopClassDoubleByteString!public! !
+!GciLibrary categoriesFor: #oopClassQuadByteString!public! !
 !GciLibrary categoriesFor: #oopClassString!public!Reserved OOPs! !
 !GciLibrary categoriesFor: #oopClassSymbol!public!Reserved OOPs! !
 !GciLibrary categoriesFor: #oopClassSystem!public!Reserved OOPs! !
+!GciLibrary categoriesFor: #oopClassUnicode16!public! !
+!GciLibrary categoriesFor: #oopClassUnicode32!public! !
+!GciLibrary categoriesFor: #oopClassUnicode7!public! !
 !GciLibrary categoriesFor: #oopFalse!public!Reserved OOPs! !
 !GciLibrary categoriesFor: #oopForInteger:!public! !
 !GciLibrary categoriesFor: #oopGemStoneError!public!Reserved OOPs! !
@@ -1301,6 +1331,14 @@ oopClassByteArray
 
 	^OopType32 fromInteger: 1617.!
 
+oopClassDoubleByteString
+
+	^OopType32 fromInteger: 0.!
+
+oopClassQuadByteString
+
+	^OopType32 fromInteger: 0.!
+
 oopClassString
 
 	^OopType32 fromInteger: 1169.!
@@ -1313,6 +1351,18 @@ oopClassSymbol
 oopClassSystem
 
 	^OopType32 fromInteger: 1189.!
+
+oopClassUnicode16
+
+	^OopType32 fromInteger: 0.!
+
+oopClassUnicode32
+
+	^OopType32 fromInteger: 0.!
+
+oopClassUnicode7
+
+	^OopType32 fromInteger: 0.!
 
 oopFalse
 
@@ -1394,9 +1444,14 @@ specialFromOop: anOop
 !Gcilw6x categoriesFor: #oopAsciiNul!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #oopClassArray!public! !
 !Gcilw6x categoriesFor: #oopClassByteArray!public! !
+!Gcilw6x categoriesFor: #oopClassDoubleByteString!public! !
+!Gcilw6x categoriesFor: #oopClassQuadByteString!public! !
 !Gcilw6x categoriesFor: #oopClassString!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #oopClassSymbol!public! !
 !Gcilw6x categoriesFor: #oopClassSystem!public!Reserved OOPs! !
+!Gcilw6x categoriesFor: #oopClassUnicode16!public! !
+!Gcilw6x categoriesFor: #oopClassUnicode32!public! !
+!Gcilw6x categoriesFor: #oopClassUnicode7!public! !
 !Gcilw6x categoriesFor: #oopFalse!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #oopGemStoneError!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #oopIllegal!public!Reserved OOPs! !
@@ -1488,6 +1543,16 @@ oopClassByteArray
 
 	^OopType64 fromInteger: 103425.!
 
+oopClassDoubleByteString
+
+	^OopType64 fromInteger: 143873.
+!
+
+oopClassQuadByteString
+
+	^OopType64 fromInteger: 144385.
+!
+
 oopClassString
 
 	^OopType64 fromInteger: 74753.
@@ -1501,6 +1566,21 @@ oopClassSymbol
 oopClassSystem
 
 	^OopType64 fromInteger: 76033.
+!
+
+oopClassUnicode16
+
+	^OopType64 fromInteger: 154625.
+!
+
+oopClassUnicode32
+
+	^OopType64 fromInteger: 154881.
+!
+
+oopClassUnicode7
+
+	^OopType64 fromInteger: 154369.
 !
 
 oopFalse
@@ -1632,9 +1712,14 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #oopAt:!private! !
 !LibGciRpc64 categoriesFor: #oopClassArray!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopClassByteArray!public!Reserved OOPs! !
+!LibGciRpc64 categoriesFor: #oopClassDoubleByteString!public! !
+!LibGciRpc64 categoriesFor: #oopClassQuadByteString!public! !
 !LibGciRpc64 categoriesFor: #oopClassString!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopClassSymbol!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopClassSystem!public!Reserved OOPs! !
+!LibGciRpc64 categoriesFor: #oopClassUnicode16!public! !
+!LibGciRpc64 categoriesFor: #oopClassUnicode32!public! !
+!LibGciRpc64 categoriesFor: #oopClassUnicode7!public! !
 !LibGciRpc64 categoriesFor: #oopFalse!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopForInteger:!public! !
 !LibGciRpc64 categoriesFor: #oopGemStoneError!public!Reserved OOPs! !

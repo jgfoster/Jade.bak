@@ -3,7 +3,7 @@ package := Package name: 'Jade Deployment'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.037'.
+package basicPackageVersion: '0.038'.
 
 package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
 bnRSAAAAEAAAAHJ1bnRpbWVcSmFkZS5leGWaAAAAUgAAAA8AAABKYWRlIERlcGxveW1lbnRSAAAA
@@ -46,6 +46,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade UI';
 	add: '..\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper';
 	add: '..\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
+	add: '..\ITC Gorisek\Source Tracking System';
 	yourself).
 
 package!
@@ -89,7 +90,7 @@ copyRuntimeFiles
 
 	| basePath |
 	basePath := SessionManager current imageBase.
-	#('bin' 'connections' 'icons') do: [:eachDir | 
+	#('bin' 'icons') do: [:eachDir | 
 		(File exists: basePath , 'runtime\' , eachDir) ifTrue: [
 			(File isDirectory: basePath , 'runtime\' , eachDir) ifFalse: [eachDir error: 'not a directory'].
 			File deleteDirectory: basePath , 'runtime\' , eachDir.
@@ -139,6 +140,7 @@ prepareToStrip
 
 	JadeSessionManager setVersion.
 	self 
+		savePackages;
 		loadJadeServerSourceCache; 
 		copyRuntimeFiles; 
 		closeLoginShells;
@@ -189,6 +191,16 @@ requiredPackageNames
 
 
 
+!
+
+savePackages
+
+	PackageManager current packages do: [:each | 
+		(each packagePathname beginsWith: 'Jade\') ifTrue: [
+			each isChanged ifTrue: [self halt].	"Are you deploying without saving the packages?"
+			each save.
+		].
+	].
 ! !
 !JadeImageStripper categoriesFor: #closeLoginShells!public! !
 !JadeImageStripper categoriesFor: #copyRuntimeFiles!public! !
@@ -199,6 +211,7 @@ requiredPackageNames
 !JadeImageStripper categoriesFor: #prepareToStrip!public! !
 !JadeImageStripper categoriesFor: #requiredClasses!public! !
 !JadeImageStripper categoriesFor: #requiredPackageNames!public! !
+!JadeImageStripper categoriesFor: #savePackages!public! !
 
 !JadeImageStripper class methodsFor!
 
@@ -258,7 +271,7 @@ version
 getVersion
 
 	| list |
-	list := [Package manager sourceControl getProjectEditionsFor: 'Jade'] on: Error do: [:ex | ^Date today printString].
+	list := [StsManager current getProjectEditionsFor: 'Jade'] on: Error do: [:ex | ^Date today printString].
 	^(list at: 1) projectVersion
 		ifNotNil: [:x | x]
 		ifNil: [(list at: 2) projectVersion , '+'].
