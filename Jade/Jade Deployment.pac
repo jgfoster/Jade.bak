@@ -3,7 +3,7 @@ package := Package name: 'Jade Deployment'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.038'.
+package basicPackageVersion: '0.040'.
 
 package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
 bnRSAAAAEAAAAHJ1bnRpbWVcSmFkZS5leGWaAAAAUgAAAA8AAABKYWRlIERlcGxveW1lbnRSAAAA
@@ -12,11 +12,11 @@ SVhFREZJTEVJTkZPcgAAADQAAAC9BO/+AAABAAAAAQABAAAAAAABAAEAAAA/AAAAAAAAAAQAAAAC
 AAAAAAAAAAAAAAAAAAAA6gAAAPAAAABiAAAAAgAAAFIAAAAIAAAAMDQwOTA0YjDqAAAA8AAAAGIA
 AAAOAAAAUgAAAA4AAABQcm9kdWN0VmVyc2lvblIAAAAKAAAAMSwgMCwgMCwgMVIAAAAQAAAAT3Jp
 Z2luYWxGaWxlbmFtZVIAAAAIAAAASmFkZS5leGVSAAAACwAAAFByb2R1Y3ROYW1lUgAAAB8AAABB
-IERvbHBoaW4gWDYuMSBUb0dvIEFwcGxpY2F0aW9uUgAAAA4AAABMZWdhbENvcHlyaWdodFIAAAAr
-AAAAUG9ydGlvbnMgQ29weXJpZ2h0IKkgT2JqZWN0IEFydHMgMTk5Ny0yMDA4LlIAAAAPAAAARmls
-ZURlc2NyaXB0aW9uUgAAAB0AAABEb2xwaGluIFg2LjEgVG9HbyBBcHBsaWNhdGlvblIAAAALAAAA
-RmlsZVZlcnNpb25SAAAACgAAADEsIDAsIDAsIDFSAAAACAAAAENvbW1lbnRzUgAAABwAAABQb3dl
-cmVkIGJ5IERvbHBoaW4gU21hbGx0YWxrygAAANAAAABiAAAAAQAAAAYCCgBEV09SREFycmF5cgAA
+IERvbHBoaW4gWDYuMSBUb0dvIEFwcGxpY2F0aW9uUgAAAAgAAABDb21tZW50c1IAAAAcAAAAUG93
+ZXJlZCBieSBEb2xwaGluIFNtYWxsdGFsa1IAAAAPAAAARmlsZURlc2NyaXB0aW9uUgAAAB0AAABE
+b2xwaGluIFg2LjEgVG9HbyBBcHBsaWNhdGlvblIAAAALAAAARmlsZVZlcnNpb25SAAAACgAAADEs
+IDAsIDAsIDFSAAAADgAAAExlZ2FsQ29weXJpZ2h0UgAAACsAAABQb3J0aW9ucyBDb3B5cmlnaHQg
+qSBPYmplY3QgQXJ0cyAxOTk3LTIwMDguygAAANAAAABiAAAAAQAAAAYCCgBEV09SREFycmF5cgAA
 AAQAAAAJBLAEAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA').
 package basicScriptAt: #postinstall put: 'SessionManager current 
 	when: #''sessionStarted'' 
@@ -46,7 +46,6 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade UI';
 	add: '..\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper';
 	add: '..\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
-	add: '..\ITC Gorisek\Source Tracking System';
 	yourself).
 
 package!
@@ -197,7 +196,7 @@ savePackages
 
 	PackageManager current packages do: [:each | 
 		(each packagePathname beginsWith: 'Jade\') ifTrue: [
-			each isChanged ifTrue: [self halt].	"Are you deploying without saving the packages?"
+			(each isChanged and: [each name ~= 'Jade Deployment']) ifTrue: [self halt].	"Are you deploying without saving the packages?"
 			each save.
 		].
 	].
@@ -271,7 +270,7 @@ version
 getVersion
 
 	| list |
-	list := [StsManager current getProjectEditionsFor: 'Jade'] on: Error do: [:ex | ^Date today printString].
+	list := [Package manager sourceControl getProjectEditionsFor: 'Jade'] on: Error do: [:ex | ^Date today printString].
 	^(list at: 1) projectVersion
 		ifNotNil: [:x | x]
 		ifNil: [(list at: 2) projectVersion , '+'].

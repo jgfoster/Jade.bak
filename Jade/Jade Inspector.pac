@@ -3,7 +3,7 @@ package := Package name: 'Jade Inspector'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.013'.
+package basicPackageVersion: '0.014'.
 
 
 package classNames
@@ -289,7 +289,7 @@ onViewOpened
 	(object isKindOf: ByteArray) ifTrue: [
 		documentPresenter value: object printString.
 		codePane setDocumentPresenterWith: (self registry getClass: 'ByteArray').
-		self view caption: 'ByteArray'.
+		self view caption: object class name.
 		^self.
 	].
 	(object isKindOf: Integer) ifTrue: [

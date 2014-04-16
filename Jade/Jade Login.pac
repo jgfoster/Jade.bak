@@ -3,7 +3,7 @@ package := Package name: 'Jade Login'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.076'.
+package basicPackageVersion: '0.077'.
 
 
 package classNames
@@ -471,7 +471,13 @@ aboutJade
 	"See also JadeTextDocument>>#'aboutJade'"
 
 	| version |
-	version := [SessionManager current version] on: Error do: [:ex | ex return: ex description printString].
+	version := [
+		SessionManager current isRuntime 
+		ifTrue: [SessionManager current version] 
+		ifFalse: ['<Development>']
+	] on: Error do: [:ex | 
+		ex return: ex description printString.
+	].
 	MessageBox 
 		notify: 
 'Jade is an Alternative Development Environment (JADE) for

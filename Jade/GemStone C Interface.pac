@@ -3,11 +3,12 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.109'.
+package basicPackageVersion: '0.110'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
 package classNames
+	add: #DoubleByteString;
 	add: #GciCommitFailure;
 	add: #GciError;
 	add: #GciErrSType;
@@ -39,6 +40,10 @@ package classNames
 	add: #OopType64;
 	add: #OopType64Array;
 	add: #OopType64Field;
+	add: #QuadByteString;
+	add: #Unicode16;
+	add: #Unicode32;
+	add: #Unicode7;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -61,6 +66,31 @@ DWORDField subclass: #OopType32Field
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 QWORDField subclass: #OopType64Field
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ByteArray variableByteSubclass: #DoubleByteString
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ByteArray variableByteSubclass: #QuadByteString
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ByteArray variableByteSubclass: #Unicode16
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ByteArray variableByteSubclass: #Unicode32
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ByteArray variableByteSubclass: #Unicode7
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -242,6 +272,21 @@ fieldClass
 	^OopType64.! !
 !OopType64Field categoriesFor: #fieldClass!public! !
 
+DoubleByteString guid: (GUID fromString: '{48552D00-1D75-4CBC-B980-D5401B007A59}')!
+DoubleByteString comment: ''!
+!DoubleByteString categoriesForClass!Unclassified! !
+QuadByteString guid: (GUID fromString: '{6A0947B2-6DC5-44AD-A5FF-91BA5DBEDE53}')!
+QuadByteString comment: ''!
+!QuadByteString categoriesForClass!Unclassified! !
+Unicode16 guid: (GUID fromString: '{CDDA698B-61EC-417C-9E6B-88450C68280E}')!
+Unicode16 comment: ''!
+!Unicode16 categoriesForClass!Unclassified! !
+Unicode32 guid: (GUID fromString: '{4C897256-00C7-4134-8787-08DB5F1E66E8}')!
+Unicode32 comment: ''!
+!Unicode32 categoriesForClass!Unclassified! !
+Unicode7 guid: (GUID fromString: '{70586536-7E1D-4EFF-B354-53290842C46E}')!
+Unicode7 comment: ''!
+!Unicode7 categoriesForClass!Unclassified! !
 GciError guid: (GUID fromString: '{071E2ED5-4EBD-4862-B435-48DE5B29CFD6}')!
 GciError comment: ''!
 !GciError categoriesForClass!Unclassified! !
@@ -392,11 +437,26 @@ executeString: aString session: anInteger
 		session: anInteger.
 !
 
-fetchByteArray: anOopType
+fetchBytes: anOopType
+
+	| oopClass |
+	oopClass := self fetchClass: anOopType.
+	oopClass = self oopClassString 						ifTrue: [^self fetchChars: anOopType].
+	oopClass = self oopClassSymbol 					ifTrue: [^(self fetchChars: anOopType) asSymbol].
+	oopClass = self oopClassByteArray 				ifTrue: [^self fetchBytes: anOopType class: ByteArray].
+	oopClass = self oopClassUnicode7 				ifTrue: [^self fetchBytes: anOopType class: Unicode7].
+	oopClass = self oopClassUnicode16 				ifTrue: [^self fetchBytes: anOopType class: Unicode16].
+	oopClass = self oopClassUnicode32 				ifTrue: [^self fetchBytes: anOopType class: Unicode32].
+	oopClass = self oopClassDoubleByteString 	ifTrue: [^self fetchBytes: anOopType class: DoubleByteString].
+	oopClass = self oopClassQuadByteString		ifTrue: [^self fetchBytes: anOopType class: QuadByteString].
+	^anOopType.
+!
+
+fetchBytes: anOopType class: aClass
 
 	| size bytes result |
 	size := self gciFetchSize: anOopType.
-	bytes := ByteArray new: size.
+	bytes := aClass new: size.
 	result := self 
 		gciFetchBytes: anOopType
 		_: 1
@@ -404,21 +464,6 @@ fetchByteArray: anOopType
 		_: size.
 	result = size ifTrue: [^bytes].
 	self signalLastError.
-!
-
-fetchBytes: anOopType
-
-	| oopClass |
-	oopClass := self fetchClass: anOopType.
-	oopClass = self oopClassString 						ifTrue: [^self fetchChars: anOopType].
-	oopClass = self oopClassSymbol 					ifTrue: [^(self fetchChars: anOopType) asSymbol].
-	oopClass = self oopClassByteArray 				ifTrue: [^self fetchByteArray: anOopType].
-	oopClass = self oopClassUnicode7 				ifTrue: [^self fetchByteArray: anOopType].
-	oopClass = self oopClassUnicode16 				ifTrue: [^self fetchByteArray: anOopType].
-	oopClass = self oopClassUnicode32 				ifTrue: [^self fetchByteArray: anOopType].
-	oopClass = self oopClassDoubleByteString 	ifTrue: [^self fetchByteArray: anOopType].
-	oopClass = self oopClassQuadByteString		ifTrue: [^self fetchByteArray: anOopType].
-	^self fetchByteArray: anOopType.
 !
 
 fetchBytes: anOopType session: anInteger
@@ -1041,8 +1086,8 @@ valueOfOop: anOopType
 !GciLibrary categoriesFor: #errorStructureClass!private! !
 !GciLibrary categoriesFor: #executeString:fromContext:session:!public! !
 !GciLibrary categoriesFor: #executeString:session:!public! !
-!GciLibrary categoriesFor: #fetchByteArray:!private! !
 !GciLibrary categoriesFor: #fetchBytes:!private! !
+!GciLibrary categoriesFor: #fetchBytes:class:!private! !
 !GciLibrary categoriesFor: #fetchBytes:session:!public! !
 !GciLibrary categoriesFor: #fetchChars:!private! !
 !GciLibrary categoriesFor: #fetchClass:!private! !
@@ -1928,10 +1973,299 @@ LibGciRpc64_32 comment: ''!
 !LibGciRpc64_32 categoriesForClass!Unclassified! !
 !LibGciRpc64_32 methodsFor!
 
+DllRegisterServer
+	<stdcall: hresult DllRegisterServer>
+	^self invalidCall!
+
+gciAbort
+
+	<cdecl: void GciAbort>
+	^self invalidCall
+!
+
+gciBegin
+
+	<cdecl: void GciBegin>
+	^self invalidCall
+!
+
+gciCallInProgress
+
+	<cdecl: bool GciCallInProgress>
+	^self invalidCall
+!
+
+gciClearStack: processOop
+
+	<cdecl: void GciClearStack OopType64>
+	^self invalidCall
+!
+
+gciCommit
+
+	<cdecl: bool GciCommit>
+	^self invalidCall
+!
+
+gciErr: errorReport
+
+	<cdecl: bool GciErr GciErrSType64_30*>
+	^self invalidCall
+!
+
+gciFetchBytes: anOopType _: startIndex _: cString _: maxSize
+
+	<cdecl: sdword GciFetchBytes_ OopType64 sqword lpvoid qword>
+	^self invalidCall
+!
+
+gciFetchChars: anOopType _: startIndex _: cString _: maxSize
+
+	<cdecl: sdword GciFetchChars_ OopType64 sqword lpstr qword>
+	^self invalidCall
+!
+
+gciFetchClass: oop
+
+	<cdecl: OopType64 GciFetchClass OopType64>
+	^self invalidCall
+!
+
+gciFetchObjImpl: anObject
+
+	<cdecl: sdword GciFetchObjImpl OopType64>
+	^self invalidCall
+!
+
+gciFetchSize: anObject
+
+	<cdecl: sdword GciFetchSize_ OopType64>
+	^self invalidCall
+!
+
+gciFetchVaryingOops: anObject _: startIndex _: theOops _: numOops
+
+	<cdecl: sdword GciFetchVaryingOops OopType64 sqword OopType64Array* sdword>
+	^self invalidCall
+!
+
+gciFltToOop: aFloat
+
+	<cdecl: OopType64 GciFltToOop double>
+	^self invalidCall
+!
+
+gciGetSessionId
+
+	<cdecl: sdword GciGetSessionId>
+	^self invalidCall
+!
+
+gciHardBreak
+
+	<cdecl: void GciHardBreak>
+	^self invalidCall
+!
+
+gciI64ToOop: anInteger
+
+	<cdecl: OopType64 GciI64ToOop sdword>
+	^self invalidCall
+!
+
+gciInit
+
+	<cdecl: bool GciInit>
+	^self invalidCall
+!
+
+gciLogin: userName _: password
+
+	<cdecl: bool GciLogin lpstr lpstr>
+	^self invalidCall
+!
+
+gciLogout
+
+	<cdecl: void GciLogout>
+	^self invalidCall
+!
+
+gciLongToOop: anInteger
+
+	<cdecl: OopType32 GciLongToOop sdword>
+	^self invalidCall
+!
+
+gciNbContinueWith: process _: replaceTopOfStack _: flags _: error
+
+	<cdecl: void GciNbContinueWith OopType64 OopType64 sdword GciErrSType64*>
+	^self invalidCall
+!
+
+gciNbEnd: result
+	"GciNbProgressEType GciNbEnd(void ** result);"
+
+	<cdecl: sdword GciNbEnd lppvoid>
+	^self invalidCall
+
+"
+/* Nonblocking support */
+typedef enum {
+  GCI_RESULT_NOT_READY,		/* nothing happened */
+  GCI_RESULT_PROGRESSED,	/* a packet was received */
+  GCI_RESULT_READY		/* your result is now ready */
+  } GciNbProgressEType;
+
+result	The address at which GciNbEnd should place a pointer to the result of the nonblocking call when it is complete.
+
+	lppvoid	Pointer to pointer. Used for functions which take a parameter into which they write
+		an address. The corresponding argument must be an ExternalAddress (or other indirection
+		object), or an object whose first instance variable is such (e.g. an ExternalStructure).
+		The address of the ExternalAddress itself is passed, so that on return it contains the
+		address written back by the external function. nil is not a valid argument value.
+		As a return type answers a pointer instance of LPVOID (i.e. LPVOID* = void**).
+"
+
+!
+
+gciNbExecuteStrFromContext: string _: context _: symbolList
+
+	<cdecl: OopType64 GciNbExecuteStrFromContext lpstr OopType64 OopType64>
+	^self invalidCall
+!
+
+gciNbPerform: receiver _: selector _: args _: numArgs
+
+	<cdecl: void GciNbPerform OopType64 lpstr OopType64* dword>
+	^self invalidCall
+!
+
+gciNbPerformNoDebug: receiver _: selector _: args _: numArgs _: flags
+"	/* bits in flags argument to GciPerformNoDebug.  */
+enum { 
+  GCI_PERFORM_FLAG_ENABLE_DEBUG = 1,  
+   /* make like GciPerform() with respect to debugging. default is debugger is
+    * disabled until GciPerformNoDebug returns */
+
+  GCI_PERFORM_FLAG_DISABLE_ASYNC_EVENTS = 2  ,
+   /* disable async events.  Used for GSI to be able to execute an exception
+    * block or method to service RT_ERR_SIGNAL_ABORT, 
+    *  RT_ERR_SIGNAL_GEMSTONE_SESSION, or ABORT_ERR_LOST_OT_ROOT */
+
+  GCI_PERFORM_FLAG_SINGLE_STEP = 4, 
+   /* place a single step break-point at the start of the method to be
+    * performed, and then execute to hit that breakpoint.
+    * if true, also implies GCI_PERFORM_FLAG_INTERPRETED
+    */
+
+  GCI_PERFORM_MAP_SYMBOLS = 8, // obsolete, not used
+
+  GCI_PERFORM_FLAG_INTERPRETED = 0x20, /* disable native code for the execution*/
+
+  GCI_PERFORM_RUBY = 0x40  /* for use by GciExecuteFromContextDbg*
+                            *   for implementing Ruby doit in ruby topaz */
+ };"
+
+	<cdecl: void GciNbPerformNoDebug OopType64 lpstr OopType64* dword dword>
+	^self invalidCall
+!
+
+gciNewString: string
+
+	<cdecl: OopType64 GciNewString lpstr >
+	^self invalidCall
+!
+
+gciOopToChr: anObject
+
+	<cdecl: sdword GciOopToChr OopType64>
+	^self invalidCall
+!
+
+gciPollForSignal
+
+	<cdecl: bool GciPollForSignal>
+	^self invalidCall
+!
+
+gciReleaseOops: args _: numArgs
+
+	<cdecl: void GciReleaseOops OopType64* dword>
+	^self invalidCall
+!
+
+gciSetNet: stoneName _: hostUserID _: hostPassword _: gemService
+
+	<cdecl: void GciSetNet lpstr lpstr lpstr lpstr>
+	^self invalidCall
+
+!
+
+gciSetSessionId: anInteger
+
+	<cdecl: void GciSetSessionId sdword >
+	^self invalidCall
+
+!
+
+gciShutdown
+
+	<cdecl: void GciShutdown>
+	^self invalidCall
+!
+
+gciSoftBreak
+
+	<cdecl: void GciSoftBreak>
+	^self invalidCall
+!
+
+gciVersion
+
+	<cdecl: lpstr GciVersion>
+	^self invalidCall
+!
+
 is64Bit32
 
 	^true.
 ! !
+!LibGciRpc64_32 categoriesFor: #DllRegisterServer!private! !
+!LibGciRpc64_32 categoriesFor: #gciAbort!private! !
+!LibGciRpc64_32 categoriesFor: #gciBegin!private! !
+!LibGciRpc64_32 categoriesFor: #gciCallInProgress!private! !
+!LibGciRpc64_32 categoriesFor: #gciClearStack:!private! !
+!LibGciRpc64_32 categoriesFor: #gciCommit!private! !
+!LibGciRpc64_32 categoriesFor: #gciErr:!private! !
+!LibGciRpc64_32 categoriesFor: #gciFetchBytes:_:_:_:!private! !
+!LibGciRpc64_32 categoriesFor: #gciFetchChars:_:_:_:!private! !
+!LibGciRpc64_32 categoriesFor: #gciFetchClass:!private! !
+!LibGciRpc64_32 categoriesFor: #gciFetchObjImpl:!private! !
+!LibGciRpc64_32 categoriesFor: #gciFetchSize:!private! !
+!LibGciRpc64_32 categoriesFor: #gciFetchVaryingOops:_:_:_:!private! !
+!LibGciRpc64_32 categoriesFor: #gciFltToOop:!private! !
+!LibGciRpc64_32 categoriesFor: #gciGetSessionId!private! !
+!LibGciRpc64_32 categoriesFor: #gciHardBreak!private! !
+!LibGciRpc64_32 categoriesFor: #gciI64ToOop:!private! !
+!LibGciRpc64_32 categoriesFor: #gciInit!private! !
+!LibGciRpc64_32 categoriesFor: #gciLogin:_:!private! !
+!LibGciRpc64_32 categoriesFor: #gciLogout!private! !
+!LibGciRpc64_32 categoriesFor: #gciLongToOop:!private! !
+!LibGciRpc64_32 categoriesFor: #gciNbContinueWith:_:_:_:!private! !
+!LibGciRpc64_32 categoriesFor: #gciNbEnd:!private! !
+!LibGciRpc64_32 categoriesFor: #gciNbExecuteStrFromContext:_:_:!private! !
+!LibGciRpc64_32 categoriesFor: #gciNbPerform:_:_:_:!private! !
+!LibGciRpc64_32 categoriesFor: #gciNbPerformNoDebug:_:_:_:_:!private! !
+!LibGciRpc64_32 categoriesFor: #gciNewString:!private! !
+!LibGciRpc64_32 categoriesFor: #gciOopToChr:!private! !
+!LibGciRpc64_32 categoriesFor: #gciPollForSignal!private! !
+!LibGciRpc64_32 categoriesFor: #gciReleaseOops:_:!private! !
+!LibGciRpc64_32 categoriesFor: #gciSetNet:_:_:_:!private! !
+!LibGciRpc64_32 categoriesFor: #gciSetSessionId:!private! !
+!LibGciRpc64_32 categoriesFor: #gciShutdown!private! !
+!LibGciRpc64_32 categoriesFor: #gciSoftBreak!private! !
+!LibGciRpc64_32 categoriesFor: #gciVersion!private! !
 !LibGciRpc64_32 categoriesFor: #is64Bit32!public! !
 
 !LibGciRpc64_32 class methodsFor!
