@@ -3,7 +3,7 @@ package := Package name: 'Jade Inspector'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.014'.
+package basicPackageVersion: '0.015'.
 
 
 package classNames
@@ -169,7 +169,7 @@ inspect: anObject
 		1 to: (anObject _basicSize min: 100) do: [:i | 
 			i printOn: stream.
 			stream tab.
-			(self oopOf: (anObject _at: i)) printOn: stream.
+			(self oopOf: (anObject _basicAt: i)) printOn: stream.
 			stream lf.
 		].
 	].
