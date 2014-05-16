@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.182'.
+package basicPackageVersion: '0.183'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -1556,6 +1556,11 @@ processOop
 
 reportError
 
+	"The error can occur before code starts executing (see bug #44232)"
+	gciErrSType contextOop isGsNil ifTrue: [
+		self reportErrorMessage.
+		Processor activeProcess terminate.
+	].
 	[
 		^self debugError.
 	] on: Error do: [:ex | 

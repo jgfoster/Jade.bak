@@ -3,7 +3,7 @@ package := Package name: 'Jade Inspector'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.015'.
+package basicPackageVersion: '0.016'.
 
 
 package classNames
@@ -14,6 +14,7 @@ package methodNames
 	add: #JadeServer -> #inspect:;
 	add: #JadeServer -> #inspectDictionary:on:;
 	add: #JadeServer -> #inspectNamedInstanceVariablesOf:on:;
+	add: #JadeServer -> #print:on:;
 	add: #JadeServer -> #printStringTo500:;
 	add: #JadeServer64bit3x -> #inspect:;
 	add: #JadeServer64bit3x -> #inspectNamedInstanceVariablesOf:on:;
@@ -65,11 +66,14 @@ inspect: anObject
 		1 to: (anObject _basicSize min: 100) do: [:i | 
 			i printOn: stream.
 			stream tab.
-			(self oopOf: (anObject _at: i)) printOn: stream.
+			self print: (self oopOf: (anObject _at: i)) on: stream.
 			stream lf.
 		].
 	].
 	(string := anObject printString) size > 5000 ifTrue: [string := (string copyFrom: 1 to: 5000) , '...'].
+	string class == String ifFalse: [
+		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
+	].
 	^stream 
 		nextPutAll: string; 
 		contents.
@@ -100,7 +104,7 @@ inspectDictionary: aDictionary on: aStream
 		valueString := valueString copyFrom: 1 to: (valueString size min: 10).
 		valueString := valueString collect: [:char | char codePoint < 32 ifTrue: [$?] ifFalse: [char]].
 		aStream nextPutAll: keyString , '->' , valueString; tab.
-		(self oopOf: value) printOn: aStream.
+		self print: (self oopOf: value) on: aStream.
 		aStream lf.
 	].
 	^aStream 
@@ -120,20 +124,35 @@ inspectNamedInstanceVariablesOf: anObject on: aStream
 	aStream lf.
 	1 to: list size do: [:i | 
 		aStream nextPutAll: (list at: i); tab.
-		(self oopOf: (anObject instVarAt: i)) printOn: aStream.
+		self print: (self oopOf: (anObject instVarAt: i)) on: aStream.
 		aStream lf.
 	].
+!
+
+print: anObject on: aStream
+	"convert multi-byte strings to single-byte"
+
+	| string |
+	string := anObject printString.
+	string class == String ifFalse: [
+		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
+	].
+	aStream nextPutAll: string.
 !
 
 printStringTo500: anObject
 
 	| string |
 	(string := anObject printString) size > 500 ifTrue: [string := (string copyFrom: 1 to: 500) , '...'].
+	string class == String ifFalse: [
+		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
+	].
 	^string.
 ! !
 !JadeServer categoriesFor: #inspect:!Inspector!public! !
 !JadeServer categoriesFor: #inspectDictionary:on:!Inspector!public! !
 !JadeServer categoriesFor: #inspectNamedInstanceVariablesOf:on:!Inspector!public! !
+!JadeServer categoriesFor: #print:on:!Inspector!public! !
 !JadeServer categoriesFor: #printStringTo500:!Inspector!public! !
 
 !JadeServer64bit3x methodsFor!
@@ -157,23 +176,26 @@ inspect: anObject
 	stream lf.
 	1 to: list size do: [:i | 
 		stream nextPutAll: (list at: i); tab.
-		(self oopOf: (anObject instVarAt: i)) printOn: stream.
+		self print: (self oopOf: (anObject instVarAt: i)) on: stream.
 		stream lf.
 	].
 	1 to: dynamic size do: [:i | 
 		stream nextPutAll: (dynamic at: i); tab.
-		(self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) printOn: stream.
+		self print: (self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) on: stream.
 		stream lf.
 	].
 	anObject class format > 0 ifTrue: [
 		1 to: (anObject _basicSize min: 100) do: [:i | 
 			i printOn: stream.
 			stream tab.
-			(self oopOf: (anObject _basicAt: i)) printOn: stream.
+			self print: (self oopOf: (anObject _basicAt: i)) on: stream.
 			stream lf.
 		].
 	].
 	(string := anObject printString) size > 5000 ifTrue: [string := (string copyFrom: 1 to: 5000) , '...'].
+	string class == String ifFalse: [
+		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
+	].
 	^stream 
 		nextPutAll: string; 
 		contents.
@@ -192,12 +214,12 @@ inspectNamedInstanceVariablesOf: anObject on: aStream
 	aStream lf.
 	1 to: list size do: [:i | 
 		aStream nextPutAll: (list at: i); tab.
-		(self oopOf: (anObject instVarAt: i)) printOn: aStream.
+		self print: (self oopOf: (anObject instVarAt: i)) on: aStream.
 		aStream lf.
 	].
 	1 to: dynamic size do: [:i | 
 		aStream nextPutAll: (dynamic at: i); tab.
-		(self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) printOn: aStream.
+		self print: (self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) on: aStream.
 		aStream lf.
 	].
 ! !
@@ -239,6 +261,7 @@ displayObject
 	result := gciSession 
 		serverPerform: #'inspect:' 
 		with: object.
+	(result isKindOf: ByteArray) ifTrue: [result := result asString].
 	(result isKindOf: String) ifFalse: [self error: 'Result of #inspect: on ' , object printString , ' should be a String'].
 	stream := ReadStream on: result.
 	className := stream upTo: Character tab.
@@ -337,9 +360,16 @@ selectedInstVar
 		documentPresenter value: instVarListPresenter selection value.
 		^self.
 	].
-	string := gciSession
-		serverPerform: #'printStringTo500:' 
-		with: instVarListPresenter selection value.
+	string := [
+		gciSession
+			serverPerform: #'printStringTo500:' 
+			with: instVarListPresenter selection value.
+	] on: GsRuntimeError do: [:ex | 
+		ex errorReport number == 2106	ifTrue: [	"Forward reference error"
+			ex return: 'an invalid or hidden object (perhaps a LargeObjectNode)'.
+		].
+		ex pass.
+	].
 	documentPresenter value: string.
 !
 
