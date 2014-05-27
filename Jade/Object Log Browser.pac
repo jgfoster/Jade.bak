@@ -3,7 +3,7 @@ package := Package name: 'Object Log Browser'.
 package paxVersion: 1;
 	basicComment: 'Fix Compiler Warning'.
 
-package basicPackageVersion: '0.017'.
+package basicPackageVersion: '0.019'.
 
 
 package classNames
@@ -138,7 +138,7 @@ commit
 		commitTransaction;
 		update;
 		yourself.
-!
+ !
 
 commitTransaction
 

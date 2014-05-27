@@ -3,7 +3,7 @@ package := Package name: 'Jade Deployment'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.040'.
+package basicPackageVersion: '0.041'.
 
 package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
 bnRSAAAAEAAAAHJ1bnRpbWVcSmFkZS5leGWaAAAAUgAAAA8AAABKYWRlIERlcGxveW1lbnRSAAAA
@@ -38,6 +38,7 @@ package globalAliases: (Set new
 package setPrerequisites: (IdentitySet new
 	add: '..\Object Arts\Dolphin\Base\Dolphin';
 	add: '..\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog';
 	add: '..\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: 'GemStone C Interface';
 	add: 'GemStone Services';
@@ -193,14 +194,25 @@ requiredPackageNames
 !
 
 savePackages
-
-	PackageManager current packages do: [:each | 
-		(each packagePathname beginsWith: 'Jade\') ifTrue: [
-			(each isChanged and: [each name ~= 'Jade Deployment']) ifTrue: [self halt].	"Are you deploying without saving the packages?"
-			each save.
+"
+	JadeImageStripper new savePackages.
+"
+	(ProgressDialog showModalWhile: [:progress | 
+		| list |
+		list := PackageManager current packages asArray.
+		1 to: list size do: [:i | 
+			| each |
+			each := list at: i.
+			progress
+				value: i // list size * 100;
+				text: each name;
+				yourself.
+			(each packagePathname beginsWith: 'Jade\') ifTrue: [
+				(each isChanged and: [each name ~= 'Jade Deployment']) ifTrue: [self halt].	"Are you deploying without saving the packages?"
+				each save.
+			].
 		].
-	].
-! !
+	]) ifNil: [self halt].! !
 !JadeImageStripper categoriesFor: #closeLoginShells!public! !
 !JadeImageStripper categoriesFor: #copyRuntimeFiles!public! !
 !JadeImageStripper categoriesFor: #exeIconFile!operations!public! !
@@ -251,8 +263,12 @@ defaultResLibPath
 	^'bin\Jade'!
 
 main
-
-	self mainShellClass show.
+"
+	JadeSessionManager basicNew main.
+"
+	Keyboard default isShiftDown 
+		ifTrue: [self mainShellClass show: 'Full view']
+		ifFalse: [self mainShellClass show].
 !
 
 version
