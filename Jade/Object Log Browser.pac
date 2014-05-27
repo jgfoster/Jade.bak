@@ -1,7 +1,7 @@
 | package |
 package := Package name: 'Object Log Browser'.
 package paxVersion: 1;
-	basicComment: ''.
+	basicComment: 'Fix Compiler Warning'.
 
 package basicPackageVersion: '0.017'.
 
@@ -62,12 +62,12 @@ Shell subclass: #ObjectLogEntryViewer
 
 sbObjectLog: anOrderedCollection
 
-	| command priorities class log debuggerLogEntryClass |
+	| command priorities class log debuggerLogEntryClass | 
 	(class := self objectNamed: #'ObjectLogEntry') isNil ifTrue: [^self].
 	debuggerLogEntryClass := self objectNamed: #'DebuggerLogEntry'.
 	(command := anOrderedCollection removeFirst) = 'delete' ifTrue: [
 		anOrderedCollection do: [:each | 			| oop entry |
-			oop := each asNumber.			entry := class objectLog detect: [:each | (self oopOf: each) = oop] ifNone: [nil].			entry notNil ifTrue: [class objectLog remove: entry].
+			oop := each asNumber.			entry := class objectLog detect: [:each2 | (self oopOf: each2) = oop] ifNone: [nil].			entry notNil ifTrue: [class objectLog remove: entry].
 		].
 		^self systemBrowserCommand.
 	].
