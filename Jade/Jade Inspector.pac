@@ -3,7 +3,7 @@ package := Package name: 'Jade Inspector'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.016'.
+package basicPackageVersion: '0.017'.
 
 
 package classNames
@@ -159,38 +159,39 @@ printStringTo500: anObject
 
 inspect: anObject
 
-	| stream list dynamic string size |
+	| dynamic dynamicSize indexedSize instVarNames namedSize stream string |
 	(stream := WriteStream on: String new)
 		nextPutAll: anObject class name; tab;
 		yourself.
 	(self oopOf: anObject) printOn: stream.
 	stream lf.
 	(anObject isKindOf: Dictionary superclass) ifTrue: [^self inspectDictionary: anObject on: stream].
-	list := anObject class allInstVarNames.
+	instVarNames := anObject class allInstVarNames.
+	namedSize := instVarNames size.
 	dynamic := anObject dynamicInstanceVariables.
-	size := list size + dynamic size.
-	anObject class format > 0 ifTrue: [
-		size := size + (anObject _basicSize min: 100).
+	dynamicSize := dynamic size.
+	indexedSize := (anObject class isNsc or: [anObject class isIndexable]) ifFalse: [
+		0.
+	] ifTrue: [
+		(anObject _primitiveSize min: 100) - namedSize.
 	].
-	size printOn: stream.
+	namedSize + dynamicSize + indexedSize printOn: stream.
 	stream lf.
-	1 to: list size do: [:i | 
-		stream nextPutAll: (list at: i); tab.
+	1 to: instVarNames size do: [:i | 
+		stream nextPutAll: (instVarNames at: i); tab.
 		self print: (self oopOf: (anObject instVarAt: i)) on: stream.
 		stream lf.
 	].
-	1 to: dynamic size do: [:i | 
+	1 to: dynamicSize do: [:i | 
 		stream nextPutAll: (dynamic at: i); tab.
 		self print: (self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) on: stream.
 		stream lf.
 	].
-	anObject class format > 0 ifTrue: [
-		1 to: (anObject _basicSize min: 100) do: [:i | 
-			i printOn: stream.
-			stream tab.
-			self print: (self oopOf: (anObject _basicAt: i)) on: stream.
-			stream lf.
-		].
+	1 to: indexedSize do: [:i | 
+		i printOn: stream.
+		stream tab.
+		self print: (self oopOf: (anObject _primitiveAt: i + namedSize)) on: stream.
+		stream lf.
 	].
 	(string := anObject printString) size > 5000 ifTrue: [string := (string copyFrom: 1 to: 5000) , '...'].
 	string class == String ifFalse: [

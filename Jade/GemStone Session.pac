@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.183'.
+package basicPackageVersion: '0.184'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -2036,7 +2036,7 @@ nextPutAll: anObject
 	| exception |
 	exception := (self objectNamed: #'ClientForwarderSend') new 
 		receiver: self 
-		clientObj: 1 
+		clientObj: 2
 		selector:#'nextPutAll:'
 		args: (Array with: (self asString: anObject)).
 	exception defaultAction.  "return error direct to GCI"!

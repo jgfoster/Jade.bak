@@ -3,7 +3,7 @@ package := Package name: 'Jade Deployment'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.041'.
+package basicPackageVersion: '0.042'.
 
 package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
 bnRSAAAAEAAAAHJ1bnRpbWVcSmFkZS5leGWaAAAAUgAAAA8AAABKYWRlIERlcGxveW1lbnRSAAAA
@@ -267,7 +267,7 @@ main
 	JadeSessionManager basicNew main.
 "
 	Keyboard default isShiftDown 
-		ifTrue: [self mainShellClass show: 'Full view']
+		ifTrue: [self mainShellClass show: 'Compact view']
 		ifFalse: [self mainShellClass show].
 !
 

@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.254'.
+package basicPackageVersion: '0.255'.
 
 
 package classNames
@@ -269,7 +269,7 @@ isPackagePolicyEnabled
 
 	| packagePolicy |
 	packagePolicy := self gsPackagePolicyClass.
-	^packagePolicy notNil and: [packagePolicy current enabled].!
+	^packagePolicy notNil and: [packagePolicy enabled].!
 
 millisecondsElapsedTime: aBlock
 
@@ -1135,7 +1135,8 @@ sbSetHomeDictionary: list
 	| name dictionary packagePolicyClass |
 	name := list removeFirst asSymbol.
 	dictionary := self symbolList detect: [:each | each name = name].
-	(packagePolicyClass := self gsPackagePolicyClass) notNil ifTrue: [
+	packagePolicyClass := self gsPackagePolicyClass.
+	(packagePolicyClass notNil and: [packagePolicyClass enabled]) ifTrue: [
 		packagePolicyClass current homeSymbolDict: dictionary.
 	].
 	self systemBrowserUpdate.
@@ -1300,13 +1301,13 @@ sbUpdateClassList
 
 sbUpdateDictionaries
 
-	| override packagePolicy home symbolList oldSelections newSelections fullList globals |
+	| override packagePolicy packagePolicyClass home symbolList oldSelections newSelections fullList globals |
 	oldSelections := self nextLineAsList.
 	(override := selections at: #'dictionary' ifAbsent: [nil]) notNil ifTrue: [oldSelections := Array with: override].
 	symbolList := self symbolList.
-	packagePolicy := self gsPackagePolicyClass.
-	packagePolicy notNil ifTrue: [
-		packagePolicy := packagePolicy current.
+	packagePolicyClass := self gsPackagePolicyClass.
+	(packagePolicyClass notNil and: [packagePolicyClass enabled]) ifTrue: [
+		packagePolicy := packagePolicyClass current.
 		home := packagePolicy homeSymbolDict.
 	].
 	fullList := symbolList collect: [:each | (each == home ifTrue: ['H'] ifFalse: ['V']) , each name].
@@ -1455,7 +1456,7 @@ sbUpdateMethods
 	isTestClass := anySatisfy ifTrue: [$T] ifFalse: [$F].
 	gsPackagePolicy := self gsPackagePolicyClass.
 	gsPackagePolicy notNil ifTrue: [
-		gsPackagePolicy := gsPackagePolicy current enabled
+		gsPackagePolicy := gsPackagePolicy enabled
 			ifTrue: [gsPackagePolicy current]
 			ifFalse: [nil].
 	].
@@ -1632,7 +1633,7 @@ sbUpdatePackagesOrDictionaries
 
 	| selectedTab |
 	selectedTab := self nextLine.
-	(self mcWorkingCopyClass isNil or: [self gsPackagePolicyClass current enabled not]) ifTrue: [selectedTab := 'dictionaryList'].
+	(self mcWorkingCopyClass isNil or: [self gsPackagePolicyClass enabled not]) ifTrue: [selectedTab := 'dictionaryList'].
 	writeStream nextPutAll: selectedTab; lf.
 	classList := OrderedCollection new.
 	selectedTab = 'dictionaryList' ifTrue: [^self sbUpdateDictionaries].

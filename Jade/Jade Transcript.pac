@@ -3,7 +3,7 @@ package := Package name: 'Jade Transcript'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.049'.
+package basicPackageVersion: '0.051'.
 
 
 package classNames
@@ -197,7 +197,6 @@ sendSigUsr1ToSession: anInteger
 
 	| description command result |
 	description := System descriptionOfSession: anInteger.
-	(description at: 3) = ((System descriptionOfSession: System session) at: 3) ifFalse: [self error: 'Not on same gem host as other session!!'].
 	command := 'kill -usr1 ' , (description at: 2) printString.
 	result := System performOnServer: command.
 	result trimSeparators notEmpty ifTrue: [self error: result trimSeparators].
@@ -516,7 +515,7 @@ queryCommand: query
 		query isEnabled: sessionListPresenter hasSelection.
 		^true.
 	].
-	(#(#'turnAutoMigrateOff' #'turAutoMigrateOn') includes: query commandSymbol) ifTrue: [
+	(#(#'turnAutoMigrateOff' #'turnAutoMigrateOn') includes: query commandSymbol) ifTrue: [
 		query isEnabled: true.
 		^true.
 	].
@@ -553,7 +552,7 @@ sleepAndCommit
 	[
 		gciSession serverPerform: #'sleepAndCommit'.
 	] on: GsSoftBreak , GsHardBreak do: [:ex | 
-		ex return.
+		ex terminateProcess.
 	].
 !
 
