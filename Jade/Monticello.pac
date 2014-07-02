@@ -3,7 +3,7 @@ package := Package name: 'Monticello'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.094'.
+package basicPackageVersion: '0.096'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Monticello'' yourself.'.
 
@@ -49,6 +49,7 @@ package methodNames
 	add: #JadeServer -> #_mcDescriptionOfPatch:baseName:alternateName:;
 	add: #JadeServer -> #_mcTopazFrom:on:;
 	add: #JadeServer -> #authorInitials:;
+	add: #JadeServer -> #gsPackagePolicy;
 	add: #JadeServer -> #gsPackagePolicyClass;
 	add: #JadeServer -> #mcAddHttpRepository:;
 	add: #JadeServer -> #mcAddPackage:;
@@ -97,6 +98,7 @@ package methodNames
 	add: #JadeServer -> #saveWorkingCopy:to:;
 	add: #JadeServer32bit -> #mcInitialsA:;
 	add: #JadeServer64bit -> #mcInitialsA:;
+	add: #JadeServer64bit32 -> #gsPackagePolicy;
 	add: #JadeTextDocument -> #jadeBrowseMonticello;
 	yourself.
 
@@ -494,9 +496,17 @@ _mcTopazFrom: aSnapshot on: aStream
 
 authorInitials: aString
 
-	| packagePolicyClass |
-	(packagePolicyClass := self gsPackagePolicyClass) isNil ifTrue: [^self].
-	packagePolicyClass current authorInitials: aString.
+	| packagePolicy |
+	(packagePolicy := self gsPackagePolicy) isNil ifTrue: [^self].
+	packagePolicy authorInitials: aString.
+!
+
+gsPackagePolicy
+
+	| class |
+	class := self gsPackagePolicyClass.
+	class isNil ifTrue: [^nil].
+	^class current.
 !
 
 gsPackagePolicyClass
@@ -1073,6 +1083,7 @@ saveWorkingCopy: wc to: stream
 !JadeServer categoriesFor: #_mcDescriptionOfPatch:baseName:alternateName:!Monticello!private! !
 !JadeServer categoriesFor: #_mcTopazFrom:on:!Monticello!private! !
 !JadeServer categoriesFor: #authorInitials:!Monticello!public! !
+!JadeServer categoriesFor: #gsPackagePolicy!public! !
 !JadeServer categoriesFor: #gsPackagePolicyClass!public! !
 !JadeServer categoriesFor: #mcAddHttpRepository:!Monticello!public! !
 !JadeServer categoriesFor: #mcAddPackage:!Monticello!public! !
@@ -1146,6 +1157,18 @@ mcInitialsA: aString
 	].
 ! !
 !JadeServer64bit categoriesFor: #mcInitialsA:!Monticello!public! !
+
+!JadeServer64bit32 methodsFor!
+
+gsPackagePolicy
+
+	| class |
+	class := self gsPackagePolicyClass.
+	class isNil ifTrue: [^nil].
+	class enabled ifFalse: [^nil].
+	^class current
+! !
+!JadeServer64bit32 categoriesFor: #gsPackagePolicy!public! !
 
 !JadeTextDocument methodsFor!
 

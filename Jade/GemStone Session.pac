@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.184'.
+package basicPackageVersion: '0.186'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -48,6 +48,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: 'GemStone C Interface';
 	add: 'GemStone Objects';
+	add: '..\Object Arts\Dolphin\Sockets\Sockets Connection';
 	yourself).
 
 package!
@@ -55,12 +56,12 @@ package!
 "Class Definitions"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionID gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask objectCache server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionID gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask objectCache server socket stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: 'GemCursor'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Object subclass: #JadeServer
-	instanceVariableNames: 'classOrganizer readStream writeStream classList selectedClass methodFilterType methodFilters selections'
+	instanceVariableNames: 'classOrganizer readStream writeStream classList selectedClass methodFilterType methodFilters selections socket'
 	classVariableNames: 'AllGroups AllUsers ClassOrganizer GemStoneError Globals GsMethodDictionary SymbolDictionary System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
@@ -213,6 +214,23 @@ _library
 abort
 
 	self serverPerform: #'abort'.
+!
+
+attemptSocket
+
+	| host port time |
+	true ifTrue: [^self].
+	host := ((gemNRS subStrings: $#) first subStrings: $@) at: 2.
+	(port := self serverPerform: #'makeListener') ifNil: [^self].
+	socket := Socket
+		port: port
+		host: host.
+	socket connectNoWait.
+	time := self serverPerform: #'acceptConnection'.
+	time ifNil: [
+		socket close.
+		socket := nil.
+	].
 !
 
 begin
@@ -595,6 +613,7 @@ postLogin: initials
 		initializeServer;
 		setInitials: initials;
 		startHeartbeat;
+		attemptSocket;
 		yourself.
 !
 
@@ -1066,6 +1085,7 @@ withOopForString1: aString1 string2: aString2 do: aBlock
 ! !
 !GciSession categoriesFor: #_library!accessing!public! !
 !GciSession categoriesFor: #abort!Jade convenience!public! !
+!GciSession categoriesFor: #attemptSocket!private! !
 !GciSession categoriesFor: #begin!Jade convenience!public! !
 !GciSession categoriesFor: #briefDescription!public! !
 !GciSession categoriesFor: #clearStack:!Jade!public! !
@@ -1210,6 +1230,23 @@ abort
 	self refreshSymbolList.
 !
 
+acceptConnection
+
+	| listener time flag |
+	listener := socket.
+	socket := nil.
+	time := Time millisecondsElapsedTime: [flag := listener readWillNotBlockWithin: 2000].
+	flag ifFalse: [
+		listener close.
+		^nil
+	].
+	socket := listener accept.
+	listener close.
+	socket isNil ifTrue: [^nil].
+	^time.
+
+!
+
 asString: anObject
 
 	(anObject isKindOf: String) ifTrue: [^anObject].
@@ -1296,6 +1333,15 @@ installTranscript
 		sessionTemps at: #'TranscriptStream_SessionStream' put: self.
 		^self
 	].
+!
+
+makeListener
+
+	| class |
+	class := self objectNamed: #'GsSocket'.
+	socket := class new makeServer: 1.
+	socket isNil ifTrue: [^nil].
+	^socket port.
 !
 
 nextPut: aCharacter
@@ -1399,6 +1445,7 @@ stackForProcess: aGsProcess
 ! !
 !JadeServer categoriesFor: #_addToPureExportSet:!private! !
 !JadeServer categoriesFor: #abort!public! !
+!JadeServer categoriesFor: #acceptConnection!public! !
 !JadeServer categoriesFor: #asString:!public!Transcript! !
 !JadeServer categoriesFor: #beginTransaction!public! !
 !JadeServer categoriesFor: #commit!public! !
@@ -1408,6 +1455,7 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #errorListFor:!public! !
 !JadeServer categoriesFor: #initialize!public! !
 !JadeServer categoriesFor: #installTranscript!public!Transcript! !
+!JadeServer categoriesFor: #makeListener!public! !
 !JadeServer categoriesFor: #nextPut:!public!Transcript! !
 !JadeServer categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeServer categoriesFor: #obConfirmationRequest:!OmniBrowser!public! !

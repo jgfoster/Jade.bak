@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.255'.
+package basicPackageVersion: '0.256'.
 
 
 package classNames
@@ -267,9 +267,7 @@ historyOf: aClass
 
 isPackagePolicyEnabled
 
-	| packagePolicy |
-	packagePolicy := self gsPackagePolicyClass.
-	^packagePolicy notNil and: [packagePolicy enabled].!
+	^self gsPackagePolicy notNil!
 
 millisecondsElapsedTime: aBlock
 
@@ -1132,12 +1130,11 @@ sbSavePackage: list
 
 sbSetHomeDictionary: list
 
-	| name dictionary packagePolicyClass |
+	| name dictionary packagePolicy |
 	name := list removeFirst asSymbol.
 	dictionary := self symbolList detect: [:each | each name = name].
-	packagePolicyClass := self gsPackagePolicyClass.
-	(packagePolicyClass notNil and: [packagePolicyClass enabled]) ifTrue: [
-		packagePolicyClass current homeSymbolDict: dictionary.
+	(packagePolicy := self gsPackagePolicy) notNil ifTrue: [
+		packagePolicy homeSymbolDict: dictionary.
 	].
 	self systemBrowserUpdate.
 !
@@ -1301,13 +1298,11 @@ sbUpdateClassList
 
 sbUpdateDictionaries
 
-	| override packagePolicy packagePolicyClass home symbolList oldSelections newSelections fullList globals |
+	| override packagePolicy home symbolList oldSelections newSelections fullList globals |
 	oldSelections := self nextLineAsList.
 	(override := selections at: #'dictionary' ifAbsent: [nil]) notNil ifTrue: [oldSelections := Array with: override].
 	symbolList := self symbolList.
-	packagePolicyClass := self gsPackagePolicyClass.
-	(packagePolicyClass notNil and: [packagePolicyClass enabled]) ifTrue: [
-		packagePolicy := packagePolicyClass current.
+	(packagePolicy := self gsPackagePolicy) notNil  ifTrue: [
 		home := packagePolicy homeSymbolDict.
 	].
 	fullList := symbolList collect: [:each | (each == home ifTrue: ['H'] ifFalse: ['V']) , each name].
@@ -1454,12 +1449,7 @@ sbUpdateMethods
 		anySatisfy := anySatisfy or: [each name = #'TestCase'].
 	].
 	isTestClass := anySatisfy ifTrue: [$T] ifFalse: [$F].
-	gsPackagePolicy := self gsPackagePolicyClass.
-	gsPackagePolicy notNil ifTrue: [
-		gsPackagePolicy := gsPackagePolicy enabled
-			ifTrue: [gsPackagePolicy current]
-			ifFalse: [nil].
-	].
+	gsPackagePolicy := self gsPackagePolicy.
 	methodFilterType = 'categoryList' ifTrue: [selectors := self sbUpdateMethodsByCategories].
 	methodFilterType = 'variableList' ifTrue: [selectors := self sbUpdateMethodsByVariables].
 	selectors isNil ifTrue: [self error: 'Unrecognized method filter type'].
@@ -1633,7 +1623,7 @@ sbUpdatePackagesOrDictionaries
 
 	| selectedTab |
 	selectedTab := self nextLine.
-	(self mcWorkingCopyClass isNil or: [self gsPackagePolicyClass enabled not]) ifTrue: [selectedTab := 'dictionaryList'].
+	(self mcWorkingCopyClass isNil or: [self gsPackagePolicy isNil]) ifTrue: [selectedTab := 'dictionaryList'].
 	writeStream nextPutAll: selectedTab; lf.
 	classList := OrderedCollection new.
 	selectedTab = 'dictionaryList' ifTrue: [^self sbUpdateDictionaries].
