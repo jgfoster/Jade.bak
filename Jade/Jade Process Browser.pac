@@ -3,7 +3,7 @@ package := Package name: 'Jade Process Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.006'.
+package basicPackageVersion: '0.007'.
 
 
 package classNames
@@ -28,15 +28,19 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: 'GemStone Objects';
 	add: 'GemStone Session';
+	add: 'Jade Inspector';
 	add: 'Jade Transcript';
+	add: 'Jade UI';
+	add: 'Jade UI Base';
 	yourself).
 
 package!
 
 "Class Definitions"!
 
-Shell subclass: #JadeProcessBrowser
+JadeShell subclass: #JadeProcessBrowser
 	instanceVariableNames: 'prioritiesPresenter processesPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -113,6 +117,30 @@ createComponents
 	super createComponents.
 	prioritiesPresenter :=  self add: ListPresenter new name: 'priorities'.
 	processesPresenter :=  self add: ListPresenter new name: 'processes'.
+!
+
+createSchematicWiring
+
+	processesPresenter when: #'actionPerformed' send: #'inspectProcess' to: self.
+!
+
+debugProcess
+
+	| oop oopType |
+	oop := (processesPresenter selection at: 2) asNumber.
+	oopType := model oopTypeWithOop: oop.
+	JadeDebugger 
+		openOn: (GsProcess session: model oop: oopType) 
+		message: 'background process'
+		terminateOnClose: false.
+!
+
+inspectProcess
+
+	| oop oopType |
+	oop := (processesPresenter selection at: 2) asNumber.
+	oopType := model oopTypeWithOop: oop.
+	JadeInspector showOn: model -> oopType.
 !
 
 onViewOpened
@@ -194,6 +222,9 @@ updateCaption
 	self caption: (model titleBarFor: 'Processes').
 ! !
 !JadeProcessBrowser categoriesFor: #createComponents!public! !
+!JadeProcessBrowser categoriesFor: #createSchematicWiring!public! !
+!JadeProcessBrowser categoriesFor: #debugProcess!public! !
+!JadeProcessBrowser categoriesFor: #inspectProcess!public! !
 !JadeProcessBrowser categoriesFor: #onViewOpened!public! !
 !JadeProcessBrowser categoriesFor: #queryCommand:!public! !
 !JadeProcessBrowser categoriesFor: #refresh!public! !
@@ -215,7 +246,7 @@ resource_Default_view
 	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Default_view)
 	"
 
-	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.ShellView)  98 27 0 0 98 2 27131905 131073 416 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 328198 ##(Smalltalk.Point)  1601 481 551 0 0 0 416 852230 ##(Smalltalk.FramingLayout)  234 240 98 4 410 8 ##(Smalltalk.ListView)  98 30 0 416 98 2 8 1409355853 1025 624 590662 2 ##(Smalltalk.ListModel)  202 208 98 0 0 1310726 ##(Smalltalk.IdentitySearchPolicy)  482 8 4278190080 0 7 0 0 0 624 0 8 4294902751 459270 ##(Smalltalk.Message)  8 #displayString 98 0 0 1049670 1 ##(Smalltalk.IconImageManager)  0 0 0 0 0 0 202 208 98 2 920646 5 ##(Smalltalk.ListViewColumn)  8 'Process Priorities' 321 8 #left 850 880 896 8 ##(Smalltalk.SortedCollection)  787814 3 ##(Smalltalk.BlockClosure)  0 0 1180966 ##(Smalltalk.CompiledExpression)  2 1 8 ##(Smalltalk.UndefinedObject)  8 'doIt' 8 '[:each | each key]' 8 #[30 105 226 0 106] 8 #key 1088 7 257 0 0 624 0 1 0 0 978 8 'Value' 101 8 #right 850 880 98 0 850 8 #<= 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each value]' 8 #[29 105 17 142 106] 1328 7 257 0 0 624 0 1 0 0 8 #report 752 0 131169 0 0 983302 ##(Smalltalk.MessageSequence)  202 208 98 2 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 530 1 1 530 461 405 624 1490 8 #text: 98 1 8 'Process Priorities' 624 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 230 0 0 0 202 0 0 0] 98 0 530 193 193 0 27 1181766 2 ##(Smalltalk.FramingConstraints)  1180678 ##(Smalltalk.FramingCalculation)  8 #fixedParentLeft 1 1762 8 #fixedViewLeft 461 1762 8 #fixedParentTop 1 1762 8 #fixedParentBottom 1 410 640 98 30 0 416 98 2 8 1409355853 1025 1904 706 202 208 752 0 784 482 816 0 7 265030 4 ##(Smalltalk.Menu)  0 16 98 6 984134 2 ##(Smalltalk.CommandMenuItem)  1 1180998 4 ##(Smalltalk.CommandDescription)  8 #resume 8 'Resume' 1 1 0 0 0 2066 1 2098 8 #suspend 8 'Suspend' 1025 1 0 0 0 2066 1 2098 8 #terminate 8 'Terminate' 1 1 0 0 0 2066 1 2098 8 #terminate9 8 'Terminate 9' 1025 1 0 0 0 983366 1 ##(Smalltalk.DividerMenuItem)  4097 2066 1 2098 8 #refresh 8 'Refresh' 1025 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 1904 0 8 4294902751 850 880 98 0 0 928 0 0 0 0 0 0 202 208 98 8 978 8 'State' 151 1024 850 880 2496 1056 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 1]' 8 #[29 105 17 63 148 106] 2592 7 257 0 0 1904 0 1 0 0 978 8 'OOP' 171 1248 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 2]' 8 #[29 105 17 64 148 106] 2736 7 257 0 0 1904 0 1 0 0 978 8 'Priority' 101 1248 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 3]' 8 #[29 105 17 214 3 148 106] 2880 7 257 0 0 1904 0 1 0 0 978 8 'App' 81 8 #center 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 4]' 8 #[29 105 17 214 4 148 106] 3040 7 257 0 0 1904 0 1 0 0 978 8 'Stack' 101 1248 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 5]' 8 #[29 105 17 214 5 148 106] 3184 7 257 0 0 1904 0 1 0 0 978 8 'Waiting On' 171 1248 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 6]' 8 #[29 105 17 214 6 148 106] 3328 7 257 0 0 1904 0 1 0 0 978 8 'Ms Left' 111 1248 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 7]' 8 #[29 105 17 214 7 148 106] 3472 7 257 0 0 1904 0 1 0 0 978 8 'Continuation' 181 2992 850 880 98 0 850 1312 3600 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 8]' 8 #[29 105 17 214 8 148 106] 3632 7 257 0 0 1904 0 1 0 0 1408 752 0 131169 0 0 1426 202 208 98 3 1490 1520 98 2 530 461 1 530 1109 405 1904 1490 8 #contextMenu: 98 1 2032 1904 1490 1600 98 1 8 'State' 1904 1650 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 230 0 0 0 0 0 0 0 16 3 0 0 202 0 0 0] 98 0 1712 0 27 1730 1762 8 #fixedPreviousRight 1 1762 8 #fixedParentRight 1 1840 1 1872 1 234 256 98 4 624 8 'priorities' 1904 8 'processes' 0 0 0 0 0 1 0 0 0 0 1 0 0 1426 202 208 98 2 1490 1520 98 2 530 2879 21 530 1601 481 416 1490 8 #updateMenuBar 752 416 1650 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 191 8 0 0 250 0 0 0] 98 2 624 1904 1712 0 27 )! !
+	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.ShellView)  98 27 0 0 98 2 27131905 131073 416 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 328198 ##(Smalltalk.Point)  1601 481 551 0 0 0 416 852230 ##(Smalltalk.FramingLayout)  234 240 98 4 410 8 ##(Smalltalk.ListView)  98 30 0 416 98 2 8 1409355853 1025 624 590662 2 ##(Smalltalk.ListModel)  202 208 98 0 0 1310726 ##(Smalltalk.IdentitySearchPolicy)  482 8 4278190080 0 7 0 0 0 624 0 8 4294903891 459270 ##(Smalltalk.Message)  8 #displayString 98 0 0 1049670 1 ##(Smalltalk.IconImageManager)  0 0 0 0 0 0 202 208 98 2 920646 5 ##(Smalltalk.ListViewColumn)  8 'Process Priorities' 321 8 #left 850 880 896 8 ##(Smalltalk.SortedCollection)  787814 3 ##(Smalltalk.BlockClosure)  0 0 1180966 ##(Smalltalk.CompiledExpression)  2 1 8 ##(Smalltalk.UndefinedObject)  8 'doIt' 8 '[:each | each key]' 8 #[30 105 226 0 106] 8 #key 1088 7 257 0 0 624 0 1 0 0 978 8 'Value' 101 8 #right 850 880 98 0 850 8 #<= 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each value]' 8 #[29 105 17 142 106] 1328 7 257 0 0 624 0 1 0 0 8 #report 752 0 131169 0 0 983302 ##(Smalltalk.MessageSequence)  202 208 98 2 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 530 1 1 530 461 405 624 1490 8 #text: 98 1 8 'Process Priorities' 624 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 230 0 0 0 202 0 0 0] 98 0 530 193 193 0 27 1181766 2 ##(Smalltalk.FramingConstraints)  1180678 ##(Smalltalk.FramingCalculation)  8 #fixedParentLeft 1 1762 8 #fixedViewLeft 461 1762 8 #fixedParentTop 1 1762 8 #fixedParentBottom 1 410 640 98 30 0 416 98 2 8 1409355853 1025 1904 706 202 208 752 0 784 482 816 0 7 265030 4 ##(Smalltalk.Menu)  0 16 98 9 984134 2 ##(Smalltalk.CommandMenuItem)  1 1180998 4 ##(Smalltalk.CommandDescription)  8 #debugProcess 8 'Debug' 1 1 0 0 0 2066 1 2098 8 #inspectProcess 8 'Inspect' 1 1 0 0 0 983366 1 ##(Smalltalk.DividerMenuItem)  4097 2066 1 2098 8 #resume 8 'Resume' 1 1 0 0 0 2066 1 2098 8 #suspend 8 'Suspend' 1025 1 0 0 0 2066 1 2098 8 #terminate 8 'Terminate' 1 1 0 0 0 2066 1 2098 8 #terminate9 8 'Terminate 9' 1025 1 0 0 0 2226 4097 2066 1 2098 8 #refresh 8 'Refresh' 1025 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 1904 0 8 4294903891 850 880 98 0 0 928 0 0 0 0 0 0 202 208 98 8 978 8 'State' 151 1024 850 880 2640 1056 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 1]' 8 #[29 105 17 63 148 106] 2736 7 257 0 0 1904 0 1 0 0 978 8 'OOP' 171 1248 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 2]' 8 #[29 105 17 64 148 106] 2880 7 257 0 0 1904 0 1 0 0 978 8 'Priority' 101 1248 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 3]' 8 #[29 105 17 214 3 148 106] 3024 7 257 0 0 1904 0 1 0 0 978 8 'App' 81 8 #center 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 4]' 8 #[29 105 17 214 4 148 106] 3184 7 257 0 0 1904 0 1 0 0 978 8 'Stack' 101 1248 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 5]' 8 #[29 105 17 214 5 148 106] 3328 7 257 0 0 1904 0 1 0 0 978 8 'Waiting On' 171 1248 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 6]' 8 #[29 105 17 214 6 148 106] 3472 7 257 0 0 1904 0 1 0 0 978 8 'Ms Left' 111 1248 850 880 1280 850 1312 1280 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 7]' 8 #[29 105 17 214 7 148 106] 3616 7 257 0 0 1904 0 1 0 0 978 8 'Continuation' 181 3136 850 880 98 0 850 1312 3744 1074 0 0 1106 1 83886081 1136 8 'doIt' 8 '[:each | each at: 8]' 8 #[29 105 17 214 8 148 106] 3776 7 257 0 0 1904 0 1 0 0 1408 752 0 131169 0 0 1426 202 208 98 3 1490 1520 98 2 530 461 1 530 1109 405 1904 1490 8 #contextMenu: 98 1 2032 1904 1490 1600 98 1 8 'State' 1904 1650 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 230 0 0 0 0 0 0 0 16 3 0 0 202 0 0 0] 98 0 1712 0 27 1730 1762 8 #fixedPreviousRight 1 1762 8 #fixedParentRight 1 1840 1 1872 1 234 256 98 4 624 8 'priorities' 1904 8 'processes' 0 0 0 0 0 1 0 0 0 0 1 0 0 1426 202 208 98 2 1490 1520 98 2 530 2879 21 530 1601 481 416 1490 8 #updateMenuBar 752 416 1650 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 191 8 0 0 250 0 0 0] 98 2 624 1904 1712 0 27 )! !
 !JadeProcessBrowser class categoriesFor: #resource_Default_view!public!resources-views! !
 
 "Binary Globals"!
