@@ -3,7 +3,7 @@ package := Package name: 'Jade Transcript'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.051'.
+package basicPackageVersion: '0.054'.
 
 
 package classNames
@@ -73,21 +73,21 @@ sendSigAbort
 
 	gciSession 
 		serverPerform: #'sendSigAbortToSession:'
-		with: (gciSession oopForInteger: id).
+		with: id.
 !
 
 sendSigUsr1
 
 	gciSession 
 		serverPerform: #'sendSigUsr1ToSession:'
-		with: (gciSession oopForInteger: id).
+		with: id.
 !
 
 stopSession
 
 	gciSession 
 		serverPerform: #'stopSession:'
-		with: (gciSession oopForInteger: id).
+		with: id.
 ! !
 !GsSession categoriesFor: #sendSigAbort!accessing!public! !
 !GsSession categoriesFor: #sendSigUsr1!accessing!public! !
@@ -387,9 +387,9 @@ fillSessionInfo
 
 fillSessionList
 
-	| result list |
+	| string list |
 	[
-		result := gciSession serverPerform: #'allSessions'.
+		string := gciSession serverPerform: #'allSessions'.
 	] on: GsError , Error do: [:ex | 
 		sessionListPresenter view hide.
 		sessionListErrorPresenter value: 
@@ -398,7 +398,7 @@ fillSessionList
 		^self.
 	].
 	list := GsSession 
-		fromStringXML: result 
+		fromStringXML: string 
 		session: gciSession.
 	sessionListPresenter list: list.
 !
@@ -414,7 +414,7 @@ fillSessionListRegularly
 			[
 				self fillSessionList.
 				count := 0.
-			] on: GsCallInProgress , Error do: [:ex | 
+			] on: Error do: [:ex | 
 				count := count + 1.	"After a number of errors, let's stop trying!!"
 				ex return. "If busy, update later"
 			].

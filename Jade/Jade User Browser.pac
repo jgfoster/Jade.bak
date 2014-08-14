@@ -3,7 +3,7 @@ package := Package name: 'Jade User Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.029'.
+package basicPackageVersion: '0.030'.
 
 
 package classNames
@@ -473,13 +473,9 @@ editGroup: anArray value: aBoolean
 		ifTrue: [#'addGroup:toUser:']
 		ifFalse: [#'removeGroup:fromUser:'].
 	gciSession
-		withOopForString: (anArray at: 2) 
-		do: [:stringOopType | 
-			gciSession
-				serverPerform: selector
-				with: stringOopType
-				with: self.
-		].
+		serverPerform: selector
+		with: (anArray at: 2) 
+		with: self.
 !
 
 editPrivilege: anArray value: aBoolean
@@ -492,13 +488,9 @@ editPrivilege: anArray value: aBoolean
 		ifTrue: [#'addPrivilege:toUser:']
 		ifFalse: [#'removePrivilege:fromUser:'].
 	gciSession
-		withOopForString: (anArray at: 2) 
-		do: [:stringOopType | 
-			gciSession
-				serverPerform: selector
-				with: stringOopType
-				with: self.
-		].
+		serverPerform: selector
+		with: (anArray at: 2) 
+		with: self.
 !
 
 groupList
@@ -704,13 +696,9 @@ newUser
 		userListPresenter selection: existingUser.
 		^self
 	].
-	self model
-		withOopForString: newUserID
-		do: [:oopType | 
-			string := self model
-				serverPerform: #'newUser:'
-				with: oopType.
-		].
+	string := self model
+		serverPerform: #'newUser:'
+		with: newUserID.
 	list := GsUserProfile
 		listFromString: string 
 		session: self model.

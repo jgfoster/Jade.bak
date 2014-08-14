@@ -3,7 +3,7 @@ package := Package name: 'Jade Method Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.077'.
+package basicPackageVersion: '0.079'.
 
 
 package classNames
@@ -129,16 +129,12 @@ methodsUpTo: aClass filterList: aList isVariables: aBoolean
 	|  stream string |
 	stream := WriteStream on: String new.
 	aList do: [:each | stream nextPutAll: each; tab].
-	gciSession
-		withOopForString: stream contents
-		do: [:stringOop |
-			string := gciSession
-				serverPerform: #'methodsFor:upTo:filter:isVariables:' 
-				with: self
-				with: aClass
-				with: stringOop 
-				with: aBoolean.
-		].
+	string := gciSession
+		serverPerform: #'methodsFor:upTo:filter:isVariables:' 
+		with: self
+		with: aClass
+		with: stream contents 
+		with: aBoolean.
 	^GsMethod2
 		listFromString: string 
 		session: gciSession.
@@ -146,21 +142,10 @@ methodsUpTo: aClass filterList: aList isVariables: aBoolean
 
 sourceFor: anObject
 
-	^(anObject isKindOf: String) ifTrue: [
-		^gciSession
-			withOopForString: anObject 
-			do: [:gsObject | 
-				gciSession
-					serverPerform: #'sourceFor:in:'
-					with: gsObject
-					with: self.
-			].
-	] ifFalse: [
-		gciSession
-			serverPerform: #'sourceFor:in:'
-			with: anObject
-			with: self.
-	].
+	^gciSession
+		serverPerform: #'sourceFor:in:'
+		with: anObject
+		with: self.
 !
 
 stepPointsFor: aGsMethod
@@ -722,7 +707,7 @@ clearBreakAtStepPoint: anInteger
 	gciSession
 		send: #'clearBreakAtStepPoint:'
 		to: oopType	
-		withAll: (Array with: (gciSession oopForInteger: anInteger)).
+		with: anInteger.
 !
 
 gsClass
@@ -756,7 +741,7 @@ setBreakAtStepPoint: anInteger
 	gciSession
 		send: #'setBreakAtStepPoint:'
 		to: oopType	
-		withAll: (Array with: (gciSession oopForInteger: anInteger)).
+		with: anInteger.
 ! !
 !GsMethod2 categoriesFor: #<=!public! !
 !GsMethod2 categoriesFor: #category!public! !
@@ -1092,12 +1077,8 @@ withSelectorDo: aBlock
 		^self.
 	].
 	result := self model 
-		withOopForString: selector
-		do: [:oopType | 
-			self model 
-				serverPerform: #selectorsMatching:
-				with: oopType.
-		].
+		serverPerform: #selectorsMatching:
+		with: selector.
 	result isNil ifTrue: [^self].
 	list := result subStrings: Character lf.
 	(selector := ChoicePrompter choices: list) isNil ifTrue: [^self].
@@ -1218,31 +1199,22 @@ fileSave
 	(theClass := self trigger: #'needClass') isNil ifTrue: [^true].
 	newSelector := self newSelector.
 	currentSelector = newSelector ifFalse: [
-		self model
-			withOopForString: newSelector
-			do: [:oopType | 
-				methodExists := self model
-					serverPerform: #'class:includesSelector:'
-					with: theClass
-					with: oopType.
-			].
+		methodExists := self model
+			serverPerform: #'class:includesSelector:'
+			with: theClass
+			with: newSelector.
 		methodExists ifTrue: [
 			(MessageBox confirm: 'Replace method?' caption: 'Method already exists!!') ifFalse: [^self].
 		].
 	].
 	user := self trigger: #'needUser'.
 	(category := self trigger: #'needMethodCategory') isNil ifTrue: [self error: 'We need a method category!!?'].
-	self model
-		withOopForString1: documentPresenter value replaceCrLfWithLf
-		string2: category
-		do: [:oopType1 :oopType2 | 
-			string := self model
-				serverPerform: #'compileMethod:behavior:user:inCategory:'
-				with: oopType1
-				with: theClass 
-				with: user 
-				with: oopType2.
-		].
+	string := self model
+		serverPerform: #'compileMethod:behavior:user:inCategory:'
+		with: documentPresenter value replaceCrLfWithLf
+		with: theClass 
+		with: user 
+		with: category.
 
 	stream := ReadStream on: string.
 	(newSelector := stream nextLine) notEmpty ifTrue: [
@@ -1531,13 +1503,9 @@ browse: performSelector method: aGsMethodOrString
 browse: performSelector methodSelector: aString
 
 	| string |
-	self gciSession
-		withOopForString: aString
-		do: [:oopType | 
-			string := self gciSession 
-				serverPerform: performSelector
-				with: oopType.
-		].
+	string := self gciSession 
+		serverPerform: performSelector
+		with: aString.
 	self browseMethodsFromString: string.
 !
 

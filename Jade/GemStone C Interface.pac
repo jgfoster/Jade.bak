@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.110'.
+package basicPackageVersion: '0.114'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -34,6 +34,8 @@ package classNames
 	add: #LibGciRpc64_31;
 	add: #LibGciRpc64_310x;
 	add: #LibGciRpc64_32;
+	add: #LibGciRpc64_321;
+	add: #LibGciRpc64_322;
 	add: #OopType32;
 	add: #OopType32Array;
 	add: #OopType32Field;
@@ -191,6 +193,16 @@ LibGciRpc64_31 subclass: #LibGciRpc64_310x
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 LibGciRpc64_31 subclass: #LibGciRpc64_32
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_321
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_322
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -492,16 +504,17 @@ fetchClass: anOopType
 
 	| result |
 	result := self gciFetchClass: anOopType.
-	result = self oopNil ifTrue: [self signalLastError.].
+	result = self oopNil ifTrue: [self signalLastError].
 	^result.
 !
 
 fetchObjImpl: anOopType
-	"0=pointer, 1=byte, 2=NSC, or 3=special"
+	"0=pointer, 1=byte, 2=NSC, or 3=special
+	If object is special, then we know on the client; otherwise we need to go to the server."
 
 	| result |
 	result := self gciFetchObjImpl: anOopType.
-	self signalIfError.
+	result ~~ 3 ifTrue: [self signalIfError].
 	^result.
 !
 
@@ -600,6 +613,29 @@ gciFetchSize: anObject
 gciFetchVaryingOops: anObject _: startIndex _: theOops _: numOops
 
 	<cdecl: sdword GciFetchVaryingOops OopType64 sqword OopType64Array* sdword>
+	^self invalidCall
+!
+
+gciGemTrace: anInteger
+"$GEMSTONE/include/gci.hf line 5098
+
+/* GciGemTrace
+    For use in debugging the implementation or client code.
+    level = 0 none, 1 commands, 2 commands+args , 3 even more
+    Function result is previous value of the tracing state.
+    Also enabled by  export GS_LGC_DEBUG=<level>
+    such as   export GS_LGC_DEBUG=2 
+    in enviroments of libgcirpc.so and of netldi .
+    The when level > 0 the gem process will write trace information to
+    it's log file; the libgcirpc.so will write trace information
+    to a gci<pid>trace.log file in the current directory of the client process.
+ */
+  EXTERN_GCI_DEC(int) 
+GciGemTrace(int level);"
+
+	"Interpreted as #int32 from #( #'int32' )"
+
+	<cdecl: sdword GciGemTrace sdword>
 	^self invalidCall
 !
 
@@ -743,6 +779,11 @@ gciVersion
 
 	<cdecl: lpstr GciVersion>
 	^self invalidCall
+!
+
+gemTrace: anInteger
+
+	^self gciGemTrace: anInteger.
 !
 
 hardBreakSession: anInteger
@@ -1106,6 +1147,7 @@ valueOfOop: anOopType
 !GciLibrary categoriesFor: #gciFetchObjImpl:!private! !
 !GciLibrary categoriesFor: #gciFetchSize:!private! !
 !GciLibrary categoriesFor: #gciFetchVaryingOops:_:_:_:!private! !
+!GciLibrary categoriesFor: #gciGemTrace:!private! !
 !GciLibrary categoriesFor: #gciGetSessionId!private! !
 !GciLibrary categoriesFor: #gciHardBreak!private! !
 !GciLibrary categoriesFor: #gciInit!private! !
@@ -1126,6 +1168,7 @@ valueOfOop: anOopType
 !GciLibrary categoriesFor: #gciShutdown!private! !
 !GciLibrary categoriesFor: #gciSoftBreak!private! !
 !GciLibrary categoriesFor: #gciVersion!private! !
+!GciLibrary categoriesFor: #gemTrace:!public! !
 !GciLibrary categoriesFor: #hardBreakSession:!public! !
 !GciLibrary categoriesFor: #initialize!private! !
 !GciLibrary categoriesFor: #is32Bit!public!Testing! !
@@ -1516,6 +1559,13 @@ LibGciRpc64 comment: ''!
 !LibGciRpc64 categoriesForClass!Unclassified! !
 !LibGciRpc64 methodsFor!
 
+gciDbgEstablishToFile: aString
+	"BoolType GciDbgEstablishToFile( const char * fileName );"
+
+	<cdecl: bool GciDbgEstablishToFile lpstr>
+	^self invalidCall
+!
+
 gciFltToOop: aFloat
 
 	<cdecl: OopType64 GciFltToOop double>
@@ -1748,6 +1798,7 @@ specialFromOop: anOop
 	].
 	^nil.
 ! !
+!LibGciRpc64 categoriesFor: #gciDbgEstablishToFile:!private! !
 !LibGciRpc64 categoriesFor: #gciFltToOop:!private! !
 !LibGciRpc64 categoriesFor: #gciI64ToOop:!private! !
 !LibGciRpc64 categoriesFor: #gciNbPerformNoDebug:_:_:_:!private! !
@@ -1992,6 +2043,40 @@ fileNameSearch
 ! !
 !LibGciRpc64_32 class categoriesFor: #displayName!public! !
 !LibGciRpc64_32 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_321 guid: (GUID fromString: '{9B3A8D44-3E44-49AC-90C5-AFDA22E1CD1B}')!
+LibGciRpc64_321 comment: ''!
+!LibGciRpc64_321 categoriesForClass!Unclassified! !
+!LibGciRpc64_321 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.1'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.2.1-32.dll'.
+! !
+!LibGciRpc64_321 class categoriesFor: #displayName!public! !
+!LibGciRpc64_321 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_322 guid: (GUID fromString: '{BD5DC8E2-7DCC-48E3-B0B8-9F73D810E6E6}')!
+LibGciRpc64_322 comment: ''!
+!LibGciRpc64_322 categoriesForClass!Unclassified! !
+!LibGciRpc64_322 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.2'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.2.2-32.dll'.
+! !
+!LibGciRpc64_322 class categoriesFor: #displayName!public! !
+!LibGciRpc64_322 class categoriesFor: #fileNameSearch!public! !
 
 GciErrSType guid: (GUID fromString: '{9932DE27-ACC2-4E27-AD64-9A3FF8B6ECF9}')!
 GciErrSType comment: ''!

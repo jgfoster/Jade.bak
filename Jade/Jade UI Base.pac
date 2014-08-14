@@ -3,7 +3,7 @@ package := Package name: 'Jade UI Base'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.052'.
+package basicPackageVersion: '0.053'.
 
 
 package classNames
@@ -780,11 +780,8 @@ defineClass: aString inPackageNamed: anUndefinedObject
 
 	[
 		gciSession 
-			withOopForString: aString 
-			do: [:anOop |
-				gciSession 
-					serverPerform: #'fileInClass:' 
-					with: anOop].
+			serverPerform: #'fileInClass:' 
+			with: aString.
 	] on: GsCompileError do: [:ex | 
 		(JadeWorkspace showOn: gciSession)
 			caption: 'Jade Workspace - Compile Error';

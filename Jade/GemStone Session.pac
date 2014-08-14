@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.186'.
+package basicPackageVersion: '0.195'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -12,7 +12,6 @@ package classNames
 	add: #GsAnsiError;
 	add: #GsApplicationError;
 	add: #GsBreakDialog;
-	add: #GsCallInProgress;
 	add: #GsClientForwarderSend;
 	add: #GsCompileError;
 	add: #GsDoesNotUnderstand;
@@ -32,6 +31,7 @@ package classNames
 	add: #JadeServer64bit;
 	add: #JadeServer64bit32;
 	add: #JadeServer64bit3x;
+	add: #JadeServerTestCase;
 	add: #TerminateProcess;
 	yourself.
 
@@ -49,6 +49,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone C Interface';
 	add: 'GemStone Objects';
 	add: '..\Object Arts\Dolphin\Sockets\Sockets Connection';
+	add: '..\Camp Smalltalk\SUnit\SUnit';
 	yourself).
 
 package!
@@ -56,7 +57,7 @@ package!
 "Class Definitions"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionID gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask objectCache server socket stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionID gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask server socket stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: 'GemCursor'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -65,11 +66,6 @@ Object subclass: #JadeServer
 	classVariableNames: 'AllGroups AllUsers ClassOrganizer GemStoneError Globals GsMethodDictionary SymbolDictionary System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
-Error subclass: #GsCallInProgress
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 Error subclass: #GsError
 	instanceVariableNames: 'gciErrSType gsProcess'
 	classVariableNames: ''
@@ -180,6 +176,11 @@ ValueDialog subclass: #GsBreakDialog
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+TestCase subclass: #JadeServerTestCase
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 
 "Global Aliases"!
 
@@ -206,9 +207,71 @@ GciSoftBreak'!
 !GciSession categoriesForClass!Unclassified! !
 !GciSession methodsFor!
 
+_executeString: aString fromContextOop: anOopType
+	socket ifNil: [
+		^library 
+				executeString: aString
+				fromContext: anOopType
+				session: gciSessionID.
+	].	self halt.
+!
+
 _library
 
 	^library.
+!
+
+_send: aSymbol to: anObject withAll: anArray
+
+	| arguments oops result |
+	socket ifNotNil: [
+		^self
+			_usingSocketSend: aSymbol 
+			to: anObject 
+			withAll: anArray.
+	].
+	oops := OrderedCollection new.
+	arguments := anArray collect: [:each | 
+		(each isKindOf: Integer) ifTrue: [self oopForInteger: each] ifFalse: [
+		(each isKindOf: String) ifTrue: [oops add: (self oopForString: each)] ifFalse: [
+		each]].
+	].
+	result := library 
+		send: aSymbol 
+		to: (self oopTypeFor: anObject) 
+		with: (self serverArrayFor: arguments)
+		session: gciSessionID.
+	self releaseOops: oops.
+	^result.
+!
+
+_server
+
+	^server.
+!
+
+_usingSocketSend: aSymbol to: anObject withAll: anArray
+
+	| stream  process resultSize result encoder |
+	stream := WriteStream on: ByteArray new.
+	stream nextPut: 1.	"version"
+	encoder := JadeServer new
+		add: anObject toByteStream: stream;
+		add: aSymbol toByteStream: stream;
+		add: anArray toByteStream: stream;
+		yourself.
+	process := [:bytes | 
+		socket sendByteArray: bytes.
+	] newProcessWithArguments: (Array with: stream contents).
+	process resume.
+	resultSize := library 
+			send: #'readSocket:' 
+			to: server
+			with: (self serverArrayFor: (Array with: stream contents size))
+			session: gciSessionID.
+	result := socket receiveByteArray: resultSize.	stream := ReadStream on: result.
+	stream next == 1 ifFalse: [self error: 'Expected wire protocol version 1'].	result := encoder readObjectFrom: stream.
+	^result.
 !
 
 abort
@@ -218,18 +281,17 @@ abort
 
 attemptSocket
 
-	| host port time |
-	true ifTrue: [^self].
+	| host port tempSocket time |
 	host := ((gemNRS subStrings: $#) first subStrings: $@) at: 2.
 	(port := self serverPerform: #'makeListener') ifNil: [^self].
-	socket := Socket
+	tempSocket := Socket
 		port: port
 		host: host.
-	socket connectNoWait.
+	tempSocket connectNoWait.
 	time := self serverPerform: #'acceptConnection'.
 	time ifNil: [
-		socket close.
-		socket := nil.
+		tempSocket close.
+	] ifNotNil: [		socket := tempSocket.
 	].
 !
 
@@ -315,6 +377,11 @@ commit
 	^self serverPerform: #'commit'.
 !
 
+debugToFilePath: aString
+
+	^library gciDbgEstablishToFile: aString
+!
+
 eventCount
 
 	^eventCount.
@@ -332,10 +399,9 @@ executeString: aString fromContext: anObject
 	^self
 		withExplanation: aString 
 		do: [
-			library 
-				executeString: aString
-				fromContext: (self oopTypeFor: anObject)
-				session: gciSessionID.
+			self
+				_executeString: aString
+				fromContextOop: (self oopTypeFor: anObject).
 		].
 !
 
@@ -460,19 +526,30 @@ indexOfClientForwarder: anObject
 		ifAbsent: [clientForwarders add: anObject. clientForwarders size].
 !
 
-initializeLibrary: libraryClass stoneNRS: stoneString gemNRS: gemString userID: gsUserID password: gsPassword hostUserID: hostUserID password: hostPassword initials: initials
+initializeLibrary: libraryClass 
+stoneNRS: stoneString 
+gemNRS: gemString 
+userID: gsUserID 
+password: gsPassword 
+hostUserID: hostUserID 
+password: hostPassword 
+initials: initials
+useSocket: useSocket
+debugPath: debugPath
 
 	isHandlingClientForwarderSend := false.
 	eventCount := 0.
 	stoneNRS := stoneString.
 	gemNRS := gemString.
 	userID := gsUserID.
-	objectCache := Dictionary new.
-	self loadLibrary: libraryClass.
+	self loadLibrary: libraryClass debugPath: debugPath.
 	gciSessionID := library
 		gciSetNet: stoneNRS _: hostUserID _: hostPassword _: gemNRS;
 		loginAs: gsUserID password: gsPassword.
-	self postLogin: initials.
+	self 
+		postLoginAs: initials
+		useSocket: useSocket.
+
 !
 
 initializeServer
@@ -534,10 +611,14 @@ libraryVersion
 	^library class displayName.
 !
 
-loadLibrary: aClass
+loadLibrary: aClass debugPath: debugPath
 
+	| pathString |
+	pathString := debugPath.
+	pathString isEmpty ifTrue: [pathString := nil].
 	library := aClass open: aClass fileName.
-!
+	(self debugToFilePath: pathString) ifFalse: [self error: 'Unable to open ' , pathString printString , ' for GCI debugging'].
+	pathString ifNotNil: [library gemTrace: 2].!
 
 logout
 
@@ -602,19 +683,11 @@ oopTypeWithOop: anInteger
 	^library oopTypeWithOop: anInteger.
 !
 
-postLogin: initials
+postLoginAs: aString useSocket: aBoolean
 
-	| string pieces |
-	string := self executeString: 'System session printString , Character space asString , (GsSession serialOfSession: System session) printString'.
-	pieces := string subStrings collect: [:each | each asNumber].
-	stoneSessionID := pieces at: 1.
-	stoneSerial := pieces at: 2.
-	self 
-		initializeServer;
-		setInitials: initials;
-		startHeartbeat;
-		attemptSocket;
-		yourself.
+	self initializeServer.
+	aBoolean ifTrue: [self attemptSocket].
+	self setInitials: aString.		"This gets back the session and serial number"
 !
 
 printString: anOopType
@@ -632,6 +705,7 @@ releaseOop: anOopType
 releaseOops: anArray
 
 	library ifNil: [^self].
+	anArray isEmpty ifTrue: [^self].
 	library releaseOops: anArray session: gciSessionID.
 !
 
@@ -647,39 +721,36 @@ returningResultOrErrorDo: aBlock
 	].
 !
 
-send: aString to: anObject
+send: aSymbol to: anObject
 
 	^self
-		send: aString
+		send: aSymbol
 		to: anObject
 		withAll: #().
 !
 
-send: aString to: anObject withAll: anArray
+send: aSymbol to: anObject withAll: anArray
 
-	| stream arguments |
+	| stream |
 	stream := WriteStream on: String new.
 	stream 
 		nextPutAll: (anObject == server ifTrue: ['jadeServer'] ifFalse: [anObject printString]); cr;
 		nextPutAll: '	perform: #''';
-		nextPutAll: aString;
+		nextPutAll: aSymbol;
 		nextPut: $'; cr;
 		nextPutAll: '	withAll: (Array';
 		yourself.
 	anArray do: [:each | 
-		stream lf; nextPutAll: '		with: '.
-		(objectCache at: each ifAbsent: [each]) printOn: stream.
+		stream lf; nextPutAll: '		with: '; print: each.
 	].
 	stream nextPut: $).
-	arguments := self serverArrayFor: anArray.
 	^self
 		withExplanation: stream contents 
 		do: [
-			library 
-				send: aString 
-				to: (self oopTypeFor: anObject) 
-				with: arguments
-				session: gciSessionID.
+			self
+				_send: aSymbol 
+				to: anObject 
+				withAll: anArray.
 		].
 !
 
@@ -695,8 +766,7 @@ sendInterpreted: aString to: anObject withAll: anArray
 		nextPutAll: '	withAll: (Array';
 		yourself.
 	anArray do: [:each | 
-		stream lf; nextPutAll: '		with: '.
-		(objectCache at: each ifAbsent: [each]) printOn: stream.
+		stream lf; nextPutAll: '		with: '; print: each.
 	].
 	stream nextPut: $).
 	arguments := self serverArrayFor: anArray.
@@ -804,14 +874,14 @@ serverPerformInterpreted: aSymbol withArguments: anArray
 
 setInitials: initials
 
+	| pieces string |
 	server isNil ifTrue: [^self].
-	self
-		withOopForString: initials 
-		do: [:oop |
-			self
-				serverPerform: #'mcInitials:' 
-				with: oop
-		].
+	string := self
+		serverPerform: #'mcInitials:' 
+		with: initials.
+	pieces := string subStrings collect: [:each | each asNumber].
+	stoneSessionID := pieces at: 1.
+	stoneSerial := pieces at: 2.
 !
 
 signalConfirmationRequestUsing: anOopType64 
@@ -830,7 +900,7 @@ signalConfirmationRequestUsing: anOopType64
 
 signalTextRequestUsing: anOopType64 
 
-	| string stream size prompt template answer |
+	| string stream size prompt template answer oop |
 	string := self 
 		serverPerform: #'obTextRequest:' 
 		with: anOopType64.
@@ -843,9 +913,11 @@ signalTextRequestUsing: anOopType64
 		prompt: prompt 
 		caption: 'Server Text Request'.
 	answer ifNil: [^library oopNil].
-	self
-		withOopForString: answer 
-		do: [:oop | ^oop].
+	oop := self oopForString: answer.
+	[
+		self releaseOop: oop.
+	] forAt: Processor userBackgroundPriority.
+	^oop.
 !
 
 softBreak
@@ -855,7 +927,9 @@ softBreak
 
 startHeartbeat
 		"Private - Every second execute something inexpensive on the server (a Delay) 
-		so that background processes on the server get a chance to run."
+		so that background processes on the server get a chance to run.
+
+		Could be called from #'postLogin'"
 
 	1 = 1 ifTrue: [^self].
 	heartbeatProcess := [
@@ -1045,45 +1119,12 @@ withExplanation: aString doA: aBlock
 	dialog showModal.
 	SessionManager inputState pumpMessages.
 	^result.
-!
-
-withOopForString: aString do: aBlock
-
-	| stringOop result |
-	stringOop := self oopForString: aString.
-	[
-		objectCache at: stringOop put: aString.
-		result := aBlock value: stringOop.
-	] ensure: [
-		objectCache removeKey: stringOop ifAbsent: [].
-		self releaseOop: stringOop.
-	].
-	^result.
-!
-
-withOopForString1: aString1 string2: aString2 do: aBlock
-
-	| stringOop1 stringOop2 result |
-	stringOop1 := self oopForString: aString1.
-	stringOop2 := self oopForString: aString2.
-	[
-		objectCache
-			at: stringOop1 put: aString1;
-			at: stringOop2 put: aString2;
-			yourself.
-		result := aBlock 
-			value: stringOop1
-			value: stringOop2.
-	] ensure: [
-		objectCache
-			removeKey: stringOop1;
-			removeKey: stringOop2;
-			yourself.
-		self releaseOops: (Array with: stringOop1 with: stringOop2).
-	].
-	^result.
 ! !
+!GciSession categoriesFor: #_executeString:fromContextOop:!public! !
 !GciSession categoriesFor: #_library!accessing!public! !
+!GciSession categoriesFor: #_send:to:withAll:!private! !
+!GciSession categoriesFor: #_server!private! !
+!GciSession categoriesFor: #_usingSocketSend:to:withAll:!private! !
 !GciSession categoriesFor: #abort!Jade convenience!public! !
 !GciSession categoriesFor: #attemptSocket!private! !
 !GciSession categoriesFor: #begin!Jade convenience!public! !
@@ -1092,6 +1133,7 @@ withOopForString1: aString1 string2: aString2 do: aBlock
 !GciSession categoriesFor: #clientForwardError:!public! !
 !GciSession categoriesFor: #clientForwarders!public! !
 !GciSession categoriesFor: #commit!Jade convenience!public! !
+!GciSession categoriesFor: #debugToFilePath:!Jade convenience!public! !
 !GciSession categoriesFor: #eventCount!public! !
 !GciSession categoriesFor: #executeString:!Jade convenience!public! !
 !GciSession categoriesFor: #executeString:fromContext:!long running!public! !
@@ -1106,14 +1148,14 @@ withOopForString1: aString1 string2: aString2 do: aBlock
 !GciSession categoriesFor: #heartbeat:arguments:!heartbeat!private! !
 !GciSession categoriesFor: #incrementEventCount!long running!private! !
 !GciSession categoriesFor: #indexOfClientForwarder:!public! !
-!GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:!private! !
+!GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:useSocket:debugPath:!private! !
 !GciSession categoriesFor: #initializeServer!private! !
 !GciSession categoriesFor: #isLinkedGem!public! !
 !GciSession categoriesFor: #isOopType:!public! !
 !GciSession categoriesFor: #isRemoteGem!public! !
 !GciSession categoriesFor: #isValidSession!public! !
 !GciSession categoriesFor: #libraryVersion!public! !
-!GciSession categoriesFor: #loadLibrary:!public! !
+!GciSession categoriesFor: #loadLibrary:debugPath:!public! !
 !GciSession categoriesFor: #logout!Jade!public! !
 !GciSession categoriesFor: #logoutRequested!Jade!public! !
 !GciSession categoriesFor: #netPort!accessing!public! !
@@ -1124,7 +1166,7 @@ withOopForString1: aString1 string2: aString2 do: aBlock
 !GciSession categoriesFor: #oopIllegal!public! !
 !GciSession categoriesFor: #oopTypeFor:!public! !
 !GciSession categoriesFor: #oopTypeWithOop:!public! !
-!GciSession categoriesFor: #postLogin:!private! !
+!GciSession categoriesFor: #postLoginAs:useSocket:!private! !
 !GciSession categoriesFor: #printString:!Jade convenience!public! !
 !GciSession categoriesFor: #releaseOop:!Jade convenience!public! !
 !GciSession categoriesFor: #releaseOops:!Jade!public! !
@@ -1162,8 +1204,6 @@ withOopForString1: aString1 string2: aString2 do: aBlock
 !GciSession categoriesFor: #valueOfOop:!Jade convenience!public! !
 !GciSession categoriesFor: #withExplanation:do:!long running!private! !
 !GciSession categoriesFor: #withExplanation:doA:!long running!private! !
-!GciSession categoriesFor: #withOopForString:do:!public! !
-!GciSession categoriesFor: #withOopForString1:string2:do:!public! !
 
 !GciSession class methodsFor!
 
@@ -1175,7 +1215,16 @@ cursor
 	^GemCursor.
 !
 
-libraryClass: libraryClass stoneNRS: stoneNRS gemNRS: gemNRS userID: gsUserID password: gsPassword hostUserID: hostUserID password: hostPassword initials: initials
+libraryClass: libraryClass 
+stoneNRS: stoneNRS 
+gemNRS: gemNRS 
+userID: gsUserID 
+password: gsPassword 
+hostUserID: hostUserID 
+password: hostPassword 
+initials: initials
+useSocket: useSocket
+debugPath: debugPath
 
 	^super new
 		initializeLibrary: libraryClass
@@ -1185,7 +1234,9 @@ libraryClass: libraryClass stoneNRS: stoneNRS gemNRS: gemNRS userID: gsUserID pa
 		password: gsPassword
 		hostUserID: hostUserID 
 		password: hostPassword
-		initials: initials.
+		initials: initials
+		useSocket: useSocket
+		debugPath: debugPath
 
 !
 
@@ -1206,12 +1257,13 @@ publishedEventsOfInstances
     
 ! !
 !GciSession class categoriesFor: #cursor!public! !
-!GciSession class categoriesFor: #libraryClass:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:!public! !
+!GciSession class categoriesFor: #libraryClass:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:useSocket:debugPath:!public! !
 !GciSession class categoriesFor: #new!public! !
 !GciSession class categoriesFor: #publishedEventsOfInstances!public! !
 
 JadeServer guid: (GUID fromString: '{FC038152-9707-4C5F-8977-A1F8D02EB005}')!
-JadeServer comment: '(System _sessionStateAt: 3).
+JadeServer comment: '(System _sessionStateAt: 3).	"pre-3.2"
+(System __sessionStateAt: 3).	"3.2 and on"
 GciSession allInstances do: [:each | each initializeServer].'!
 !JadeServer categoriesForClass!Unclassified! !
 !JadeServer methodsFor!
@@ -1245,6 +1297,133 @@ acceptConnection
 	socket isNil ifTrue: [^nil].
 	^time.
 
+!
+
+add: anObject toByteStream: aStream
+
+	anObject == nil		ifTrue: [aStream nextPut: 0. ^self].
+	anObject == true 	ifTrue: [aStream nextPut: 1. ^self].
+	anObject == false 	ifTrue: [aStream nextPut: 2. ^self].
+	(ExternalInteger notNil and: [anObject isKindOf: ExternalInteger]) ifTrue: [self addExternalInteger: anObject toByteStream: aStream. ^self].		"3 & 4"	(self isInDolphin and: [anObject isKindOf: GsObject]) ifTrue: [self addExternalInteger: anObject oopType toByteStream: aStream. ^self].			"3 & 4"
+	(anObject isKindOf: Symbol				) ifTrue: [self addSymbol: anObject toByteStream: aStream. ^self].	"5 & 6"
+	(anObject isKindOf: Integer				) ifTrue: [self addInteger: anObject toByteStream: aStream. ^self].	"7, 8, 9, & 10"
+	(anObject isKindOf: String					) ifTrue: [self addString: anObject toByteStream: aStream. ^self].	"11 & 12"
+	(anObject isKindOf: Array					) ifTrue: [self addArray: anObject toByteStream: aStream. ^self].	"13"
+	self isInDolphin ifTrue: [self error: 'Attempt to encode an unsupported object'].
+	self is32Bit ifTrue: [
+		self
+			addPositiveInteger: anObject asOop
+			toByteStream: aStream 
+			code: 3 
+			size: 4.
+	] ifFalse: [
+		self
+			addPositiveInteger: anObject asOop
+			toByteStream: aStream 
+			code: 4 
+			size: 8.
+	].!
+
+addArray: anArray toByteStream: aStream
+
+	16rFF < anArray size ifTrue: [self error: 'Array is too large!!'].
+	aStream nextPut: 14; nextPut: anArray size.
+	anArray do: [:each | self add: each toByteStream: aStream].
+!
+
+addException: anException toByteStream: aStream
+
+	| array instVarNames |
+	aStream nextPut: 13.
+	self
+		add: GsProcess _current toByteStream: aStream;
+		add: anException toByteStream: aStream;
+		add: anException class name toByteStream: aStream;
+		add: anException messageText toByteStream: aStream;
+		add: anException stackReport toByteStream: aStream;
+		yourself.
+	array := Array new.
+	instVarNames := anException class allInstVarNames.
+	Exception allInstVarNames size + 1 to: instVarNames size do: [:i | 
+		array add: (instVarNames at: i); add: (anException instVarAt: i).
+	].
+	self add: array toByteStream: aStream.
+!
+
+addExternalInteger: anObject toByteStream: aStream
+
+	self 
+		addPositiveInteger: anObject value
+		toByteStream: aStream 
+		code: (anObject byteSize == 4 ifTrue: [3] ifFalse: [4]) 
+		size: anObject byteSize.
+!
+
+addInteger: anObject toByteStream: aStream
+
+	| integer stream |
+	(0 <= anObject and: [anObject < 16r100]) ifTrue: [
+		aStream nextPut: 7; nextPut: anObject.
+		^self.
+	].
+	(-16r100 <= anObject and: [anObject < 0]) ifTrue: [
+		aStream nextPut: 8; nextPut: anObject negated - 1.
+		^self.
+	].
+	aStream nextPut: (anObject positive ifTrue: [9] ifFalse: [10]).
+	integer := anObject abs.
+	stream := WriteStream on: ByteArray new.
+	[
+		0 < integer.
+	] whileTrue: [
+		stream nextPut: (integer bitAnd: 16rFF).
+		integer := integer // 16r100.
+	].
+	aStream
+		nextPut: stream contents size;
+		nextPutAll: stream contents;
+		yourself.
+!
+
+addPositiveInteger: anInteger toByteStream: aStream code: codeInteger size: sizeInteger
+
+	| x |
+	x := anInteger.
+	aStream nextPut: codeInteger.
+	sizeInteger timesRepeat: [
+		aStream nextPut: (x bitAnd: 16rFF).
+		x := x // 16r100.
+	].
+!
+
+addString: aString toByteStream: aStream
+
+	aString size < 16r100 ifTrue: [
+		aStream nextPut: 11; nextPut: aString size.
+		aString do: [:each | aStream nextPut: each codePoint].
+		^self.
+	].
+	aString size <= 16rFFFF ifTrue: [
+		aStream nextPut: 12; nextPut: (aString size bitAnd: 16rFF); nextPut: (aString size // 16r100 bitAnd: 16rFF).
+		aString do: [:each | aStream nextPut: each codePoint].
+		^self.
+	].
+	self error: 'Object cannot be encoded'.
+!
+
+addSymbol: aSymbol toByteStream: aStream
+
+	aSymbol size <= 16rFF ifTrue: [
+		aStream nextPut: 5; nextPut: aSymbol size.
+		aSymbol do: [:each | aStream nextPut: each codePoint].
+		^self.
+	].
+	aSymbol size <= 16rFFFF ifTrue: [
+		aStream nextPut: 6; nextPut: (aSymbol size bitAnd: 16rFF); nextPut: (aSymbol size // 16r100 bitAnd: 16rFF).
+		aSymbol do: [:each | aStream nextPut: each codePoint].
+		^self.
+	].
+	self error: 'Object cannot be encoded'.
 !
 
 asString: anObject
@@ -1335,6 +1514,28 @@ installTranscript
 	].
 !
 
+is32Bit
+
+	^false.
+!
+
+is64Bit
+
+	^false.
+!
+
+isInDolphin
+	"Most JadeServer code is in GemStone but the socket wire protocol encode/decode is in Dolphin as well"
+
+	^System isNil.
+!
+
+isInGemStone
+	"Most JadeServer code is in GemStone but the socket wire protocol encode/decode is in Dolphin as well"
+
+	^System notNil.
+!
+
 makeListener
 
 	| class |
@@ -1375,6 +1576,10 @@ obConfirmationRequest: anOBConfirmationRequest
 		yourself.
 !
 
+objectForOop: anInteger
+
+	self subclassResponsibility.!
+
 objectNamed: aString
 
 	^System myUserProfile objectNamed: aString asSymbol.
@@ -1396,6 +1601,122 @@ obTextRequest: anOBTextRequest
 oopOf: anObject
 
 	^anObject asOop.
+!
+
+readExceptionFrom: aStream
+
+	self halt.
+!
+
+readObjectFrom: aStream
+
+	| type byteSize bytes oid x |
+	type := aStream next.
+	type == 0 ifTrue: [^nil].
+	(type == 1 or: [type == 2]) ifTrue: [
+		^type == 1.
+	].
+	(type == 3 or: [type == 4]) ifTrue: [
+		byteSize := type == 3 ifTrue: [4] ifFalse: [8].
+		bytes := aStream next: byteSize.
+		oid := 0.
+		bytes reverseDo: [:each |
+			oid := oid * 16r100 + each.
+		].
+		^System 
+			ifNotNil: [self objectForOop: oid]	"Usually this will execute in GemStone"
+			ifNil: [type == 3			"This can execute in Dolphin to support testing"
+				ifTrue: [OopType32 fromInteger: oid]
+				ifFalse: [OopType64 fromInteger: oid]
+			].
+	].
+	type == 5 ifTrue: [		"Symbol with size < 256"
+		bytes := aStream next: aStream next.
+		x := String new: bytes size.
+		1 to: bytes size do: [:i | 
+			x at: i put: (Character codePoint: (bytes at: i)).
+		].
+		^x asSymbol.
+	].
+	type == 6 ifTrue: [		"Symbol with size >= 256"
+		x := aStream next + (aStream next * 16r100).
+		bytes := aStream next: x.
+		x := String new: bytes size.
+		1 to: bytes size do: [:i | 
+			x at: i put: (Character codePoint: (bytes at: i)).
+		].
+		^x asSymbol.
+	].
+	type == 7 ifTrue: [		"SmallInteger 0 <= x < 256"
+		^aStream next.
+	].
+	type == 8 ifTrue: [		"SmallInteger: -256 <= x < 0"
+		^(aStream next + 1) negated
+	].
+	(type == 9 or: [type == 10]) ifTrue: [
+		| integer |
+		byteSize := aStream next.
+		bytes := aStream next: byteSize.
+		integer := 0.
+		bytes reverseDo: [:each |
+			integer := integer * 16r100 + each.
+		].
+		^integer * (type == 9 ifTrue: [1] ifFalse: [-1]).
+	].
+	type == 11 ifTrue: [		"String with size < 256"
+		bytes := aStream next: aStream next.
+		x := String new: bytes size.
+		1 to: bytes size do: [:i | 
+			x at: i put: (Character codePoint: (bytes at: i)).
+		].
+		^x.
+	].
+	type == 12 ifTrue: [		"String with size >= 256"
+		x := aStream next + (aStream next * 16r100).
+		bytes := aStream next: x.
+		x := String new: bytes size.
+		1 to: bytes size do: [:i | 
+			x at: i put: (Character codePoint: (bytes at: i)).
+		].
+		^x.
+	].
+	type == 13 ifTrue: [		"GciErrSType"
+		^self readExceptionFrom: aStream.
+	].
+	type == 14 ifTrue: [		"Array"
+		x := Array new: aStream next.
+		1 to: x size do: [:i | x at: i put: (self readObjectFrom: aStream)].
+		^x.
+	].
+!
+
+readSocket: anInteger
+
+	| arguments bytes exception receiver result selector stream string |
+	string := socket read: anInteger.
+	bytes := ByteArray withAll: (string asArray collect: [:each | each codePoint]).
+	stream := ReadStream on: bytes.
+	stream next == 1 ifFalse: [self error: 'Expected version 1'].
+	receiver := self readObjectFrom: stream.
+	selector := self readObjectFrom: stream.
+	arguments := self readObjectFrom: stream.
+	[
+		result := receiver 
+			perform: selector 
+			withArguments: arguments.
+	] on: Exception do: [:ex | 
+		exception := ex.
+		ex return.
+	].
+	stream := WriteStream on: ByteArray new.	stream nextPut: 1.
+	exception ifNil: [
+		self add: result toByteStream: stream.
+	] ifNotNil: [
+		self addException: exception toByteStream: stream.
+	].
+	bytes := stream contents.
+	socket write: bytes.
+	^bytes size.
 !
 
 refreshSymbolList
@@ -1446,6 +1767,14 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #_addToPureExportSet:!private! !
 !JadeServer categoriesFor: #abort!public! !
 !JadeServer categoriesFor: #acceptConnection!public! !
+!JadeServer categoriesFor: #add:toByteStream:!public!Socket! !
+!JadeServer categoriesFor: #addArray:toByteStream:!public!Socket! !
+!JadeServer categoriesFor: #addException:toByteStream:!public! !
+!JadeServer categoriesFor: #addExternalInteger:toByteStream:!public!Socket! !
+!JadeServer categoriesFor: #addInteger:toByteStream:!public!Socket! !
+!JadeServer categoriesFor: #addPositiveInteger:toByteStream:code:size:!public!Socket! !
+!JadeServer categoriesFor: #addString:toByteStream:!public!Socket! !
+!JadeServer categoriesFor: #addSymbol:toByteStream:!public!Socket! !
 !JadeServer categoriesFor: #asString:!public!Transcript! !
 !JadeServer categoriesFor: #beginTransaction!public! !
 !JadeServer categoriesFor: #commit!public! !
@@ -1455,13 +1784,21 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #errorListFor:!public! !
 !JadeServer categoriesFor: #initialize!public! !
 !JadeServer categoriesFor: #installTranscript!public!Transcript! !
+!JadeServer categoriesFor: #is32Bit!public! !
+!JadeServer categoriesFor: #is64Bit!public! !
+!JadeServer categoriesFor: #isInDolphin!public!Socket! !
+!JadeServer categoriesFor: #isInGemStone!public!Socket! !
 !JadeServer categoriesFor: #makeListener!public! !
 !JadeServer categoriesFor: #nextPut:!public!Transcript! !
 !JadeServer categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeServer categoriesFor: #obConfirmationRequest:!OmniBrowser!public! !
+!JadeServer categoriesFor: #objectForOop:!private! !
 !JadeServer categoriesFor: #objectNamed:!private! !
 !JadeServer categoriesFor: #obTextRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #oopOf:!private! !
+!JadeServer categoriesFor: #readExceptionFrom:!public! !
+!JadeServer categoriesFor: #readObjectFrom:!public!Socket! !
+!JadeServer categoriesFor: #readSocket:!public!Socket! !
 !JadeServer categoriesFor: #refreshSymbolList!public! !
 !JadeServer categoriesFor: #registerOBNotifications!public! !
 !JadeServer categoriesFor: #reset!public! !
@@ -1490,9 +1827,13 @@ addGsStringTo: aStream
 !
 
 gsClassDefinition
+	"Class variables exist only in Dolphin and map to globals in GemStone"
 
 	^'class subclass: ''' , self name , '''
 			instVarNames: ' , self instVarNames printString , '
+			classVars: #(' , (self == JadeServer ifTrue: ['ExternalInteger OopType32 OopType64 GsObject'] ifFalse: ['']) , ')
+			classInstVars: #()
+			poolDictionaries: #()
 			inDictionary: SymbolDictionary new.'.
 !
 
@@ -1511,8 +1852,9 @@ gsString
 	stream 
 		nextPutAll: '(mcPlatformSupport := System myUserProfile objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
 		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
-		nextPutAll: self sessionStateCode; lf;
 		nextPutAll: 'server := class new initialize; yourself.'; lf;
+		nextPutAll: self sessionStateCode; lf;
+		nextPutAll: 'server';
 		yourself.
 	gsString := stream contents.
 	^gsString.
@@ -1539,9 +1881,6 @@ sessionStateCode
 !JadeServer class categoriesFor: #serverForLibrary:!public! !
 !JadeServer class categoriesFor: #sessionStateCode!public! !
 
-GsCallInProgress guid: (GUID fromString: '{301DB858-C9F2-46C5-80A6-9EA99B18B330}')!
-GsCallInProgress comment: ''!
-!GsCallInProgress categoriesForClass!Unclassified! !
 GsError guid: (GUID fromString: '{7299EB14-EE00-4BEC-8A87-E9EC616FAB36}')!
 GsError comment: ''!
 !GsError categoriesForClass!Unclassified! !
@@ -2018,12 +2357,18 @@ installTranscript
 	super installTranscript.
 !
 
+is32Bit
+
+	^true.
+!
+
 objectForOop: anInteger
 
 	^Object _objectForOop: anInteger
 ! !
 !JadeServer32bit categoriesFor: #asString:!public!Transcript! !
 !JadeServer32bit categoriesFor: #installTranscript!public!Transcript! !
+!JadeServer32bit categoriesFor: #is32Bit!public! !
 !JadeServer32bit categoriesFor: #objectForOop:!public!System Browser! !
 
 !JadeServer32bit class methodsFor!
@@ -2057,12 +2402,18 @@ installTranscript
 	].
 !
 
+is64Bit
+
+	^true.
+!
+
 objectForOop: anInteger
 
 	^Object _objectForOop: anInteger.
 ! !
 !JadeServer64bit categoriesFor: #asString:!public!Transcript! !
 !JadeServer64bit categoriesFor: #installTranscript!public!Transcript! !
+!JadeServer64bit categoriesFor: #is64Bit!public! !
 !JadeServer64bit categoriesFor: #objectForOop:!public!System Browser! !
 
 !JadeServer64bit class methodsFor!
@@ -2175,6 +2526,68 @@ resource_Default_view
 	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.DialogView)  98 30 0 0 98 2 26214401 131073 416 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 0 167 0 0 0 416 788230 ##(Smalltalk.BorderLayout)  1 1 0 0 0 0 0 234 256 98 0 590342 ##(Smalltalk.Rectangle)  328198 ##(Smalltalk.Point)  21 21 626 21 21 0 0 0 0 12485 0 0 0 0 1 0 0 590598 ##(Smalltalk.Semaphore)  0 0 1 0 8 2118378847 983302 ##(Smalltalk.MessageSequence)  202 208 98 3 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 626 2799 21 626 441 341 416 786 8 #text: 98 1 8 'User Interrupt Requested' 416 786 8 #updateMenuBar 576 416 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 119 5 0 0 10 0 0 0 83 6 0 0 180 0 0 0] 98 7 410 8 ##(Smalltalk.PushButton)  98 17 0 416 98 2 8 1140924416 1 1040 0 0 0 7 0 0 0 1040 0 8 4294903631 1180998 4 ##(Smalltalk.CommandDescription)  8 #softBreak 8 '&Soft Break' 1 1 0 0 16 722 202 208 98 3 786 816 98 2 626 91 61 626 141 51 1040 786 8 #isEnabled: 98 1 32 1040 786 896 98 1 8 '&Soft Break' 1040 978 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 45 0 0 0 30 0 0 0 115 0 0 0 55 0 0 0] 98 0 626 193 193 0 27 410 1056 98 17 0 416 98 2 8 1140924416 1 1472 0 0 0 7 0 0 0 1472 0 8 4294903631 1138 8 #hardBreak 8 '&Hard Break' 1 1 0 0 32 722 202 208 98 3 786 816 98 2 626 241 61 626 141 51 1472 786 1328 98 1 32 1472 786 896 98 1 8 '&Hard Break' 1472 978 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 120 0 0 0 30 0 0 0 190 0 0 0 55 0 0 0] 98 0 1456 0 27 410 1056 98 17 0 416 98 2 8 1140924416 1 1840 0 0 0 7 0 0 0 1840 0 8 4294903631 1138 8 #dolphinBreak 8 '&Dolphin' 1 1 0 0 32 722 202 208 98 3 786 816 98 2 626 241 121 626 141 51 1840 786 1328 98 1 32 1840 786 896 98 1 8 '&Dolphin' 1840 978 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 120 0 0 0 60 0 0 0 190 0 0 0 85 0 0 0] 98 0 1456 0 27 410 1056 98 17 0 416 98 2 8 1140924416 1 2208 0 0 0 7 0 0 0 2208 0 8 4294903631 1138 8 #cancel 8 '&Cancel' 1 1 0 0 32 722 202 208 98 3 786 816 98 2 626 241 181 626 141 51 2208 786 1328 98 1 32 2208 786 896 98 1 8 '&Cancel' 2208 978 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 120 0 0 0 90 0 0 0 190 0 0 0 115 0 0 0] 98 0 1456 0 27 410 8 ##(Smalltalk.StaticText)  98 16 0 416 98 2 8 1140850944 1 2576 0 0 0 7 0 0 0 2576 0 8 4294903639 852486 ##(Smalltalk.NullConverter)  0 0 0 722 202 208 98 2 786 816 98 2 626 1 11 626 431 41 2576 786 896 98 1 8 ' Interrupt GemStone execution with:' 2576 978 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 5 0 0 0 215 0 0 0 25 0 0 0] 98 0 1456 0 27 410 2592 98 16 0 416 98 2 8 1140850944 1 2912 0 0 0 7 0 0 0 2912 0 8 4294903639 2674 0 0 0 722 202 208 98 2 786 816 98 2 626 1 131 626 211 41 2912 786 896 98 1 8 ' Interrupt Dolphin:' 2912 978 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 65 0 0 0 105 0 0 0 85 0 0 0] 98 0 1456 0 27 410 2592 98 16 0 416 98 2 8 1140850944 1 3216 0 0 0 7 0 0 0 3216 0 8 4294903639 2674 0 0 0 722 202 208 98 2 786 816 98 2 626 1 191 626 201 41 3216 786 896 98 1 8 ' Ignore interrupt:' 3216 978 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 95 0 0 0 100 0 0 0 115 0 0 0] 98 0 1456 0 27 1456 0 27 )! !
 !GsBreakDialog class categoriesFor: #icon!public! !
 !GsBreakDialog class categoriesFor: #resource_Default_view!public!resources-views! !
+
+JadeServerTestCase guid: (GUID fromString: '{494DCD74-2E61-4AA2-9836-C23515C37947}')!
+JadeServerTestCase comment: ''!
+!JadeServerTestCase categoriesForClass!Unclassified! !
+!JadeServerTestCase methodsFor!
+
+testSocket
+
+	| encoder stream x |
+	encoder := JadeServer new.
+	stream := WriteStream on: ByteArray new.
+	encoder
+		add: nil toByteStream: stream;
+		add: true toByteStream: stream;
+		add: false toByteStream: stream;
+		add: (OopType32 fromInteger: 123456) toByteStream: stream;
+		add: (OopType64 fromInteger: 12345678) toByteStream: stream;
+		add: #'foo' toByteStream: stream;
+		add: 0 toByteStream: stream;
+		add: 255 toByteStream: stream;
+		add: 'bar' toByteStream: stream;
+		add: ((String new: 256) atAllPut: $x) asSymbol toByteStream: stream;
+		add: -1 toByteStream: stream;
+		add: -256 toByteStream: stream;
+		add: 256 toByteStream: stream;
+		add: SmallInteger maximum toByteStream: stream;
+		add: SmallInteger minimum toByteStream: stream;
+		add: SmallInteger maximum + 1 toByteStream: stream;
+		add: SmallInteger minimum - 1 toByteStream: stream;
+		add: ((String new: 256) atAllPut: $x) toByteStream: stream;
+		add: #(nil true false #(1 'abc' #'foo')) toByteStream: stream;
+		add: nil toByteStream: stream;
+		yourself.
+	stream := ReadStream on: stream contents.
+	self 
+		assert: (encoder readObjectFrom: stream) == nil;
+		assert: (encoder readObjectFrom: stream) == true;
+		assert: (encoder readObjectFrom: stream) == false;
+		assert: (x := encoder readObjectFrom: stream) class == OopType32;
+		assert: x value == 123456;
+		assert: (x := encoder readObjectFrom: stream) class == OopType64;
+		assert: x value == 12345678;
+		assert: (encoder readObjectFrom: stream) == #'foo';
+		assert: (encoder readObjectFrom: stream) == 0;
+		assert: (encoder readObjectFrom: stream) == 255;
+		assert: (encoder readObjectFrom: stream) = 'bar';
+		assert: (x := encoder readObjectFrom: stream) class == Symbol;
+		assert: x size == 256;
+		assert: (encoder readObjectFrom: stream) == -1;
+		assert: (encoder readObjectFrom: stream) == -256;
+		assert: (encoder readObjectFrom: stream) == 256;
+		assert: (encoder readObjectFrom: stream) == SmallInteger maximum;
+		assert: (encoder readObjectFrom: stream) == SmallInteger minimum;
+		assert: (encoder readObjectFrom: stream) = (SmallInteger maximum + 1);
+		assert: (encoder readObjectFrom: stream) = (SmallInteger minimum - 1);
+		assert: (x := encoder readObjectFrom: stream) class == String;
+		assert: x size == 256;
+		assert: (x := encoder readObjectFrom: stream) = #(nil true false #(1 'abc' #'foo'));
+		assert: (encoder readObjectFrom: stream) == nil;
+		yourself.
+! !
+!JadeServerTestCase categoriesFor: #testSocket!public! !
 
 "Binary Globals"!
 

@@ -3,7 +3,7 @@ package := Package name: 'Jade UI'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.185'.
+package basicPackageVersion: '0.186'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
@@ -1297,15 +1297,11 @@ runToCursor
 saveMethod
 
 	| result |
-	gciSession
-		withOopForString: self getDocumentData
-		do: [:oopType |
-			result := gciSession
-				serverPerform: #'compile:frame:process:' 
-				with: oopType
-				with: frameListPresenter selectionByIndex 
-				with: gsProcess.
-		].
+	result := gciSession
+		serverPerform: #'compile:frame:process:' 
+		with: self getDocumentData
+		with: frameListPresenter selectionByIndex 
+		with: gsProcess.
 	(result isKindOf: Boolean) ifTrue: [
 		result ifTrue: [
 			gsProcess trimStackToLevel: frameListPresenter selectionByIndex.

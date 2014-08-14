@@ -158,7 +158,7 @@ GsWin32Service subclass: #StoneService
 
 "Classes"!
 
-GsConfiguration guid: (GUID fromString: '{9952C933-2F68-4E71-B69F-3BFE2FC514AF}')!
+GsConfiguration guid: (GUID fromString: '{CD6CC3A9-D9FA-4F8E-A4AE-200573A63366}')!
 GsConfiguration comment: ''!
 !GsConfiguration categoriesForClass!Unclassified! !
 !GsConfiguration methodsFor!
@@ -252,7 +252,7 @@ new
 !GsConfiguration class categoriesFor: #emptyExtentPath!public! !
 !GsConfiguration class categoriesFor: #new!public! !
 
-GsEnvironment guid: (GUID fromString: '{DC5543F4-9706-455B-91ED-E7CF9168805F}')!
+GsEnvironment guid: (GUID fromString: '{D4F01BBD-8871-4860-BC98-F34C0726ACD3}')!
 GsEnvironment comment: ''!
 !GsEnvironment categoriesForClass!Unclassified! !
 !GsEnvironment methodsFor!
@@ -470,7 +470,7 @@ local
 !GsEnvironment class categoriesFor: #isWindowsNT!public! !
 !GsEnvironment class categoriesFor: #local!public! !
 
-GsFile guid: (GUID fromString: '{8823EBBA-371A-4FF7-A4CC-F0322B38BBCB}')!
+GsFile guid: (GUID fromString: '{728CD08F-BD29-424A-A492-C0127A9CD064}')!
 GsFile comment: ''!
 !GsFile categoriesForClass!Unclassified! !
 !GsFile class methodsFor!
@@ -493,7 +493,7 @@ removeServerFile: aPathName
 !GsFile class categoriesFor: #openWriteOnServer:!public! !
 !GsFile class categoriesFor: #removeServerFile:!public! !
 
-GsHostProcess guid: (GUID fromString: '{4D8250F8-AC41-45BD-A32D-CF9D1B068234}')!
+GsHostProcess guid: (GUID fromString: '{317D129C-B9F4-4DF1-8142-4D40E64D6102}')!
 GsHostProcess comment: ''!
 !GsHostProcess categoriesForClass!Unclassified! !
 !GsHostProcess methodsFor!
@@ -681,7 +681,7 @@ type
 !GsHostProcess class categoriesFor: #fromStream:!public! !
 !GsHostProcess class categoriesFor: #type!public! !
 
-GsNRS guid: (GUID fromString: '{6E44EBAE-896C-4799-978F-F24BD09AF923}')!
+GsNRS guid: (GUID fromString: '{DA99D714-2195-4901-A28B-776D4F8178A0}')!
 GsNRS comment: ''!
 !GsNRS categoriesForClass!Unclassified! !
 !GsNRS methodsFor!
@@ -899,7 +899,7 @@ new
 !GsNRS class categoriesFor: #body:!public! !
 !GsNRS class categoriesFor: #new!public! !
 
-GsShellCommand guid: (GUID fromString: '{66A016F6-AC46-48AD-B33B-83A1148D2F67}')!
+GsShellCommand guid: (GUID fromString: '{272E69BF-5238-421B-BBA3-FAA16A2A432D}')!
 GsShellCommand comment: ''!
 !GsShellCommand categoriesForClass!Unclassified! !
 !GsShellCommand methodsFor!
@@ -990,7 +990,7 @@ new
 !GsShellCommand class categoriesFor: #find:!public! !
 !GsShellCommand class categoriesFor: #new!private! !
 
-GsWin32Service guid: (GUID fromString: '{CFC54123-6EE9-4EC1-BE79-9E7F68A4D9A2}')!
+GsWin32Service guid: (GUID fromString: '{C6EFB87C-A8A3-4E98-A917-61C6A02A96D9}')!
 GsWin32Service comment: ''!
 !GsWin32Service categoriesForClass!Unclassified! !
 !GsWin32Service methodsFor!
@@ -1148,7 +1148,7 @@ removeIfPresent: aString
 !System class categoriesFor: #performOnServer:!public! !
 !System class categoriesFor: #removeIfPresent:!public! !
 
-NetLDI guid: (GUID fromString: '{3ABB464C-2B04-4907-AAB0-A2516187802D}')!
+NetLDI guid: (GUID fromString: '{80D5192F-B67F-4EC3-B641-8853BA42A584}')!
 NetLDI comment: ''!
 !NetLDI categoriesForClass!Unclassified! !
 !NetLDI methodsFor!
@@ -1229,7 +1229,7 @@ type
 ! !
 !NetLDI class categoriesFor: #type!public! !
 
-SharedPageCacheMonitor guid: (GUID fromString: '{55394EAE-4FB3-4E22-84EC-32FA775C8625}')!
+SharedPageCacheMonitor guid: (GUID fromString: '{81611FF5-3795-4F5A-83D0-98C55159048A}')!
 SharedPageCacheMonitor comment: ''!
 !SharedPageCacheMonitor categoriesForClass!Unclassified! !
 !SharedPageCacheMonitor methodsFor!
@@ -1248,7 +1248,7 @@ type
 ! !
 !SharedPageCacheMonitor class categoriesFor: #type!public! !
 
-Stone guid: (GUID fromString: '{0FD79054-79B1-4DEB-887B-4EDBD9A1758D}')!
+Stone guid: (GUID fromString: '{30D3A885-42AB-423A-8752-C86CE1F268C9}')!
 Stone comment: ''!
 !Stone categoriesForClass!Unclassified! !
 !Stone methodsFor!
@@ -1416,7 +1416,7 @@ sample2
 !CopyDBF class categoriesFor: #sample1!public! !
 !CopyDBF class categoriesFor: #sample2!public! !
 
-GsList guid: (GUID fromString: '{4337F4C0-1552-4A70-AE55-EA882DCFC496}')!
+GsList guid: (GUID fromString: '{E2BCCE18-152C-4329-BBAA-8EF9FC8F29DA}')!
 GsList comment: ''!
 !GsList categoriesForClass!Unclassified! !
 !GsList methodsFor!
@@ -1563,7 +1563,7 @@ services
 !GsList class categoriesFor: #servers!public! !
 !GsList class categoriesFor: #services!public! !
 
-NetLDICommand guid: (GUID fromString: '{0EC19966-CCD6-4F33-B7F5-7DE111CC9EDB}')!
+NetLDICommand guid: (GUID fromString: '{FE6BC418-DBBC-4042-B124-01C2C1D2F276}')!
 NetLDICommand comment: ''!
 !NetLDICommand categoriesForClass!Unclassified! !
 !NetLDICommand methodsFor!
@@ -1630,7 +1630,7 @@ sample3
 !NetLDICommand class categoriesFor: #sample2!public! !
 !NetLDICommand class categoriesFor: #sample3!public! !
 
-PageAudit guid: (GUID fromString: '{1F76FD0A-2C91-4344-BE74-CE7A1ABBCA30}')!
+PageAudit guid: (GUID fromString: '{CB7BB9F1-3586-495F-9E8C-A09D1FDF20F5}')!
 PageAudit comment: ''!
 !PageAudit categoriesForClass!Unclassified! !
 !PageAudit methodsFor!
@@ -1678,7 +1678,7 @@ sample1
 !PageAudit class categoriesFor: #exeName!public! !
 !PageAudit class categoriesFor: #sample1!public! !
 
-StoneCommand guid: (GUID fromString: '{879E630A-6998-4427-AEBF-14A83DCA8E46}')!
+StoneCommand guid: (GUID fromString: '{90CE9FE9-C045-4CAE-929D-5E834B1E310A}')!
 StoneCommand comment: ''!
 !StoneCommand categoriesForClass!Unclassified! !
 !StoneCommand methodsFor!
@@ -1768,7 +1768,7 @@ sample3
 !StoneCommand class categoriesFor: #sample2!public! !
 !StoneCommand class categoriesFor: #sample3!public! !
 
-StartStone guid: (GUID fromString: '{77627D3A-E2B8-4CF7-9D01-A599D8CE1677}')!
+StartStone guid: (GUID fromString: '{9B0D628F-C8EA-44BC-A3CE-5FC0A51DEC5E}')!
 StartStone comment: ''!
 !StartStone categoriesForClass!Unclassified! !
 !StartStone methodsFor!
@@ -1813,7 +1813,7 @@ sample1
 	^StartStone new help! !
 !StartStone class categoriesFor: #sample1!public! !
 
-StopStone guid: (GUID fromString: '{7995E10B-D8AA-4EDE-8642-50B6F20F20E1}')!
+StopStone guid: (GUID fromString: '{6E6EC07C-E746-4E12-BF17-08F6B080D49E}')!
 StopStone comment: ''!
 !StopStone categoriesForClass!Unclassified! !
 !StopStone methodsFor!
@@ -1857,7 +1857,7 @@ sample1
 	^StopStone new help! !
 !StopStone class categoriesFor: #sample1!public! !
 
-NetLDIService guid: (GUID fromString: '{913AFDF5-70DB-41D1-9C9B-21796B4179F3}')!
+NetLDIService guid: (GUID fromString: '{543D39F7-0A12-4645-A8B2-560938E69D84}')!
 NetLDIService comment: ''!
 !NetLDIService categoriesForClass!Unclassified! !
 !NetLDIService methodsFor!
@@ -1884,7 +1884,7 @@ stop
 !NetLDIService categoriesFor: #start!public! !
 !NetLDIService categoriesFor: #stop!public! !
 
-StoneService guid: (GUID fromString: '{2A7F76CE-EA21-455B-82FF-BBF91C334B88}')!
+StoneService guid: (GUID fromString: '{54671F79-0372-445B-96A3-C9DF632955F4}')!
 StoneService comment: ''!
 !StoneService categoriesForClass!Unclassified! !
 !StoneService methodsFor!

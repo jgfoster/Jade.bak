@@ -6,8 +6,9 @@ Jade is an Alternative Development Environment (IDE) for GemStone/S that runs on
 Jade is built in (and inspired by) Dolphin Smalltalk from [Object-Arts](http://www.object-arts.com/).
 
 ### Installation
-To install Jade, follow the following steps:
+To install Jade, download a 15 MB zip file with the executable and supporting libraries from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.zip). Once you have the environment, you can get just the latest executable (about 1.5 MB) from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.exe).
 
+To install Jade in Dolphin, follow these steps:
 1. Install a Github client such as [SourceTree](http://www.sourcetreeapp.com/)
 2. Clone https://github.com/jgfoster/Jade to Documents\Dolphin\Jade.
 3. Do a Fresh Install of Dolphin into Documents\Dolphin\Jade as 'Jade.img'.
@@ -46,7 +47,7 @@ PackageManager current
 	install: 'Jade\Object Log Browser.pac';
 	install: 'Jade\Jade Login.pac';
 	yourself.
-[PackageManager current install: 'Jade\Jade from Dolphin.pac'] 
+[PackageManager current install: 'Jade\Jade from Dolphin.pac']
 	on: Package clashSignal  do: [:ex | ex resume].
 
 "If you want to integrate Jade in Dolphin Professional"
@@ -57,9 +58,9 @@ PackageManager current
 ```
 #### Dolphin Community Edition
 
-Dolphin CE is on version 6.0 while the main development work 
+Dolphin CE is on version 6.0 while the main development work
 has been done on Dolphin Pro 6.1b2. This means that things don't
-really work. You can, however, load things without errors and 
+really work. You can, however, load things without errors and
 look at the code if you start with the following:
 ```
 PackageManager current

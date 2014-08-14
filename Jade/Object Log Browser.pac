@@ -3,7 +3,7 @@ package := Package name: 'Object Log Browser'.
 package paxVersion: 1;
 	basicComment: 'Fix Compiler Warning'.
 
-package basicPackageVersion: '0.019'.
+package basicPackageVersion: '0.020'.
 
 
 package classNames
@@ -288,8 +288,8 @@ updateA: aString
 	| time1 time2 time3 string stream |
 	time1 := Time millisecondsToRun: [
 		string := model 
-			withOopForString: aString
-			do: [:oop | model serverPerform: #'systemBrowser:' with: oop].
+			serverPerform: #'systemBrowser:' 
+			with: aString.
 	].
 	time2 := Time millisecondsToRun: [
 		| x |

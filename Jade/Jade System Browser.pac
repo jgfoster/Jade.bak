@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.258'.
+package basicPackageVersion: '0.259'.
 
 
 package classNames
@@ -2228,8 +2228,8 @@ browseImplementorsOf
 	list do: [:each | stream tab; nextPutAll: each].
 
 	string := self gciSession 
-		withOopForString: stream contents
-		do: [:oop | self gciSession serverPerform: #'systemBrowser:' with: oop].
+		serverPerform: #'systemBrowser:' 
+		with: stream contents.
 	list := string subStrings: Character lf.
 	list := list copyFrom: 2 to: list size.
 	(selector := ChoicePrompter choices: list) isNil ifTrue: [^self].
@@ -2877,8 +2877,8 @@ fileOutClassOnPath: aString
 	className := self selectedClassNameWithoutVersion.
 	header := self stuffToKeepFromOldFileForClass: className onPath: aString.
 	newSource := self gciSession 
-		withOopForString: 'fileOutClass' , Character tab asString , self behaviorIdentifier
-		do: [:oop | self gciSession serverPerform: #'systemBrowser:' with: oop].
+		serverPerform: #'systemBrowser:' 
+		with: 'fileOutClass' , Character tab asString , self behaviorIdentifier.
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
 	file := FileStream write: aString.
@@ -2903,8 +2903,8 @@ fileOutDictionary
 	path isNil ifTrue: [^self].
 	string := 'fileOutDictionary' , Character tab asString , dictionaryName.
 	string := self gciSession 
-		withOopForString: string
-		do: [:oop | self gciSession serverPerform: #'systemBrowser:' with: oop].
+		serverPerform: #'systemBrowser:' 
+		with: string.
 	index := string indexOf: Character lf.
 	file := FileStream write: path.
 	[
@@ -2928,8 +2928,8 @@ findClass
 "
 	| string find list |
 	string := self gciSession 
-		withOopForString: 'findClass'
-		do: [:oop | self gciSession serverPerform: #'systemBrowser:' with: oop].
+		serverPerform: #'systemBrowser:' 
+		with: 'findClass'.
 	list := (string subStrings: Character lf) collect: [:each | each subStrings: Character tab].
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
@@ -4027,8 +4027,8 @@ runClassTests
 		nextPutAll: self behaviorIdentifier;
 		yourself.
 	string := self gciSession 
-				withOopForString: stream contents
-				do: [:oop | self gciSession serverPerform: #'sbRunClassTests:' with: oop].
+		serverPerform: #'sbRunClassTests:' 
+		with: stream contents.
 	string isNil ifTrue: [self error: 'Test run did not return expected value!!'. ^self].
 	list := string subStrings: Character lf.
 	list size = 1 ifTrue: [
@@ -4051,8 +4051,8 @@ runMethodTests
 
 	| result |
 	result := self gciSession 
-		withOopForString: self methodsIdentifier
-		do: [:oop | self gciSession serverPerform: #'sbRunMethodTests:' with: oop].
+		serverPerform: #'sbRunMethodTests:' 
+		with: self methodsIdentifier.
 	result == true ifFalse: [self error: 'unexpected result!!'].
 	MessageBox notify: 'Ran ' , methodListPresenter selections size printString , ' test(s)'.
 !
@@ -4100,8 +4100,8 @@ selectClass: aString selector: methodString
 "
 	| string list className isMeta array |
 	string := self gciSession 
-		withOopForString: 'findClass'
-		do: [:oop | self gciSession serverPerform: #'systemBrowser:' with: oop].
+		serverPerform: #'systemBrowser:' 
+		with: 'findClass'.
 	list := (string subStrings: Character lf) collect: [:each | each subStrings: Character tab].
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
@@ -4551,8 +4551,8 @@ updateCommand: aString onSuccessDo: aBlock
 		| time1 time2 time3 string |
 		time1 := Time millisecondsToRun: [
 			string := self gciSession 
-				withOopForString: aString
-				do: [:oop | self gciSession serverPerform: #'systemBrowser:' with: oop].
+				serverPerform: #'systemBrowser:' 
+				with: aString.
 			eventCount := self gciSession eventCount.
 		].
 		time2 := Time millisecondsToRun: [
