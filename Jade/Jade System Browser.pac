@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.259'.
+package basicPackageVersion: '0.260'.
 
 
 package classNames
@@ -1388,7 +1388,10 @@ sbUpdateMethod: aSymbol
 		(string notEmpty and: [string last = Character lf]) ifFalse: [writeStream lf].
 	].
 	writeStream nextPut: $%; lf.
-!
+	string := selections at: #'methodWarnings' ifAbsent: [''].
+	string isNil ifTrue: [string := ''].
+	writeStream nextPutAll: string; nextPut: $%; lf.
+ !
 
 sbUpdateMethodBreakPointsFor: aMethod
 	"Answers an Array of step points"
@@ -4613,7 +4616,7 @@ updateMenuBar
 
 updateMethod
 
-	| isReadOnly newSource |
+	| isReadOnly newSource warnings |
 	methodSourcePresenter view cancelCallTip.
 	isReadOnly := self nextLine = 'false'.	"current user has write permission for the class"
 	(newSource := self nextParagraph) isEmpty ifTrue: [
@@ -4690,7 +4693,10 @@ updateMethod
 		].
 	].
 	originalSourcePresenter value: self nextParagraph.
-!
+	(warnings := self nextParagraph) notEmpty ifTrue: [
+		MessageBox warning: warnings caption: 'Jade Compile Warning'.
+	].
+	!
 
 updateMethodFilter
 

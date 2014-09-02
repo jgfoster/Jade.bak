@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.114'.
+package basicPackageVersion: '0.119'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -208,7 +208,7 @@ LibGciRpc64_32 subclass: #LibGciRpc64_322
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 ExternalStructure subclass: #GciErrSType
-	instanceVariableNames: ''
+	instanceVariableNames: 'args stack'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -2083,6 +2083,14 @@ GciErrSType comment: ''!
 !GciErrSType categoriesForClass!Unclassified! !
 !GciErrSType methodsFor!
 
+args: anArray
+
+	| list |
+	list := anArray asOrderedCollection.
+	[list size < 10] whileTrue: [list add: (self oopTypeClass fromInteger: 1)].
+	args := list asArray.
+!
+
 isApplicationErrorInSession: aGciSession
 
 	^(self isGemStoneErrorCategoryInSession: aGciSession) and: [
@@ -2166,7 +2174,21 @@ isStackBreakpointInSession: aGciSession
 number
 
 	self subclassResponsibility.
+!
+
+oopTypeClass
+
+	self subclassResponsibility.
+!
+
+stack
+	^stack.
+!
+
+stack: anObject
+	stack := anObject.
 ! !
+!GciErrSType categoriesFor: #args:!public! !
 !GciErrSType categoriesFor: #isApplicationErrorInSession:!public! !
 !GciErrSType categoriesFor: #isClientForwarderSendInSession:!public! !
 !GciErrSType categoriesFor: #isCompileErrorInSession:!public! !
@@ -2181,6 +2203,9 @@ number
 !GciErrSType categoriesFor: #isSoftBreakInSession:!public! !
 !GciErrSType categoriesFor: #isStackBreakpointInSession:!public! !
 !GciErrSType categoriesFor: #number!public! !
+!GciErrSType categoriesFor: #oopTypeClass!public! !
+!GciErrSType categoriesFor: #stack!public! !
+!GciErrSType categoriesFor: #stack:!public! !
 
 OopType32Array guid: (GUID fromString: '{73AA2718-0F19-4B5E-AF7F-A3D2D8FBB1C4}')!
 OopType32Array comment: ''!
@@ -2443,15 +2468,24 @@ argCount
 
 	^(bytes dwordAtOffset: 456)!
 
-args
-	"Answer the receiver's args field as a Smalltalk object."
+argCount: anObject
+	"Set the receiver's argCount field to the value of anObject."
 
+	bytes dwordAtOffset: 456 put: anObject!
+
+args
+	args ifNotNil: [^args].
 	^OopType32Array fromAddress: (bytes yourAddress + 416) length: 10!
 
 category
 	"Answer the receiver's category field as a Smalltalk object."
 
 	^(bytes dwordAtOffset: 0)!
+
+category: anObject
+	"Set the receiver's category field to the value of anObject."
+
+	bytes dwordAtOffset: 0 put: anObject!
 
 categoryOop
 
@@ -2463,6 +2497,11 @@ context
 
 	^(bytes dwordAtOffset: 8)!
 
+context: anObject
+	"Set the receiver's context field to the value of anObject."
+
+	bytes dwordAtOffset: 8 put: anObject!
+
 contextOop
 
 	^OopType32 fromInteger: self context.!
@@ -2472,24 +2511,54 @@ fatal
 
 	^(bytes dwordAtOffset: 460) asBoolean!
 
+fatal: anObject
+	"Set the receiver's fatal field to the value of anObject."
+
+	bytes dwordAtOffset: 460 put: anObject asParameter!
+
 message
 	"Answer the receiver's message field as a Smalltalk object."
 
 	^String fromAddress: (bytes yourAddress + 12)!
 
+message: anObject
+	"Set the receiver's message field to the value of anObject."
+
+	| size |
+	size := anObject byteSize - 1 min: (400 * 1).
+	anObject replaceBytesOf: bytes from: 13 to: 12 + size startingAt: 1.
+	bytes at: size+13 put: 0!
+
 number
 	"Answer the receiver's number field as a Smalltalk object."
 
-	^(bytes dwordAtOffset: 4)! !
+	^(bytes dwordAtOffset: 4)!
+
+number: anObject
+	"Set the receiver's number field to the value of anObject."
+
+	bytes dwordAtOffset: 4 put: anObject!
+
+oopTypeClass
+
+	^OopType32.
+! !
 !GciErrSType32 categoriesFor: #argCount!**compiled accessors**!public! !
+!GciErrSType32 categoriesFor: #argCount:!public! !
 !GciErrSType32 categoriesFor: #args!**compiled accessors**!public! !
 !GciErrSType32 categoriesFor: #category!**compiled accessors**!public! !
+!GciErrSType32 categoriesFor: #category:!public! !
 !GciErrSType32 categoriesFor: #categoryOop!public! !
 !GciErrSType32 categoriesFor: #context!**compiled accessors**!public! !
+!GciErrSType32 categoriesFor: #context:!public! !
 !GciErrSType32 categoriesFor: #contextOop!public! !
 !GciErrSType32 categoriesFor: #fatal!**compiled accessors**!public! !
+!GciErrSType32 categoriesFor: #fatal:!public! !
 !GciErrSType32 categoriesFor: #message!**compiled accessors**!public! !
+!GciErrSType32 categoriesFor: #message:!public! !
 !GciErrSType32 categoriesFor: #number!**compiled accessors**!public! !
+!GciErrSType32 categoriesFor: #number:!public! !
+!GciErrSType32 categoriesFor: #oopTypeClass!public! !
 
 !GciErrSType32 class methodsFor!
 
@@ -2511,13 +2580,13 @@ defineFields
 	arrayField := ArrayField type: OopType32Array length: 10.
 	stringField := StringField length: 401.
 	self
-		defineField: #category 	type: OopType32Field 	new	beReadOnly;
-		defineField: #number		type: DWORDField 		new	beReadOnly;
-		defineField: #context		type: OopType32Field	new	beReadOnly;
-		defineField: #message	type: stringField						beReadOnly;
-		defineField: #args			type: arrayField						beReadOnly;
-		defineField: #argCount	type: DWORDField		new	beReadOnly;
-		defineField: #fatal			type: BOOLField			new	beReadOnly;
+		defineField: #category 	type: OopType32Field 	new	;
+		defineField: #number		type: DWORDField 		new	;
+		defineField: #context		type: OopType32Field	new	;
+		defineField: #message	type: stringField						;
+		defineField: #args			type: arrayField						;
+		defineField: #argCount	type: DWORDField		new	;
+		defineField: #fatal			type: BOOLField			new	;
 		yourself.
 ! !
 !GciErrSType32 class categoriesFor: #defineFields!public! !
@@ -2532,15 +2601,25 @@ argCount
 
 	^(bytes dwordAtOffset: 100)!
 
-args
-	"Answer the receiver's args field as a Smalltalk object."
+argCount: anObject
+	"Set the receiver's argCount field to the value of anObject."
 
+	bytes dwordAtOffset: 100 put: anObject!
+
+args
+
+	args ifNotNil: [^args].
 	^OopType64Array fromAddress: (bytes yourAddress + 16) length: 10!
 
 category
 	"Answer the receiver's category field as a Smalltalk object."
 
 	^(bytes qwordAtOffset: 0)!
+
+category: anObject
+	"Set the receiver's category field to the value of anObject."
+
+	bytes qwordAtOffset: 0 put: anObject!
 
 categoryOop
 
@@ -2550,6 +2629,11 @@ context
 	"Answer the receiver's context field as a Smalltalk object."
 
 	^(bytes qwordAtOffset: 8)!
+
+context: anObject
+	"Set the receiver's context field to the value of anObject."
+
+	bytes qwordAtOffset: 8 put: anObject!
 
 contextOop
 
@@ -2561,24 +2645,54 @@ fatal
 
 	^(bytes byteAtOffset: 104)!
 
+fatal: anObject
+	"Set the receiver's fatal field to the value of anObject."
+
+	bytes byteAtOffset: 104 put: anObject!
+
 message
 	"Answer the receiver's message field as a Smalltalk object."
 
 	^String fromAddress: (bytes yourAddress + 105)!
 
+message: anObject
+	"Set the receiver's message field to the value of anObject."
+
+	| size |
+	size := anObject byteSize - 1 min: (1024 * 1).
+	anObject replaceBytesOf: bytes from: 106 to: 105 + size startingAt: 1.
+	bytes at: size+106 put: 0!
+
 number
 	"Answer the receiver's number field as a Smalltalk object."
 
-	^(bytes dwordAtOffset: 96)! !
+	^(bytes dwordAtOffset: 96)!
+
+number: anObject
+	"Set the receiver's number field to the value of anObject."
+
+	bytes dwordAtOffset: 96 put: anObject!
+
+oopTypeClass
+
+	^OopType64.
+! !
 !GciErrSType64 categoriesFor: #argCount!**compiled accessors**!public! !
+!GciErrSType64 categoriesFor: #argCount:!public! !
 !GciErrSType64 categoriesFor: #args!**compiled accessors**!public! !
 !GciErrSType64 categoriesFor: #category!**compiled accessors**!public! !
+!GciErrSType64 categoriesFor: #category:!public! !
 !GciErrSType64 categoriesFor: #categoryOop!public! !
 !GciErrSType64 categoriesFor: #context!**compiled accessors**!public! !
+!GciErrSType64 categoriesFor: #context:!public! !
 !GciErrSType64 categoriesFor: #contextOop!public! !
 !GciErrSType64 categoriesFor: #fatal!**compiled accessors**!public! !
+!GciErrSType64 categoriesFor: #fatal:!public! !
 !GciErrSType64 categoriesFor: #message!**compiled accessors**!public! !
+!GciErrSType64 categoriesFor: #message:!public! !
 !GciErrSType64 categoriesFor: #number!**compiled accessors**!public! !
+!GciErrSType64 categoriesFor: #number:!public! !
+!GciErrSType64 categoriesFor: #oopTypeClass!public! !
 
 !GciErrSType64 class methodsFor!
 
@@ -2600,13 +2714,13 @@ defineFields
 	arrayField := ArrayField type: OopType64Array length: 10.
 	stringField := StringField length: 1025.
 	self
-		defineField: #category 	type: OopType64Field 	new	beReadOnly;
-		defineField: #context	type: OopType64Field	new	beReadOnly;
-		defineField: #args		type: arrayField			beReadOnly;
-		defineField: #number	type: DWORDField 		new	beReadOnly;
-		defineField: #argCount	type: DWORDField		new	beReadOnly;
-		defineField: #fatal		type: BYTEField			new	beReadOnly;
-		defineField: #message	type: stringField			beReadOnly;
+		defineField: #category 	type: OopType64Field 	new	;
+		defineField: #context		type: OopType64Field	new	;
+		defineField: #args			type: arrayField						;
+		defineField: #number		type: DWORDField 		new	;
+		defineField: #argCount	type: DWORDField		new	;
+		defineField: #fatal			type: BYTEField			new	;
+		defineField: #message	type: stringField						;
 		yourself.
 ! !
 !GciErrSType64 class categoriesFor: #defineFields!public! !
@@ -2621,15 +2735,25 @@ argCount
 
 	^(bytes dwordAtOffset: 108)!
 
-args
-	"Answer the receiver's args field as a Smalltalk object."
+argCount: anObject
+	"Set the receiver's argCount field to the value of anObject."
 
+	bytes dwordAtOffset: 108 put: anObject!
+
+args
+
+	args ifNotNil: [^args].
 	^OopType64Array fromAddress: (bytes yourAddress + 24) length: 10!
 
 category
 	"Answer the receiver's category field as a Smalltalk object."
 
 	^(bytes qwordAtOffset: 0)!
+
+category: anObject
+	"Set the receiver's category field to the value of anObject."
+
+	bytes qwordAtOffset: 0 put: anObject!
 
 categoryOop
 
@@ -2639,6 +2763,11 @@ context
 	"Answer the receiver's context field as a Smalltalk object."
 
 	^(bytes qwordAtOffset: 8)!
+
+context: anObject
+	"Set the receiver's context field to the value of anObject."
+
+	bytes qwordAtOffset: 8 put: anObject!
 
 contextOop
 
@@ -2650,6 +2779,11 @@ exceptionObj
 
 	^(bytes qwordAtOffset: 16)!
 
+exceptionObj: anObject
+	"Set the receiver's exceptionObj field to the value of anObject."
+
+	bytes qwordAtOffset: 16 put: anObject!
+
 exceptionObjOop
 
 	^OopType64 fromInteger: self exceptionObj.!
@@ -2659,32 +2793,72 @@ fatal
 
 	^(bytes byteAtOffset: 112)!
 
+fatal: anObject
+	"Set the receiver's fatal field to the value of anObject."
+
+	bytes byteAtOffset: 112 put: anObject!
+
 message
 	"Answer the receiver's message field as a Smalltalk object."
 
 	^String fromAddress: (bytes yourAddress + 113)!
+
+message: anObject
+	"Set the receiver's message field to the value of anObject."
+
+	| size |
+	size := anObject byteSize - 1 min: (1024 * 1).
+	anObject replaceBytesOf: bytes from: 114 to: 113 + size startingAt: 1.
+	bytes at: size+114 put: 0!
 
 number
 	"Answer the receiver's number field as a Smalltalk object."
 
 	^(bytes dwordAtOffset: 104)!
 
+number: anObject
+	"Set the receiver's number field to the value of anObject."
+
+	bytes dwordAtOffset: 104 put: anObject!
+
+oopTypeClass
+
+	^OopType64.
+!
+
 reason
 	"Answer the receiver's reason field as a Smalltalk object."
 
-	^String fromAddress: (bytes yourAddress + 1138)! !
+	^String fromAddress: (bytes yourAddress + 1138)!
+
+reason: anObject
+	"Set the receiver's reason field to the value of anObject."
+
+	| size |
+	size := anObject byteSize - 1 min: (63 * 1).
+	anObject replaceBytesOf: bytes from: 1139 to: 1138 + size startingAt: 1.
+	bytes at: size+1139 put: 0! !
 !GciErrSType64_30 categoriesFor: #argCount!**compiled accessors**!public! !
+!GciErrSType64_30 categoriesFor: #argCount:!public! !
 !GciErrSType64_30 categoriesFor: #args!**compiled accessors**!public! !
 !GciErrSType64_30 categoriesFor: #category!**compiled accessors**!public! !
+!GciErrSType64_30 categoriesFor: #category:!public! !
 !GciErrSType64_30 categoriesFor: #categoryOop!public! !
 !GciErrSType64_30 categoriesFor: #context!**compiled accessors**!public! !
+!GciErrSType64_30 categoriesFor: #context:!public! !
 !GciErrSType64_30 categoriesFor: #contextOop!public! !
 !GciErrSType64_30 categoriesFor: #exceptionObj!**compiled accessors**!public! !
+!GciErrSType64_30 categoriesFor: #exceptionObj:!public! !
 !GciErrSType64_30 categoriesFor: #exceptionObjOop!public! !
 !GciErrSType64_30 categoriesFor: #fatal!**compiled accessors**!public! !
+!GciErrSType64_30 categoriesFor: #fatal:!public! !
 !GciErrSType64_30 categoriesFor: #message!**compiled accessors**!public! !
+!GciErrSType64_30 categoriesFor: #message:!public! !
 !GciErrSType64_30 categoriesFor: #number!**compiled accessors**!public! !
+!GciErrSType64_30 categoriesFor: #number:!public! !
+!GciErrSType64_30 categoriesFor: #oopTypeClass!public! !
 !GciErrSType64_30 categoriesFor: #reason!**compiled accessors**!public! !
+!GciErrSType64_30 categoriesFor: #reason:!public! !
 
 !GciErrSType64_30 class methodsFor!
 
@@ -2712,15 +2886,15 @@ defineFields
 	messageField := StringField length: 1025.
 	reasonField := StringField length: 64.
 	self
-		defineField: #category 			type: OopType64Field 	new	beReadOnly;
-		defineField: #context				type: OopType64Field	new	beReadOnly;
-		defineField: #exceptionObj		type: OopType64Field	new	beReadOnly;
-		defineField: #args					type: arrayField						beReadOnly;
-		defineField: #number				type: DWORDField 		new	beReadOnly;
-		defineField: #argCount			type: DWORDField		new	beReadOnly;
-		defineField: #fatal					type: BYTEField			new	beReadOnly;
-		defineField: #message			type: messageField				beReadOnly;
-		defineField: #reason				type: reasonField					beReadOnly;
+		defineField: #category 			type: OopType64Field 	new	;
+		defineField: #context				type: OopType64Field	new	;
+		defineField: #exceptionObj		type: OopType64Field	new	;
+		defineField: #args					type: arrayField						;
+		defineField: #number				type: DWORDField 		new	;
+		defineField: #argCount			type: DWORDField		new	;
+		defineField: #fatal					type: BYTEField			new	;
+		defineField: #message			type: messageField				;
+		defineField: #reason				type: reasonField					;
 		yourself.
 ! !
 !GciErrSType64_30 class categoriesFor: #defineFields!public! !
@@ -2735,15 +2909,25 @@ argCount
 
 	^(bytes dwordAtOffset: 108)!
 
-args
-	"Answer the receiver's args field as a Smalltalk object."
+argCount: anObject
+	"Set the receiver's argCount field to the value of anObject."
 
+	bytes dwordAtOffset: 108 put: anObject!
+
+args
+
+	args ifNotNil: [^args].
 	^OopType64Array fromAddress: (bytes yourAddress + 24) length: 10!
 
 category
 	"Answer the receiver's category field as a Smalltalk object."
 
 	^(bytes qwordAtOffset: 0)!
+
+category: anObject
+	"Set the receiver's category field to the value of anObject."
+
+	bytes qwordAtOffset: 0 put: anObject!
 
 categoryOop
 
@@ -2753,6 +2937,11 @@ context
 	"Answer the receiver's context field as a Smalltalk object."
 
 	^(bytes qwordAtOffset: 8)!
+
+context: anObject
+	"Set the receiver's context field to the value of anObject."
+
+	bytes qwordAtOffset: 8 put: anObject!
 
 contextOop
 
@@ -2764,6 +2953,11 @@ exceptionObj
 
 	^(bytes qwordAtOffset: 16)!
 
+exceptionObj: anObject
+	"Set the receiver's exceptionObj field to the value of anObject."
+
+	bytes qwordAtOffset: 16 put: anObject!
+
 exceptionObjOop
 
 	^OopType64 fromInteger: self exceptionObj.!
@@ -2773,32 +2967,72 @@ fatal
 
 	^(bytes byteAtOffset: 112)!
 
+fatal: anObject
+	"Set the receiver's fatal field to the value of anObject."
+
+	bytes byteAtOffset: 112 put: anObject!
+
 message
 	"Answer the receiver's message field as a Smalltalk object."
 
 	^String fromAddress: (bytes yourAddress + 113)!
+
+message: anObject
+	"Set the receiver's message field to the value of anObject."
+
+	| size |
+	size := anObject byteSize - 1 min: (1024 * 1).
+	anObject replaceBytesOf: bytes from: 114 to: 113 + size startingAt: 1.
+	bytes at: size+114 put: 0!
 
 number
 	"Answer the receiver's number field as a Smalltalk object."
 
 	^(bytes dwordAtOffset: 104)!
 
+number: anObject
+	"Set the receiver's number field to the value of anObject."
+
+	bytes dwordAtOffset: 104 put: anObject!
+
+oopTypeClass
+
+	^OopType64.
+!
+
 reason
 	"Answer the receiver's reason field as a Smalltalk object."
 
-	^String fromAddress: (bytes yourAddress + 1138)! !
+	^String fromAddress: (bytes yourAddress + 1138)!
+
+reason: anObject
+	"Set the receiver's reason field to the value of anObject."
+
+	| size |
+	size := anObject byteSize - 1 min: (1024 * 1).
+	anObject replaceBytesOf: bytes from: 1139 to: 1138 + size startingAt: 1.
+	bytes at: size+1139 put: 0! !
 !GciErrSType64_31 categoriesFor: #argCount!**compiled accessors**!public! !
+!GciErrSType64_31 categoriesFor: #argCount:!public! !
 !GciErrSType64_31 categoriesFor: #args!**compiled accessors**!public! !
 !GciErrSType64_31 categoriesFor: #category!**compiled accessors**!public! !
+!GciErrSType64_31 categoriesFor: #category:!public! !
 !GciErrSType64_31 categoriesFor: #categoryOop!public! !
 !GciErrSType64_31 categoriesFor: #context!**compiled accessors**!public! !
+!GciErrSType64_31 categoriesFor: #context:!public! !
 !GciErrSType64_31 categoriesFor: #contextOop!public! !
 !GciErrSType64_31 categoriesFor: #exceptionObj!**compiled accessors**!public! !
+!GciErrSType64_31 categoriesFor: #exceptionObj:!public! !
 !GciErrSType64_31 categoriesFor: #exceptionObjOop!public! !
 !GciErrSType64_31 categoriesFor: #fatal!**compiled accessors**!public! !
+!GciErrSType64_31 categoriesFor: #fatal:!public! !
 !GciErrSType64_31 categoriesFor: #message!**compiled accessors**!public! !
+!GciErrSType64_31 categoriesFor: #message:!public! !
 !GciErrSType64_31 categoriesFor: #number!**compiled accessors**!public! !
+!GciErrSType64_31 categoriesFor: #number:!public! !
+!GciErrSType64_31 categoriesFor: #oopTypeClass!public! !
 !GciErrSType64_31 categoriesFor: #reason!**compiled accessors**!public! !
+!GciErrSType64_31 categoriesFor: #reason:!public! !
 
 !GciErrSType64_31 class methodsFor!
 
@@ -2826,15 +3060,15 @@ defineFields
 	messageField := StringField length: 1025.
 	reasonField := StringField length: 1025.
 	self
-		defineField: #category 			type: OopType64Field 	new	beReadOnly;
-		defineField: #context				type: OopType64Field	new	beReadOnly;
-		defineField: #exceptionObj		type: OopType64Field	new	beReadOnly;
-		defineField: #args					type: arrayField						beReadOnly;
-		defineField: #number				type: DWORDField 		new	beReadOnly;
-		defineField: #argCount			type: DWORDField		new	beReadOnly;
-		defineField: #fatal					type: BYTEField			new	beReadOnly;
-		defineField: #message			type: messageField				beReadOnly;
-		defineField: #reason				type: reasonField					beReadOnly;
+		defineField: #category 			type: OopType64Field 	new	;
+		defineField: #context				type: OopType64Field	new	;
+		defineField: #exceptionObj		type: OopType64Field	new	;
+		defineField: #args					type: arrayField						;
+		defineField: #number				type: DWORDField 		new	;
+		defineField: #argCount			type: DWORDField		new	;
+		defineField: #fatal					type: BYTEField			new	;
+		defineField: #message			type: messageField				;
+		defineField: #reason				type: reasonField					;
 		yourself.
 ! !
 !GciErrSType64_31 class categoriesFor: #defineFields!public! !

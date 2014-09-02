@@ -3,7 +3,7 @@ package := Package name: 'Jade UI'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.186'.
+package basicPackageVersion: '0.188'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
@@ -133,9 +133,8 @@ step: anInteger
 
 	stack := nil.
 	^gciSession
-		serverPerformInterpreted: #'step:inFrame:'
-		with: self
-		with: anInteger.
+		step: self
+		inFrame: anInteger.
 !
 
 terminate
@@ -303,6 +302,7 @@ asAsciiString: aString
 !
 
 compile: aString frame: anInteger process: aGsProcess
+	"Compile method from within debugger"
 
 	| oldMethod aBehavior selector category result |
 	oldMethod := aGsProcess localMethodAt: anInteger.

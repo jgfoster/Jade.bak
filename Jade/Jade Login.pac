@@ -3,7 +3,7 @@ package := Package name: 'Jade Login'.
 package paxVersion: 1;
 	basicComment: 'Login window redesign'.
 
-package basicPackageVersion: '0.083'.
+package basicPackageVersion: '0.084'.
 
 
 package classNames
@@ -90,7 +90,7 @@ asXML
 		setAttribute: 'gsUserID' 		value: gsUserID;
 		setAttribute: 'gsPassword' 		value: gsPassword;
 		setAttribute: 'initials'				value: initials;
-		setAttribute: 'useSocket'		value: useSocket;
+		setAttribute: 'useSocket'		value: useSocket printString;
 		yourself.
 	doc setDocumentElement: root.
 	^doc xml.
@@ -261,8 +261,7 @@ initializeFromXML: aString
 	gsUserID			:= element getAttribute: 'gsUserID'.
 	gsPassword		:= element getAttribute: 'gsPassword'.
 	initials				:= element getAttribute: 'initials'.
-	useSocket			:= element getAttribute: 'useSocket'.
-!
+	useSocket			:= (element getAttribute: 'useSocket') = 'true'.!
 
 initials
 
@@ -455,7 +454,7 @@ defaultXML
 	gsUserID="DataCurator" 
 	gsPassword="swordfish"
 	initials="MyName"
-	useBoolean=false
+	useSocket="false"
 	debugPath=""
 />
 '.

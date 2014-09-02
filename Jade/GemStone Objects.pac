@@ -3,7 +3,7 @@ package := Package name: 'GemStone Objects'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.050'.
+package basicPackageVersion: '0.051'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Objects'' yourself.'.
 
@@ -25,7 +25,6 @@ package globalAliases: (Set new
 
 package setPrerequisites: (IdentitySet new
 	add: '..\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter';
 	add: '..\Object Arts\Dolphin\ActiveX\Components\XML DOM\XML DOM';
 	yourself).
 
@@ -49,7 +48,7 @@ GsObject subclass: #GsMethod
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GsObject subclass: #GsProcess
-	instanceVariableNames: 'errorReport stackDepth stack'
+	instanceVariableNames: 'stack'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -502,19 +501,6 @@ oop: anOopType
 	oopType := anOopType.
 !
 
-reportError
-
-	| list answer |
-	Sound warningBeep.
-	list := self stack.
-	answer := ChoicePrompter
-		choices: list
-		caption: errorReport message.
-	answer notNil 
-		ifTrue: [self frameForLevel: (list indexOf: answer)].
-	gciSession clearStack: errorReport contextOop.
-!
-
 stack
 
 	stack notNil ifTrue: [^stack].
@@ -527,43 +513,13 @@ stack
 		with: '>>#'.
 	stack := stack subStrings: Character lf.
 	^stack.
-!
-
-stackCode
-
-	^'[:gsProcess | 
-| array stream |
-Exception
-	category: nil
-	number: nil
-	do: [:ex :cat :num :args | nil].
-array := gsProcess _reportOfSize: 5000.
-stream := WriteStream on: String new.
-array do: [:each | 
-	stream nextPutAll: each; cr.
-].
-stream contents]'.
-!
-
-stackDepth
-
-	| string |
-	stackDepth isNil ifTrue: [
-		stackDepth := gciSession 
-			send: 'stackDepth' 
-			to: self oop.
-	].
-	^stackDepth.
 ! !
 !GsProcess categoriesFor: #aboutToDebug!public! !
 !GsProcess categoriesFor: #description!public! !
 !GsProcess categoriesFor: #frameForLevel:!public! !
 !GsProcess categoriesFor: #gciSession:!public! !
 !GsProcess categoriesFor: #oop:!public! !
-!GsProcess categoriesFor: #reportError!public! !
 !GsProcess categoriesFor: #stack!public! !
-!GsProcess categoriesFor: #stackCode!public! !
-!GsProcess categoriesFor: #stackDepth!public! !
 
 !GsProcess class methodsFor!
 

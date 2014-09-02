@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.195'.
+package basicPackageVersion: '0.208'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -163,7 +163,7 @@ JadeServer subclass: #JadeServer64bit
 	classInstanceVariableNames: ''!
 JadeServer64bit subclass: #JadeServer64bit3x
 	instanceVariableNames: ''
-	classVariableNames: 'Reflection'
+	classVariableNames: 'CompileError CompileWarning Reflection'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeServer64bit3x subclass: #JadeServer64bit32
@@ -207,14 +207,31 @@ GciSoftBreak'!
 !GciSession categoriesForClass!Unclassified! !
 !GciSession methodsFor!
 
+_continueProcess: aContextOop
+
+	^socket ifNil: [
+		library
+			continue: aContextOop
+			session: gciSessionID.
+	] ifNotNil: [
+		self
+			_usingSocketSend: #'socketStep:inFrame:' 
+			to: server 
+			withAll: (Array with: aContextOop with: nil).
+	].!
+
 _executeString: aString fromContextOop: anOopType
-	socket ifNil: [
-		^library 
+	^socket ifNil: [
+		library 
 				executeString: aString
 				fromContext: anOopType
 				session: gciSessionID.
-	].	self halt.
-!
+	] ifNotNil: [
+		self
+			_usingSocketSend: #'executeString:fromContext:' 
+			to: server 
+			withAll: (Array with: aString with: anOopType).
+	].!
 
 _library
 
@@ -254,7 +271,6 @@ _usingSocketSend: aSymbol to: anObject withAll: anArray
 
 	| stream  process resultSize result encoder |
 	stream := WriteStream on: ByteArray new.
-	stream nextPut: 1.	"version"
 	encoder := JadeServer new
 		add: anObject toByteStream: stream;
 		add: aSymbol toByteStream: stream;
@@ -270,7 +286,9 @@ _usingSocketSend: aSymbol to: anObject withAll: anArray
 			with: (self serverArrayFor: (Array with: stream contents size))
 			session: gciSessionID.
 	result := socket receiveByteArray: resultSize.	stream := ReadStream on: result.
-	stream next == 1 ifFalse: [self error: 'Expected wire protocol version 1'].	result := encoder readObjectFrom: stream.
+	result := encoder 
+		readObjectFrom: stream
+		errorClass: library errorStructureClass.
 	^result.
 !
 
@@ -940,6 +958,20 @@ startHeartbeat
 	] forkAt: Processor userBackgroundPriority.
 !
 
+step: aGsProcess inFrame: anInteger
+
+	^socket ifNil: [
+		self
+			serverPerformInterpreted: #'step:inFrame:'
+			with: aGsProcess
+			with: anInteger.
+	] ifNotNil: [
+		self
+			_usingSocketSend: #'socketStep:inFrame:' 
+			to: server 
+			withAll: (Array with: aGsProcess with: anInteger).
+	].!
+
 stoneHost
 	^stoneHost!
 
@@ -1072,11 +1104,7 @@ withExplanation: aString do: aBlock
 	result = #'resume' ifFalse: [self halt].
 	^self
 		withExplanation: aString 
-		do: [
-			library
-				continue: error errorReport contextOop
-				session: gciSessionID.
-		].
+		do: [self _continueProcess: error errorReport contextOop].
 !
 
 withExplanation: aString doA: aBlock
@@ -1120,7 +1148,8 @@ withExplanation: aString doA: aBlock
 	SessionManager inputState pumpMessages.
 	^result.
 ! !
-!GciSession categoriesFor: #_executeString:fromContextOop:!public! !
+!GciSession categoriesFor: #_continueProcess:!long running!private! !
+!GciSession categoriesFor: #_executeString:fromContextOop:!private! !
 !GciSession categoriesFor: #_library!accessing!public! !
 !GciSession categoriesFor: #_send:to:withAll:!private! !
 !GciSession categoriesFor: #_server!private! !
@@ -1188,6 +1217,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #signalTextRequestUsing:!OmniBrowser!public! !
 !GciSession categoriesFor: #softBreak!Jade!public! !
 !GciSession categoriesFor: #startHeartbeat!heartbeat!private! !
+!GciSession categoriesFor: #step:inFrame:!public! !
 !GciSession categoriesFor: #stoneHost!accessing!public! !
 !GciSession categoriesFor: #stoneName!accessing!public! !
 !GciSession categoriesFor: #stoneSerial!private! !
@@ -1331,25 +1361,6 @@ addArray: anArray toByteStream: aStream
 	anArray do: [:each | self add: each toByteStream: aStream].
 !
 
-addException: anException toByteStream: aStream
-
-	| array instVarNames |
-	aStream nextPut: 13.
-	self
-		add: GsProcess _current toByteStream: aStream;
-		add: anException toByteStream: aStream;
-		add: anException class name toByteStream: aStream;
-		add: anException messageText toByteStream: aStream;
-		add: anException stackReport toByteStream: aStream;
-		yourself.
-	array := Array new.
-	instVarNames := anException class allInstVarNames.
-	Exception allInstVarNames size + 1 to: instVarNames size do: [:i | 
-		array add: (instVarNames at: i); add: (anException instVarAt: i).
-	].
-	self add: array toByteStream: aStream.
-!
-
 addExternalInteger: anObject toByteStream: aStream
 
 	self 
@@ -1398,13 +1409,14 @@ addPositiveInteger: anInteger toByteStream: aStream code: codeInteger size: size
 
 addString: aString toByteStream: aStream
 
-	aString size < 16r100 ifTrue: [
-		aStream nextPut: 11; nextPut: aString size.
+	| size |
+	(size := aString size) < 16r100 ifTrue: [
+		aStream nextPut: 11; nextPut: size.
 		aString do: [:each | aStream nextPut: each codePoint].
 		^self.
 	].
-	aString size <= 16rFFFF ifTrue: [
-		aStream nextPut: 12; nextPut: (aString size bitAnd: 16rFF); nextPut: (aString size // 16r100 bitAnd: 16rFF).
+	size < 16r1000000 ifTrue: [
+		aStream nextPut: 12; nextPut: (size bitAnd: 16rFF); nextPut: (size // 16r100 bitAnd: 16rFF); nextPut: (size // 16r10000 bitAnd: 16rFF).
 		aString do: [:each | aStream nextPut: each codePoint].
 		^self.
 	].
@@ -1474,6 +1486,12 @@ errorListFor: aCollection
 	].
 	^stream contents.
 !
+
+executeString: aString fromContext: anObject
+
+	^aString
+		evaluateInContext: anObject 
+		symbolList: GsSession currentSession symbolList. !
 
 initialize
 
@@ -1603,12 +1621,32 @@ oopOf: anObject
 	^anObject asOop.
 !
 
-readExceptionFrom: aStream
+readExceptionFrom: aStream errorClass: gciErrorSTypeClass
 
-	self halt.
+	| category number context exception name message arguments stack gciErrSType |
+	category		:= self readObjectFrom: aStream.	number			:= self readObjectFrom: aStream.
+	context 		:= self readObjectFrom: aStream.
+	exception 		:= self readObjectFrom: aStream.
+	name 			:= self readObjectFrom: aStream.	name yourself.
+	message 		:= self readObjectFrom: aStream.
+	arguments 	:= self readObjectFrom: aStream.
+	stack 			:= self readObjectFrom: aStream.
+	(gciErrSType	:= gciErrorSTypeClass new)		category: category value;
+		number: number;
+		context: context value;
+		exceptionObj: exception value;		message: (message ifNil: [''] ifNotNil: [message]);
+		argCount: arguments size;
+		args: arguments;
+		stack: stack;
+		yourself.
+	GciError signal:  gciErrSType.
 !
 
 readObjectFrom: aStream
+
+	^self readObjectFrom: aStream errorClass: nil.!
+
+readObjectFrom: aStream errorClass: gciErrorSTypeClass
 
 	| type byteSize bytes oid x |
 	type := aStream next.
@@ -1672,7 +1710,7 @@ readObjectFrom: aStream
 		^x.
 	].
 	type == 12 ifTrue: [		"String with size >= 256"
-		x := aStream next + (aStream next * 16r100).
+		x := aStream next + (aStream next * 16r100) + (aStream next * 16r10000).
 		bytes := aStream next: x.
 		x := String new: bytes size.
 		1 to: bytes size do: [:i | 
@@ -1681,7 +1719,7 @@ readObjectFrom: aStream
 		^x.
 	].
 	type == 13 ifTrue: [		"GciErrSType"
-		^self readExceptionFrom: aStream.
+		^self readExceptionFrom: aStream errorClass: gciErrorSTypeClass.
 	].
 	type == 14 ifTrue: [		"Array"
 		x := Array new: aStream next.
@@ -1692,28 +1730,25 @@ readObjectFrom: aStream
 
 readSocket: anInteger
 
-	| arguments bytes exception receiver result selector stream string |
-	string := socket read: anInteger.
+	| arguments bytes receiver selector stream string |	string := String new.	[		string size < anInteger.
+	] whileTrue: [
+		socket read: anInteger - string size into: string startingAt: string size + 1.
+	].
 	bytes := ByteArray withAll: (string asArray collect: [:each | each codePoint]).
 	stream := ReadStream on: bytes.
-	stream next == 1 ifFalse: [self error: 'Expected version 1'].
 	receiver := self readObjectFrom: stream.
 	selector := self readObjectFrom: stream.
 	arguments := self readObjectFrom: stream.
-	[
-		result := receiver 
-			perform: selector 
-			withArguments: arguments.
-	] on: Exception do: [:ex | 
-		exception := ex.
-		ex return.
-	].
-	stream := WriteStream on: ByteArray new.	stream nextPut: 1.
-	exception ifNil: [
-		self add: result toByteStream: stream.
-	] ifNotNil: [
-		self addException: exception toByteStream: stream.
-	].
+	stream := WriteStream on: ByteArray new.
+	self
+		reportErrorOnStream: stream
+		fromEvaluationOf: [
+			| result |
+			result := receiver 
+				perform: selector 
+				withArguments: arguments.
+			self add: result toByteStream: stream.
+		].
 	bytes := stream contents.
 	socket write: bytes.
 	^bytes size.
@@ -1742,6 +1777,36 @@ registerOBNotifications
 		yourself.
 !
 
+reportErrorOnStream: aStream fromEvaluationOf: aBlock
+	"See also override in JadeServer64bit3x"
+
+	| semaphore |
+	Exception
+		category: nil
+		number: nil
+		do: [:ex :cat :num :args | 
+			aStream nextPut: 13.
+			self
+				add: cat 							toByteStream: aStream;
+				add: num 							toByteStream: aStream;
+				add: GsProcess _current 	toByteStream: aStream;
+				add: ex 							toByteStream: aStream;
+				add: ex class name			toByteStream: aStream;
+				add: ex messageText 		toByteStream: aStream;
+				add: args 							toByteStream: aStream;
+				add: (GsProcess stackReportToLevel: 100) toByteStream: aStream;
+				yourself.
+			self add: args toByteStream: aStream.
+			semaphore signal.
+			semaphore wait.
+		].
+	semaphore := Semaphore new.
+	[
+		aBlock value.
+		semaphore signal.
+	] fork.
+	semaphore wait.!
+
 reset
 	"WriteStream protocol"!
 
@@ -1769,7 +1834,6 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #acceptConnection!public! !
 !JadeServer categoriesFor: #add:toByteStream:!public!Socket! !
 !JadeServer categoriesFor: #addArray:toByteStream:!public!Socket! !
-!JadeServer categoriesFor: #addException:toByteStream:!public! !
 !JadeServer categoriesFor: #addExternalInteger:toByteStream:!public!Socket! !
 !JadeServer categoriesFor: #addInteger:toByteStream:!public!Socket! !
 !JadeServer categoriesFor: #addPositiveInteger:toByteStream:code:size:!public!Socket! !
@@ -1782,6 +1846,7 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #cr!public!Transcript! !
 !JadeServer categoriesFor: #delay!public! !
 !JadeServer categoriesFor: #errorListFor:!public! !
+!JadeServer categoriesFor: #executeString:fromContext:!public! !
 !JadeServer categoriesFor: #initialize!public! !
 !JadeServer categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer categoriesFor: #is32Bit!public! !
@@ -1796,11 +1861,13 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #objectNamed:!private! !
 !JadeServer categoriesFor: #obTextRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #oopOf:!private! !
-!JadeServer categoriesFor: #readExceptionFrom:!public! !
+!JadeServer categoriesFor: #readExceptionFrom:errorClass:!public!Socket! !
 !JadeServer categoriesFor: #readObjectFrom:!public!Socket! !
+!JadeServer categoriesFor: #readObjectFrom:errorClass:!public!Socket! !
 !JadeServer categoriesFor: #readSocket:!public!Socket! !
 !JadeServer categoriesFor: #refreshSymbolList!public! !
 !JadeServer categoriesFor: #registerOBNotifications!public! !
+!JadeServer categoriesFor: #reportErrorOnStream:fromEvaluationOf:!public!Socket! !
 !JadeServer categoriesFor: #reset!public! !
 !JadeServer categoriesFor: #show:!public!Transcript! !
 !JadeServer categoriesFor: #stackForProcess:!public! !
@@ -2322,7 +2389,9 @@ GsHaltError comment: ''!
 
 wantsToHandle: aGciErrorSType session: aGciSession
 
-	^aGciErrorSType message = 'User defined error, ''#halt encountered'''.
+	^aGciErrorSType message = 'User defined error, ''#halt encountered''' or: [
+		aGciErrorSType message = 'a Halt occurred (error 2709)'].
+
 ! !
 !GsHaltError class categoriesFor: #wantsToHandle:session:!public! !
 
@@ -2443,9 +2512,74 @@ nextPutAll: anObject
 oopOf: anObject
 
 	^Reflection oopOf: anObject.
+!
+
+reportErrorOnStream: aStream fromEvaluationOf: aBlock
+
+	| clientData process semaphore |
+	clientData := Array 
+		with: aStream
+		with: (semaphore := Semaphore new)
+		with: false.
+	process := [
+		[
+			aBlock value.
+			semaphore signal.
+		] on: Exception do: [:ex | 
+				aStream nextPut: 13.
+				self
+					add: GemStoneError 			toByteStream: aStream;
+					add: ex gsNumber 			toByteStream: aStream;
+					add: GsProcess _current 	toByteStream: aStream;
+					add: ex 							toByteStream: aStream;
+					add: ex class name 			toByteStream: aStream;
+					add: ex description 			toByteStream: aStream;					add: ex gsArguments 		toByteStream: aStream;
+					add: (GsProcess stackReportToLevel: 100) toByteStream: aStream;
+					yourself.
+				clientData at: 3 put: true.
+				semaphore signal.
+				semaphore wait.
+				ex resume.
+		].
+		clientData.
+	] newProcess.
+	process clientData: clientData.
+	process resume.
+	semaphore wait.
+	(clientData at: 3) ifTrue: [
+		semaphore signal.		"this resumes the process but does not do a context switch"
+		process suspend.		"the process is now suspended but not waiting on anything"
+	].
+
+!
+
+socketStep: gsProcess inFrame: anInteger
+
+	| clientData semaphore stream |
+	clientData := gsProcess clientData.
+	stream := (clientData at: 1) reset; yourself.
+	semaphore := clientData at: 2.
+	clientData at: 3 put: false.
+	anInteger ifNil: [
+		gsProcess resume.
+	] ifNotNil: [
+		gsProcess convertToPortableStack.
+		gsProcess resume.
+		gsProcess _stepOverInFrame: anInteger.
+		gsProcess suspend.
+		semaphore signal.
+	].
+	semaphore wait.
+	(clientData at: 3) ifTrue: [		"Got an Exception"
+		gsProcess suspend.
+		semaphore signal.
+	].
+	^self readObjectFrom: (ReadStream on: stream contents).
 ! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #oopOf:!private! !
+!JadeServer64bit3x categoriesFor: #reportErrorOnStream:fromEvaluationOf:!public! !
+!JadeServer64bit3x categoriesFor: #socketStep:inFrame:!public! !
 
 !JadeServer64bit3x class methodsFor!
 
