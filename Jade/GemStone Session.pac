@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.208'.
+package basicPackageVersion: '0.209'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -560,7 +560,9 @@ debugPath: debugPath
 	stoneNRS := stoneString.
 	gemNRS := gemString.
 	userID := gsUserID.
-	self loadLibrary: libraryClass debugPath: debugPath.
+	self 
+		loadLibrary: libraryClass 
+		debugPath: debugPath.
 	gciSessionID := library
 		gciSetNet: stoneNRS _: hostUserID _: hostPassword _: gemNRS;
 		loginAs: gsUserID password: gsPassword.
@@ -631,12 +633,11 @@ libraryVersion
 
 loadLibrary: aClass debugPath: debugPath
 
-	| pathString |
-	pathString := debugPath.
-	pathString isEmpty ifTrue: [pathString := nil].
 	library := aClass open: aClass fileName.
-	(self debugToFilePath: pathString) ifFalse: [self error: 'Unable to open ' , pathString printString , ' for GCI debugging'].
-	pathString ifNotNil: [library gemTrace: 2].!
+	debugPath isNilOrEmpty ifFalse: [
+		(self debugToFilePath: debugPath) ifFalse: [self error: 'Unable to open ' , debugPath printString , ' for GCI debugging'].
+		library gemTrace: 2.
+	].!
 
 logout
 
@@ -1634,7 +1635,7 @@ readExceptionFrom: aStream errorClass: gciErrorSTypeClass
 	(gciErrSType	:= gciErrorSTypeClass new)		category: category value;
 		number: number;
 		context: context value;
-		exceptionObj: exception value;		message: (message ifNil: [''] ifNotNil: [message]);
+		exceptionObj: exception value;		message: (message isNil ifTrue: [''] ifFalse: [message]);
 		argCount: arguments size;
 		args: arguments;
 		stack: stack;
@@ -1661,9 +1662,9 @@ readObjectFrom: aStream errorClass: gciErrorSTypeClass
 		bytes reverseDo: [:each |
 			oid := oid * 16r100 + each.
 		].
-		^System 
-			ifNotNil: [self objectForOop: oid]	"Usually this will execute in GemStone"
-			ifNil: [type == 3			"This can execute in Dolphin to support testing"
+		^System notNil
+			ifTrue: [self objectForOop: oid]	"Usually this will execute in GemStone"
+			ifFalse: [type == 3			"This can execute in Dolphin to support testing"
 				ifTrue: [OopType32 fromInteger: oid]
 				ifFalse: [OopType64 fromInteger: oid]
 			].
@@ -1874,10 +1875,10 @@ stackForProcess: aGsProcess
 
 !JadeServer class methodsFor!
 
-addGsStringTo: aStream
+addGsStringTo: aStream definingClassIn: aClass
 
 	aStream
-		nextPutAll: 'class := ', self gsClassDefinition; lf;
+		nextPutAll: 'class := ', (aClass gsClassDefinitionFor: self); lf;
 		yourself.
 	self selectors do: [:each | 
 		aStream nextPutAll: 'source := '.
@@ -1893,15 +1894,14 @@ addGsStringTo: aStream
 	].
 !
 
-gsClassDefinition
-	"Class variables exist only in Dolphin and map to globals in GemStone"
+classVarsForGemStone
 
-	^'class subclass: ''' , self name , '''
-			instVarNames: ' , self instVarNames printString , '
-			classVars: #(' , (self == JadeServer ifTrue: ['ExternalInteger OopType32 OopType64 GsObject'] ifFalse: ['']) , ')
-			classInstVars: #()
-			poolDictionaries: #()
-			inDictionary: SymbolDictionary new.'.
+	^(self == JadeServer ifTrue: ['ExternalInteger GciError GsObject OopType32 OopType64'] ifFalse: ['']).
+!
+
+gsClassDefinitionFor: aClass
+
+	self subclassResponsibility.
 !
 
 gsString
@@ -1915,7 +1915,7 @@ gsString
 		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
 		nextPutAll: 'class := Object.'; lf;
 		yourself.
-	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | eachClass addGsStringTo: stream].
+	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | eachClass addGsStringTo: stream definingClassIn: self].
 	stream 
 		nextPutAll: '(mcPlatformSupport := System myUserProfile objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
 		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
@@ -1941,8 +1941,9 @@ serverForLibrary: aGciLibrary
 sessionStateCode
 
 	^'System _sessionStateAt: 3 put: server.'! !
-!JadeServer class categoriesFor: #addGsStringTo:!public! !
-!JadeServer class categoriesFor: #gsClassDefinition!public! !
+!JadeServer class categoriesFor: #addGsStringTo:definingClassIn:!public! !
+!JadeServer class categoriesFor: #classVarsForGemStone!public! !
+!JadeServer class categoriesFor: #gsClassDefinitionFor:!public! !
 !JadeServer class categoriesFor: #gsString!public! !
 !JadeServer class categoriesFor: #isServerForLibrary:!public! !
 !JadeServer class categoriesFor: #serverForLibrary:!public! !
@@ -2442,10 +2443,25 @@ objectForOop: anInteger
 
 !JadeServer32bit class methodsFor!
 
+gsClassDefinitionFor: aClass
+	"Some class variables exist only in Dolphin and map to globals in GemStone; others exist only in GemStone and map to globals in Dolphin!!"
+
+	^'class subclass: ''' , aClass name , '''
+		instVarNames: ' , aClass instVarNames printString , '
+		classVars: #(' , aClass classVarsForGemStone , ')
+		classInstVars: #()
+		poolDictionaries: #()
+		inDictionary: SymbolDictionary new
+		constraints: #()
+		instancesInvariant: false
+		isModifiable: false.'.
+!
+
 isServerForLibrary: aGciLibrary
 
 	^aGciLibrary is32Bit.
 ! !
+!JadeServer32bit class categoriesFor: #gsClassDefinitionFor:!public! !
 !JadeServer32bit class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit guid: (GUID fromString: '{36FD8C46-21B4-4852-977C-1A9889969313}')!
@@ -2487,10 +2503,22 @@ objectForOop: anInteger
 
 !JadeServer64bit class methodsFor!
 
+gsClassDefinitionFor: aClass
+	"Some class variables exist only in Dolphin and map to globals in GemStone; others exist only in GemStone and map to globals in Dolphin!!"
+
+	^'class subclass: ''' , aClass name , '''
+		instVarNames: ' , aClass instVarNames printString , '
+		classVars: #(' , aClass classVarsForGemStone , ')
+		classInstVars: #()
+		poolDictionaries: #()
+		inDictionary: SymbolDictionary new.'.
+!
+
 isServerForLibrary: aGciLibrary
 
 	^aGciLibrary is64Bit.
 ! !
+!JadeServer64bit class categoriesFor: #gsClassDefinitionFor:!public! !
 !JadeServer64bit class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit3x guid: (GUID fromString: '{1DC3DEBB-81EC-4B7B-872E-82229E88781B}')!
@@ -2560,9 +2588,9 @@ socketStep: gsProcess inFrame: anInteger
 	stream := (clientData at: 1) reset; yourself.
 	semaphore := clientData at: 2.
 	clientData at: 3 put: false.
-	anInteger ifNil: [
+	anInteger isNil ifTrue: [
 		gsProcess resume.
-	] ifNotNil: [
+	] ifFalse: [
 		gsProcess convertToPortableStack.
 		gsProcess resume.
 		gsProcess _stepOverInFrame: anInteger.

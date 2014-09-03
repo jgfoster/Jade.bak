@@ -3,7 +3,7 @@ package := Package name: 'Jade Process Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.007'.
+package basicPackageVersion: '0.008'.
 
 
 package classNames
@@ -62,8 +62,8 @@ addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
 "3"	nextPutAll: aProcess priority printString; tab;
 "4"	nextPutAll: (aProcess createdByApplication 	ifTrue: ['Y'] ifFalse: ['']); tab; 
 "5"	nextPutAll: ((x := aProcess stackId) == -1 	ifTrue: [''] ifFalse: [x printString]); tab;
-"6"	nextPutAll: ((x := aProcess waitingOn) 			ifNil: [''] ifNotNil: [x asOop printString]); tab;
-"7"	nextPutAll: ((x := aProcess _signalTime) 		ifNil: [''] ifNotNil: [(x - aScheduler _now) printString]); tab;
+"6"	nextPutAll: ((x := aProcess waitingOn) 			isNil ifTrue: [''] ifFalse: [x asOop printString]); tab;
+"7"	nextPutAll: ((x := aProcess _signalTime) 	isNil ifTrue: [''] ifFalse: [(x - aScheduler _now) printString]); tab;
 "8"	nextPutAll: (aProcess isPartialContinuation		ifTrue: ['partial'] ifFalse: [aProcess isContinuation ifTrue: ['full'] ifFalse: ['']]); tab;
 		yourself.
 !

@@ -3,7 +3,7 @@ package := Package name: 'Jade Deployment'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.042'.
+package basicPackageVersion: '0.043'.
 
 package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
 bnRSAAAAEAAAAHJ1bnRpbWVcSmFkZS5leGWaAAAAUgAAAA8AAABKYWRlIERlcGxveW1lbnRSAAAA
@@ -122,7 +122,7 @@ finishedWith: selector
 
 loadJadeServerSourceCache
 
-	JadeServer withAllSubclassesDo: [:each | each gsString].
+	JadeServer allSubclassesDo: [:each | each gsString].
 !
 
 logRemainingClasses

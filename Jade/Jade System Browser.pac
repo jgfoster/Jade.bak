@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.260'.
+package basicPackageVersion: '0.261'.
 
 
 package classNames
@@ -1216,11 +1216,11 @@ sbUpdateClassHierarchy
 	currentSelection isEmpty ifTrue: [
 		selectedClass := nil.
 	] ifFalse: [
-		(currentClass := selections at: #'class' ifAbsent: [nil]) ifNil: [
+		(currentClass := selections at: #'class' ifAbsent: [nil]) isNil ifTrue: [
 			| className |
 			className := (currentSelection last subStrings: Character space) first asSymbol.
 			selectedClass := allClasses detect: [:each | each name = className] ifNone: [nil].
-		] ifNotNil: [
+		] ifFalse: [
 			selectedClass := nil.
 			[
 				selectedClass isNil and: [currentClass notNil].
@@ -1287,7 +1287,9 @@ sbUpdateClassList
 	mySelections := classList select: [:eachClass | mySelections includes: eachClass name].
 	mySelections do: [:each | self sbAddNameOf: each].
 	writeStream lf.
-	(testCaseClass := self objectNamed: #'TestCase') notNil ifTrue: [
+	(testCaseClass := self objectNamed: #'TestCase') isNil ifTrue: [
+		false printOn: writeStream.
+	] ifFalse: [
 		(mySelections allSatisfy: [:each | each  inheritsFrom: testCaseClass]) printOn: writeStream.
 	].
 	writeStream lf.
@@ -1945,7 +1947,7 @@ sbUpdateMethodBreakPointsFor: aMethod
 	"Answers an Array of step points"
 
 	| list array |
-	(array := aMethod _allBreakpoints) ifNil: [^#()].      "{ breakpointNumber1 . method . ipOffset1 . ... }"
+	(array := aMethod _allBreakpoints) isNil ifTrue: [^#()].      "{ breakpointNumber1 . method . ipOffset1 . ... }"
 	list := Array new.
 	1 to: array size by: 3 do:[:k |
 		list add: (aMethod
