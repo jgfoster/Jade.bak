@@ -5,10 +5,12 @@ Jade is an Alternative Development Environment (IDE) for GemStone/S that runs on
 
 Jade is built in (and inspired by) Dolphin Smalltalk from [Object-Arts](http://www.object-arts.com/).
 
-### Installation
-To install Jade, download a 15 MB zip file with the executable and supporting libraries from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.zip). Once you have the environment, you can get just the latest executable (about 1.5 MB) from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.exe).
+### Runtime Installation
+To install Jade runtime, download a 15 MB zip file with the executable and supporting libraries from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.zip). Once you have the environment, you can get just the latest executable (about 1.5 MB) from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.exe).
 
-To install Jade in Dolphin, follow these steps:
+### Development Installation
+
+To install Jade in Dolphin to do development, follow these steps:
 
 1. Install a Github client such as [SourceTree](http://www.sourcetreeapp.com/)
 2. Clone https://github.com/jgfoster/Jade to Documents\Dolphin\Jade.
