@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.209'.
+package basicPackageVersion: '0.210'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -62,7 +62,7 @@ Object subclass: #GciSession
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Object subclass: #JadeServer
-	instanceVariableNames: 'classOrganizer readStream writeStream classList selectedClass methodFilterType methodFilters selections socket'
+	instanceVariableNames: 'classList classOrganizer readStream writeStream selectedClass methodFilterType methodFilters selections socket'
 	classVariableNames: 'AllGroups AllUsers ClassOrganizer GemStoneError Globals GsMethodDictionary SymbolDictionary System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
@@ -162,7 +162,7 @@ JadeServer subclass: #JadeServer64bit
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeServer64bit subclass: #JadeServer64bit3x
-	instanceVariableNames: ''
+	instanceVariableNames: 'environment'
 	classVariableNames: 'CompileError CompileWarning Reflection'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
