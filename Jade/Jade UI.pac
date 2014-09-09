@@ -3,7 +3,7 @@ package := Package name: 'Jade UI'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.188'.
+package basicPackageVersion: '0.189'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
@@ -192,10 +192,10 @@ _sourceForProcess: gsProcess frame: level
 		yourself.
 	receiver := frame at: 10.
 	values := OrderedCollection new.
-	(receiver _class name == #'ClientForwarder') ifTrue: [
+	(self isClientForwarder: receiver) ifTrue: [
 		keys := OrderedCollection with: 'clientObject'.
 		values add: receiver clientObject.
-		receiver := '[aClientForwarder with OOP ' , ((self objectNamed: #'Reflection') oopOf: receiver) printString , ']'.
+		receiver := '[aClientForwarder(' , (self oopOf: receiver) printString , ')]'.
 	] ifFalse: [
 		((receiver isKindOf: BlockClosure) or: [receiver isKindOf: Class]) ifTrue: [
 			keys := OrderedCollection new.

@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.210'.
+package basicPackageVersion: '0.213'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -29,6 +29,7 @@ package classNames
 	add: #JadeServer;
 	add: #JadeServer32bit;
 	add: #JadeServer64bit;
+	add: #JadeServer64bit24;
 	add: #JadeServer64bit32;
 	add: #JadeServer64bit3x;
 	add: #JadeServerTestCase;
@@ -161,9 +162,14 @@ JadeServer subclass: #JadeServer64bit
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeServer64bit subclass: #JadeServer64bit3x
+JadeServer64bit subclass: #JadeServer64bit24
+	instanceVariableNames: ''
+	classVariableNames: 'Reflection'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeServer64bit24 subclass: #JadeServer64bit3x
 	instanceVariableNames: 'environment'
-	classVariableNames: 'CompileError CompileWarning Reflection'
+	classVariableNames: 'CompileError CompileWarning'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeServer64bit3x subclass: #JadeServer64bit32
@@ -712,8 +718,8 @@ postLoginAs: aString useSocket: aBoolean
 printString: anOopType
 
 	^self
-		send: 'printString'
-		to: anOopType.
+		serverPerform: 'printStringOf:'
+		with: anOopType.
 !
 
 releaseOop: anOopType
@@ -1521,16 +1527,6 @@ installTranscript
 		transcript registerTranscriptClientForwarder: clientForwarder.
 		^self.
 	].
-
-	"Transcript in 3.0 or later"
-	transcript class name == #'TranscriptStreamPortable' ifTrue: [
-		| class sessionTemps |
-		(class := self objectNamed: #'SessionTemps') isNil ifTrue: [^self].
-		sessionTemps := class current.
-		(sessionTemps at: #'TranscriptStream_SessionStream' ifAbsent: [nil]) ifNotNil: [:x | ^self].
-		sessionTemps at: #'TranscriptStream_SessionStream' put: self.
-		^self
-	].
 !
 
 is32Bit
@@ -1541,6 +1537,11 @@ is32Bit
 is64Bit
 
 	^false.
+!
+
+isClientForwarder: anObject
+
+	^anObject _class name == #'ClientForwarder'.
 !
 
 isInDolphin
@@ -1852,6 +1853,7 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer categoriesFor: #is32Bit!public! !
 !JadeServer categoriesFor: #is64Bit!public! !
+!JadeServer categoriesFor: #isClientForwarder:!Debugger!public! !
 !JadeServer categoriesFor: #isInDolphin!public!Socket! !
 !JadeServer categoriesFor: #isInGemStone!public!Socket! !
 !JadeServer categoriesFor: #makeListener!public! !
@@ -2521,11 +2523,33 @@ isServerForLibrary: aGciLibrary
 !JadeServer64bit class categoriesFor: #gsClassDefinitionFor:!public! !
 !JadeServer64bit class categoriesFor: #isServerForLibrary:!public! !
 
+JadeServer64bit24 guid: (GUID fromString: '{1AF3D6EB-C974-4E19-B3CF-46098CDD8C6D}')!
+JadeServer64bit24 comment: ''!
+!JadeServer64bit24 categoriesForClass!Unclassified! !
+!JadeServer64bit24 methodsFor!
+
+oopOf: anObject
+
+	^Reflection oopOf: anObject.
+! !
+!JadeServer64bit24 categoriesFor: #oopOf:!private! !
+
 JadeServer64bit3x guid: (GUID fromString: '{1DC3DEBB-81EC-4B7B-872E-82229E88781B}')!
 JadeServer64bit3x comment: '(System _sessionStateAt: 3).
 GciSession allInstances do: [:each | each initializeServer].'!
 !JadeServer64bit3x categoriesForClass!Unclassified! !
 !JadeServer64bit3x methodsFor!
+
+installTranscript
+
+	| class sessionTemps transcript |
+	transcript := self objectNamed: #'Transcript'.
+	transcript class name == #'TranscriptStreamPortable' ifFalse: [^super installTranscript].
+	(class := self objectNamed: #'SessionTemps') isNil ifTrue: [^super installTranscript].
+	sessionTemps := class current.
+	(sessionTemps at: #'TranscriptStream_SessionStream' ifAbsent: [nil]) notNil ifTrue: [^super installTranscript].
+	sessionTemps at: #'TranscriptStream_SessionStream' put: self.
+!
 
 nextPutAll: anObject
 
@@ -2536,11 +2560,6 @@ nextPutAll: anObject
 		selector:#'nextPutAll:'
 		args: (Array with: (self asString: anObject)).
 	exception defaultAction.  "return error direct to GCI"!
-
-oopOf: anObject
-
-	^Reflection oopOf: anObject.
-!
 
 reportErrorOnStream: aStream fromEvaluationOf: aBlock
 
@@ -2604,8 +2623,8 @@ socketStep: gsProcess inFrame: anInteger
 	].
 	^self readObjectFrom: (ReadStream on: stream contents).
 ! !
+!JadeServer64bit3x categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !
-!JadeServer64bit3x categoriesFor: #oopOf:!private! !
 !JadeServer64bit3x categoriesFor: #reportErrorOnStream:fromEvaluationOf:!public! !
 !JadeServer64bit3x categoriesFor: #socketStep:inFrame:!public! !
 

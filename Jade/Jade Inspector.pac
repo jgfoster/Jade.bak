@@ -3,7 +3,7 @@ package := Package name: 'Jade Inspector'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.017'.
+package basicPackageVersion: '0.019'.
 
 
 package classNames
@@ -14,10 +14,17 @@ package methodNames
 	add: #JadeServer -> #inspect:;
 	add: #JadeServer -> #inspectDictionary:on:;
 	add: #JadeServer -> #inspectNamedInstanceVariablesOf:on:;
+	add: #JadeServer -> #keysForDictionary:;
 	add: #JadeServer -> #print:on:;
-	add: #JadeServer -> #printStringTo500:;
+	add: #JadeServer -> #printStringOf:;
+	add: #JadeServer -> #printStringOf:to:;
+	add: #JadeServer64bit24 -> #inspect:;
+	add: #JadeServer64bit24 -> #inspectClientForwarder:;
+	add: #JadeServer64bit24 -> #isClientForwarder:;
+	add: #JadeServer64bit24 -> #printStringOf:;
 	add: #JadeServer64bit3x -> #inspect:;
 	add: #JadeServer64bit3x -> #inspectNamedInstanceVariablesOf:on:;
+	add: #JadeServer64bit3x -> #keysForDictionary:;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -82,7 +89,7 @@ inspect: anObject
 inspectDictionary: aDictionary on: aStream
 
 	| keys keyDict |
-	keys := aDictionary keys.
+	keys := self keysForDictionary: aDictionary.
 	keyDict := Dictionary new.
 	keys do: [:each | 
 		| key |
@@ -100,9 +107,7 @@ inspectDictionary: aDictionary on: aStream
 		keyString := each copyFrom: 1 to: index - 1.
 		key := keyDict at: each.
 		value := aDictionary at: key. 
-		valueString := value printString.
-		valueString := valueString copyFrom: 1 to: (valueString size min: 10).
-		valueString := valueString collect: [:char | char codePoint < 32 ifTrue: [$?] ifFalse: [char]].
+		valueString := (self printStringOf: value to: 10).
 		aStream nextPutAll: keyString , '->' , valueString; tab.
 		self print: (self oopOf: value) on: aStream.
 		aStream lf.
@@ -129,37 +134,88 @@ inspectNamedInstanceVariablesOf: anObject on: aStream
 	].
 !
 
+keysForDictionary: aDictionary 
+
+	^aDictionary keys.
+!
+
 print: anObject on: aStream
 	"convert multi-byte strings to single-byte"
 
 	| string |
-	string := anObject printString.
+	string := self printStringOf: anObject.
 	string class == String ifFalse: [
 		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
 	].
 	aStream nextPutAll: string.
 !
 
-printStringTo500: anObject
+printStringOf: anObject
+
+	^anObject printString.!
+
+printStringOf: anObject to: anInteger
 
 	| string |
-	(string := anObject printString) size > 500 ifTrue: [string := (string copyFrom: 1 to: 500) , '...'].
-	string class == String ifFalse: [
-		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
-	].
+	(string := self printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
+	string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
 	^string.
 ! !
 !JadeServer categoriesFor: #inspect:!Inspector!public! !
 !JadeServer categoriesFor: #inspectDictionary:on:!Inspector!public! !
 !JadeServer categoriesFor: #inspectNamedInstanceVariablesOf:on:!Inspector!public! !
+!JadeServer categoriesFor: #keysForDictionary:!Inspector!public! !
 !JadeServer categoriesFor: #print:on:!Inspector!public! !
-!JadeServer categoriesFor: #printStringTo500:!Inspector!public! !
+!JadeServer categoriesFor: #printStringOf:!Inspector!public! !
+!JadeServer categoriesFor: #printStringOf:to:!Inspector!public! !
+
+!JadeServer64bit24 methodsFor!
+
+inspect: anObject
+
+	^(self isClientForwarder: anObject)
+		ifTrue: [self inspectClientForwarder: anObject]
+		ifFalse: [super inspect: anObject].
+!
+
+inspectClientForwarder: anObject
+
+	| stream |
+	(stream := WriteStream on: String new)
+		nextPutAll: 'ClientForwarder'; tab;
+		yourself.
+	(self oopOf: anObject) printOn: stream.
+	stream lf;
+		nextPut: $1; lf;
+		nextPutAll: 'clientObject'; tab;
+		yourself.
+	self print: (self oopOf: anObject clientObject) on: stream.
+	stream lf; nextPutAll: (self printStringOf: anObject).
+	^stream contents.
+!
+
+isClientForwarder: anObject
+
+	^(Reflection classOf: anObject) name == #'ClientForwarder' 
+!
+
+printStringOf: anObject
+
+	^(self isClientForwarder: anObject)
+		ifFalse: [anObject printString]
+		ifTrue: ['aClientForwarder(' , anObject clientObject printString , ')'].
+! !
+!JadeServer64bit24 categoriesFor: #inspect:!Inspector!public! !
+!JadeServer64bit24 categoriesFor: #inspectClientForwarder:!Inspector!public! !
+!JadeServer64bit24 categoriesFor: #isClientForwarder:!Debugger!public! !
+!JadeServer64bit24 categoriesFor: #printStringOf:!Inspector!public! !
 
 !JadeServer64bit3x methodsFor!
 
 inspect: anObject
 
 	| dynamic dynamicSize indexedSize instVarNames namedSize stream string |
+	(self isClientForwarder: anObject) ifTrue: [^self inspectClientForwarder: anObject].
 	(stream := WriteStream on: String new)
 		nextPutAll: anObject class name; tab;
 		yourself.
@@ -223,9 +279,21 @@ inspectNamedInstanceVariablesOf: anObject on: aStream
 		self print: (self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) on: aStream.
 		aStream lf.
 	].
+!
+
+keysForDictionary: aDictionary 
+	"RubyHash does not implement #'keys' or #'keysDo:'!!"
+
+	| rubyHashClass keys |
+	rubyHashClass := self objectNamed: #'RubyHash'.
+	(rubyHashClass isNil or: [(aDictionary isKindOf: rubyHashClass) not]) ifTrue: [^super keysForDictionary: aDictionary].
+	keys := Set new.
+	aDictionary keysAndValuesDo: [:eachKey :eachValue | keys add: eachKey].
+	^keys.
 ! !
 !JadeServer64bit3x categoriesFor: #inspect:!Inspector!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #inspectNamedInstanceVariablesOf:on:!Inspector!public!Transcript! !
+!JadeServer64bit3x categoriesFor: #keysForDictionary:!Inspector!public! !
 
 "End of package definition"!
 
@@ -363,8 +431,9 @@ selectedInstVar
 	].
 	string := [
 		gciSession
-			serverPerform: #'printStringTo500:' 
-			with: instVarListPresenter selection value.
+			serverPerform: #'printStringOf:to:' 
+			with: instVarListPresenter selection value
+			with: 500.
 	] on: GsRuntimeError do: [:ex | 
 		ex errorReport number == 2106	ifTrue: [	"Forward reference error"
 			ex return: 'an invalid or hidden object (perhaps a LargeObjectNode)'.
