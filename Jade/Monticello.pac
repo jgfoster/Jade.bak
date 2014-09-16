@@ -3,7 +3,7 @@ package := Package name: 'Monticello'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.094'.
+package basicPackageVersion: '0.098'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Monticello'' yourself.'.
 
@@ -49,6 +49,7 @@ package methodNames
 	add: #JadeServer -> #_mcDescriptionOfPatch:baseName:alternateName:;
 	add: #JadeServer -> #_mcTopazFrom:on:;
 	add: #JadeServer -> #authorInitials:;
+	add: #JadeServer -> #gsPackagePolicy;
 	add: #JadeServer -> #gsPackagePolicyClass;
 	add: #JadeServer -> #mcAddHttpRepository:;
 	add: #JadeServer -> #mcAddPackage:;
@@ -97,6 +98,7 @@ package methodNames
 	add: #JadeServer -> #saveWorkingCopy:to:;
 	add: #JadeServer32bit -> #mcInitialsA:;
 	add: #JadeServer64bit -> #mcInitialsA:;
+	add: #JadeServer64bit32 -> #gsPackagePolicy;
 	add: #JadeTextDocument -> #jadeBrowseMonticello;
 	yourself.
 
@@ -494,9 +496,17 @@ _mcTopazFrom: aSnapshot on: aStream
 
 authorInitials: aString
 
-	| packagePolicyClass |
-	(packagePolicyClass := self gsPackagePolicyClass) isNil ifTrue: [^self].
-	packagePolicyClass current authorInitials: aString.
+	| packagePolicy |
+	(packagePolicy := self gsPackagePolicy) isNil ifTrue: [^self].
+	packagePolicy authorInitials: aString.
+!
+
+gsPackagePolicy
+
+	| class |
+	class := self gsPackagePolicyClass.
+	class isNil ifTrue: [^nil].
+	^class current.
 !
 
 gsPackagePolicyClass
@@ -661,6 +671,7 @@ mcInitials: aString
 	].
 	mcPlatformSupport := self objectNamed: #'MCPlatformSupport'.
 	mcPlatformSupport notNil ifTrue: [mcPlatformSupport setAuthorInitials: aString].
+	^System session printString , Character space asString , (GsSession serialOfSession: System session) printString.
 !
 
 mcInitialsA: aString
@@ -1073,6 +1084,7 @@ saveWorkingCopy: wc to: stream
 !JadeServer categoriesFor: #_mcDescriptionOfPatch:baseName:alternateName:!Monticello!private! !
 !JadeServer categoriesFor: #_mcTopazFrom:on:!Monticello!private! !
 !JadeServer categoriesFor: #authorInitials:!Monticello!public! !
+!JadeServer categoriesFor: #gsPackagePolicy!public! !
 !JadeServer categoriesFor: #gsPackagePolicyClass!public! !
 !JadeServer categoriesFor: #mcAddHttpRepository:!Monticello!public! !
 !JadeServer categoriesFor: #mcAddPackage:!Monticello!public! !
@@ -1146,6 +1158,18 @@ mcInitialsA: aString
 	].
 ! !
 !JadeServer64bit categoriesFor: #mcInitialsA:!Monticello!public! !
+
+!JadeServer64bit32 methodsFor!
+
+gsPackagePolicy
+
+	| class |
+	class := self gsPackagePolicyClass.
+	class isNil ifTrue: [^nil].
+	class enabled ifFalse: [^nil].
+	^class current
+! !
+!JadeServer64bit32 categoriesFor: #gsPackagePolicy!public! !
 
 !JadeTextDocument methodsFor!
 
@@ -1647,16 +1671,11 @@ patchFrom: string1 to: string2
 storeVersion: anMCWorkingCopy name: nameString message: messageString from: aMCVersionDialog
 
 	gciSession
-		withOopForString1: nameString 
-		string2: messageString 
-		do: [:oop1 :oop2 | 
-			gciSession
-				serverPerform: #'mcStore:name:message:repository:'
-				with: anMCWorkingCopy
-				with: oop1 
-				with: oop2 
-				with: self.
-		].
+		serverPerform: #'mcStore:name:message:repository:'
+		with: anMCWorkingCopy
+		with: nameString 
+		with: messageString 
+		with: self.
 !
 
 topazFrom: aString 
@@ -1666,14 +1685,10 @@ topazFrom: aString
 versionInfoForPackageNamed: aString
 
 	| string version |
-	gciSession
-		withOopForString: aString
-		do: [:oopType |
-			string := gciSession
-				serverPerform: #'mcVersionInfoFromFileNamed:in:' 
-				with: oopType
-				with: self.
-	].
+	string := gciSession
+		serverPerform: #'mcVersionInfoFromFileNamed:in:' 
+		with: aString
+		with: self.
 	version := MCPackageVersion
 		fromString: string
 		session: gciSession.
@@ -1816,12 +1831,8 @@ ancestors
 authorInitials: aString
 
 	gciSession
-		withOopForString: aString
-		do: [:newOop |
-			gciSession
-				serverPerform: #'authorInitials:'
-				with: newOop.
-		].
+		serverPerform: #'authorInitials:'
+		with: aString.
 !
 
 categoryList
@@ -1896,15 +1907,10 @@ newVersionWithName: nameString message: messageString
 
 	| string |
 	string := gciSession
-		withOopForString1: nameString 
-		string2: messageString 
-		do: [:oop1 :oop2 | 
-			gciSession
-				serverPerform: #'mcNewVersionWithNname:message:'
-				with: self
-				with: oop1 
-				with: oop2 .
-		].
+		serverPerform: #'mcNewVersionWithNname:message:'
+		with: self
+		with: nameString 
+		with: messageString.
 	MessageBox notify: 'Sorry, we are not yet implemented this feature!!'.
 	Keyboard default isShiftDown ifTrue: [self halt].
 !
@@ -2261,30 +2267,21 @@ isDefault
 
 loadPackageNamed: packageName versionName: versionName
 
-	gciSession 
-		withOopForString: packageName , '-' , (versionName copyFrom: 1 to: versionName size - 4)
-		do: [:oopType |
-			gciSession
-				serverPerform: #'mcVersionLoad:fromDictionary:autoMigrate:' 
-				with: oopType
-				with: self
-				with: true.
-	].
+	gciSession
+		serverPerform: #'mcVersionLoad:fromDictionary:autoMigrate:' 
+		with: packageName , '-' , (versionName copyFrom: 1 to: versionName size - 4)
+		with: self
+		with: true.
 !
 
 patchFrom: string1 to: string2 
 
 	| string |
 	string := gciSession
-		withOopForString1: (string1 ifNotNil: [:value | value copyFrom: 1 to: value size - 4])
-		string2: (string2 ifNotNil: [:value | value copyFrom: 1 to: value size - 4])
-		do: [:oop1 :oop2 | 
-			gciSession
-				serverPerform: #'mcPatchFrom:to:inDictionaryRepository:'
-				with: oop1
-				with: oop2
-				with: self.
-		].
+		serverPerform: #'mcPatchFrom:to:inDictionaryRepository:'
+		with: (string1 ifNotNil: [:value | value copyFrom: 1 to: value size - 4])
+		with: (string2 ifNotNil: [:value | value copyFrom: 1 to: value size - 4])
+		with: self.
 	^MCPatch
 		fromString: string
 		session: gciSession.
@@ -2296,13 +2293,9 @@ topazFrom: aString
 	string := aString.
 	(string endsWith: '.mcz') ifTrue: [string := string copyFrom: 1 to: string size - 4].
 	^gciSession
-		withOopForString: string 
-		do: [:oop | 
-			gciSession
-				serverPerform: #'mcTopazFrom:inDictionaryRepository:'
-				with: oop
-				with: self.
-		].
+		serverPerform: #'mcTopazFrom:inDictionaryRepository:'
+		with: string
+		with: self.
 !
 
 updateVersionDialogTabIn: aMCVersionDialog
@@ -2313,13 +2306,10 @@ updateVersionDialogTabIn: aMCVersionDialog
 versionInfoFor: aString 
 
 	| string version |
-	gciSession withOopForString: aString
-		do: 
-			[:oopType | 
-			string := gciSession 
-						serverPerform: #mcVersionInfoFromDictionaryPackageNamed:in:
-						with: oopType
-						with: self].
+	string := gciSession 
+		serverPerform: #mcVersionInfoFromDictionaryPackageNamed:in:
+		with: aString
+		with: self.
 	string isEmpty ifTrue: [^nil].
 	version := MCPackageVersion fromString: string session: gciSession.
 	^version!
@@ -2329,14 +2319,10 @@ versionInfoForPackageNamed: aString version: aString2
 	| string version |
 	string := aString , '-' , aString2.
 	(string endsWith: '.mcz') ifTrue: [string := string copyFrom: 1 to: string size - 4].
-	gciSession 
-		withOopForString: string
-		do: [:stringOopType | 
-			string := gciSession 
-				serverPerform: #mcVersionInfoFromDictionaryPackageNamed:in:
-				with: stringOopType
-				with: self.
-		].
+	string := gciSession 
+		serverPerform: #mcVersionInfoFromDictionaryPackageNamed:in:
+		with: string
+		with: self.
 	string isEmpty ifTrue: [^nil].
 	version := MCPackageVersion fromString: string session: gciSession.
 	^version! !
@@ -2371,30 +2357,21 @@ fullNameOfPackage: packageName versionName: versionName
 
 loadPackageNamed: packageName versionName: versionName
 
-	gciSession 
-		withOopForString: (self fullNameOfPackage: packageName versionName: versionName)
-		do: [:anOopType |
-			gciSession
-				serverPerform: #'mcVersionLoad:fromFile:autoMigrate:' 
-				with: anOopType
-				with: self
-				with: true.
-	].
+	gciSession
+		serverPerform: #'mcVersionLoad:fromFile:autoMigrate:' 
+		with: (self fullNameOfPackage: packageName versionName: versionName)
+		with: self
+		with: true.
 !
 
 patchFrom: string1 to: string2 
 
 	| string |
 	string := gciSession
-		withOopForString1: string1
-		string2: string2
-		do: [:oop1 :oop2 | 
-			gciSession
-				serverPerform: #'mcPatchFrom:to:inFileBasedRepository:'
-				with: oop1
-				with: oop2
-				with: self.
-		].
+		serverPerform: #'mcPatchFrom:to:inFileBasedRepository:'
+		with: string1
+		with: string2
+		with: self.
 	^MCPatch
 		fromString: string
 		session: gciSession.
@@ -2403,13 +2380,9 @@ patchFrom: string1 to: string2
 topazFrom: aString 
 
 	^gciSession
-		withOopForString: aString 
-		do: [:oop | 
-			gciSession
-				serverPerform: #'mcTopazFrom:inFileRepository:'
-				with: oop
-				with: self.
-		].
+		serverPerform: #'mcTopazFrom:inFileRepository:'
+		with: aString
+		with: self.
 !
 
 versionInfoForPackageNamed: packageName version: versionName 
@@ -2445,16 +2418,11 @@ storeVersion: anMCWorkingCopy name: nameString message: messageString from: aMCV
 		user: aMCVersionDialog httpUser
 		password: aMCVersionDialog httpPassword.
 	gciSession
-		withOopForString1: nameString 
-		string2: messageString 
-		do: [:oop1 :oop2 | 
-			gciSession
-				serverPerform: #'mcStore:name:message:repository:'
-				with: anMCWorkingCopy
-				with: oop1 
-				with: oop2 
-				with: self.
-		].
+		serverPerform: #'mcStore:name:message:repository:'
+		with: anMCWorkingCopy
+		with: nameString 
+		with: messageString 
+		with: self.
 !
 
 updateVersionDialogTabIn: aMCVersionDialog
@@ -2465,15 +2433,10 @@ updateVersionDialogTabIn: aMCVersionDialog
 user: userString password: passwordString
 
 	gciSession
-		withOopForString1: userString 
-		string2: passwordString 
-		do: [:oop1 :oop2 | 
-			gciSession
-				serverPerform: #'mcHttpRepository:user:password:'
-				with: self
-				with: oop1 
-				with: oop2.
-		].
+		serverPerform: #'mcHttpRepository:user:password:'
+		with: self
+		with: userString 
+		with: passwordString.
 !
 
 userAndPassword
@@ -2818,13 +2781,9 @@ addDirectoryRepository
 		title: 'Please select a Monticello folder';
 		showModal.
 	path isNil ifTrue: [^self].
-	self model 
-		withOopForString: path 
-		do: [:oopType |
-			self model
-				serverPerform: #'mcNewDirectoryRepository:' 
-				with: oopType.
-	].
+	self model
+		serverPerform: #'mcNewDirectoryRepository:' 
+		with: path.
 	self updateRepositoryList.
 !
 
@@ -2832,13 +2791,9 @@ addFileTreeRepository
 
 	| path |
 	(path := Prompter prompt: 'Enter server path:') isNil ifTrue: [^self].
-	self model 
-		withOopForString: path 
-		do: [:oopType |
-			self model
-				serverPerform: #'mcNewFileTreeRepository:' 
-				with: oopType.
-	].
+	self model
+		serverPerform: #'mcNewFileTreeRepository:' 
+		with: path.
 	self updateRepositoryList.
 !
 
@@ -2846,13 +2801,9 @@ addGitHubRepository
 
 	| path |
 	(path := Prompter prompt: 'Enter location (e.g., ''github://glassdb/zinc:gemstone3.1/repository''):') isNil ifTrue: [^self].
-	self model 
-		withOopForString: path 
-		do: [:oopType |
-			self model
-				serverPerform: #'mcNewGitHubRepository:' 
-				with: oopType.
-	].
+	self model
+		serverPerform: #'mcNewGitHubRepository:' 
+		with: path.
 	self updateRepositoryList.
 !
 
@@ -2862,13 +2813,9 @@ addHttpRepository
 	(info := MCHttpRepositoryInfoDialog showModalOn: MCHttpRepositoryInfo new) isNil ifTrue: [^self].
 	delimiter := (Character codePoint: 255) asString.
 	string := info location , delimiter , info user , delimiter , info password.
-	model 
-		withOopForString: string 
-		do: [:oopType | 
-			model
-				serverPerform: #'mcAddHttpRepository:' 
-				with: oopType.
-		].
+	model
+		serverPerform: #'mcAddHttpRepository:' 
+		with: string.
 	self updateRepositoryList.
 !
 
@@ -2891,13 +2838,9 @@ addServerDirectoryRepository
 
 	| path |
 	(path := Prompter prompt: 'Enter server path:') isNil ifTrue: [^self].
-	self model 
-		withOopForString: path 
-		do: [:oopType |
-			self model
-				serverPerform: #'mcNewServerDirectoryRepository:' 
-				with: oopType.
-	].
+	self model
+		serverPerform: #'mcNewServerDirectoryRepository:' 
+		with: path.
 	self updateRepositoryList.
 !
 
@@ -3020,15 +2963,11 @@ mergeVersion
 	(package := packageListPresenter selectionOrNil) isNil ifTrue: [^self].
 	(versionName := versionListPresenter selectionOrNil) isNil ifTrue: [^self].
 	versionFullName := package name , '-' , versionName name.
-	self model 
-		withOopForString: versionFullName 
-		do: [:oopType |
-			self model
-				serverPerform: #'mcVersionMerge:from:autoMigrate:' 
-				with: oopType
-				with: repository
-				with: true.
-	].
+	self model
+		serverPerform: #'mcVersionMerge:from:autoMigrate:' 
+		with: versionFullName
+		with: repository
+		with: true.
 	self getLoadedVersionNames.
 	versionListPresenter list do: [:each | each isLoaded: false; isModified: false].
 	versionName isLoaded: true.

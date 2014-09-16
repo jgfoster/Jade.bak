@@ -3,7 +3,7 @@ package := Package name: 'Jade Transcript'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.049'.
+package basicPackageVersion: '0.054'.
 
 
 package classNames
@@ -73,21 +73,21 @@ sendSigAbort
 
 	gciSession 
 		serverPerform: #'sendSigAbortToSession:'
-		with: (gciSession oopForInteger: id).
+		with: id.
 !
 
 sendSigUsr1
 
 	gciSession 
 		serverPerform: #'sendSigUsr1ToSession:'
-		with: (gciSession oopForInteger: id).
+		with: id.
 !
 
 stopSession
 
 	gciSession 
 		serverPerform: #'stopSession:'
-		with: (gciSession oopForInteger: id).
+		with: id.
 ! !
 !GsSession categoriesFor: #sendSigAbort!accessing!public! !
 !GsSession categoriesFor: #sendSigUsr1!accessing!public! !
@@ -197,7 +197,6 @@ sendSigUsr1ToSession: anInteger
 
 	| description command result |
 	description := System descriptionOfSession: anInteger.
-	(description at: 3) = ((System descriptionOfSession: System session) at: 3) ifFalse: [self error: 'Not on same gem host as other session!!'].
 	command := 'kill -usr1 ' , (description at: 2) printString.
 	result := System performOnServer: command.
 	result trimSeparators notEmpty ifTrue: [self error: result trimSeparators].
@@ -388,9 +387,9 @@ fillSessionInfo
 
 fillSessionList
 
-	| result list |
+	| string list |
 	[
-		result := gciSession serverPerform: #'allSessions'.
+		string := gciSession serverPerform: #'allSessions'.
 	] on: GsError , Error do: [:ex | 
 		sessionListPresenter view hide.
 		sessionListErrorPresenter value: 
@@ -399,7 +398,7 @@ fillSessionList
 		^self.
 	].
 	list := GsSession 
-		fromStringXML: result 
+		fromStringXML: string 
 		session: gciSession.
 	sessionListPresenter list: list.
 !
@@ -415,7 +414,7 @@ fillSessionListRegularly
 			[
 				self fillSessionList.
 				count := 0.
-			] on: GsCallInProgress , Error do: [:ex | 
+			] on: Error do: [:ex | 
 				count := count + 1.	"After a number of errors, let's stop trying!!"
 				ex return. "If busy, update later"
 			].
@@ -516,7 +515,7 @@ queryCommand: query
 		query isEnabled: sessionListPresenter hasSelection.
 		^true.
 	].
-	(#(#'turnAutoMigrateOff' #'turAutoMigrateOn') includes: query commandSymbol) ifTrue: [
+	(#(#'turnAutoMigrateOff' #'turnAutoMigrateOn') includes: query commandSymbol) ifTrue: [
 		query isEnabled: true.
 		^true.
 	].
@@ -553,7 +552,7 @@ sleepAndCommit
 	[
 		gciSession serverPerform: #'sleepAndCommit'.
 	] on: GsSoftBreak , GsHardBreak do: [:ex | 
-		ex return.
+		ex terminateProcess.
 	].
 !
 

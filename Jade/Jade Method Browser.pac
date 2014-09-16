@@ -3,7 +3,7 @@ package := Package name: 'Jade Method Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.077'.
+package basicPackageVersion: '0.082'.
 
 
 package classNames
@@ -31,7 +31,6 @@ package methodNames
 	add: #JadeServer -> #behaviorFor:in:;
 	add: #JadeServer -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer -> #compileMethod:behavior:user:inCategory:;
-	add: #JadeServer -> #compileSourceFrom:in:isMeta:user:;
 	add: #JadeServer -> #implementorsOf:;
 	add: #JadeServer -> #implementorsOf:startingAt:;
 	add: #JadeServer -> #isAtLeastVersion3;
@@ -50,6 +49,7 @@ package methodNames
 	add: #JadeServer -> #stepPointsFor:in:;
 	add: #JadeServer -> #streamOfMethods:;
 	add: #JadeServer -> #stringOfLineNumbersWithBreaksIn:;
+	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -129,16 +129,12 @@ methodsUpTo: aClass filterList: aList isVariables: aBoolean
 	|  stream string |
 	stream := WriteStream on: String new.
 	aList do: [:each | stream nextPutAll: each; tab].
-	gciSession
-		withOopForString: stream contents
-		do: [:stringOop |
-			string := gciSession
-				serverPerform: #'methodsFor:upTo:filter:isVariables:' 
-				with: self
-				with: aClass
-				with: stringOop 
-				with: aBoolean.
-		].
+	string := gciSession
+		serverPerform: #'methodsFor:upTo:filter:isVariables:' 
+		with: self
+		with: aClass
+		with: stream contents 
+		with: aBoolean.
 	^GsMethod2
 		listFromString: string 
 		session: gciSession.
@@ -146,21 +142,10 @@ methodsUpTo: aClass filterList: aList isVariables: aBoolean
 
 sourceFor: anObject
 
-	^(anObject isKindOf: String) ifTrue: [
-		^gciSession
-			withOopForString: anObject 
-			do: [:gsObject | 
-				gciSession
-					serverPerform: #'sourceFor:in:'
-					with: gsObject
-					with: self.
-			].
-	] ifFalse: [
-		gciSession
-			serverPerform: #'sourceFor:in:'
-			with: anObject
-			with: self.
-	].
+	^gciSession
+		serverPerform: #'sourceFor:in:'
+		with: anObject
+		with: self.
 !
 
 stepPointsFor: aGsMethod
@@ -329,43 +314,31 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 	result notNil ifTrue: [
 		^nil -> result.
 	].
-	self isAtLeastVersion3 ifTrue: [
-			result := aBehavior 
-				_primitiveCompileMethod: methodString
-				symbolList: aSymbolList
-				category: categorySymbol
-				oldLitVars: nil
-				intoMethodDict: GsMethodDictionary new 
-				intoCategories: GsMethodDictionary new
-				intoPragmas: nil
-				environmentId: 0.
+	(aBehavior class canUnderstand: #_primitiveCompileMethod:symbolList:category:oldLitVars:intoMethodDict:intoCategories:intoPragmas:) ifTrue: [
+		result := aBehavior 
+			_primitiveCompileMethod: methodString
+			symbolList: aSymbolList
+			category: categorySymbol
+			oldLitVars: nil
+			intoMethodDict: GsMethodDictionary new 
+			intoCategories: GsMethodDictionary new
+			intoPragmas: nil.
 	] ifFalse: [
-		(aBehavior class canUnderstand: #_primitiveCompileMethod:symbolList:category:oldLitVars:intoMethodDict:intoCategories:intoPragmas:) ifTrue: [
+		(aBehavior class canUnderstand: #_primitiveCompileMethod:symbolList:category:obsoleteClassNames:oldLitVars:) ifTrue: [
+			result := aBehavior 
+				_primitiveCompileMethod: methodString
+				symbolList: aSymbolList
+				category: categorySymbol
+				obsoleteClassNames: nil
+				oldLitVars: nil.
+		] ifFalse: [
 			result := aBehavior 
 				_primitiveCompileMethod: methodString
 				symbolList: aSymbolList
 				category: categorySymbol
 				oldLitVars: nil
 				intoMethodDict: GsMethodDictionary new 
-				intoCategories: GsMethodDictionary new
-				intoPragmas: nil.
-		] ifFalse: [
-			(aBehavior class canUnderstand: #_primitiveCompileMethod:symbolList:category:obsoleteClassNames:oldLitVars:) ifTrue: [
-				result := aBehavior 
-					_primitiveCompileMethod: methodString
-					symbolList: aSymbolList
-					category: categorySymbol
-					obsoleteClassNames: nil
-					oldLitVars: nil.
-			] ifFalse: [
-				result := aBehavior 
-					_primitiveCompileMethod: methodString
-					symbolList: aSymbolList
-					category: categorySymbol
-					oldLitVars: nil
-					intoMethodDict: GsMethodDictionary new 
-					intoCategories: GsMethodDictionary new.
-			].
+				intoCategories: GsMethodDictionary new.
 		].
 	].
 	(result isKindOf: Array) ifTrue: [
@@ -382,7 +355,7 @@ compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCatego
 	userProfile := aUserProfileOrNil isNil
 		ifTrue: [System myUserProfile]
 		ifFalse: [aUserProfileOrNil].
-	result := self 		"key: GsNMethod value: (Array withAll: errors and warnings)"
+	result := self 		"key: GsNMethod value: ((Array withAll: errors) or aStringOfWarnings)"
 		compileMethod: methodString 
 		behavior: aBehavior 
 		symbolList: userProfile symbolList 
@@ -418,17 +391,6 @@ compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCatego
 	warnings isNil ifTrue: [warnings := ''].
 	stream lf; nextPutAll: warnings.
 	^stream contents.
-!
-
-compileSourceFrom: aGsMethod in: aClass isMeta: aBoolean user: aUserProfile
-
-	| myBehavior |
-	myBehavior := aBoolean ifTrue: [aClass class] ifFalse: [aClass].
-	^self
-		compileMethod: aGsMethod sourceString
-		behavior: myBehavior 
-		user: aUserProfile 
-		inCategory: (aGsMethod inClass categoryOfSelector: aGsMethod selector).
 !
 
 implementorsOf: anObject
@@ -544,6 +506,7 @@ sbSaveMethod: anOrderedCollection
 	selections 
 		at: #'methodCategory' 	put: (gsMethod inClass categoryOfSelector: gsMethod selector) asString;
 		at: #'method'					put: gsMethod selector asString;
+		at: #'methodWarnings'	put: association value;
 		yourself.
 	self systemBrowserUpdate.
 !
@@ -670,7 +633,6 @@ stringOfLineNumbersWithBreaksIn: aGsMethod
 !JadeServer categoriesFor: #behaviorFor:in:!Methods!public! !
 !JadeServer categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
 !JadeServer categoriesFor: #compileMethod:behavior:user:inCategory:!Methods!public! !
-!JadeServer categoriesFor: #compileSourceFrom:in:isMeta:user:!Classes!Methods!public! !
 !JadeServer categoriesFor: #implementorsOf:!Methods!public! !
 !JadeServer categoriesFor: #implementorsOf:startingAt:!public! !
 !JadeServer categoriesFor: #isAtLeastVersion3!Methods!public! !
@@ -682,13 +644,31 @@ stringOfLineNumbersWithBreaksIn: aGsMethod
 !JadeServer categoriesFor: #removeMethod:!Methods!public! !
 !JadeServer categoriesFor: #renameCategory:to:inBehavior:!Methods!public! !
 !JadeServer categoriesFor: #runAsTest:!Methods!public! !
-!JadeServer categoriesFor: #sbSaveMethod:!public! !
+!JadeServer categoriesFor: #sbSaveMethod:!public!System Browser! !
 !JadeServer categoriesFor: #selectorsMatching:!Methods!public! !
 !JadeServer categoriesFor: #sendersOf:!Methods!public! !
 !JadeServer categoriesFor: #sourceFor:in:!Methods!public! !
 !JadeServer categoriesFor: #stepPointsFor:in:!Methods!public! !
 !JadeServer categoriesFor: #streamOfMethods:!Methods!public! !
 !JadeServer categoriesFor: #stringOfLineNumbersWithBreaksIn:!Methods!public! !
+
+!JadeServer64bit3x methodsFor!
+
+compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCategory: categorySymbol
+
+	^[[		"(aGsNMethod -> nil) if no errors or warnings"
+		(aBehavior
+			compileMethod: methodString
+			dictionaries: aSymbolList
+			category: categorySymbol
+			environmentId: 0) -> nil.
+	] on: CompileError do: [:ex | 		"(nil -> anArrayOfErrors) if a compile error"
+		ex return: nil -> (ex gsArguments at: 1)
+	]] on: CompileWarning do: [:ex | 	"(aGsNMethod -> aString) if a compiler warning"
+		ex return: (ex gsArguments at: 2) -> (ex gsArguments at: 1)
+	].
+! !
+!JadeServer64bit3x categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
 
 "End of package definition"!
 
@@ -722,7 +702,7 @@ clearBreakAtStepPoint: anInteger
 	gciSession
 		send: #'clearBreakAtStepPoint:'
 		to: oopType	
-		withAll: (Array with: (gciSession oopForInteger: anInteger)).
+		with: anInteger.
 !
 
 gsClass
@@ -756,7 +736,7 @@ setBreakAtStepPoint: anInteger
 	gciSession
 		send: #'setBreakAtStepPoint:'
 		to: oopType	
-		withAll: (Array with: (gciSession oopForInteger: anInteger)).
+		with: anInteger.
 ! !
 !GsMethod2 categoriesFor: #<=!public! !
 !GsMethod2 categoriesFor: #category!public! !
@@ -1092,12 +1072,8 @@ withSelectorDo: aBlock
 		^self.
 	].
 	result := self model 
-		withOopForString: selector
-		do: [:oopType | 
-			self model 
-				serverPerform: #selectorsMatching:
-				with: oopType.
-		].
+		serverPerform: #selectorsMatching:
+		with: selector.
 	result isNil ifTrue: [^self].
 	list := result subStrings: Character lf.
 	(selector := ChoicePrompter choices: list) isNil ifTrue: [^self].
@@ -1218,31 +1194,22 @@ fileSave
 	(theClass := self trigger: #'needClass') isNil ifTrue: [^true].
 	newSelector := self newSelector.
 	currentSelector = newSelector ifFalse: [
-		self model
-			withOopForString: newSelector
-			do: [:oopType | 
-				methodExists := self model
-					serverPerform: #'class:includesSelector:'
-					with: theClass
-					with: oopType.
-			].
+		methodExists := self model
+			serverPerform: #'class:includesSelector:'
+			with: theClass
+			with: newSelector.
 		methodExists ifTrue: [
 			(MessageBox confirm: 'Replace method?' caption: 'Method already exists!!') ifFalse: [^self].
 		].
 	].
 	user := self trigger: #'needUser'.
 	(category := self trigger: #'needMethodCategory') isNil ifTrue: [self error: 'We need a method category!!?'].
-	self model
-		withOopForString1: documentPresenter value replaceCrLfWithLf
-		string2: category
-		do: [:oopType1 :oopType2 | 
-			string := self model
-				serverPerform: #'compileMethod:behavior:user:inCategory:'
-				with: oopType1
-				with: theClass 
-				with: user 
-				with: oopType2.
-		].
+	string := self model
+		serverPerform: #'compileMethod:behavior:user:inCategory:'
+		with: documentPresenter value replaceCrLfWithLf
+		with: theClass 
+		with: user 
+		with: category.
 
 	stream := ReadStream on: string.
 	(newSelector := stream nextLine) notEmpty ifTrue: [
@@ -1531,13 +1498,9 @@ browse: performSelector method: aGsMethodOrString
 browse: performSelector methodSelector: aString
 
 	| string |
-	self gciSession
-		withOopForString: aString
-		do: [:oopType | 
-			string := self gciSession 
-				serverPerform: performSelector
-				with: oopType.
-		].
+	string := self gciSession 
+		serverPerform: performSelector
+		with: aString.
 	self browseMethodsFromString: string.
 !
 

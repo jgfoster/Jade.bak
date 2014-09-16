@@ -3,7 +3,7 @@ package := Package name: 'Jade UI Base'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.051'.
+package basicPackageVersion: '0.053'.
 
 
 package classNames
@@ -780,11 +780,8 @@ defineClass: aString inPackageNamed: anUndefinedObject
 
 	[
 		gciSession 
-			withOopForString: aString 
-			do: [:anOop |
-				gciSession 
-					serverPerform: #'fileInClass:' 
-					with: anOop].
+			serverPerform: #'fileInClass:' 
+			with: aString.
 	] on: GsCompileError do: [:ex | 
 		(JadeWorkspace showOn: gciSession)
 			caption: 'Jade Workspace - Compile Error';
@@ -1314,7 +1311,7 @@ JadeTextPresenter comment: ''!
 
 colorForCompileError
 
-	ColorForCompileError ifNil: [ColorForCompileError := Color red: 255 green: 128 blue: 128].
+	ColorForCompileError ifNil: [ColorForCompileError := Color red: 255 green: 220 blue: 255].
 	^ColorForCompileError.!
 
 colorForCompileError: aColor
@@ -1324,7 +1321,7 @@ colorForCompileError: aColor
 
 colorForNoEdits
 
-	ColorForNoEdits ifNil: [ColorForNoEdits := Color white].
+	ColorForNoEdits ifNil: [ColorForNoEdits := Color red: 253 green: 222 blue: 181].
 	^ColorForNoEdits.
 !
 
@@ -1335,7 +1332,7 @@ colorForNoEdits: aColor
 
 colorForUnsavedEdits
 
-	ColorForUnsavedEdits ifNil: [ColorForUnsavedEdits := Color red: 255 green: 240 blue: 240].
+	ColorForUnsavedEdits ifNil: [ColorForUnsavedEdits := Color red: 255 green: 255 blue: 180].
 	^ColorForUnsavedEdits.!
 
 colorForUnsavedEdits: aColor
@@ -1471,6 +1468,16 @@ defaultTextStyles
 		yourself.
 	^answer!
 
+resetColors
+"
+	JadeTextPresenter resetColors.
+	ColorDialog showModalOn: JadeTextPresenter colorForNoEdits.
+"
+	ColorForCompileError := nil.
+	ColorForNoEdits := nil.
+	ColorForUnsavedEdits := nil.
+!
+
 textStyles
 
 	JadeTextStyles ifNil: [JadeTextStyles := self defaultTextStyles].
@@ -1490,6 +1497,7 @@ textStyles: aSortedCollection
 !JadeTextPresenter class categoriesFor: #colorForUnsavedEdits!public! !
 !JadeTextPresenter class categoriesFor: #colorForUnsavedEdits:!public! !
 !JadeTextPresenter class categoriesFor: #defaultTextStyles!public! !
+!JadeTextPresenter class categoriesFor: #resetColors!public! !
 !JadeTextPresenter class categoriesFor: #textStyles!public! !
 !JadeTextPresenter class categoriesFor: #textStyles:!public! !
 
