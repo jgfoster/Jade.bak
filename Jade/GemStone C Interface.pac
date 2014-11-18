@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.119'.
+package basicPackageVersion: '0.120'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -36,6 +36,8 @@ package classNames
 	add: #LibGciRpc64_32;
 	add: #LibGciRpc64_321;
 	add: #LibGciRpc64_322;
+	add: #LibGciRpc64_323;
+	add: #LibGciRpc64_33;
 	add: #OopType32;
 	add: #OopType32Array;
 	add: #OopType32Field;
@@ -203,6 +205,16 @@ LibGciRpc64_32 subclass: #LibGciRpc64_321
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 LibGciRpc64_32 subclass: #LibGciRpc64_322
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_323
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_33
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -2077,6 +2089,40 @@ fileNameSearch
 ! !
 !LibGciRpc64_322 class categoriesFor: #displayName!public! !
 !LibGciRpc64_322 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_323 guid: (GUID fromString: '{7CD3D48A-C954-4465-8DBC-90511A44E6E3}')!
+LibGciRpc64_323 comment: ''!
+!LibGciRpc64_323 categoriesForClass!Unclassified! !
+!LibGciRpc64_323 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.3'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.2.3-32.dll'.
+! !
+!LibGciRpc64_323 class categoriesFor: #displayName!public! !
+!LibGciRpc64_323 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_33 guid: (GUID fromString: '{68DB187D-A739-41BE-AD58-A476218B1B04}')!
+LibGciRpc64_33 comment: ''!
+!LibGciRpc64_33 categoriesForClass!Unclassified! !
+!LibGciRpc64_33 class methodsFor!
+
+displayName
+
+	^'64-bit 3.3'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.3.0-32.dll'.
+! !
+!LibGciRpc64_33 class categoriesFor: #displayName!public! !
+!LibGciRpc64_33 class categoriesFor: #fileNameSearch!public! !
 
 GciErrSType guid: (GUID fromString: '{9932DE27-ACC2-4E27-AD64-9A3FF8B6ECF9}')!
 GciErrSType comment: ''!
