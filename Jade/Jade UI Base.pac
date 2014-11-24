@@ -3,7 +3,7 @@ package := Package name: 'Jade UI Base'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.053'.
+package basicPackageVersion: '0.054'.
 
 
 package classNames
@@ -764,7 +764,8 @@ continueTransaction
 createComponents
 
 	super createComponents.
-	codePane :=  self add: JadeCodePresenter new name: 'codePane'.
+	view viewNamed: 'codePane' ifNone: [^self].
+	codePane := self add: JadeCodePresenter new name: 'codePane'.
 	documentPresenter := codePane documentPresenter.
 	codePane parent: self.
 	self updateCodeFont.
@@ -1059,6 +1060,7 @@ onViewOpened
 
 	super onViewOpened.
 	self updateStatusBar.
+	(documentPresenter view isKindOf: ScintillaView) ifFalse: [^self].
 	documentPresenter view 
 		restyleAll;
 		backcolor: (RGB red: 250 green: 242 blue: 208);

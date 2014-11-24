@@ -3,7 +3,7 @@ package := Package name: 'Jade from Dolphin'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.009'.
+package basicPackageVersion: '0.010'.
 
 
 package classNames
@@ -95,6 +95,7 @@ literalTextStyle
 onViewOpened
 
 	super onViewOpened.
+	(view isKindOf: ScintillaView) ifFalse: [^self].
 	view lexer: #container.
 	view stylerClass: JadeMethodStyler.
 	view textStyles: self class textStyles.

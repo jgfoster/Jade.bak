@@ -3,7 +3,7 @@ package := Package name: 'Jade Inspector'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.019'.
+package basicPackageVersion: '0.020'.
 
 
 package classNames
@@ -38,6 +38,8 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: 'GemStone Session';
 	add: 'Jade UI Base';
 	yourself).
@@ -361,7 +363,8 @@ isModified
 	^false.
 !
 
-on: anAssociation	"gciSession -> anObject (often a GsObject, but could be an Integer, String, etc."
+on: anAssociation
+	"gciSession -> anObject (often a GsObject, but could be an Integer, String, etc.)"
 
 	object := anAssociation value.
 	super on: anAssociation key.
@@ -371,46 +374,38 @@ onViewOpened
 
 	super onViewOpened.
 	super model: object.
-
 	(object isKindOf: String) ifTrue: [
 		documentPresenter value: object.
-		codePane setDocumentPresenterWith: (self registry getClass: 'String').
-		self view caption: 'String'.
+		self view caption: 'String (' , object size printString , ' characters)'.
 		^self.
 	].
 	(object isKindOf: ByteArray) ifTrue: [
 		documentPresenter value: object printString.
-		codePane setDocumentPresenterWith: (self registry getClass: 'ByteArray').
-		self view caption: object class name.
+		self view caption: object class name , ' (' , object size printString , ' bytes)'.
 		^self.
 	].
 	(object isKindOf: Integer) ifTrue: [
 		documentPresenter value: object printString.
-		codePane setDocumentPresenterWith: (self registry getClass: object class name).
 		self view caption: 'Integer'.
 		^self.
 	].
 	object isNil ifTrue: [
 		documentPresenter value: object printString.
-		codePane setDocumentPresenterWith: (self registry getClass: 'UndefinedObject').
 		self view caption: 'UndefinedObject'.
 		^self.
 	].
 	(object isKindOf: Boolean) ifTrue: [
 		documentPresenter value: object printString.
-		codePane setDocumentPresenterWith: (self registry getClass: object class name).
 		self view caption: 'Boolean'.
 		^self.
 	]. 
 	(object isKindOf: Character) ifTrue: [
 		documentPresenter value: object printString.
-		codePane setDocumentPresenterWith: (self registry getClass: object class name).
 		self view caption: 'Character'.
 		^self.
 	]. 
 	(object isKindOf: Float) ifTrue: [
 		documentPresenter value: object printString.
-		codePane setDocumentPresenterWith: (self registry getClass: object class name).
 		self view caption: 'Float'.
 		^self.
 	].
@@ -467,8 +462,27 @@ resource_Default_view
 	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Default_view)
 	"
 
-	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.ShellView)  98 27 0 0 98 2 27131905 131073 416 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 328198 ##(Smalltalk.Point)  801 601 551 0 0 0 416 1180166 ##(Smalltalk.ProportionalLayout)  234 240 98 0 32 234 256 98 4 410 8 ##(Smalltalk.ReferenceView)  98 14 0 416 98 2 8 1140850688 131073 656 0 482 8 4278190080 0 7 0 0 0 656 1180166 ##(Smalltalk.ResourceIdentifier)  8 ##(Smalltalk.JadeCodePresenter)  8 #resource_Default_view 0 983302 ##(Smalltalk.MessageSequence)  202 208 98 1 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 530 393 1 530 377 485 656 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 196 0 0 0 0 0 0 0 128 1 0 0 242 0 0 0] 608 530 193 193 0 27 8 'codePane' 410 8 ##(Smalltalk.ListBox)  98 17 0 416 98 2 8 1144062209 1025 1072 590662 2 ##(Smalltalk.ListModel)  202 208 608 0 1310726 ##(Smalltalk.IdentitySearchPolicy)  482 8 4278190080 0 7 0 0 0 1072 0 8 4294902521 459270 ##(Smalltalk.Message)  8 #key 98 0 608 32 834 202 208 98 2 898 928 98 2 530 1 1 530 375 485 1072 898 8 #horizontalExtent: 98 1 1 1072 994 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 187 0 0 0 242 0 0 0] 98 0 1040 0 27 8 'instVarList' 0 461638 4 ##(Smalltalk.MenuBar)  0 16 98 4 265030 4 ##(Smalltalk.Menu)  0 16 98 7 984134 2 ##(Smalltalk.CommandMenuItem)  1 1180998 4 ##(Smalltalk.CommandDescription)  8 #fileNew 8 '&New Workspace' 9373 1 0 0 0 1666 1 1698 8 #fileOpen 8 '&Open Workspace...' 9375 1 0 0 0 1666 1 1698 8 #fileSave 8 '&Save' 9383 1 0 0 0 1666 1 1698 8 #fileSaveAs 8 'Save &As...' 1 1 0 0 0 1666 1 1698 8 #fileRevert 8 '&Revert' 1025 1 0 0 0 983366 1 ##(Smalltalk.DividerMenuItem)  4097 1666 1 1698 8 #exit 8 'E&xit Jade' 17639 1 0 0 0 8 '&File' 0 1 0 0 20835 0 0 1618 0 16 98 15 1666 1 1698 8 #undo 8 '&Undo' 9397 1 0 0 0 1666 1 1698 8 #redo 8 'R&edo' 9395 1 0 0 0 2018 4097 1666 1 1698 8 #editCut 8 'Cu&t' 9393 1 0 0 0 1666 1 1698 8 #editCopy 8 '&Copy' 9351 1 0 0 0 1666 1 1698 8 #editPaste 8 '&Paste' 9389 1 0 0 0 1666 1 1698 8 #editSelectAll 8 'Select &All' 9347 1 0 0 0 1666 1 1698 8 #editDelete 8 '&Delete' 1629 1 0 0 0 2018 4097 1666 1 1698 8 #editFind 8 '&Find...' 9357 1 0 0 0 1666 1 1698 8 #editFindNext 8 'Find &Next' 9359 1 0 0 0 1666 1 1698 8 #editReplace 8 '&Replace...' 9361 1 0 0 0 2018 4097 1666 1 1698 8 #addQuotesToSelection 8 'Add &Quotes' 1 1 0 0 0 1666 1 1698 8 #removeQuotesFromSelection 8 'Re&move Quotes' 1 1 0 0 0 8 '&Edit' 0 1 0 0 20861 0 0 1618 0 16 98 9 1666 1 1698 8 #abortTransaction 8 '&Abort Transaction' 1 1 0 0 0 1666 1 1698 8 #commitTransaction 8 '&Commit Transaction' 1 1 0 0 0 2018 4097 1666 1 1698 8 #jadeInspect 8 '&Inspect' 9379 1 0 0 0 1666 1 1698 8 #jadeDisplay 8 '&Display' 9353 1 0 0 0 1666 1 1698 8 #jadeExecute 8 '&Execute' 9355 1 0 0 0 1666 1 1698 8 #fileIn 8 'Fi&le In' 1 1 0 0 0 2018 4097 1666 1 1698 8 #jadeBrowseClasses 8 '&Browse Classes' 9349 1 0 0 0 8 '&Jade' 0 1 0 0 20877 0 0 1618 0 16 98 1 1666 1 1698 8 #aboutJade 8 '&About Jade' 1 1 0 0 0 8 '&Help' 0 1 0 0 20881 0 0 8 '' 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 834 202 208 98 3 898 928 98 2 530 2879 21 530 801 601 416 898 8 #text: 98 1 8 'Jade Object Inspector' 416 898 8 #updateMenuBar 608 416 994 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 47 7 0 0 54 1 0 0] 98 3 1072 410 8 ##(Smalltalk.Splitter)  98 12 0 416 98 2 8 1140850688 1 3904 0 482 8 4278190080 0 519 0 0 0 3904 834 202 208 98 1 898 928 98 2 530 375 1 530 19 485 3904 994 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 187 0 0 0 0 0 0 0 196 0 0 0 242 0 0 0] 98 0 1040 0 27 656 1040 0 27 )! !
+	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.ShellView)  98 27 0 0 98 2 27131905 131073 416 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 328198 ##(Smalltalk.Point)  801 601 551 0 0 0 416 852230 ##(Smalltalk.FramingLayout)  234 240 98 6 410 8 ##(Smalltalk.ListBox)  98 17 0 416 98 2 8 1144062209 1025 624 590662 2 ##(Smalltalk.ListModel)  202 208 98 0 0 1310726 ##(Smalltalk.IdentitySearchPolicy)  482 8 4278190080 0 7 0 0 0 624 0 8 4294903207 459270 ##(Smalltalk.Message)  8 #key 98 0 752 32 983302 ##(Smalltalk.MessageSequence)  202 208 98 2 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 530 1 1 530 241 485 624 978 8 #horizontalExtent: 98 1 1 624 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 120 0 0 0 242 0 0 0] 98 0 530 193 193 0 27 1181766 2 ##(Smalltalk.FramingConstraints)  1180678 ##(Smalltalk.FramingCalculation)  8 #fixedParentLeft 1 1234 8 #fixedPreviousLeft 1 1234 8 #fixedParentTop 1 1234 8 #fixedParentBottom 1 410 8 ##(Smalltalk.ReferenceView)  98 14 0 416 98 2 8 1140850688 131073 1376 0 482 8 4278190080 0 7 0 0 0 1376 1180166 ##(Smalltalk.ResourceIdentifier)  8 ##(Smalltalk.JadeCodePresenter)  8 #resource_Default_view 0 914 202 208 98 1 978 1008 98 2 530 259 1 530 511 485 1376 1122 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 129 0 0 0 0 0 0 0 128 1 0 0 242 0 0 0] 752 1184 0 27 1202 1234 8 #fixedPreviousRight 19 1234 8 #fixedParentRight 1 1312 1 1344 1 410 8 ##(Smalltalk.Splitter)  98 12 0 416 98 2 8 1140850688 1 1776 0 482 8 4278190080 0 519 0 0 0 1776 914 202 208 98 1 978 1008 98 2 530 241 1 530 19 485 1776 1122 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 120 0 0 0 0 0 0 0 129 0 0 0 242 0 0 0] 98 0 1184 0 27 1202 1248 241 1234 8 #fixedViewLeft 19 1312 1 1344 1 234 256 98 4 624 8 'instVarList' 1376 8 'codePane' 0 461638 4 ##(Smalltalk.MenuBar)  0 16 98 4 265030 4 ##(Smalltalk.Menu)  0 16 98 7 984134 2 ##(Smalltalk.CommandMenuItem)  1 1180998 4 ##(Smalltalk.CommandDescription)  8 #fileNew 8 '&New Workspace' 9373 1 0 0 0 2258 1 2290 8 #fileOpen 8 '&Open Workspace...' 9375 1 0 0 0 2258 1 2290 8 #fileSave 8 '&Save' 9383 1 0 0 0 2258 1 2290 8 #fileSaveAs 8 'Save &As...' 1 1 0 0 0 2258 1 2290 8 #fileRevert 8 '&Revert' 1025 1 0 0 0 983366 1 ##(Smalltalk.DividerMenuItem)  4097 2258 1 2290 8 #exit 8 'E&xit Jade' 17639 1 0 0 0 8 '&File' 0 1 0 0 22621 0 0 2210 0 16 98 15 2258 1 2290 8 #undo 8 '&Undo' 9397 1 0 0 0 2258 1 2290 8 #redo 8 'R&edo' 9395 1 0 0 0 2610 4097 2258 1 2290 8 #editCut 8 'Cu&t' 9393 1 0 0 0 2258 1 2290 8 #editCopy 8 '&Copy' 9351 1 0 0 0 2258 1 2290 8 #editPaste 8 '&Paste' 9389 1 0 0 0 2258 1 2290 8 #editSelectAll 8 'Select &All' 9347 1 0 0 0 2258 1 2290 8 #editDelete 8 '&Delete' 1629 1 0 0 0 2610 4097 2258 1 2290 8 #editFind 8 '&Find...' 9357 1 0 0 0 2258 1 2290 8 #editFindNext 8 'Find &Next' 9359 1 0 0 0 2258 1 2290 8 #editReplace 8 '&Replace...' 9361 1 0 0 0 2610 4097 2258 1 2290 8 #addQuotesToSelection 8 'Add &Quotes' 1 1 0 0 0 2258 1 2290 8 #removeQuotesFromSelection 8 'Re&move Quotes' 1 1 0 0 0 8 '&Edit' 0 1 0 0 22647 0 0 2210 0 16 98 9 2258 1 2290 8 #abortTransaction 8 '&Abort Transaction' 1 1 0 0 0 2258 1 2290 8 #commitTransaction 8 '&Commit Transaction' 1 1 0 0 0 2610 4097 2258 1 2290 8 #jadeInspect 8 '&Inspect' 9379 1 0 0 0 2258 1 2290 8 #jadeDisplay 8 '&Display' 9353 1 0 0 0 2258 1 2290 8 #jadeExecute 8 '&Execute' 9355 1 0 0 0 2258 1 2290 8 #fileIn 8 'Fi&le In' 1 1 0 0 0 2610 4097 2258 1 2290 8 #jadeBrowseClasses 8 '&Browse Classes' 9349 1 0 0 0 8 '&Jade' 0 1 0 0 22663 0 0 2210 0 16 98 1 2258 1 2290 8 #aboutJade 8 '&About Jade' 1 1 0 0 0 8 '&Help' 0 1 0 0 22667 0 0 8 '' 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 914 202 208 98 3 978 1008 98 2 530 2879 21 530 801 601 416 978 8 #text: 98 1 8 'Jade Object Inspector' 416 978 8 #updateMenuBar 752 416 1122 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 47 7 0 0 54 1 0 0] 98 3 1776 624 1376 1184 0 27 )!
+
+resource_Special_view
+	"Answer the literal data from which the 'Special view' resource can be reconstituted.
+	DO NOT EDIT OR RECATEGORIZE THIS METHOD.
+
+	If you wish to modify this resource evaluate:
+	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Special_view)
+	"
+
+	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.ShellView)  98 27 0 0 98 2 27131905 131073 416 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 328198 ##(Smalltalk.Point)  801 601 551 0 0 0 416 1180166 ##(Smalltalk.ProportionalLayout)  234 240 98 0 32 234 256 98 2 410 8 ##(Smalltalk.MultilineTextEdit)  98 16 0 416 98 2 8 1143017796 1025 656 0 482 8 4278190080 0 7 0 0 0 656 0 8 4294903017 852486 ##(Smalltalk.NullConverter)  0 0 11 983302 ##(Smalltalk.MessageSequence)  202 208 98 3 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 530 1 1 530 769 485 656 882 8 #selectionRange: 98 1 525062 ##(Smalltalk.Interval)  3 1 3 656 882 8 #isTextModified: 98 1 32 656 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 128 1 0 0 242 0 0 0] 98 0 530 193 193 0 27 8 'document' 0 461638 4 ##(Smalltalk.MenuBar)  0 16 98 4 265030 4 ##(Smalltalk.Menu)  0 16 98 7 984134 2 ##(Smalltalk.CommandMenuItem)  1 1180998 4 ##(Smalltalk.CommandDescription)  8 #fileNew 8 '&New Workspace' 9373 1 0 0 0 1298 1 1330 8 #fileOpen 8 '&Open Workspace...' 9375 1 0 0 0 1298 1 1330 8 #fileSave 8 '&Save' 9383 1 0 0 0 1298 1 1330 8 #fileSaveAs 8 'Save &As...' 1 1 0 0 0 1298 1 1330 8 #fileRevert 8 '&Revert' 1025 1 0 0 0 983366 1 ##(Smalltalk.DividerMenuItem)  4097 1298 1 1330 8 #exit 8 'E&xit Jade' 17639 1 0 0 0 8 '&File' 0 1 0 0 27279 0 0 1250 0 16 98 15 1298 1 1330 8 #undo 8 '&Undo' 9397 1 0 0 0 1298 1 1330 8 #redo 8 'R&edo' 9395 1 0 0 0 1650 4097 1298 1 1330 8 #editCut 8 'Cu&t' 9393 1 0 0 0 1298 1 1330 8 #editCopy 8 '&Copy' 9351 1 0 0 0 1298 1 1330 8 #editPaste 8 '&Paste' 9389 1 0 0 0 1298 1 1330 8 #editSelectAll 8 'Select &All' 9347 1 0 0 0 1298 1 1330 8 #editDelete 8 '&Delete' 1629 1 0 0 0 1650 4097 1298 1 1330 8 #editFind 8 '&Find...' 9357 1 0 0 0 1298 1 1330 8 #editFindNext 8 'Find &Next' 9359 1 0 0 0 1298 1 1330 8 #editReplace 8 '&Replace...' 9361 1 0 0 0 1650 4097 1298 1 1330 8 #addQuotesToSelection 8 'Add &Quotes' 1 1 0 0 0 1298 1 1330 8 #removeQuotesFromSelection 8 'Re&move Quotes' 1 1 0 0 0 8 '&Edit' 0 1 0 0 27305 0 0 1250 0 16 98 9 1298 1 1330 8 #abortTransaction 8 '&Abort Transaction' 1 1 0 0 0 1298 1 1330 8 #commitTransaction 8 '&Commit Transaction' 1 1 0 0 0 1650 4097 1298 1 1330 8 #jadeInspect 8 '&Inspect' 9379 1 0 0 0 1298 1 1330 8 #jadeDisplay 8 '&Display' 9353 1 0 0 0 1298 1 1330 8 #jadeExecute 8 '&Execute' 9355 1 0 0 0 1298 1 1330 8 #fileIn 8 'Fi&le In' 1 1 0 0 0 1650 4097 1298 1 1330 8 #jadeBrowseClasses 8 '&Browse Classes' 9349 1 0 0 0 8 '&Jade' 0 1 0 0 27321 0 0 1250 0 16 98 1 1298 1 1330 8 #aboutJade 8 '&About Jade' 1 1 0 0 0 8 '&Help' 0 1 0 0 27325 0 0 8 '' 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 818 202 208 98 3 882 912 98 2 530 2879 21 530 801 601 416 882 8 #text: 98 1 8 'Jade Object Inspector' 416 882 8 #updateMenuBar 608 416 1106 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 47 7 0 0 54 1 0 0] 98 1 656 1168 0 27 )!
+
+showOn: anAssociation
+	"aGciSession -> anObject"
+
+	(anAssociation value isKindOf: ExternalInteger "OopType") ifTrue: [^super showOn: anAssociation].
+	(self create: 'Special view' on: anAssociation) showShell.
+! !
 !JadeInspector class categoriesFor: #resource_Default_view!public!resources-views! !
+!JadeInspector class categoriesFor: #resource_Special_view!public!resources-views! !
+!JadeInspector class categoriesFor: #showOn:!public! !
 
 "Binary Globals"!
 
