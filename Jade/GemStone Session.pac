@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.213'.
+package basicPackageVersion: '0.215'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -1767,6 +1767,13 @@ registerOBNotifications
 	(platform := self objectNamed: #'OBGemStonePlatform') isNil ifTrue: [^self].
 	clientForwarder := (self objectNamed: #'ClientForwarder') new.
 	clientForwarder	clientObject: 1.
+	self
+		registerOBNotificationsForPlatform: platform 
+		clientForwarder: clientForwarder.
+!
+
+registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
+
 	platform 
 		registerBrowseClientForwarder: clientForwarder;
 		registerChoiceClientForwarder: clientForwarder;
@@ -1774,7 +1781,6 @@ registerOBNotifications
 		registerConfirmationClientForwarder: clientForwarder;
 		registerInformClientForwarder: clientForwarder;
 		registerMultiLineTextClientForwarder: clientForwarder;
-		registerMultipleChoiceClientForwarder: clientForwarder;
 		registerTextClientForwarder: clientForwarder;
 		yourself.
 !
@@ -1870,6 +1876,7 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #readSocket:!public!Socket! !
 !JadeServer categoriesFor: #refreshSymbolList!public! !
 !JadeServer categoriesFor: #registerOBNotifications!public! !
+!JadeServer categoriesFor: #registerOBNotificationsForPlatform:clientForwarder:!public! !
 !JadeServer categoriesFor: #reportErrorOnStream:fromEvaluationOf:!public!Socket! !
 !JadeServer categoriesFor: #reset!public! !
 !JadeServer categoriesFor: #show:!public!Transcript! !
@@ -1877,10 +1884,10 @@ stackForProcess: aGsProcess
 
 !JadeServer class methodsFor!
 
-addGsStringTo: aStream definingClassIn: aClass
+addGsStringTo: aStream definingClassBlock: aBlock
 
 	aStream
-		nextPutAll: 'class := ', (aClass gsClassDefinitionFor: self); lf;
+		nextPutAll: 'class := ', (aBlock value: self); lf;
 		yourself.
 	self selectors do: [:each | 
 		aStream nextPutAll: 'source := '.
@@ -1901,7 +1908,7 @@ classVarsForGemStone
 	^(self == JadeServer ifTrue: ['ExternalInteger GciError GsObject OopType32 OopType64'] ifFalse: ['']).
 !
 
-gsClassDefinitionFor: aClass
+gsClassDefinitionBlock
 
 	self subclassResponsibility.
 !
@@ -1917,7 +1924,7 @@ gsString
 		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
 		nextPutAll: 'class := Object.'; lf;
 		yourself.
-	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | eachClass addGsStringTo: stream definingClassIn: self].
+	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | eachClass addGsStringTo: stream definingClassBlock: self gsClassDefinitionBlock].
 	stream 
 		nextPutAll: '(mcPlatformSupport := System myUserProfile objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
 		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
@@ -1943,9 +1950,9 @@ serverForLibrary: aGciLibrary
 sessionStateCode
 
 	^'System _sessionStateAt: 3 put: server.'! !
-!JadeServer class categoriesFor: #addGsStringTo:definingClassIn:!public! !
+!JadeServer class categoriesFor: #addGsStringTo:definingClassBlock:!public! !
 !JadeServer class categoriesFor: #classVarsForGemStone!public! !
-!JadeServer class categoriesFor: #gsClassDefinitionFor:!public! !
+!JadeServer class categoriesFor: #gsClassDefinitionBlock!public! !
 !JadeServer class categoriesFor: #gsString!public! !
 !JadeServer class categoriesFor: #isServerForLibrary:!public! !
 !JadeServer class categoriesFor: #serverForLibrary:!public! !
@@ -2445,10 +2452,10 @@ objectForOop: anInteger
 
 !JadeServer32bit class methodsFor!
 
-gsClassDefinitionFor: aClass
+gsClassDefinitionBlock
 	"Some class variables exist only in Dolphin and map to globals in GemStone; others exist only in GemStone and map to globals in Dolphin!!"
 
-	^'class subclass: ''' , aClass name , '''
+	^[:aClass | 'class subclass: ''' , aClass name , '''
 		instVarNames: ' , aClass instVarNames printString , '
 		classVars: #(' , aClass classVarsForGemStone , ')
 		classInstVars: #()
@@ -2456,15 +2463,9 @@ gsClassDefinitionFor: aClass
 		inDictionary: SymbolDictionary new
 		constraints: #()
 		instancesInvariant: false
-		isModifiable: false.'.
-!
-
-isServerForLibrary: aGciLibrary
-
-	^aGciLibrary is32Bit.
+		isModifiable: false.'].
 ! !
-!JadeServer32bit class categoriesFor: #gsClassDefinitionFor:!public! !
-!JadeServer32bit class categoriesFor: #isServerForLibrary:!public! !
+!JadeServer32bit class categoriesFor: #gsClassDefinitionBlock!public! !
 
 JadeServer64bit guid: (GUID fromString: '{36FD8C46-21B4-4852-977C-1A9889969313}')!
 JadeServer64bit comment: ''!
@@ -2505,22 +2506,24 @@ objectForOop: anInteger
 
 !JadeServer64bit class methodsFor!
 
-gsClassDefinitionFor: aClass
+gsClassDefinitionBlock
 	"Some class variables exist only in Dolphin and map to globals in GemStone; others exist only in GemStone and map to globals in Dolphin!!"
 
-	^'class subclass: ''' , aClass name , '''
+	^[:aClass | 'class subclass: ''' , aClass name , '''
 		instVarNames: ' , aClass instVarNames printString , '
 		classVars: #(' , aClass classVarsForGemStone , ')
 		classInstVars: #()
 		poolDictionaries: #()
-		inDictionary: SymbolDictionary new.'.
+		inDictionary: SymbolDictionary new
+		instancesInvariant: false
+		isModifiable: false.'].
 !
 
 isServerForLibrary: aGciLibrary
 
 	^aGciLibrary is64Bit.
 ! !
-!JadeServer64bit class categoriesFor: #gsClassDefinitionFor:!public! !
+!JadeServer64bit class categoriesFor: #gsClassDefinitionBlock!public! !
 !JadeServer64bit class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit24 guid: (GUID fromString: '{1AF3D6EB-C974-4E19-B3CF-46098CDD8C6D}')!
@@ -2531,8 +2534,27 @@ JadeServer64bit24 comment: ''!
 oopOf: anObject
 
 	^Reflection oopOf: anObject.
+!
+
+registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
+
+	super
+		registerOBNotificationsForPlatform: platform 
+		clientForwarder: clientForwarder.
+	platform 
+		registerMultipleChoiceClientForwarder: clientForwarder;
+		yourself.
 ! !
 !JadeServer64bit24 categoriesFor: #oopOf:!private! !
+!JadeServer64bit24 categoriesFor: #registerOBNotificationsForPlatform:clientForwarder:!public! !
+
+!JadeServer64bit24 class methodsFor!
+
+isServerForLibrary: aGciLibrary
+
+	^aGciLibrary is64Bit24.
+! !
+!JadeServer64bit24 class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit3x guid: (GUID fromString: '{1DC3DEBB-81EC-4B7B-872E-82229E88781B}')!
 JadeServer64bit3x comment: '(System _sessionStateAt: 3).
