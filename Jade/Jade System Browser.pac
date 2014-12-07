@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.265'.
+package basicPackageVersion: '0.266'.
 
 
 package classNames
@@ -80,6 +80,7 @@ package methodNames
 	add: #JadeServer -> #sbRemoveDictionaries:;
 	add: #JadeServer -> #sbRemoveGlobals;
 	add: #JadeServer -> #sbRemoveHistory:;
+	add: #JadeServer -> #sbRemoveKey:fromDictionary:;
 	add: #JadeServer -> #sbRemoveMethodCategories:;
 	add: #JadeServer -> #sbRemoveMethods:;
 	add: #JadeServer -> #sbRemovePriorVersions;
@@ -121,6 +122,7 @@ package methodNames
 	add: #JadeServer -> #systemBrowserUpdate;
 	add: #JadeServer -> #writeList:;
 	add: #JadeServer32bit -> #systemBrowser:;
+	add: #JadeServer64bit -> #sbRemoveKey:fromDictionary:;
 	add: #JadeServer64bit -> #systemBrowser:;
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:;
 	add: #JadeServer64bit3x -> #addMethodCategoryNamesToMethodFilters;
@@ -1006,7 +1008,7 @@ sbRemoveClasses
 						at: #'className'	put: selectedClass name;
 						at: #'class'				put: selectedClass;
 						yourself.
-					eachDictionary removeKey: eachName.
+					self sbRemoveKey: eachName fromDictionary: eachDictionary.
 				].
 			].
 		].
@@ -1047,6 +1049,11 @@ sbRemoveHistory: aClass
 			].
 		].
 	].
+!
+
+sbRemoveKey: aSymbol fromDictionary: aDictionary
+
+	aDictionary removeKey: aSymbol.
 !
 
 sbRemoveMethodCategories: anOrderedCollection
@@ -1895,6 +1902,7 @@ writeList: aList
 !JadeServer categoriesFor: #sbRemoveDictionaries:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveGlobals!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveHistory:!public!System Browser! !
+!JadeServer categoriesFor: #sbRemoveKey:fromDictionary:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveMethodCategories:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveMethods:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemovePriorVersions!public!System Browser! !
@@ -1954,6 +1962,18 @@ systemBrowser: aString
 
 !JadeServer64bit methodsFor!
 
+sbRemoveKey: aSymbol fromDictionary: aDictionary
+
+	| aClass array |
+	aClass := aDictionary at: aSymbol.
+	array := self dictionaryAndSymbolOf: aClass.
+	((array at: 1) == aDictionary and: [
+		(array at: 2) == aSymbol and: [
+		(Class canUnderstand: #'removeFromSystem') and: [	"mark package as modified"
+		aClass removeFromSystem]]]) ifFalse: [
+			aDictionary removeKey: aSymbol.
+		].!
+
 systemBrowser: aString
 
 	[
@@ -1963,6 +1983,7 @@ systemBrowser: aString
 		ex pass.
 	].
 ! !
+!JadeServer64bit categoriesFor: #sbRemoveKey:fromDictionary:!public!System Browser! !
 !JadeServer64bit categoriesFor: #systemBrowser:!public!System Browser! !
 
 !JadeServer64bit32 methodsFor!

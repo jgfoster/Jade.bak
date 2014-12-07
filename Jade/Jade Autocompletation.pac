@@ -3,7 +3,7 @@ package := Package name: 'Jade Autocompletation'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.012'.
+package basicPackageVersion: '0.013'.
 
 
 package classNames
@@ -495,10 +495,10 @@ setAsDefault
 
 	^self class default: self!
 
-unregister: jadeClass
+unregister: aString
 	"The receiver unregister the class JadeGsClassShape <jadeClass>"
 
-	^registry removeKey: jadeClass name!
+	^registry removeKey: aString ifAbsent: [nil].!
 
 unregisterClassNamed: className
 	"The receiver unregister the class named <className>"
