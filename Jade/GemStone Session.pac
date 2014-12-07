@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.215'.
+package basicPackageVersion: '0.216'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -2464,8 +2464,14 @@ gsClassDefinitionBlock
 		constraints: #()
 		instancesInvariant: false
 		isModifiable: false.'].
+!
+
+isServerForLibrary: aGciLibrary
+
+	^aGciLibrary is32Bit.
 ! !
 !JadeServer32bit class categoriesFor: #gsClassDefinitionBlock!public! !
+!JadeServer32bit class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit guid: (GUID fromString: '{36FD8C46-21B4-4852-977C-1A9889969313}')!
 JadeServer64bit comment: ''!
