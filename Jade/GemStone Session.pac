@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.216'.
+package basicPackageVersion: '0.217'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -2669,6 +2669,17 @@ JadeServer64bit32 comment: ''!
 !JadeServer64bit32 categoriesForClass!Unclassified! !
 !JadeServer64bit32 class methodsFor!
 
+gsClassDefinitionBlock
+	"Some class variables exist only in Dolphin and map to globals in GemStone; others exist only in GemStone and map to globals in Dolphin!!"
+
+	^[:aClass | 'class subclass: ''' , aClass name , '''
+		instVarNames: ' , aClass instVarNames printString , '
+		classVars: #(' , aClass classVarsForGemStone , ')
+		classInstVars: #()
+		poolDictionaries: #()
+		inDictionary: SymbolDictionary new.'].
+!
+
 isServerForLibrary: aGciLibrary
 
 	^aGciLibrary is64Bit32.
@@ -2678,6 +2689,7 @@ sessionStateCode
 	"Avoid deprecated method and still use 'Topaz session state' (since we know Topaz isn't running!!)"
 
 	^'System __sessionStateAt: 3 put: server.'! !
+!JadeServer64bit32 class categoriesFor: #gsClassDefinitionBlock!public! !
 !JadeServer64bit32 class categoriesFor: #isServerForLibrary:!public! !
 !JadeServer64bit32 class categoriesFor: #sessionStateCode!public! !
 
