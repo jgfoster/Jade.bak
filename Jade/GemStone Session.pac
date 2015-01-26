@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.217'.
+package basicPackageVersion: '0.218'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -923,6 +923,17 @@ signalConfirmationRequestUsing: anOopType64
 	^answer ifTrue: [library oopTrue] ifFalse: [library oopFalse].
 !
 
+signalInformRequestUsing: anOopType64 
+
+	| string |
+	string := self 
+		serverPerform: #'obInformRequest:' 
+		with: anOopType64.
+	MessageBox
+		notify: string 
+		caption: 'Server Inform Request'.
+	^library oopNil!
+
 signalTextRequestUsing: anOopType64 
 
 	| string stream size prompt template answer oop |
@@ -1221,6 +1232,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #serverPerformInterpreted:withArguments:!Jade convenience!public! !
 !GciSession categoriesFor: #setInitials:!private! !
 !GciSession categoriesFor: #signalConfirmationRequestUsing:!OmniBrowser!public! !
+!GciSession categoriesFor: #signalInformRequestUsing:!OmniBrowser!public! !
 !GciSession categoriesFor: #signalTextRequestUsing:!OmniBrowser!public! !
 !GciSession categoriesFor: #softBreak!Jade!public! !
 !GciSession categoriesFor: #startHeartbeat!heartbeat!private! !
@@ -1596,6 +1608,10 @@ obConfirmationRequest: anOBConfirmationRequest
 		yourself.
 !
 
+obInformRequest: anOBInformRequest
+
+	^anOBInformRequest message!
+
 objectForOop: anInteger
 
 	self subclassResponsibility.!
@@ -1866,6 +1882,7 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #nextPut:!public!Transcript! !
 !JadeServer categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeServer categoriesFor: #obConfirmationRequest:!OmniBrowser!public! !
+!JadeServer categoriesFor: #obInformRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #objectForOop:!private! !
 !JadeServer categoriesFor: #objectNamed:!private! !
 !JadeServer categoriesFor: #obTextRequest:!OmniBrowser!public! !
