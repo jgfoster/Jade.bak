@@ -3,7 +3,7 @@ package := Package name: 'Monticello'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.098'.
+package basicPackageVersion: '0.099'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Monticello'' yourself.'.
 
@@ -2117,6 +2117,8 @@ hasEquivalentText
 	lf := Character lf asString.
 	left := obsoletion displayMemo copyReplaceAll: crlf with: lf.
 	right := modification displayMemo copyReplaceAll: crlf with: lf.
+	left := left trimBlanks.
+	right := right trimBlanks.
 	^left = right.
 !
 
