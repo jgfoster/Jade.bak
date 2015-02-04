@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.218'.
+package basicPackageVersion: '0.219'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -64,7 +64,7 @@ Object subclass: #GciSession
 	classInstanceVariableNames: ''!
 Object subclass: #JadeServer
 	instanceVariableNames: 'classList classOrganizer readStream writeStream selectedClass methodFilterType methodFilters selections socket'
-	classVariableNames: 'AllGroups AllUsers ClassOrganizer GemStoneError Globals GsMethodDictionary SymbolDictionary System UserGlobals UserProfile'
+	classVariableNames: 'Admonition AllGroups AllUsers ClassOrganizer GemStoneError Globals GsMethodDictionary SymbolDictionary System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
 Error subclass: #GsError
@@ -1460,7 +1460,11 @@ addSymbol: aSymbol toByteStream: aStream
 asString: anObject
 
 	(anObject isKindOf: String) ifTrue: [^anObject].
-	^anObject printString.
+	^[
+		anObject printString.
+	] on: Error , Admonition do: [:ex | 
+		ex return: '<<printString error: ' , ex description , '>>'.
+	].
 !
 
 beginTransaction
