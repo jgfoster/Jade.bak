@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.266'.
+package basicPackageVersion: '0.267'.
 
 
 package classNames
@@ -26,6 +26,7 @@ package methodNames
 	add: #JadeServer -> #compiledMethodAt:inClass:;
 	add: #JadeServer -> #currentUserMayEditMethod:;
 	add: #JadeServer -> #dictionaryAndSymbolOf:;
+	add: #JadeServer -> #dictionaryAndSymbolOf:forUser:;
 	add: #JadeServer -> #historyOf:;
 	add: #JadeServer -> #isPackagePolicyEnabled;
 	add: #JadeServer -> #methodSignatureForSelector:;
@@ -125,6 +126,7 @@ package methodNames
 	add: #JadeServer64bit -> #sbRemoveKey:fromDictionary:;
 	add: #JadeServer64bit -> #systemBrowser:;
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:;
+	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:forUser:;
 	add: #JadeServer64bit3x -> #addMethodCategoryNamesToMethodFilters;
 	add: #JadeServer64bit3x -> #categoryOfMethod:;
 	add: #JadeServer64bit3x -> #class:includesSelector:;
@@ -288,6 +290,11 @@ currentUserMayEditMethod: aMethod
 dictionaryAndSymbolOf: aClass
 
 	^self symbolList dictionaryAndSymbolOf: aClass.
+!
+
+dictionaryAndSymbolOf: aClass forUser: aUserProfile
+
+	^aUserProfile symbolList dictionaryAndSymbolOf: aClass.
 !
 
 historyOf: aClass
@@ -755,8 +762,23 @@ sbFileOutClass: anOrderedCollection
 
 sbFileOutDictionary: anOrderedCollection
 
+	| dictionary |
+	dictionary := self objectNamed: anOrderedCollection first.
+	writeStream nextPutAll: '!! ------- Create dictionary if it is not present
+run
+| aSymbol names userProfile |
+aSymbol := ' , dictionary name printString , '.
+userProfile := System myUserProfile.
+names := userProfile symbolList names.
+(names includes: aSymbol) ifFalse: [
+	| symbolDictionary |
+	symbolDictionary := SymbolDictionary new name: aSymbol; yourself.
+	userProfile insertDictionary: symbolDictionary at: names size + 1.
+].
+%
+'.
 	self classOrganizer
-		fileOutClassesAndMethodsInDictionary: (self objectNamed: anOrderedCollection first)
+		fileOutClassesAndMethodsInDictionary: dictionary
 		on: writeStream.
 !
 
@@ -957,18 +979,26 @@ sbRecompileSubclassesOf: newClass andCopyMethods: aBoolean
 	symbolList := self symbolList.
 	list := self classOrganizer subclassesOf: oldClass.
 	list do: [:oldSubclass |
-		| instVars classInstVars newSubclass |
+		| instVars classInstVars definition string newSubclass i j |
 		instVars := self sbInstVarsOldParent: oldClass newParent: newClass oldChild: oldSubclass.
 		classInstVars := self sbInstVarsOldParent: oldClass class newParent: newClass class oldChild: oldSubclass class.
-		newSubclass := newClass
-			subclass: oldSubclass name
-			instVarNames: instVars
-			classVars: oldSubclass classVarNames
-			classInstVars: classInstVars
-			poolDictionaries: oldSubclass sharedPools
-			inDictionary: (System myUserProfile dictionaryAndSymbolOf: oldSubclass) first
-			instancesInvariant: oldSubclass instancesInvariant
-			isModifiable: oldSubclass isModifiable.
+
+		definition := oldSubclass definition.
+		0 < (i := definition findString: 'instVarNames:' startingAt: 1) ifTrue: [
+			j := definition indexOf: Character lf startingAt: i.
+			string := String withAll: 'instVarNames: #('.
+			instVars do: [:each | string addAll: each; add: Character space].
+			string add: $).
+			definition := (definition copyFrom: 1 to: i - 1) , string , (definition copyFrom: j to: definition size).
+		].
+		0 < (i := definition findString: 'classInstVars:' startingAt: 1) ifTrue: [
+			j := definition indexOf: Character lf startingAt: i.
+			string := String withAll: 'classInstVars: #('.
+			classInstVars do: [:each | string addAll: each; add: Character space].
+			string add: $).
+			definition := (definition copyFrom: 1 to: i - 1) , string , (definition copyFrom: j to: definition size).
+		].
+		newSubclass := definition evaluate.
 		aBoolean ifTrue: [self sbCopyMethodsFor: newSubclass].
 		self classOrganizer update.
 	].
@@ -1700,7 +1730,12 @@ sbUpdateSuperclass
 
 	| class tabName selected index |
 	tabName := self nextLine.
-	(#('instanceTab' 'classTab') includes: tabName) ifFalse: [self error: 'Unexpected token!!'].
+	(#('default' 'instanceTab' 'classTab') includes: tabName) ifFalse: [self error: 'Unexpected token!!'].
+	tabName = 'default' ifTrue: [
+		tabName := (selectedClass notNil and: [selectedClass selectors isEmpty and: [selectedClass class selectors notEmpty]]) 
+			ifTrue: ['classTab']
+			ifFalse: ['instanceTab'].
+	].
 	writeStream nextPutAll: tabName; lf.
 	selectedClass notNil ifTrue: [
 		selectedClass := tabName = 'instanceTab'
@@ -1848,6 +1883,7 @@ writeList: aList
 !JadeServer categoriesFor: #compiledMethodAt:inClass:!public!System Browser! !
 !JadeServer categoriesFor: #currentUserMayEditMethod:!public!System Browser! !
 !JadeServer categoriesFor: #dictionaryAndSymbolOf:!public!System Browser! !
+!JadeServer categoriesFor: #dictionaryAndSymbolOf:forUser:!public!System Browser! !
 !JadeServer categoriesFor: #historyOf:!private! !
 !JadeServer categoriesFor: #isPackagePolicyEnabled!public!System Browser! !
 !JadeServer categoriesFor: #methodSignatureForSelector:!public!System Browser! !
@@ -1995,8 +2031,18 @@ dictionaryAndSymbolOf: aClass
 	^array isEmpty
 		ifTrue: [nil]
 		ifFalse: [array first].
+!
+
+dictionaryAndSymbolOf: aClass forUser: aUserProfile
+
+	| array |
+	array := aUserProfile symbolList dictionariesAndSymbolsOf: aClass.
+	^array isEmpty
+		ifTrue: [nil]
+		ifFalse: [array first].
 ! !
 !JadeServer64bit32 categoriesFor: #dictionaryAndSymbolOf:!public! !
+!JadeServer64bit32 categoriesFor: #dictionaryAndSymbolOf:forUser:!public! !
 
 !JadeServer64bit3x methodsFor!
 
@@ -2763,12 +2809,12 @@ createSchematicWiringForMethodList
 createSchematicWiringForMethodSource
 
 	methodSourcePresenter 	
-		when: #'hoverStart:'						send: #'methodHoverStart:'		to: self;
-		when: #'hoverEnd:'						send: #'methodHoverEnd:'			to: self;
-		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'				to: self;
-		when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'	to: self;
-		when: #'valueChanged'					send: #'methodChanged'			to: self;
-		when: #'focusLost'						send: #'cancelCallTip'				to: methodSourcePresenter view;
+		when: #'hoverStart:'						send: #'methodHoverStart:'			to: self;
+		when: #'hoverEnd:'						send: #'methodHoverEnd:'				to: self;
+		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'					to: self;
+		when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'		to: self;
+		when: #'valueChanged'					send: #'methodValueChanged'		to: self;
+		when: #'focusLost'						send: #'cancelCallTip'					to: methodSourcePresenter view;
 		yourself.
 !
 
@@ -2898,7 +2944,7 @@ editCut
 editDelete
 
 	View focus clearSelection.
-	self methodChanged.
+	self methodValueChanged.
 !
 
 editFind
@@ -3110,7 +3156,7 @@ fileOutClass
 
 fileOutClassOnPath: aString
 
-	| className header file newSource index |
+	| className header file newSource index set line |
 	className := self selectedClassNameWithoutVersion.
 	header := self stuffToKeepFromOldFileForClass: className onPath: aString.
 	newSource := self gciSession 
@@ -3118,6 +3164,11 @@ fileOutClassOnPath: aString
 		with: 'fileOutClass' , Character tab asString , self behaviorIdentifier.
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
+	"check to see if header is repeat of first line of file-out"
+	index := newSource indexOf: Character lf.
+	line := newSource copyFrom: 1 to: index - 1.
+	set := (header subStrings: Character lf) asSet.
+	(set size == 1 and: [set any = line]) ifTrue: [header := ''].
 	file := FileStream write: aString.
 	[
 		file nextPutAll: header; nextPutAll: newSource.
@@ -3176,7 +3227,7 @@ findClass
 	find ifNil: [^self].
 	self 
 		updateAfterFindClass: find value
-		isMeta: (find = ('System' -> #('System' 'Globals' 'User Classes' ''))) 
+		isMeta: nil 
 		selector: ''.
 !
 
@@ -3476,24 +3527,6 @@ loadLatestVersion
 	self updateCommand: stream contents.
 !
 
-methodChanged
-
-	inUpdate ifTrue: [^self].
-	methodSourcePresenter value = methodSource ifTrue: [
-		methodSourcePresenter view 
-			backcolor: JadeTextPresenter colorForNoEdits;
-			isModified: false;
-			yourself.
-		self updateMethodStepPoints.
-		self statusBarText: ''.
-	] ifFalse: [
-		methodSourcePresenter view 
-			backcolor: JadeTextPresenter colorForUnsavedEdits;
-			clearContainerIndicators;
-			yourself.
-	].
-!
-
 methodDoubleClicked: anObject
 
 	| range string |
@@ -3611,6 +3644,24 @@ methodsMenuStrings
 methodSourcePresenter
 
 	^methodSourcePresenter.
+!
+
+methodValueChanged
+
+	inUpdate ifTrue: [^self].
+	methodSourcePresenter value = methodSource ifTrue: [
+		methodSourcePresenter view 
+			backcolor: JadeTextPresenter colorForNoEdits;
+			isModified: false;
+			yourself.
+		self updateMethodStepPoints.
+		self statusBarText: ''.
+	] ifFalse: [
+		methodSourcePresenter view 
+			backcolor: JadeTextPresenter colorForUnsavedEdits;
+			clearContainerIndicators;
+			yourself.
+	].
 !
 
 nextLine
@@ -4522,7 +4573,8 @@ stuffToKeepFromOldFileForClass: nameString onPath: pathString
 	x = 'doit' ifFalse: [^''].
 	x := source copyFrom: j + 1 to: l - 1.
 	(x includes: Character space) ifTrue: [^''].
-	^source copyFrom: 1 to: i.!
+	source := source copyFrom: 1 to: i.
+	^source!
 
 textTabChanged
 
@@ -4569,7 +4621,7 @@ updateAfterFindClass: anArray isMeta: aBoolean selector: aString
 		nextPutAll: (anArray at: 3); nextPut: $-; lf;	"class category"
 		nextPutAll: 'classList'; lf;	"not hierarchy"
 		nextPutAll: (anArray at: 1); lf;	"className"
-		nextPutAll: (aBoolean ifTrue: ['classTab'] ifFalse: ['instanceTab']); lf;
+		nextPutAll: (aBoolean ifNil: ['default'] ifNotNil: [aBoolean ifTrue: ['classTab'] ifFalse: ['instanceTab']]); lf;
 		lf; 	"superclass"
 		nextPutAll: 'categoryList'; lf;	"not variables"
 		lf;		"methodFilter (category or variable)"
@@ -5278,7 +5330,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #layoutInfo!public! !
 !JadeSystemBrowserPresenter categoriesFor: #layoutInfo:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #loadLatestVersion!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #methodChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodDoubleClicked:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodFilterListPresenter!public!request string! !
 !JadeSystemBrowserPresenter categoriesFor: #methodHoverEnd:!event handlers!public! !
@@ -5288,6 +5339,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #methodsIdentifier!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourcePresenter!public!updating! !
+!JadeSystemBrowserPresenter categoriesFor: #methodValueChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #nextLine!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #nextLineAsList!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #nextList!public!updating! !
@@ -5437,12 +5489,12 @@ createArrayFromString: arrayString
 createSchematicWiringForMethodSource
 
 	methodSourcePresenter 	
-		when: #'hoverStart:'						send: #'methodHoverStart:'		to: self;
-		when: #'hoverEnd:'						send: #'methodHoverEnd:'			to: self;
-		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'				to: self;
-		when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'	to: self;
-		when: #'valueChanged'					send: #'methodChanged'			to: self;
-		when: #'focusLost'						send: #'cancelCallTip'				to: methodSourcePresenter view;
+		when: #'hoverStart:'						send: #'methodHoverStart:'			to: self;
+		when: #'hoverEnd:'						send: #'methodHoverEnd:'				to: self;
+		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'					to: self;
+		when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'		to: self;
+		when: #'valueChanged'					send: #'methodValueChanged'		to: self;
+		when: #'focusLost'						send: #'cancelCallTip'					to: methodSourcePresenter view;
 		yourself.
 !
 

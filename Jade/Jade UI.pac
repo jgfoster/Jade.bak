@@ -3,7 +3,7 @@ package := Package name: 'Jade UI'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.189'.
+package basicPackageVersion: '0.190'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
@@ -1394,6 +1394,8 @@ stackInitialSelectionData
 		#(6 'Object >> _doesNotUnderstand:args:envId:reason: (envId 0) @7 line 12')
 		#(5 'Object >> _doesNotUnderstand:')
 
+		#(4 '(Object) >> halt @2 line 5')
+		#(4 '(Object) >> error: @6 line 7')
 		#(4 'Object >> halt (envId 0) @2 line 5')
 		#(3 'Object >> error: (envId 0) @6 line 7')
 
