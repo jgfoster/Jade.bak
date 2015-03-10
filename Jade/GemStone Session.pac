@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.219'.
+package basicPackageVersion: '0.221'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -1016,9 +1016,8 @@ stopHeartbeat
 
 terminate: anOopType
 
-	self clearStack: anOopType.
+	self serverPerform: #'terminate:' with: anOopType.
 	TerminateProcess signal.
-	Processor terminateActive.
 !
 
 titleBarFor: aString
@@ -1856,6 +1855,12 @@ stackForProcess: aGsProcess
 		stream nextPutAll: each; lf.
 	].
 	^stream contents.
+!
+
+terminate: aGsProcess
+
+	aGsProcess isNil ifTrue: [^self].
+	aGsProcess terminate.
 ! !
 !JadeServer categoriesFor: #_addToPureExportSet:!private! !
 !JadeServer categoriesFor: #abort!public! !
@@ -1902,6 +1907,7 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #reset!public! !
 !JadeServer categoriesFor: #show:!public!Transcript! !
 !JadeServer categoriesFor: #stackForProcess:!public! !
+!JadeServer categoriesFor: #terminate:!Processes!public! !
 
 !JadeServer class methodsFor!
 
@@ -2068,7 +2074,7 @@ reportErrorMessage
 		errorMsg: stream contents
 		caption: 'GemStone Error #' , gciErrSType number printString.
 	Keyboard default isShiftDown ifTrue: [self halt].
-	self gciSession clearStack: gciErrSType contextOop.
+	self gciSession terminate: gciErrSType contextOop.
 !
 
 signal
@@ -2431,7 +2437,10 @@ TerminateProcess comment: ''!
 !TerminateProcess categoriesForClass!Unclassified! !
 !TerminateProcess methodsFor!
 
-defaultAction! !
+defaultAction
+
+	Processor terminateActive.
+! !
 !TerminateProcess categoriesFor: #defaultAction!public! !
 
 JadeServer32bit guid: (GUID fromString: '{6BD4AC2A-D6A4-438A-9B0B-E050DD50B3A2}')!

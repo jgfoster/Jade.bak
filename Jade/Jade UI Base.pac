@@ -3,7 +3,7 @@ package := Package name: 'Jade UI Base'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.054'.
+package basicPackageVersion: '0.055'.
 
 
 package classNames
@@ -1141,7 +1141,6 @@ showError: aList on: aString
 	self isModified: false.
 	(MessageBox confirm: 'Continue?' caption: 'Compile Error Found') ifTrue: [^self].
 	TerminateProcess signal.
-	Processor terminateActive.
 !
 
 showSelection
