@@ -3,7 +3,7 @@ package := Package name: 'Jade UI'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.193'.
+package basicPackageVersion: '0.194'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
@@ -1510,17 +1510,22 @@ terminateProcess
 
 update
 
-	| stack process |
+	| stack |
 	((stack := gsProcess stack) isEmpty or: [stack = #('' '')]) ifTrue: [
 		MessageBox warning: 'We appear to have finished this process!!'. 
 		self view close. 
 		^self.
 	].
-	process := processList first.
-	processListPresenter 
-		list: processList;	"This triggers a selection changed message that clears the current selection"
-		selection: process.
-!
+	(2 <= processList size and: [processListPresenter selectionOrNil ~~ processList first]) ifTrue: [
+		processListPresenter 
+			list: processList;	"This triggers a selection changed message that clears the current selection"
+			selection: processList first.
+	] ifFalse: [
+		frameListPresenter 
+			list: gsProcess stack;
+			selectionByIndex: self stackInitialSelection;
+			yourself.
+	].!
 
 updateCaption
 
