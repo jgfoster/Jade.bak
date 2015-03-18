@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.221'.
+package basicPackageVersion: '0.222'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -1459,11 +1459,13 @@ addSymbol: aSymbol toByteStream: aStream
 asString: anObject
 
 	(anObject isKindOf: String) ifTrue: [^anObject].
-	^[
-		anObject printString.
-	] on: Error , Admonition do: [:ex | 
-		ex return: '<<printString error: ' , ex description , '>>'.
-	].
+	Exception
+		category: nil
+		number: nil
+		do: [:ex :cat :num :args | 
+			^'<<printString error: ' , ex printString , '>>'.
+		].
+	^anObject printString.
 !
 
 beginTransaction
@@ -2598,6 +2600,16 @@ GciSession allInstances do: [:each | each initializeServer].'!
 !JadeServer64bit3x categoriesForClass!Unclassified! !
 !JadeServer64bit3x methodsFor!
 
+asString: anObject
+
+	(anObject isKindOf: String) ifTrue: [^anObject].
+	^[
+		anObject printString.
+	] on: Error , Admonition do: [:ex | 
+		ex return: '<<printString error: ' , ex description , '>>'.
+	].
+!
+
 installTranscript
 
 	| class sessionTemps transcript |
@@ -2681,6 +2693,7 @@ socketStep: gsProcess inFrame: anInteger
 	].
 	^self readObjectFrom: (ReadStream on: stream contents).
 ! !
+!JadeServer64bit3x categoriesFor: #asString:!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #reportErrorOnStream:fromEvaluationOf:!public! !
