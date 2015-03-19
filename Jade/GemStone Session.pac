@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.222'.
+package basicPackageVersion: '0.223'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -1430,12 +1430,12 @@ addString: aString toByteStream: aStream
 	| size |
 	(size := aString size) < 16r100 ifTrue: [
 		aStream nextPut: 11; nextPut: size.
-		aString do: [:each | aStream nextPut: each codePoint].
+		aString do: [:each | aStream nextPut: each asciiValue].
 		^self.
 	].
 	size < 16r1000000 ifTrue: [
 		aStream nextPut: 12; nextPut: (size bitAnd: 16rFF); nextPut: (size // 16r100 bitAnd: 16rFF); nextPut: (size // 16r10000 bitAnd: 16rFF).
-		aString do: [:each | aStream nextPut: each codePoint].
+		aString do: [:each | aStream nextPut: each asciiValue].
 		^self.
 	].
 	self error: 'Object cannot be encoded'.
@@ -1445,12 +1445,12 @@ addSymbol: aSymbol toByteStream: aStream
 
 	aSymbol size <= 16rFF ifTrue: [
 		aStream nextPut: 5; nextPut: aSymbol size.
-		aSymbol do: [:each | aStream nextPut: each codePoint].
+		aSymbol do: [:each | aStream nextPut: each asciiValue].
 		^self.
 	].
 	aSymbol size <= 16rFFFF ifTrue: [
 		aStream nextPut: 6; nextPut: (aSymbol size bitAnd: 16rFF); nextPut: (aSymbol size // 16r100 bitAnd: 16rFF).
-		aSymbol do: [:each | aStream nextPut: each codePoint].
+		aSymbol do: [:each | aStream nextPut: each asciiValue].
 		^self.
 	].
 	self error: 'Object cannot be encoded'.
@@ -1757,7 +1757,7 @@ readSocket: anInteger
 	] whileTrue: [
 		socket read: anInteger - string size into: string startingAt: string size + 1.
 	].
-	bytes := ByteArray withAll: (string asArray collect: [:each | each codePoint]).
+	bytes := ByteArray withAll: (string asArray collect: [:each | each asciiValue]).
 	stream := ReadStream on: bytes.
 	receiver := self readObjectFrom: stream.
 	selector := self readObjectFrom: stream.

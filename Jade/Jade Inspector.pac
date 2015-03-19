@@ -3,7 +3,7 @@ package := Package name: 'Jade Inspector'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.020'.
+package basicPackageVersion: '0.021'.
 
 
 package classNames
@@ -81,7 +81,7 @@ inspect: anObject
 	].
 	(string := anObject printString) size > 5000 ifTrue: [string := (string copyFrom: 1 to: 5000) , '...'].
 	string class == String ifFalse: [
-		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
+		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 127]) ifTrue: [each] ifFalse: [$?]]).
 	].
 	^stream 
 		nextPutAll: string; 
@@ -96,7 +96,7 @@ inspectDictionary: aDictionary on: aStream
 	keys do: [:each | 
 		| key |
 		key := each printString , '~' , (self oopOf: each) printString.
-		key := key collect: [:char | char codePoint < 32 ifTrue: [$?] ifFalse: [char]].
+		key := key collect: [:char | char asciiValue < 32 ifTrue: [$?] ifFalse: [char]].
 		keyDict
 			at: key
 			put: each.
@@ -147,7 +147,7 @@ print: anObject on: aStream
 	| string |
 	string := self printStringOf: anObject.
 	string class == String ifFalse: [
-		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
+		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 127]) ifTrue: [each] ifFalse: [$?]]).
 	].
 	aStream nextPutAll: string.
 !
@@ -160,7 +160,7 @@ printStringOf: anObject to: anInteger
 
 	| string |
 	(string := self printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
-	string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
+	string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 127]) ifTrue: [each] ifFalse: [$?]]).
 	^string.
 ! !
 !JadeServer categoriesFor: #inspect:!Inspector!public! !
