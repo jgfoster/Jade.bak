@@ -3,7 +3,7 @@ package := Package name: 'Jade UI'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.194'.
+package basicPackageVersion: '0.195'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
@@ -1596,7 +1596,7 @@ reportError: gsError
 		Processor activeProcess terminate.
 		self error: 'We should never get here!!'.
 	].
-	answer := JadeErrorShell showModalOn: gsError.
+	answer := (JadeErrorShell showModalOn: gsError) ifNil: [#'terminate'].	"Window was closed without pressing any button!!"
 	answer = #'terminate' ifTrue: [
 		gsError terminateProcess.
 		self error: 'We should never get here!!'.
