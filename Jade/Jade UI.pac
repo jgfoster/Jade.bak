@@ -3,7 +3,7 @@ package := Package name: 'Jade UI'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.196'.
+package basicPackageVersion: '0.197'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
@@ -168,7 +168,9 @@ _sourceForProcess: gsProcess frame: level
 	stream := WriteStream on: String new.
 	(frame := gsProcess _frameContentsAt: level) isNil ifTrue: [^'No frame found for level ' , level printString].
 	gsMethod := frame at: 1.
-	stepPoint := (gsMethod respondsTo: #'_stepPointForIp:level:quick:')  ifTrue: [
+	stepPoint := (gsProcess respondsTo: #'_localStepPointAt:')  ifTrue: [
+		(gsProcess _localStepPointAt: level) at: 1.
+	] ifFalse: [(gsMethod respondsTo: #'_stepPointForIp:level:quick:')  ifTrue: [
 		gsMethod
 			_stepPointForIp: (frame at: 2) 
 			level: level 
@@ -178,7 +180,7 @@ _sourceForProcess: gsProcess frame: level
 			_stepPointForIp: (frame at: 2) 
 			level: level 
 			isNative: gsProcess _nativeStack.
-	].
+	]].
 	stream
 		nextPutAll: '<?xml version=''1.0'' ?><frame oop=';
 		nextPutAll: (self oopOf: frame) printString printString;
@@ -447,7 +449,7 @@ sourceForProcess: gsProcess frame: level
 			_sourceForProcess: gsProcess 
 			frame: level.
 	] on: Error do: [:ex | 
-			self return: (self asAsciiString: ('?????' , ex description , Character cr asString , (GsProcess stackReportToLevel: 50))).
+			ex return: (self asAsciiString: ('?????' , ex description , Character cr asString , (GsProcess stackReportToLevel: 50))).
 	].
 ! !
 !JadeServer64bit categoriesFor: #_oopAndStringFor:!Debugger!public! !
