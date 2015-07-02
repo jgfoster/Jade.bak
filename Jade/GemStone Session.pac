@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.223'.
+package basicPackageVersion: '0.224'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -934,6 +934,28 @@ signalInformRequestUsing: anOopType64
 		caption: 'Server Inform Request'.
 	^library oopNil!
 
+signalMultiLineTextRequestUsing: anOopType64 
+
+	| string stream size prompt template answer oop |
+	string := self 
+		serverPerform: #'obTextRequest:' 
+		with: anOopType64.
+	stream := ReadStream on: string.
+	size := stream nextLine asNumber.
+	prompt := stream next: size.
+	template := stream upToEnd.
+	answer := Prompter
+		on: template 
+		prompt: prompt 
+		caption: 'Server Text Request'.
+	answer ifNil: [^library oopNil].
+	oop := self oopForString: answer.
+	[
+		self releaseOop: oop.
+	] forkAt: Processor userBackgroundPriority.
+	^oop.
+!
+
 signalTextRequestUsing: anOopType64 
 
 	| string stream size prompt template answer oop |
@@ -952,7 +974,7 @@ signalTextRequestUsing: anOopType64
 	oop := self oopForString: answer.
 	[
 		self releaseOop: oop.
-	] forAt: Processor userBackgroundPriority.
+	] forkAt: Processor userBackgroundPriority.
 	^oop.
 !
 
@@ -1232,6 +1254,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #setInitials:!private! !
 !GciSession categoriesFor: #signalConfirmationRequestUsing:!OmniBrowser!public! !
 !GciSession categoriesFor: #signalInformRequestUsing:!OmniBrowser!public! !
+!GciSession categoriesFor: #signalMultiLineTextRequestUsing:!OmniBrowser!public! !
 !GciSession categoriesFor: #signalTextRequestUsing:!OmniBrowser!public! !
 !GciSession categoriesFor: #softBreak!Jade!public! !
 !GciSession categoriesFor: #startHeartbeat!heartbeat!private! !

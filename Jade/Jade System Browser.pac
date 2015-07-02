@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.267'.
+package basicPackageVersion: '0.268'.
 
 
 package classNames
@@ -184,7 +184,7 @@ package!
 "Class Definitions"!
 
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
-	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs updateCount updateProcess variableListPresenter'
+	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1437,7 +1437,7 @@ sbUpdateDictionaries
 
 sbUpdateMethod: aSymbol
 
-	| selection classes names method string list oldGsMethod |
+	| selection classes names method string list oldGsMethod allSelectors |
 
 	"Inherited implimentors"
 	classes := self sbUpdateMethodInheritedImplementationsOf: aSymbol.
@@ -1458,18 +1458,32 @@ sbUpdateMethod: aSymbol
 	string last = Character lf ifFalse: [writeStream lf].
 	writeStream nextPut: $%; lf.	"Lines 4-N"
 
+	"unimplemented selectors"
+	((method class includesSelector: #'_selectorPool') and: [method class includesSelector: #'_sourceOffsetOfFirstSendOf:']) ifTrue: [
+		allSelectors := IdentitySet new.
+		self classOrganizer classes do: [:each | 
+			allSelectors addAll: each selectors; addAll: each class selectors.
+		].
+		(method _selectorPool reject: [:each | allSelectors includes: each]) do: [:each | 
+			(method _sourceOffsetOfFirstSendOf: each) printOn: writeStream.
+			writeStream space; nextPutAll: each; tab.
+		].
+	].
+	writeStream lf.	"Line N+1"
+
 	"Array of Associations (offset -> selector) indexed by step points"
 	list := self sbUpdateMethodStepPointsFor: method.
 	list := list collect: [:each | each key printString , ' ' , each value].
-	self writeList: list.	"Line N+1"
+	self writeList: list.	"Line N+2"
 
 	"breaks"
 	list := self  sbUpdateMethodBreakPointsFor: method.
-	self writeList: (list collect: [:each | each printString]).	"Line N+2"
+	self writeList: (list collect: [:each | each printString]).	"Line N+3"
 
-	"Method category"
-	writeStream nextPutAll: (self categoryOfMethod: method); lf.	"Line N+3"
+	"method category"
+	writeStream nextPutAll: (self categoryOfMethod: method); lf.	"Line N+4"
 
+	"original method"
 	oldGsMethod := (method inClass class canUnderstand: #'persistentMethodDictForEnv:')
 		ifTrue: [(method inClass persistentMethodDictForEnv: 0) at: aSymbol ifAbsent: [method]]
 		ifFalse: [(method inClass class canUnderstand: #'_rawMethodDict')
@@ -1481,6 +1495,8 @@ sbUpdateMethod: aSymbol
 		(string notEmpty and: [string last = Character lf]) ifFalse: [writeStream lf].
 	].
 	writeStream nextPut: $%; lf.
+
+	"method compile warnings"
 	string := selections at: #'methodWarnings' ifAbsent: [''].
 	string isNil ifTrue: [string := ''].
 	writeStream nextPutAll: string; nextPut: $%; lf.
@@ -4939,6 +4955,14 @@ updateMethod
 	].
 	methodSource := newSource.
 	methodSourcePresenter value: methodSource.
+	"unimplemented selectors"
+	unimplementedSelectors := Dictionary new.
+	self nextLineAsList do: [:eachPair | 
+		| pieces |
+		pieces := eachPair subStrings.
+		unimplementedSelectors at: pieces first asNumber put: pieces last.
+	].
+	"step points"
 	stepPoints := self nextLineAsList collect: [:each |
 		| pieces offset selector | 
 		pieces := each subStrings.
@@ -4946,6 +4970,7 @@ updateMethod
 		selector := (2 <= pieces size ifTrue: [pieces at: 2] ifFalse: ['']).
 		(offset to: 0) -> selector.
 	].
+	"breaks"
 	breakPoints := self nextLineAsList collect: [:each | each asNumber].
 	1 to: stepPoints size do: [:stepPoint |
 		| range start char length |
@@ -4979,6 +5004,7 @@ updateMethod
 			isReadOnly: true;
 			yourself.
 	].
+	"method category"
 	((methodCategory := self nextLine) notEmpty and: [self isCategoriesTabSelected]) ifTrue: [
 		| fullList selections index newName |
 		fullList := categoryListPresenter list.
@@ -4993,7 +5019,9 @@ updateMethod
 			categoryListPresenter view invalidate.
 		].
 	].
+	"original source"
 	originalSourcePresenter value: self nextParagraph.
+	"compiler warnings"
 	(warnings := self nextParagraph) notEmpty ifTrue: [
 		MessageBox warning: warnings caption: 'Jade Compile Warning'.
 	].
@@ -5064,8 +5092,13 @@ updateMethodStepPoints
 	1 to: stepPoints size do: [:stepPoint |
 		| range string styleName |
 		range := (stepPoints at: stepPoint) key.
-		styleName := (breakPoints includes: stepPoint) ifTrue: [9] ifFalse: [8].
-		string := ((breakPoints includes: stepPoint) ifTrue: ['Break at '] ifFalse: ['']) , 'step point #' , stepPoint printString.
+		(unimplementedSelectors at: range start ifAbsent: [nil]) ifNotNil: [:value | 
+			styleName := 10.
+			string := 'No implementors of #' , value printString , ' (found at step point #' , stepPoint printString , ')'.
+		] ifNil: [
+			styleName := (breakPoints includes: stepPoint) ifTrue: [9] ifFalse: [8].
+			string := ((breakPoints includes: stepPoint) ifTrue: ['Break at '] ifFalse: ['']) , 'step point #' , stepPoint printString.
+		].
 		indicators add: (ScintillaIndicator
 			styleName: styleName 
 			range: range 
