@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.268'.
+package basicPackageVersion: '0.269'.
 
 
 package classNames
@@ -2572,6 +2572,18 @@ browseMethodsContaining
 	self browseMethodsAndSelect: searchString.
 !
 
+browseSelectedClass
+
+	| range string list assoc |
+	range := methodSourcePresenter view selectionRange.
+	string := methodSourcePresenter value copyFrom: range start to: range stop.
+	list := self findClassList.
+	assoc := list 
+		detect: [:each | each key = string]
+		ifNone: [^MessageBox warning: 'Class ' , string printString , ' not found!!' caption: 'Jade'].
+	parentPresenter parentPresenter addSystemBrowserForClass: assoc value.
+!
+
 browseSenders
 
 	self browseSendersOf: methodListPresenter selections first first.
@@ -2979,7 +2991,8 @@ editFindNext
 editMenuStrings
 
 	false ifTrue: [
-		self editSave; editUndo; editRedo; editCut; editCopy; editPaste; editDelete; editSelectAll; editFind; editFindNext; editReplace; jadeDisplay; jadeExecute; jadeInspect.
+		self editSave; editUndo; editRedo; editCut; editCopy; editPaste; editDelete; editSelectAll; editFind; editFindNext; editReplace; 
+			jadeDisplay; jadeExecute; jadeInspect; browseSelectedClass.
 	].
 	^#(
 		'&Edit'
@@ -3004,6 +3017,7 @@ editMenuStrings
 		'Display/Ctrl+D/jadeDisplay'
 		'Execute/Ctrl+E/jadeExecute'
 		'Inspect/Ctrl+Q/jadeInspect'
+		'Browse Class/Ctrl+B/browseSelectedClass'
 	).
 !
 
@@ -3230,7 +3244,22 @@ findClass
 "
 	Array with: className with: dictionaryName with: catetory with: packageName.
 "
-	| string find list |
+	| find list |
+	list := self findClassList.
+	ignoreNextSetFocusEvent := true.
+	find := JadeFindClassDialog showModal: 'ThreeColumnView' on: list.
+	find ifNil: [^self].
+	self halt
+		updateAfterFindClass: find value
+		isMeta: nil 
+		selector: ''.
+!
+
+findClassList
+"
+	Array with: className with: dictionaryName with: catetory with: packageName.
+"
+	| string list |
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
 		with: 'findClass'.
@@ -3238,13 +3267,7 @@ findClass
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
 	list := list collect: [:each | (each at: 1) -> each].
-	ignoreNextSetFocusEvent := true.
-	find := JadeFindClassDialog showModal: 'ThreeColumnView' on: list.
-	find ifNil: [^self].
-	self 
-		updateAfterFindClass: find value
-		isMeta: nil 
-		selector: ''.
+	^list
 !
 
 getViews
@@ -3349,6 +3372,14 @@ isCategoriesTabSelected
 isClassListTabSelected
 
 	^classHierarchyTabs currentCard name = 'classList'.
+!
+
+isClassSelectedInEditor
+
+	| range string |
+	range := methodSourcePresenter view selectionRange.
+	string := methodSourcePresenter value copyFrom: range start to: range stop.
+	^(string allSatisfy: [:each | each isAlphaNumeric]) and: [string first isLetter and: [string first isUppercase]]
 !
 
 isDictionariesTabSelected
@@ -4157,6 +4188,7 @@ queryCommand: aCommandQuery
 		aCommandQuery isEnabled: self selectedClasses size == 1. ^true.
 	].
 	(#(#'runClassTests') includes: command) ifTrue: [aCommandQuery isEnabled: selectedClassesAreTestCases. ^true].
+	(#(#'browseSelectedClass') includes: command) ifTrue: [aCommandQuery isEnabled: self isClassSelectedInEditor. ^true].
 	^super queryCommand: aCommandQuery.
 !
 
@@ -5285,6 +5317,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseSelectedClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSenders!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
@@ -5338,6 +5371,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #fileOutDictionary!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileTypes!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #findClassList!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #getViews!public! !
 !JadeSystemBrowserPresenter categoriesFor: #globalsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #handleInvalidSession!public! !
@@ -5347,6 +5381,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #inspectGlobal!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isCategoriesTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassListTabSelected!public!request string! !
+!JadeSystemBrowserPresenter categoriesFor: #isClassSelectedInEditor!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isDictionariesTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isGlobalsTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public! !
@@ -5838,6 +5873,16 @@ addSystemBrowser
 	self addSystemBrowserWithLayoutInfo: (self currentCard ifNotNil: [:currentCard | currentCard layoutInfo]).
 !
 
+addSystemBrowserForClass: anArray
+
+	(JadeAutoSystemBrowserPresenter
+		createIn: cardsPresenter 
+		on: model)
+		updateAfterFindClass: anArray
+		isMeta: nil 
+		selector: ''.
+!
+
 addSystemBrowserWithLayoutInfo: each
 
 	(JadeAutoSystemBrowserPresenter
@@ -6045,6 +6090,7 @@ update
 ! !
 !JadeSystemBrowser categoriesFor: #abortTransaction!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowser!public! !
+!JadeSystemBrowser categoriesFor: #addSystemBrowserForClass:!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowserWithLayoutInfo:!public! !
 !JadeSystemBrowser categoriesFor: #addWorkspace!public! !
 !JadeSystemBrowser categoriesFor: #closeCard!public! !
