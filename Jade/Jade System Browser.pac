@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.269'.
+package basicPackageVersion: '0.270'.
 
 
 package classNames
@@ -3249,7 +3249,7 @@ findClass
 	ignoreNextSetFocusEvent := true.
 	find := JadeFindClassDialog showModal: 'ThreeColumnView' on: list.
 	find ifNil: [^self].
-	self halt
+	self 
 		updateAfterFindClass: find value
 		isMeta: nil 
 		selector: ''.
