@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.270'.
+package basicPackageVersion: '0.271'.
 
 
 package classNames
@@ -3377,7 +3377,7 @@ isClassListTabSelected
 isClassSelectedInEditor
 
 	| range string |
-	range := methodSourcePresenter view selectionRange.
+	(range := methodSourcePresenter view selectionRange) isEmpty ifTrue: [^false].
 	string := methodSourcePresenter value copyFrom: range start to: range stop.
 	^(string allSatisfy: [:each | each isAlphaNumeric]) and: [string first isLetter and: [string first isUppercase]]
 !
