@@ -3,7 +3,7 @@ package := Package name: 'GemStone Objects'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.052'.
+package basicPackageVersion: '0.053'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Objects'' yourself.'.
 
@@ -622,15 +622,15 @@ initializeXML: xmlElement
 	(value := xmlElement getAttribute: 'serial'				) notNil ifTrue: [serial 			:= value asNumber].
 	(value := xmlElement getAttribute: 'id'					) notNil ifTrue: [id 				:= value asNumber].
 	(value := xmlElement getAttribute: 'ip'					) notNil ifTrue: [ip 				:= value].
-	(value := xmlElement getAttribute: 'priority'			) notNil ifTrue: [priority 			:= value asNumber].
-	(value := xmlElement getAttribute: 'hostId'				) notNil ifTrue: [hostId			:= value asNumber].
-	(value := xmlElement getAttribute: 'quietTime'		) notNil ifTrue: [quietTime 	:= value asNumber].
-	(value := xmlElement getAttribute: 'lifeTime'			) notNil ifTrue: [lifeTime 		:= value asNumber].
-	(value := xmlElement getAttribute: 'backlog'			) notNil ifTrue: [backlog 		:= value asNumber].
+	(value := xmlElement getAttribute: 'priority'			) notNil ifTrue: [priority 			:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'hostId'				) notNil ifTrue: [hostId			:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'quietTime'		) notNil ifTrue: [quietTime 	:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'lifeTime'			) notNil ifTrue: [lifeTime 		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'backlog'			) notNil ifTrue: [backlog 		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
 	(value := xmlElement getAttribute: 'description'		) notNil ifTrue: [description  	:= value].
-	(value := xmlElement getAttribute: 'objects'			) notNil ifTrue: [objects  		:= value asNumber].
-	(value := xmlElement getAttribute: 'pages'				) notNil ifTrue: [pages  			:= value asNumber].
-	(value := xmlElement getAttribute: 'voteState'		) notNil ifTrue: [voteState 		:= value asNumber].
+	(value := xmlElement getAttribute: 'objects'			) notNil ifTrue: [objects  		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'pages'				) notNil ifTrue: [pages  			:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'voteState'		) notNil ifTrue: [voteState 		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
 !
 
 ip
@@ -670,7 +670,7 @@ state
 stringFromSeconds: anInteger
 
 	| x |
-	x := anInteger.
+	(x := anInteger) ifNil: [^''].
 	x < 120 ifTrue: [^x printString , ' secs'].
 	(x := x // 60) < 120 ifTrue: [^x printString , ' mins'].
 	(x := x // 60) < 48 ifTrue: [^x printString , ' hrs'].

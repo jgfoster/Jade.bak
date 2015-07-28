@@ -3,7 +3,7 @@ package := Package name: 'Jade Transcript'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.054'.
+package basicPackageVersion: '0.055'.
 
 
 package classNames
@@ -128,23 +128,23 @@ addSessionWithId: anInteger toStream: aStream
 		nextPutAll: ' ip=';
 		nextPutAll: (array at: 11) printString;
 		nextPutAll: ' priority=';
-		nextPutAll: (array at: 12) printString printString;
+		nextPutAll: ((x := array at: 12) isNil ifTrue: [''] ifFalse: [x printString]) printString;
 		nextPutAll: ' hostId=';
-		nextPutAll: (array at: 13) printString printString;
+		nextPutAll: ((x := array at: 13)  isNil ifTrue: [''] ifFalse: [x printString]) printString;
 		nextPutAll: ' quietTime=';
-		nextPutAll: (timeGmt - (array at: 14)) printString printString;
+		nextPutAll: ((x := array at: 14) isNil ifTrue: [''] ifFalse: [(timeGmt - x)  printString]) printString;
 		nextPutAll: ' lifeTime=';
-		nextPutAll: (timeGmt - (array at: 15)) printString printString;
+		nextPutAll: ((x := array at: 15) isNil ifTrue: [''] ifFalse: [(timeGmt - x)  printString]) printString;
 		nextPutAll: ' backlog=';
-		nextPutAll: (array at: 16) printString printString;
+		nextPutAll: ((x := array at: 16) isNil ifTrue: [''] ifFalse: [x printString]) printString;
 		nextPutAll: ' description=';
 		nextPutAll: ((x := array at: 17) isNil ifTrue: [''] ifFalse: [x]) printString;
 		nextPutAll: ' objects=';
-		nextPutAll: (array at: 18) printString printString;
+		nextPutAll: ((x := array at: 18) isNil ifTrue: [''] ifFalse: [x printString]) printString;
 		nextPutAll: ' pages=';
-		nextPutAll: (array at: 19) printString printString;
+		nextPutAll: ((x := array at: 19) isNil ifTrue: [''] ifFalse: [x printString]) printString;
 		nextPutAll: ' voteState=';
-		nextPutAll: (array at: 20) printString printString;
+		nextPutAll: ((x := array at: 20) isNil ifTrue: [''] ifFalse: [x printString]) printString;
 		nextPutAll: ' />';
 		yourself.
 !
@@ -397,6 +397,7 @@ fillSessionList
 ' , ((ex isKindOf: GsError) ifTrue: [ex errorReport message printString] ifFalse: [ex description]).
 		^self.
 	].
+	sessionListPresenter view show.
 	list := GsSession 
 		fromStringXML: string 
 		session: gciSession.

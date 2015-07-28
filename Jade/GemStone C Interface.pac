@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.124'.
+package basicPackageVersion: '0.125'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -40,6 +40,7 @@ package classNames
 	add: #LibGciRpc64_324;
 	add: #LibGciRpc64_325;
 	add: #LibGciRpc64_326;
+	add: #LibGciRpc64_327;
 	add: #LibGciRpc64_33;
 	add: #OopType32;
 	add: #OopType32Array;
@@ -228,6 +229,11 @@ LibGciRpc64_32 subclass: #LibGciRpc64_325
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 LibGciRpc64_32 subclass: #LibGciRpc64_326
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_327
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -2260,6 +2266,23 @@ fileNameSearch
 ! !
 !LibGciRpc64_326 class categoriesFor: #displayName!public! !
 !LibGciRpc64_326 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_327 guid: (GUID fromString: '{ED635505-59E8-42E5-87A5-47C0E655E5FC}')!
+LibGciRpc64_327 comment: ''!
+!LibGciRpc64_327 categoriesForClass!Unclassified! !
+!LibGciRpc64_327 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.7'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.2.7-32.dll'.
+! !
+!LibGciRpc64_327 class categoriesFor: #displayName!public! !
+!LibGciRpc64_327 class categoriesFor: #fileNameSearch!public! !
 
 LibGciRpc64_33 guid: (GUID fromString: '{68DB187D-A739-41BE-AD58-A476218B1B04}')!
 LibGciRpc64_33 comment: ''!
