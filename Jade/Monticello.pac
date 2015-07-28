@@ -3,7 +3,7 @@ package := Package name: 'Monticello'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.098'.
+package basicPackageVersion: '0.100'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Monticello'' yourself.'.
 
@@ -1380,15 +1380,16 @@ versionNames: aList
 
 	| list |
 	list := aList asArray.
-	list := list collect: [:each | 
+	list := list collect: [:each1 | 
 		| pieces |
-		pieces := each subStrings: $..
+		pieces := each1 subStrings: $..
 		pieces = #('current') ifTrue: [
 			0 -> 'current'
 		] ifFalse: [
-			((pieces at: pieces size - 1) collect: [:each | each isDigit ifTrue: [each] ifFalse: [$0]]) asNumber -> each.
+			((pieces at: pieces size - 1) collect: [:each2 | each2 isDigit ifTrue: [each2] ifFalse: [$0]]) asNumber -> each1.
 		].
 	].
+	list := list asSortedCollection.	"at first it seemed that the server provided them in order but that seems to not be consistent"
 	list := list collect: [:each | MCVersionName new name: each value].
 	versionNames := list.! !
 !MCPackage categoriesFor: #infoForVersion:!public! !
@@ -2117,6 +2118,8 @@ hasEquivalentText
 	lf := Character lf asString.
 	left := obsoletion displayMemo copyReplaceAll: crlf with: lf.
 	right := modification displayMemo copyReplaceAll: crlf with: lf.
+	left := left trimBlanks.
+	right := right trimBlanks.
 	^left = right.
 !
 

@@ -3,7 +3,7 @@ package := Package name: 'Jade Login'.
 package paxVersion: 1;
 	basicComment: 'Login window redesign'.
 
-package basicPackageVersion: '0.090'.
+package basicPackageVersion: '0.091'.
 
 
 package classNames
@@ -470,10 +470,15 @@ defaultXML
 
 fromXML: aString
 
-	^super new
-		initializeFromXML: aString;
-		yourself.
-!
+	^[
+		super new
+			initializeFromXML: aString;
+			yourself.
+	] on: Error do: [:ex | 
+		super new
+			initializeFromXML: self defaultXML;
+			yourself.
+	].!
 
 new
 

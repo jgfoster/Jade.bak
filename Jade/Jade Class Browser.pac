@@ -3,7 +3,7 @@ package := Package name: 'Jade Class Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.068'.
+package basicPackageVersion: '0.069'.
 
 
 package classNames
@@ -30,7 +30,6 @@ package methodNames
 	add: #JadeServer -> #removeClass:from:;
 	add: #JadeServer -> #removePriorVersionsOf:;
 	add: #JadeServer -> #stringForClassList:;
-	add: #JadeServer -> #subclass:name:user:;
 	add: #JadeServer -> #subclassSelectorForClass:;
 	add: #JadeServer -> #superclassesOf:isMeta:;
 	yourself.
@@ -209,9 +208,9 @@ definitionOfClass: aClass forUser: aUserProfile
 dictionaryForClass: aClass forUser: aUserProfile
 
 	| anArray |
-	anArray := aUserProfile dictionaryAndSymbolOf: aClass.
+	anArray := self dictionaryAndSymbolOf: aClass forUser: aUserProfile.
 	anArray isNil ifTrue: [^''].
-	anArray := aUserProfile dictionaryAndSymbolOf: (anArray at: 1).
+	anArray := self dictionaryAndSymbolOf: (anArray at: 1) forUser: aUserProfile.
 	anArray isNil ifTrue: [^''].
 	^(anArray at: 2)
 !
@@ -229,7 +228,7 @@ fileOutForClass: aClass
 nameForSharedPool: anObject forUser: aUserProfile
 
 	| anArray dict sharedPoolClass |
-	anArray := aUserProfile dictionaryAndSymbolOf: anObject.
+	anArray := self dictionaryAndSymbolOf: anObject forUser: aUserProfile.
 	anArray notNil ifTrue: [^anArray at: 2].
 	(dict := aUserProfile objectNamed: anObject name) isNil ifTrue: [^'???'].
 	(sharedPoolClass := self objectNamed: 'SharedPool') isNil ifTrue: [^'???'].
@@ -332,22 +331,6 @@ stringForClassList: aList
 	^stream contents.
 !
 
-subclass: aClass name: aString user: aUserProfile
-
-	| dictionary |
-	dictionary := (aUserProfile dictionaryAndSymbolOf: aClass) at: 1.
-	aClass subclass: aString
-		instVarNames: #()
-		classVars: #()
-		classInstVars: #()
-		poolDictionaries: #[]
-		category: aClass _classCategory
-		inDictionary: dictionary
-		constraints: #[  ]
-		instancesInvariant: false
-		isModifiable: false.
-!
-
 subclassSelectorForClass: aClass
 
 	(aClass isBytes and: [aClass superclass notNil and: [aClass superclass isBytes not]]) ifTrue: [
@@ -385,7 +368,6 @@ superclassesOf: aClass isMeta: aBoolean
 !JadeServer categoriesFor: #removeClass:from:!Classes!public! !
 !JadeServer categoriesFor: #removePriorVersionsOf:!Classes!public! !
 !JadeServer categoriesFor: #stringForClassList:!Classes!public! !
-!JadeServer categoriesFor: #subclass:name:user:!Classes!public! !
 !JadeServer categoriesFor: #subclassSelectorForClass:!Classes!public! !
 !JadeServer categoriesFor: #superclassesOf:isMeta:!Classes!public! !
 

@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.265'.
+package basicPackageVersion: '0.271'.
 
 
 package classNames
@@ -26,6 +26,7 @@ package methodNames
 	add: #JadeServer -> #compiledMethodAt:inClass:;
 	add: #JadeServer -> #currentUserMayEditMethod:;
 	add: #JadeServer -> #dictionaryAndSymbolOf:;
+	add: #JadeServer -> #dictionaryAndSymbolOf:forUser:;
 	add: #JadeServer -> #historyOf:;
 	add: #JadeServer -> #isPackagePolicyEnabled;
 	add: #JadeServer -> #methodSignatureForSelector:;
@@ -80,6 +81,7 @@ package methodNames
 	add: #JadeServer -> #sbRemoveDictionaries:;
 	add: #JadeServer -> #sbRemoveGlobals;
 	add: #JadeServer -> #sbRemoveHistory:;
+	add: #JadeServer -> #sbRemoveKey:fromDictionary:;
 	add: #JadeServer -> #sbRemoveMethodCategories:;
 	add: #JadeServer -> #sbRemoveMethods:;
 	add: #JadeServer -> #sbRemovePriorVersions;
@@ -121,8 +123,10 @@ package methodNames
 	add: #JadeServer -> #systemBrowserUpdate;
 	add: #JadeServer -> #writeList:;
 	add: #JadeServer32bit -> #systemBrowser:;
+	add: #JadeServer64bit -> #sbRemoveKey:fromDictionary:;
 	add: #JadeServer64bit -> #systemBrowser:;
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:;
+	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:forUser:;
 	add: #JadeServer64bit3x -> #addMethodCategoryNamesToMethodFilters;
 	add: #JadeServer64bit3x -> #categoryOfMethod:;
 	add: #JadeServer64bit3x -> #class:includesSelector:;
@@ -180,7 +184,7 @@ package!
 "Class Definitions"!
 
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
-	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs updateCount updateProcess variableListPresenter'
+	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -286,6 +290,11 @@ currentUserMayEditMethod: aMethod
 dictionaryAndSymbolOf: aClass
 
 	^self symbolList dictionaryAndSymbolOf: aClass.
+!
+
+dictionaryAndSymbolOf: aClass forUser: aUserProfile
+
+	^aUserProfile symbolList dictionaryAndSymbolOf: aClass.
 !
 
 historyOf: aClass
@@ -753,8 +762,23 @@ sbFileOutClass: anOrderedCollection
 
 sbFileOutDictionary: anOrderedCollection
 
+	| dictionary |
+	dictionary := self objectNamed: anOrderedCollection first.
+	writeStream nextPutAll: '!! ------- Create dictionary if it is not present
+run
+| aSymbol names userProfile |
+aSymbol := ' , dictionary name printString , '.
+userProfile := System myUserProfile.
+names := userProfile symbolList names.
+(names includes: aSymbol) ifFalse: [
+	| symbolDictionary |
+	symbolDictionary := SymbolDictionary new name: aSymbol; yourself.
+	userProfile insertDictionary: symbolDictionary at: names size + 1.
+].
+%
+'.
 	self classOrganizer
-		fileOutClassesAndMethodsInDictionary: (self objectNamed: anOrderedCollection first)
+		fileOutClassesAndMethodsInDictionary: dictionary
 		on: writeStream.
 !
 
@@ -955,18 +979,26 @@ sbRecompileSubclassesOf: newClass andCopyMethods: aBoolean
 	symbolList := self symbolList.
 	list := self classOrganizer subclassesOf: oldClass.
 	list do: [:oldSubclass |
-		| instVars classInstVars newSubclass |
+		| instVars classInstVars definition string newSubclass i j |
 		instVars := self sbInstVarsOldParent: oldClass newParent: newClass oldChild: oldSubclass.
 		classInstVars := self sbInstVarsOldParent: oldClass class newParent: newClass class oldChild: oldSubclass class.
-		newSubclass := newClass
-			subclass: oldSubclass name
-			instVarNames: instVars
-			classVars: oldSubclass classVarNames
-			classInstVars: classInstVars
-			poolDictionaries: oldSubclass sharedPools
-			inDictionary: (System myUserProfile dictionaryAndSymbolOf: oldSubclass) first
-			instancesInvariant: oldSubclass instancesInvariant
-			isModifiable: oldSubclass isModifiable.
+
+		definition := oldSubclass definition.
+		0 < (i := definition findString: 'instVarNames:' startingAt: 1) ifTrue: [
+			j := definition indexOf: Character lf startingAt: i.
+			string := String withAll: 'instVarNames: #('.
+			instVars do: [:each | string addAll: each; add: Character space].
+			string add: $).
+			definition := (definition copyFrom: 1 to: i - 1) , string , (definition copyFrom: j to: definition size).
+		].
+		0 < (i := definition findString: 'classInstVars:' startingAt: 1) ifTrue: [
+			j := definition indexOf: Character lf startingAt: i.
+			string := String withAll: 'classInstVars: #('.
+			classInstVars do: [:each | string addAll: each; add: Character space].
+			string add: $).
+			definition := (definition copyFrom: 1 to: i - 1) , string , (definition copyFrom: j to: definition size).
+		].
+		newSubclass := definition evaluate.
 		aBoolean ifTrue: [self sbCopyMethodsFor: newSubclass].
 		self classOrganizer update.
 	].
@@ -1006,7 +1038,7 @@ sbRemoveClasses
 						at: #'className'	put: selectedClass name;
 						at: #'class'				put: selectedClass;
 						yourself.
-					eachDictionary removeKey: eachName.
+					self sbRemoveKey: eachName fromDictionary: eachDictionary.
 				].
 			].
 		].
@@ -1047,6 +1079,11 @@ sbRemoveHistory: aClass
 			].
 		].
 	].
+!
+
+sbRemoveKey: aSymbol fromDictionary: aDictionary
+
+	aDictionary removeKey: aSymbol.
 !
 
 sbRemoveMethodCategories: anOrderedCollection
@@ -1400,7 +1437,7 @@ sbUpdateDictionaries
 
 sbUpdateMethod: aSymbol
 
-	| selection classes names method string list oldGsMethod |
+	| selection classes names method string list oldGsMethod allSelectors |
 
 	"Inherited implimentors"
 	classes := self sbUpdateMethodInheritedImplementationsOf: aSymbol.
@@ -1421,18 +1458,32 @@ sbUpdateMethod: aSymbol
 	string last = Character lf ifFalse: [writeStream lf].
 	writeStream nextPut: $%; lf.	"Lines 4-N"
 
+	"unimplemented selectors"
+	((method class includesSelector: #'_selectorPool') and: [method class includesSelector: #'_sourceOffsetOfFirstSendOf:']) ifTrue: [
+		allSelectors := IdentitySet new.
+		self classOrganizer classes do: [:each | 
+			allSelectors addAll: each selectors; addAll: each class selectors.
+		].
+		(method _selectorPool reject: [:each | allSelectors includes: each]) do: [:each | 
+			(method _sourceOffsetOfFirstSendOf: each) printOn: writeStream.
+			writeStream space; nextPutAll: each; tab.
+		].
+	].
+	writeStream lf.	"Line N+1"
+
 	"Array of Associations (offset -> selector) indexed by step points"
 	list := self sbUpdateMethodStepPointsFor: method.
 	list := list collect: [:each | each key printString , ' ' , each value].
-	self writeList: list.	"Line N+1"
+	self writeList: list.	"Line N+2"
 
 	"breaks"
 	list := self  sbUpdateMethodBreakPointsFor: method.
-	self writeList: (list collect: [:each | each printString]).	"Line N+2"
+	self writeList: (list collect: [:each | each printString]).	"Line N+3"
 
-	"Method category"
-	writeStream nextPutAll: (self categoryOfMethod: method); lf.	"Line N+3"
+	"method category"
+	writeStream nextPutAll: (self categoryOfMethod: method); lf.	"Line N+4"
 
+	"original method"
 	oldGsMethod := (method inClass class canUnderstand: #'persistentMethodDictForEnv:')
 		ifTrue: [(method inClass persistentMethodDictForEnv: 0) at: aSymbol ifAbsent: [method]]
 		ifFalse: [(method inClass class canUnderstand: #'_rawMethodDict')
@@ -1444,6 +1495,8 @@ sbUpdateMethod: aSymbol
 		(string notEmpty and: [string last = Character lf]) ifFalse: [writeStream lf].
 	].
 	writeStream nextPut: $%; lf.
+
+	"method compile warnings"
 	string := selections at: #'methodWarnings' ifAbsent: [''].
 	string isNil ifTrue: [string := ''].
 	writeStream nextPutAll: string; nextPut: $%; lf.
@@ -1693,7 +1746,12 @@ sbUpdateSuperclass
 
 	| class tabName selected index |
 	tabName := self nextLine.
-	(#('instanceTab' 'classTab') includes: tabName) ifFalse: [self error: 'Unexpected token!!'].
+	(#('default' 'instanceTab' 'classTab') includes: tabName) ifFalse: [self error: 'Unexpected token!!'].
+	tabName = 'default' ifTrue: [
+		tabName := (selectedClass notNil and: [selectedClass selectors isEmpty and: [selectedClass class selectors notEmpty]]) 
+			ifTrue: ['classTab']
+			ifFalse: ['instanceTab'].
+	].
 	writeStream nextPutAll: tabName; lf.
 	selectedClass notNil ifTrue: [
 		selectedClass := tabName = 'instanceTab'
@@ -1841,6 +1899,7 @@ writeList: aList
 !JadeServer categoriesFor: #compiledMethodAt:inClass:!public!System Browser! !
 !JadeServer categoriesFor: #currentUserMayEditMethod:!public!System Browser! !
 !JadeServer categoriesFor: #dictionaryAndSymbolOf:!public!System Browser! !
+!JadeServer categoriesFor: #dictionaryAndSymbolOf:forUser:!public!System Browser! !
 !JadeServer categoriesFor: #historyOf:!private! !
 !JadeServer categoriesFor: #isPackagePolicyEnabled!public!System Browser! !
 !JadeServer categoriesFor: #methodSignatureForSelector:!public!System Browser! !
@@ -1895,6 +1954,7 @@ writeList: aList
 !JadeServer categoriesFor: #sbRemoveDictionaries:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveGlobals!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveHistory:!public!System Browser! !
+!JadeServer categoriesFor: #sbRemoveKey:fromDictionary:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveMethodCategories:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveMethods:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemovePriorVersions!public!System Browser! !
@@ -1954,6 +2014,18 @@ systemBrowser: aString
 
 !JadeServer64bit methodsFor!
 
+sbRemoveKey: aSymbol fromDictionary: aDictionary
+
+	| aClass array |
+	aClass := aDictionary at: aSymbol.
+	array := self dictionaryAndSymbolOf: aClass.
+	((array at: 1) == aDictionary and: [
+		(array at: 2) == aSymbol and: [
+		(Class canUnderstand: #'removeFromSystem') and: [	"mark package as modified"
+		aClass removeFromSystem]]]) ifFalse: [
+			aDictionary removeKey: aSymbol.
+		].!
+
 systemBrowser: aString
 
 	[
@@ -1963,6 +2035,7 @@ systemBrowser: aString
 		ex pass.
 	].
 ! !
+!JadeServer64bit categoriesFor: #sbRemoveKey:fromDictionary:!public!System Browser! !
 !JadeServer64bit categoriesFor: #systemBrowser:!public!System Browser! !
 
 !JadeServer64bit32 methodsFor!
@@ -1974,8 +2047,18 @@ dictionaryAndSymbolOf: aClass
 	^array isEmpty
 		ifTrue: [nil]
 		ifFalse: [array first].
+!
+
+dictionaryAndSymbolOf: aClass forUser: aUserProfile
+
+	| array |
+	array := aUserProfile symbolList dictionariesAndSymbolsOf: aClass.
+	^array isEmpty
+		ifTrue: [nil]
+		ifFalse: [array first].
 ! !
 !JadeServer64bit32 categoriesFor: #dictionaryAndSymbolOf:!public! !
+!JadeServer64bit32 categoriesFor: #dictionaryAndSymbolOf:forUser:!public! !
 
 !JadeServer64bit3x methodsFor!
 
@@ -2489,6 +2572,18 @@ browseMethodsContaining
 	self browseMethodsAndSelect: searchString.
 !
 
+browseSelectedClass
+
+	| range string list assoc |
+	range := methodSourcePresenter view selectionRange.
+	string := methodSourcePresenter value copyFrom: range start to: range stop.
+	list := self findClassList.
+	assoc := list 
+		detect: [:each | each key = string]
+		ifNone: [^MessageBox warning: 'Class ' , string printString , ' not found!!' caption: 'Jade'].
+	parentPresenter parentPresenter addSystemBrowserForClass: assoc value.
+!
+
 browseSenders
 
 	self browseSendersOf: methodListPresenter selections first first.
@@ -2742,12 +2837,12 @@ createSchematicWiringForMethodList
 createSchematicWiringForMethodSource
 
 	methodSourcePresenter 	
-		when: #'hoverStart:'						send: #'methodHoverStart:'		to: self;
-		when: #'hoverEnd:'						send: #'methodHoverEnd:'			to: self;
-		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'				to: self;
-		when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'	to: self;
-		when: #'valueChanged'					send: #'methodChanged'			to: self;
-		when: #'focusLost'						send: #'cancelCallTip'				to: methodSourcePresenter view;
+		when: #'hoverStart:'						send: #'methodHoverStart:'			to: self;
+		when: #'hoverEnd:'						send: #'methodHoverEnd:'				to: self;
+		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'					to: self;
+		when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'		to: self;
+		when: #'valueChanged'					send: #'methodValueChanged'		to: self;
+		when: #'focusLost'						send: #'cancelCallTip'					to: methodSourcePresenter view;
 		yourself.
 !
 
@@ -2877,7 +2972,7 @@ editCut
 editDelete
 
 	View focus clearSelection.
-	self methodChanged.
+	self methodValueChanged.
 !
 
 editFind
@@ -2896,7 +2991,8 @@ editFindNext
 editMenuStrings
 
 	false ifTrue: [
-		self editSave; editUndo; editRedo; editCut; editCopy; editPaste; editDelete; editSelectAll; editFind; editFindNext; editReplace; jadeDisplay; jadeExecute; jadeInspect.
+		self editSave; editUndo; editRedo; editCut; editCopy; editPaste; editDelete; editSelectAll; editFind; editFindNext; editReplace; 
+			jadeDisplay; jadeExecute; jadeInspect; browseSelectedClass.
 	].
 	^#(
 		'&Edit'
@@ -2921,6 +3017,7 @@ editMenuStrings
 		'Display/Ctrl+D/jadeDisplay'
 		'Execute/Ctrl+E/jadeExecute'
 		'Inspect/Ctrl+Q/jadeInspect'
+		'Browse Class/Ctrl+B/browseSelectedClass'
 	).
 !
 
@@ -3089,7 +3186,7 @@ fileOutClass
 
 fileOutClassOnPath: aString
 
-	| className header file newSource index |
+	| className header file newSource index set line |
 	className := self selectedClassNameWithoutVersion.
 	header := self stuffToKeepFromOldFileForClass: className onPath: aString.
 	newSource := self gciSession 
@@ -3097,6 +3194,11 @@ fileOutClassOnPath: aString
 		with: 'fileOutClass' , Character tab asString , self behaviorIdentifier.
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
+	"check to see if header is repeat of first line of file-out"
+	index := newSource indexOf: Character lf.
+	line := newSource copyFrom: 1 to: index - 1.
+	set := (header subStrings: Character lf) asSet.
+	(set size == 1 and: [set any = line]) ifTrue: [header := ''].
 	file := FileStream write: aString.
 	[
 		file nextPutAll: header; nextPutAll: newSource.
@@ -3142,7 +3244,22 @@ findClass
 "
 	Array with: className with: dictionaryName with: catetory with: packageName.
 "
-	| string find list |
+	| find list |
+	list := self findClassList.
+	ignoreNextSetFocusEvent := true.
+	find := JadeFindClassDialog showModal: 'ThreeColumnView' on: list.
+	find ifNil: [^self].
+	self 
+		updateAfterFindClass: find value
+		isMeta: nil 
+		selector: ''.
+!
+
+findClassList
+"
+	Array with: className with: dictionaryName with: catetory with: packageName.
+"
+	| string list |
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
 		with: 'findClass'.
@@ -3150,13 +3267,7 @@ findClass
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
 	list := list collect: [:each | (each at: 1) -> each].
-	ignoreNextSetFocusEvent := true.
-	find := JadeFindClassDialog showModal: 'ThreeColumnView' on: list.
-	find ifNil: [^self].
-	self 
-		updateAfterFindClass: find value
-		isMeta: (find = ('System' -> #('System' 'Globals' 'User Classes' ''))) 
-		selector: ''.
+	^list
 !
 
 getViews
@@ -3261,6 +3372,14 @@ isCategoriesTabSelected
 isClassListTabSelected
 
 	^classHierarchyTabs currentCard name = 'classList'.
+!
+
+isClassSelectedInEditor
+
+	| range string |
+	(range := methodSourcePresenter view selectionRange) isEmpty ifTrue: [^false].
+	string := methodSourcePresenter value copyFrom: range start to: range stop.
+	^(string allSatisfy: [:each | each isAlphaNumeric]) and: [string first isLetter and: [string first isUppercase]]
 !
 
 isDictionariesTabSelected
@@ -3455,24 +3574,6 @@ loadLatestVersion
 	self updateCommand: stream contents.
 !
 
-methodChanged
-
-	inUpdate ifTrue: [^self].
-	methodSourcePresenter value = methodSource ifTrue: [
-		methodSourcePresenter view 
-			backcolor: JadeTextPresenter colorForNoEdits;
-			isModified: false;
-			yourself.
-		self updateMethodStepPoints.
-		self statusBarText: ''.
-	] ifFalse: [
-		methodSourcePresenter view 
-			backcolor: JadeTextPresenter colorForUnsavedEdits;
-			clearContainerIndicators;
-			yourself.
-	].
-!
-
 methodDoubleClicked: anObject
 
 	| range string |
@@ -3590,6 +3691,24 @@ methodsMenuStrings
 methodSourcePresenter
 
 	^methodSourcePresenter.
+!
+
+methodValueChanged
+
+	inUpdate ifTrue: [^self].
+	methodSourcePresenter value = methodSource ifTrue: [
+		methodSourcePresenter view 
+			backcolor: JadeTextPresenter colorForNoEdits;
+			isModified: false;
+			yourself.
+		self updateMethodStepPoints.
+		self statusBarText: ''.
+	] ifFalse: [
+		methodSourcePresenter view 
+			backcolor: JadeTextPresenter colorForUnsavedEdits;
+			clearContainerIndicators;
+			yourself.
+	].
 !
 
 nextLine
@@ -4069,6 +4188,7 @@ queryCommand: aCommandQuery
 		aCommandQuery isEnabled: self selectedClasses size == 1. ^true.
 	].
 	(#(#'runClassTests') includes: command) ifTrue: [aCommandQuery isEnabled: selectedClassesAreTestCases. ^true].
+	(#(#'browseSelectedClass') includes: command) ifTrue: [aCommandQuery isEnabled: self isClassSelectedInEditor. ^true].
 	^super queryCommand: aCommandQuery.
 !
 
@@ -4501,7 +4621,8 @@ stuffToKeepFromOldFileForClass: nameString onPath: pathString
 	x = 'doit' ifFalse: [^''].
 	x := source copyFrom: j + 1 to: l - 1.
 	(x includes: Character space) ifTrue: [^''].
-	^source copyFrom: 1 to: i.!
+	source := source copyFrom: 1 to: i.
+	^source!
 
 textTabChanged
 
@@ -4548,7 +4669,7 @@ updateAfterFindClass: anArray isMeta: aBoolean selector: aString
 		nextPutAll: (anArray at: 3); nextPut: $-; lf;	"class category"
 		nextPutAll: 'classList'; lf;	"not hierarchy"
 		nextPutAll: (anArray at: 1); lf;	"className"
-		nextPutAll: (aBoolean ifTrue: ['classTab'] ifFalse: ['instanceTab']); lf;
+		nextPutAll: (aBoolean ifNil: ['default'] ifNotNil: [aBoolean ifTrue: ['classTab'] ifFalse: ['instanceTab']]); lf;
 		lf; 	"superclass"
 		nextPutAll: 'categoryList'; lf;	"not variables"
 		lf;		"methodFilter (category or variable)"
@@ -4866,6 +4987,14 @@ updateMethod
 	].
 	methodSource := newSource.
 	methodSourcePresenter value: methodSource.
+	"unimplemented selectors"
+	unimplementedSelectors := Dictionary new.
+	self nextLineAsList do: [:eachPair | 
+		| pieces |
+		pieces := eachPair subStrings.
+		unimplementedSelectors at: pieces first asNumber put: pieces last.
+	].
+	"step points"
 	stepPoints := self nextLineAsList collect: [:each |
 		| pieces offset selector | 
 		pieces := each subStrings.
@@ -4873,6 +5002,7 @@ updateMethod
 		selector := (2 <= pieces size ifTrue: [pieces at: 2] ifFalse: ['']).
 		(offset to: 0) -> selector.
 	].
+	"breaks"
 	breakPoints := self nextLineAsList collect: [:each | each asNumber].
 	1 to: stepPoints size do: [:stepPoint |
 		| range start char length |
@@ -4906,6 +5036,7 @@ updateMethod
 			isReadOnly: true;
 			yourself.
 	].
+	"method category"
 	((methodCategory := self nextLine) notEmpty and: [self isCategoriesTabSelected]) ifTrue: [
 		| fullList selections index newName |
 		fullList := categoryListPresenter list.
@@ -4920,7 +5051,9 @@ updateMethod
 			categoryListPresenter view invalidate.
 		].
 	].
+	"original source"
 	originalSourcePresenter value: self nextParagraph.
+	"compiler warnings"
 	(warnings := self nextParagraph) notEmpty ifTrue: [
 		MessageBox warning: warnings caption: 'Jade Compile Warning'.
 	].
@@ -4991,8 +5124,13 @@ updateMethodStepPoints
 	1 to: stepPoints size do: [:stepPoint |
 		| range string styleName |
 		range := (stepPoints at: stepPoint) key.
-		styleName := (breakPoints includes: stepPoint) ifTrue: [9] ifFalse: [8].
-		string := ((breakPoints includes: stepPoint) ifTrue: ['Break at '] ifFalse: ['']) , 'step point #' , stepPoint printString.
+		(unimplementedSelectors at: range start ifAbsent: [nil]) ifNotNil: [:value | 
+			styleName := 10.
+			string := 'No implementors of #' , value printString , ' (found at step point #' , stepPoint printString , ')'.
+		] ifNil: [
+			styleName := (breakPoints includes: stepPoint) ifTrue: [9] ifFalse: [8].
+			string := ((breakPoints includes: stepPoint) ifTrue: ['Break at '] ifFalse: ['']) , 'step point #' , stepPoint printString.
+		].
 		indicators add: (ScintillaIndicator
 			styleName: styleName 
 			range: range 
@@ -5179,6 +5317,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseSelectedClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSenders!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
@@ -5232,6 +5371,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #fileOutDictionary!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileTypes!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #findClassList!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #getViews!public! !
 !JadeSystemBrowserPresenter categoriesFor: #globalsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #handleInvalidSession!public! !
@@ -5241,6 +5381,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #inspectGlobal!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isCategoriesTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassListTabSelected!public!request string! !
+!JadeSystemBrowserPresenter categoriesFor: #isClassSelectedInEditor!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isDictionariesTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isGlobalsTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public! !
@@ -5257,7 +5398,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #layoutInfo!public! !
 !JadeSystemBrowserPresenter categoriesFor: #layoutInfo:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #loadLatestVersion!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #methodChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodDoubleClicked:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodFilterListPresenter!public!request string! !
 !JadeSystemBrowserPresenter categoriesFor: #methodHoverEnd:!event handlers!public! !
@@ -5267,6 +5407,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #methodsIdentifier!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourcePresenter!public!updating! !
+!JadeSystemBrowserPresenter categoriesFor: #methodValueChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #nextLine!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #nextLineAsList!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #nextList!public!updating! !
@@ -5416,12 +5557,12 @@ createArrayFromString: arrayString
 createSchematicWiringForMethodSource
 
 	methodSourcePresenter 	
-		when: #'hoverStart:'						send: #'methodHoverStart:'		to: self;
-		when: #'hoverEnd:'						send: #'methodHoverEnd:'			to: self;
-		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'				to: self;
-		when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'	to: self;
-		when: #'valueChanged'					send: #'methodChanged'			to: self;
-		when: #'focusLost'						send: #'cancelCallTip'				to: methodSourcePresenter view;
+		when: #'hoverStart:'						send: #'methodHoverStart:'			to: self;
+		when: #'hoverEnd:'						send: #'methodHoverEnd:'				to: self;
+		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'					to: self;
+		when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'		to: self;
+		when: #'valueChanged'					send: #'methodValueChanged'		to: self;
+		when: #'focusLost'						send: #'cancelCallTip'					to: methodSourcePresenter view;
 		yourself.
 !
 
@@ -5732,6 +5873,16 @@ addSystemBrowser
 	self addSystemBrowserWithLayoutInfo: (self currentCard ifNotNil: [:currentCard | currentCard layoutInfo]).
 !
 
+addSystemBrowserForClass: anArray
+
+	(JadeAutoSystemBrowserPresenter
+		createIn: cardsPresenter 
+		on: model)
+		updateAfterFindClass: anArray
+		isMeta: nil 
+		selector: ''.
+!
+
 addSystemBrowserWithLayoutInfo: each
 
 	(JadeAutoSystemBrowserPresenter
@@ -5939,6 +6090,7 @@ update
 ! !
 !JadeSystemBrowser categoriesFor: #abortTransaction!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowser!public! !
+!JadeSystemBrowser categoriesFor: #addSystemBrowserForClass:!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowserWithLayoutInfo:!public! !
 !JadeSystemBrowser categoriesFor: #addWorkspace!public! !
 !JadeSystemBrowser categoriesFor: #closeCard!public! !

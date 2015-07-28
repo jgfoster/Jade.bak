@@ -3,7 +3,7 @@ package := Package name: 'GemStone Objects'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.051'.
+package basicPackageVersion: '0.052'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Objects'' yourself.'.
 
@@ -48,7 +48,7 @@ GsObject subclass: #GsMethod
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GsObject subclass: #GsProcess
-	instanceVariableNames: 'stack'
+	instanceVariableNames: 'stack type'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -501,6 +501,16 @@ oop: anOopType
 	oopType := anOopType.
 !
 
+printOn: aStream
+
+	aStream
+		nextPutAll: 'aGsProcess(';
+		print: oopType asInteger;
+		nextPutAll: ((type isNil or: [type isEmpty]) ifTrue: [''] ifFalse: [', ' , type]);
+		nextPut: $);
+		yourself.
+!
+
 stack
 
 	stack notNil ifTrue: [^stack].
@@ -513,13 +523,22 @@ stack
 		with: '>>#'.
 	stack := stack subStrings: Character lf.
 	^stack.
-! !
+!
+
+type
+	^type!
+
+type: anObject
+	type := anObject! !
 !GsProcess categoriesFor: #aboutToDebug!public! !
 !GsProcess categoriesFor: #description!public! !
 !GsProcess categoriesFor: #frameForLevel:!public! !
 !GsProcess categoriesFor: #gciSession:!public! !
 !GsProcess categoriesFor: #oop:!public! !
+!GsProcess categoriesFor: #printOn:!public! !
 !GsProcess categoriesFor: #stack!public! !
+!GsProcess categoriesFor: #type!accessing!public! !
+!GsProcess categoriesFor: #type:!accessing!public! !
 
 !GsProcess class methodsFor!
 

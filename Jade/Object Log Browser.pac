@@ -3,7 +3,7 @@ package := Package name: 'Object Log Browser'.
 package paxVersion: 1;
 	basicComment: 'Fix Compiler Warning'.
 
-package basicPackageVersion: '0.020'.
+package basicPackageVersion: '0.021'.
 
 
 package classNames
@@ -77,15 +77,15 @@ sbObjectLog: anOrderedCollection
 	log reverseDo: [:each | 
 		| labelString objectString |
 		objectString := String withAll: (each objectString asArray collect: [:char | 
-			char codePoint < 32 ifTrue: [Character space] ifFalse: [
-			127 < char codePoint ifTrue: [$?] ifFalse: [char]]]).
+			char asciiValue < 32 ifTrue: [Character space] ifFalse: [
+			127 < char asciiValue ifTrue: [$?] ifFalse: [char]]]).
 		500 < objectString size ifTrue: [objectString := (objectString copyFrom: 1 to: 500) , '...'].
 		each label = each object printString ifTrue: [
 			labelString := ''.
 		] ifFalse: [
 			labelString := String withAll: (each labelString asArray collect: [:char | 
-				char codePoint < 32 ifTrue: [Character space] ifFalse: [
-				127 < char codePoint ifTrue: [$?] ifFalse: [char]]]).
+				char asciiValue < 32 ifTrue: [Character space] ifFalse: [
+				127 < char asciiValue ifTrue: [$?] ifFalse: [char]]]).
 			500 < labelString size ifTrue: [labelString := (labelString copyFrom: 1 to: 500) , '...'].
 		].
 "1"	(self oopOf: each) printOn: writeStream.

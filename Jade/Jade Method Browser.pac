@@ -3,7 +3,7 @@ package := Package name: 'Jade Method Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.082'.
+package basicPackageVersion: '0.083'.
 
 
 package classNames
@@ -655,17 +655,32 @@ stringOfLineNumbersWithBreaksIn: aGsMethod
 !JadeServer64bit3x methodsFor!
 
 compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCategory: categorySymbol
+	"returns (nil -> anArrayOfErrors) or (aGsNMethod -> compilerWarnings) or (aGsNMethod -> nil)"
 
-	^[[		"(aGsNMethod -> nil) if no errors or warnings"
-		(aBehavior
+	| method warnings |
+	[[
+		method := aBehavior
 			compileMethod: methodString
 			dictionaries: aSymbolList
 			category: categorySymbol
-			environmentId: 0) -> nil.
-	] on: CompileError do: [:ex | 		"(nil -> anArrayOfErrors) if a compile error"
-		ex return: nil -> (ex gsArguments at: 1)
-	]] on: CompileWarning do: [:ex | 	"(aGsNMethod -> aString) if a compiler warning"
-		ex return: (ex gsArguments at: 2) -> (ex gsArguments at: 1)
+			environmentId: 0.
+	] on: CompileError do: [:ex |
+		^nil -> (ex gsArguments at: 1)
+	]] on: CompileWarning do: [:ex |
+		warnings := ex gsArguments at: 1.
+		ex resume.
+	].
+	^[	"Above method does not notify package of changes. 
+		Repeat compile if possible using method that broadcasts changes (but does not signal warnings).
+		See https://github.com/jgfoster/Jade/issues/3."
+		aBehavior
+			compileMethod: methodString 
+			category: categorySymbol 
+			using: aSymbolList 
+			environmentId: 0.
+		(aBehavior compiledMethodAt: method key selector) -> warnings.
+	] on: Error do: [:ex | 
+		ex return: method -> warnings.
 	].
 ! !
 !JadeServer64bit3x categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !

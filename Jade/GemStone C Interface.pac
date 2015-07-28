@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.119'.
+package basicPackageVersion: '0.124'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -36,6 +36,11 @@ package classNames
 	add: #LibGciRpc64_32;
 	add: #LibGciRpc64_321;
 	add: #LibGciRpc64_322;
+	add: #LibGciRpc64_323;
+	add: #LibGciRpc64_324;
+	add: #LibGciRpc64_325;
+	add: #LibGciRpc64_326;
+	add: #LibGciRpc64_33;
 	add: #OopType32;
 	add: #OopType32Array;
 	add: #OopType32Field;
@@ -203,6 +208,31 @@ LibGciRpc64_32 subclass: #LibGciRpc64_321
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 LibGciRpc64_32 subclass: #LibGciRpc64_322
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_323
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_324
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_325
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_326
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_33
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -564,8 +594,7 @@ gciCallInProgress
 
 gciClearStack: processOop
 
-	<cdecl: void GciClearStack OopType64>
-	^self invalidCall
+	self subclassResponsibility.
 !
 
 gciCommit
@@ -576,45 +605,31 @@ gciCommit
 
 gciErr: errorReport
 
-	<cdecl: bool GciErr GciErrSType64*>
-	^self invalidCall
-!
+	self subclassResponsibility.!
 
 gciFetchBytes: anOopType _: startIndex _: cString _: maxSize
 
-	<cdecl: sdword GciFetchBytes_ OopType64 sqword lpvoid qword>
-	^self invalidCall
-!
+	self subclassResponsibility.!
 
 gciFetchChars: anOopType _: startIndex _: cString _: maxSize
 
-	<cdecl: sdword GciFetchChars_ OopType64 sqword lpstr qword>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciFetchClass: oop
 
-	<cdecl: OopType64 GciFetchClass OopType64>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciFetchObjImpl: anObject
 
-	<cdecl: sdword GciFetchObjImpl OopType64>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciFetchSize: anObject
 
-	<cdecl: sdword GciFetchSize_ OopType64>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciFetchVaryingOops: anObject _: startIndex _: theOops _: numOops
 
-	<cdecl: sdword GciFetchVaryingOops OopType64 sqword OopType64Array* sdword>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciGemTrace: anInteger
 "$GEMSTONE/include/gci.hf line 5098
@@ -677,9 +692,7 @@ gciLongToOop: anInteger
 
 gciNbContinueWith: process _: replaceTopOfStack _: flags _: error
 
-	<cdecl: void GciNbContinueWith OopType64 OopType64 sdword GciErrSType64*>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciNbEnd: result
 	"GciNbProgressEType GciNbEnd(void ** result);"
@@ -709,15 +722,11 @@ result	The address at which GciNbEnd should place a pointer to the result of the
 
 gciNbExecuteStrFromContext: string _: context _: symbolList
 
-	<cdecl: OopType64 GciNbExecuteStrFromContext lpstr OopType64 OopType64>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciNbPerform: receiver _: selector _: args _: numArgs
 
-	<cdecl: void GciNbPerform OopType64 lpstr OopType64* dword>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciNbPerformNoDebug: receiver _: selector _: args _: numArgs
 
@@ -727,15 +736,11 @@ gciNbPerformNoDebug: receiver _: selector _: args _: numArgs
 
 gciNewString: string
 
-	<cdecl: OopType64 GciNewString lpstr >
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciOopToChr: anObject
 
-	<cdecl: sdword GciOopToChr OopType64>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciPollForSignal
 
@@ -745,9 +750,7 @@ gciPollForSignal
 
 gciReleaseOops: args _: numArgs
 
-	<cdecl: void GciReleaseOops OopType64* dword>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciSetNet: stoneName _: hostUserID _: hostPassword _: gemService
 
@@ -811,6 +814,11 @@ is32Bit
 !
 
 is64Bit
+
+	^false.
+!
+
+is64Bit24
 
 	^false.
 !
@@ -1173,6 +1181,7 @@ valueOfOop: anOopType
 !GciLibrary categoriesFor: #initialize!private! !
 !GciLibrary categoriesFor: #is32Bit!public!Testing! !
 !GciLibrary categoriesFor: #is64Bit!public!Testing! !
+!GciLibrary categoriesFor: #is64Bit24!public!Testing! !
 !GciLibrary categoriesFor: #is64Bit32!public! !
 !GciLibrary categoriesFor: #is64Bit3x!public!Testing! !
 !GciLibrary categoriesFor: #lastError!private! !
@@ -1559,10 +1568,58 @@ LibGciRpc64 comment: ''!
 !LibGciRpc64 categoriesForClass!Unclassified! !
 !LibGciRpc64 methodsFor!
 
+gciClearStack: processOop
+
+	<cdecl: void GciClearStack OopType64>
+	^self invalidCall
+!
+
 gciDbgEstablishToFile: aString
 	"BoolType GciDbgEstablishToFile( const char * fileName );"
 
 	<cdecl: bool GciDbgEstablishToFile lpstr>
+	^self invalidCall
+!
+
+gciErr: errorReport
+
+	<cdecl: bool GciErr GciErrSType64*>
+	^self invalidCall
+!
+
+gciFetchBytes: anOopType _: startIndex _: cString _: maxSize
+
+	<cdecl: sdword GciFetchBytes_ OopType64 sqword lpvoid qword>
+	^self invalidCall
+!
+
+gciFetchChars: anOopType _: startIndex _: cString _: maxSize
+
+	<cdecl: sdword GciFetchChars_ OopType64 sqword lpstr qword>
+	^self invalidCall
+!
+
+gciFetchClass: oop
+
+	<cdecl: OopType64 GciFetchClass OopType64>
+	^self invalidCall
+!
+
+gciFetchObjImpl: anObject
+
+	<cdecl: sdword GciFetchObjImpl OopType64>
+	^self invalidCall
+!
+
+gciFetchSize: anObject
+
+	<cdecl: sdword GciFetchSize_ OopType64>
+	^self invalidCall
+!
+
+gciFetchVaryingOops: anObject _: startIndex _: theOops _: numOops
+
+	<cdecl: sdword GciFetchVaryingOops OopType64 sqword OopType64Array* sdword>
 	^self invalidCall
 !
 
@@ -1575,6 +1632,24 @@ gciFltToOop: aFloat
 gciI64ToOop: anInteger
 
 	<cdecl: OopType64 GciI64ToOop sdword>
+	^self invalidCall
+!
+
+gciNbContinueWith: process _: replaceTopOfStack _: flags _: error
+
+	<cdecl: void GciNbContinueWith OopType64 OopType64 sdword GciErrSType64*>
+	^self invalidCall
+!
+
+gciNbExecuteStrFromContext: string _: context _: symbolList
+
+	<cdecl: OopType64 GciNbExecuteStrFromContext lpstr OopType64 OopType64>
+	^self invalidCall
+!
+
+gciNbPerform: receiver _: selector _: args _: numArgs
+
+	<cdecl: void GciNbPerform OopType64 lpstr OopType64* dword>
 	^self invalidCall
 !
 
@@ -1611,6 +1686,24 @@ enum {
  };"
 
 	<cdecl: void GciNbPerformNoDebug OopType64 lpstr OopType64* dword dword>
+	^self invalidCall
+!
+
+gciNewString: string
+
+	<cdecl: OopType64 GciNewString lpstr >
+	^self invalidCall
+!
+
+gciOopToChr: anObject
+
+	<cdecl: sdword GciOopToChr OopType64>
+	^self invalidCall
+!
+
+gciReleaseOops: args _: numArgs
+
+	<cdecl: void GciReleaseOops OopType64* dword>
 	^self invalidCall
 !
 
@@ -1798,11 +1891,25 @@ specialFromOop: anOop
 	].
 	^nil.
 ! !
+!LibGciRpc64 categoriesFor: #gciClearStack:!private! !
 !LibGciRpc64 categoriesFor: #gciDbgEstablishToFile:!private! !
+!LibGciRpc64 categoriesFor: #gciErr:!private! !
+!LibGciRpc64 categoriesFor: #gciFetchBytes:_:_:_:!private! !
+!LibGciRpc64 categoriesFor: #gciFetchChars:_:_:_:!private! !
+!LibGciRpc64 categoriesFor: #gciFetchClass:!private! !
+!LibGciRpc64 categoriesFor: #gciFetchObjImpl:!private! !
+!LibGciRpc64 categoriesFor: #gciFetchSize:!private! !
+!LibGciRpc64 categoriesFor: #gciFetchVaryingOops:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciFltToOop:!private! !
 !LibGciRpc64 categoriesFor: #gciI64ToOop:!private! !
+!LibGciRpc64 categoriesFor: #gciNbContinueWith:_:_:_:!private! !
+!LibGciRpc64 categoriesFor: #gciNbExecuteStrFromContext:_:_:!private! !
+!LibGciRpc64 categoriesFor: #gciNbPerform:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciNbPerformNoDebug:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciNbPerformNoDebug:_:_:_:_:!private! !
+!LibGciRpc64 categoriesFor: #gciNewString:!private! !
+!LibGciRpc64 categoriesFor: #gciOopToChr:!private! !
+!LibGciRpc64 categoriesFor: #gciReleaseOops:_:!private! !
 !LibGciRpc64 categoriesFor: #is64Bit!public!Testing! !
 !LibGciRpc64 categoriesFor: #oopAsciiNul!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopAt:!private! !
@@ -1937,6 +2044,14 @@ displayName
 LibGciRpc64_24 guid: (GUID fromString: '{4DF6B51F-E61C-4046-9413-2DB70136A4C1}')!
 LibGciRpc64_24 comment: ''!
 !LibGciRpc64_24 categoriesForClass!Unclassified! !
+!LibGciRpc64_24 methodsFor!
+
+is64Bit24
+
+	^true.
+! !
+!LibGciRpc64_24 categoriesFor: #is64Bit24!public!Testing! !
+
 !LibGciRpc64_24 class methodsFor!
 
 displayName
@@ -2077,6 +2192,91 @@ fileNameSearch
 ! !
 !LibGciRpc64_322 class categoriesFor: #displayName!public! !
 !LibGciRpc64_322 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_323 guid: (GUID fromString: '{7CD3D48A-C954-4465-8DBC-90511A44E6E3}')!
+LibGciRpc64_323 comment: ''!
+!LibGciRpc64_323 categoriesForClass!Unclassified! !
+!LibGciRpc64_323 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.3'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.2.3-32.dll'.
+! !
+!LibGciRpc64_323 class categoriesFor: #displayName!public! !
+!LibGciRpc64_323 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_324 guid: (GUID fromString: '{AE6862DF-767F-45A7-8CF0-2520FDD79C28}')!
+LibGciRpc64_324 comment: ''!
+!LibGciRpc64_324 categoriesForClass!Unclassified! !
+!LibGciRpc64_324 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.4'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.2.4-32.dll'.
+! !
+!LibGciRpc64_324 class categoriesFor: #displayName!public! !
+!LibGciRpc64_324 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_325 guid: (GUID fromString: '{24C3DFCA-1974-4647-BE98-B8A0AA33801A}')!
+LibGciRpc64_325 comment: ''!
+!LibGciRpc64_325 categoriesForClass!Unclassified! !
+!LibGciRpc64_325 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.5'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.2.5-32.dll'.
+! !
+!LibGciRpc64_325 class categoriesFor: #displayName!public! !
+!LibGciRpc64_325 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_326 guid: (GUID fromString: '{81EB5050-FDDC-4907-9B98-69F01284C900}')!
+LibGciRpc64_326 comment: ''!
+!LibGciRpc64_326 categoriesForClass!Unclassified! !
+!LibGciRpc64_326 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.6'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.2.6-32.dll'.
+! !
+!LibGciRpc64_326 class categoriesFor: #displayName!public! !
+!LibGciRpc64_326 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_33 guid: (GUID fromString: '{68DB187D-A739-41BE-AD58-A476218B1B04}')!
+LibGciRpc64_33 comment: ''!
+!LibGciRpc64_33 categoriesForClass!Unclassified! !
+!LibGciRpc64_33 class methodsFor!
+
+displayName
+
+	^'64-bit 3.3'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.3.0-32.dll'.
+! !
+!LibGciRpc64_33 class categoriesFor: #displayName!public! !
+!LibGciRpc64_33 class categoriesFor: #fileNameSearch!public! !
 
 GciErrSType guid: (GUID fromString: '{9932DE27-ACC2-4E27-AD64-9A3FF8B6ECF9}')!
 GciErrSType comment: ''!

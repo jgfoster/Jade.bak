@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.213'.
+package basicPackageVersion: '0.224'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -64,7 +64,7 @@ Object subclass: #GciSession
 	classInstanceVariableNames: ''!
 Object subclass: #JadeServer
 	instanceVariableNames: 'classList classOrganizer readStream writeStream selectedClass methodFilterType methodFilters selections socket'
-	classVariableNames: 'AllGroups AllUsers ClassOrganizer GemStoneError Globals GsMethodDictionary SymbolDictionary System UserGlobals UserProfile'
+	classVariableNames: 'Admonition AllGroups AllUsers ClassOrganizer GemStoneError Globals GsMethodDictionary SymbolDictionary System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
 Error subclass: #GsError
@@ -923,6 +923,39 @@ signalConfirmationRequestUsing: anOopType64
 	^answer ifTrue: [library oopTrue] ifFalse: [library oopFalse].
 !
 
+signalInformRequestUsing: anOopType64 
+
+	| string |
+	string := self 
+		serverPerform: #'obInformRequest:' 
+		with: anOopType64.
+	MessageBox
+		notify: string 
+		caption: 'Server Inform Request'.
+	^library oopNil!
+
+signalMultiLineTextRequestUsing: anOopType64 
+
+	| string stream size prompt template answer oop |
+	string := self 
+		serverPerform: #'obTextRequest:' 
+		with: anOopType64.
+	stream := ReadStream on: string.
+	size := stream nextLine asNumber.
+	prompt := stream next: size.
+	template := stream upToEnd.
+	answer := Prompter
+		on: template 
+		prompt: prompt 
+		caption: 'Server Text Request'.
+	answer ifNil: [^library oopNil].
+	oop := self oopForString: answer.
+	[
+		self releaseOop: oop.
+	] forkAt: Processor userBackgroundPriority.
+	^oop.
+!
+
 signalTextRequestUsing: anOopType64 
 
 	| string stream size prompt template answer oop |
@@ -941,7 +974,7 @@ signalTextRequestUsing: anOopType64
 	oop := self oopForString: answer.
 	[
 		self releaseOop: oop.
-	] forAt: Processor userBackgroundPriority.
+	] forkAt: Processor userBackgroundPriority.
 	^oop.
 !
 
@@ -1005,9 +1038,8 @@ stopHeartbeat
 
 terminate: anOopType
 
-	self clearStack: anOopType.
+	self serverPerform: #'terminate:' with: anOopType.
 	TerminateProcess signal.
-	Processor terminateActive.
 !
 
 titleBarFor: aString
@@ -1221,6 +1253,8 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #serverPerformInterpreted:withArguments:!Jade convenience!public! !
 !GciSession categoriesFor: #setInitials:!private! !
 !GciSession categoriesFor: #signalConfirmationRequestUsing:!OmniBrowser!public! !
+!GciSession categoriesFor: #signalInformRequestUsing:!OmniBrowser!public! !
+!GciSession categoriesFor: #signalMultiLineTextRequestUsing:!OmniBrowser!public! !
 !GciSession categoriesFor: #signalTextRequestUsing:!OmniBrowser!public! !
 !GciSession categoriesFor: #softBreak!Jade!public! !
 !GciSession categoriesFor: #startHeartbeat!heartbeat!private! !
@@ -1419,12 +1453,12 @@ addString: aString toByteStream: aStream
 	| size |
 	(size := aString size) < 16r100 ifTrue: [
 		aStream nextPut: 11; nextPut: size.
-		aString do: [:each | aStream nextPut: each codePoint].
+		aString do: [:each | aStream nextPut: each asciiValue].
 		^self.
 	].
 	size < 16r1000000 ifTrue: [
 		aStream nextPut: 12; nextPut: (size bitAnd: 16rFF); nextPut: (size // 16r100 bitAnd: 16rFF); nextPut: (size // 16r10000 bitAnd: 16rFF).
-		aString do: [:each | aStream nextPut: each codePoint].
+		aString do: [:each | aStream nextPut: each asciiValue].
 		^self.
 	].
 	self error: 'Object cannot be encoded'.
@@ -1434,12 +1468,12 @@ addSymbol: aSymbol toByteStream: aStream
 
 	aSymbol size <= 16rFF ifTrue: [
 		aStream nextPut: 5; nextPut: aSymbol size.
-		aSymbol do: [:each | aStream nextPut: each codePoint].
+		aSymbol do: [:each | aStream nextPut: each asciiValue].
 		^self.
 	].
 	aSymbol size <= 16rFFFF ifTrue: [
 		aStream nextPut: 6; nextPut: (aSymbol size bitAnd: 16rFF); nextPut: (aSymbol size // 16r100 bitAnd: 16rFF).
-		aSymbol do: [:each | aStream nextPut: each codePoint].
+		aSymbol do: [:each | aStream nextPut: each asciiValue].
 		^self.
 	].
 	self error: 'Object cannot be encoded'.
@@ -1448,6 +1482,12 @@ addSymbol: aSymbol toByteStream: aStream
 asString: anObject
 
 	(anObject isKindOf: String) ifTrue: [^anObject].
+	Exception
+		category: nil
+		number: nil
+		do: [:ex :cat :num :args | 
+			^'<<printString error: ' , ex printString , '>>'.
+		].
 	^anObject printString.
 !
 
@@ -1596,6 +1636,10 @@ obConfirmationRequest: anOBConfirmationRequest
 		yourself.
 !
 
+obInformRequest: anOBInformRequest
+
+	^anOBInformRequest message!
+
 objectForOop: anInteger
 
 	self subclassResponsibility.!
@@ -1736,7 +1780,7 @@ readSocket: anInteger
 	] whileTrue: [
 		socket read: anInteger - string size into: string startingAt: string size + 1.
 	].
-	bytes := ByteArray withAll: (string asArray collect: [:each | each codePoint]).
+	bytes := ByteArray withAll: (string asArray collect: [:each | each asciiValue]).
 	stream := ReadStream on: bytes.
 	receiver := self readObjectFrom: stream.
 	selector := self readObjectFrom: stream.
@@ -1767,6 +1811,13 @@ registerOBNotifications
 	(platform := self objectNamed: #'OBGemStonePlatform') isNil ifTrue: [^self].
 	clientForwarder := (self objectNamed: #'ClientForwarder') new.
 	clientForwarder	clientObject: 1.
+	self
+		registerOBNotificationsForPlatform: platform 
+		clientForwarder: clientForwarder.
+!
+
+registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
+
 	platform 
 		registerBrowseClientForwarder: clientForwarder;
 		registerChoiceClientForwarder: clientForwarder;
@@ -1774,7 +1825,6 @@ registerOBNotifications
 		registerConfirmationClientForwarder: clientForwarder;
 		registerInformClientForwarder: clientForwarder;
 		registerMultiLineTextClientForwarder: clientForwarder;
-		registerMultipleChoiceClientForwarder: clientForwarder;
 		registerTextClientForwarder: clientForwarder;
 		yourself.
 !
@@ -1830,6 +1880,12 @@ stackForProcess: aGsProcess
 		stream nextPutAll: each; lf.
 	].
 	^stream contents.
+!
+
+terminate: aGsProcess
+
+	aGsProcess isNil ifTrue: [^self].
+	aGsProcess terminate.
 ! !
 !JadeServer categoriesFor: #_addToPureExportSet:!private! !
 !JadeServer categoriesFor: #abort!public! !
@@ -1860,6 +1916,7 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #nextPut:!public!Transcript! !
 !JadeServer categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeServer categoriesFor: #obConfirmationRequest:!OmniBrowser!public! !
+!JadeServer categoriesFor: #obInformRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #objectForOop:!private! !
 !JadeServer categoriesFor: #objectNamed:!private! !
 !JadeServer categoriesFor: #obTextRequest:!OmniBrowser!public! !
@@ -1870,17 +1927,19 @@ stackForProcess: aGsProcess
 !JadeServer categoriesFor: #readSocket:!public!Socket! !
 !JadeServer categoriesFor: #refreshSymbolList!public! !
 !JadeServer categoriesFor: #registerOBNotifications!public! !
+!JadeServer categoriesFor: #registerOBNotificationsForPlatform:clientForwarder:!public! !
 !JadeServer categoriesFor: #reportErrorOnStream:fromEvaluationOf:!public!Socket! !
 !JadeServer categoriesFor: #reset!public! !
 !JadeServer categoriesFor: #show:!public!Transcript! !
 !JadeServer categoriesFor: #stackForProcess:!public! !
+!JadeServer categoriesFor: #terminate:!Processes!public! !
 
 !JadeServer class methodsFor!
 
-addGsStringTo: aStream definingClassIn: aClass
+addGsStringTo: aStream definingClassBlock: aBlock
 
 	aStream
-		nextPutAll: 'class := ', (aClass gsClassDefinitionFor: self); lf;
+		nextPutAll: 'class := ', (aBlock value: self); lf;
 		yourself.
 	self selectors do: [:each | 
 		aStream nextPutAll: 'source := '.
@@ -1901,7 +1960,7 @@ classVarsForGemStone
 	^(self == JadeServer ifTrue: ['ExternalInteger GciError GsObject OopType32 OopType64'] ifFalse: ['']).
 !
 
-gsClassDefinitionFor: aClass
+gsClassDefinitionBlock
 
 	self subclassResponsibility.
 !
@@ -1917,7 +1976,7 @@ gsString
 		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
 		nextPutAll: 'class := Object.'; lf;
 		yourself.
-	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | eachClass addGsStringTo: stream definingClassIn: self].
+	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | eachClass addGsStringTo: stream definingClassBlock: self gsClassDefinitionBlock].
 	stream 
 		nextPutAll: '(mcPlatformSupport := System myUserProfile objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
 		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
@@ -1943,9 +2002,9 @@ serverForLibrary: aGciLibrary
 sessionStateCode
 
 	^'System _sessionStateAt: 3 put: server.'! !
-!JadeServer class categoriesFor: #addGsStringTo:definingClassIn:!public! !
+!JadeServer class categoriesFor: #addGsStringTo:definingClassBlock:!public! !
 !JadeServer class categoriesFor: #classVarsForGemStone!public! !
-!JadeServer class categoriesFor: #gsClassDefinitionFor:!public! !
+!JadeServer class categoriesFor: #gsClassDefinitionBlock!public! !
 !JadeServer class categoriesFor: #gsString!public! !
 !JadeServer class categoriesFor: #isServerForLibrary:!public! !
 !JadeServer class categoriesFor: #serverForLibrary:!public! !
@@ -2040,7 +2099,7 @@ reportErrorMessage
 		errorMsg: stream contents
 		caption: 'GemStone Error #' , gciErrSType number printString.
 	Keyboard default isShiftDown ifTrue: [self halt].
-	self gciSession clearStack: gciErrSType contextOop.
+	self gciSession terminate: gciErrSType contextOop.
 !
 
 signal
@@ -2403,7 +2462,10 @@ TerminateProcess comment: ''!
 !TerminateProcess categoriesForClass!Unclassified! !
 !TerminateProcess methodsFor!
 
-defaultAction! !
+defaultAction
+
+	Processor terminateActive.
+! !
 !TerminateProcess categoriesFor: #defaultAction!public! !
 
 JadeServer32bit guid: (GUID fromString: '{6BD4AC2A-D6A4-438A-9B0B-E050DD50B3A2}')!
@@ -2445,10 +2507,10 @@ objectForOop: anInteger
 
 !JadeServer32bit class methodsFor!
 
-gsClassDefinitionFor: aClass
+gsClassDefinitionBlock
 	"Some class variables exist only in Dolphin and map to globals in GemStone; others exist only in GemStone and map to globals in Dolphin!!"
 
-	^'class subclass: ''' , aClass name , '''
+	^[:aClass | 'class subclass: ''' , aClass name , '''
 		instVarNames: ' , aClass instVarNames printString , '
 		classVars: #(' , aClass classVarsForGemStone , ')
 		classInstVars: #()
@@ -2456,14 +2518,14 @@ gsClassDefinitionFor: aClass
 		inDictionary: SymbolDictionary new
 		constraints: #()
 		instancesInvariant: false
-		isModifiable: false.'.
+		isModifiable: false.'].
 !
 
 isServerForLibrary: aGciLibrary
 
 	^aGciLibrary is32Bit.
 ! !
-!JadeServer32bit class categoriesFor: #gsClassDefinitionFor:!public! !
+!JadeServer32bit class categoriesFor: #gsClassDefinitionBlock!public! !
 !JadeServer32bit class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit guid: (GUID fromString: '{36FD8C46-21B4-4852-977C-1A9889969313}')!
@@ -2505,22 +2567,24 @@ objectForOop: anInteger
 
 !JadeServer64bit class methodsFor!
 
-gsClassDefinitionFor: aClass
+gsClassDefinitionBlock
 	"Some class variables exist only in Dolphin and map to globals in GemStone; others exist only in GemStone and map to globals in Dolphin!!"
 
-	^'class subclass: ''' , aClass name , '''
+	^[:aClass | 'class subclass: ''' , aClass name , '''
 		instVarNames: ' , aClass instVarNames printString , '
 		classVars: #(' , aClass classVarsForGemStone , ')
 		classInstVars: #()
 		poolDictionaries: #()
-		inDictionary: SymbolDictionary new.'.
+		inDictionary: SymbolDictionary new
+		instancesInvariant: false
+		isModifiable: false.'].
 !
 
 isServerForLibrary: aGciLibrary
 
 	^aGciLibrary is64Bit.
 ! !
-!JadeServer64bit class categoriesFor: #gsClassDefinitionFor:!public! !
+!JadeServer64bit class categoriesFor: #gsClassDefinitionBlock!public! !
 !JadeServer64bit class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit24 guid: (GUID fromString: '{1AF3D6EB-C974-4E19-B3CF-46098CDD8C6D}')!
@@ -2531,14 +2595,43 @@ JadeServer64bit24 comment: ''!
 oopOf: anObject
 
 	^Reflection oopOf: anObject.
+!
+
+registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
+
+	super
+		registerOBNotificationsForPlatform: platform 
+		clientForwarder: clientForwarder.
+	platform 
+		registerMultipleChoiceClientForwarder: clientForwarder;
+		yourself.
 ! !
 !JadeServer64bit24 categoriesFor: #oopOf:!private! !
+!JadeServer64bit24 categoriesFor: #registerOBNotificationsForPlatform:clientForwarder:!public! !
+
+!JadeServer64bit24 class methodsFor!
+
+isServerForLibrary: aGciLibrary
+
+	^aGciLibrary is64Bit24.
+! !
+!JadeServer64bit24 class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit3x guid: (GUID fromString: '{1DC3DEBB-81EC-4B7B-872E-82229E88781B}')!
 JadeServer64bit3x comment: '(System _sessionStateAt: 3).
 GciSession allInstances do: [:each | each initializeServer].'!
 !JadeServer64bit3x categoriesForClass!Unclassified! !
 !JadeServer64bit3x methodsFor!
+
+asString: anObject
+
+	(anObject isKindOf: String) ifTrue: [^anObject].
+	^[
+		anObject printString.
+	] on: Error , Admonition do: [:ex | 
+		ex return: '<<printString error: ' , ex description , '>>'.
+	].
+!
 
 installTranscript
 
@@ -2623,6 +2716,7 @@ socketStep: gsProcess inFrame: anInteger
 	].
 	^self readObjectFrom: (ReadStream on: stream contents).
 ! !
+!JadeServer64bit3x categoriesFor: #asString:!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #reportErrorOnStream:fromEvaluationOf:!public! !
@@ -2641,6 +2735,17 @@ JadeServer64bit32 comment: ''!
 !JadeServer64bit32 categoriesForClass!Unclassified! !
 !JadeServer64bit32 class methodsFor!
 
+gsClassDefinitionBlock
+	"Some class variables exist only in Dolphin and map to globals in GemStone; others exist only in GemStone and map to globals in Dolphin!!"
+
+	^[:aClass | 'class subclass: ''' , aClass name , '''
+		instVarNames: ' , aClass instVarNames printString , '
+		classVars: #(' , aClass classVarsForGemStone , ')
+		classInstVars: #()
+		poolDictionaries: #()
+		inDictionary: SymbolDictionary new.'].
+!
+
 isServerForLibrary: aGciLibrary
 
 	^aGciLibrary is64Bit32.
@@ -2650,6 +2755,7 @@ sessionStateCode
 	"Avoid deprecated method and still use 'Topaz session state' (since we know Topaz isn't running!!)"
 
 	^'System __sessionStateAt: 3 put: server.'! !
+!JadeServer64bit32 class categoriesFor: #gsClassDefinitionBlock!public! !
 !JadeServer64bit32 class categoriesFor: #isServerForLibrary:!public! !
 !JadeServer64bit32 class categoriesFor: #sessionStateCode!public! !
 
