@@ -3,7 +3,7 @@ package := Package name: 'Jade Process Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.010'.
+package basicPackageVersion: '0.013'.
 
 
 package classNames
@@ -13,6 +13,8 @@ package classNames
 package methodNames
 	add: #JadeServer -> #addProcess:to:withStatus:scheduler:;
 	add: #JadeServer -> #processes;
+	add: #JadeServer -> #waitingProcesses;
+	add: #JadeServer64bit33 -> #waitingProcesses;
 	add: #JadeServer64bit3x -> #addProcess:to:withStatus:scheduler:;
 	add: #JadeTranscript -> #browseProcesses;
 	yourself.
@@ -71,8 +73,8 @@ addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
 
 processes
 
-	| scheduler stream |
-	scheduler := (self objectNamed: 'ProcessorScheduler') scheduler.
+	| list scheduler stream |
+	scheduler := ProcessorScheduler scheduler.
 	stream := (WriteStream on: String new)
 		nextPutAll: 'highestPriority'; 						space; nextPutAll: scheduler highestPriority 					printString; tab;
 		nextPutAll: 'highIOPriority'; 						space; nextPutAll: scheduler highIOPriority 					printString; tab;
@@ -86,12 +88,29 @@ processes
 		yourself.
 	scheduler readyProcesses 			do: [:each | self addProcess: each to: stream withStatus: 'ready'			scheduler: scheduler].
 	scheduler suspendedProcesses 	do: [:each | self addProcess: each to: stream withStatus: 'suspended'	scheduler: scheduler].
-	scheduler waitingProcesses 		do: [:each | self addProcess: each to: stream withStatus: 'waiting'			scheduler: scheduler].
+	self waitingProcesses				do: [:each | self addProcess: each to: stream withStatus: 'waiting'			scheduler: scheduler].
 	^stream contents.
 
+!
+
+waitingProcesses
+
+	^ProcessorScheduler scheduler waitingProcesses
 ! !
 !JadeServer categoriesFor: #addProcess:to:withStatus:scheduler:!Processes!public! !
 !JadeServer categoriesFor: #processes!Processes!public! !
+!JadeServer categoriesFor: #waitingProcesses!Processes!public! !
+
+!JadeServer64bit33 methodsFor!
+
+waitingProcesses
+
+	| processToIgnore |
+	processToIgnore := Processor activeProcess environmentAt: #'parent' ifAbsent: [nil].
+	^ProcessorScheduler scheduler waitingProcesses reject: [:each | each == processToIgnore]
+
+! !
+!JadeServer64bit33 categoriesFor: #waitingProcesses!Processes!public! !
 
 !JadeServer64bit3x methodsFor!
 

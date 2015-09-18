@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.125'.
+package basicPackageVersion: '0.131'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -41,6 +41,8 @@ package classNames
 	add: #LibGciRpc64_325;
 	add: #LibGciRpc64_326;
 	add: #LibGciRpc64_327;
+	add: #LibGciRpc64_328;
+	add: #LibGciRpc64_329;
 	add: #LibGciRpc64_33;
 	add: #OopType32;
 	add: #OopType32Array;
@@ -203,6 +205,11 @@ LibGciRpc64_31 subclass: #LibGciRpc64_32
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+LibGciRpc64_31 subclass: #LibGciRpc64_33
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 LibGciRpc64_32 subclass: #LibGciRpc64_321
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -238,7 +245,12 @@ LibGciRpc64_32 subclass: #LibGciRpc64_327
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_33
+LibGciRpc64_32 subclass: #LibGciRpc64_328
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_329
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -338,6 +350,22 @@ Unicode7 comment: ''!
 GciError guid: (GUID fromString: '{071E2ED5-4EBD-4862-B435-48DE5B29CFD6}')!
 GciError comment: ''!
 !GciError categoriesForClass!Unclassified! !
+!GciError class methodsFor!
+
+signal: aString
+
+	self error: 'use #''signalWith:'''.
+!
+
+signalWith: aGciErrSType
+
+	^self
+		signal: aGciErrSType message
+		with: aGciErrSType.
+! !
+!GciError class categoriesFor: #signal:!public! !
+!GciError class categoriesFor: #signalWith:!public! !
+
 GciCommitFailure guid: (GUID fromString: '{0282A2E9-2264-46A8-8391-61EDE92B12C7}')!
 GciCommitFailure comment: ''!
 !GciCommitFailure categoriesForClass!Unclassified! !
@@ -814,27 +842,7 @@ initialize
 	self class sessionStarted.
 !
 
-is32Bit
-
-	^false.
-!
-
-is64Bit
-
-	^false.
-!
-
-is64Bit24
-
-	^false.
-!
-
 is64Bit32
-
-	^false.
-!
-
-is64Bit3x
 
 	^false.
 !
@@ -1097,7 +1105,7 @@ signalIfError
 
 signalLastError
 
-	GciError signal: self lastError.
+	GciError signalWith: self lastError.
 !
 
 signalSemaphoreIfNeeded: anArray
@@ -1185,11 +1193,7 @@ valueOfOop: anOopType
 !GciLibrary categoriesFor: #gemTrace:!public! !
 !GciLibrary categoriesFor: #hardBreakSession:!public! !
 !GciLibrary categoriesFor: #initialize!private! !
-!GciLibrary categoriesFor: #is32Bit!public!Testing! !
-!GciLibrary categoriesFor: #is64Bit!public!Testing! !
-!GciLibrary categoriesFor: #is64Bit24!public!Testing! !
 !GciLibrary categoriesFor: #is64Bit32!public! !
-!GciLibrary categoriesFor: #is64Bit3x!public!Testing! !
 !GciLibrary categoriesFor: #lastError!private! !
 !GciLibrary categoriesFor: #loginAs:password:!public! !
 !GciLibrary categoriesFor: #logoutSession:!public! !
@@ -1416,11 +1420,6 @@ gciReleaseOops: args _: numArgs
 	^self invalidCall
 !
 
-is32Bit
-
-	^true.
-!
-
 oopAsciiNul
 
 	^OopType32 fromInteger: 14.!
@@ -1543,7 +1542,6 @@ specialFromOop: anOop
 !Gcilw6x categoriesFor: #gciNewString:!private! !
 !Gcilw6x categoriesFor: #gciOopToChr:!private! !
 !Gcilw6x categoriesFor: #gciReleaseOops:_:!private! !
-!Gcilw6x categoriesFor: #is32Bit!public!Testing! !
 !Gcilw6x categoriesFor: #oopAsciiNul!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #oopClassArray!public! !
 !Gcilw6x categoriesFor: #oopClassByteArray!public! !
@@ -1711,11 +1709,6 @@ gciReleaseOops: args _: numArgs
 
 	<cdecl: void GciReleaseOops OopType64* dword>
 	^self invalidCall
-!
-
-is64Bit
-
-	^true.
 !
 
 oopAsciiNul
@@ -1916,7 +1909,6 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #gciNewString:!private! !
 !LibGciRpc64 categoriesFor: #gciOopToChr:!private! !
 !LibGciRpc64 categoriesFor: #gciReleaseOops:_:!private! !
-!LibGciRpc64 categoriesFor: #is64Bit!public!Testing! !
 !LibGciRpc64 categoriesFor: #oopAsciiNul!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopAt:!private! !
 !LibGciRpc64 categoriesFor: #oopClassArray!public!Reserved OOPs! !
@@ -2050,14 +2042,6 @@ displayName
 LibGciRpc64_24 guid: (GUID fromString: '{4DF6B51F-E61C-4046-9413-2DB70136A4C1}')!
 LibGciRpc64_24 comment: ''!
 !LibGciRpc64_24 categoriesForClass!Unclassified! !
-!LibGciRpc64_24 methodsFor!
-
-is64Bit24
-
-	^true.
-! !
-!LibGciRpc64_24 categoriesFor: #is64Bit24!public!Testing! !
-
 !LibGciRpc64_24 class methodsFor!
 
 displayName
@@ -2080,15 +2064,9 @@ gciErr: errorReport
 
 	<cdecl: bool GciErr GciErrSType64_30*>
 	^self invalidCall
-!
-
-is64Bit3x
-
-	^true.
 ! !
 !LibGciRpc64_30 categoriesFor: #errorStructureClass!private! !
 !LibGciRpc64_30 categoriesFor: #gciErr:!private! !
-!LibGciRpc64_30 categoriesFor: #is64Bit3x!public!Testing! !
 
 !LibGciRpc64_30 class methodsFor!
 
@@ -2143,14 +2121,6 @@ fileNameSearch
 LibGciRpc64_32 guid: (GUID fromString: '{25CBF893-B55F-4C84-B927-F0E27DAF8114}')!
 LibGciRpc64_32 comment: ''!
 !LibGciRpc64_32 categoriesForClass!Unclassified! !
-!LibGciRpc64_32 methodsFor!
-
-is64Bit32
-
-	^true.
-! !
-!LibGciRpc64_32 categoriesFor: #is64Bit32!public! !
-
 !LibGciRpc64_32 class methodsFor!
 
 displayName
@@ -2164,6 +2134,34 @@ fileNameSearch
 ! !
 !LibGciRpc64_32 class categoriesFor: #displayName!public! !
 !LibGciRpc64_32 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_33 guid: (GUID fromString: '{68DB187D-A739-41BE-AD58-A476218B1B04}')!
+LibGciRpc64_33 comment: ''!
+!LibGciRpc64_33 categoriesForClass!Unclassified! !
+!LibGciRpc64_33 methodsFor!
+
+specialFromOop: anOop
+
+	anOop isSmallFraction ifTrue: [
+		^anOop asFraction.
+	].
+	^super specialFromOop: anOop
+! !
+!LibGciRpc64_33 categoriesFor: #specialFromOop:!public! !
+
+!LibGciRpc64_33 class methodsFor!
+
+displayName
+
+	^'64-bit 3.3'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.3.0-32.dll'.
+! !
+!LibGciRpc64_33 class categoriesFor: #displayName!public! !
+!LibGciRpc64_33 class categoriesFor: #fileNameSearch!public! !
 
 LibGciRpc64_321 guid: (GUID fromString: '{9B3A8D44-3E44-49AC-90C5-AFDA22E1CD1B}')!
 LibGciRpc64_321 comment: ''!
@@ -2284,22 +2282,39 @@ fileNameSearch
 !LibGciRpc64_327 class categoriesFor: #displayName!public! !
 !LibGciRpc64_327 class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_33 guid: (GUID fromString: '{68DB187D-A739-41BE-AD58-A476218B1B04}')!
-LibGciRpc64_33 comment: ''!
-!LibGciRpc64_33 categoriesForClass!Unclassified! !
-!LibGciRpc64_33 class methodsFor!
+LibGciRpc64_328 guid: (GUID fromString: '{E31F62FC-C1EE-40C6-90D4-A59DDA3C831B}')!
+LibGciRpc64_328 comment: ''!
+!LibGciRpc64_328 categoriesForClass!Unclassified! !
+!LibGciRpc64_328 class methodsFor!
 
 displayName
 
-	^'64-bit 3.3'.
+	^'64-bit 3.2.8'.
 !
 
 fileNameSearch
 
-	^'libgcirpc-3.3.0-32.dll'.
+	^'libgcirpc-3.2.8-32.dll'.
 ! !
-!LibGciRpc64_33 class categoriesFor: #displayName!public! !
-!LibGciRpc64_33 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_328 class categoriesFor: #displayName!public! !
+!LibGciRpc64_328 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_329 guid: (GUID fromString: '{12081231-C77F-4BC8-8F36-DD11BDBB44CD}')!
+LibGciRpc64_329 comment: ''!
+!LibGciRpc64_329 categoriesForClass!Unclassified! !
+!LibGciRpc64_329 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.9'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.2.9-32.dll'.
+! !
+!LibGciRpc64_329 class categoriesFor: #displayName!public! !
+!LibGciRpc64_329 class categoriesFor: #fileNameSearch!public! !
 
 GciErrSType guid: (GUID fromString: '{9932DE27-ACC2-4E27-AD64-9A3FF8B6ECF9}')!
 GciErrSType comment: ''!
@@ -2585,6 +2600,32 @@ OopType64 comment: '#define OOP_TAG_RAM_OOP     0x0 /* 2r000  memory pointer Obj
 !OopType64 categoriesForClass!Unclassified! !
 !OopType64 methodsFor!
 
+asFraction
+	"SmallFractions are special objects that can represent Fractions
+	  with   -268435456 <= numerator   <= 268435455
+	  and             0 <  denominator <= 134217727 . 
+
+	 A SmallFraction contains the bits
+		snnnnnnn|nnnnnnnn|nnnnnnnn|nnnnnddd|dddddddd|dddddddd|dddddddd|tttttttt
+	 where bits are shown with least-significant on the right.
+	 The bits  sn...n  are a 29 bit signed twos-complement numerator ,
+	 The bits  d...d   are a 27 bit unsigned denominator .
+	 The 8 tag bits have the constant value  16r2C . "
+
+	| numerator denominator fraction |
+	numerator := ((bytes dwordAtOffset: 4) bitAnd: 16rFFFFFFF8) bitShift: -3.
+	0 ~~ (numerator bitAnd: 16r10000000) ifTrue: [
+		| temp |
+		temp := ByteArray new: 4.
+		numerator := numerator bitOr: 16rF0000000.
+		temp dwordAtOffset: 0 put: numerator.
+		numerator := temp sdwordAtOffset: 0.
+	].
+	denominator := (bytes dwordAtOffset: 1) bitAnd: 16r7FFFFFF.
+	fraction := numerator / denominator.
+	^fraction
+!
+
 asSmallInteger
 
 	| value myBytes |
@@ -2628,6 +2669,11 @@ isSmallDouble
 	^(self value bitAnd: 7) = 6.
 !
 
+isSmallFraction
+
+	^(self value bitAnd: 16rFF) = 16r2C.
+!
+
 isSmallInteger
 
 	^(self value bitAnd: 7) = 2.
@@ -2660,6 +2706,7 @@ smallDoubleAsFloat
 	].
 	^(frac + 16r8000000000000 / 16r8000000000000 * (2 raisedTo: expn - 127) * sign) asFloat.
 ! !
+!OopType64 categoriesFor: #asFraction!public! !
 !OopType64 categoriesFor: #asSmallInteger!public! !
 !OopType64 categoriesFor: #isBoolean!public! !
 !OopType64 categoriesFor: #isCharacter!public! !
@@ -2667,6 +2714,7 @@ smallDoubleAsFloat
 !OopType64 categoriesFor: #isImmediate!public! !
 !OopType64 categoriesFor: #isOopIllegal!public! !
 !OopType64 categoriesFor: #isSmallDouble!public! !
+!OopType64 categoriesFor: #isSmallFraction!public! !
 !OopType64 categoriesFor: #isSmallInteger!public! !
 !OopType64 categoriesFor: #isSpecial!public! !
 !OopType64 categoriesFor: #printOn:!public! !

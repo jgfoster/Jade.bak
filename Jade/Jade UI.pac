@@ -3,7 +3,7 @@ package := Package name: 'Jade UI'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.197'.
+package basicPackageVersion: '0.202'.
 
 package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
@@ -19,13 +19,14 @@ package classNames
 package methodNames
 	add: #GsError -> #debugError;
 	add: #GsObject -> #gsInspect;
-	add: #GsProcess -> #step:;
+	add: #GsProcess -> #stepInto:;
+	add: #GsProcess -> #stepOut:;
+	add: #GsProcess -> #stepOver:;
 	add: #GsProcess -> #terminate;
 	add: #GsProcess -> #trimStackToLevel:;
 	add: #JadeServer -> #_oopAndStringFor:;
 	add: #JadeServer -> #_sourceForProcess:frame:;
 	add: #JadeServer -> #_trimStackOf:toLevel:;
-	add: #JadeServer -> #aboutToDebugProcess:;
 	add: #JadeServer -> #asAsciiString:;
 	add: #JadeServer -> #compile:frame:process:;
 	add: #JadeServer -> #isResumableCategory:number:context:;
@@ -38,6 +39,7 @@ package methodNames
 	add: #JadeServer64bit -> #_trimStackOf:toLevel:;
 	add: #JadeServer64bit -> #recompile:withSource:;
 	add: #JadeServer64bit -> #sourceForProcess:frame:;
+	add: #JadeServer64bit33 -> #step:inFrame:;
 	add: #JadeTextDocument -> #fileIn;
 	add: #JadeTextDocument -> #jadeInspect;
 	yourself.
@@ -65,6 +67,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone Objects';
 	add: 'GemStone Session';
 	add: 'Jade Inspector';
+	add: 'Jade Method Browser';
 	add: 'Jade UI Base';
 	add: '..\JGF\JGF Fading Dialog';
 	add: 'VisualWorks Component';
@@ -95,7 +98,7 @@ JadeTextDocument subclass: #JadeCodeBrowser
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeCodeBrowser subclass: #JadeDebugger
-	instanceVariableNames: 'answer errorMessagePresenter frame frameListPresenter gsProcess processList processListPresenter terminateOnClose variableDataPresenter variableListPresenter'
+	instanceVariableNames: 'answer errorMessagePresenter frame frameListOffset frameListPresenter gsProcess processList processListPresenter terminateOnClose variableDataPresenter variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'debuggers'!
@@ -129,11 +132,27 @@ gsInspect
 
 !GsProcess methodsFor!
 
-step: anInteger
+stepInto: anInteger
 
 	stack := nil.
-	^gciSession
-		step: self
+	gciSession
+		stepInto: self
+		inFrame: anInteger.
+!
+
+stepOut: anInteger
+
+	stack := nil.
+	gciSession
+		stepOut: self
+		inFrame: anInteger.
+!
+
+stepOver: anInteger
+
+	stack := nil.
+	gciSession
+		stepOver: self
 		inFrame: anInteger.
 !
 
@@ -151,7 +170,9 @@ trimStackToLevel: anInteger
 		to: self
 		withAll: (Array with: anInteger).
 ! !
-!GsProcess categoriesFor: #step:!public! !
+!GsProcess categoriesFor: #stepInto:!public! !
+!GsProcess categoriesFor: #stepOut:!public! !
+!GsProcess categoriesFor: #stepOver:!public! !
 !GsProcess categoriesFor: #terminate!public! !
 !GsProcess categoriesFor: #trimStackToLevel:!public! !
 
@@ -275,25 +296,6 @@ _trimStackOf: aGsProcess toLevel: anInteger
 	^aGsProcess.
 !
 
-aboutToDebugProcess: aGsProcess
-
-	| testCaseClass |
-	aGsProcess isNil ifTrue: [^aGsProcess].
-	((Object respondsTo: #'_doesNotUnderstand:') and: [3 < aGsProcess stackDepth and: [(Object compiledMethodAt: #'_doesNotUnderstand:') == (aGsProcess localMethodAt: 3)]]) ifTrue: [
-		^self _trimStackOf: aGsProcess toLevel: 3.
-	].
-	(5 < aGsProcess stackDepth and: [(Object compiledMethodAt: #'error:') == (aGsProcess localMethodAt: 5)]) ifTrue: [
-		^self _trimStackOf: aGsProcess toLevel:  4.
-	].
-	testCaseClass := self objectNamed: #'GSTestCase'.
-	(testCaseClass notNil and: [Behavior respondsTo: #'compiledMethodAt:otherwise:']) ifTrue: [
-		(6 < aGsProcess stackDepth and: [(testCaseClass compiledMethodAt: #'assert:' otherwise: nil) == (aGsProcess localMethodAt: 6)]) ifTrue: [
-			^self _trimStackOf: aGsProcess toLevel:  6.
-		].
-	].
-	^aGsProcess.
-!
-
 asAsciiString: aString
 
 	^String withAll: (aString asArray collect: [:char | 
@@ -341,12 +343,11 @@ isResumableCategory: category number: number context: context
 
 step: aGsProcess inFrame: anInteger
 
-	^aGsProcess _stepOverInFrame: anInteger.
+	aGsProcess _stepOverInFrame: anInteger.
 ! !
 !JadeServer categoriesFor: #_oopAndStringFor:!Debugger!public! !
 !JadeServer categoriesFor: #_sourceForProcess:frame:!Debugger!public! !
 !JadeServer categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
-!JadeServer categoriesFor: #aboutToDebugProcess:!Debugger!public! !
 !JadeServer categoriesFor: #asAsciiString:!Debugger!public! !
 !JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
 !JadeServer categoriesFor: #isResumableCategory:number:context:!Debugger!public! !
@@ -456,6 +457,14 @@ sourceForProcess: gsProcess frame: level
 !JadeServer64bit categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
 !JadeServer64bit categoriesFor: #recompile:withSource:!Debugger!public! !
 !JadeServer64bit categoriesFor: #sourceForProcess:frame:!Debugger!public! !
+
+!JadeServer64bit33 methodsFor!
+
+step: aGsProcess inFrame: anInteger
+
+	aGsProcess _stepOverInFrame: anInteger.
+! !
+!JadeServer64bit33 categoriesFor: #step:inFrame:!Debugger!public!Socket! !
 
 !JadeTextDocument methodsFor!
 
@@ -952,7 +961,7 @@ doDebug
 
 doResume
 
-	self return: #resume.
+	self return: #'resume'.
 !
 
 doTerminate
@@ -1237,6 +1246,7 @@ answer
 clearUI
 
 	frameListPresenter list: #().
+	frameListOffset := 0.
 	variableListPresenter list: #().
 	variableDataPresenter value: ''.
 	documentPresenter value: ''.
@@ -1252,6 +1262,7 @@ createComponents
 	super createComponents.
 	errorMessagePresenter	:= self add: TextPresenter		new name: 'errorMessage'.
 	frameListPresenter 		:= self add: ListPresenter		new name: 'frameList'.
+	frameListOffset			:= 0.
 	processListPresenter 	:= self add: ListPresenter		new name: 'processList'.
 	variableDataPresenter 	:= self add: TextPresenter		new name: 'variableData'.
 	variableListPresenter		:= self add: ListPresenter		new name: 'variableList'.
@@ -1337,7 +1348,7 @@ queryCommand: query
 
 resumeProcess
 
-	answer := #resume.
+	answer := #'resume'.
 	self view close.
 !
 
@@ -1352,11 +1363,11 @@ saveMethod
 	result := gciSession
 		serverPerform: #'compile:frame:process:' 
 		with: self getDocumentData
-		with: frameListPresenter selectionByIndex 
+		with: frameListPresenter selectionByIndex + frameListOffset
 		with: gsProcess.
 	(result isKindOf: Boolean) ifTrue: [
 		result ifTrue: [
-			gsProcess trimStackToLevel: frameListPresenter selectionByIndex.
+			gsProcess trimStackToLevel: frameListPresenter selectionByIndex + frameListOffset.
 			^self update.
 		] ifFalse: [
 			MessageBox notify: 'New method has different selector so will not be on stack!!'.
@@ -1370,6 +1381,7 @@ selectedFrame
 
 	| index breaks offset source source1 source2 word wordLength range lineNumber |
 	(index := frameListPresenter selectionByIndex) = 0 ifTrue: [^self].
+	index := index + frameListOffset.
 	(frame := gsProcess frameForLevel: index) isNil ifTrue: [^self].
 	source := frame source.
 	breaks := frame breaks collect: [:each | frame offsets at: each].
@@ -1402,13 +1414,9 @@ selectedFrame
 
 selectedProcess
 
-	| stack |
 	self clearUI.
 	(gsProcess := processListPresenter selectionOrNil) ifNil: [^self].
-	frameListPresenter list: (stack := gsProcess stack).
-	stack notEmpty ifTrue: [
-		frameListPresenter selectionByIndex: self stackInitialSelection.
-	].
+	self stack: gsProcess stack.
 !
 
 selectedVariable
@@ -1429,12 +1437,25 @@ showNextStatement
 
 !
 
+stack: aList
+
+	| index |
+	index := self stackInitialSelection.
+	frameListOffset := index - 1.
+	frameListPresenter list: (aList copyFrom: index to: aList size).
+	aList notEmpty ifTrue: [
+		frameListPresenter selectionByIndex: 1.
+	].
+!
+
 stackInitialSelection
 
 	| list |
 	list := gsProcess stack.
 	self stackInitialSelectionData do: [:each | 
-		(each first <= list size and: [0 < ((list at: each first - 1) indexOfSubCollection: each last)]) ifTrue: [^each first].
+		1 to: list size do: [:i | 
+			0 < ((list at: i) indexOfSubCollection: each) ifTrue: [^i + 1].
+		].
 	].
 	^1.
 !
@@ -1443,67 +1464,44 @@ stackInitialSelectionData
 	"Line number to select if string included on previous line (need not be exact match)"
 
 	^#(
-		#(2 '(Object)>>#pause @2 line 8')
-		#(2 '(Object)>>#error: @1 line 6')
-		#(6 '(Object)>>#halt @1 line 6')
-		#(10 '(Object)>>#halt @1 line 6')
-		#(10 '(Object)>>#error: @3 line 7')
-		#(12 '(Object)>>#halt @1 line 6')
-		#(21 '(Object)>>#error: @1 line 6')
-		#(4 '(Object) >> halt (envId 0) @2 line 5')
-		#(4 '(Object) >> error: (envId 0) @6 ine 7')
-
-		#(2 '(Object)>>#_doesNotUnderstand: @1 line 6')
-		#(6 'Object >> _doesNotUnderstand:args:envId:reason: (envId 0) @7 line 12')
-		#(5 'Object >> _doesNotUnderstand:')
-
-		#(4 '(Object) >> halt @2 line 5')
-		#(4 '(Object) >> error: @6 line 7')
-		#(4 'Object >> halt (envId 0) @2 line 5')
-		#(3 'Object >> error: (envId 0) @6 line 7')
-
-		#(2 '(TestCase)>>#assert: @1 line 1')
-		#(3 '(TestCase)>>#should:raise: @10 line 9')
-		#(3 '(TestCase)>>#shouldnt:raise: @4 line 2')
-		#(3 '(TestCase)>>#deny: @2 line 3')
-		#(2 'GSTestCase >> assert: (envId 0) @1 line 1')
-		#(5 'TestAsserter >> assert: (envId 0) @5 line 4')
-	).
-!
-
-step: anInteger
-
-	| result gciError |
-	result := gsProcess step: anInteger.
-	true ifTrue: [^self update].
-	gsProcess oopType = result ifTrue: [^self update].
-	result isOopIllegal ifFalse: [
-		answer := result.
-		^self view close.
-	].
-	((gciError := GsError forSession: gciSession) isStackBreakpointInSession: gciSession) ifFalse: [
-		GsError signalGCI: gciSession.
-		Keyboard default isShiftDown ifTrue: [self halt].
-	].
-	gsProcess := gciError gsProcess.
-	errorMessagePresenter value: gciError messageText.
-	self update.
-!
+		'(AbstractException) >> _signalAsync @7 line 21'
+		'(Object) >> _doesNotUnderstand:args:envId:reason: @7 line 12'
+		'(Object) >> error: (envId 0) @6 line 7'
+		'(Object) >> error: @6 line 7'
+		'(Object) >> halt (envId 0) @2 line 5'
+		'(Object) >> halt @2 line 5'
+		'(Object) >> pause @2 line 7'
+		'(Object)>>#_doesNotUnderstand: @1 line 6'
+		'(Object)>>#error: @1 line 6'
+		'(Object)>>#error: @3 line 7'
+		'(Object)>>#halt @1 line 6'
+		'(Object)>>#pause @2 line 8'
+		'(TestCase)>>#assert: @1 line 1'
+		'(TestCase)>>#deny: @2 line 3'
+		'(TestCase)>>#should:raise: @10 line 9'
+		'(TestCase)>>#shouldnt:raise: @4 line 2'
+		'GSTestCase >> assert: (envId 0) @1 line 1'
+		'Object >> _doesNotUnderstand:'
+		'Object >> _doesNotUnderstand:args:envId:reason: (envId 0) @7 line 12'
+		'Object >> error: (envId 0) @6 line 7'
+		'Object >> halt (envId 0) @2 line 5'
+		'TestAsserter >> assert: (envId 0) @5 line 4'
+	)!
 
 stepInto
 
-	self step: 0.
-!
+	gsProcess stepInto: frameListPresenter selectionByIndex + frameListOffset.
+	^self update!
 
 stepOut
 
-	self step: frameListPresenter selectionByIndex + 1.
-!
+	gsProcess stepOut: frameListPresenter selectionByIndex + frameListOffset + 1.
+	^self update!
 
 stepOver
 
-	self step: frameListPresenter selectionByIndex.
-!
+	gsProcess stepOver: frameListPresenter selectionByIndex + frameListOffset.
+	^self update!
 
 terminateProcess
 
@@ -1530,12 +1528,9 @@ update
 	(2 <= processList size and: [processListPresenter selectionOrNil ~~ processList first]) ifTrue: [
 		processListPresenter 
 			list: processList;	"This triggers a selection changed message that clears the current selection"
-			selection: processList first.
+			selectionByIndex: 1.
 	] ifFalse: [
-		frameListPresenter 
-			list: gsProcess stack;
-			selectionByIndex: self stackInitialSelection;
-			yourself.
+		self stack: stack.
 	].!
 
 updateCaption
@@ -1560,9 +1555,9 @@ updateCaption
 !JadeDebugger categoriesFor: #selectedProcess!public! !
 !JadeDebugger categoriesFor: #selectedVariable!public! !
 !JadeDebugger categoriesFor: #showNextStatement!public! !
+!JadeDebugger categoriesFor: #stack:!public! !
 !JadeDebugger categoriesFor: #stackInitialSelection!public! !
 !JadeDebugger categoriesFor: #stackInitialSelectionData!public! !
-!JadeDebugger categoriesFor: #step:!public! !
 !JadeDebugger categoriesFor: #stepInto!public! !
 !JadeDebugger categoriesFor: #stepOut!public! !
 !JadeDebugger categoriesFor: #stepOver!public! !
@@ -1613,10 +1608,10 @@ reportError: gsError
 		gsError terminateProcess.
 		self error: 'We should never get here!!'.
 	].
-	answer = #resume ifTrue: [
-		^#resume.
+	answer = #'resume' ifTrue: [
+		^#'resume'.
 	].
-	answer = #debug ifTrue: [
+	answer = #'debug' ifTrue: [
 		^self openDebuggerOnException: gsError.
 	].
 	self error: 'Unexpected response of ' , answer printString , '!!'.
@@ -1635,7 +1630,7 @@ resource_Default_view
 	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Default_view)
 	"
 
-	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.ShellView)  98 27 0 0 98 2 27131905 131073 416 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 328198 ##(Smalltalk.Point)  1601 1201 551 0 0 0 416 852230 ##(Smalltalk.FramingLayout)  234 240 98 6 410 8 ##(Smalltalk.ContainerView)  98 15 0 416 98 2 8 1140850688 131073 624 0 0 0 7 0 0 0 624 1180166 ##(Smalltalk.ProportionalLayout)  234 240 98 0 16 234 256 98 2 410 8 ##(Smalltalk.ReferenceView)  98 14 0 624 98 2 8 1140850688 131073 800 0 482 8 4278190080 0 7 0 0 0 800 1180166 ##(Smalltalk.ResourceIdentifier)  8 ##(Smalltalk.JadeCodePresenter)  8 #resource_Default_view 0 983302 ##(Smalltalk.MessageSequence)  202 208 98 1 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 530 1 527 530 1569 509 800 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 7 1 0 0 16 3 0 0 5 2 0 0] 752 530 193 193 0 27 8 'codePane' 0 978 202 208 98 1 1042 1072 98 2 530 1 51 530 1569 1035 624 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 16 3 0 0 30 2 0 0] 98 3 410 640 98 15 0 624 98 2 8 1140850688 131073 1376 0 482 512 0 7 0 0 0 1376 706 234 240 98 4 410 640 98 15 0 1376 98 2 8 1140850688 131073 1504 0 482 512 0 7 0 0 0 1504 706 234 240 98 2 410 8 ##(Smalltalk.ListView)  98 30 0 1504 98 2 8 1140920397 1025 1632 590662 2 ##(Smalltalk.ListModel)  202 208 752 0 1310726 ##(Smalltalk.IdentitySearchPolicy)  482 512 0 7 0 0 0 1632 0 8 4294902819 8 ##(Smalltalk.BasicListAbstract)  0 1049670 1 ##(Smalltalk.IconImageManager)  0 0 0 0 0 0 202 208 98 3 920646 5 ##(Smalltalk.ListViewColumn)  8 'Variable' 201 8 #left 1824 8 ##(Smalltalk.SortedCollection)  787814 3 ##(Smalltalk.BlockClosure)  0 0 1180966 ##(Smalltalk.CompiledExpression)  2 1 1984 8 'doIt' 8 '[:each | each key value]' 8 #[30 105 226 0 142 106] 8 #key 2000 7 257 0 0 1632 0 1 0 0 1906 8 'Value' 317 1952 1824 1968 1986 0 459302 ##(Smalltalk.Context)  1 1 0 0 2018 0 9 8 ##(Smalltalk.UndefinedObject)  8 'doIt' 98 2 8 '[:each | each value]' 98 1 202 8 ##(Smalltalk.PoolDictionary)  752 8 #[252 1 0 1 1 5 0 17 229 32 142 106 105] 17 257 0 0 1632 0 3 0 0 1906 8 'OOP' 181 8 #right 459270 ##(Smalltalk.Message)  8 #displayString 98 0 2386 8 #<= 2432 1986 0 0 2018 3 1 2208 8 'doIt' 8 '[:each | each key key asNumber]' 8 #[31 105 226 0 158 159 106] 2096 8 #asNumber 2480 7 257 0 0 1632 0 1 0 0 8 #report 752 0 131169 0 0 978 202 208 98 2 1042 1072 98 2 530 1 1 530 697 327 1632 1042 8 #text: 98 1 8 'Variable' 1632 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 92 1 0 0 163 0 0 0] 98 0 1184 0 27 5 16 234 256 98 4 1632 8 'variableList' 410 8 ##(Smalltalk.MultilineTextEdit)  98 16 0 1504 98 2 8 1143017796 1025 2864 0 482 512 0 7 0 0 0 2864 0 8 4294903171 852486 ##(Smalltalk.NullConverter)  0 0 9 978 202 208 98 3 1042 1072 98 2 530 1 345 530 697 165 2864 1042 8 #selectionRange: 98 1 525062 ##(Smalltalk.Interval)  3 1 3 2864 1042 8 #isTextModified: 98 1 32 2864 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 172 0 0 0 92 1 0 0 254 0 0 0] 98 0 1184 0 27 8 'variableData' 0 978 202 208 98 1 1042 1072 98 2 530 873 1 530 697 509 1504 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 180 1 0 0 0 0 0 0 16 3 0 0 254 0 0 0] 98 3 1632 410 8 ##(Smalltalk.Splitter)  98 12 0 1504 98 2 8 1140850688 1 3472 0 482 512 0 519 0 0 0 3472 978 202 208 98 1 1042 1072 98 2 530 1 327 530 697 19 3472 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 163 0 0 0 92 1 0 0 172 0 0 0] 98 0 1184 0 27 2864 1184 0 27 524806 ##(Smalltalk.Fraction)  253 311 410 640 98 15 0 1376 98 2 8 1140850688 131073 3760 0 0 0 7 0 0 0 3760 562 234 240 98 6 410 8 ##(Smalltalk.PushButton)  98 20 0 3760 98 2 8 1140924416 1 3872 0 0 0 7 0 0 0 3872 0 8 4294903015 1180998 4 ##(Smalltalk.CommandDescription)  8 #terminateProcess 8 'Terminate' 1 1 0 0 32 0 0 0 978 202 208 98 3 1042 1072 98 2 530 715 1 530 141 51 3872 1042 8 #isEnabled: 98 1 32 3872 1042 2720 98 1 8 'Terminate' 3872 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 101 1 0 0 0 0 0 0 171 1 0 0 25 0 0 0] 98 0 1184 0 29 1181766 2 ##(Smalltalk.FramingConstraints)  1180678 ##(Smalltalk.FramingCalculation)  8 #fixedPreviousRight 1 4322 8 #fixedParentRight 1 4322 8 #fixedParentTop 1 4322 8 #fixedViewTop 51 410 8 ##(Smalltalk.ListBox)  98 17 0 3760 98 2 8 1144062209 1025 4464 1714 202 208 752 0 1776 482 512 0 7 0 0 0 4464 0 8 4294903237 1824 752 32 978 202 208 98 2 1042 1072 98 2 530 1 51 530 855 459 4464 1042 8 #horizontalExtent: 98 1 1 4464 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 171 1 0 0 254 0 0 0] 98 0 1184 0 27 4290 4322 8 #fixedParentLeft 1 4368 1 4322 8 #fixedPreviousBottom 1 4322 8 #fixedParentBottom 1 410 8 ##(Smalltalk.ComboBox)  98 17 0 3760 98 2 8 1412498947 1025 4928 1714 202 208 752 0 1776 482 8 4278190080 0 7 0 0 0 4928 0 8 4294903189 1986 0 0 2018 2 1 2208 8 'doIt' 8 '[:each | each printString]' 8 #[30 105 226 0 106] 8 #printString 5088 7 257 0 752 401 978 202 208 98 1 1042 1072 98 2 530 1 1 530 715 47 4928 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 101 1 0 0 23 0 0 0] 98 0 1184 0 27 4290 4832 1 4368 -139 4400 1 4432 47 234 256 98 4 4464 8 'frameList' 4928 8 'processList' 0 978 202 208 98 1 1042 1072 98 2 530 1 1 530 855 509 3760 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 171 1 0 0 254 0 0 0] 98 3 4928 3872 4464 1184 0 27 3 32 234 256 752 0 978 202 208 98 1 1042 1072 98 2 530 1 1 530 1569 509 1376 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 16 3 0 0 254 0 0 0] 98 3 3760 410 3488 98 12 0 1376 98 2 8 1140850688 1 5760 0 482 512 0 519 0 0 0 5760 978 202 208 98 1 1042 1072 98 2 530 855 1 530 19 509 5760 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 171 1 0 0 0 0 0 0 180 1 0 0 254 0 0 0] 98 0 1184 0 27 1504 1184 0 27 410 3488 98 12 0 624 98 2 8 1140850688 1 6000 0 482 512 0 519 0 0 0 6000 978 202 208 98 1 1042 1072 98 2 530 1 509 530 1569 19 6000 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 254 0 0 0 16 3 0 0 7 1 0 0] 98 0 1184 0 27 800 1184 0 27 4290 4832 1 4368 1 4400 51 4896 1 410 8 ##(Smalltalk.TextEdit)  98 16 0 416 98 2 8 1140850816 1 6256 721990 2 ##(Smalltalk.ValueHolder)  0 32 1310726 ##(Smalltalk.EqualitySearchPolicy)  0 0 0 7 0 0 0 6256 0 8 4294903171 2978 0 0 3 978 202 208 98 5 1042 1072 98 2 530 291 7 530 1275 39 6256 1042 2720 98 1 8 'Static Text' 6256 1042 3136 98 1 3170 3 1 3 6256 1042 3216 98 1 32 6256 1042 8 #setMarginWidths: 98 1 98 2 7 7 6256 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 145 0 0 0 3 0 0 0 14 3 0 0 22 0 0 0] 98 0 1184 0 27 4290 4832 291 4368 -3 4400 7 4432 39 410 8 ##(Smalltalk.Toolbar)  98 25 0 416 98 2 8 1409289036 131137 6800 0 482 8 4278190080 0 519 0 0 0 6800 482 6896 8 4294902913 234 256 752 234 256 98 12 21923 1115910 ##(Smalltalk.ToolbarIconButton)  21923 0 6800 1 3970 8 #showNextStatement 8 'Show Next Statement' 1 1 263494 3 ##(Smalltalk.Icon)  0 16 1572870 ##(Smalltalk.ImageRelativeFileLocator)  8 'ShowNextStatement.ico' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy)  8 'dolphindr006.dll' 0 395334 3 ##(Smalltalk.Bitmap)  0 16 0 0 0 0 3 530 33 33 1 21925 6994 21925 0 6800 1 3970 8 #stepInto 8 'Step Into' 1 1 7074 0 16 7120 8 'StepInto.ico' 7168 7202 0 16 0 0 0 0 3 530 33 33 1 21927 6994 21927 0 6800 1 3970 8 #stepOver 8 'Step Over' 1 1 7074 0 16 7120 8 'StepOver.ico' 7168 7202 0 16 0 0 0 0 3 530 33 33 1 21929 6994 21929 0 6800 1 3970 8 #stepOut 8 'Step Out' 1 1 7074 0 16 7120 8 'StepOut.ico' 7168 7202 0 16 0 0 0 0 3 530 33 33 1 21931 6994 21931 0 6800 1 3970 8 #runToCursor 8 'Run to Cursor' 1 1 7074 0 16 7120 8 'RunToCursor.ico' 7168 7202 0 16 0 0 0 0 3 530 33 33 1 21933 6994 21933 0 6800 1 3970 8 #resumeProcess 8 'Go' 1 1 7074 0 16 7120 8 'Run.ico' 7168 7202 0 16 0 0 0 0 3 530 33 33 1 98 7 7008 7248 7376 7504 7632 7760 1050118 ##(Smalltalk.ToolbarSeparator)  0 0 6800 3 0 1 234 240 98 12 7472 5 7216 1 7344 3 7600 7 7728 9 7856 11 0 1 0 530 33 33 530 45 45 0 0 978 202 208 98 2 1042 1072 98 2 530 1 1 530 1569 51 6800 1042 8 #updateSize 752 6800 1138 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 16 3 0 0 25 0 0 0] 98 0 1184 0 27 4290 4832 1 4368 1 4400 1 4432 51 234 256 98 2 6256 8 'errorMessage' 0 461638 4 ##(Smalltalk.MenuBar)  0 16 98 3 265030 4 ##(Smalltalk.Menu)  0 16 98 1 984134 2 ##(Smalltalk.CommandMenuItem)  1 3970 8 #saveMethod 8 '&Save' 9383 1 0 0 0 8 '&File' 0 134217729 0 0 26353 0 0 8306 0 16 98 0 8 '&Edit' 0 134217729 0 0 26355 0 0 8306 0 16 98 1 8354 1 3970 8 #implement 8 '&Implement Method In ...' 1 1 0 0 0 8 '&Debug' 0 134217729 0 0 26359 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 0 1 7074 0 16 7120 8 'icons\GS32x32.ico' 0 7074 0 16 7120 8 'icons\GS16x16.ico' 0 0 0 1 0 0 978 202 208 98 3 1042 1072 98 2 530 2879 21 530 1601 1201 416 1042 2720 98 1 8 'Jade Debugger' 416 1042 8 #updateMenuBar 752 416 1138 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 191 8 0 0 98 2 0 0] 98 3 6256 6800 624 1184 0 27 )! !
+	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.ShellView)  98 27 0 0 98 2 27131905 131073 416 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 328198 ##(Smalltalk.Point)  1601 1201 551 0 0 0 416 852230 ##(Smalltalk.FramingLayout)  234 240 98 6 410 8 ##(Smalltalk.TextEdit)  98 16 0 416 98 2 8 1140850816 1 624 721990 2 ##(Smalltalk.ValueHolder)  0 32 1310726 ##(Smalltalk.EqualitySearchPolicy)  0 0 0 7 0 0 0 624 0 8 4294901907 852486 ##(Smalltalk.NullConverter)  0 0 3 983302 ##(Smalltalk.MessageSequence)  202 208 98 5 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 530 291 7 530 1275 39 624 882 8 #text: 98 1 8 'Static Text' 624 882 8 #selectionRange: 98 1 525062 ##(Smalltalk.Interval)  3 1 3 624 882 8 #isTextModified: 98 1 32 624 882 8 #setMarginWidths: 98 1 98 2 7 7 624 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 145 0 0 0 3 0 0 0 14 3 0 0 22 0 0 0] 98 0 530 193 193 0 27 1181766 2 ##(Smalltalk.FramingConstraints)  1180678 ##(Smalltalk.FramingCalculation)  8 #fixedParentLeft 291 1346 8 #fixedParentRight -3 1346 8 #fixedParentTop 7 1346 8 #fixedViewTop 39 410 8 ##(Smalltalk.ContainerView)  98 15 0 416 98 2 8 1140850688 131073 1488 0 0 0 7 0 0 0 1488 1180166 ##(Smalltalk.ProportionalLayout)  234 240 98 0 16 234 256 98 2 410 8 ##(Smalltalk.ReferenceView)  98 14 0 1488 98 2 8 1140850688 131073 1664 0 482 8 4278190080 0 7 0 0 0 1664 1180166 ##(Smalltalk.ResourceIdentifier)  8 ##(Smalltalk.MethodSourcePresenter)  8 #resource_Default_view 0 818 202 208 98 1 882 912 98 2 530 1 525 530 1569 509 1664 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 6 1 0 0 16 3 0 0 4 2 0 0] 1616 1296 0 27 8 'codePane' 0 818 202 208 98 1 882 912 98 2 530 1 51 530 1569 1033 1488 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 16 3 0 0 29 2 0 0] 98 3 410 1504 98 15 0 1488 98 2 8 1140850688 131073 2160 0 482 512 0 7 0 0 0 2160 1570 234 240 98 4 410 1504 98 15 0 2160 98 2 8 1140850688 131073 2288 0 0 0 7 0 0 0 2288 562 234 240 98 6 410 8 ##(Smalltalk.PushButton)  98 20 0 2288 98 2 8 1140924416 1 2400 0 0 0 7 0 0 0 2400 0 8 4294902463 1180998 4 ##(Smalltalk.CommandDescription)  8 #terminateProcess 8 'Terminate' 1 1 0 0 32 0 0 0 818 202 208 98 3 882 912 98 2 530 715 1 530 141 51 2400 882 8 #isEnabled: 98 1 32 2400 882 992 98 1 8 'Terminate' 2400 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 101 1 0 0 0 0 0 0 171 1 0 0 25 0 0 0] 98 0 1296 0 29 1314 1346 8 #fixedPreviousRight 1 1392 1 1424 1 1456 51 410 8 ##(Smalltalk.ComboBox)  98 17 0 2288 98 2 8 1412498947 1025 2864 590662 2 ##(Smalltalk.ListModel)  202 208 1616 0 1310726 ##(Smalltalk.IdentitySearchPolicy)  482 8 4278190080 0 7 0 0 0 2864 0 8 4294902379 787814 3 ##(Smalltalk.BlockClosure)  0 0 1180966 ##(Smalltalk.CompiledExpression)  2 1 8 ##(Smalltalk.UndefinedObject)  8 'doIt' 8 '[:each | each printString]' 8 #[30 105 226 0 106] 8 #printString 3088 7 257 0 1616 401 818 202 208 98 1 882 912 98 2 530 1 1 530 715 47 2864 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 101 1 0 0 23 0 0 0] 98 0 1296 0 27 1314 1360 1 1392 -139 1424 1 1456 47 410 8 ##(Smalltalk.ListBox)  98 17 0 2288 98 2 8 1144062209 1025 3392 2946 202 208 1616 0 3008 482 512 0 7 0 0 0 3392 0 8 4294903235 8 ##(Smalltalk.BasicListAbstract)  1616 32 818 202 208 98 2 882 912 98 2 530 1 51 530 855 457 3392 882 8 #horizontalExtent: 98 1 1 3392 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 171 1 0 0 253 0 0 0] 98 0 1296 0 27 1314 1360 1 1392 1 1346 8 #fixedPreviousBottom 1 1346 8 #fixedParentBottom 1 234 256 98 4 2864 8 'processList' 3392 8 'frameList' 0 818 202 208 98 1 882 912 98 2 530 1 1 530 855 507 2288 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 171 1 0 0 253 0 0 0] 98 3 2864 2400 3392 1296 0 27 3 410 1504 98 15 0 2160 98 2 8 1140850688 131073 4064 0 482 512 0 7 0 0 0 4064 1570 234 240 98 2 410 8 ##(Smalltalk.ListView)  98 30 0 4064 98 2 8 1140920397 1025 4192 2946 202 208 1616 0 3008 482 512 0 7 0 0 0 4192 0 8 4294903309 3536 0 1049670 1 ##(Smalltalk.IconImageManager)  0 0 0 0 0 0 202 208 98 3 920646 5 ##(Smalltalk.ListViewColumn)  8 'Variable' 201 8 #left 3536 8 ##(Smalltalk.SortedCollection)  3074 0 0 3106 2 1 3072 8 'doIt' 8 '[:each | each key value]' 8 #[30 105 226 0 142 106] 8 #key 4480 7 257 0 0 4192 0 1 0 0 4402 8 'Value' 317 4448 3536 4464 3074 0 459302 ##(Smalltalk.Context)  1 1 0 0 3106 0 9 3136 8 'doIt' 98 2 8 '[:each | each value]' 98 1 202 8 ##(Smalltalk.PoolDictionary)  1616 8 #[252 1 0 1 1 5 0 17 229 32 142 106 105] 17 257 0 0 4192 0 3 0 0 4402 8 'OOP' 181 8 #right 459270 ##(Smalltalk.Message)  8 #displayString 98 0 4834 8 #<= 4880 3074 0 0 3106 3 1 3136 8 'doIt' 8 '[:each | each key key asNumber]' 8 #[31 105 226 0 158 159 106] 4560 8 #asNumber 4928 7 257 0 0 4192 0 1 0 0 8 #report 1616 0 131169 0 0 818 202 208 98 2 882 912 98 2 530 1 1 530 697 325 4192 882 992 98 1 8 'Variable' 4192 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 92 1 0 0 162 0 0 0] 98 0 1296 0 27 5 16 234 256 98 4 4192 8 'variableList' 410 8 ##(Smalltalk.MultilineTextEdit)  98 16 0 4064 98 2 8 1143017796 1025 5296 0 482 512 0 7 0 0 0 5296 0 8 4294901907 786 0 0 9 818 202 208 98 3 882 912 98 2 530 1 343 530 697 165 5296 882 1056 98 1 1090 3 1 3 5296 882 1136 98 1 32 5296 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 171 0 0 0 92 1 0 0 253 0 0 0] 98 0 1296 0 27 8 'variableData' 0 818 202 208 98 1 882 912 98 2 530 873 1 530 697 507 4064 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 180 1 0 0 0 0 0 0 16 3 0 0 253 0 0 0] 98 3 4192 410 8 ##(Smalltalk.Splitter)  98 12 0 4064 98 2 8 1140850688 1 5840 0 482 512 0 519 0 0 0 5840 818 202 208 98 1 882 912 98 2 530 1 325 530 697 19 5840 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 162 0 0 0 92 1 0 0 171 0 0 0] 98 0 1296 0 27 5296 1296 0 27 524806 ##(Smalltalk.Fraction)  253 311 32 234 256 1616 0 818 202 208 98 1 882 912 98 2 530 1 1 530 1569 507 2160 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 16 3 0 0 253 0 0 0] 98 3 2288 410 5856 98 12 0 2160 98 2 8 1140850688 1 6304 0 482 512 0 519 0 0 0 6304 818 202 208 98 1 882 912 98 2 530 855 1 530 19 507 6304 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 171 1 0 0 0 0 0 0 180 1 0 0 253 0 0 0] 98 0 1296 0 27 4064 1296 0 27 410 5856 98 12 0 1488 98 2 8 1140850688 1 6544 0 482 512 0 519 0 0 0 6544 818 202 208 98 1 882 912 98 2 530 1 507 530 1569 19 6544 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 253 0 0 0 16 3 0 0 6 1 0 0] 98 0 1296 0 27 1664 1296 0 27 1314 1360 1 1392 1 1424 51 3808 1 410 8 ##(Smalltalk.Toolbar)  98 25 0 416 98 2 8 1409289036 131137 6800 0 482 8 4278190080 0 519 0 0 0 6800 482 6896 8 4294903255 234 256 1616 234 256 98 12 38589 1115910 ##(Smalltalk.ToolbarIconButton)  38589 0 6800 1 2498 8 #showNextStatement 8 'Show Next Statement' 1 1 263494 3 ##(Smalltalk.Icon)  0 16 1572870 ##(Smalltalk.ImageRelativeFileLocator)  8 'ShowNextStatement.ico' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy)  8 'dolphindr006.dll' 0 395334 3 ##(Smalltalk.Bitmap)  0 16 0 0 0 0 3 530 33 33 1 38591 6994 38591 0 6800 1 2498 8 #stepInto 8 'Step Into' 1 1 7074 0 16 7120 8 'StepInto.ico' 7168 7202 0 16 0 0 0 0 3 530 33 33 1 38593 6994 38593 0 6800 1 2498 8 #stepOver 8 'Step Over' 1 1 7074 0 16 7120 8 'StepOver.ico' 7168 7202 0 16 0 0 0 0 3 530 33 33 1 38595 6994 38595 0 6800 1 2498 8 #stepOut 8 'Step Out' 1 1 7074 0 16 7120 8 'StepOut.ico' 7168 7202 0 16 0 0 0 0 3 530 33 33 1 38597 6994 38597 0 6800 1 2498 8 #runToCursor 8 'Run to Cursor' 1 1 7074 0 16 7120 8 'RunToCursor.ico' 7168 7202 0 16 0 0 0 0 3 530 33 33 1 38599 6994 38599 0 6800 1 2498 8 #resumeProcess 8 'Go' 1 1 7074 0 16 7120 8 'Run.ico' 7168 7202 0 16 0 0 0 0 3 530 33 33 1 98 7 7008 7248 7376 7504 7632 7760 1050118 ##(Smalltalk.ToolbarSeparator)  0 0 6800 3 0 1 234 240 98 12 7472 5 7216 1 7344 3 7600 7 7728 9 7856 11 0 1 0 530 33 33 530 45 45 0 0 818 202 208 98 2 882 912 98 2 530 1 1 530 1569 51 6800 882 8 #updateSize 1616 6800 1234 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 16 3 0 0 25 0 0 0] 98 0 1296 0 27 1314 1360 1 1392 1 1424 1 1456 51 234 256 98 2 624 8 'errorMessage' 0 461638 4 ##(Smalltalk.MenuBar)  0 16 98 3 265030 4 ##(Smalltalk.Menu)  0 16 98 1 984134 2 ##(Smalltalk.CommandMenuItem)  1 2498 8 #saveMethod 8 '&Save' 9383 1 0 0 0 8 '&File' 0 134217729 0 0 38581 0 0 8306 0 16 98 0 8 '&Edit' 0 134217729 0 0 38583 0 0 8306 0 16 98 1 8354 1 2498 8 #implement 8 '&Implement Method In ...' 1 1 0 0 0 8 '&Debug' 0 134217729 0 0 38587 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 0 1 7074 0 16 7120 8 'icons\GS32x32.ico' 0 7074 0 16 7120 8 'icons\GS16x16.ico' 0 0 0 1 0 0 818 202 208 98 3 882 912 98 2 530 2879 21 530 1601 1201 416 882 992 98 1 8 'Jade Debugger' 416 882 8 #updateMenuBar 1616 416 1234 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 191 8 0 0 98 2 0 0] 98 3 624 6800 1488 1296 0 27 )! !
 !JadeDebugger class categoriesFor: #debuggerFor:!public! !
 !JadeDebugger class categoriesFor: #debuggers!public! !
 !JadeDebugger class categoriesFor: #openDebuggerOnException:!public! !
@@ -1809,7 +1804,7 @@ resource_Default_view
 	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Default_view)
 	"
 
-	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.ShellView)  98 27 0 0 98 2 27131905 131073 416 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 328198 ##(Smalltalk.Point)  1201 801 551 0 0 0 416 1180166 ##(Smalltalk.ProportionalLayout)  234 240 98 0 16 234 256 98 4 410 8 ##(Smalltalk.ReferenceView)  98 14 0 416 98 2 8 1140850688 131073 656 0 482 8 4278190080 0 7 0 0 0 656 1180166 ##(Smalltalk.ResourceIdentifier)  8 ##(Smalltalk.JadeCodePresenter)  8 #resource_Default_view 0 983302 ##(Smalltalk.MessageSequence)  202 208 98 1 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 530 1 371 530 1185 363 656 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 185 0 0 0 80 2 0 0 110 1 0 0] 608 530 193 193 0 27 8 'codePane' 410 8 ##(Smalltalk.ListView)  98 30 0 416 98 2 8 1140920393 1025 1072 590662 2 ##(Smalltalk.ListModel)  202 208 608 0 1114638 ##(Smalltalk.STBSingletonProxy)  8 ##(Smalltalk.SearchPolicy)  8 #identity 482 512 0 7 265030 4 ##(Smalltalk.Menu)  0 16 98 1 984134 2 ##(Smalltalk.CommandMenuItem)  1 1180998 4 ##(Smalltalk.CommandDescription)  8 #removeFromList 8 'Remove from list' 1 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 1072 0 8 4294903261 8 ##(Smalltalk.BasicListAbstract)  8 ##(Smalltalk.IconicListAbstract)  1210 8 ##(Smalltalk.IconImageManager)  8 #current 0 0 0 0 0 0 202 208 98 3 920646 5 ##(Smalltalk.ListViewColumn)  8 'Dictionary' 241 8 #left 459270 ##(Smalltalk.Message)  8 #displayString 98 0 1634 8 #<= 1680 787814 3 ##(Smalltalk.BlockClosure)  0 0 1180966 ##(Smalltalk.CompiledExpression)  2 1 1728 8 'doIt' 8 '[:each | each symbolDictionaryName]' 8 #[30 105 226 0 106] 8 #symbolDictionaryName 1744 7 257 0 0 1072 0 1 0 0 1570 8 'Class' 301 1616 1456 8 ##(Smalltalk.SortedCollection)  1730 0 459302 ##(Smalltalk.Context)  1 1 0 0 1762 1 9 8 ##(Smalltalk.UndefinedObject)  8 'doIt' 98 2 8 '[:each | each gsBehavior]' 98 1 202 8 ##(Smalltalk.PoolDictionary)  608 8 #[252 1 0 1 1 5 0 17 229 32 158 106 105] 8 #gsBehavior 17 257 0 0 1072 0 1 0 0 1570 8 'Method' 601 1616 1456 1888 1730 0 1922 1 1 0 0 1762 1 9 1968 8 'doIt' 98 2 8 '[:each | each name]' 98 1 202 2064 608 8 #[252 1 0 1 1 5 0 17 229 32 158 106 105] 8 #name 17 257 0 0 1072 0 1 0 0 8 #report 608 0 131169 0 0 834 202 208 98 3 898 928 98 2 530 1 1 530 1185 361 1072 898 8 #contextMenu: 98 1 1296 1072 898 8 #text: 98 1 8 'Dictionary' 1072 994 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 80 2 0 0 180 0 0 0] 98 0 1040 0 27 8 'methodList' 0 0 0 0 0 1 263494 3 ##(Smalltalk.Icon)  0 16 1210 8 ##(Smalltalk.ImageRelativeFileLocator)  1520 8 'icons\GS32x32.ico' 0 2610 0 16 2640 8 'icons\GS16x16.ico' 0 0 0 1 0 0 834 202 208 98 3 898 928 98 2 530 2799 21 530 1201 801 416 898 2496 98 1 8 'Jade Method List' 416 898 8 #updateMenuBar 608 416 994 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 119 5 0 0 10 0 0 0 207 7 0 0 154 1 0 0] 98 3 1072 410 8 ##(Smalltalk.Splitter)  98 12 0 416 98 2 8 1140850688 1 2960 0 482 512 0 519 0 0 0 2960 834 202 208 98 1 898 928 98 2 530 1 361 530 1185 11 2960 994 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 180 0 0 0 80 2 0 0 185 0 0 0] 98 0 1040 0 27 656 1040 0 27 )! !
+	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.ShellView)  98 27 0 0 98 2 27131905 131073 416 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 328198 ##(Smalltalk.Point)  1201 801 551 0 0 0 416 1180166 ##(Smalltalk.ProportionalLayout)  234 240 98 0 16 234 256 98 4 410 8 ##(Smalltalk.ReferenceView)  98 14 0 416 98 2 8 1140850688 131073 656 0 482 8 4278190080 0 7 0 0 0 656 1180166 ##(Smalltalk.ResourceIdentifier)  8 ##(Smalltalk.MethodSourcePresenter)  8 #resource_Default_view 0 983302 ##(Smalltalk.MessageSequence)  202 208 98 1 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 530 1 371 530 1169 353 656 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 185 0 0 0 72 2 0 0 105 1 0 0] 608 530 193 193 0 27 8 'codePane' 410 8 ##(Smalltalk.ListView)  98 30 0 416 98 2 8 1140920393 1025 1072 590662 2 ##(Smalltalk.ListModel)  202 208 608 0 1310726 ##(Smalltalk.IdentitySearchPolicy)  482 512 0 7 265030 4 ##(Smalltalk.Menu)  0 16 98 1 984134 2 ##(Smalltalk.CommandMenuItem)  1 1180998 4 ##(Smalltalk.CommandDescription)  8 #removeFromList 8 'Remove from list' 1 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 1072 0 8 4294903309 8 ##(Smalltalk.BasicListAbstract)  8 ##(Smalltalk.IconicListAbstract)  1049670 1 ##(Smalltalk.IconImageManager)  0 0 0 0 0 0 202 208 98 3 920646 5 ##(Smalltalk.ListViewColumn)  8 'Dictionary' 241 8 #left 459270 ##(Smalltalk.Message)  8 #displayString 98 0 1586 8 #<= 1632 787814 3 ##(Smalltalk.BlockClosure)  0 0 1180966 ##(Smalltalk.CompiledExpression)  2 1 1680 8 'doIt' 8 '[:each | each symbolDictionaryName]' 8 #[30 105 226 0 106] 8 #symbolDictionaryName 1696 7 257 0 0 1072 0 1 0 0 1522 8 'Class' 301 1568 1424 8 ##(Smalltalk.SortedCollection)  1682 0 459302 ##(Smalltalk.Context)  1 1 0 0 1714 1 9 8 ##(Smalltalk.UndefinedObject)  8 'doIt' 98 2 8 '[:each | each gsBehavior]' 98 1 202 8 ##(Smalltalk.PoolDictionary)  608 8 #[252 1 0 1 1 5 0 17 229 32 158 106 105] 8 #gsBehavior 17 257 0 0 1072 0 1 0 0 1522 8 'Method' 601 1568 1424 1840 1682 0 1874 1 1 0 0 1714 1 9 1920 8 'doIt' 98 2 8 '[:each | each name]' 98 1 202 2016 608 8 #[252 1 0 1 1 5 0 17 229 32 158 106 105] 8 #name 17 257 0 0 1072 0 1 0 0 8 #report 608 0 131169 0 0 834 202 208 98 3 898 928 98 2 530 1 1 530 1169 353 1072 898 8 #contextMenu: 98 1 1264 1072 898 8 #text: 98 1 8 'Dictionary' 1072 994 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 72 2 0 0 176 0 0 0] 98 0 1040 0 27 8 'methodList' 0 0 0 0 0 1 263494 3 ##(Smalltalk.Icon)  0 16 1572870 ##(Smalltalk.ImageRelativeFileLocator)  8 'icons\GS32x32.ico' 0 2562 0 16 2608 8 'icons\GS16x16.ico' 0 0 0 1 0 0 834 202 208 98 3 898 928 98 2 530 2879 21 530 1201 801 416 898 2448 98 1 8 'Jade Method List' 416 898 8 #updateMenuBar 608 416 994 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 247 7 0 0 154 1 0 0] 98 3 1072 410 8 ##(Smalltalk.Splitter)  98 12 0 416 98 2 8 1140850688 1 2912 0 482 512 0 519 0 0 0 2912 834 202 208 98 1 898 928 98 2 530 1 353 530 1169 19 2912 994 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 176 0 0 0 72 2 0 0 185 0 0 0] 98 0 1040 0 27 656 1040 0 27 )! !
 !JadeMethodList class categoriesFor: #resource_Default_view!public!resources-views! !
 
 "Binary Globals"!

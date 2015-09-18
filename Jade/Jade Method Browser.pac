@@ -3,7 +3,7 @@ package := Package name: 'Jade Method Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.083'.
+package basicPackageVersion: '0.086'.
 
 
 package classNames
@@ -13,7 +13,6 @@ package classNames
 	add: #JadeMethodListPresenter;
 	add: #MethodListPresenter;
 	add: #MethodSourcePresenter;
-	add: #StepPointPresenter;
 	yourself.
 
 package methodNames
@@ -26,14 +25,12 @@ package methodNames
 	add: #JadeServer -> #_methodsFor:categories:;
 	add: #JadeServer -> #_methodsFor:filter:isVariables:;
 	add: #JadeServer -> #_methodsFor:variables:;
-	add: #JadeServer -> #_methodsFor3:categories:;
 	add: #JadeServer -> #_packageNameFor:;
 	add: #JadeServer -> #behaviorFor:in:;
 	add: #JadeServer -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer -> #compileMethod:behavior:user:inCategory:;
 	add: #JadeServer -> #implementorsOf:;
 	add: #JadeServer -> #implementorsOf:startingAt:;
-	add: #JadeServer -> #isAtLeastVersion3;
 	add: #JadeServer -> #methodsContaining:;
 	add: #JadeServer -> #methodsFor:upTo:filter:isVariables:;
 	add: #JadeServer -> #moveMethod:toCategory:;
@@ -49,6 +46,7 @@ package methodNames
 	add: #JadeServer -> #stepPointsFor:in:;
 	add: #JadeServer -> #streamOfMethods:;
 	add: #JadeServer -> #stringOfLineNumbersWithBreaksIn:;
+	add: #JadeServer64bit3x -> #_methodsFor:categories:;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	yourself.
 
@@ -93,11 +91,6 @@ JadePresenter subclass: #MethodListPresenter
 	classInstanceVariableNames: ''!
 CodeSourcePresenter subclass: #MethodSourcePresenter
 	instanceVariableNames: 'currentSelector'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-CodeSourcePresenter subclass: #StepPointPresenter
-	instanceVariableNames: 'stepPointOffsets'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -216,13 +209,9 @@ _methodsFor: aClass categories: aList
 
 _methodsFor: aClass filter: aList isVariables: aBoolean
 
-	aBoolean ifTrue: [
-		^self _methodsFor: aClass variables: aList.
-	].
-	self isAtLeastVersion3 ifTrue: [
-		^self _methodsFor3: aClass categories: aList.
-	].
-	^self _methodsFor: aClass categories: aList.
+	^aBoolean 
+		ifTrue:	[self _methodsFor: aClass variables: 	aList]
+		ifFalse:	[self _methodsFor: aClass categories: aList].
 !
 
 _methodsFor: aClass variables: aList
@@ -237,21 +226,6 @@ _methodsFor: aClass variables: aList
 		intersect notEmpty ifTrue: [methods add: method].
 	].
 	^methods.
-!
-
-_methodsFor3: aClass categories: aList
-
-	| methods |
-	methods := IdentitySet new.
-	aList do: [:eachCategory | 
-		(aClass includesCategory: eachCategory) ifTrue: [
-			(aClass selectorsIn: eachCategory) do: [:eachSelector |
-				methods add: (aClass compiledMethodAt: eachSelector).
-			].
-		].
-	].
-	^methods.
-
 !
 
 _packageNameFor: aCategoryName
@@ -415,37 +389,35 @@ implementorsOf: aGsMethod startingAt: aClass
 	^self stringForClassList: list.
 !
 
-isAtLeastVersion3
-
-	| string |
-	string := System gemVersionAt: 'gsRelease'.
-	^string notNil and: [$3 <= (string first)].
-!
-
 methodsContaining: aString
 
 	^self streamOfMethods: (self classOrganizer substringSearch: aString) first.
 !
 
 methodsFor: childClass upTo: parentClass filter: aString isVariables: aBoolean 
+
 	| filterList answerList aClass stream selectors |
 	filterList := (aString subStrings: Character tab) reject: [:each | each isEmpty].
 	aBoolean ifTrue: [filterList := (filterList collect: [:each | each asSymbol]) asIdentitySet].
 	aClass := childClass.
 	answerList := IdentitySet new.
 	selectors := IdentitySet new.
-	
-	[(self 
-		_methodsFor: aClass
-		filter: filterList
-		isVariables: aBoolean) do: 
-				[:each | 
-				(selectors includes: each selector) 
-					ifFalse: 
-						[answerList add: each.
-						selectors add: each selector]].
-	aClass = parentClass] 
-			whileFalse: [aClass := aClass superclass].
+	[
+		| methods |
+		methods := self 
+			_methodsFor: aClass
+			filter: filterList
+			isVariables: aBoolean.
+		methods do: [:each | 
+			(selectors includes: each selector) ifFalse: [
+				answerList add: each.
+				selectors add: each selector.
+			].
+		].
+		aClass = parentClass.
+	] whileFalse: [
+		aClass := aClass superclass.
+	].
 	stream := WriteStream on: String new.
 	answerList do: [:each | self _addMethod: each toStream: stream].
 	^stream contents!
@@ -567,7 +539,6 @@ sourceFor: anObject in: aClass
 		nextPutAll: packageName; tab;
 		nextPutAll: category; tab;
 		nextPutAll: mcTimestamp; lf;
-		nextPutAll: (self stringOfLineNumbersWithBreaksIn: (behavior compiledMethodAt: selector)); lf;
 		nextPutAll: source;
 		contents.
 !
@@ -628,14 +599,12 @@ stringOfLineNumbersWithBreaksIn: aGsMethod
 !JadeServer categoriesFor: #_methodsFor:categories:!Methods!public! !
 !JadeServer categoriesFor: #_methodsFor:filter:isVariables:!Methods!public! !
 !JadeServer categoriesFor: #_methodsFor:variables:!Methods!public! !
-!JadeServer categoriesFor: #_methodsFor3:categories:!Methods!public! !
 !JadeServer categoriesFor: #_packageNameFor:!Methods!public! !
 !JadeServer categoriesFor: #behaviorFor:in:!Methods!public! !
 !JadeServer categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
 !JadeServer categoriesFor: #compileMethod:behavior:user:inCategory:!Methods!public! !
 !JadeServer categoriesFor: #implementorsOf:!Methods!public! !
 !JadeServer categoriesFor: #implementorsOf:startingAt:!public! !
-!JadeServer categoriesFor: #isAtLeastVersion3!Methods!public! !
 !JadeServer categoriesFor: #methodsContaining:!Methods!public! !
 !JadeServer categoriesFor: #methodsFor:upTo:filter:isVariables:!Methods!public! !
 !JadeServer categoriesFor: #moveMethod:toCategory:!Methods!public! !
@@ -653,6 +622,21 @@ stringOfLineNumbersWithBreaksIn: aGsMethod
 !JadeServer categoriesFor: #stringOfLineNumbersWithBreaksIn:!Methods!public! !
 
 !JadeServer64bit3x methodsFor!
+
+_methodsFor: aClass categories: aList
+
+	| methods |
+	methods := IdentitySet new.
+	aList do: [:eachCategory | 
+		(aClass includesCategory: eachCategory) ifTrue: [
+			(aClass selectorsIn: eachCategory) do: [:eachSelector |
+				methods add: (aClass compiledMethodAt: eachSelector).
+			].
+		].
+	].
+	^methods.
+
+!
 
 compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCategory: categorySymbol
 	"returns (nil -> anArrayOfErrors) or (aGsNMethod -> compilerWarnings) or (aGsNMethod -> nil)"
@@ -683,6 +667,7 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 		ex return: method -> warnings.
 	].
 ! !
+!JadeServer64bit3x categoriesFor: #_methodsFor:categories:!Methods!public! !
 !JadeServer64bit3x categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
 
 "End of package definition"!
@@ -1331,7 +1316,6 @@ update
 	stream := ReadStream on: string.
 	string := (stream upTo: Character tab) , ' -- ' , (stream upTo: Character tab) , ' -- ' , stream nextLine.
 	self statusBarText: string.
-	string := stream nextLine.
 	documentPresenter 
 		value: stream upToEnd;
 		isModified: false;
@@ -1339,9 +1323,6 @@ update
 		yourself.
 	documentPresenter view isEnabled: true.
 	currentSelector := self newSelector.
-	string subStrings do: [:each | 
-		self addMarkerAtLine: each asNumber.
-	].
 ! !
 !MethodSourcePresenter categoriesFor: #canSetBreakpoints!Breakpoints!public! !
 !MethodSourcePresenter categoriesFor: #codePresenterIsMethod!public! !
@@ -1378,110 +1359,6 @@ resource_Default_view
 	^#(#'!!STL' 3 788558 10 ##(Smalltalk.STBViewProxy)  8 ##(Smalltalk.ContainerView)  98 15 0 0 98 2 8 1409286144 131073 416 0 0 0 5 0 0 0 416 852230 ##(Smalltalk.FramingLayout)  234 240 98 4 410 8 ##(Smalltalk.Toolbar)  98 25 0 416 98 2 8 1140851500 131137 560 0 524550 ##(Smalltalk.ColorRef)  8 4278190080 0 517 0 263174 ##(Smalltalk.Font)  0 16 459014 ##(Smalltalk.LOGFONT)  8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 65 114 105 97 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 328198 ##(Smalltalk.Point)  193 193 0 560 642 672 8 4294903133 234 256 98 0 234 256 98 24 16241 1246982 ##(Smalltalk.ToolbarSystemButton)  16241 0 560 1 1180998 4 ##(Smalltalk.CommandDescription)  8 #redo 8 'Redo' 1 1 0 1 9 16243 898 16243 0 560 1 930 8 #editFind 8 'Find' 1 1 0 1 25 16245 898 16245 0 560 1 930 8 #editReplace 8 'Replace' 1 1 0 1 27 16247 853766 ##(Smalltalk.ToolbarButton)  16247 0 560 1 930 8 #jadeDisplay 8 'Print Result of Selection or Line' 1 1 0 395334 3 ##(Smalltalk.Bitmap)  0 16 1114638 ##(Smalltalk.STBSingletonProxy)  8 ##(Smalltalk.ImageRelativeFileLocator)  8 #current 8 'Tools.bmp' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy)  8 'dolphindr006.dll' 0 0 7 770 1857 33 55 16249 1122 16249 0 560 1 930 8 #jadeExecute 8 'Evaluate Selection or Line' 1 1 0 1216 57 16251 1122 16251 0 560 1 930 8 #jadeInspect 8 'Inspect Selection or Line' 1 1 0 1216 59 16229 898 16229 0 560 1 930 8 #fileSave 8 'Save' 1 1 0 1 17 16231 898 16231 0 560 1 930 8 #editCut 8 'Cut' 1 1 0 1 1 16233 898 16233 0 560 1 930 8 #editCopy 8 'Copy' 1 1 0 1 3 16235 898 16235 0 560 1 930 8 #editPaste 8 'Paste' 1 1 0 1 5 16237 898 16237 0 560 1 930 8 #editDelete 8 'Delete' 1 1 0 1 11 16239 898 16239 0 560 1 930 8 #undo 8 'Undo' 1 1 0 1 7 98 15 1504 1050118 ##(Smalltalk.ToolbarSeparator)  0 0 560 3 0 1 1568 1632 1696 1760 1824 912 1906 0 0 560 3 0 1 992 1056 1906 0 0 560 3 0 1 1136 1376 1440 234 240 98 4 1 1 1216 31 0 1 0 770 33 33 770 45 45 0 0 983302 ##(Smalltalk.MessageSequence)  202 208 98 2 721670 ##(Smalltalk.MessageSend)  8 #createAt:extent: 98 2 770 1 1 770 1001 51 560 2098 8 #updateSize 848 560 983302 ##(Smalltalk.WINDOWPLACEMENT)  8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 244 1 0 0 25 0 0 0] 98 0 770 193 193 0 27 1181766 2 ##(Smalltalk.FramingConstraints)  1242 8 ##(Smalltalk.FramingCalculation)  8 #fixedParentLeft 1 1242 2352 8 #fixedParentRight 1 1242 2352 8 #fixedParentTop 1 1242 2352 8 #fixedViewTop 51 410 8 ##(Smalltalk.ScintillaView)  98 46 0 416 98 2 8 1176571972 1025 2480 721990 2 ##(Smalltalk.ValueHolder)  0 32 1242 8 ##(Smalltalk.SearchPolicy)  8 #equality 0 196934 1 ##(Smalltalk.RGB)  27387381 0 5 265030 4 ##(Smalltalk.Menu)  0 16 98 5 2674 0 16 98 7 984134 2 ##(Smalltalk.CommandMenuItem)  1 930 8 #browseImplementors 8 'Browse &Implementors' 1 1 0 0 0 2754 1 930 8 #browseSenders 8 'Browse &Senders' 1 1 0 0 0 983366 1 ##(Smalltalk.DividerMenuItem)  4097 2754 1 930 8 #browseReferences 8 'Browse &References' 1 1 0 0 0 2754 1 930 8 #browseClass 8 'Browse &Class' 1 1 0 0 0 2898 4097 2754 1 930 8 #browseMethodsWithString 8 'Browse &Methods with String' 1 1 0 0 0 8 '&Browse' 0 134217729 0 0 0 0 0 2674 0 16 98 10 2754 1 930 1536 8 '&Save' 9383 1 0 0 0 2898 4097 2754 1 930 1856 8 '&Undo' 9397 1 0 0 0 2754 1 930 960 8 'Redo' 9395 1 0 0 0 2898 4097 2754 1 930 1600 8 'Cu&t' 9393 1 0 0 0 2754 1 930 1664 8 '&Copy' 9351 1 0 0 0 2754 1 930 1728 8 '&Paste' 9389 1 0 0 0 2754 1 930 8 #editSelectAll 8 'Select &All' 9347 1 0 0 0 2754 1 930 1792 8 'De&lete' 1629 1 0 0 0 8 '&Edit' 0 134217729 0 0 0 0 0 2674 0 16 98 6 2754 1 930 1168 8 '&Display' 9353 1 0 0 0 2754 1 930 1408 8 '&Execute' 9355 1 0 0 0 2754 1 930 1472 8 '&Inspect' 9363 1 0 0 0 2754 1 930 1472 8 '&Query' 9379 1 0 0 0 2898 4097 2754 1 930 8 #fileIn 8 'File In' 1 1 0 0 0 8 'E&xecute' 0 134217729 0 0 0 0 0 2674 0 16 98 3 2754 1 930 1024 8 '&Find...' 9357 1 0 0 0 2754 1 930 8 #editFindNext 8 'Find &Next' 9359 1 0 0 0 2754 1 930 1088 8 '&Replace...' 9361 1 0 0 0 8 '&Find' 0 134217729 0 0 0 0 0 2674 0 16 98 2 2754 1 930 8 #addQuotesToSelection 8 '&Add' 1 1 0 0 0 2754 1 930 8 #removeQuotesFromSelection 8 '&Remove' 1 1 0 0 0 8 '&Quotes' 0 134217729 0 0 0 0 0 8 '' 0 1 0 0 0 0 0 690 0 16 722 8 #[244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 86 101 114 100 97 110 97 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 770 193 193 0 2480 0 61692557 852486 ##(Smalltalk.NullConverter)  0 0 9 0 234 256 98 42 8 #braceMismatch 1182726 ##(Smalltalk.ScintillaTextStyle)  71 786694 ##(Smalltalk.IndexedColor)  33554459 0 3 0 0 0 0 4480 0 0 0 8 #character 4498 31 2642 16646399 0 3 0 0 0 0 4560 0 0 0 8 #indentGuide 4498 75 4530 33554447 0 1 0 0 0 0 4608 0 0 0 8 #string 4498 3 2642 16646399 0 129 0 0 0 0 4656 0 0 0 8 #global 4498 21 0 0 3 0 0 0 0 4704 0 0 0 8 #keywordSend 4498 27 4530 33554437 0 3 0 0 0 0 4736 0 0 0 8 #boolean 4498 13 2642 16646145 0 3 0 0 0 0 4784 0 0 0 8 #nil 4498 19 4816 0 3 0 0 0 0 4832 0 0 0 8 #number 4498 5 2642 16711169 0 1 0 0 0 0 4864 0 0 0 8 #binary 4498 11 4530 33554433 0 1 0 0 0 0 4912 0 0 0 8 #assignment 4498 29 0 0 3 0 0 0 0 4960 0 0 0 8 #symbol 4498 9 4530 33554443 0 1 0 0 0 0 4992 0 0 0 8 #self 4498 15 4816 0 3 0 0 0 0 5040 0 0 0 8 #return 4498 23 2642 321 0 3 0 0 0 0 5072 0 0 0 8 #super 4498 17 4816 0 3 0 0 0 0 5120 0 0 0 8 #specialSelector 4498 33 4816 0 3 0 0 0 0 5152 0 0 0 8 #special 4498 25 0 0 3 0 0 0 0 5184 0 0 0 8 #lineNumber 4498 67 0 0 1 0 0 0 0 5216 0 0 0 8 #normal 4498 1 0 0 1 0 0 0 0 5248 0 0 0 8 #comment 4498 7 2642 65025 0 1 0 0 0 0 5280 0 0 0 8 #braceHighlight 4498 69 4530 33554465 0 3 0 0 0 0 5328 0 0 0 98 40 5264 4672 4880 5296 5008 4928 4800 5056 5136 4848 4720 5088 5200 4752 4976 4576 5168 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5232 5344 4512 0 4624 0 0 1245510 1 ##(Smalltalk.NullScintillaStyler)  5248 234 256 98 16 8 #folderTail 1639942 ##(Smalltalk.ScintillaMarkerDefinition)  57 11 4944 4944 2480 5456 8 #folder 5474 61 5 4944 4944 2480 5504 8 #folderOpen 5474 63 13 4944 4944 2480 5536 8 #folderOpenMid 5474 53 11 4530 33554471 4944 2480 5568 8 #folderEnd 5474 51 11 5600 4944 2480 5616 8 #folderMidTail 5474 55 11 5600 4944 2480 5648 8 #circle 5474 1 1 4944 4544 2480 5680 8 #folderSub 5474 59 11 4944 4944 2480 5712 202 208 848 0 63 0 0 0 0 0 4640 0 0 0 0 0 0 8 '' 7 234 256 98 2 8 #container 234 256 98 2 5248 4498 1 0 0 1 0 0 0 0 5248 0 0 0 0 0 8 #arrows 0 1 0 0 2034 202 208 98 11 2098 2128 98 2 770 1 51 770 1001 551 2480 2098 8 #contextMenu: 98 1 2688 2480 2098 8 #selectionRange: 98 1 525062 ##(Smalltalk.Interval)  3 1 3 2480 2098 8 #isTextModified: 98 1 32 2480 2098 8 #modificationEventMask: 98 1 9215 2480 2098 8 #indicatorDefinitions: 98 1 98 3 1836038 ##(Smalltalk.ScintillaIndicatorDefinition)  1 2480 65025 3 6290 3 2480 33423361 5 6290 5 2480 511 1 2480 2098 8 #margins: 98 1 98 3 984582 ##(Smalltalk.ScintillaMargin)  1 2480 41 3 32 1 6418 3 2480 33 1 16 67108863 6418 5 2480 1 1 16 -67108863 2480 2098 8 #hasIndentationGuides: 98 1 16 2480 2098 8 #tabIndents: 98 1 16 2480 2098 8 #tabWidth: 98 1 9 2480 2098 8 #setLexerLanguage: 98 1 8 #smalltalk 2480 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 244 1 0 0 44 1 0 0] 98 0 2288 0 27 2306 2336 1 2384 1 2416 51 1242 2352 8 #fixedParentBottom 1 234 256 98 2 2480 8 'document' 0 2034 202 208 98 1 2098 2128 98 2 770 2799 21 770 1001 601 416 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 119 5 0 0 10 0 0 0 107 7 0 0 54 1 0 0] 98 2 560 2480 2288 0 27 )! !
 !MethodSourcePresenter class categoriesFor: #publishedEventsOfInstances!public! !
 !MethodSourcePresenter class categoriesFor: #resource_Default_view!public!resources-views! !
-
-StepPointPresenter guid: (GUID fromString: '{B8F191CE-65B5-4C45-8FBB-492C94CA0BF5}')!
-StepPointPresenter comment: ''!
-!StepPointPresenter categoriesForClass!Unclassified! !
-!StepPointPresenter methodsFor!
-
-canSetBreakpoints
-
-	^true.
-!
-
-onViewOpened
-
-	super onViewOpened.
-	documentPresenter 
-		value: '';
-		isModified: false;
-		isReadOnly: true;
-		yourself.
-	self updateCodeFont.
-!
-
-setBreakpoint
-
-	self 
-		setBreakpointOnLine: documentPresenter view currentLine 
-		atStepPoint: self stepPointAtCaret.
-!
-
-stepPointAtCaret
-
-	| scintilla text position begin end |
-	scintilla := documentPresenter view.
-	text := scintilla value.
-	position := scintilla caretPosition min: text size.
-	[
-		begin isNil and: [0 < position].
-	] whileTrue: [
-		(text at: position) = ${ 
-			ifTrue: [begin := position]
-			ifFalse: [position := position - 1].
-	].
-	[
-		end isNil and: [position <= text size].
-	] whileTrue: [
-		(text at: position) = $} 
-			ifTrue: [end := position]
-			ifFalse: [position := position + 1].
-	].
-	(begin isNil or: [end isNil]) ifTrue: [^1].
-	text := text copyFrom: begin + 1 to: end - 1.
-	(text allSatisfy: [:char | 'B-0123456789' includes: char]) ifFalse: [^1].
-	text := text select: [:each | each isDigit].
-	^text asNumber.
-!
-
-stepPointOffsets
-
-	^stepPointOffsets.
-!
-
-update
-
-	| theClass method string stream list breaks source markedSource |
-	documentPresenter value: ''.
-	(theClass := self trigger: #'needClass') isNil ifTrue: [^self].
-	(method := self trigger: #'needMethod') isNil ifTrue: [^self].
-	string := theClass stepPointsFor: method.
-	stream := ReadStream on: string.
-
-	list := stream nextLine subStrings.
-	stepPointOffsets := OrderedCollection new.
-	1 to: list size do: [:i | 
-		| code isBreak |
-		code := list at: i.
-		(isBreak := code first = $B) ifTrue: [
-			code :=code copyFrom: 2 to: code size.
-		].
-		stepPointOffsets add: code asNumber -> (isBreak ifTrue: [i negated] ifFalse: [i]).
-	].
-	breaks := stream nextLine.
-	source := stream upToEnd.
-	markedSource := source copy.
-	stepPointOffsets := stepPointOffsets asSortedCollection reverse.
-	stepPointOffsets first key = source size ifTrue: [
-		stepPointOffsets first key: stepPointOffsets first key + 1.
-	].
-	stepPointOffsets do: [:each | 
-		markedSource := 
-			(markedSource copyFrom: 1 to: each key - 1) , 
-			'{' , (each value < 0 ifTrue: ['B'] ifFalse: ['']) , each value abs printString , '}' , 
-			(markedSource copyFrom: each key to: markedSource size).
-	].
-	documentPresenter value: markedSource "replaceLfWithCrLf".
-	breaks subStrings do: [:each | 
-		self addMarkerAtLine: each asNumber.
-	].
-! !
-!StepPointPresenter categoriesFor: #canSetBreakpoints!Breakpoints!public! !
-!StepPointPresenter categoriesFor: #onViewOpened!public! !
-!StepPointPresenter categoriesFor: #setBreakpoint!Breakpoints!public! !
-!StepPointPresenter categoriesFor: #stepPointAtCaret!Breakpoints!public! !
-!StepPointPresenter categoriesFor: #stepPointOffsets!Breakpoints!public! !
-!StepPointPresenter categoriesFor: #update!public! !
 
 JadeMethodListPresenter guid: (GUID fromString: '{BCF7EDB6-114A-4E67-84D3-6FECD6C5AE0C}')!
 JadeMethodListPresenter comment: ''!

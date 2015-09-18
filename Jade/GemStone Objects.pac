@@ -3,7 +3,7 @@ package := Package name: 'GemStone Objects'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.053'.
+package basicPackageVersion: '0.054'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Objects'' yourself.'.
 
@@ -447,24 +447,6 @@ GsProcess comment: ''!
 !GsProcess categoriesForClass!Unclassified! !
 !GsProcess methodsFor!
 
-aboutToDebug
-"	Try the following in a workspace.
-	nil halt. 2 + 3.
-	[nil halt. 2 + 3] value.
-	nil pause. 2 + 3.
-	[nil pause. 2 + 3] value.
-	nil foo. 2 + 3.
-	[nil foo. 2 + 3] value.
-	nil error: 'foo'. 2 + 3.
-	[nil error: 'foo'. 2 + 3] value.
-"
-	| result |
-	result := gciSession 
-		serverPerform: #'aboutToDebugProcess:'
-		with: self.
-	result = oopType ifFalse: [self halt].
-!
-
 description
 
 	^gciSession printString: self oop.
@@ -530,7 +512,6 @@ type
 
 type: anObject
 	type := anObject! !
-!GsProcess categoriesFor: #aboutToDebug!public! !
 !GsProcess categoriesFor: #description!public! !
 !GsProcess categoriesFor: #frameForLevel:!public! !
 !GsProcess categoriesFor: #gciSession:!public! !
@@ -565,7 +546,6 @@ session: aSession oop: anOop
 	^self new
 		gciSession: aSession;
 		oop: anOop; 
-		aboutToDebug;
 		yourself.
 !
 

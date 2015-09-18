@@ -3,12 +3,13 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.224'.
+package basicPackageVersion: '0.237'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
 package classNames
 	add: #GciSession;
+	add: #GciSessionWithSocket;
 	add: #GsAnsiError;
 	add: #GsApplicationError;
 	add: #GsBreakDialog;
@@ -31,9 +32,18 @@ package classNames
 	add: #JadeServer64bit;
 	add: #JadeServer64bit24;
 	add: #JadeServer64bit32;
+	add: #JadeServer64bit33;
 	add: #JadeServer64bit3x;
 	add: #JadeServerTestCase;
 	add: #TerminateProcess;
+	yourself.
+
+package methodNames
+	add: #Gcilw6x -> #jadeServerClass;
+	add: #LibGciRpc64 -> #jadeServerClass;
+	add: #LibGciRpc64_30 -> #jadeServerClass;
+	add: #LibGciRpc64_32 -> #jadeServerClass;
+	add: #LibGciRpc64_33 -> #jadeServerClass;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -58,13 +68,13 @@ package!
 "Class Definitions"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionID gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask server socket stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionID gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: 'GemCursor'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Object subclass: #JadeServer
-	instanceVariableNames: 'classList classOrganizer readStream writeStream selectedClass methodFilterType methodFilters selections socket'
-	classVariableNames: 'Admonition AllGroups AllUsers ClassOrganizer GemStoneError Globals GsMethodDictionary SymbolDictionary System UserGlobals UserProfile'
+	instanceVariableNames: 'classList classOrganizer readStream writeStream selectedClass methodFilterType methodFilters selections'
+	classVariableNames: 'AllGroups AllUsers ClassOrganizer ClientForwarder GemStoneError Globals GsMethodDictionary ProcessorScheduler SymbolDictionary System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
 Error subclass: #GsError
@@ -152,6 +162,11 @@ Notification subclass: #TerminateProcess
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+GciSession subclass: #GciSessionWithSocket
+	instanceVariableNames: 'socket'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeServer subclass: #JadeServer32bit
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -169,12 +184,17 @@ JadeServer64bit subclass: #JadeServer64bit24
 	classInstanceVariableNames: ''!
 JadeServer64bit24 subclass: #JadeServer64bit3x
 	instanceVariableNames: 'environment'
-	classVariableNames: 'CompileError CompileWarning'
+	classVariableNames: 'Admonition ClientForwarderSend CompileError CompileWarning RubyHash SessionTemps Transcript'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeServer64bit3x subclass: #JadeServer64bit32
 	instanceVariableNames: ''
 	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeServer64bit32 subclass: #JadeServer64bit33
+	instanceVariableNames: 'socket'
+	classVariableNames: 'Breakpoint GsNMethod GsSocket'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 ValueDialog subclass: #GsBreakDialog
@@ -192,6 +212,46 @@ TestCase subclass: #JadeServerTestCase
 
 
 "Loose Methods"!
+
+!Gcilw6x methodsFor!
+
+jadeServerClass
+
+	^JadeServer32bit
+! !
+!Gcilw6x categoriesFor: #jadeServerClass!public!Testing! !
+
+!LibGciRpc64 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit
+! !
+!LibGciRpc64 categoriesFor: #jadeServerClass!public!Testing! !
+
+!LibGciRpc64_30 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit3x
+! !
+!LibGciRpc64_30 categoriesFor: #jadeServerClass!public!Testing! !
+
+!LibGciRpc64_32 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit32
+! !
+!LibGciRpc64_32 categoriesFor: #jadeServerClass!public!Testing! !
+
+!LibGciRpc64_33 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit33
+! !
+!LibGciRpc64_33 categoriesFor: #jadeServerClass!public!Testing! !
 
 "End of package definition"!
 
@@ -215,29 +275,17 @@ GciSoftBreak'!
 
 _continueProcess: aContextOop
 
-	^socket ifNil: [
-		library
-			continue: aContextOop
-			session: gciSessionID.
-	] ifNotNil: [
-		self
-			_usingSocketSend: #'socketStep:inFrame:' 
-			to: server 
-			withAll: (Array with: aContextOop with: nil).
-	].!
+	^library
+		continue: aContextOop
+		session: gciSessionID.
+!
 
 _executeString: aString fromContextOop: anOopType
-	^socket ifNil: [
-		library 
-				executeString: aString
-				fromContext: anOopType
-				session: gciSessionID.
-	] ifNotNil: [
-		self
-			_usingSocketSend: #'executeString:fromContext:' 
-			to: server 
-			withAll: (Array with: aString with: anOopType).
-	].!
+	^library 
+		executeString: aString
+		fromContext: anOopType
+		session: gciSessionID.
+!
 
 _library
 
@@ -246,13 +294,7 @@ _library
 
 _send: aSymbol to: anObject withAll: anArray
 
-	| arguments oops result |
-	socket ifNotNil: [
-		^self
-			_usingSocketSend: aSymbol 
-			to: anObject 
-			withAll: anArray.
-	].
+	| arguments oops result time1 time2 |
 	oops := OrderedCollection new.
 	arguments := anArray collect: [:each | 
 		(each isKindOf: Integer) ifTrue: [self oopForInteger: each] ifFalse: [
@@ -273,31 +315,6 @@ _server
 	^server.
 !
 
-_usingSocketSend: aSymbol to: anObject withAll: anArray
-
-	| stream  process resultSize result encoder |
-	stream := WriteStream on: ByteArray new.
-	encoder := JadeServer new
-		add: anObject toByteStream: stream;
-		add: aSymbol toByteStream: stream;
-		add: anArray toByteStream: stream;
-		yourself.
-	process := [:bytes | 
-		socket sendByteArray: bytes.
-	] newProcessWithArguments: (Array with: stream contents).
-	process resume.
-	resultSize := library 
-			send: #'readSocket:' 
-			to: server
-			with: (self serverArrayFor: (Array with: stream contents size))
-			session: gciSessionID.
-	result := socket receiveByteArray: resultSize.	stream := ReadStream on: result.
-	result := encoder 
-		readObjectFrom: stream
-		errorClass: library errorStructureClass.
-	^result.
-!
-
 abort
 
 	self serverPerform: #'abort'.
@@ -308,16 +325,14 @@ attemptSocket
 	| host port tempSocket time |
 	host := ((gemNRS subStrings: $#) first subStrings: $@) at: 2.
 	(port := self serverPerform: #'makeListener') ifNil: [^self].
-	tempSocket := Socket
-		port: port
-		host: host.
+	tempSocket := Socket port: port host: host.
 	tempSocket connectNoWait.
 	time := self serverPerform: #'acceptConnection'.
 	time ifNil: [
 		tempSocket close.
-	] ifNotNil: [		socket := tempSocket.
+		^self.
 	].
-!
+	^self become: (GciSessionWithSocket from: self withSocket: tempSocket).!
 
 begin
 
@@ -584,7 +599,7 @@ initializeServer
 "
 	library ifNil: [^self].
 	[
-		server := self executeString: (JadeServer serverForLibrary: library) gsString.
+		server := self executeString: library jadeServerClass gsString.
 	] on: GsRuntimeError do: [:ex | 
 		| number notes |
 		number := ex errorReport number.
@@ -998,19 +1013,29 @@ startHeartbeat
 	] forkAt: Processor userBackgroundPriority.
 !
 
-step: aGsProcess inFrame: anInteger
+stepInto: aGsProcess inFrame: anInteger
 
-	^socket ifNil: [
-		self
-			serverPerformInterpreted: #'step:inFrame:'
-			with: aGsProcess
-			with: anInteger.
-	] ifNotNil: [
-		self
-			_usingSocketSend: #'socketStep:inFrame:' 
-			to: server 
-			withAll: (Array with: aGsProcess with: anInteger).
-	].!
+	self
+		serverPerformInterpreted: #'step:inFrame:'
+		with: aGsProcess
+		with: 0.
+!
+
+stepOut: aGsProcess inFrame: anInteger
+
+	self
+		serverPerformInterpreted: #'step:inFrame:'
+		with: aGsProcess
+		with: anInteger.
+!
+
+stepOver: aGsProcess inFrame: anInteger
+
+	self
+		serverPerformInterpreted: #'step:inFrame:'
+		with: aGsProcess
+		with: anInteger.
+!
 
 stoneHost
 	^stoneHost!
@@ -1149,18 +1174,20 @@ withExplanation: aString do: aBlock
 withExplanation: aString doA: aBlock
 	"Here we manage the UI feedback"
 
-	| result haveResult shouldRunEventLoop dialog |
+	| result haveResult shouldRunEventLoop dialog proc |
 	shouldRunEventLoop := true.
 	haveResult := false.
 	[
 		result := self handlingClientForwarderSendDo: aBlock.
 		haveResult := true.
 		shouldRunEventLoop := false.
+		SessionManager inputState prod.
 	] fork.
 	[
-		[
+		proc := [
 			(Delay forSeconds: 1) wait.
 			shouldRunEventLoop := false.
+			SessionManager inputState prod.
 		] fork.
 		isHandlingClientForwarderSend ifTrue: [
 			SessionManager inputState loopWhile: [shouldRunEventLoop].
@@ -1171,7 +1198,10 @@ withExplanation: aString doA: aBlock
 				shouldRunEventLoop := true.
 			].
 		].
-		haveResult ifTrue: [^result].
+		haveResult ifTrue: [
+			proc terminate.
+			^result
+		].
 		isHandlingClientForwarderSend.
 	] whileTrue: [].
 	dialog := (Smalltalk at: #'WaitOnGemStoneDialog')
@@ -1192,7 +1222,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #_library!accessing!public! !
 !GciSession categoriesFor: #_send:to:withAll:!private! !
 !GciSession categoriesFor: #_server!private! !
-!GciSession categoriesFor: #_usingSocketSend:to:withAll:!private! !
 !GciSession categoriesFor: #abort!Jade convenience!public! !
 !GciSession categoriesFor: #attemptSocket!private! !
 !GciSession categoriesFor: #begin!Jade convenience!public! !
@@ -1258,7 +1287,9 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #signalTextRequestUsing:!OmniBrowser!public! !
 !GciSession categoriesFor: #softBreak!Jade!public! !
 !GciSession categoriesFor: #startHeartbeat!heartbeat!private! !
-!GciSession categoriesFor: #step:inFrame:!public! !
+!GciSession categoriesFor: #stepInto:inFrame:!public! !
+!GciSession categoriesFor: #stepOut:inFrame:!public! !
+!GciSession categoriesFor: #stepOver:inFrame:!public! !
 !GciSession categoriesFor: #stoneHost!accessing!public! !
 !GciSession categoriesFor: #stoneName!accessing!public! !
 !GciSession categoriesFor: #stoneSerial!private! !
@@ -1335,7 +1366,8 @@ publishedEventsOfInstances
 JadeServer guid: (GUID fromString: '{FC038152-9707-4C5F-8977-A1F8D02EB005}')!
 JadeServer comment: '(System _sessionStateAt: 3).	"pre-3.2"
 (System __sessionStateAt: 3).	"3.2 and on"
-GciSession allInstances do: [:each | each initializeServer].'!
+GciSession allInstances , GciSessionWithSocket allInstances do: [:each | each initializeServer].
+GciSession allInstances do: [:each | each logout].'!
 !JadeServer categoriesForClass!Unclassified! !
 !JadeServer methodsFor!
 
@@ -1351,132 +1383,6 @@ abort
 	classOrganizer := nil.
 	System abortTransaction.
 	self refreshSymbolList.
-!
-
-acceptConnection
-
-	| listener time flag |
-	listener := socket.
-	socket := nil.
-	time := Time millisecondsElapsedTime: [flag := listener readWillNotBlockWithin: 2000].
-	flag ifFalse: [
-		listener close.
-		^nil
-	].
-	socket := listener accept.
-	listener close.
-	socket isNil ifTrue: [^nil].
-	^time.
-
-!
-
-add: anObject toByteStream: aStream
-
-	anObject == nil		ifTrue: [aStream nextPut: 0. ^self].
-	anObject == true 	ifTrue: [aStream nextPut: 1. ^self].
-	anObject == false 	ifTrue: [aStream nextPut: 2. ^self].
-	(ExternalInteger notNil and: [anObject isKindOf: ExternalInteger]) ifTrue: [self addExternalInteger: anObject toByteStream: aStream. ^self].		"3 & 4"	(self isInDolphin and: [anObject isKindOf: GsObject]) ifTrue: [self addExternalInteger: anObject oopType toByteStream: aStream. ^self].			"3 & 4"
-	(anObject isKindOf: Symbol				) ifTrue: [self addSymbol: anObject toByteStream: aStream. ^self].	"5 & 6"
-	(anObject isKindOf: Integer				) ifTrue: [self addInteger: anObject toByteStream: aStream. ^self].	"7, 8, 9, & 10"
-	(anObject isKindOf: String					) ifTrue: [self addString: anObject toByteStream: aStream. ^self].	"11 & 12"
-	(anObject isKindOf: Array					) ifTrue: [self addArray: anObject toByteStream: aStream. ^self].	"13"
-	self isInDolphin ifTrue: [self error: 'Attempt to encode an unsupported object'].
-	self is32Bit ifTrue: [
-		self
-			addPositiveInteger: anObject asOop
-			toByteStream: aStream 
-			code: 3 
-			size: 4.
-	] ifFalse: [
-		self
-			addPositiveInteger: anObject asOop
-			toByteStream: aStream 
-			code: 4 
-			size: 8.
-	].!
-
-addArray: anArray toByteStream: aStream
-
-	16rFF < anArray size ifTrue: [self error: 'Array is too large!!'].
-	aStream nextPut: 14; nextPut: anArray size.
-	anArray do: [:each | self add: each toByteStream: aStream].
-!
-
-addExternalInteger: anObject toByteStream: aStream
-
-	self 
-		addPositiveInteger: anObject value
-		toByteStream: aStream 
-		code: (anObject byteSize == 4 ifTrue: [3] ifFalse: [4]) 
-		size: anObject byteSize.
-!
-
-addInteger: anObject toByteStream: aStream
-
-	| integer stream |
-	(0 <= anObject and: [anObject < 16r100]) ifTrue: [
-		aStream nextPut: 7; nextPut: anObject.
-		^self.
-	].
-	(-16r100 <= anObject and: [anObject < 0]) ifTrue: [
-		aStream nextPut: 8; nextPut: anObject negated - 1.
-		^self.
-	].
-	aStream nextPut: (anObject positive ifTrue: [9] ifFalse: [10]).
-	integer := anObject abs.
-	stream := WriteStream on: ByteArray new.
-	[
-		0 < integer.
-	] whileTrue: [
-		stream nextPut: (integer bitAnd: 16rFF).
-		integer := integer // 16r100.
-	].
-	aStream
-		nextPut: stream contents size;
-		nextPutAll: stream contents;
-		yourself.
-!
-
-addPositiveInteger: anInteger toByteStream: aStream code: codeInteger size: sizeInteger
-
-	| x |
-	x := anInteger.
-	aStream nextPut: codeInteger.
-	sizeInteger timesRepeat: [
-		aStream nextPut: (x bitAnd: 16rFF).
-		x := x // 16r100.
-	].
-!
-
-addString: aString toByteStream: aStream
-
-	| size |
-	(size := aString size) < 16r100 ifTrue: [
-		aStream nextPut: 11; nextPut: size.
-		aString do: [:each | aStream nextPut: each asciiValue].
-		^self.
-	].
-	size < 16r1000000 ifTrue: [
-		aStream nextPut: 12; nextPut: (size bitAnd: 16rFF); nextPut: (size // 16r100 bitAnd: 16rFF); nextPut: (size // 16r10000 bitAnd: 16rFF).
-		aString do: [:each | aStream nextPut: each asciiValue].
-		^self.
-	].
-	self error: 'Object cannot be encoded'.
-!
-
-addSymbol: aSymbol toByteStream: aStream
-
-	aSymbol size <= 16rFF ifTrue: [
-		aStream nextPut: 5; nextPut: aSymbol size.
-		aSymbol do: [:each | aStream nextPut: each asciiValue].
-		^self.
-	].
-	aSymbol size <= 16rFFFF ifTrue: [
-		aStream nextPut: 6; nextPut: (aSymbol size bitAnd: 16rFF); nextPut: (aSymbol size // 16r100 bitAnd: 16rFF).
-		aSymbol do: [:each | aStream nextPut: each asciiValue].
-		^self.
-	].
-	self error: 'Object cannot be encoded'.
 !
 
 asString: anObject
@@ -1562,7 +1468,7 @@ installTranscript
 	"Transcript object from Seaside"
 	transcript class name = 'TranscriptProxy class' ifTrue: [
 		| clientForwarder |
-		clientForwarder := (self objectNamed: #'ClientForwarder') new.
+		clientForwarder := ClientForwarder new.
 		clientForwarder	clientObject: 2.
 		transcript registerTranscriptClientForwarder: clientForwarder.
 		^self.
@@ -1574,35 +1480,14 @@ is32Bit
 	^false.
 !
 
-is64Bit
-
-	^false.
-!
-
 isClientForwarder: anObject
 
 	^anObject _class name == #'ClientForwarder'.
 !
 
-isInDolphin
-	"Most JadeServer code is in GemStone but the socket wire protocol encode/decode is in Dolphin as well"
-
-	^System isNil.
-!
-
-isInGemStone
-	"Most JadeServer code is in GemStone but the socket wire protocol encode/decode is in Dolphin as well"
-
-	^System notNil.
-!
-
 makeListener
 
-	| class |
-	class := self objectNamed: #'GsSocket'.
-	socket := class new makeServer: 1.
-	socket isNil ifTrue: [^nil].
-	^socket port.
+	^nil.
 !
 
 nextPut: aCharacter
@@ -1667,139 +1552,6 @@ oopOf: anObject
 	^anObject asOop.
 !
 
-readExceptionFrom: aStream errorClass: gciErrorSTypeClass
-
-	| category number context exception name message arguments stack gciErrSType |
-	category		:= self readObjectFrom: aStream.	number			:= self readObjectFrom: aStream.
-	context 		:= self readObjectFrom: aStream.
-	exception 		:= self readObjectFrom: aStream.
-	name 			:= self readObjectFrom: aStream.	name yourself.
-	message 		:= self readObjectFrom: aStream.
-	arguments 	:= self readObjectFrom: aStream.
-	stack 			:= self readObjectFrom: aStream.
-	(gciErrSType	:= gciErrorSTypeClass new)		category: category value;
-		number: number;
-		context: context value;
-		exceptionObj: exception value;		message: (message isNil ifTrue: [''] ifFalse: [message]);
-		argCount: arguments size;
-		args: arguments;
-		stack: stack;
-		yourself.
-	GciError signal:  gciErrSType.
-!
-
-readObjectFrom: aStream
-
-	^self readObjectFrom: aStream errorClass: nil.!
-
-readObjectFrom: aStream errorClass: gciErrorSTypeClass
-
-	| type byteSize bytes oid x |
-	type := aStream next.
-	type == 0 ifTrue: [^nil].
-	(type == 1 or: [type == 2]) ifTrue: [
-		^type == 1.
-	].
-	(type == 3 or: [type == 4]) ifTrue: [
-		byteSize := type == 3 ifTrue: [4] ifFalse: [8].
-		bytes := aStream next: byteSize.
-		oid := 0.
-		bytes reverseDo: [:each |
-			oid := oid * 16r100 + each.
-		].
-		^System notNil
-			ifTrue: [self objectForOop: oid]	"Usually this will execute in GemStone"
-			ifFalse: [type == 3			"This can execute in Dolphin to support testing"
-				ifTrue: [OopType32 fromInteger: oid]
-				ifFalse: [OopType64 fromInteger: oid]
-			].
-	].
-	type == 5 ifTrue: [		"Symbol with size < 256"
-		bytes := aStream next: aStream next.
-		x := String new: bytes size.
-		1 to: bytes size do: [:i | 
-			x at: i put: (Character codePoint: (bytes at: i)).
-		].
-		^x asSymbol.
-	].
-	type == 6 ifTrue: [		"Symbol with size >= 256"
-		x := aStream next + (aStream next * 16r100).
-		bytes := aStream next: x.
-		x := String new: bytes size.
-		1 to: bytes size do: [:i | 
-			x at: i put: (Character codePoint: (bytes at: i)).
-		].
-		^x asSymbol.
-	].
-	type == 7 ifTrue: [		"SmallInteger 0 <= x < 256"
-		^aStream next.
-	].
-	type == 8 ifTrue: [		"SmallInteger: -256 <= x < 0"
-		^(aStream next + 1) negated
-	].
-	(type == 9 or: [type == 10]) ifTrue: [
-		| integer |
-		byteSize := aStream next.
-		bytes := aStream next: byteSize.
-		integer := 0.
-		bytes reverseDo: [:each |
-			integer := integer * 16r100 + each.
-		].
-		^integer * (type == 9 ifTrue: [1] ifFalse: [-1]).
-	].
-	type == 11 ifTrue: [		"String with size < 256"
-		bytes := aStream next: aStream next.
-		x := String new: bytes size.
-		1 to: bytes size do: [:i | 
-			x at: i put: (Character codePoint: (bytes at: i)).
-		].
-		^x.
-	].
-	type == 12 ifTrue: [		"String with size >= 256"
-		x := aStream next + (aStream next * 16r100) + (aStream next * 16r10000).
-		bytes := aStream next: x.
-		x := String new: bytes size.
-		1 to: bytes size do: [:i | 
-			x at: i put: (Character codePoint: (bytes at: i)).
-		].
-		^x.
-	].
-	type == 13 ifTrue: [		"GciErrSType"
-		^self readExceptionFrom: aStream errorClass: gciErrorSTypeClass.
-	].
-	type == 14 ifTrue: [		"Array"
-		x := Array new: aStream next.
-		1 to: x size do: [:i | x at: i put: (self readObjectFrom: aStream)].
-		^x.
-	].
-!
-
-readSocket: anInteger
-
-	| arguments bytes receiver selector stream string |	string := String new.	[		string size < anInteger.
-	] whileTrue: [
-		socket read: anInteger - string size into: string startingAt: string size + 1.
-	].
-	bytes := ByteArray withAll: (string asArray collect: [:each | each asciiValue]).
-	stream := ReadStream on: bytes.
-	receiver := self readObjectFrom: stream.
-	selector := self readObjectFrom: stream.
-	arguments := self readObjectFrom: stream.
-	stream := WriteStream on: ByteArray new.
-	self
-		reportErrorOnStream: stream
-		fromEvaluationOf: [
-			| result |
-			result := receiver 
-				perform: selector 
-				withArguments: arguments.
-			self add: result toByteStream: stream.
-		].
-	bytes := stream contents.
-	socket write: bytes.
-	^bytes size.
-!
-
 refreshSymbolList
 
 	GsSession currentSession symbolList replaceElementsFrom: self symbolList.	"replace the transcient one with the persistent one"
@@ -1809,7 +1561,7 @@ registerOBNotifications
 
 	| platform clientForwarder |
 	(platform := self objectNamed: #'OBGemStonePlatform') isNil ifTrue: [^self].
-	clientForwarder := (self objectNamed: #'ClientForwarder') new.
+	clientForwarder := ClientForwarder new.
 	clientForwarder	clientObject: 1.
 	self
 		registerOBNotificationsForPlatform: platform 
@@ -1828,36 +1580,6 @@ registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
 		registerTextClientForwarder: clientForwarder;
 		yourself.
 !
-
-reportErrorOnStream: aStream fromEvaluationOf: aBlock
-	"See also override in JadeServer64bit3x"
-
-	| semaphore |
-	Exception
-		category: nil
-		number: nil
-		do: [:ex :cat :num :args | 
-			aStream nextPut: 13.
-			self
-				add: cat 							toByteStream: aStream;
-				add: num 							toByteStream: aStream;
-				add: GsProcess _current 	toByteStream: aStream;
-				add: ex 							toByteStream: aStream;
-				add: ex class name			toByteStream: aStream;
-				add: ex messageText 		toByteStream: aStream;
-				add: args 							toByteStream: aStream;
-				add: (GsProcess stackReportToLevel: 100) toByteStream: aStream;
-				yourself.
-			self add: args toByteStream: aStream.
-			semaphore signal.
-			semaphore wait.
-		].
-	semaphore := Semaphore new.
-	[
-		aBlock value.
-		semaphore signal.
-	] fork.
-	semaphore wait.!
 
 reset
 	"WriteStream protocol"!
@@ -1886,17 +1608,10 @@ terminate: aGsProcess
 
 	aGsProcess isNil ifTrue: [^self].
 	aGsProcess terminate.
+	(Delay forMilliseconds: 10) wait.	"allow forked processes to finish"
 ! !
 !JadeServer categoriesFor: #_addToPureExportSet:!private! !
 !JadeServer categoriesFor: #abort!public! !
-!JadeServer categoriesFor: #acceptConnection!public! !
-!JadeServer categoriesFor: #add:toByteStream:!public!Socket! !
-!JadeServer categoriesFor: #addArray:toByteStream:!public!Socket! !
-!JadeServer categoriesFor: #addExternalInteger:toByteStream:!public!Socket! !
-!JadeServer categoriesFor: #addInteger:toByteStream:!public!Socket! !
-!JadeServer categoriesFor: #addPositiveInteger:toByteStream:code:size:!public!Socket! !
-!JadeServer categoriesFor: #addString:toByteStream:!public!Socket! !
-!JadeServer categoriesFor: #addSymbol:toByteStream:!public!Socket! !
 !JadeServer categoriesFor: #asString:!public!Transcript! !
 !JadeServer categoriesFor: #beginTransaction!public! !
 !JadeServer categoriesFor: #commit!public! !
@@ -1908,11 +1623,8 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #initialize!public! !
 !JadeServer categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer categoriesFor: #is32Bit!public! !
-!JadeServer categoriesFor: #is64Bit!public! !
 !JadeServer categoriesFor: #isClientForwarder:!Debugger!public! !
-!JadeServer categoriesFor: #isInDolphin!public!Socket! !
-!JadeServer categoriesFor: #isInGemStone!public!Socket! !
-!JadeServer categoriesFor: #makeListener!public! !
+!JadeServer categoriesFor: #makeListener!private! !
 !JadeServer categoriesFor: #nextPut:!public!Transcript! !
 !JadeServer categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeServer categoriesFor: #obConfirmationRequest:!OmniBrowser!public! !
@@ -1921,14 +1633,9 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #objectNamed:!private! !
 !JadeServer categoriesFor: #obTextRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #oopOf:!private! !
-!JadeServer categoriesFor: #readExceptionFrom:errorClass:!public!Socket! !
-!JadeServer categoriesFor: #readObjectFrom:!public!Socket! !
-!JadeServer categoriesFor: #readObjectFrom:errorClass:!public!Socket! !
-!JadeServer categoriesFor: #readSocket:!public!Socket! !
 !JadeServer categoriesFor: #refreshSymbolList!public! !
 !JadeServer categoriesFor: #registerOBNotifications!public! !
 !JadeServer categoriesFor: #registerOBNotificationsForPlatform:clientForwarder:!public! !
-!JadeServer categoriesFor: #reportErrorOnStream:fromEvaluationOf:!public!Socket! !
 !JadeServer categoriesFor: #reset!public! !
 !JadeServer categoriesFor: #show:!public!Transcript! !
 !JadeServer categoriesFor: #stackForProcess:!public! !
@@ -1988,17 +1695,6 @@ gsString
 	^gsString.
 !
 
-isServerForLibrary: aGciLibrary
-
-	self subclassResponsibility.
-!
-
-serverForLibrary: aGciLibrary
-
-	^self allSubclasses reverse
-		detect: [:each | each isServerForLibrary: aGciLibrary]
-		ifNone: [self error: 'Server not found!!'].!
-
 sessionStateCode
 
 	^'System _sessionStateAt: 3 put: server.'! !
@@ -2006,8 +1702,6 @@ sessionStateCode
 !JadeServer class categoriesFor: #classVarsForGemStone!public! !
 !JadeServer class categoriesFor: #gsClassDefinitionBlock!public! !
 !JadeServer class categoriesFor: #gsString!public! !
-!JadeServer class categoriesFor: #isServerForLibrary:!public! !
-!JadeServer class categoriesFor: #serverForLibrary:!public! !
 !JadeServer class categoriesFor: #sessionStateCode!public! !
 
 GsError guid: (GUID fromString: '{7299EB14-EE00-4BEC-8A87-E9EC616FAB36}')!
@@ -2468,6 +2162,143 @@ defaultAction
 ! !
 !TerminateProcess categoriesFor: #defaultAction!public! !
 
+GciSessionWithSocket guid: (GUID fromString: '{604CBF33-D6BE-45FF-B250-4654B42AA062}')!
+GciSessionWithSocket comment: ''!
+!GciSessionWithSocket categoriesForClass!Unclassified! !
+!GciSessionWithSocket methodsFor!
+
+_continueProcess: aContextOop
+
+	^self
+		_usingSocketSend: #'processAction:' 
+		to: server
+		withAll: (Array with: aContextOop with: #'resume').
+!
+
+_executeString: aString fromContextOop: anOopType
+	^self
+		_usingSocketSend: #'executeString:fromContext:' 
+		to: server 
+		withAll: (Array with: aString with: anOopType).
+!
+
+_send: aSymbol to: anObject withAll: anArray
+
+	^self
+		_usingSocketSend: aSymbol 
+		to: anObject 
+		withAll: anArray.
+!
+
+_usingSocketSend: aSymbol to: anObject withAll: anArray
+
+	| stream  process resultSize result encoder |
+	stream := WriteStream on: ByteArray new.
+	encoder := JadeServer64bit33 new
+		add: anObject toByteStream: stream;
+		add: aSymbol toByteStream: stream;
+		add: anArray toByteStream: stream;
+		yourself.
+	process := [:bytes | socket sendByteArray: bytes] newProcessWithArguments: (Array with: stream contents).
+	process resume.
+	[
+		resultSize := library 
+				send: #'readSocket:' 
+				to: server
+				with: (self serverArrayFor: (Array with: stream contents size))
+				session: gciSessionID.
+		result := socket receiveByteArray: resultSize.
+	] on: Exception do: [:ex | 
+	].	stream := ReadStream on: result.
+	result := encoder 
+		readObjectFrom: stream
+		errorClass: library errorStructureClass.
+	^result.
+!
+
+initializeFrom: aGciSession withSocket: aSocket
+
+	1 to: aGciSession class allInstVarNames size do: [:i | 
+		self instVarAt: i put: (aGciSession instVarAt: i).
+	].
+	socket := aSocket.
+!
+
+stepInto: aGsProcess inFrame: anInteger
+
+	[
+		self
+			_usingSocketSend: #'processAction:' 
+			to: server
+			withAll: (Array with: aGsProcess with: #'stepInto' with: anInteger).
+	] on: GciError do: [:ex | 
+		ex tag number == 6002 ifTrue: [
+			ex return.	"We were expecting a single-step breakpoint!!"
+		].
+		ex pass.
+	].!
+
+stepOut: aGsProcess inFrame: anInteger
+
+	[
+		self
+			_usingSocketSend: #'processAction:' 
+			to: server
+			withAll: (Array with: aGsProcess with: #'stepOut' with: anInteger).
+	] on: GciError do: [:ex | 
+		ex tag number == 6002 ifTrue: [
+			ex return.	"We were expecting a single-step breakpoint!!"
+		].
+		ex pass.
+	].!
+
+stepOver: aGsProcess inFrame: anInteger
+
+	[
+		self
+			_usingSocketSend: #'processAction:' 
+			to: server
+			withAll: (Array with: aGsProcess with: #'stepOver' with: anInteger).
+	] on: GciError do: [:ex | 
+		ex tag number == 6002 ifTrue: [
+			ex return.	"We were expecting a single-step breakpoint!!"
+		].
+		ex pass.
+	].!
+
+terminate: anOopType
+
+	self
+		_usingSocketSend: #'processAction:' 
+		to: server
+		withAll: (Array with: anOopType with: #'terminate').
+	TerminateProcess signal.
+! !
+!GciSessionWithSocket categoriesFor: #_continueProcess:!long running!private! !
+!GciSessionWithSocket categoriesFor: #_executeString:fromContextOop:!private! !
+!GciSessionWithSocket categoriesFor: #_send:to:withAll:!private! !
+!GciSessionWithSocket categoriesFor: #_usingSocketSend:to:withAll:!private! !
+!GciSessionWithSocket categoriesFor: #initializeFrom:withSocket:!public! !
+!GciSessionWithSocket categoriesFor: #stepInto:inFrame:!public! !
+!GciSessionWithSocket categoriesFor: #stepOut:inFrame:!public! !
+!GciSessionWithSocket categoriesFor: #stepOver:inFrame:!public! !
+!GciSessionWithSocket categoriesFor: #terminate:!public! !
+
+!GciSessionWithSocket class methodsFor!
+
+from: aGciSession withSocket: aSocket
+
+	^self basicNew
+		initializeFrom: aGciSession withSocket: aSocket;
+		yourself.
+!
+
+new
+
+	self error: 'use #''from:withSocket:'''.! !
+!GciSessionWithSocket class categoriesFor: #from:withSocket:!public! !
+!GciSessionWithSocket class categoriesFor: #new!public! !
+
 JadeServer32bit guid: (GUID fromString: '{6BD4AC2A-D6A4-438A-9B0B-E050DD50B3A2}')!
 JadeServer32bit comment: ''!
 !JadeServer32bit categoriesForClass!Unclassified! !
@@ -2491,18 +2322,12 @@ installTranscript
 	super installTranscript.
 !
 
-is32Bit
-
-	^true.
-!
-
 objectForOop: anInteger
 
 	^Object _objectForOop: anInteger
 ! !
 !JadeServer32bit categoriesFor: #asString:!public!Transcript! !
 !JadeServer32bit categoriesFor: #installTranscript!public!Transcript! !
-!JadeServer32bit categoriesFor: #is32Bit!public! !
 !JadeServer32bit categoriesFor: #objectForOop:!public!System Browser! !
 
 !JadeServer32bit class methodsFor!
@@ -2519,14 +2344,8 @@ gsClassDefinitionBlock
 		constraints: #()
 		instancesInvariant: false
 		isModifiable: false.'].
-!
-
-isServerForLibrary: aGciLibrary
-
-	^aGciLibrary is32Bit.
 ! !
 !JadeServer32bit class categoriesFor: #gsClassDefinitionBlock!public! !
-!JadeServer32bit class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit guid: (GUID fromString: '{36FD8C46-21B4-4852-977C-1A9889969313}')!
 JadeServer64bit comment: ''!
@@ -2551,18 +2370,12 @@ installTranscript
 	].
 !
 
-is64Bit
-
-	^true.
-!
-
 objectForOop: anInteger
 
 	^Object _objectForOop: anInteger.
 ! !
 !JadeServer64bit categoriesFor: #asString:!public!Transcript! !
 !JadeServer64bit categoriesFor: #installTranscript!public!Transcript! !
-!JadeServer64bit categoriesFor: #is64Bit!public! !
 !JadeServer64bit categoriesFor: #objectForOop:!public!System Browser! !
 
 !JadeServer64bit class methodsFor!
@@ -2578,14 +2391,8 @@ gsClassDefinitionBlock
 		inDictionary: SymbolDictionary new
 		instancesInvariant: false
 		isModifiable: false.'].
-!
-
-isServerForLibrary: aGciLibrary
-
-	^aGciLibrary is64Bit.
 ! !
 !JadeServer64bit class categoriesFor: #gsClassDefinitionBlock!public! !
-!JadeServer64bit class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit24 guid: (GUID fromString: '{1AF3D6EB-C974-4E19-B3CF-46098CDD8C6D}')!
 JadeServer64bit24 comment: ''!
@@ -2609,14 +2416,6 @@ registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
 !JadeServer64bit24 categoriesFor: #oopOf:!private! !
 !JadeServer64bit24 categoriesFor: #registerOBNotificationsForPlatform:clientForwarder:!public! !
 
-!JadeServer64bit24 class methodsFor!
-
-isServerForLibrary: aGciLibrary
-
-	^aGciLibrary is64Bit24.
-! !
-!JadeServer64bit24 class categoriesFor: #isServerForLibrary:!public! !
-
 JadeServer64bit3x guid: (GUID fromString: '{1DC3DEBB-81EC-4B7B-872E-82229E88781B}')!
 JadeServer64bit3x comment: '(System _sessionStateAt: 3).
 GciSession allInstances do: [:each | each initializeServer].'!
@@ -2633,13 +2432,22 @@ asString: anObject
 	].
 !
 
+executeString: aString fromContext: anObject
+
+	[
+		^aString
+			evaluateInContext: anObject 
+			symbolList: GsSession currentSession symbolList. 
+	] on: CompileWarning do: [:ex | 
+		ex resume.
+	].
+!
+
 installTranscript
 
-	| class sessionTemps transcript |
-	transcript := self objectNamed: #'Transcript'.
-	transcript class name == #'TranscriptStreamPortable' ifFalse: [^super installTranscript].
-	(class := self objectNamed: #'SessionTemps') isNil ifTrue: [^super installTranscript].
-	sessionTemps := class current.
+	| sessionTemps |
+	Transcript class name == #'TranscriptStreamPortable' ifFalse: [^super installTranscript].
+	sessionTemps := SessionTemps current.
 	(sessionTemps at: #'TranscriptStream_SessionStream' ifAbsent: [nil]) notNil ifTrue: [^super installTranscript].
 	sessionTemps at: #'TranscriptStream_SessionStream' put: self.
 !
@@ -2647,88 +2455,16 @@ installTranscript
 nextPutAll: anObject
 
 	| exception |
-	exception := (self objectNamed: #'ClientForwarderSend') new 
+	exception := ClientForwarderSend new 
 		receiver: self 
 		clientObj: 2
 		selector:#'nextPutAll:'
 		args: (Array with: (self asString: anObject)).
-	exception defaultAction.  "return error direct to GCI"!
-
-reportErrorOnStream: aStream fromEvaluationOf: aBlock
-
-	| clientData process semaphore |
-	clientData := Array 
-		with: aStream
-		with: (semaphore := Semaphore new)
-		with: false.
-	process := [
-		[
-			aBlock value.
-			semaphore signal.
-		] on: Exception do: [:ex | 
-				aStream nextPut: 13.
-				self
-					add: GemStoneError 			toByteStream: aStream;
-					add: ex gsNumber 			toByteStream: aStream;
-					add: GsProcess _current 	toByteStream: aStream;
-					add: ex 							toByteStream: aStream;
-					add: ex class name 			toByteStream: aStream;
-					add: ex description 			toByteStream: aStream;					add: ex gsArguments 		toByteStream: aStream;
-					add: (GsProcess stackReportToLevel: 100) toByteStream: aStream;
-					yourself.
-				clientData at: 3 put: true.
-				semaphore signal.
-				semaphore wait.
-				ex resume.
-		].
-		clientData.
-	] newProcess.
-	process clientData: clientData.
-	process resume.
-	semaphore wait.
-	(clientData at: 3) ifTrue: [
-		semaphore signal.		"this resumes the process but does not do a context switch"
-		process suspend.		"the process is now suspended but not waiting on anything"
-	].
-
-!
-
-socketStep: gsProcess inFrame: anInteger
-
-	| clientData semaphore stream |
-	clientData := gsProcess clientData.
-	stream := (clientData at: 1) reset; yourself.
-	semaphore := clientData at: 2.
-	clientData at: 3 put: false.
-	anInteger isNil ifTrue: [
-		gsProcess resume.
-	] ifFalse: [
-		gsProcess convertToPortableStack.
-		gsProcess resume.
-		gsProcess _stepOverInFrame: anInteger.
-		gsProcess suspend.
-		semaphore signal.
-	].
-	semaphore wait.
-	(clientData at: 3) ifTrue: [		"Got an Exception"
-		gsProcess suspend.
-		semaphore signal.
-	].
-	^self readObjectFrom: (ReadStream on: stream contents).
-! !
+	exception defaultAction.  "return error direct to GCI"! !
 !JadeServer64bit3x categoriesFor: #asString:!public!Transcript! !
+!JadeServer64bit3x categoriesFor: #executeString:fromContext:!public! !
 !JadeServer64bit3x categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !
-!JadeServer64bit3x categoriesFor: #reportErrorOnStream:fromEvaluationOf:!public! !
-!JadeServer64bit3x categoriesFor: #socketStep:inFrame:!public! !
-
-!JadeServer64bit3x class methodsFor!
-
-isServerForLibrary: aGciLibrary
-
-	^aGciLibrary is64Bit3x.
-! !
-!JadeServer64bit3x class categoriesFor: #isServerForLibrary:!public! !
 
 JadeServer64bit32 guid: (GUID fromString: '{B2CB5F19-4347-4B6E-922E-705E99F7CB99}')!
 JadeServer64bit32 comment: ''!
@@ -2746,18 +2482,381 @@ gsClassDefinitionBlock
 		inDictionary: SymbolDictionary new.'].
 !
 
-isServerForLibrary: aGciLibrary
-
-	^aGciLibrary is64Bit32.
-!
-
 sessionStateCode
 	"Avoid deprecated method and still use 'Topaz session state' (since we know Topaz isn't running!!)"
 
 	^'System __sessionStateAt: 3 put: server.'! !
 !JadeServer64bit32 class categoriesFor: #gsClassDefinitionBlock!public! !
-!JadeServer64bit32 class categoriesFor: #isServerForLibrary:!public! !
 !JadeServer64bit32 class categoriesFor: #sessionStateCode!public! !
+
+JadeServer64bit33 guid: (GUID fromString: '{4100A18B-FBC2-4EA5-86A8-B8A8C6194269}')!
+JadeServer64bit33 comment: ''!
+!JadeServer64bit33 categoriesForClass!Unclassified! !
+!JadeServer64bit33 methodsFor!
+
+acceptConnection
+
+	| listener time flag |
+	listener := socket.
+	socket := nil.
+	time := Time millisecondsElapsedTime: [flag := listener readWillNotBlockWithin: 2000].
+	flag ifFalse: [
+		listener close.
+		^nil
+	].
+	socket := listener accept.
+	listener close.
+	socket isNil ifTrue: [^nil].
+	^time.
+
+!
+
+add: anObject toByteStream: aStream
+
+	anObject == nil		ifTrue: [aStream nextPut: 0. ^self].
+	anObject == true 	ifTrue: [aStream nextPut: 1. ^self].
+	anObject == false 	ifTrue: [aStream nextPut: 2. ^self].
+	(ExternalInteger notNil and: [anObject isKindOf: ExternalInteger]) ifTrue: [self addExternalInteger: anObject toByteStream: aStream. ^self].		"3 & 4"	(self isInDolphin and: [anObject isKindOf: GsObject]) ifTrue: [self addExternalInteger: anObject oopType toByteStream: aStream. ^self].			"3 & 4"
+	(anObject isKindOf: Symbol	) ifTrue: [self addSymbol: anObject toByteStream: aStream. ^self].	"5 & 6"
+	(anObject isKindOf: Integer	) ifTrue: [self addInteger: anObject toByteStream: aStream. ^self].	"7, 8, 9, & 10"
+	(anObject isKindOf: String		) ifTrue: [self addString: anObject toByteStream: aStream. ^self].	"11 & 12"
+	(anObject isKindOf: Array		) ifTrue: [self addArray: anObject toByteStream: aStream. ^self].	"13"
+	self isInDolphin ifTrue: [self error: 'Attempt to encode an unsupported object'].
+	self addPositiveInteger: anObject toByteStream: aStream.
+!
+
+addArray: anArray toByteStream: aStream
+
+	16rFF < anArray size ifTrue: [self error: 'Array is too large!!'].
+	aStream nextPut: 14; nextPut: anArray size.
+	anArray do: [:each | self add: each toByteStream: aStream].
+!
+
+addExternalInteger: anObject toByteStream: aStream
+
+	self 
+		addPositiveInteger: anObject value
+		toByteStream: aStream 
+		code: (anObject byteSize == 4 ifTrue: [3] ifFalse: [4]) 
+		size: anObject byteSize.
+!
+
+addInteger: anObject toByteStream: aStream
+
+	| integer stream |
+	(0 <= anObject and: [anObject < 16r100]) ifTrue: [
+		aStream nextPut: 7; nextPut: anObject.
+		^self.
+	].
+	(-16r100 <= anObject and: [anObject < 0]) ifTrue: [
+		aStream nextPut: 8; nextPut: anObject negated - 1.
+		^self.
+	].
+	aStream nextPut: (anObject positive ifTrue: [9] ifFalse: [10]).
+	integer := anObject abs.
+	stream := WriteStream on: ByteArray new.
+	[
+		0 < integer.
+	] whileTrue: [
+		stream nextPut: (integer bitAnd: 16rFF).
+		integer := integer // 16r100.
+	].
+	aStream
+		nextPut: stream contents size;
+		nextPutAll: stream contents;
+		yourself.
+!
+
+addPositiveInteger: anInteger toByteStream: aStream
+
+		self
+			addPositiveInteger: anInteger asOop
+			toByteStream: aStream 
+			code: 4 
+			size: 8.
+!
+
+addPositiveInteger: anInteger toByteStream: aStream code: codeInteger size: sizeInteger
+
+	| x |
+	x := anInteger.
+	aStream nextPut: codeInteger.
+	sizeInteger timesRepeat: [
+		aStream nextPut: (x bitAnd: 16rFF).
+		x := x // 16r100.
+	].
+!
+
+addString: aString toByteStream: aStream
+
+	| size |
+	(size := aString size) < 16r100 ifTrue: [
+		aStream nextPut: 11; nextPut: size.
+		aString do: [:each | aStream nextPut: each asciiValue].
+		^self.
+	].
+	size < 16r1000000 ifTrue: [
+		aStream nextPut: 12; nextPut: (size bitAnd: 16rFF); nextPut: (size // 16r100 bitAnd: 16rFF); nextPut: (size // 16r10000 bitAnd: 16rFF).
+		aString do: [:each | aStream nextPut: each asciiValue].
+		^self.
+	].
+	self error: 'Object cannot be encoded'.
+!
+
+addSymbol: aSymbol toByteStream: aStream
+
+	aSymbol size <= 16rFF ifTrue: [
+		aStream nextPut: 5; nextPut: aSymbol size.
+		aSymbol do: [:each | aStream nextPut: each asciiValue].
+		^self.
+	].
+	aSymbol size <= 16rFFFF ifTrue: [
+		aStream nextPut: 6; nextPut: (aSymbol size bitAnd: 16rFF); nextPut: (aSymbol size // 16r100 bitAnd: 16rFF).
+		aSymbol do: [:each | aStream nextPut: each asciiValue].
+		^self.
+	].
+	self error: 'Object cannot be encoded'.
+!
+
+doSocketRequest
+	"We are in a forked process.
+	We provide the result or a description of an Exception on the stream."
+
+	| arguments process receiver selector semaphore stream |
+	Breakpoint trappable: true.
+	process			:= Processor activeProcess.
+	receiver 		:= process environmentAt: #'receiver'.
+	selector 		:= process environmentAt: #'selector'.
+	arguments 	:= process environmentAt: #'arguments'.
+	semaphore 	:= process environmentAt: #'semaphore'.
+	stream 			:= process environmentAt: #'stream'.
+	[
+		self add: (receiver perform: selector withArguments: arguments) toByteStream: stream.
+		semaphore signal.		"we are finished and the GCI process may resume"
+	] on: Exception do: [:ex | 
+		GsNMethod _clearAllStepBreaks.		"We are headed into a debugger so we either hit a breakpoint or we have an unrelated error"
+		stream nextPut: Character cr codePoint.
+		self
+			add: GemStoneError 			toByteStream: stream;
+			add: ex gsNumber 			toByteStream: stream;
+			add: GsProcess _current 	toByteStream: stream;
+			add: ex 							toByteStream: stream;
+			add: ex class name 			toByteStream: stream;
+			add: ex description 			toByteStream: stream;
+			add: ex gsArguments 		toByteStream: stream;
+			add: (GsProcess stackReportToLevel: 100) toByteStream: stream;
+			yourself.
+		semaphore signal.		"GCI process may resume"
+		semaphore wait.		"wait till we are told it is okay to resume"
+		stream reset.
+		ex resume.
+	].
+!
+
+environmentAt: key
+
+	self error: 'method included to avoid unimplemented selector warning in Dolphin'.
+!
+
+environmentAt: key put: value
+
+	self error: 'method included to avoid unimplemented selector warning in Dolphin'.
+!
+
+isInDolphin
+	"Most JadeServer code is in GemStone but the socket wire protocol encode/decode is in Dolphin as well"
+
+	^System isNil.
+!
+
+isInGemStone
+	"Most JadeServer code is in GemStone but the socket wire protocol encode/decode is in Dolphin as well"
+
+	^System notNil.
+!
+
+makeListener
+
+	socket := GsSocket new makeServer: 1.
+	socket isNil ifTrue: [^nil].
+	^socket port.
+!
+
+processAction: arguments
+
+	| process request semaphore stream |
+	process := arguments at: 1.
+	semaphore := process environmentAt: #'semaphore'.
+	stream := process environmentAt: #'stream'.
+	stream reset.
+	semaphore signal.		"okay for process to continue"
+	request := arguments at: 2.
+	request == #'terminate' 	ifTrue: [process terminate. self add: #'terminate' toByteStream: stream. 				^self].
+	request == #'resume' 	ifTrue: [																				semaphore wait. 	^self].	"this should resume from the last line of #'doSocketRequest'."
+	request == #'stepInto' 	ifTrue: [process stepIntoFromLevel: 			(arguments at: 3). 	semaphore wait. 	^self].
+	request == #'stepOut' 	ifTrue: [process stepOverFromLevel: 		(arguments at: 3). 	semaphore wait. 	^self].	"1 added by JadeDebugger>>#'stepOut'"
+	request == #'stepOver'	ifTrue: [process stepThroughFromLevel: 	(arguments at: 3). 	semaphore wait. 	^self].	"thru gives us more natural behavior"
+	self error: 'Unrecognized command!!'.
+!
+
+readExceptionFrom: aStream errorClass: gciErrorSTypeClass
+
+	| category number context exception name message arguments stack gciErrSType |
+	category		:= self readObjectFrom: aStream.	number			:= self readObjectFrom: aStream.
+	context 		:= self readObjectFrom: aStream.
+	exception 		:= self readObjectFrom: aStream.
+	name 			:= self readObjectFrom: aStream.	name yourself.
+	message 		:= self readObjectFrom: aStream.
+	arguments 	:= self readObjectFrom: aStream.
+	stack 			:= self readObjectFrom: aStream.
+	(gciErrSType	:= gciErrorSTypeClass new)		category: category value;
+		number: number;
+		context: context value;
+		exceptionObj: exception value;		message: (message isNil ifTrue: [''] ifFalse: [message]);
+		argCount: arguments size;
+		args: arguments;
+		stack: stack;
+		yourself.
+	GciError signalWith:  gciErrSType.
+!
+
+readObjectFrom: aStream
+
+	^self readObjectFrom: aStream errorClass: nil.!
+
+readObjectFrom: aStream errorClass: gciErrorSTypeClass
+
+	| type byteSize bytes oid x |
+	type := aStream next.
+	type == 0 ifTrue: [^nil].
+	(type == 1 or: [type == 2]) ifTrue: [
+		^type == 1.
+	].
+	(type == 3 or: [type == 4]) ifTrue: [
+		byteSize := type == 3 ifTrue: [4] ifFalse: [8].
+		bytes := aStream next: byteSize.
+		oid := 0.
+		bytes reverseDo: [:each |
+			oid := oid * 16r100 + each.
+		].
+		^System notNil
+			ifTrue: [self objectForOop: oid]	"Usually this will execute in GemStone"
+			ifFalse: [type == 3			"This can execute in Dolphin to support testing"
+				ifTrue: [OopType32 fromInteger: oid]
+				ifFalse: [OopType64 fromInteger: oid]
+			].
+	].
+	type == 5 ifTrue: [		"Symbol with size < 256"
+		bytes := aStream next: aStream next.
+		x := String new: bytes size.
+		1 to: bytes size do: [:i | 
+			x at: i put: (Character codePoint: (bytes at: i)).
+		].
+		^x asSymbol.
+	].
+	type == 6 ifTrue: [		"Symbol with size >= 256"
+		x := aStream next + (aStream next * 16r100).
+		bytes := aStream next: x.
+		x := String new: bytes size.
+		1 to: bytes size do: [:i | 
+			x at: i put: (Character codePoint: (bytes at: i)).
+		].
+		^x asSymbol.
+	].
+	type == 7 ifTrue: [		"SmallInteger 0 <= x < 256"
+		^aStream next.
+	].
+	type == 8 ifTrue: [		"SmallInteger: -256 <= x < 0"
+		^(aStream next + 1) negated
+	].
+	(type == 9 or: [type == 10]) ifTrue: [
+		| integer |
+		byteSize := aStream next.
+		bytes := aStream next: byteSize.
+		integer := 0.
+		bytes reverseDo: [:each |
+			integer := integer * 16r100 + each.
+		].
+		^integer * (type == 9 ifTrue: [1] ifFalse: [-1]).
+	].
+	type == 11 ifTrue: [		"String with size < 256"
+		bytes := aStream next: aStream next.
+		x := String new: bytes size.
+		1 to: bytes size do: [:i | 
+			x at: i put: (Character codePoint: (bytes at: i)).
+		].
+		^x.
+	].
+	type == 12 ifTrue: [		"String with size >= 256"
+		x := aStream next + (aStream next * 16r100) + (aStream next * 16r10000).
+		bytes := aStream next: x.
+		x := String new: bytes size.
+		1 to: bytes size do: [:i | 
+			x at: i put: (Character codePoint: (bytes at: i)).
+		].
+		^x.
+	].
+	type == 13 ifTrue: [		"GciErrSType"
+		^self readExceptionFrom: aStream errorClass: gciErrorSTypeClass.
+	].
+	type == 14 ifTrue: [		"Array"
+		x := Array new: aStream next.
+		1 to: x size do: [:i | x at: i put: (self readObjectFrom: aStream)].
+		^x.
+	].
+!
+
+readSocket: anInteger
+
+	| arguments bytes process receiver selector semaphore stream |	bytes := ByteArray new.	[		bytes size < anInteger.
+	] whileTrue: [
+		socket read: anInteger - bytes size into: bytes startingAt: bytes size + 1.
+	].
+	stream := ReadStream on: bytes.
+	receiver := self readObjectFrom: stream.
+	selector := self readObjectFrom: stream.
+	arguments := self readObjectFrom: stream.
+	(receiver == self and: [selector == #'processAction:']) ifTrue: [	"We already have a process so should not fork again!!"
+		process := arguments at: 1.
+		process environmentAt: #'parent' put: Processor activeProcess.		"ignore me when returning a list of processes"
+		stream := process environmentAt: #'stream'.
+		self processAction: arguments.
+	] ifFalse: [		"This is the first time with this command so create a new process to handle request"
+		process := [self doSocketRequest] newProcess.
+		process 
+			environmentAt: #'receiver'		put: receiver;
+			environmentAt: #'selector'		put: selector;
+			environmentAt: #'arguments'	put: arguments;
+			environmentAt: #'semaphore'	put: (semaphore := Semaphore new);
+			environmentAt: #'stream'		put: (stream := WriteStream on: ByteArray new);
+			environmentAt: #'parent' 		put: Processor activeProcess;		"ignore me when returning a list of processes"
+			resume.
+		semaphore wait.	"we wait while the process runs"
+	].
+	bytes := stream contents.
+	socket write: bytes.
+	^bytes size.
+! !
+!JadeServer64bit33 categoriesFor: #acceptConnection!public! !
+!JadeServer64bit33 categoriesFor: #add:toByteStream:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #addArray:toByteStream:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #addExternalInteger:toByteStream:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #addInteger:toByteStream:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #addPositiveInteger:toByteStream:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #addPositiveInteger:toByteStream:code:size:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #addString:toByteStream:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #addSymbol:toByteStream:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #doSocketRequest!public!Socket! !
+!JadeServer64bit33 categoriesFor: #environmentAt:!public!Socket! !
+!JadeServer64bit33 categoriesFor: #environmentAt:put:!public!Socket! !
+!JadeServer64bit33 categoriesFor: #isInDolphin!public!testing! !
+!JadeServer64bit33 categoriesFor: #isInGemStone!public!testing! !
+!JadeServer64bit33 categoriesFor: #makeListener!public! !
+!JadeServer64bit33 categoriesFor: #processAction:!public!Socket! !
+!JadeServer64bit33 categoriesFor: #readExceptionFrom:errorClass:!public!Socket! !
+!JadeServer64bit33 categoriesFor: #readObjectFrom:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #readObjectFrom:errorClass:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #readSocket:!public!Socket! !
 
 GsBreakDialog guid: (GUID fromString: '{4D16A999-7457-4B6C-A8F3-40B6ECD5A7AD}')!
 GsBreakDialog comment: ''!
