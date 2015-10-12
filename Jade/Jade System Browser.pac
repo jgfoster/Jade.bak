@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.273'.
+package basicPackageVersion: '0.275'.
 
 
 package classNames
@@ -3186,19 +3186,13 @@ fileOutClass
 
 fileOutClassOnPath: aString
 
-	| className header file newSource index set line |
-	className := self selectedClassNameWithoutVersion.
-	header := self stuffToKeepFromOldFileForClass: className onPath: aString.
+	| header file newSource index |
 	newSource := self gciSession 
 		serverPerform: #'systemBrowser:' 
 		with: 'fileOutClass' , Character tab asString , self behaviorIdentifier.
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
-	"check to see if header is repeat of first line of file-out"
-	index := newSource indexOf: Character lf.
-	line := newSource copyFrom: 1 to: index - 1.
-	set := (header subStrings: Character lf) asSet.
-	(set size == 1 and: [set any = line]) ifTrue: [header := ''].
+	header := self stuffToKeepFromPath: aString andAddTo: newSource.
 	file := FileStream write: aString.
 	[
 		file nextPutAll: header; nextPutAll: newSource.
@@ -4597,31 +4591,37 @@ stepPointAt: aPoint
 	^nil.
 !
 
-stuffToKeepFromOldFileForClass: nameString onPath: pathString
+stuffToKeepFromPath: pathString andAddTo: newSource
 
-	| file source lf i j k l x |
+	| file existingSource i j string existingHeader newHeader x |
 	[
 		file := FileStream
 			read: pathString
 			text: true.
 	] on: Exception do: [:ex | ^''].
-	source := file contents.
+	existingSource := file contents.
 	file close.
-	l := source indexOfSubCollection: ' subclass: ''' , nameString , ''''.
-	0 == l ifTrue: [^''].
-	k := j := i := 0.
-	lf := Character lf asString.
+	string := 'doit' , Character lf asString.
+	(i := existingSource indexOfSubCollection: string) <3 ifTrue: [^''].
+	(j := newSource indexOfSubCollection: string) <3 ifTrue: [^''].
+	(i == j and: [(existingSource copyFrom: 1 to: i) = (newSource copyFrom: 1 to: j)]) ifTrue: [^''].
+	existingHeader := existingSource copyFrom: 1 to: i - 2.
+	newHeader := newSource copyFrom: 1 to: j - 2.
 	[
-		(k := source indexOfSubCollection: lf startingAt: k + 1) < l.
+		0 < (i := existingHeader size - newHeader size) and: [
+			x := existingHeader copyFrom: i + 1 to: existingHeader size.
+			x = newHeader.
+		].
 	] whileTrue: [
-		i := j. j := k.
+		existingHeader = newHeader ifTrue: [^''].
+		existingHeader := existingHeader copyFrom: 1 to: i - 1.
 	].
-	x := source copyFrom: i + 1 to: j - 1.
-	x = 'doit' ifFalse: [^''].
-	x := source copyFrom: j + 1 to: l - 1.
-	(x includes: Character space) ifTrue: [^''].
-	source := source copyFrom: 1 to: i.
-	^source!
+	^(MessageBox confirm: 'Add the following header to the fileout?
+' , existingHeader caption: 'Existing fileout has extra line(s) at the top') 
+		ifTrue: [existingHeader , Character lf asString]
+		ifFalse: [''].
+
+!
 
 textTabChanged
 
@@ -5480,7 +5480,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #statusBarServerRequestText:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #statusBarText:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #stepPointAt:!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #stuffToKeepFromOldFileForClass:onPath:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #stuffToKeepFromPath:andAddTo:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #unloadPackage!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #updateAfterFindClass:isMeta:selector:!public!updating! !

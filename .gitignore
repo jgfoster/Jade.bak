@@ -6,3 +6,4 @@ Jade.errors
 *.DS_Store
 ._*
 Jade System Browser Layout.stb
+Jade/Connections/*.GSS
