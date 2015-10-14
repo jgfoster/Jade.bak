@@ -3,7 +3,7 @@ package := Package name: 'Jade Login'.
 package paxVersion: 1;
 	basicComment: 'Login window redesign'.
 
-package basicPackageVersion: '0.091'.
+package basicPackageVersion: '0.092'.
 
 
 package classNames
@@ -688,7 +688,8 @@ fillVersionList
 	| list |
 	list := GciLibrary allSubclasses collect: [:each | each displayName].
 	list := list reject: [:each | each isNil].
-	versionListPresenter list: list asSortedCollection.
+	list := list asSortedCollection: [:a :b | self isVersion: a lessThanOrEqualTo: b].
+	versionListPresenter list: list.
 !
 
 getDocumentData
@@ -710,6 +711,26 @@ isModified: aBoolean
 
 isText
 
+	^true.
+!
+
+isVersion: a lessThanOrEqualTo: b
+
+	| aList bList |
+	aList := a subStrings: $. .
+	bList := b subStrings: $. .
+	1 to: aList size do: [:i | 
+		| x y |
+		bList size < i ifTrue: [^false].
+		x := aList at: i.
+		y := bList at: i.
+		((x allSatisfy: [:each | each isDigit]) and: [y allSatisfy: [:each | each isDigit]]) ifTrue: [
+			x := x asNumber.
+			y := y asNumber.
+		].
+		x < y ifTrue: [^true].
+		x = y ifFalse: [^false].
+	].
 	^true.
 !
 
@@ -937,6 +958,7 @@ updateView
 !JadeLoginShell categoriesFor: #isModified!public! !
 !JadeLoginShell categoriesFor: #isModified:!public! !
 !JadeLoginShell categoriesFor: #isText!public!testing! !
+!JadeLoginShell categoriesFor: #isVersion:lessThanOrEqualTo:!public! !
 !JadeLoginShell categoriesFor: #login!public! !
 !JadeLoginShell categoriesFor: #model:!accessing!public! !
 !JadeLoginShell categoriesFor: #onCloseRequested:!public! !

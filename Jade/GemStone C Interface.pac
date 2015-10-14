@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.131'.
+package basicPackageVersion: '0.135'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -30,19 +30,20 @@ package classNames
 	add: #LibGciRpc64_22;
 	add: #LibGciRpc64_23;
 	add: #LibGciRpc64_24;
+	add: #LibGciRpc64_3_2_01;
+	add: #LibGciRpc64_3_2_02;
+	add: #LibGciRpc64_3_2_03;
+	add: #LibGciRpc64_3_2_04;
+	add: #LibGciRpc64_3_2_05;
+	add: #LibGciRpc64_3_2_06;
+	add: #LibGciRpc64_3_2_07;
+	add: #LibGciRpc64_3_2_08;
+	add: #LibGciRpc64_3_2_09;
+	add: #LibGciRpc64_3_2_10;
 	add: #LibGciRpc64_30;
 	add: #LibGciRpc64_31;
 	add: #LibGciRpc64_310x;
 	add: #LibGciRpc64_32;
-	add: #LibGciRpc64_321;
-	add: #LibGciRpc64_322;
-	add: #LibGciRpc64_323;
-	add: #LibGciRpc64_324;
-	add: #LibGciRpc64_325;
-	add: #LibGciRpc64_326;
-	add: #LibGciRpc64_327;
-	add: #LibGciRpc64_328;
-	add: #LibGciRpc64_329;
 	add: #LibGciRpc64_33;
 	add: #OopType32;
 	add: #OopType32Array;
@@ -210,47 +211,52 @@ LibGciRpc64_31 subclass: #LibGciRpc64_33
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_321
+LibGciRpc64_32 subclass: #LibGciRpc64_3_2_01
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_322
+LibGciRpc64_32 subclass: #LibGciRpc64_3_2_02
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_323
+LibGciRpc64_32 subclass: #LibGciRpc64_3_2_03
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_324
+LibGciRpc64_32 subclass: #LibGciRpc64_3_2_04
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_325
+LibGciRpc64_32 subclass: #LibGciRpc64_3_2_05
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_326
+LibGciRpc64_32 subclass: #LibGciRpc64_3_2_06
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_327
+LibGciRpc64_32 subclass: #LibGciRpc64_3_2_07
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_328
+LibGciRpc64_32 subclass: #LibGciRpc64_3_2_08
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_329
+LibGciRpc64_32 subclass: #LibGciRpc64_3_2_09
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_32 subclass: #LibGciRpc64_3_2_10
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -2163,10 +2169,10 @@ fileNameSearch
 !LibGciRpc64_33 class categoriesFor: #displayName!public! !
 !LibGciRpc64_33 class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_321 guid: (GUID fromString: '{9B3A8D44-3E44-49AC-90C5-AFDA22E1CD1B}')!
-LibGciRpc64_321 comment: ''!
-!LibGciRpc64_321 categoriesForClass!Unclassified! !
-!LibGciRpc64_321 class methodsFor!
+LibGciRpc64_3_2_01 guid: (GUID fromString: '{9B3A8D44-3E44-49AC-90C5-AFDA22E1CD1B}')!
+LibGciRpc64_3_2_01 comment: ''!
+!LibGciRpc64_3_2_01 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_01 class methodsFor!
 
 displayName
 
@@ -2177,13 +2183,13 @@ fileNameSearch
 
 	^'libgcirpc-3.2.1-32.dll'.
 ! !
-!LibGciRpc64_321 class categoriesFor: #displayName!public! !
-!LibGciRpc64_321 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_2_01 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_01 class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_322 guid: (GUID fromString: '{BD5DC8E2-7DCC-48E3-B0B8-9F73D810E6E6}')!
-LibGciRpc64_322 comment: ''!
-!LibGciRpc64_322 categoriesForClass!Unclassified! !
-!LibGciRpc64_322 class methodsFor!
+LibGciRpc64_3_2_02 guid: (GUID fromString: '{BD5DC8E2-7DCC-48E3-B0B8-9F73D810E6E6}')!
+LibGciRpc64_3_2_02 comment: ''!
+!LibGciRpc64_3_2_02 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_02 class methodsFor!
 
 displayName
 
@@ -2194,13 +2200,13 @@ fileNameSearch
 
 	^'libgcirpc-3.2.2-32.dll'.
 ! !
-!LibGciRpc64_322 class categoriesFor: #displayName!public! !
-!LibGciRpc64_322 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_2_02 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_02 class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_323 guid: (GUID fromString: '{7CD3D48A-C954-4465-8DBC-90511A44E6E3}')!
-LibGciRpc64_323 comment: ''!
-!LibGciRpc64_323 categoriesForClass!Unclassified! !
-!LibGciRpc64_323 class methodsFor!
+LibGciRpc64_3_2_03 guid: (GUID fromString: '{7CD3D48A-C954-4465-8DBC-90511A44E6E3}')!
+LibGciRpc64_3_2_03 comment: ''!
+!LibGciRpc64_3_2_03 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_03 class methodsFor!
 
 displayName
 
@@ -2211,13 +2217,13 @@ fileNameSearch
 
 	^'libgcirpc-3.2.3-32.dll'.
 ! !
-!LibGciRpc64_323 class categoriesFor: #displayName!public! !
-!LibGciRpc64_323 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_2_03 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_03 class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_324 guid: (GUID fromString: '{AE6862DF-767F-45A7-8CF0-2520FDD79C28}')!
-LibGciRpc64_324 comment: ''!
-!LibGciRpc64_324 categoriesForClass!Unclassified! !
-!LibGciRpc64_324 class methodsFor!
+LibGciRpc64_3_2_04 guid: (GUID fromString: '{AE6862DF-767F-45A7-8CF0-2520FDD79C28}')!
+LibGciRpc64_3_2_04 comment: ''!
+!LibGciRpc64_3_2_04 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_04 class methodsFor!
 
 displayName
 
@@ -2228,13 +2234,13 @@ fileNameSearch
 
 	^'libgcirpc-3.2.4-32.dll'.
 ! !
-!LibGciRpc64_324 class categoriesFor: #displayName!public! !
-!LibGciRpc64_324 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_2_04 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_04 class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_325 guid: (GUID fromString: '{24C3DFCA-1974-4647-BE98-B8A0AA33801A}')!
-LibGciRpc64_325 comment: ''!
-!LibGciRpc64_325 categoriesForClass!Unclassified! !
-!LibGciRpc64_325 class methodsFor!
+LibGciRpc64_3_2_05 guid: (GUID fromString: '{24C3DFCA-1974-4647-BE98-B8A0AA33801A}')!
+LibGciRpc64_3_2_05 comment: ''!
+!LibGciRpc64_3_2_05 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_05 class methodsFor!
 
 displayName
 
@@ -2245,13 +2251,13 @@ fileNameSearch
 
 	^'libgcirpc-3.2.5-32.dll'.
 ! !
-!LibGciRpc64_325 class categoriesFor: #displayName!public! !
-!LibGciRpc64_325 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_2_05 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_05 class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_326 guid: (GUID fromString: '{81EB5050-FDDC-4907-9B98-69F01284C900}')!
-LibGciRpc64_326 comment: ''!
-!LibGciRpc64_326 categoriesForClass!Unclassified! !
-!LibGciRpc64_326 class methodsFor!
+LibGciRpc64_3_2_06 guid: (GUID fromString: '{81EB5050-FDDC-4907-9B98-69F01284C900}')!
+LibGciRpc64_3_2_06 comment: ''!
+!LibGciRpc64_3_2_06 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_06 class methodsFor!
 
 displayName
 
@@ -2262,13 +2268,13 @@ fileNameSearch
 
 	^'libgcirpc-3.2.6-32.dll'.
 ! !
-!LibGciRpc64_326 class categoriesFor: #displayName!public! !
-!LibGciRpc64_326 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_2_06 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_06 class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_327 guid: (GUID fromString: '{ED635505-59E8-42E5-87A5-47C0E655E5FC}')!
-LibGciRpc64_327 comment: ''!
-!LibGciRpc64_327 categoriesForClass!Unclassified! !
-!LibGciRpc64_327 class methodsFor!
+LibGciRpc64_3_2_07 guid: (GUID fromString: '{ED635505-59E8-42E5-87A5-47C0E655E5FC}')!
+LibGciRpc64_3_2_07 comment: ''!
+!LibGciRpc64_3_2_07 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_07 class methodsFor!
 
 displayName
 
@@ -2279,13 +2285,13 @@ fileNameSearch
 
 	^'libgcirpc-3.2.7-32.dll'.
 ! !
-!LibGciRpc64_327 class categoriesFor: #displayName!public! !
-!LibGciRpc64_327 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_2_07 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_07 class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_328 guid: (GUID fromString: '{E31F62FC-C1EE-40C6-90D4-A59DDA3C831B}')!
-LibGciRpc64_328 comment: ''!
-!LibGciRpc64_328 categoriesForClass!Unclassified! !
-!LibGciRpc64_328 class methodsFor!
+LibGciRpc64_3_2_08 guid: (GUID fromString: '{E31F62FC-C1EE-40C6-90D4-A59DDA3C831B}')!
+LibGciRpc64_3_2_08 comment: ''!
+!LibGciRpc64_3_2_08 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_08 class methodsFor!
 
 displayName
 
@@ -2296,13 +2302,13 @@ fileNameSearch
 
 	^'libgcirpc-3.2.8-32.dll'.
 ! !
-!LibGciRpc64_328 class categoriesFor: #displayName!public! !
-!LibGciRpc64_328 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_2_08 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_08 class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_329 guid: (GUID fromString: '{12081231-C77F-4BC8-8F36-DD11BDBB44CD}')!
-LibGciRpc64_329 comment: ''!
-!LibGciRpc64_329 categoriesForClass!Unclassified! !
-!LibGciRpc64_329 class methodsFor!
+LibGciRpc64_3_2_09 guid: (GUID fromString: '{12081231-C77F-4BC8-8F36-DD11BDBB44CD}')!
+LibGciRpc64_3_2_09 comment: ''!
+!LibGciRpc64_3_2_09 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_09 class methodsFor!
 
 displayName
 
@@ -2313,8 +2319,25 @@ fileNameSearch
 
 	^'libgcirpc-3.2.9-32.dll'.
 ! !
-!LibGciRpc64_329 class categoriesFor: #displayName!public! !
-!LibGciRpc64_329 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_2_09 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_09 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_3_2_10 guid: (GUID fromString: '{4EF14B8F-3BF8-4484-9A0C-4B2468F46491}')!
+LibGciRpc64_3_2_10 comment: ''!
+!LibGciRpc64_3_2_10 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_10 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.10'.
+!
+
+fileNameSearch
+
+	^'libgcirpc-3.2.10-32.dll'.
+! !
+!LibGciRpc64_3_2_10 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_10 class categoriesFor: #fileNameSearch!public! !
 
 GciErrSType guid: (GUID fromString: '{9932DE27-ACC2-4E27-AD64-9A3FF8B6ECF9}')!
 GciErrSType comment: ''!

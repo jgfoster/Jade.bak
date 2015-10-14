@@ -3,7 +3,7 @@ package := Package name: 'Jade UI Base'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.064'.
+package basicPackageVersion: '0.065'.
 
 
 package classNames
@@ -37,6 +37,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'GemStone Session';
+	add: '..\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	yourself).
 
 package!
@@ -562,11 +563,11 @@ addQuotesToSelection
 
 browseImplementors
 
-	self browseImplementorsOf: documentPresenter view selection.!
+	self browseImplementorsOf: self currentSelector.!
 
 browseSenders
 
-	self browseSendersOf: documentPresenter view selection.!
+	self browseSendersOf: self currentSelector.!
 
 clearBreakAtStepPoint: anInteger
 
@@ -590,6 +591,17 @@ currentSelectionOrLine
 	documentPresenter hasSelection ifFalse: [documentPresenter view selectCurrentLine].
 	range := documentPresenter view selectionRange.
 	^(documentPresenter value copyFrom: range start to: range stop) replaceCrLfWithLf.
+!
+
+currentSelector
+
+	| selection |
+	selection := documentPresenter view selection.
+	^[
+		(SmalltalkParser parseMethod: selection) selector.
+	] on: Error do: [:ex | 
+		selection.
+	]
 !
 
 documentPresenter
@@ -876,6 +888,7 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #codeFont:!public! !
 !CodeSourcePresenter categoriesFor: #codePresenterIsMethod!public! !
 !CodeSourcePresenter categoriesFor: #currentSelectionOrLine!Jade!private! !
+!CodeSourcePresenter categoriesFor: #currentSelector!public! !
 !CodeSourcePresenter categoriesFor: #documentPresenter!public! !
 !CodeSourcePresenter categoriesFor: #editCopy!edit!private! !
 !CodeSourcePresenter categoriesFor: #editCut!edit!private! !
