@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.135'.
+package basicPackageVersion: '0.156'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -23,13 +23,22 @@ package classNames
 	add: #Gcilw65;
 	add: #Gcilw66;
 	add: #Gcilw6x;
+	add: #GciMtLibraryTestCase;
+	add: #GciMtLibraryTestResource;
+	add: #GciMultiThreadedLibrary;
 	add: #Gcirw62;
+	add: #GciSessionId;
+	add: #GciSingleThreadedLibrary;
+	add: #GciTsObjInfo;
 	add: #LibGciRpc64;
 	add: #LibGciRpc64_20;
 	add: #LibGciRpc64_21;
 	add: #LibGciRpc64_22;
 	add: #LibGciRpc64_23;
 	add: #LibGciRpc64_24;
+	add: #LibGciRpc64_3_0;
+	add: #LibGciRpc64_3_1;
+	add: #LibGciRpc64_3_2;
 	add: #LibGciRpc64_3_2_01;
 	add: #LibGciRpc64_3_2_02;
 	add: #LibGciRpc64_3_2_03;
@@ -40,11 +49,9 @@ package classNames
 	add: #LibGciRpc64_3_2_08;
 	add: #LibGciRpc64_3_2_09;
 	add: #LibGciRpc64_3_2_10;
-	add: #LibGciRpc64_30;
-	add: #LibGciRpc64_31;
+	add: #LibGciRpc64_3_2_11;
+	add: #LibGciRpc64_3_3;
 	add: #LibGciRpc64_310x;
-	add: #LibGciRpc64_32;
-	add: #LibGciRpc64_33;
 	add: #OopType32;
 	add: #OopType32Array;
 	add: #OopType32Field;
@@ -65,6 +72,7 @@ package globalAliases: (Set new
 
 package setPrerequisites: (IdentitySet new
 	add: '..\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Camp Smalltalk\SUnit\SUnit';
 	yourself).
 
 package!
@@ -122,16 +130,31 @@ GciError subclass: #GciLoginFailed
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 ExternalLibrary subclass: #GciLibrary
-	instanceVariableNames: 'semaphore'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GciLibrary subclass: #Gcilw6x
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciLibrary subclass: #LibGciRpc64
+GciLibrary subclass: #GciMultiThreadedLibrary
+	instanceVariableNames: ''
+	classVariableNames: 'OOP_ILLEGAL OOP_NIL'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciLibrary subclass: #GciSingleThreadedLibrary
+	instanceVariableNames: 'semaphore'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciMultiThreadedLibrary subclass: #LibGciRpc64_3_3
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciSingleThreadedLibrary subclass: #Gcilw6x
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciSingleThreadedLibrary subclass: #LibGciRpc64
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -186,83 +209,88 @@ LibGciRpc64 subclass: #LibGciRpc64_24
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64 subclass: #LibGciRpc64_30
+LibGciRpc64 subclass: #LibGciRpc64_3_0
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_30 subclass: #LibGciRpc64_31
+LibGciRpc64 subclass: #LibGciRpc64_3_1
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_31 subclass: #LibGciRpc64_310x
+LibGciRpc64 subclass: #LibGciRpc64_3_2
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_31 subclass: #LibGciRpc64_32
+LibGciRpc64_3_1 subclass: #LibGciRpc64_310x
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_31 subclass: #LibGciRpc64_33
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_01
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_3_2_01
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_02
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_3_2_02
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_03
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_3_2_03
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_04
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_3_2_04
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_05
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_3_2_05
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_06
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_3_2_06
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_07
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_3_2_07
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_08
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_3_2_08
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_09
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_3_2_09
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_10
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_32 subclass: #LibGciRpc64_3_2_10
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_11
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 ExternalStructure subclass: #GciErrSType
 	instanceVariableNames: 'args stack'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ExternalStructure subclass: #GciTsObjInfo
+	instanceVariableNames: 'data'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -276,13 +304,18 @@ ExternalArray subclass: #OopType64Array
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+DWORD subclass: #GciSessionId
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 DWORD subclass: #OopType32
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 ULARGE_INTEGER subclass: #OopType64
-	instanceVariableNames: ''
+	instanceVariableNames: 'objectInfo'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -303,6 +336,16 @@ GciErrSType subclass: #GciErrSType64_30
 	classInstanceVariableNames: ''!
 GciErrSType subclass: #GciErrSType64_31
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TestCase subclass: #GciMtLibraryTestCase
+	instanceVariableNames: 'library session'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TestResource subclass: #GciMtLibraryTestResource
+	instanceVariableNames: 'library session'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -378,8 +421,1490 @@ GciCommitFailure comment: ''!
 GciLoginFailed guid: (GUID fromString: '{48341733-FBF0-4F01-A585-CCA55E4FF300}')!
 GciLoginFailed comment: ''!
 !GciLoginFailed categoriesForClass!Unclassified! !
-GciLibrary guid: (GUID fromString: '{AFFFAFEB-5777-4D4B-A7D0-931922158468}')!
-GciLibrary comment: 'JadeLoginShell show.
+GciLibrary guid: (GUID fromString: '{AD9A79E0-D6EF-4D77-83FC-015B118B2331}')!
+GciLibrary comment: ''!
+!GciLibrary categoriesForClass!Unclassified! !
+!GciLibrary methodsFor!
+
+abortSession: anInteger
+
+	self subclassResponsibility.
+!
+
+beginSession: anInteger
+
+	self subclassResponsibility.
+!
+
+commitSession: anInteger
+
+	self subclassResponsibility.
+!
+
+continue: aProcess session: anInteger
+
+	^self
+		continue: aProcess 
+		with: self oopIllegal 
+		session: anInteger.
+!
+
+continue: aProcess with: anObject session: anInteger
+
+	self subclassResponsibility.
+!
+
+errorStructureClass
+
+	self subclassResponsibility.
+!
+
+hardBreakSession: anInteger
+
+	self subclassResponsibility.
+!
+
+loginHostUser: hostUser hostPassword: hostPassword gsUser: gsUser gsPassword: gsPassword gemNRS: gemString stoneNRS: stoneString
+
+	self subclassResponsibility.
+!
+
+logoutSession: anInteger
+
+	self subclassResponsibility.
+!
+
+nbResult
+
+	self subclassResponsibility.
+!
+
+oopAsciiNul
+
+	self subclassResponsibility.
+!
+
+oopAt: anExternalAddress
+
+	self subclassResponsibility.
+!
+
+oopClassArray
+
+	self subclassResponsibility.
+!
+
+oopClassByteArray
+
+	self subclassResponsibility.
+!
+
+oopClassDoubleByteString
+
+	self subclassResponsibility.
+!
+
+oopClassQuadByteString
+
+	self subclassResponsibility.
+!
+
+oopClassString
+
+	self subclassResponsibility.
+!
+
+oopClassSymbol
+
+	self subclassResponsibility.
+!
+
+oopClassSystem
+
+	self subclassResponsibility.
+!
+
+oopClassUnicode16
+
+	self subclassResponsibility.
+!
+
+oopClassUnicode32
+
+	self subclassResponsibility.
+!
+
+oopClassUnicode7
+
+	self subclassResponsibility.
+!
+
+oopFalse
+
+	self subclassResponsibility.
+!
+
+oopForInteger: anInteger
+
+	self subclassResponsibility.
+!
+
+oopGemStoneError
+
+	self subclassResponsibility.
+!
+
+oopIllegal
+
+	self subclassResponsibility.
+!
+
+oopMaxSmallInteger
+
+	self subclassResponsibility.
+!
+
+oopMinSmallInteger
+
+	self subclassResponsibility.
+!
+
+oopMinusOne
+
+	self subclassResponsibility.
+!
+
+oopNil
+
+	self subclassResponsibility.
+!
+
+oopOne
+
+	self subclassResponsibility.
+!
+
+oopRemoteNil
+
+	self subclassResponsibility.
+!
+
+oopTrue
+
+	self subclassResponsibility.
+!
+
+oopTwo
+
+	self subclassResponsibility.
+!
+
+oopTypeArrayClass
+
+	self subclassResponsibility.
+!
+
+oopTypeClass
+
+	self subclassResponsibility.
+!
+
+oopTypeWithOop: anInteger
+
+	self subclassResponsibility.
+!
+
+oopZero
+
+	self subclassResponsibility.
+!
+
+pollForSignalSession: anInteger
+
+	self subclassResponsibility.
+!
+
+sendInterpreted: aString to: anOopType with: anArray session: anInteger
+
+	self subclassResponsibility.
+!
+
+session: session clearStack: processOop
+
+	self subclassResponsibility.
+!
+
+session: session continue: gsProcessOop
+
+	^self 
+		session: session 
+		continue: gsProcessOop 
+		withObject: self oopNil
+!
+
+session: session continue: gsProcessOop withObject: anOop
+
+	self subclassResponsibility.
+!
+
+session: session execute: stringOrOop context: contextOop
+
+	self subclassResponsibility.
+!
+
+session: session fetchBytes: anOop
+
+	self subclassResponsibility.
+!
+
+session: session oopForInteger: anInteger
+
+	self subclassResponsibility.
+!
+
+session: session oopForString: aString
+
+	self subclassResponsibility.
+!
+
+session: session releaseOops: oopList
+
+	self subclassResponsibility.
+!
+
+session: anInteger send: aString to: anOopType with: anArray 
+
+	self subclassResponsibility.
+!
+
+softBreakSession: anInteger
+
+	self subclassResponsibility.
+!
+
+version
+
+	self subclassResponsibility.
+! !
+!GciLibrary categoriesFor: #abortSession:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #beginSession:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #commitSession:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #continue:session:!not subclassResponsibility!public! !
+!GciLibrary categoriesFor: #continue:with:session:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #errorStructureClass!private!subclassResponsibility! !
+!GciLibrary categoriesFor: #hardBreakSession:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #loginHostUser:hostPassword:gsUser:gsPassword:gemNRS:stoneNRS:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #logoutSession:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #nbResult!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopAsciiNul!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopAt:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopClassArray!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopClassByteArray!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopClassDoubleByteString!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopClassQuadByteString!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopClassString!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopClassSymbol!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopClassSystem!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopClassUnicode16!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopClassUnicode32!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopClassUnicode7!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopFalse!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopForInteger:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopGemStoneError!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopIllegal!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopMaxSmallInteger!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopMinSmallInteger!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopMinusOne!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopNil!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopOne!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopRemoteNil!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopTrue!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopTwo!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopTypeArrayClass!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopTypeClass!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopTypeWithOop:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #oopZero!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #pollForSignalSession:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #sendInterpreted:to:with:session:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #session:clearStack:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #session:continue:!public! !
+!GciLibrary categoriesFor: #session:continue:withObject:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #session:execute:context:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #session:fetchBytes:!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #session:oopForInteger:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #session:oopForString:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #session:releaseOops:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #session:send:to:with:!public!Reserved OOPs!subclassResponsibility! !
+!GciLibrary categoriesFor: #softBreakSession:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #version!public!subclassResponsibility! !
+
+!GciLibrary class methodsFor!
+
+addMissingMethods
+	"The external function address is cached in the method and if it is inherited we will use the first one called.
+	Having our own method allows us to have multiple libraries loaded and to call the proper function."
+
+	self allSelectors do: [:each |
+		| class method |
+		class := self whichClassIncludesSelector: each.
+		class ~~ self ifTrue: [
+			method := class methodDictionary at: each.
+			method isExternalCall ifTrue: [
+				self addSelector: each withMethod: method copy clear; yourself.
+			].
+		].
+	].!
+
+displayName
+
+	^nil.
+!
+
+fileName
+
+	| list |
+	list := OrderedCollection new.
+	File
+		for: self fileNameSearch
+		in: SessionManager current imageBase , 'bin'
+		do: [:each | list add: each fileName].
+	list := list reject: [:each | each = '.'].	"This is needed after upgrading to Fusion 2 beta 1"
+	list isEmpty ifTrue: [self error: 'library not found!!'].
+	^list first.
+!
+
+fileNameSearch
+
+	^(self name copyReplaceAll: '_' with: '-') , '*.dll'.
+!
+
+onStartup2
+
+	default := nil.
+!
+
+open: pathString
+
+	| currentWorkingDirectory result |
+	(default notNil and: [default handle notNil]) ifTrue: [^default].
+	self addMissingMethods.
+	currentWorkingDirectory := File workingDirectory.
+	[
+		File workingDirectory: SessionManager current imageBase , 'bin'.
+		result := super open: pathString.
+		self default: result.
+	] ensure: [
+		File workingDirectory: currentWorkingDirectory.
+	].
+	^result.
+!
+
+sessionStarted
+"
+	GciLibrary sessionStarted.
+"
+	GciErrSType32 new.
+	GciErrSType64 new.
+	GciErrSType64_30 new.
+	GciErrSType64_31 new.
+	GciTsObjInfo new.
+	OopType32Array new.
+	OopType64Array new.
+	OopType32 new.
+	OopType64 new.
+!
+
+withDisplayName: aString
+
+	^self allSubclasses detect: [:each | each displayName = aString].
+! !
+!GciLibrary class categoriesFor: #addMissingMethods!public! !
+!GciLibrary class categoriesFor: #displayName!public! !
+!GciLibrary class categoriesFor: #fileName!public! !
+!GciLibrary class categoriesFor: #fileNameSearch!public! !
+!GciLibrary class categoriesFor: #onStartup2!public! !
+!GciLibrary class categoriesFor: #open:!public! !
+!GciLibrary class categoriesFor: #sessionStarted!public! !
+!GciLibrary class categoriesFor: #withDisplayName:!public! !
+
+GciMultiThreadedLibrary guid: (GUID fromString: '{FB4CDA56-2508-4FD1-BAC4-FF32805C1DD5}')!
+GciMultiThreadedLibrary comment: ''!
+!GciMultiThreadedLibrary categoriesForClass!Unclassified! !
+!GciMultiThreadedLibrary methodsFor!
+
+abortSession: session
+
+	| didAbort gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	didAbort := self GciMtAbort: session _: gciErrSType asParameter.
+	didAbort ifFalse: [self gciError: gciErrSType].
+!
+
+beginSession: session
+
+	| didBegin gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	didBegin := self GciMtBegin: session _: gciErrSType asParameter.
+	didBegin ifFalse: [self gciError: gciErrSType].
+!
+
+characterForOop: anOop
+
+	^Character codePoint: (self GciMtOopToChar: anOop)
+
+!
+
+classForSpecial: anOop
+
+	^self GciMtFetchSpecialClass: anOop
+
+!
+
+commitSession: session
+
+	| didCommit gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	didCommit := self GciMtCommit: session _: gciErrSType asParameter.
+	didCommit ifFalse: [self gciError: gciErrSType].
+!
+
+DllRegisterServer
+	<stdcall: hresult DllRegisterServer>
+	^self invalidCall!
+
+expect: typeName errorIfResultIs: errorResult inThreadDo: aTwoArgumentBlock
+
+	| callback doneFlag gciErrSType forkResult mainResult |
+	gciErrSType := self errorStructureClass new.
+	doneFlag := false.
+	callback := ExternalCallback 
+		block: [:result | mainResult := result. doneFlag := true. 0]
+		argumentTypes: typeName.
+	forkResult := aTwoArgumentBlock value: gciErrSType asParameter value: callback asParameter.
+	forkResult == 0 ifFalse: [self error: 'CreateThread() returned error #' , forkResult printString].
+	[doneFlag] whileFalse: [SessionManager inputState pumpMessages. (Delay forMilliseconds: 1) wait].
+	mainResult = errorResult ifTrue: [self gciError: gciErrSType].
+	^mainResult!
+
+fetchObjImpl: anOopType
+
+	self subclassResponsibility.
+!
+
+gciError: aGciErrSType
+
+	GciError signalWith: aGciErrSType.
+!
+
+GciMtAbort: session _: error
+
+	<cdecl: bool GciMtAbort GciSessionId lpvoid>
+	^self invalidCall
+!
+
+GciMtBegin: session _: error
+
+	<cdecl: bool GciMtBegin GciSessionId lpvoid>
+	^self invalidCall
+!
+
+GciMtBreak: session _: isHard _: error
+
+	<cdecl: bool GciMtBreak GciSessionId bool lpvoid>
+	^self invalidCall
+!
+
+GciMtCharToOop: myChar
+
+	<cdecl: OopType64 GciMtCharToOop dword>
+	^self invalidCall
+!
+
+GciMtClearStack: session _: process _: error
+
+	<cdecl: bool GciMtClearStack GciSessionId OopType64 lpvoid>
+	^self invalidCall
+!
+
+GciMtCommit: session _: error
+
+	<cdecl: bool GciMtCommit GciSessionId lpvoid>
+	^self invalidCall
+!
+
+GciMtContinueWith: session _: gsProcess _: replaceTopOfStack _: continueWithError _: flags _: error _: callback
+	"Remember, this doesn't return an OopType64 but an error code on the thread fork attempt.
+	The actual result is sent to the callback."
+
+	<cdecl: sdword GciMtContinueWith GciSessionId OopType64 OopType64 lpvoid sdword lpvoid lpvoid>
+	^self invalidCall
+!
+
+GciMtDoubleToOop: session _: double _: error
+
+	<cdecl: OopType64 GciMtDoubleToOop GciSessionId double lpvoid>
+	^self invalidCall
+!
+
+GciMtDoubleToSmallDouble: aFloat
+
+	<cdecl: OopType64 GciMtDoubleToSmallDouble double>
+	^self invalidCall
+!
+
+GciMtExecute: session _: sourceString _: sourceOop _: contextOop _: symbolListOop _: flags _: environment _: error _: callback
+	"Remember, this doesn't return an OopType64 but an error code on the thread fork attempt.
+	The actual result is sent to the callback."
+
+	<cdecl: sdword GciMtExecute GciSessionId lpvoid OopType64 OopType64 OopType64 sdword word lpvoid lpvoid>
+	^self invalidCall
+!
+
+GciMtFetchBytes: session _: theObject _: startIndex _: dest _: numBytes _: error
+
+	<cdecl: sqword GciMtFetchBytes GciSessionId OopType64 sqword lpvoid sqword lpvoid>
+	^self invalidCall
+!
+
+GciMtFetchChars: session _: theObject _: startIndex _: cString _: maxSize _: error
+
+	<cdecl: sqword GciMtFetchChars GciSessionId OopType64 sqword lpvoid sqword lpvoid>
+	^self invalidCall
+!
+
+GciMtFetchClass: session _: theObject _: error
+
+	<cdecl: OopType64 GciMtFetchClass GciSessionId OopType64 lpvoid>
+	^self invalidCall
+!
+
+GciMtFetchObjInfo: session _: objId _: addToExportSet _: result _: buffer _: bufsize _: error
+
+	<cdecl: sqword GciMtFetchObjInfo GciSessionId OopType64 bool lpvoid lpvoid sdword lpvoid>
+	^self invalidCall
+"
+EXTERN_GCI_DEC(int64) GciTsFetchObjInfo(GciSession sess, OopType objId, 
+	BoolType addToExportSet, GciTsObjInfo *result, 
+	ByteType *buffer, size_t bufSize, GciErrSType *err);
+  // Function result is >= 0 if *result filled in,
+  //   -1 if an error was returned in *err .
+  // client side handling of special objects as before.
+  // addToExportSet has effect only if function result is 1
+  // if buffer not NULL, then up to bufSize bytes of the body of the object
+  // are returned in *buffer, and function result is the number of instVars returned
+  // If read authorization is denied for objId, then result->access == 0 ,
+  // the rest of *result other than result->objId is zero , and function result is zero.
+"
+!
+
+GciMtFetchOops: session _: theObject _: startIndex _: theOops _: numOops _: error
+
+	<cdecl: sdword GciMtFetchOops GciSessionId OopType64 sqword OopType64Array* sdword lpvoid>
+	^self invalidCall
+!
+
+GciMtFetchSize: session _: theObject _: error
+
+	<cdecl: sqword GciMtFetchSize GciSessionId OopType64 lpvoid>
+	^self invalidCall
+!
+
+GciMtFetchSpecialClass: anOop
+
+	<cdecl: OopType64 GciMtFetchSpecialClass OopType64>
+	^self invalidCall
+!
+
+GciMtFetchVaryingSize: session _: theObject _: error
+
+	<cdecl: sqword GciMtFetchVaryingSize GciSessionId OopType64 lpvoid>
+	^self invalidCall
+!
+
+GciMtGemTrace: session _: enable _: error
+
+	<cdecl: sdword GciMtGemTrace GciSessionId sdword lpvoid>
+	^self invalidCall
+!
+
+GciMtI64ToOop: session _: anInteger _: error
+
+	<cdecl: OopType64 GciMtI64ToOop GciSessionId sqword lpvoid>
+	^self invalidCall
+!
+
+GciMtInit: gciLibraryPath
+
+	<cdecl: dword GciMtInit lpstr>
+	^self invalidCall
+!
+
+GciMtLogin: stoneName 
+	_:hostUserId 
+	_: hostPassword 
+	_: hostPwIsEncrypted 
+	_: gemServiceNRS 
+	_: gsUsername 
+	_: gsPassword 
+	_: loginFlags 
+	_: haltOnErrNum 
+	_: gciErrSType 
+	_: callback
+	"Remember, this doesn't return a session but an error code on the thread fork attempt.
+	The actual result is sent to the callback."
+
+	<cdecl: sdword GciMtLogin lpvoid lpvoid lpvoid bool lpvoid lpvoid lpvoid dword sdword lpvoid lpvoid>
+	^self invalidCall
+!
+
+GciMtLogout: session _: error
+
+	<cdecl: bool GciMtLogout GciSessionId lpvoid>
+	^self invalidCall
+!
+
+GciMtNewString: session _: string _: error
+
+	<cdecl: OopType64 GciMtNewString GciSessionId lpstr lpvoid>
+	^self invalidCall
+!
+
+GciMtObjExists: session _: anOop
+
+	<cdecl: bool GciMtObjExists GciSessionId OopType64>
+	^self invalidCall
+!
+
+GciMtOopIsSpecial: anOop
+
+	<cdecl: bool GciMtOopIsSpecial OopType64>
+	^self invalidCall
+!
+
+GciMtOopToChar: anOop
+
+	<cdecl: sdword GciMtOopToChar OopType64>
+	^self invalidCall
+!
+
+GciMtOopToDouble: session _: anOop _: result _: error
+
+	<cdecl: bool GciMtOopToDouble GciSessionId OopType64 lpvoid lpvoid>
+	^self invalidCall
+!
+
+GciMtOopToI64: session _: anOop _: result _: error
+
+	<cdecl: bool GciMtOopToI64 GciSessionId OopType64 lpvoid lpvoid>
+	^self invalidCall
+!
+
+GciMtPerform: session _: reciverOop _: symbolOop _: selectorString _: argumentList _: argumentCount _: flags _: environment _: error _: callback
+	"Remember, this doesn't return an OopType64 but an error code on the thread fork attempt.
+	The actual result is sent to the callback."
+
+	<cdecl: sdword GciMtPerform GciSessionId OopType64 OopType64 lpvoid qword* sdword sdword word lpvoid lpvoid>
+	^self invalidCall
+!
+
+GciMtReleaseAllObjs: session _: error
+
+	<cdecl: bool GciMtReleaseAllObjs GciSessionId lpvoid>
+	^self invalidCall
+!
+
+GciMtReleaseObjs: session _: oopList _: count _: error
+
+	<cdecl: bool GciMtReleaseAllObjs GciSessionId OopType64Array* sdword lpvoid>
+	^self invalidCall
+!
+
+GciMtResolveSymbol: session _: string _: anOop _: error
+
+	<cdecl: OopType64 GciMtResolveSymbol GciSessionId lpstr OopType64 lpvoid>
+	^self invalidCall
+!
+
+GciMtResolveSymbolObj: session _: stringOop _: symbolListOop _: error
+
+	<cdecl: OopType64 GciMtResolveSymbolObj GciSessionId OopType64 OopType64 lpvoid>
+	^self invalidCall
+!
+
+GciMtSessionIsRemote: sessionId
+
+	<cdecl: sdword GciMtSessionIsRemote GciSessionId>
+	^self invalidCall
+!
+
+GciMtVersion: buffer _: size
+
+	<cdecl: dword GciMtVersion lpstr dword>
+	^self invalidCall
+!
+
+hardBreakSession: session
+
+	self session: session breakHard: true.
+!
+
+initialize
+"
+	LibGciRpc64_3_3 new initialize.
+"
+	| errorNumber |
+	OOP_ILLEGAL := OopType64 fromInteger: 1.
+	OOP_NIL := OopType64 fromInteger: 20.
+	SessionManager current 
+		setenv: 'GEMSTONE_LIB' 
+		value: File workingDirectory.
+	errorNumber := self GciMtInit: self threadSafeLibraryName.
+	errorNumber == 0 ifTrue: [^self].
+	self error: 'initialize returned ' , errorNumber printString.
+!
+
+loginHostUser: hostUser hostPassword: hostPassword gsUser: gsUser gsPassword: gsPassword gemNRS: gemString stoneNRS: stoneString
+
+	^self
+		loginToStone: stoneString
+		hostUser: hostUser
+		hostPassword: hostPassword
+		hostPasswordIsEncrypted: false 
+		gemNRS: gemString 
+		gsUser: gsUser
+		gsPassword: gsPassword 
+		loginFlags: 0 
+		haltOnErrorNumber: 0 
+!
+
+loginToStone: stoneNRS
+	hostUser: hostUser
+	hostPassword: hostPassword 
+	hostPasswordIsEncrypted: isEncrypted 
+	gemNRS: gemNRS 
+	gsUser: gsUser
+	gsPassword: gsPassword 
+	loginFlags: loginFlags 
+	haltOnErrorNumber: errNum 
+
+	| stoneNrsEx hostUserEx hostPasswordEx gemNrsEx gsUserEx gsPasswordEx |
+	stoneNrsEx := ExternalMemory fromString: stoneNRS.
+	hostUserEx := ExternalMemory fromString: hostUser.
+	hostPasswordEx := ExternalMemory fromString: hostPassword.
+	gemNrsEx := ExternalMemory fromString: gemNRS.
+	gsUserEx := ExternalMemory fromString: gsUser.
+	gsPasswordEx := ExternalMemory fromString: gsPassword.
+
+	^self expect: 'GciSessionId' errorIfResultIs: 0 inThreadDo: [:gciErrSType :callback |
+		self 
+			GciMtLogin: stoneNrsEx asParameter
+			_: hostUserEx asParameter
+			_: hostPasswordEx asParameter
+			_: isEncrypted
+			_: gemNrsEx asParameter
+			_: gsUserEx asParameter
+			_: gsPasswordEx asParameter
+			_: loginFlags
+			_: errNum
+			_: gciErrSType 
+			_: callback.
+	].
+!
+
+loginUser: userString password: passwordString gemNRS: gemString stoneNRS: stoneString
+
+	^self
+		loginToStone: stoneString
+		hostUser: ''
+		hostPassword: '' 
+		hostPasswordIsEncrypted: false 
+		gemNRS: gemString 
+		gsUser: userString
+		gsPassword: passwordString 
+		loginFlags: 0 
+		haltOnErrorNumber: 0 
+!
+
+logoutSession: session
+
+	| didLogout gciErrSType | 
+	gciErrSType := self errorStructureClass new.
+	didLogout := self GciMtLogout: session _: gciErrSType asParameter.
+	didLogout ifFalse: [self gciError: gciErrSType].
+!
+
+oopAsciiNul
+
+	^OopType64 fromInteger: 28. "16r1C"
+!
+
+oopClassArray
+
+	^OopType64 fromInteger: 66817.
+!
+
+oopClassByteArray
+
+	^OopType64 fromInteger: 103425.!
+
+oopClassCharacter
+
+	^OopType64 fromInteger: 68353.
+!
+
+oopClassDoubleByteString
+
+	^OopType64 fromInteger: 143873.
+!
+
+oopClassQuadByteString
+
+	^OopType64 fromInteger: 144385.
+!
+
+oopClassSmallDouble
+
+	^OopType64 fromInteger: 121345.
+!
+
+oopClassSmallFraction
+
+	^OopType64 fromInteger: 156161.
+!
+
+oopClassSmallInteger
+
+	^OopType64 fromInteger: 74241.
+!
+
+oopClassString
+
+	^OopType64 fromInteger: 74753.
+!
+
+oopClassSymbol
+
+	^OopType64 fromInteger: 110849.
+!
+
+oopClassSystem
+
+	^OopType64 fromInteger: 76033.
+!
+
+oopClassUnicode16
+
+	^OopType64 fromInteger: 154625.
+!
+
+oopClassUnicode32
+
+	^OopType64 fromInteger: 154881.
+!
+
+oopClassUnicode7
+
+	^OopType64 fromInteger: 154369.
+!
+
+oopFalse
+
+	^OopType64 fromInteger: 12. "16r0C"
+!
+
+oopForCharacter: aCharacter
+
+	^self GciMtCharToOop: aCharacter codePoint
+
+!
+
+oopForSmallDouble: aFloat
+
+	| oop |
+	oop := self GciMtDoubleToSmallDouble: aFloat.
+	oop == OOP_ILLEGAL ifTrue: [self error: 'Unable to convert ' , aFloat printString , ' to a SmallDouble'].
+	^oop!
+
+oopGemStoneError
+
+	^OopType64 fromInteger:  231169.!
+
+oopIllegal
+
+	^OopType64 fromInteger: 1. "16r01"
+!
+
+oopIsSpecial: anOop
+
+	^self GciMtOopIsSpecial: anOop
+
+!
+
+oopMaxSmallInteger
+
+	^OopType64 fromInteger: 16r7FFFFFFFFFFFFFFA
+!
+
+oopMinSmallInteger
+
+	^OopType64 fromInteger: -16r7FFFFFFFFFFFFFFE
+!
+
+oopMinusOne
+
+	^OopType64 fromInteger: -6.
+!
+
+oopNil
+
+	^OopType64 fromInteger: 20. "16r14"
+!
+
+oopOne
+
+	^OopType64 fromInteger: 10.
+!
+
+oopRemoteNil
+
+	^OopType64 fromInteger: 276. "16r114"
+!
+
+oopTrue
+
+	^OopType64 fromInteger: 268.	"16r10C"
+!
+
+oopTwo
+
+	^OopType64 fromInteger: 18.
+!
+
+oopTypeArrayClass
+
+	^OopType64Array.!
+
+oopTypeClass
+
+	^OopType64.
+!
+
+oopZero
+
+	^OopType64 fromInteger: 2.
+!
+
+releaseAllObjectsInSession: session
+
+	| didRelease gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	didRelease := self GciMtReleaseAllObjs: session _: gciErrSType asParameter.
+	didRelease ifFalse: [self gciError: gciErrSType].
+!
+
+session: session breakHard: isHard
+
+	| flag gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	flag := self GciMtBreak: session _: isHard _: gciErrSType asParameter.
+	flag ifFalse: [self gciError: gciErrSType].
+!
+
+session: session clearStack: process
+
+	| didAbort gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	didAbort := self GciMtClearStack: session _: process _: gciErrSType asParameter.
+	didAbort ifFalse: [self gciError: gciErrSType].
+!
+
+session: session continue: gsProcessOop with: anOop error: aGciErrSType
+
+	^self 
+		session: session 
+		continue: gsProcessOop 
+		with: anOop 
+		error: aGciErrSType 
+		flags: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
+!
+
+session: session continue: gsProcessOop with: anOop error: aGciErrSType flags: flags
+
+	| result |
+	result := self expect: 'OopType64' errorIfResultIs: OOP_ILLEGAL inThreadDo: [:gciErrSType :callback |
+		self 
+			GciMtContinueWith: session
+			_: gsProcessOop 
+			_: anOop 
+			_: aGciErrSType 
+			_: flags 
+			_: gciErrSType  
+			_: callback.
+	].
+	^self session: session valueOfOop: result
+
+!
+
+session: session continue: gsProcessOop withError: aGciErrSType
+
+	^self 
+		session: session 
+		continue: gsProcessOop 
+		with: OOP_ILLEGAL 
+		error: aGciErrSType
+!
+
+session: session continue: gsProcessOop withObject: anOop
+
+	^self 
+		session: session 
+		continue: gsProcessOop 
+		with: anOop 
+		error: nil
+!
+
+session: session doubleForOop: anOop
+
+	| bytes flag gciErrSType  |
+	bytes := ByteArray new: 8.
+	gciErrSType := self errorStructureClass new.
+	flag := self GciMtOopToDouble: session _: anOop _: bytes asParameter _: gciErrSType asParameter.
+	flag ifFalse: [self gciError: gciErrSType].
+	^bytes doubleAtOffset: 0!
+
+session: session execute: stringOrOop
+
+	^self session: session execute: stringOrOop context: OOP_ILLEGAL symbolList: OOP_NIL.!
+
+session: session execute: stringOrOop context: contextOop
+
+	^self session: session execute: stringOrOop context: contextOop symbolList: OOP_NIL.!
+
+session: session execute: stringOrOop context: contextOop symbolList: symbolListOop
+
+	| result stringEx stringOop |
+	(stringOrOop isKindOf: String) ifTrue: [
+		stringEx := ExternalMemory fromString: stringOrOop.
+		stringOop := self oopClassString.
+	] ifFalse: [
+		stringEx := OOP_NIL.
+		stringOop := stringOrOop.
+	].
+	result := self expect: 'OopType64' errorIfResultIs: OOP_ILLEGAL inThreadDo: [:gciErrSType :callback |
+		self
+			GciMtExecute: session 
+			_: stringEx asParameter 
+			_: stringOop  
+			_: contextOop 
+			_: symbolListOop 
+			_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
+			_: 0 "environment" 
+			_: gciErrSType  
+			_: callback.
+	].
+	^self session: session valueOfOop: result
+!
+
+session: session fetchBytes: anOop
+
+	| bytes gciErrSType result |
+	gciErrSType := self errorStructureClass new.
+	bytes := ByteArray new: 1000.
+	result := self GciMtFetchBytes: session _: anOop _: 1 _: bytes _: bytes size _: gciErrSType.
+	result < 0 ifTrue: [self gciError: gciErrSType].
+	(0 <= result and: [result < bytes size]) ifTrue: [^bytes copyFrom: 1 to: result].
+	bytes := ByteArray new: (self session: session fetchSize: anOop).
+	result := self GciMtFetchBytes: session _: anOop _: 1 _: bytes _: bytes size _: gciErrSType.
+	^bytes!
+
+session: session fetchClass: anOop
+
+	| gciErrSType result |
+	gciErrSType := self errorStructureClass new.
+	result := self GciMtFetchClass: session _: anOop _: gciErrSType asParameter.
+	result == OOP_ILLEGAL ifTrue: [self gciError: gciErrSType].
+	^result!
+
+session: session fetchObject: anOop
+
+	| buffer class gciErrSType gciTsObjInfo implementation result |
+	gciErrSType := self errorStructureClass new.
+	gciTsObjInfo := GciTsObjInfo new.
+	buffer := ByteArray new: 1000.
+	result := self 
+		GciMtFetchObjInfo: session 
+		_: anOop 
+		_: false "addToExportSet"
+		_: gciTsObjInfo asParameter 
+		_: buffer asParameter
+		_: buffer size
+		_: gciErrSType asParameter.
+	result < 0 ifTrue: [self gciError: gciErrSType].
+	gciTsObjInfo data: anOop.
+	(implementation := gciTsObjInfo implementation) == 0 "OOP pointers" ifTrue: [
+		buffer := buffer copyFrom: 1 to: result * 8.
+		gciTsObjInfo data: (self oopTypeArrayClass fromBytes: buffer).
+		^gciTsObjInfo.
+	]. 
+	implementation == 2 "NSC" ifTrue: [^gciTsObjInfo].
+	class := gciTsObjInfo objClass.
+	implementation == 3 "Special" ifTrue: [
+		anOop = self oopNil 						ifTrue: [gciTsObjInfo data: nil	] ifFalse: [
+		anOop = self oopTrue 					ifTrue: [gciTsObjInfo data: true	] ifFalse: [
+		anOop = self oopFalse 					ifTrue: [gciTsObjInfo data: false	] ifFalse: [
+		class = self oopClassSmallInteger 	ifTrue: [gciTsObjInfo data: (self session: session integerForOop: anOop)	] ifFalse: [
+		class = self oopClassSmallDouble 	ifTrue: [gciTsObjInfo data: (self session: session doubleForOop: anOop)	] ifFalse: [
+		class = self oopClassCharacter		ifTrue: [gciTsObjInfo data: (self characterForOop: anOop)						] ifFalse: [
+		class = self oopClassSmallFraction	ifTrue: [gciTsObjInfo data: anOop asFraction											] ifFalse: [
+		self error: 'Unrecognized special: ' , anOop printString]]]]]]].
+		^gciTsObjInfo
+	].
+	"bytes"
+	result < gciTsObjInfo objSize ifTrue: [
+			buffer := ByteArray new: gciTsObjInfo objSize.
+			result := self GciMtFetchBytes: session _: anOop _: 1 _: buffer _: buffer size _: gciErrSType.
+			result < 0 ifTrue: [self gciError: gciErrSType].
+	].
+	buffer := buffer copyFrom: 1 to: result.
+	class = self oopClassByteArray 			value ifTrue: [gciTsObjInfo data: buffer											] ifFalse: [
+	class = self oopClassString 					value ifTrue: [gciTsObjInfo data: buffer asString								] ifFalse: [
+	class = self oopClassSymbol 					value ifTrue: [gciTsObjInfo data: buffer asString asSymbol				] ifFalse: [
+	class = self oopClassUnicode7 				value ifTrue: [gciTsObjInfo data: (Unicode7 withAll: buffer				)] ifFalse: [
+	class = self oopClassUnicode16 			value ifTrue: [gciTsObjInfo data: (Unicode16 withAll: buffer			)] ifFalse: [
+	class = self oopClassUnicode32 			value ifTrue: [gciTsObjInfo data: (Unicode32 withAll: buffer			)] ifFalse: [
+	class = self oopClassDoubleByteString 	value ifTrue: [gciTsObjInfo data: (DoubleByteString withAll: buffer	)] ifFalse: [
+	class = self oopClassQuadByteString 		value ifTrue: [gciTsObjInfo data: (QuadByteString withAll: buffer	)] ifFalse: [
+	self halt]]]]]]]].
+	^gciTsObjInfo!
+
+session: session fetchObjects: anOop
+
+	| count gciErrSType objects result |
+	gciErrSType := self errorStructureClass new.
+	count := 100.
+	objects := self oopTypeArrayClass new: count.
+	result := self GciMtFetchOops: session _: anOop _: 1 _: objects _: count _: gciErrSType.
+	result < 0 ifTrue: [self gciError: gciErrSType].
+	result == 0 ifTrue: [^self oopTypeArrayClass new].
+	result == count ifTrue: [
+		count := self session: session fetchSize: anOop.
+		objects := self oopTypeArrayClass new: count.
+		result := self GciMtFetchOops: session _: anOop _: 1 _: objects _: count _: gciErrSType.
+		result < 0 ifTrue: [self gciError: gciErrSType].
+	] ifFalse: [
+		objects size: count.
+	].
+	^objects!
+
+session: session fetchSize: anOop
+
+	| gciErrSType result |
+	gciErrSType := self errorStructureClass new.
+	result := self GciMtFetchSize: session _: anOop _: gciErrSType asParameter.
+	result < 0 ifTrue: [self gciError: gciErrSType].
+	^result!
+
+session: session fetchString: anOop
+
+	| string gciErrSType result |
+	gciErrSType := self errorStructureClass new.
+	string := String new: 1000.
+	result := self GciMtFetchChars: session _: anOop _: 1 _: string _: string size _: gciErrSType.
+	result < 0 ifTrue: [self gciError: gciErrSType].
+	result == 0 ifTrue: [^''].
+	result + 1 < string size ifTrue: [^string copyFrom: 1 to: result].
+	string := String new: (self session: session fetchSize: anOop) + 1.
+	result := self GciMtFetchChars: session _: anOop _: 1 _: string _: string size _: gciErrSType.
+	^string copyFrom: 1 to: result!
+
+session: session fetchVaryingSize: anOop
+
+	| gciErrSType result |
+	gciErrSType := self errorStructureClass new.
+	result := self GciMtFetchVaryingSize: session _: anOop _: gciErrSType asParameter.
+	result < 0 ifTrue: [self gciError: gciErrSType].
+	^result!
+
+session: session gemTrace: anInteger
+
+	| oldValue gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	oldValue := self GciMtGemTrace: session _: anInteger _: gciErrSType asParameter.
+	oldValue < 0 ifTrue: [self gciError: gciErrSType].
+	^oldValue!
+
+session: session integerForOop: anOop
+
+	| bytes flag gciErrSType  |
+	bytes := ByteArray new: 8.
+	gciErrSType := self errorStructureClass new.
+	flag := self GciMtOopToI64: session _: anOop _: bytes asParameter _: gciErrSType asParameter.
+	flag ifFalse: [self gciError: gciErrSType].
+	^bytes sqwordAtOffset: 0!
+
+session: session objectExists: anOop
+
+	^self GciMtObjExists: session _: anOop
+!
+
+session: session objectNamed: aString
+
+	^self session: session objectNamed: aString inSymbolList: OOP_NIL
+!
+
+session: session objectNamed: aString inSymbolList: symbolList
+
+	| oop gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	oop := self GciMtResolveSymbol: session _: aString asParameter _: symbolList _: gciErrSType asParameter.
+	oop == OOP_ILLEGAL ifTrue: [self gciError: gciErrSType].
+	^oop
+!
+
+session: session objectNamedOop: stringOop inSymbolList: symbolList
+
+	| oop gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	oop := self GciMtResolveSymbolObj: session _: stringOop _: symbolList _: gciErrSType asParameter.
+	oop == OOP_ILLEGAL ifTrue: [self gciError: gciErrSType].
+	^oop
+!
+
+session: session oopForDouble: aFloat
+
+	| oop gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	oop := self GciMtDoubleToOop: session _: aFloat _: gciErrSType asParameter.
+	oop == OOP_ILLEGAL ifTrue: [self gciError: gciErrSType].
+	^oop!
+
+session: session oopForInteger: anInteger
+
+	| oop gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	oop := self GciMtI64ToOop: session _: anInteger asParameter _: gciErrSType asParameter.
+	oop == OOP_ILLEGAL ifTrue: [self gciError: gciErrSType].
+	^oop
+!
+
+session: session oopForString: aString
+
+	| oop gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	oop := self GciMtNewString: session _: aString asParameter _: gciErrSType asParameter.
+	oop == OOP_ILLEGAL ifTrue: [self gciError: gciErrSType].
+	^oop
+!
+
+session: session releaseOops: anOopType64Array
+
+	| didRelease gciErrSType |
+	gciErrSType := self errorStructureClass new.
+	didRelease := self GciMtReleaseObjs: session _: anOopType64Array _: anOopType64Array size _: gciErrSType asParameter.
+	didRelease ifFalse: [self gciError: gciErrSType].
+!
+
+session: session send: stringOrOop to: receiverOop
+
+	^self session: session send: stringOrOop to: receiverOop with: self oopTypeArrayClass new!
+
+session: session send: stringOrOop to: receiverOop with: anOopType64Array
+
+	| argumentsEx result string selectorOop |
+	argumentsEx := ExternalMemory fromString: anOopType64Array bytes asString.
+	(stringOrOop isKindOf: String) ifTrue: [
+		string := ExternalMemory fromString: stringOrOop.
+		selectorOop := OOP_ILLEGAL.
+	] ifFalse: [
+		string := OOP_NIL.
+		selectorOop := stringOrOop.
+	].
+	result := self expect: 'OopType64' errorIfResultIs: OOP_ILLEGAL inThreadDo: [:gciErrSType :callback |
+		self 
+			GciMtPerform: session 
+			_: receiverOop
+			_: selectorOop 
+			_: string asParameter 
+			_: argumentsEx asParameter
+			_: anOopType64Array size 
+			_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
+			_: 0 "environment" 
+			_: gciErrSType asParameter 
+			_: callback asParameter].
+	^self session: session valueOfOop: result!
+
+session: session valueOfOop: anOop
+
+	| data objectInfo |
+	objectInfo := self session: session fetchObject: anOop.
+	anOop objectInfo: objectInfo.
+	data := objectInfo data.
+	^(data isKindOf: OopType64Array) 
+		ifTrue: [anOop]
+		ifFalse: [data]
+!
+
+sessionIsRemote: session
+
+	| resultCode |
+	resultCode := self GciMtSessionIsRemote: session.
+	resultCode == -1 ifTrue: [self error: 'invalid session'].
+	^resultCode == 1!
+
+softBreakSession: session
+
+	self session: session breakHard: false.!
+
+specialFromOop: anOop
+
+	anOop isSmallFraction ifTrue: [
+		^anOop asFraction.
+	].
+	^super specialFromOop: anOop
+!
+
+threadSafeLibraryName
+
+	self subclassResponsibility!
+
+version
+
+	| productCode string |
+	string := String new: 1024.
+	productCode := self GciMtVersion: string _: string size.
+	productCode == 3 ifFalse: [self error: 'Unexpected product code (' , productCode printString , ')'].
+	string := string copyFrom: 1 to: (string indexOf: (Character codePoint: 0)) - 1.
+	^string! !
+!GciMultiThreadedLibrary categoriesFor: #abortSession:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #beginSession:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #characterForOop:!public! !
+!GciMultiThreadedLibrary categoriesFor: #classForSpecial:!public! !
+!GciMultiThreadedLibrary categoriesFor: #commitSession:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #DllRegisterServer!private! !
+!GciMultiThreadedLibrary categoriesFor: #expect:errorIfResultIs:inThreadDo:!private!threaded! !
+!GciMultiThreadedLibrary categoriesFor: #fetchObjImpl:!private!subclassResponsibility! !
+!GciMultiThreadedLibrary categoriesFor: #gciError:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtAbort:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtBegin:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtBreak:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtCharToOop:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtClearStack:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtCommit:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtContinueWith:_:_:_:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtDoubleToOop:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtDoubleToSmallDouble:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtExecute:_:_:_:_:_:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtFetchBytes:_:_:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtFetchChars:_:_:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtFetchClass:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtFetchObjInfo:_:_:_:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtFetchOops:_:_:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtFetchSize:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtFetchSpecialClass:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtFetchVaryingSize:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtGemTrace:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtI64ToOop:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtInit:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtLogin:_:_:_:_:_:_:_:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtLogout:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtNewString:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtObjExists:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtOopIsSpecial:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtOopToChar:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtOopToDouble:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtOopToI64:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtPerform:_:_:_:_:_:_:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtReleaseAllObjs:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtReleaseObjs:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtResolveSymbol:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtResolveSymbolObj:_:_:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtSessionIsRemote:!private! !
+!GciMultiThreadedLibrary categoriesFor: #GciMtVersion:_:!private! !
+!GciMultiThreadedLibrary categoriesFor: #hardBreakSession:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #initialize!private! !
+!GciMultiThreadedLibrary categoriesFor: #loginHostUser:hostPassword:gsUser:gsPassword:gemNRS:stoneNRS:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #loginToStone:hostUser:hostPassword:hostPasswordIsEncrypted:gemNRS:gsUser:gsPassword:loginFlags:haltOnErrorNumber:!public!threaded! !
+!GciMultiThreadedLibrary categoriesFor: #loginUser:password:gemNRS:stoneNRS:!public! !
+!GciMultiThreadedLibrary categoriesFor: #logoutSession:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #oopAsciiNul!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassArray!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassByteArray!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassCharacter!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassDoubleByteString!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassQuadByteString!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassSmallDouble!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassSmallFraction!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassSmallInteger!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassString!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassSymbol!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassSystem!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassUnicode16!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassUnicode32!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopClassUnicode7!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopFalse!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopForCharacter:!public! !
+!GciMultiThreadedLibrary categoriesFor: #oopForSmallDouble:!public! !
+!GciMultiThreadedLibrary categoriesFor: #oopGemStoneError!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopIllegal!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopIsSpecial:!public! !
+!GciMultiThreadedLibrary categoriesFor: #oopMaxSmallInteger!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopMinSmallInteger!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopMinusOne!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopNil!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopOne!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopRemoteNil!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopTrue!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopTwo!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopTypeArrayClass!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #oopTypeClass!public! !
+!GciMultiThreadedLibrary categoriesFor: #oopZero!public!Reserved OOPs! !
+!GciMultiThreadedLibrary categoriesFor: #releaseAllObjectsInSession:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #session:breakHard:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:clearStack:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #session:continue:with:error:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:continue:with:error:flags:!public!threaded! !
+!GciMultiThreadedLibrary categoriesFor: #session:continue:withError:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:continue:withObject:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #session:doubleForOop:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:execute:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:execute:context:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #session:execute:context:symbolList:!public!threaded! !
+!GciMultiThreadedLibrary categoriesFor: #session:fetchBytes:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #session:fetchClass:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:fetchObject:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:fetchObjects:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #session:fetchSize:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:fetchString:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:fetchVaryingSize:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:gemTrace:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:integerForOop:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:objectExists:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:objectNamed:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:objectNamed:inSymbolList:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:objectNamedOop:inSymbolList:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:oopForDouble:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:oopForInteger:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:oopForString:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #session:releaseOops:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #session:send:to:!public! !
+!GciMultiThreadedLibrary categoriesFor: #session:send:to:with:!public!required!threaded! !
+!GciMultiThreadedLibrary categoriesFor: #session:valueOfOop:!public! !
+!GciMultiThreadedLibrary categoriesFor: #sessionIsRemote:!public! !
+!GciMultiThreadedLibrary categoriesFor: #softBreakSession:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #specialFromOop:!public! !
+!GciMultiThreadedLibrary categoriesFor: #threadSafeLibraryName!private! !
+!GciMultiThreadedLibrary categoriesFor: #version!public! !
+
+!GciMultiThreadedLibrary class methodsFor!
+
+fileName
+
+	^'GciMt.dll'.
+! !
+!GciMultiThreadedLibrary class categoriesFor: #fileName!public! !
+
+GciSingleThreadedLibrary guid: (GUID fromString: '{AFFFAFEB-5777-4D4B-A7D0-931922158468}')!
+GciSingleThreadedLibrary comment: 'JadeLoginShell show.
 GciLibrary current gciCommit.
 GciLibrary current nbCallResult.
 GciLibrary current nbCallResultOop.
@@ -393,8 +1918,8 @@ Array
 	with: library nbCallDone
 	with: library nbCallResult.
 '!
-!GciLibrary categoriesForClass!Unclassified! !
-!GciLibrary methodsFor!
+!GciSingleThreadedLibrary categoriesForClass!Unclassified! !
+!GciSingleThreadedLibrary methodsFor!
 
 _semaphore
 
@@ -404,29 +1929,22 @@ _semaphore
 abortSession: anInteger
 
 	self critical: [
-		self gciSetSessionId: anInteger.
-		self gciAbort.
+		self 
+			gciSetSessionId: anInteger;
+			gciAbort;
+			signalIfError;
+			yourself.
 	].
 !
 
 beginSession: anInteger
 
 	self critical: [
-		self gciSetSessionId: anInteger.
-		self gciBegin.
-	].
-!
-
-callInProgress
-
-	^self gciCallInProgress.
-!
-
-clearStack: anOopType session: anInteger
-
-	self critical: [
-		self gciSetSessionId: anInteger.
-		self gciClearStack: anOopType.
+		self 
+			gciSetSessionId: anInteger;
+			gciBegin;
+			signalIfError;
+			yourself.
 	].
 !
 
@@ -447,27 +1965,6 @@ commitSession: anInteger
 		self gciCommit ifTrue: [^self].
 		self signalIfError.
 		GciCommitFailure signal.
-	].
-!
-
-continue: aProcess session: anInteger
-
-	^self
-		continue: aProcess 
-		with: self oopIllegal 
-		session: anInteger.
-!
-
-continue: aProcess with: anObject session: anInteger
-
-	self critical: [
-		self gciSetSessionId: anInteger.
-		self 
-			gciNbContinueWith: aProcess
-			_: anObject
-			_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
-			_: nil.
-		^self nbResult.
 	].
 !
 
@@ -492,31 +1989,6 @@ critical: aBlock
 		SessionManager current isRuntime ifFalse: [self halt].
 		^result.
 	].
-!
-
-errorStructureClass
-
-	^GciErrSType64.
-!
-
-executeString: aString fromContext: anOopType session: anInteger
-
-	self critical: [
-		self gciSetSessionId: anInteger.
-		self
-			gciNbExecuteStrFromContext: aString
-			_: anOopType
-			_: self oopNil.
-		^self nbResult.
-	].
-!
-
-executeString: aString session: anInteger
-
-	^self
-		executeStr: aString
-		fromContext: self oopNil
-		session: anInteger.
 !
 
 fetchBytes: anOopType
@@ -546,14 +2018,6 @@ fetchBytes: anOopType class: aClass
 		_: size.
 	result = size ifTrue: [^bytes].
 	self signalLastError.
-!
-
-fetchBytes: anOopType session: anInteger
-
-	self critical: [
-		self gciSetSessionId: anInteger.
-		^self fetchBytes: anOopType.
-	].
 !
 
 fetchChars: anOopType
@@ -586,32 +2050,6 @@ fetchObjImpl: anOopType
 	result := self gciFetchObjImpl: anOopType.
 	result ~~ 3 ifTrue: [self signalIfError].
 	^result.
-!
-
-fetchObjImpl: anOopType session: anInteger
-
-	self critical: [
-		^self fetchObjImpl: anOopType.
-	].
-!
-
-fetchOops: anOopType session: anInteger
-
-	anOopType isSpecial ifTrue: [^self specialFromOop: anOopType].
-	self critical: [
-		| type size array result |
-		self gciSetSessionId: anInteger.
-		(type := self fetchObjImpl:anOopType) = 0 ifFalse: [self error: 'Expected 0 but got ' , type printString].
-		size := self gciFetchSize: anOopType.
-		array := self oopTypeArrayClass new: size.
-		result := self 
-			gciFetchVaryingOops: anOopType
-			_: 1
-			_: array
-			_: size.
-		result = size ifTrue: [^array].
-		self signalLastError.
-	].
 !
 
 gciAbort
@@ -724,12 +2162,6 @@ gciLogout
 	^self invalidCall
 !
 
-gciLongToOop: anInteger
-
-	<cdecl: OopType32 GciLongToOop sdword>
-	^self invalidCall
-!
-
 gciNbContinueWith: process _: replaceTopOfStack _: flags _: error
 
 	self subclassResponsibility!
@@ -770,9 +2202,7 @@ gciNbPerform: receiver _: selector _: args _: numArgs
 
 gciNbPerformNoDebug: receiver _: selector _: args _: numArgs
 
-	<cdecl: void GciNbPerformNoDebug OopType64 lpstr OopType64* dword>
-	^self invalidCall
-!
+	self subclassResponsibility!
 
 gciNewString: string
 
@@ -846,11 +2276,7 @@ initialize
 	super initialize.
 	semaphore := Semaphore forMutualExclusion.
 	self class sessionStarted.
-!
-
-is64Bit32
-
-	^false.
+	self gciInit ifFalse: [self error: 'GciInit() failed!!'].
 !
 
 lastError
@@ -879,11 +2305,20 @@ loginAs: userName password: password
 
 !
 
+loginHostUser: hostUser hostPassword: hostPassword gsUser: gsUser gsPassword: gsPassword gemNRS: gemString stoneNRS: stoneString
+
+	^self
+		gciSetNet: stoneString _: hostUser _: hostPassword _: gemString;
+		loginAs: gsUser password: gsPassword!
+
 logoutSession: anInteger
 
 	self critical: [
-		self gciSetSessionId: anInteger.
-		self gciLogout.
+		self 
+			gciSetSessionId: anInteger;
+			gciLogout;
+			signalIfError;
+			yourself.
 	].
 !
 
@@ -906,159 +2341,6 @@ nbResult
 	].
 !
 
-newString: aString session: anInteger
-
-	self critical: [
-		self gciSetSessionId: anInteger.
-		^self gciNewString: aString.
-	].
-!
-
-oopAsciiNul
-
-	self subclassResponsibility.
-!
-
-oopAt: anExternalAddress
-
-	^OopType32 fromInteger: (anExternalAddress sdwordAtOffset: 0).
-!
-
-oopClassArray
-
-	self subclassResponsibility.
-!
-
-oopClassDoubleByteString
-
-	self subclassResponsibility.
-!
-
-oopClassQuadByteString
-
-	self subclassResponsibility.
-!
-
-oopClassString
-
-	self subclassResponsibility.
-!
-
-oopClassSymbol
-
-	self subclassResponsibility.
-!
-
-oopClassSystem
-
-	self subclassResponsibility.
-!
-
-oopClassUnicode16
-
-	self subclassResponsibility.
-!
-
-oopClassUnicode32
-
-	self subclassResponsibility.
-!
-
-oopClassUnicode7
-
-	self subclassResponsibility.
-!
-
-oopFalse
-
-	self subclassResponsibility.
-!
-
-oopForInteger: anInteger
-
-	| int bytes |
-	bytes := ByteArray new: 4.
-	bytes 
-		dwordAtOffset: 0 
-		put: anInteger.
-	int := bytes sdwordAtOffset: 0.
-	^self gciLongToOop: int.
-!
-
-oopGemStoneError
-
-	self subclassResponsibility.
-!
-
-oopIllegal
-
-	self subclassResponsibility.
-!
-
-oopMaxSmallInteger
-
-	self subclassResponsibility.
-!
-
-oopMinSmallInteger
-
-	self subclassResponsibility.
-!
-
-oopMinusOne
-
-	self subclassResponsibility.
-!
-
-oopNil
-
-	self subclassResponsibility.
-!
-
-oopOne
-
-	self subclassResponsibility.
-!
-
-oopRemoteNil
-
-	self subclassResponsibility.
-!
-
-oopTrue
-
-	self subclassResponsibility.
-!
-
-oopTwo
-
-	self subclassResponsibility.
-!
-
-oopTypeArrayClass
-
-	^OopType32Array.!
-
-oopTypeClass
-
-	^OopType32.!
-
-oopTypeWithOop: anInteger
-
-	| int bytes |
-	bytes := ByteArray new: 4.
-	bytes 
-		dwordAtOffset: 0 
-		put: anInteger.
-	int := bytes sdwordAtOffset: 0.
-	^OopType32 fromInteger: int.
-!
-
-oopZero
-
-	self subclassResponsibility.
-!
-
 pollForSignalSession: anInteger
 
 	self critical: [
@@ -1068,7 +2350,79 @@ pollForSignalSession: anInteger
 	].
 !
 
-releaseOops: anArray session: anInteger
+sendInterpreted: aString to: anOopType with: anArray session: anInteger
+
+	^self 
+		session: anInteger
+		send: aString 
+		to: anOopType 
+		with: anArray 
+!
+
+session: session clearStack: processOop
+
+	self critical: [
+		self gciSetSessionId: session.
+		self gciClearStack: processOop.
+	].
+!
+
+session: session execute: aString context: contextOop
+
+	self critical: [
+		self gciSetSessionId: session.
+		self
+			gciNbExecuteStrFromContext: aString
+			_: contextOop
+			_: self oopNil.
+		^self nbResult.
+	].
+!
+
+session: anInteger fetchBytes: anOopType 
+
+	self critical: [
+		self gciSetSessionId: anInteger.
+		^self fetchBytes: anOopType.
+	].
+!
+
+session: anInteger fetchObjects: anOopType 
+
+	anOopType isSpecial ifTrue: [^self specialFromOop: anOopType].
+	self critical: [
+		| type size array result |
+		self gciSetSessionId: anInteger.
+		(type := self fetchObjImpl: anOopType) = 0 ifFalse: [self error: 'Expected 0 but got ' , type printString].
+		size := self gciFetchSize: anOopType.
+		array := self oopTypeArrayClass new: size.
+		result := self 
+			gciFetchVaryingOops: anOopType
+			_: 1
+			_: array
+			_: size.
+		result = size ifTrue: [^array].
+		self signalLastError.
+	].
+!
+
+session: session oopForInteger: anInteger
+
+	self critical: [
+		self gciSetSessionId: session.
+		^self oopForInteger: anInteger.
+	].
+!
+
+session: session oopForString: aString
+
+	self critical: [
+		self gciSetSessionId: session.
+		^self gciNewString: aString.
+	].
+!
+
+session: anInteger releaseOops: anArray
 
 	self critical: [
 		| array |
@@ -1081,7 +2435,7 @@ releaseOops: anArray session: anInteger
 	].
 !
 
-send: aString to: anOopType with: anArray session: anInteger
+session: anInteger send: aString to: anOopType with: anArray 
 
 	self critical: [
 		self gciSetSessionId: anInteger.
@@ -1092,15 +2446,6 @@ send: aString to: anOopType with: anArray session: anInteger
 			_: anArray size.
 		^self nbResult.
 	].
-!
-
-sendInterpreted: aString to: anOopType with: anArray session: anInteger
-
-	^self 
-		send: aString 
-		to: anOopType 
-		with: anArray 
-		session: anInteger.
 !
 
 signalIfError
@@ -1134,6 +2479,10 @@ softBreakSession: anInteger
 	].
 !
 
+specialFromOop: anOopType
+
+	self subclassResponsibility!
+
 valueOfOop: anOopType
 
 	| type |
@@ -1141,195 +2490,111 @@ valueOfOop: anOopType
 	type = 1 ifTrue: [^self fetchBytes: anOopType].
 	type = 3 ifTrue: [^self specialFromOop: anOopType].
 	^anOopType.
+!
+
+version
+
+	^self gciVersion.
 ! !
-!GciLibrary categoriesFor: #_semaphore!private! !
-!GciLibrary categoriesFor: #abortSession:!public! !
-!GciLibrary categoriesFor: #beginSession:!public! !
-!GciLibrary categoriesFor: #callInProgress!public! !
-!GciLibrary categoriesFor: #clearStack:session:!public! !
-!GciLibrary categoriesFor: #close!public! !
-!GciLibrary categoriesFor: #commitSession:!public! !
-!GciLibrary categoriesFor: #continue:session:!public! !
-!GciLibrary categoriesFor: #continue:with:session:!public! !
-!GciLibrary categoriesFor: #critical:!private! !
-!GciLibrary categoriesFor: #errorStructureClass!private! !
-!GciLibrary categoriesFor: #executeString:fromContext:session:!public! !
-!GciLibrary categoriesFor: #executeString:session:!public! !
-!GciLibrary categoriesFor: #fetchBytes:!private! !
-!GciLibrary categoriesFor: #fetchBytes:class:!private! !
-!GciLibrary categoriesFor: #fetchBytes:session:!public! !
-!GciLibrary categoriesFor: #fetchChars:!private! !
-!GciLibrary categoriesFor: #fetchClass:!private! !
-!GciLibrary categoriesFor: #fetchObjImpl:!private! !
-!GciLibrary categoriesFor: #fetchObjImpl:session:!public! !
-!GciLibrary categoriesFor: #fetchOops:session:!public! !
-!GciLibrary categoriesFor: #gciAbort!private! !
-!GciLibrary categoriesFor: #gciBegin!private! !
-!GciLibrary categoriesFor: #gciCallInProgress!private! !
-!GciLibrary categoriesFor: #gciClearStack:!private! !
-!GciLibrary categoriesFor: #gciCommit!private! !
-!GciLibrary categoriesFor: #gciErr:!private! !
-!GciLibrary categoriesFor: #gciFetchBytes:_:_:_:!private! !
-!GciLibrary categoriesFor: #gciFetchChars:_:_:_:!private! !
-!GciLibrary categoriesFor: #gciFetchClass:!private! !
-!GciLibrary categoriesFor: #gciFetchObjImpl:!private! !
-!GciLibrary categoriesFor: #gciFetchSize:!private! !
-!GciLibrary categoriesFor: #gciFetchVaryingOops:_:_:_:!private! !
-!GciLibrary categoriesFor: #gciGemTrace:!private! !
-!GciLibrary categoriesFor: #gciGetSessionId!private! !
-!GciLibrary categoriesFor: #gciHardBreak!private! !
-!GciLibrary categoriesFor: #gciInit!private! !
-!GciLibrary categoriesFor: #gciLogin:_:!private! !
-!GciLibrary categoriesFor: #gciLogout!private! !
-!GciLibrary categoriesFor: #gciLongToOop:!private! !
-!GciLibrary categoriesFor: #gciNbContinueWith:_:_:_:!private! !
-!GciLibrary categoriesFor: #gciNbEnd:!private! !
-!GciLibrary categoriesFor: #gciNbExecuteStrFromContext:_:_:!private! !
-!GciLibrary categoriesFor: #gciNbPerform:_:_:_:!private! !
-!GciLibrary categoriesFor: #gciNbPerformNoDebug:_:_:_:!private! !
-!GciLibrary categoriesFor: #gciNewString:!private! !
-!GciLibrary categoriesFor: #gciOopToChr:!private! !
-!GciLibrary categoriesFor: #gciPollForSignal!private! !
-!GciLibrary categoriesFor: #gciReleaseOops:_:!private! !
-!GciLibrary categoriesFor: #gciSetNet:_:_:_:!private! !
-!GciLibrary categoriesFor: #gciSetSessionId:!private! !
-!GciLibrary categoriesFor: #gciShutdown!private! !
-!GciLibrary categoriesFor: #gciSoftBreak!private! !
-!GciLibrary categoriesFor: #gciVersion!private! !
-!GciLibrary categoriesFor: #gemTrace:!public! !
-!GciLibrary categoriesFor: #hardBreakSession:!public! !
-!GciLibrary categoriesFor: #initialize!private! !
-!GciLibrary categoriesFor: #is64Bit32!public! !
-!GciLibrary categoriesFor: #lastError!private! !
-!GciLibrary categoriesFor: #loginAs:password:!public! !
-!GciLibrary categoriesFor: #logoutSession:!public! !
-!GciLibrary categoriesFor: #nbResult!public! !
-!GciLibrary categoriesFor: #newString:session:!public! !
-!GciLibrary categoriesFor: #oopAsciiNul!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopAt:!public! !
-!GciLibrary categoriesFor: #oopClassArray!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopClassDoubleByteString!public! !
-!GciLibrary categoriesFor: #oopClassQuadByteString!public! !
-!GciLibrary categoriesFor: #oopClassString!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopClassSymbol!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopClassSystem!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopClassUnicode16!public! !
-!GciLibrary categoriesFor: #oopClassUnicode32!public! !
-!GciLibrary categoriesFor: #oopClassUnicode7!public! !
-!GciLibrary categoriesFor: #oopFalse!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopForInteger:!public! !
-!GciLibrary categoriesFor: #oopGemStoneError!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopIllegal!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopMaxSmallInteger!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopMinSmallInteger!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopMinusOne!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopNil!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopOne!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopRemoteNil!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopTrue!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopTwo!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #oopTypeArrayClass!public! !
-!GciLibrary categoriesFor: #oopTypeClass!public! !
-!GciLibrary categoriesFor: #oopTypeWithOop:!public! !
-!GciLibrary categoriesFor: #oopZero!public!Reserved OOPs! !
-!GciLibrary categoriesFor: #pollForSignalSession:!public! !
-!GciLibrary categoriesFor: #releaseOops:session:!public! !
-!GciLibrary categoriesFor: #send:to:with:session:!public! !
-!GciLibrary categoriesFor: #sendInterpreted:to:with:session:!public! !
-!GciLibrary categoriesFor: #signalIfError!private! !
-!GciLibrary categoriesFor: #signalLastError!private! !
-!GciLibrary categoriesFor: #signalSemaphoreIfNeeded:!private! !
-!GciLibrary categoriesFor: #softBreakSession:!public! !
-!GciLibrary categoriesFor: #valueOfOop:!private! !
+!GciSingleThreadedLibrary categoriesFor: #_semaphore!private! !
+!GciSingleThreadedLibrary categoriesFor: #abortSession:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #beginSession:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #close!public! !
+!GciSingleThreadedLibrary categoriesFor: #commitSession:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #critical:!private! !
+!GciSingleThreadedLibrary categoriesFor: #fetchBytes:!not subclassResponsibility!private! !
+!GciSingleThreadedLibrary categoriesFor: #fetchBytes:class:!private! !
+!GciSingleThreadedLibrary categoriesFor: #fetchChars:!private! !
+!GciSingleThreadedLibrary categoriesFor: #fetchClass:!private! !
+!GciSingleThreadedLibrary categoriesFor: #fetchObjImpl:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciAbort!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciBegin!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciCallInProgress!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciClearStack:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciCommit!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciErr:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciFetchBytes:_:_:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciFetchChars:_:_:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciFetchClass:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciFetchObjImpl:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciFetchSize:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciFetchVaryingOops:_:_:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciGemTrace:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciGetSessionId!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciHardBreak!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciInit!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciLogin:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciLogout!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciNbContinueWith:_:_:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciNbEnd:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciNbExecuteStrFromContext:_:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciNbPerform:_:_:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciNbPerformNoDebug:_:_:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciNewString:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciOopToChr:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciPollForSignal!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciReleaseOops:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciSetNet:_:_:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciSetSessionId:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciShutdown!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciSoftBreak!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciVersion!private! !
+!GciSingleThreadedLibrary categoriesFor: #gemTrace:!public!to investigate! !
+!GciSingleThreadedLibrary categoriesFor: #hardBreakSession:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #initialize!private! !
+!GciSingleThreadedLibrary categoriesFor: #lastError!private! !
+!GciSingleThreadedLibrary categoriesFor: #loginAs:password:!public!to investigate! !
+!GciSingleThreadedLibrary categoriesFor: #loginHostUser:hostPassword:gsUser:gsPassword:gemNRS:stoneNRS:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #logoutSession:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #nbResult!public!to investigate! !
+!GciSingleThreadedLibrary categoriesFor: #pollForSignalSession:!public! !
+!GciSingleThreadedLibrary categoriesFor: #sendInterpreted:to:with:session:!public! !
+!GciSingleThreadedLibrary categoriesFor: #session:clearStack:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:execute:context:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:fetchBytes:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:fetchObjects:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:oopForInteger:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:oopForString:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:releaseOops:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:send:to:with:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #signalIfError!private! !
+!GciSingleThreadedLibrary categoriesFor: #signalLastError!private! !
+!GciSingleThreadedLibrary categoriesFor: #signalSemaphoreIfNeeded:!private! !
+!GciSingleThreadedLibrary categoriesFor: #softBreakSession:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #specialFromOop:!private! !
+!GciSingleThreadedLibrary categoriesFor: #valueOfOop:!private! !
+!GciSingleThreadedLibrary categoriesFor: #version!public! !
 
-!GciLibrary class methodsFor!
+LibGciRpc64_3_3 guid: (GUID fromString: '{68DB187D-A739-41BE-AD58-A476218B1B04}')!
+LibGciRpc64_3_3 comment: ''!
+!LibGciRpc64_3_3 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_3 methodsFor!
 
-addMissingMethods
-	"The external function address is cached in the method and if it is inherited we will use the first one called.
-	Having our own method allows us to have multiple libraries loaded and to call the proper function."
+errorStructureClass
 
-	self allSelectors do: [:each |
-		| class method |
-		class := self whichClassIncludesSelector: each.
-		class ~~ self ifTrue: [
-			method := class methodDictionary at: each.
-			method isExternalCall ifTrue: [
-				self addSelector: each withMethod: method copy clear; yourself.
-			].
-		].
-	].!
+	^GciErrSType64_31.
+!
+
+threadSafeLibraryName
+
+	^'libgcits-3.3.0-32.dll'
+! !
+!LibGciRpc64_3_3 categoriesFor: #errorStructureClass!private! !
+!LibGciRpc64_3_3 categoriesFor: #threadSafeLibraryName!private! !
+
+!LibGciRpc64_3_3 class methodsFor!
 
 displayName
 
-	^nil.
-!
-
-fileName
-
-	| list |
-	list := OrderedCollection new.
-	File
-		for: self fileNameSearch
-		in: SessionManager current imageBase , 'bin'
-		do: [:each | list add: each fileName].
-	list := list reject: [:each | each = '.'].	"This is needed after upgrading to Fusion 2 beta 1"
-	list isEmpty ifTrue: [self error: 'library not found!!'].
-	^list first.
+	^'64-bit 3.3'.
 !
 
 fileNameSearch
 
-	^(self name copyReplaceAll: '_' with: '-') , '*.dll'.
-!
-
-onStartup2
-
-	default := nil.
-!
-
-open: pathString
-
-	| currentWorkingDirectory result |
-	(default notNil and: [default handle notNil]) ifTrue: [^default].
-	self addMissingMethods.
-	currentWorkingDirectory := File workingDirectory.
-	[
-		File workingDirectory: SessionManager current imageBase , 'bin'.
-		result := super open: pathString.
-		result gciInit ifFalse: [self error: 'GciInit() failed!!'].
-		self default: result.
-	] ensure: [
-		File workingDirectory: currentWorkingDirectory.
-	].
-	^result.
-!
-
-sessionStarted
-"
-	GciLibrary sessionStarted.
-"
-	GciErrSType32 new.
-	GciErrSType64 new.
-	GciErrSType64_30 new.
-	GciErrSType64_31 new.
-	OopType32Array new.
-	OopType64Array new.
-	OopType32 new.
-	OopType64 new.
-!
-
-withDisplayName: aString
-
-	^self allSubclasses detect: [:each | each displayName = aString].
+	^'libgcimt-3.3.0-32.dll'.
 ! !
-!GciLibrary class categoriesFor: #addMissingMethods!public! !
-!GciLibrary class categoriesFor: #displayName!public! !
-!GciLibrary class categoriesFor: #fileName!public! !
-!GciLibrary class categoriesFor: #fileNameSearch!public! !
-!GciLibrary class categoriesFor: #onStartup2!public! !
-!GciLibrary class categoriesFor: #open:!public! !
-!GciLibrary class categoriesFor: #sessionStarted!public! !
-!GciLibrary class categoriesFor: #withDisplayName:!public! !
+!LibGciRpc64_3_3 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_3 class categoriesFor: #fileNameSearch!public! !
 
 Gcilw6x guid: (GUID fromString: '{903182EE-3A32-4868-8468-77731D1B2FD5}')!
 Gcilw6x comment: ''!
@@ -1390,6 +2655,12 @@ gciFetchVaryingOops: anObject _: startIndex _: theOops _: numOops
 	^self invalidCall
 !
 
+gciLongToOop: anInteger
+
+	<cdecl: OopType32 GciLongToOop sdword>
+	^self invalidCall
+!
+
 gciNbContinueWith: process _: replaceTopOfStack _: flags _: error
 
 	<cdecl: void GciNbContinueWith OopType32 OopType32 sdword GciErrSType32*>
@@ -1429,6 +2700,11 @@ gciReleaseOops: args _: numArgs
 oopAsciiNul
 
 	^OopType32 fromInteger: 14.!
+
+oopAt: anExternalAddress
+
+	^OopType32 fromInteger: (anExternalAddress sdwordAtOffset: 0).
+!
 
 oopClassArray
 
@@ -1476,6 +2752,17 @@ oopFalse
 
 	^OopType32 fromInteger: 6.!
 
+oopForInteger: anInteger
+
+	| int bytes |
+	bytes := ByteArray new: 4.
+	bytes 
+		dwordAtOffset: 0 
+		put: anInteger.
+	int := bytes sdwordAtOffset: 0.
+	^self gciLongToOop: int.
+!
+
 oopGemStoneError
 
 	^OopType32 fromInteger: 3613.!
@@ -1516,6 +2803,25 @@ oopTwo
 
 	^OopType32 fromInteger: 11.!
 
+oopTypeArrayClass
+
+	^OopType32Array.!
+
+oopTypeClass
+
+	^OopType32.!
+
+oopTypeWithOop: anInteger
+
+	| int bytes |
+	bytes := ByteArray new: 4.
+	bytes 
+		dwordAtOffset: 0 
+		put: anInteger.
+	int := bytes sdwordAtOffset: 0.
+	^OopType32 fromInteger: int.
+!
+
 oopZero
 
 	^OopType32 fromInteger: 3.!
@@ -1542,6 +2848,7 @@ specialFromOop: anOop
 !Gcilw6x categoriesFor: #gciFetchObjImpl:!private! !
 !Gcilw6x categoriesFor: #gciFetchSize:!private! !
 !Gcilw6x categoriesFor: #gciFetchVaryingOops:_:_:_:!private! !
+!Gcilw6x categoriesFor: #gciLongToOop:!private! !
 !Gcilw6x categoriesFor: #gciNbContinueWith:_:_:_:!private! !
 !Gcilw6x categoriesFor: #gciNbExecuteStrFromContext:_:_:!private! !
 !Gcilw6x categoriesFor: #gciNbPerform:_:_:_:!private! !
@@ -1549,6 +2856,7 @@ specialFromOop: anOop
 !Gcilw6x categoriesFor: #gciOopToChr:!private! !
 !Gcilw6x categoriesFor: #gciReleaseOops:_:!private! !
 !Gcilw6x categoriesFor: #oopAsciiNul!public!Reserved OOPs! !
+!Gcilw6x categoriesFor: #oopAt:!public! !
 !Gcilw6x categoriesFor: #oopClassArray!public! !
 !Gcilw6x categoriesFor: #oopClassByteArray!public! !
 !Gcilw6x categoriesFor: #oopClassDoubleByteString!public! !
@@ -1560,6 +2868,7 @@ specialFromOop: anOop
 !Gcilw6x categoriesFor: #oopClassUnicode32!public! !
 !Gcilw6x categoriesFor: #oopClassUnicode7!public! !
 !Gcilw6x categoriesFor: #oopFalse!public!Reserved OOPs! !
+!Gcilw6x categoriesFor: #oopForInteger:!public! !
 !Gcilw6x categoriesFor: #oopGemStoneError!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #oopIllegal!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #oopMaxSmallInteger!public!Reserved OOPs! !
@@ -1570,6 +2879,9 @@ specialFromOop: anOop
 !Gcilw6x categoriesFor: #oopRemoteNil!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #oopTrue!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #oopTwo!public!Reserved OOPs! !
+!Gcilw6x categoriesFor: #oopTypeArrayClass!public! !
+!Gcilw6x categoriesFor: #oopTypeClass!public! !
+!Gcilw6x categoriesFor: #oopTypeWithOop:!public! !
 !Gcilw6x categoriesFor: #oopZero!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #specialFromOop:!public! !
 
@@ -1577,6 +2889,11 @@ LibGciRpc64 guid: (GUID fromString: '{CE7FE05A-C8EE-4A13-B4AA-7C8AEF295620}')!
 LibGciRpc64 comment: ''!
 !LibGciRpc64 categoriesForClass!Unclassified! !
 !LibGciRpc64 methodsFor!
+
+errorStructureClass
+
+	^GciErrSType64.
+!
 
 gciClearStack: processOop
 
@@ -1896,6 +3213,7 @@ specialFromOop: anOop
 	].
 	^nil.
 ! !
+!LibGciRpc64 categoriesFor: #errorStructureClass!private! !
 !LibGciRpc64 categoriesFor: #gciClearStack:!private! !
 !LibGciRpc64 categoriesFor: #gciDbgEstablishToFile:!private! !
 !LibGciRpc64 categoriesFor: #gciErr:!private! !
@@ -2056,10 +3374,10 @@ displayName
 ! !
 !LibGciRpc64_24 class categoriesFor: #displayName!public! !
 
-LibGciRpc64_30 guid: (GUID fromString: '{A8A6C6D6-29C1-4E0D-9C00-EC47F1078D4D}')!
-LibGciRpc64_30 comment: ''!
-!LibGciRpc64_30 categoriesForClass!Unclassified! !
-!LibGciRpc64_30 methodsFor!
+LibGciRpc64_3_0 guid: (GUID fromString: '{A8A6C6D6-29C1-4E0D-9C00-EC47F1078D4D}')!
+LibGciRpc64_3_0 comment: ''!
+!LibGciRpc64_3_0 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_0 methodsFor!
 
 errorStructureClass
 
@@ -2071,29 +3389,36 @@ gciErr: errorReport
 	<cdecl: bool GciErr GciErrSType64_30*>
 	^self invalidCall
 ! !
-!LibGciRpc64_30 categoriesFor: #errorStructureClass!private! !
-!LibGciRpc64_30 categoriesFor: #gciErr:!private! !
+!LibGciRpc64_3_0 categoriesFor: #errorStructureClass!private! !
+!LibGciRpc64_3_0 categoriesFor: #gciErr:!private! !
 
-!LibGciRpc64_30 class methodsFor!
+!LibGciRpc64_3_0 class methodsFor!
 
 displayName
 
 	^'64-bit 3.0.x'.
 ! !
-!LibGciRpc64_30 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_0 class categoriesFor: #displayName!public! !
 
-LibGciRpc64_31 guid: (GUID fromString: '{B9F761F8-7AA2-47AB-804A-8A2C76AFDB1D}')!
-LibGciRpc64_31 comment: ''!
-!LibGciRpc64_31 categoriesForClass!Unclassified! !
-!LibGciRpc64_31 methodsFor!
+LibGciRpc64_3_1 guid: (GUID fromString: '{B9F761F8-7AA2-47AB-804A-8A2C76AFDB1D}')!
+LibGciRpc64_3_1 comment: ''!
+!LibGciRpc64_3_1 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_1 methodsFor!
 
 errorStructureClass
 
 	^GciErrSType64_31.
-! !
-!LibGciRpc64_31 categoriesFor: #errorStructureClass!private! !
+!
 
-!LibGciRpc64_31 class methodsFor!
+gciErr: errorReport
+
+	<cdecl: bool GciErr GciErrSType64_31*>
+	^self invalidCall
+! !
+!LibGciRpc64_3_1 categoriesFor: #errorStructureClass!private! !
+!LibGciRpc64_3_1 categoriesFor: #gciErr:!private! !
+
+!LibGciRpc64_3_1 class methodsFor!
 
 displayName
 
@@ -2104,8 +3429,40 @@ fileNameSearch
 
 	^'libgcirpc-3.1.0-32.dll'.
 ! !
-!LibGciRpc64_31 class categoriesFor: #displayName!public! !
-!LibGciRpc64_31 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_1 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_1 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_3_2 guid: (GUID fromString: '{25CBF893-B55F-4C84-B927-F0E27DAF8114}')!
+LibGciRpc64_3_2 comment: ''!
+!LibGciRpc64_3_2 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2 methodsFor!
+
+errorStructureClass
+
+	^GciErrSType64_31.
+!
+
+gciErr: errorReport
+
+	<cdecl: bool GciErr GciErrSType64_31*>
+	^self invalidCall
+! !
+!LibGciRpc64_3_2 categoriesFor: #errorStructureClass!private! !
+!LibGciRpc64_3_2 categoriesFor: #gciErr:!private! !
+
+!LibGciRpc64_3_2 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2'.
+!
+
+fileNameSearch
+
+	^'libgcits-3.2.0-32.dll'.
+! !
+!LibGciRpc64_3_2 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2 class categoriesFor: #fileNameSearch!public! !
 
 LibGciRpc64_310x guid: (GUID fromString: '{1A433237-482B-47C8-89DB-541890BB91B8}')!
 LibGciRpc64_310x comment: ''!
@@ -2124,51 +3481,6 @@ fileNameSearch
 !LibGciRpc64_310x class categoriesFor: #displayName!public! !
 !LibGciRpc64_310x class categoriesFor: #fileNameSearch!public! !
 
-LibGciRpc64_32 guid: (GUID fromString: '{25CBF893-B55F-4C84-B927-F0E27DAF8114}')!
-LibGciRpc64_32 comment: ''!
-!LibGciRpc64_32 categoriesForClass!Unclassified! !
-!LibGciRpc64_32 class methodsFor!
-
-displayName
-
-	^'64-bit 3.2'.
-!
-
-fileNameSearch
-
-	^'libgcirpc-3.2.0-32.dll'.
-! !
-!LibGciRpc64_32 class categoriesFor: #displayName!public! !
-!LibGciRpc64_32 class categoriesFor: #fileNameSearch!public! !
-
-LibGciRpc64_33 guid: (GUID fromString: '{68DB187D-A739-41BE-AD58-A476218B1B04}')!
-LibGciRpc64_33 comment: ''!
-!LibGciRpc64_33 categoriesForClass!Unclassified! !
-!LibGciRpc64_33 methodsFor!
-
-specialFromOop: anOop
-
-	anOop isSmallFraction ifTrue: [
-		^anOop asFraction.
-	].
-	^super specialFromOop: anOop
-! !
-!LibGciRpc64_33 categoriesFor: #specialFromOop:!public! !
-
-!LibGciRpc64_33 class methodsFor!
-
-displayName
-
-	^'64-bit 3.3'.
-!
-
-fileNameSearch
-
-	^'libgcirpc-3.3.0-32.dll'.
-! !
-!LibGciRpc64_33 class categoriesFor: #displayName!public! !
-!LibGciRpc64_33 class categoriesFor: #fileNameSearch!public! !
-
 LibGciRpc64_3_2_01 guid: (GUID fromString: '{9B3A8D44-3E44-49AC-90C5-AFDA22E1CD1B}')!
 LibGciRpc64_3_2_01 comment: ''!
 !LibGciRpc64_3_2_01 categoriesForClass!Unclassified! !
@@ -2181,7 +3493,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcirpc-3.2.1-32.dll'.
+	^'libgcits-3.2.1-32.dll'.
 ! !
 !LibGciRpc64_3_2_01 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_01 class categoriesFor: #fileNameSearch!public! !
@@ -2198,7 +3510,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcirpc-3.2.2-32.dll'.
+	^'libgcits-3.2.2-32.dll'.
 ! !
 !LibGciRpc64_3_2_02 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_02 class categoriesFor: #fileNameSearch!public! !
@@ -2215,7 +3527,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcirpc-3.2.3-32.dll'.
+	^'libgcits-3.2.3-32.dll'.
 ! !
 !LibGciRpc64_3_2_03 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_03 class categoriesFor: #fileNameSearch!public! !
@@ -2232,7 +3544,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcirpc-3.2.4-32.dll'.
+	^'libgcits-3.2.4-32.dll'.
 ! !
 !LibGciRpc64_3_2_04 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_04 class categoriesFor: #fileNameSearch!public! !
@@ -2249,7 +3561,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcirpc-3.2.5-32.dll'.
+	^'libgcits-3.2.5-32.dll'.
 ! !
 !LibGciRpc64_3_2_05 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_05 class categoriesFor: #fileNameSearch!public! !
@@ -2266,7 +3578,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcirpc-3.2.6-32.dll'.
+	^'libgcits-3.2.6-32.dll'.
 ! !
 !LibGciRpc64_3_2_06 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_06 class categoriesFor: #fileNameSearch!public! !
@@ -2283,7 +3595,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcirpc-3.2.7-32.dll'.
+	^'libgcits-3.2.7-32.dll'.
 ! !
 !LibGciRpc64_3_2_07 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_07 class categoriesFor: #fileNameSearch!public! !
@@ -2300,7 +3612,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcirpc-3.2.8-32.dll'.
+	^'libgcits-3.2.8-32.dll'.
 ! !
 !LibGciRpc64_3_2_08 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_08 class categoriesFor: #fileNameSearch!public! !
@@ -2317,7 +3629,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcirpc-3.2.9-32.dll'.
+	^'libgcits-3.2.9-32.dll'.
 ! !
 !LibGciRpc64_3_2_09 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_09 class categoriesFor: #fileNameSearch!public! !
@@ -2334,10 +3646,27 @@ displayName
 
 fileNameSearch
 
-	^'libgcirpc-3.2.10-32.dll'.
+	^'libgcits-3.2.10-32.dll'.
 ! !
 !LibGciRpc64_3_2_10 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_10 class categoriesFor: #fileNameSearch!public! !
+
+LibGciRpc64_3_2_11 guid: (GUID fromString: '{B4E236BE-BE04-48DD-AC35-D4CE1BB763C5}')!
+LibGciRpc64_3_2_11 comment: ''!
+!LibGciRpc64_3_2_11 categoriesForClass!Unclassified! !
+!LibGciRpc64_3_2_11 class methodsFor!
+
+displayName
+
+	^'64-bit 3.2.11'.
+!
+
+fileNameSearch
+
+	^'libgcits-3.2.11-32.dll'.
+! !
+!LibGciRpc64_3_2_11 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_2_11 class categoriesFor: #fileNameSearch!public! !
 
 GciErrSType guid: (GUID fromString: '{9932DE27-ACC2-4E27-AD64-9A3FF8B6ECF9}')!
 GciErrSType comment: ''!
@@ -2468,6 +3797,194 @@ stack: anObject
 !GciErrSType categoriesFor: #stack!public! !
 !GciErrSType categoriesFor: #stack:!public! !
 
+GciTsObjInfo guid: (GUID fromString: '{6A0671AC-78FF-43D1-B841-525B61598094}')!
+GciTsObjInfo comment: '
+class GciTsObjInfo {
+	public:
+		OopType			objId;
+		OopType			objClass;							/* OOP of the class of the obj						*/
+		int64					objSize;								/* obj''s total size, in bytes or OOPs					*/
+		int					namedSize;						/* num of named inst vars in the obj				*/
+		unsigned short	objectSecurityPolicyId;		/* previously named segmentId						*/
+		unsigned short	_bits;
+		unsigned short	access;								/* 0 no auth, 1 read allowed, 2 write allowed	*/
+
+		enum { 
+			AUTH_NONE = 0, AUTH_READ = 1, AUTH_WRITE = 2 
+		};
+		enum {  // definitions of _bits
+			implem_mask		= GC_IMPLEMENTATION_MASK,	// 0x03
+			indexable_mask	= GC_INDEXABLE_MASK,				// 0x04
+			invariant_mask		= GC_INVARIANT_MASK,				// 0x08
+			partial_mask			= 0x10,
+			overlay_mask		= 0x20,
+			is_placeholder		= 0x40,		// object is place holder for unsatisfied forward reference
+			swiz_kind_mask	= 0x300,
+			swiz_kind_shift		= 8
+		};
+
+		inline unsigned char isInvariant()	{ return _bits & invariant_mask;	}
+		inline unsigned char isIndexable()	{ return _bits & indexable_mask;	}
+		inline unsigned char isPartial()		{ return _bits & partial_mask;		}
+		inline unsigned char isOverlayed()	{ return _bits & overlay_mask;		}
+
+		inline GciByteSwizEType byteSwizKind() const {
+			return (GciByteSwizEType)((_bits & swiz_kind_mask) >> swiz_kind_shift) ;
+		}
+
+		inline unsigned char objImpl() {
+			/* implementation format 0..3 , one of GC_FORMAT_OOP..GC_FORMAT_SPECIAL */
+			return _bits & GC_IMPLEMENTATION_MASK;
+		}
+};'!
+!GciTsObjInfo categoriesForClass!Unclassified! !
+!GciTsObjInfo methodsFor!
+
+_bits
+	"Answer the receiver's _bits field as a Smalltalk object."
+
+	^(bytes swordAtOffset: 30)!
+
+_bits: anObject
+	"Set the receiver's _bits field to the value of anObject."
+
+	bytes swordAtOffset: 30 put: anObject!
+
+access
+	"Answer the receiver's access field as a Smalltalk object."
+
+	^(bytes swordAtOffset: 32)!
+
+access: anObject
+	"Set the receiver's access field to the value of anObject."
+
+	bytes swordAtOffset: 32 put: anObject!
+
+data
+	^data!
+
+data: anObject
+	data := anObject!
+
+implementation
+"
+#define GC_FORMAT_OOP			0
+#define GC_FORMAT_BYTE			1
+#define GC_FORMAT_NSC			2
+#define GC_FORMAT_SPECIAL		3
+"
+	^self _bits bitAnd: 16r03	"implem_mask    = GC_IMPLEMENTATION_MASK, // 0x03"
+!
+
+isIndexable
+
+	^0 < (self _bits bitAnd: 16r04)	"indexable_mask = GC_INDEXABLE_MASK,      // 0x04"
+!
+
+isInvariant
+
+	^0 < (self _bits bitAnd: 16r08)	"invariant_mask = GC_INVARIANT_MASK,      // 0x08"
+!
+
+isReadable
+
+	^0 < self access.
+!
+
+isWriteable
+
+	^1 < self access.
+!
+
+namedSize
+	"Answer the receiver's namedSize field as a Smalltalk object."
+
+	^(bytes sdwordAtOffset: 24)!
+
+namedSize: anObject
+	"Set the receiver's namedSize field to the value of anObject."
+
+	bytes sdwordAtOffset: 24 put: anObject!
+
+objClass
+	"Answer the receiver's objClass field as a Smalltalk object."
+
+	^OopType64 fromInteger: (bytes qwordAtOffset: 8)!
+
+objClass: anObject
+	"Set the receiver's objClass field to the value of anObject."
+
+	bytes qwordAtOffset: 8 put: anObject value!
+
+objectSecurityPolicyId
+	"Answer the receiver's objectSecurityPolicyId field as a Smalltalk object."
+
+	^(bytes swordAtOffset: 28)!
+
+objectSecurityPolicyId: anObject
+	"Set the receiver's objectSecurityPolicyId field to the value of anObject."
+
+	bytes swordAtOffset: 28 put: anObject!
+
+objId
+	"Answer the receiver's objId field as a Smalltalk object."
+
+	^(bytes qwordAtOffset: 0)!
+
+objId: anObject
+	"Set the receiver's objId field to the value of anObject."
+
+	bytes qwordAtOffset: 0 put: anObject!
+
+objSize
+	"Answer the receiver's objSize field as a Smalltalk object."
+
+	^(bytes sqwordAtOffset: 16)!
+
+objSize: anObject
+	"Set the receiver's objSize field to the value of anObject."
+
+	bytes sqwordAtOffset: 16 put: anObject! !
+!GciTsObjInfo categoriesFor: #_bits!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #_bits:!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #access!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #access:!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #data!accessing!public! !
+!GciTsObjInfo categoriesFor: #data:!accessing!public! !
+!GciTsObjInfo categoriesFor: #implementation!public!testing! !
+!GciTsObjInfo categoriesFor: #isIndexable!public!testing! !
+!GciTsObjInfo categoriesFor: #isInvariant!public!testing! !
+!GciTsObjInfo categoriesFor: #isReadable!public!testing! !
+!GciTsObjInfo categoriesFor: #isWriteable!public!testing! !
+!GciTsObjInfo categoriesFor: #namedSize!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #namedSize:!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #objClass!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #objClass:!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #objectSecurityPolicyId!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #objectSecurityPolicyId:!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #objId!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #objId:!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #objSize!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #objSize:!**compiled accessors**!public! !
+
+!GciTsObjInfo class methodsFor!
+
+defineFields
+"
+	GciTsObjInfo compileDefinition.
+"
+	self
+		defineField: #objId 							type: QWORDField 	new	;
+		defineField: #objClass						type: QWORDField 	new	;
+		defineField: #objSize							type: SQWORDField	new	;
+		defineField: #namedSize					type: SDWORDField	new	;
+		defineField: #objectSecurityPolicyId	type: SWORDField	new	;
+		defineField: #_bits								type: SWORDField	new	;
+		defineField: #access							type: SWORDField	new	;
+		yourself.
+! !
+!GciTsObjInfo class categoriesFor: #defineFields!public! !
+
 OopType32Array guid: (GUID fromString: '{73AA2718-0F19-4B5E-AF7F-A3D2D8FBB1C4}')!
 OopType32Array comment: ''!
 !OopType32Array categoriesForClass!Unclassified! !
@@ -2511,6 +4028,11 @@ elementClass
 	^OopType64.
 !
 
+size: anInteger
+
+	bytes := bytes copyFrom: 1 to: self class elementSize * anInteger.
+!
+
 uncheckedAt: index 
 
 	^OopType64 fromInteger: (bytes qwordAtOffset: (index - 1) * 8)!
@@ -2523,6 +4045,7 @@ uncheckedAt: index  put: anOopType64
 
 ! !
 !OopType64Array categoriesFor: #elementClass!constants!public! !
+!OopType64Array categoriesFor: #size:!public! !
 !OopType64Array categoriesFor: #uncheckedAt:!accessing!private! !
 !OopType64Array categoriesFor: #uncheckedAt:put:!accessing!private! !
 
@@ -2531,9 +4054,20 @@ uncheckedAt: index  put: anOopType64
 elementSize
 
 	^8.
+!
+
+fromBytes: aByteArray
+
+	^(self new: aByteArray size / self elementSize)
+		bytes: aByteArray;
+		yourself.
 ! !
 !OopType64Array class categoriesFor: #elementSize!instance creation!private! !
+!OopType64Array class categoriesFor: #fromBytes:!public! !
 
+GciSessionId guid: (GUID fromString: '{63B7B17D-EE05-4344-8A1F-E3EC5ABC32E8}')!
+GciSessionId comment: ''!
+!GciSessionId categoriesForClass!Unclassified! !
 OopType32 guid: (GUID fromString: '{5E753C2A-33E0-438C-8B48-549E19CCC28E}')!
 OopType32 comment: ''!
 !OopType32 categoriesForClass!Unclassified! !
@@ -2709,6 +4243,12 @@ isSpecial
 	^(self value bitAnd: 7) = 4.
 !
 
+objectInfo
+	^objectInfo!
+
+objectInfo: anObject
+	objectInfo := anObject!
+
 printOn: aStream
 
 	aStream nextPutAll: 'Oop(' , self value printString , ')'.
@@ -2740,6 +4280,8 @@ smallDoubleAsFloat
 !OopType64 categoriesFor: #isSmallFraction!public! !
 !OopType64 categoriesFor: #isSmallInteger!public! !
 !OopType64 categoriesFor: #isSpecial!public! !
+!OopType64 categoriesFor: #objectInfo!accessing!public! !
+!OopType64 categoriesFor: #objectInfo:!accessing!public! !
 !OopType64 categoriesFor: #printOn:!public! !
 !OopType64 categoriesFor: #smallDoubleAsFloat!public! !
 
@@ -3366,6 +4908,563 @@ defineFields
 		yourself.
 ! !
 !GciErrSType64_31 class categoriesFor: #defineFields!public! !
+
+GciMtLibraryTestCase guid: (GUID fromString: '{14F7F08C-7854-44C6-BDAA-E1B5055DC094}')!
+GciMtLibraryTestCase comment: ''!
+!GciMtLibraryTestCase categoriesForClass!Unclassified! !
+!GciMtLibraryTestCase methodsFor!
+
+setUp
+
+	super setUp.
+	library := LibGciRpc64_3_3 default.
+	session := GciMtLibraryTestResource current session!
+
+test_abort
+
+	library abortSession: session.
+!
+
+test_begin
+
+	library beginSession: session.
+!
+
+test_break
+
+	| semaphore a b c d e t1 time |
+	library 
+		softBreakSession: session;
+		hardBreakSession: session;
+		session: session breakHard: false;
+		session: session breakHard: true;
+		yourself.
+	semaphore := Semaphore new.
+	t1 := Time millisecondClockValue.
+	[
+		[semaphore signal] forkAt: Processor userBackgroundPriority. 
+		a := [
+			b := library session: session execute: '(Delay forSeconds: 5) wait. $b'.
+		] on: Error do: [:ex | 
+			c := ex. 
+			ex return: $a.
+		].
+		[semaphore signal] forkAt: Processor userBackgroundPriority. 
+	] fork.
+	semaphore wait.
+	(Delay forMilliseconds: 50) wait.
+	[
+		d := library softBreakSession: session.
+	] on: Error do: [:ex | 
+		e := ex.
+	].
+	semaphore wait.
+	time := Time millisecondClockValue - t1.
+	library session: session clearStack: c tag contextOop.
+	self
+		assert: time < 2500;
+		assert: a == $a;
+		assert: b isNil;
+		assert: (c isKindOf: GciError);
+		assert: d == library;
+		assert: e isNil;
+		yourself.
+!
+
+test_charToOop
+
+	| x |
+	x := library oopForCharacter: $a.
+	self assert: x value == 24860.
+!
+
+test_clearStack
+
+	| context |
+	[
+		library session: session execute: 'nil halt'.
+	] on: Error do: [:ex |
+		context :=ex tag contextOop.
+	].
+	self assert: context notNil.
+	library session: session clearStack: context.
+!
+
+test_commit
+
+	library commitSession: session.
+!
+
+test_continue
+
+	| error result  |
+	[
+		result := library session: session execute: 'nil halt. 5'.
+	] on: GciError do: [:ex |
+		error := ex.
+	].
+	self
+		assert: result isNil;
+		assert: error notNil;
+		yourself.
+	result := library session: session continue: error tag contextOop.
+	self assert: result == 5.
+!
+
+test_doubleToOop
+
+	| x |
+	x := library session: session oopForDouble: 1.5.
+	self assert: x value = 16r7F80000000000006.
+!
+
+test_doubleToSmallDouble
+
+	| x |
+	x := library oopForSmallDouble: 1.5.
+	self assert: x value = 16r7F80000000000006.
+!
+
+test_execute
+
+	| x |
+	self 
+		assert: (x := library session: session execute: '0') == 0;
+		assert: (x := library session: session execute: 'nil') == nil;
+		assert: (x := library session: session execute: 'true') == true;
+		assert: (x := library session: session execute: 'false') == false;
+		assert: (x := library session: session execute: '$a') == $a;
+		assert: (x := library session: session execute: '1.5') = 1.5;
+		"assert: (x := library session: session execute: '1 / 2') = (1 / 2);"
+
+		assert: (x := library session: session execute: 'String with: $a with: $b') = 'ab';
+		assert: (x := library session: session execute: 'ByteArray with: 0 with: 255') = #[0 255];
+		yourself.
+!
+
+test_fetchBytes
+
+	| x |
+	self 
+		should: [library session: session fetchBytes: library oopIllegal]
+		raise: GciError.
+	x := library session: session execute: 'ByteArray new asOop'.
+	x := library session: session fetchBytes: (OopType64 fromInteger: x).
+	self 
+		assert: x class == ByteArray;
+		assert: x size == 0;
+		yourself.
+	x := library session: session execute: '(ByteArray new: 999) atAllPut: 1; asOop'.
+	x := library session: session fetchBytes: (OopType64 fromInteger: x).
+	self 
+		assert: x class == ByteArray;
+		assert: x size == 999;
+		assert: x asSet any == 1;
+		yourself.
+	x := library session: session execute: '(ByteArray new: 1000) atAllPut: 1; asOop'.
+	x := library session: session fetchBytes: (OopType64 fromInteger: x).
+	self 
+		assert: x class == ByteArray;
+		assert: x size == 1000;
+		assert: x asSet any == 1;
+		yourself.
+	x := library session: session execute: '(ByteArray new: 1001) atAllPut: 1; asOop'.
+	x := library session: session fetchBytes: (OopType64 fromInteger: x).
+	self 
+		assert: x class == ByteArray;
+		assert: x size == 1001;
+		assert: x asSet any == 1;
+		yourself.
+
+!
+
+test_fetchClass
+
+	| x y z |
+	x := library session: session execute: 'String new asOop'.
+	y := library session: session execute: 'String'.
+	z := library session: session fetchClass: (OopType64 fromInteger: x).
+	self assert: y = z.
+
+!
+
+test_fetchObject1
+	"Pointer (OOPs) object"
+
+	| oop class policy namedSize object |
+	oop := library session: session execute: 'System myUserProfile'.
+	class := library session: session execute: 'UserProfile'.
+	policy := library session: session execute: 'System myUserProfile objectSecurityPolicyId'.
+	namedSize := library session: session execute: 'UserProfile instVarNames size'.
+	object := library session: session fetchObject: oop.
+	self
+		assert: object objId == oop value;
+		assert: object objClass = class;
+		assert: object objectSecurityPolicyId == policy;
+		assert: object namedSize == namedSize;
+		assert: object isWriteable;
+		deny: object isInvariant;
+		deny: object isIndexable;
+		assert: object implementation == 0;
+		assert: object data size == 10;
+		yourself.
+!
+
+test_fetchObject2
+	"String object"
+
+	| oop object |
+	oop := library session: session execute: 'System myUserProfile userId asOop'.
+	object := library session: session fetchObject: (OopType64 fromInteger: oop).
+	self assert: object data = 'DataCurator'.!
+
+test_fetchObject3
+	"Symbol object"
+
+	| oop object |
+	oop := library session: session execute: '#UserGlobals asOop'.
+	object := library session: session fetchObject: (OopType64 fromInteger: oop).
+	self assert: object data = #'UserGlobals'.!
+
+test_fetchObject4
+	"ByteArray object"
+
+	| oop object |
+	oop := library session: session execute: '#[0 1 2 3 4 5 6 7] asOop'.
+	object := library session: session fetchObject: (OopType64 fromInteger: oop).
+	self assert: object data = #[0 1 2 3 4 5 6 7].!
+
+test_fetchObjects
+
+	| object objects |
+	object := library session: session execute: '#()'.
+	objects := library session: session fetchObjects: object.
+	self assert: objects isEmpty.
+	object := library session: session execute: '#(true false nil)'.
+	objects := library session: session fetchObjects: object.
+	self 
+		assert: objects class == library oopTypeArrayClass;
+		assert: (objects at: 1) = library oopTrue;
+		assert: (objects at: 2) = library oopFalse;
+		assert: (objects at: 3) = library oopNil;
+		yourself.
+!
+
+test_fetchSize
+
+	| x y |
+	x := library session: session fetchSize: library oopNil.
+	self assert: x == 0.
+	x := library session: session execute: '(String new: 1005) atAllPut: $a; asOop'.
+	y := library session: session fetchSize: (OopType64 fromInteger: x).
+	self assert: y == 1005.
+
+!
+
+test_fetchSpecialClass
+
+	| x y z |
+	x := library session: session execute: 'nil asOop'.
+	y := library session: session execute: 'nil class'.
+	z := library classForSpecial: (OopType64 fromInteger: x).
+	self assert: y = z.
+
+	x := library session: session execute: '0 asOop'.
+	y := library session: session execute: '0 class'.
+	z := library classForSpecial: (OopType64 fromInteger: x).
+	self assert: y = z.
+
+	x := library session: session execute: 'true asOop'.
+	y := library session: session execute: 'true class'.
+	z := library classForSpecial: (OopType64 fromInteger: x).
+	self assert: y = z.
+
+	x := library session: session execute: '$a asOop'.
+	y := library session: session execute: '$a class'.
+	z := library classForSpecial: (OopType64 fromInteger: x).
+	self assert: y = z.
+!
+
+test_fetchString
+
+	| x |
+	self 
+		should: [library session: session fetchString: library oopIllegal ]
+		raise: GciError.
+	x := library session: session execute: 'String new asOop'.
+	x := library session: session fetchString: (OopType64 fromInteger: x).
+	self 
+		assert: x class == String;
+		assert: x size == 0;
+		yourself.
+	x := library session: session execute: '(String new: 999) atAllPut: $a; asOop'.
+	x := library session: session fetchString: (OopType64 fromInteger: x).
+	self 
+		assert: x class == String;
+		assert: x size == 999;
+		assert: x asSet any == $a;
+		yourself.
+	x := library session: session execute: '(String new: 1000) atAllPut: $a; asOop'.
+	x := library session: session fetchString: (OopType64 fromInteger: x).
+	self 
+		assert: x class == String;
+		assert: x size == 1000;
+		assert: x asSet any == $a;
+		yourself.
+	x := library session: session execute: '(String new: 1001) atAllPut: $a; asOop'.
+	x := library session: session fetchString: (OopType64 fromInteger: x).
+	self 
+		assert: x class == String;
+		assert: x size == 1001;
+		assert: x asSet any == $a;
+		yourself.
+
+!
+
+test_fetchVaryingSize
+
+	| x y |
+	x := library session: session fetchSize: library oopNil.
+	self assert: x == 0.
+
+	x := library session: session execute: 'Association new'.
+	y := library session: session fetchVaryingSize: x.
+	self assert: y == 0.
+
+	x := library session: session execute: '(String new: 10) asOop'.
+	y := library session: session fetchVaryingSize: (OopType64 fromInteger: x).
+	self assert: y == 10.
+
+	x := library session: session execute: 'Array new: 10'.
+	y := library session: session fetchVaryingSize: x.
+	self assert: y == 10.
+!
+
+test_gemTrace
+
+	| value |
+	value := library session: session gemTrace: 1.
+	self assert: value == 0.
+	value := library session: session gemTrace: 2.
+	self assert: value == 1.
+	value := library session: session gemTrace: 3.
+	self assert: value == 2.
+	value := library session: session gemTrace: 0.
+	self assert: value == 3.
+!
+
+test_i64ToOop
+
+	| x |
+	x := library session: session oopForInteger: 0.
+	self assert: x = library oopZero.
+	x := library session: session  oopForInteger: 1.
+	self assert: x = library oopOne.
+	x := library session: session  oopForInteger: -1.
+	self assert: x value = 16rFFFFFFFFFFFFFFFA.
+!
+
+test_login
+
+	self assert: session notNil.
+!
+
+test_newString
+
+	| x |
+	x := library session: session oopForString: 'UserGlobals'.
+	self assert: 0 < x value.
+!
+
+test_objExists
+
+	| x |
+	x := library session: session execute: 'Globals'.
+	x := library session: session objectExists: x.
+	self assert: x.
+	x := library session: session objectExists: library oopIllegal.
+	self deny: x.
+!
+
+test_oopIsSpecial
+
+	| x |
+	x := library oopIsSpecial: library oopNil.
+	self assert: x.
+	x := library session: session execute: 'AllUsers'.
+	x := library oopIsSpecial: x.
+	self deny: x.
+!
+
+test_oopToChar
+
+	| x |
+	x := library session: session execute: '$a asOop'.
+	x := library characterForOop: (OopType64 fromInteger: x).
+	self assert: x == $a.
+!
+
+test_oopToDouble
+
+	| x |
+	x := library session: session doubleForOop: (OopType64 fromInteger: 16r7F80000000000006).
+	self assert: x = 1.5.
+!
+
+test_oopToI64
+
+	| x |
+	x := library session: session integerForOop: library oopZero.
+	self assert: x == 0.
+	x := library session: session  integerForOop: library oopOne.
+	self assert: x == 1.
+	x := library session: session  integerForOop: library oopMinusOne.
+	self assert: x == -1.
+!
+
+test_perform
+
+	| args x |
+	x := library session: session send: 'yourself' to: library oopZero.
+	self assert: x  == 0.
+	args := library oopTypeArrayClass with: (OopType64 fromInteger: 26 "3").
+	x := library session: session send: '+' to: (OopType64 fromInteger: 18) "2" with: args.
+	self assert: x == 5.
+	args := (library oopTypeArrayClass new: 2)
+		at: 1 put: (OopType64 fromInteger: 18 "2");
+		at: 2 put: (OopType64 fromInteger: 42 "5");
+		yourself.
+	x := library session: session send: 'between:and:' to: (OopType64 fromInteger: 26 "3") with: args.
+	self assert: x == true.
+!
+
+test_releaseAllObjs
+
+	library releaseAllObjectsInSession: session.
+!
+
+test_releaseOops
+
+	| x |
+	x := library session: session execute: 'Object new'.
+	library session: session releaseOops: (library oopTypeArrayClass with: x).
+!
+
+test_resolveSymbol
+
+	| x |
+	x := library session: session execute: 'System myUserProfile symbolList'.
+	x := library session: session objectNamed: 'Array' inSymbolList: x.
+	self assert: x = library oopClassArray.
+!
+
+test_resolveSymbolOop
+
+	| stringOop symbolList x y |
+	stringOop := library session: session oopForString: 'UserGlobals'.
+	symbolList := library session: session execute: 'System myUserProfile symbolList'.
+	x := library session: session objectNamedOop: stringOop inSymbolList: symbolList.
+	y := library session: session execute: 'UserGlobals'.
+	self assert: x = y.
+!
+
+test_sessionIsRemote
+
+	self 
+		assert: (library sessionIsRemote: session);
+		should: [library sessionIsRemote: session + 1] raise: Error;
+		yourself.
+
+!
+
+test_version
+
+	| string |
+	string := library version.
+	self 
+		assert: string notEmpty;
+		assert: string last codePoint ~~ 0;
+		assert: (string beginsWith: '3.3');
+		yourself.
+! !
+!GciMtLibraryTestCase categoriesFor: #setUp!private! !
+!GciMtLibraryTestCase categoriesFor: #test_abort!public! !
+!GciMtLibraryTestCase categoriesFor: #test_begin!public! !
+!GciMtLibraryTestCase categoriesFor: #test_break!public! !
+!GciMtLibraryTestCase categoriesFor: #test_charToOop!public! !
+!GciMtLibraryTestCase categoriesFor: #test_clearStack!public! !
+!GciMtLibraryTestCase categoriesFor: #test_commit!public! !
+!GciMtLibraryTestCase categoriesFor: #test_continue!public! !
+!GciMtLibraryTestCase categoriesFor: #test_doubleToOop!public! !
+!GciMtLibraryTestCase categoriesFor: #test_doubleToSmallDouble!public! !
+!GciMtLibraryTestCase categoriesFor: #test_execute!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchBytes!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchClass!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchObject1!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchObject2!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchObject3!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchObject4!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchObjects!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchSize!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchSpecialClass!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchString!public! !
+!GciMtLibraryTestCase categoriesFor: #test_fetchVaryingSize!public! !
+!GciMtLibraryTestCase categoriesFor: #test_gemTrace!public! !
+!GciMtLibraryTestCase categoriesFor: #test_i64ToOop!public! !
+!GciMtLibraryTestCase categoriesFor: #test_login!public! !
+!GciMtLibraryTestCase categoriesFor: #test_newString!public! !
+!GciMtLibraryTestCase categoriesFor: #test_objExists!public! !
+!GciMtLibraryTestCase categoriesFor: #test_oopIsSpecial!public! !
+!GciMtLibraryTestCase categoriesFor: #test_oopToChar!public! !
+!GciMtLibraryTestCase categoriesFor: #test_oopToDouble!public! !
+!GciMtLibraryTestCase categoriesFor: #test_oopToI64!public! !
+!GciMtLibraryTestCase categoriesFor: #test_perform!public! !
+!GciMtLibraryTestCase categoriesFor: #test_releaseAllObjs!public! !
+!GciMtLibraryTestCase categoriesFor: #test_releaseOops!public! !
+!GciMtLibraryTestCase categoriesFor: #test_resolveSymbol!public! !
+!GciMtLibraryTestCase categoriesFor: #test_resolveSymbolOop!public! !
+!GciMtLibraryTestCase categoriesFor: #test_sessionIsRemote!public! !
+!GciMtLibraryTestCase categoriesFor: #test_version!public! !
+
+!GciMtLibraryTestCase class methodsFor!
+
+resources
+
+	^IdentitySet with: GciMtLibraryTestResource! !
+!GciMtLibraryTestCase class categoriesFor: #resources!public! !
+
+GciMtLibraryTestResource guid: (GUID fromString: '{689B0A0E-E39A-43AB-AE67-060AF181BB24}')!
+GciMtLibraryTestResource comment: ''!
+!GciMtLibraryTestResource categoriesForClass!Unclassified! !
+!GciMtLibraryTestResource methodsFor!
+
+session
+
+	^session!
+
+setUp
+
+	super setUp.
+	library := LibGciRpc64_3_3 default.
+	session ifNil: [
+		session := library 
+			loginUser: 'DataCurator'
+			password: 'swordfish'
+			gemNRS: '!!@portugal#netldi:ldijfoster#task!!gemnetobject'
+			stoneNRS: 'jfoster0'.
+	]!
+
+tearDown
+
+	session ifNotNil: [
+		library logoutSession: session.
+		session := nil.
+	].
+	super tearDown.
+! !
+!GciMtLibraryTestResource categoriesFor: #session!accessing!public! !
+!GciMtLibraryTestResource categoriesFor: #setUp!private! !
+!GciMtLibraryTestResource categoriesFor: #tearDown!private! !
 
 "Binary Globals"!
 

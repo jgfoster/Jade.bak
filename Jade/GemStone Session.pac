@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.237'.
+package basicPackageVersion: '0.243'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -41,9 +41,10 @@ package classNames
 package methodNames
 	add: #Gcilw6x -> #jadeServerClass;
 	add: #LibGciRpc64 -> #jadeServerClass;
-	add: #LibGciRpc64_30 -> #jadeServerClass;
-	add: #LibGciRpc64_32 -> #jadeServerClass;
-	add: #LibGciRpc64_33 -> #jadeServerClass;
+	add: #LibGciRpc64_3_0 -> #jadeServerClass;
+	add: #LibGciRpc64_3_1 -> #jadeServerClass;
+	add: #LibGciRpc64_3_2 -> #jadeServerClass;
+	add: #LibGciRpc64_3_3 -> #jadeServerClass;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -68,7 +69,7 @@ package!
 "Class Definitions"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionID gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: 'GemCursor'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -219,7 +220,7 @@ jadeServerClass
 
 	^JadeServer32bit
 ! !
-!Gcilw6x categoriesFor: #jadeServerClass!public!Testing! !
+!Gcilw6x categoriesFor: #jadeServerClass!public! !
 
 !LibGciRpc64 methodsFor!
 
@@ -227,31 +228,39 @@ jadeServerClass
 
 	^JadeServer64bit
 ! !
-!LibGciRpc64 categoriesFor: #jadeServerClass!public!Testing! !
+!LibGciRpc64 categoriesFor: #jadeServerClass!public! !
 
-!LibGciRpc64_30 methodsFor!
+!LibGciRpc64_3_0 methodsFor!
 
 jadeServerClass
 
 	^JadeServer64bit3x
 ! !
-!LibGciRpc64_30 categoriesFor: #jadeServerClass!public!Testing! !
+!LibGciRpc64_3_0 categoriesFor: #jadeServerClass!public! !
 
-!LibGciRpc64_32 methodsFor!
+!LibGciRpc64_3_1 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit3x
+! !
+!LibGciRpc64_3_1 categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64_3_2 methodsFor!
 
 jadeServerClass
 
 	^JadeServer64bit32
 ! !
-!LibGciRpc64_32 categoriesFor: #jadeServerClass!public!Testing! !
+!LibGciRpc64_3_2 categoriesFor: #jadeServerClass!public! !
 
-!LibGciRpc64_33 methodsFor!
+!LibGciRpc64_3_3 methodsFor!
 
 jadeServerClass
 
 	^JadeServer64bit33
 ! !
-!LibGciRpc64_33 categoriesFor: #jadeServerClass!public!Testing! !
+!LibGciRpc64_3_3 categoriesFor: #jadeServerClass!public! !
 
 "End of package definition"!
 
@@ -276,15 +285,15 @@ GciSoftBreak'!
 _continueProcess: aContextOop
 
 	^library
+		session: gciSessionId
 		continue: aContextOop
-		session: gciSessionID.
 !
 
 _executeString: aString fromContextOop: anOopType
 	^library 
-		executeString: aString
-		fromContext: anOopType
-		session: gciSessionID.
+		session: gciSessionId
+		execute: aString
+		context: anOopType
 !
 
 _library
@@ -294,18 +303,18 @@ _library
 
 _send: aSymbol to: anObject withAll: anArray
 
-	| arguments oops result time1 time2 |
+	| arguments oops result |
 	oops := OrderedCollection new.
 	arguments := anArray collect: [:each | 
-		(each isKindOf: Integer) ifTrue: [self oopForInteger: each] ifFalse: [
+		(each isKindOf: Integer) ifTrue: [library session: self oopForInteger: each] ifFalse: [
 		(each isKindOf: String) ifTrue: [oops add: (self oopForString: each)] ifFalse: [
 		each]].
 	].
 	result := library 
+		session: gciSessionId
 		send: aSymbol 
 		to: (self oopTypeFor: anObject) 
-		with: (self serverArrayFor: arguments)
-		session: gciSessionID.
+		with: (self serverArrayFor: arguments).
 	self releaseOops: oops.
 	^result.
 !
@@ -382,8 +391,8 @@ briefDescription
 clearStack: anOopType
 
 	library
+		session: gciSessionId
 		clearStack: anOopType 
-		session: gciSessionID.
 !
 
 clientForwardError: gciErrSType
@@ -446,11 +455,9 @@ executeString: aString fromContext: anObject
 
 fetchBytes: anOopType
 
-	| result |
-	result := library 
+	^library 
+		session: gciSessionId
 		fetchBytes: anOopType 
-		session: gciSessionID.
-	^result.
 !
 
 forceLogout
@@ -465,12 +472,17 @@ forceLogout
 
 gciSessionId
 
-	^gciSessionID.
+	^gciSessionId
+!
+
+gciSessionId: aGciSessionId
+
+	gciSessionId := aGciSessionId.
 !
 
 gciVersion
 
-	^library gciVersion.
+	^library version.
 !
 
 gemHost
@@ -487,9 +499,9 @@ handlingClientForwarderSendDo: aBlock
 		continueWith := result signal.
 		block := [
 			library
+				session: gciSessionId
 				continue: result errorReport contextOop
-				with: continueWith
-				session: gciSessionID.
+				withObject: continueWith.
 		].
 	].
 	^result.
@@ -497,7 +509,7 @@ handlingClientForwarderSendDo: aBlock
 
 hardBreak
 
-	library hardBreakSession: gciSessionID.
+	library hardBreakSession: gciSessionId.
 !
 
 hasServer
@@ -511,10 +523,10 @@ heartbeat: receiver arguments: arguments
 	(Delay forSeconds: 1) wait.
 	result := self returningResultOrErrorDo: [
 		library 
+			session: gciSessionId
 			send: 'delay' 
 			to: receiver
 			with: arguments
-			session: gciSessionID.
 	].
 	[
 		result isKindOf: GciError.
@@ -527,8 +539,8 @@ heartbeat: receiver arguments: arguments
 		result = #'resume' ifFalse: [self halt].
 		result := self returningResultOrErrorDo: [
 			library
-				continue: error tag contextOop
-				session: gciSessionID.
+				session: gciSessionId
+				continue: error tag contextOop.
 		].
 	].
 !
@@ -582,15 +594,16 @@ debugPath: debugPath
 	gemNRS := gemString.
 	userID := gsUserID.
 	self 
-		loadLibrary: libraryClass 
-		debugPath: debugPath.
-	gciSessionID := library
-		gciSetNet: stoneNRS _: hostUserID _: hostPassword _: gemNRS;
-		loginAs: gsUserID password: gsPassword.
-	self 
-		postLoginAs: initials
-		useSocket: useSocket.
-
+		loadLibrary: libraryClass debugPath: debugPath;
+		gciSessionId: (library
+			loginHostUser: hostUserID 
+			hostPassword: hostPassword 
+			gsUser: gsUserID 
+			gsPassword: gsPassword 
+			gemNRS: gemNRS 
+			stoneNRS: stoneNRS) ;
+		postLoginAs: initials useSocket: useSocket;
+		yourself.
 !
 
 initializeServer
@@ -644,7 +657,7 @@ isRemoteGem
 
 isValidSession
 
-	^gciSessionID notNil.
+	^gciSessionId notNil
 !
 
 libraryVersion
@@ -665,11 +678,11 @@ logout
 	self stopHeartbeat.
 	self trigger: #'logoutPending'.
 	library ifNotNil: [
-		library logoutSession: gciSessionID.
+		library logoutSession: gciSessionId.
 		library := nil.
 	].
 	self trigger: #'logout'.
-	gciSessionID := nil.
+	gciSessionId := nil.
 !
 
 logoutRequested
@@ -686,15 +699,10 @@ netPort
 netTask
 	^netTask!
 
-oopForInteger: anInteger
-
-	^library oopForInteger: anInteger.
-!
-
 oopForString: aString
 
 	aString isNil ifTrue: [^library oopNil].
-	^library newString: aString session: gciSessionID.
+	^library session: gciSessionId oopForString: aString
 !
 
 oopGemStoneError
@@ -712,7 +720,7 @@ oopTypeFor: anObject
 	anObject isNil 										ifTrue: [^library oopNil].
 	(anObject isKindOf: ExternalInteger) 	ifTrue: [^anObject].
 	(anObject isKindOf: Boolean) 				ifTrue: [^anObject ifTrue: [library oopTrue] ifFalse: [library oopFalse]].
-	(anObject isKindOf: SmallInteger) 			ifTrue: [^self oopForInteger: anObject].
+	(anObject isKindOf: SmallInteger) 			ifTrue: [^library session: gciSessionId oopForInteger: anObject].
 	(anObject isKindOf: GsObject) 				ifTrue: [^anObject oopType].
 	MessageBox notify: 'Sorry, we are not yet prepared to convert ' , anObject printString , ' to an OOP!!'.
 	Keyboard default isShiftDown ifTrue: [self halt].
@@ -746,7 +754,7 @@ releaseOops: anArray
 
 	library ifNil: [^self].
 	anArray isEmpty ifTrue: [^self].
-	library releaseOops: anArray session: gciSessionID.
+	library session: gciSessionId releaseOops: anArray.
 !
 
 returningResultOrErrorDo: aBlock
@@ -817,7 +825,7 @@ sendInterpreted: aString to: anObject withAll: anArray
 				sendInterpreted: aString 
 				to: (self oopTypeFor: anObject) 
 				with: arguments
-				session: gciSessionID.
+				session: gciSessionId.
 		].
 !
 
@@ -995,7 +1003,7 @@ signalTextRequestUsing: anOopType64
 
 softBreak
 
-	library softBreakSession: gciSessionID.
+	library softBreakSession: gciSessionId.
 !
 
 startHeartbeat
@@ -1068,7 +1076,7 @@ terminate: anOopType
 !
 
 titleBarFor: aString
-"'Jade ' , gciSession gciSessionId printString , ' (' , gciSession userID , ') - "
+"'Jade ' , gciSession gciSessionID printString , ' (' , gciSession userID , ') - "
 	| stream list |
 	list := stoneNRS subStrings: $!!.
 	stoneName := list at: 3.
@@ -1078,7 +1086,7 @@ titleBarFor: aString
 	stream := WriteStream on: String new.
 	stream 
 		nextPutAll: 'Jade ';
-		print: gciSessionID;
+		print: gciSessionId;
 		nextPutAll: ' (';
 		nextPutAll: userID;
 		nextPutAll: ') - ';
@@ -1110,48 +1118,17 @@ userID
 	^userID.
 !
 
-value: aString
-
-	^self
-		value: aString
-		withArguments: #().
-!
-
-value: aString with: anOopType
-
-	^self
-		value: aString
-		withArguments: (Array with: anOopType).
-!
-
-value: aString with: anOopType1 with: anOopType2
-
-	^self
-		value: aString
-		withArguments: (Array with: anOopType1 with: anOopType2).
-!
-
-value: aString withArguments: anArray
-
-	self error: 'We should be using JadeServer'.
-!
-
 valueOfArrayOop: anOopType
 
 	| array |
-	(array := library fetchOops: anOopType session: gciSessionID) ifNil: [^nil].
+	(array := library session: gciSessionId fetchObjects: anOopType) ifNil: [^nil].
 	array := array collect: [:each | self valueOfOop: each].
 	^array.
 !
 
 valueOfOop: anOopType
 
-	| type |
-	type := library fetchObjImpl: anOopType session: gciSessionID.
-	type = 1 ifTrue: [^self fetchBytes: anOopType].
-	type = 3 ifTrue: [^library specialFromOop: anOopType].
-	^anOopType.
-!
+	^library valueOfOop: anOopType.!
 
 withExplanation: aString do: aBlock
 	"Here we make the call and handle any error."
@@ -1237,6 +1214,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #fetchBytes:!private! !
 !GciSession categoriesFor: #forceLogout!Jade!public! !
 !GciSession categoriesFor: #gciSessionId!public! !
+!GciSession categoriesFor: #gciSessionId:!public! !
 !GciSession categoriesFor: #gciVersion!public! !
 !GciSession categoriesFor: #gemHost!accessing!public! !
 !GciSession categoriesFor: #handlingClientForwarderSendDo:!long running!private! !
@@ -1257,7 +1235,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #logoutRequested!Jade!public! !
 !GciSession categoriesFor: #netPort!accessing!public! !
 !GciSession categoriesFor: #netTask!accessing!public! !
-!GciSession categoriesFor: #oopForInteger:!public! !
 !GciSession categoriesFor: #oopForString:!public! !
 !GciSession categoriesFor: #oopGemStoneError!public! !
 !GciSession categoriesFor: #oopIllegal!public! !
@@ -1298,10 +1275,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #terminate:!public! !
 !GciSession categoriesFor: #titleBarFor:!public! !
 !GciSession categoriesFor: #userID!public! !
-!GciSession categoriesFor: #value:!Jade convenience!public! !
-!GciSession categoriesFor: #value:with:!Jade convenience!public! !
-!GciSession categoriesFor: #value:with:with:!Jade convenience!public! !
-!GciSession categoriesFor: #value:withArguments:!Jade!public! !
 !GciSession categoriesFor: #valueOfArrayOop:!Jade convenience!public! !
 !GciSession categoriesFor: #valueOfOop:!Jade convenience!public! !
 !GciSession categoriesFor: #withExplanation:do:!long running!private! !
@@ -2203,10 +2176,10 @@ _usingSocketSend: aSymbol to: anObject withAll: anArray
 	process resume.
 	[
 		resultSize := library 
+				session: gciSessionID
 				send: #'readSocket:' 
 				to: server
-				with: (self serverArrayFor: (Array with: stream contents size))
-				session: gciSessionID.
+				with: (self serverArrayFor: (Array with: stream contents size)).
 		result := socket receiveByteArray: resultSize.
 	] on: Exception do: [:ex | 
 	].	stream := ReadStream on: result.

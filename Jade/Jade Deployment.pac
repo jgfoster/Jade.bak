@@ -3,7 +3,7 @@ package := Package name: 'Jade Deployment'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.043'.
+package basicPackageVersion: '0.045'.
 
 package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
 bnRSAAAAEAAAAHJ1bnRpbWVcSmFkZS5leGWaAAAAUgAAAA8AAABKYWRlIERlcGxveW1lbnRSAAAA
@@ -149,8 +149,7 @@ prepareToStrip
 !
 
 requiredClasses
-
-	^super requiredClasses
+	^(super requiredClasses)
 		addAll: JadeServer withAllSubclasses;
 		addAll: GciError withAllSubclasses;
 		addAll: GsError withAllSubclasses;
@@ -163,9 +162,7 @@ requiredClasses
 		addAll: StToken withAllSubclasses;
 		add: ScintillaIndicator;
 		add: WaitOnGemStoneDialog;
-		yourself.
-
-!
+		yourself!
 
 requiredPackageNames
 
@@ -299,8 +296,7 @@ mainShellClass
 
 sessionStarted
 
-	GciLibrary sessionStarted.
-!
+	GciLibrary sessionStarted!
 
 setVersion
 

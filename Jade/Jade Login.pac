@@ -3,7 +3,7 @@ package := Package name: 'Jade Login'.
 package paxVersion: 1;
 	basicComment: 'Login window redesign'.
 
-package basicPackageVersion: '0.092'.
+package basicPackageVersion: '0.094'.
 
 
 package classNames
@@ -277,19 +277,17 @@ initials: aString
 !
 
 login
-
-	^GciSession
+	^GciSession 
 		libraryClass: (GciLibrary withDisplayName: gemVersion)
 		stoneNRS: self stoneNRS
 		gemNRS: self gemNRS
 		userID: self gsUserID
 		password: self gsPassword
-		hostUserID: self hostUserID 
+		hostUserID: self hostUserID
 		password: self hostPassword
 		initials: self initials
 		useSocket: self useSocket
-		debugPath: self debugPath.
-!
+		debugPath: self debugPath!
 
 loginType
 	^loginType.
@@ -684,13 +682,11 @@ fileOpen
 !
 
 fillVersionList
-
 	| list |
 	list := GciLibrary allSubclasses collect: [:each | each displayName].
 	list := list reject: [:each | each isNil].
 	list := list asSortedCollection: [:a :b | self isVersion: a lessThanOrEqualTo: b].
-	versionListPresenter list: list.
-!
+	versionListPresenter list: list!
 
 getDocumentData
 

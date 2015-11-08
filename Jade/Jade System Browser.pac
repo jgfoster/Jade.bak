@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.275'.
+package basicPackageVersion: '0.276'.
 
 
 package classNames
@@ -2237,7 +2237,7 @@ sbUpdateMethodStepPointsFor: aMethod
 	"Answers an Array of Associations (offset -> selector) indexed by step point"
 
 	|  selectors list |
-	selectors := aMethod _allDebugInfo: 10.
+	(selectors := aMethod _allDebugInfo: 10) ifNil: [^#()].
 	list := aMethod _sourceOffsets collect: [:each | 		"exists as far back as 32-bit 6.3.0"
 		| index selector |
 		selector := ''.
