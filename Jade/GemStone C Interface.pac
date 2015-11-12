@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.156'.
+package basicPackageVersion: '0.157'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -773,11 +773,6 @@ fileName
 	^list first.
 !
 
-fileNameSearch
-
-	^(self name copyReplaceAll: '_' with: '-') , '*.dll'.
-!
-
 onStartup2
 
 	default := nil.
@@ -821,7 +816,6 @@ withDisplayName: aString
 !GciLibrary class categoriesFor: #addMissingMethods!public! !
 !GciLibrary class categoriesFor: #displayName!public! !
 !GciLibrary class categoriesFor: #fileName!public! !
-!GciLibrary class categoriesFor: #fileNameSearch!public! !
 !GciLibrary class categoriesFor: #onStartup2!public! !
 !GciLibrary class categoriesFor: #open:!public! !
 !GciLibrary class categoriesFor: #sessionStarted!public! !
@@ -3493,7 +3487,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.1-32.dll'.
+	^'libgcirpc-3.2.1-32.dll'.
 ! !
 !LibGciRpc64_3_2_01 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_01 class categoriesFor: #fileNameSearch!public! !
@@ -3510,7 +3504,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.2-32.dll'.
+	^'libgcirpc-3.2.2-32.dll'.
 ! !
 !LibGciRpc64_3_2_02 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_02 class categoriesFor: #fileNameSearch!public! !
@@ -3527,7 +3521,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.3-32.dll'.
+	^'libgcirpc-3.2.3-32.dll'.
 ! !
 !LibGciRpc64_3_2_03 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_03 class categoriesFor: #fileNameSearch!public! !
@@ -3544,7 +3538,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.4-32.dll'.
+	^'libgcirpc-3.2.4-32.dll'.
 ! !
 !LibGciRpc64_3_2_04 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_04 class categoriesFor: #fileNameSearch!public! !
@@ -3561,7 +3555,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.5-32.dll'.
+	^'libgcirpc-3.2.5-32.dll'.
 ! !
 !LibGciRpc64_3_2_05 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_05 class categoriesFor: #fileNameSearch!public! !
@@ -3578,7 +3572,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.6-32.dll'.
+	^'libgcirpc-3.2.6-32.dll'.
 ! !
 !LibGciRpc64_3_2_06 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_06 class categoriesFor: #fileNameSearch!public! !
@@ -3595,7 +3589,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.7-32.dll'.
+	^'libgcirpc-3.2.7-32.dll'.
 ! !
 !LibGciRpc64_3_2_07 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_07 class categoriesFor: #fileNameSearch!public! !
@@ -3612,7 +3606,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.8-32.dll'.
+	^'libgcirpc-3.2.8-32.dll'.
 ! !
 !LibGciRpc64_3_2_08 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_08 class categoriesFor: #fileNameSearch!public! !
@@ -3629,7 +3623,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.9-32.dll'.
+	^'libgcirpc-3.2.9-32.dll'.
 ! !
 !LibGciRpc64_3_2_09 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_09 class categoriesFor: #fileNameSearch!public! !
@@ -3646,7 +3640,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.10-32.dll'.
+	^'libgcirpc-3.2.10-32.dll'.
 ! !
 !LibGciRpc64_3_2_10 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_10 class categoriesFor: #fileNameSearch!public! !
@@ -3663,7 +3657,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.11-32.dll'.
+	^'libgcirpc-3.2.11-32.dll'.
 ! !
 !LibGciRpc64_3_2_11 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_11 class categoriesFor: #fileNameSearch!public! !
