@@ -3,7 +3,7 @@ package := Package name: 'Jade Process Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.013'.
+package basicPackageVersion: '0.014'.
 
 
 package classNames
@@ -73,7 +73,7 @@ addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
 
 processes
 
-	| list scheduler stream |
+	| scheduler stream |
 	scheduler := ProcessorScheduler scheduler.
 	stream := (WriteStream on: String new)
 		nextPutAll: 'highestPriority'; 						space; nextPutAll: scheduler highestPriority 					printString; tab;

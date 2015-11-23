@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.243'.
+package basicPackageVersion: '0.245'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 
@@ -306,7 +306,7 @@ _send: aSymbol to: anObject withAll: anArray
 	| arguments oops result |
 	oops := OrderedCollection new.
 	arguments := anArray collect: [:each | 
-		(each isKindOf: Integer) ifTrue: [library session: self oopForInteger: each] ifFalse: [
+		(each isKindOf: Integer) ifTrue: [library session: gciSessionId oopForInteger: each] ifFalse: [
 		(each isKindOf: String) ifTrue: [oops add: (self oopForString: each)] ifFalse: [
 		each]].
 	].
@@ -2176,7 +2176,7 @@ _usingSocketSend: aSymbol to: anObject withAll: anArray
 	process resume.
 	[
 		resultSize := library 
-				session: gciSessionID
+				session: gciSessionId
 				send: #'readSocket:' 
 				to: server
 				with: (self serverArrayFor: (Array with: stream contents size)).

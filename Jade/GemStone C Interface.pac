@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.157'.
+package basicPackageVersion: '0.159'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -441,19 +441,6 @@ commitSession: anInteger
 	self subclassResponsibility.
 !
 
-continue: aProcess session: anInteger
-
-	^self
-		continue: aProcess 
-		with: self oopIllegal 
-		session: anInteger.
-!
-
-continue: aProcess with: anObject session: anInteger
-
-	self subclassResponsibility.
-!
-
 errorStructureClass
 
 	self subclassResponsibility.
@@ -689,8 +676,6 @@ version
 !GciLibrary categoriesFor: #abortSession:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #beginSession:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #commitSession:!public!subclassResponsibility! !
-!GciLibrary categoriesFor: #continue:session:!not subclassResponsibility!public! !
-!GciLibrary categoriesFor: #continue:with:session:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #errorStructureClass!private!subclassResponsibility! !
 !GciLibrary categoriesFor: #hardBreakSession:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #loginHostUser:hostPassword:gsUser:gsPassword:gemNRS:stoneNRS:!public!subclassResponsibility! !
@@ -1383,6 +1368,17 @@ oopTypeClass
 	^OopType64.
 !
 
+oopTypeWithOop: anInteger
+
+	| int bytes |
+	bytes := ByteArray new: 8.
+	bytes 
+		qwordAtOffset: 0 
+		put: anInteger.
+	int := bytes sqwordAtOffset: 0.
+	^OopType64 fromInteger: int.
+!
+
 oopZero
 
 	^OopType64 fromInteger: 2.
@@ -1851,6 +1847,7 @@ version
 !GciMultiThreadedLibrary categoriesFor: #oopTwo!public!Reserved OOPs! !
 !GciMultiThreadedLibrary categoriesFor: #oopTypeArrayClass!public!Reserved OOPs! !
 !GciMultiThreadedLibrary categoriesFor: #oopTypeClass!public! !
+!GciMultiThreadedLibrary categoriesFor: #oopTypeWithOop:!public! !
 !GciMultiThreadedLibrary categoriesFor: #oopZero!public!Reserved OOPs! !
 !GciMultiThreadedLibrary categoriesFor: #releaseAllObjectsInSession:!public!required! !
 !GciMultiThreadedLibrary categoriesFor: #session:breakHard:!public! !
@@ -2361,6 +2358,19 @@ session: session clearStack: processOop
 	].
 !
 
+session: session continue: gsProcessOop withObject: anOop
+
+	self critical: [
+		self gciSetSessionId: session.
+		self
+			gciNbContinueWith: gsProcessOop
+			_: anOop
+			_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
+			_: self oopNil.
+		^self nbResult.
+	].
+!
+
 session: session execute: aString context: contextOop
 
 	self critical: [
@@ -2544,6 +2554,7 @@ version
 !GciSingleThreadedLibrary categoriesFor: #pollForSignalSession:!public! !
 !GciSingleThreadedLibrary categoriesFor: #sendInterpreted:to:with:session:!public! !
 !GciSingleThreadedLibrary categoriesFor: #session:clearStack:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:continue:withObject:!public! !
 !GciSingleThreadedLibrary categoriesFor: #session:execute:context:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:fetchBytes:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:fetchObjects:!public!required! !

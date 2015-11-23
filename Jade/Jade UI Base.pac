@@ -3,7 +3,7 @@ package := Package name: 'Jade UI Base'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.065'.
+package basicPackageVersion: '0.066'.
 
 
 package classNames
@@ -1309,7 +1309,7 @@ fileOpen
 
 getDocumentData
 
-	^documentPresenter value asString.
+	^documentPresenter value ifNil: [''] ifNotNil: [:x | x asString].
 !
 
 help
