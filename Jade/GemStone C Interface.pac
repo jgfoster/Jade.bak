@@ -3,7 +3,7 @@ package := Package name: 'GemStone C Interface'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.159'.
+package basicPackageVersion: '0.160'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
 
@@ -2366,7 +2366,7 @@ session: session continue: gsProcessOop withObject: anOop
 			gciNbContinueWith: gsProcessOop
 			_: anOop
 			_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
-			_: self oopNil.
+			_: nil.
 		^self nbResult.
 	].
 !

@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.276'.
+package basicPackageVersion: '0.277'.
 
 
 package classNames
@@ -131,6 +131,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #categoryOfMethod:;
 	add: #JadeServer64bit3x -> #class:includesSelector:;
 	add: #JadeServer64bit3x -> #compiledMethodAt:inClass:;
+	add: #JadeServer64bit3x -> #initialize;
 	add: #JadeServer64bit3x -> #methodSignatureForSelector:;
 	add: #JadeServer64bit3x -> #objectSecurityPolicyFor:;
 	add: #JadeServer64bit3x -> #packagePolicy:includesSelector:forClass:;
@@ -2092,6 +2093,12 @@ compiledMethodAt: aSymbol inClass: aClass
 	method ifNil: [self error: 'Lookup failed for selector ' , aSymbol , ' inClass ' , aClass name , ' in environment ' , environment printString].
 	^method.!
 
+initialize
+
+	super initialize.
+	environment := 0.
+!
+
 methodSignatureForSelector: aSymbol
 
 	| class method source |
@@ -2257,6 +2264,7 @@ selectedClassOverridesSelector: aSymbol
 !JadeServer64bit3x categoriesFor: #categoryOfMethod:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #class:includesSelector:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #compiledMethodAt:inClass:!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #initialize!public! !
 !JadeServer64bit3x categoriesFor: #methodSignatureForSelector:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #objectSecurityPolicyFor:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #packagePolicy:includesSelector:forClass:!public!System Browser! !
