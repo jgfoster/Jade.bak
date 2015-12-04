@@ -44,7 +44,6 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone Services';
 	add: 'GemStone Session';
 	add: 'Jade Login';
-	add: 'Jade UI';
 	add: '..\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper';
 	add: '..\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	yourself).

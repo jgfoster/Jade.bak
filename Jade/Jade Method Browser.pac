@@ -3,7 +3,7 @@ package := Package name: 'Jade Method Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.086'.
+package basicPackageVersion: '0.087'.
 
 
 package classNames
@@ -890,12 +890,10 @@ removeFromList
 
 removeMethods
 
-	Cursor wait showWhile: [ 
-		methodListPresenter selections do: [:each | 
-			self gciSession
-				serverPerform: #'removeMethod:'
-				with: each.
-		].
+	methodListPresenter selections do: [:each | 
+		self gciSession
+			serverPerform: #'removeMethod:'
+			with: each.
 	].
 	self update.
 !
@@ -972,17 +970,15 @@ update
 
 updateClassList
 
-	Cursor wait showWhile: [
-		| myClass isMeta list |
-		classListPresenter list: #().
-		(myClass 	:= self trigger: #'needClass') isNil ifTrue: [^self].
-		isMeta 		:= self trigger: #'needIsMeta'.
-		list := myClass superclassListForMeta: isMeta.
-		classListPresenter 
-			list: list;
-			selection: list last;
-			yourself.
-	].
+	| myClass isMeta list |
+	classListPresenter list: #().
+	(myClass 	:= self trigger: #'needClass') isNil ifTrue: [^self].
+	isMeta 		:= self trigger: #'needIsMeta'.
+	list := myClass superclassListForMeta: isMeta.
+	classListPresenter 
+		list: list;
+		selection: list last;
+		yourself.
 !
 
 updateInheritanceList
@@ -1006,34 +1002,31 @@ updateInheritanceList
 
 updateSelecting: aSymbol
 
-	| classList |
+	| classList isVariables filterList list newMethod |
 	(classList := self selectedClasses) isNil ifTrue: [
 		methodListPresenter selectionOrNil: nil.
 		^self.
 	].
-	Cursor wait showWhile: [ 
-		| isVariables filterList list newMethod |
-		methodListPresenter list: #().
-		inheritanceListPresenter list: #().
-		isVariables 	:= self trigger: #'needIsVariables'.
-		filterList		:= self trigger: #'needFilterList'.
-		list := classList last
-			methodsUpTo: classList first 
-			filterList: filterList 
-			isVariables: isVariables.
-		newMethod := list 
-			detect: [:each | each name = aSymbol]
-			ifNone: [nil].
-		methodListPresenter 
-			list: list asSortedCollection;
-			selectionOrNil: newMethod;
-			yourself.
-	].
+	methodListPresenter list: #().
+	inheritanceListPresenter list: #().
+	isVariables 	:= self trigger: #'needIsVariables'.
+	filterList		:= self trigger: #'needFilterList'.
+	list := classList last
+		methodsUpTo: classList first 
+		filterList: filterList 
+		isVariables: isVariables.
+	newMethod := list 
+		detect: [:each | each name = aSymbol]
+		ifNone: [nil].
+	methodListPresenter 
+		list: list asSortedCollection;
+		selectionOrNil: newMethod;
+		yourself.
 !
 
 updateSelecting: aSymbol inClass: aClass
 
-	| classList newMethod |
+	| classList newMethod isVariables filterList list |
 	methodListPresenter list: #().
 	inheritanceListPresenter list: #().
 	(classList := self selectedClasses) isNil ifTrue: [
@@ -1043,23 +1036,20 @@ updateSelecting: aSymbol inClass: aClass
 		methodListPresenter selectionOrNil: newMethod.
 		^self.
 	].
-	Cursor wait showWhile: [ 
-		| isVariables filterList list |
-		isVariables 	:= self trigger: #'needIsVariables'.
-		filterList		:= self trigger: #'needFilterList'.
-		list := classList last
-			methodsUpTo: classList first 
-			filterList: filterList 
-			isVariables: isVariables.
-		newMethod := list 
-			detect: [:each | each name = aSymbol]
-			ifNone: [nil].
-		methodListPresenter 
-			list: list asSortedCollection;
-			selectionOrNil: newMethod;
-			yourself.
-		newMethod isNil ifTrue: [self trigger: #methodSelectionChanged].
-	].
+	isVariables 	:= self trigger: #'needIsVariables'.
+	filterList		:= self trigger: #'needFilterList'.
+	list := classList last
+		methodsUpTo: classList first 
+		filterList: filterList 
+		isVariables: isVariables.
+	newMethod := list 
+		detect: [:each | each name = aSymbol]
+		ifNone: [nil].
+	methodListPresenter 
+		list: list asSortedCollection;
+		selectionOrNil: newMethod;
+		yourself.
+	newMethod isNil ifTrue: [self trigger: #methodSelectionChanged].
 !
 
 withSelectorDo: aBlock

@@ -3,7 +3,7 @@ package := Package name: 'Jade UI Base'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.066'.
+package basicPackageVersion: '0.068'.
 
 
 package classNames
@@ -1006,10 +1006,11 @@ onViewClosed
 !
 
 onViewOpened
+	"If we have a presenter that is responsible for the entire window, then let it set up the MenuBar"
 
+	super onViewOpened.
 	[
 		| menuBar |
-		super onViewOpened.
 		menuBar := self view menuBar.
 		menuBar isNil ifTrue: [menuBar := MenuBar new].
 		myPresenter notNil ifTrue: [myPresenter updateMenuBar: menuBar].
@@ -1081,7 +1082,13 @@ abortTransaction
 aboutJade
 
 	| stream version |
-	version := [SessionManager current version] on: Error do: [:ex | ex return: ex description printString].
+	version := [
+		SessionManager current isRuntime 
+		ifTrue: [SessionManager current version] 
+		ifFalse: ['<Development>']
+	] on: Error do: [:ex | 
+		ex return: ex description printString.
+	].
 	stream := WriteStream on: String new.
 	stream
 		nextPutAll: 'Jade for GemStone/S ('; 
@@ -1640,7 +1647,7 @@ shutdownOnExit
 !JadeTextDocument class categoriesFor: #shutdownOnExit!public! !
 
 JadeWorkspace guid: (GUID fromString: '{5337E391-2108-4A4D-AE2F-C6C1AD3E4C1C}')!
-JadeWorkspace comment: ''!
+JadeWorkspace comment: 'model is an instance of GciSession'!
 !JadeWorkspace categoriesForClass!Unclassified! !
 !JadeWorkspace methodsFor!
 

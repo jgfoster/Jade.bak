@@ -3,7 +3,7 @@ package := Package name: 'Jade Transcript'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.056'.
+package basicPackageVersion: '0.057'.
 
 
 package classNames

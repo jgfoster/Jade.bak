@@ -3,7 +3,7 @@ package := Package name: 'Jade User Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.030'.
+package basicPackageVersion: '0.031'.
 
 
 package classNames
@@ -677,9 +677,7 @@ createSchematicWiring
 
 fillUserList
 
-	Cursor wait showWhile: [
-		userListPresenter list: (GsUserProfile allIn: self model).
-	].
+	userListPresenter list: (GsUserProfile allIn: self model).
 !
 
 newUser
