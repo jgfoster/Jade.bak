@@ -1,0 +1,125 @@
+| package |
+package := Package name: 'Object Log Browser'.
+package paxVersion: 1;
+	basicComment: 'Fix Compiler Warning'.
+
+package basicPackageVersion: '0.022'.
+
+
+package classNames
+	add: #ObjectLogBrowser;
+	add: #ObjectLogEntryViewer;
+	yourself.
+
+package methodNames
+	add: #JadeServer -> #sbObjectLog:;
+	add: #JadeTextDocument -> #jadeBrowseObjectLog;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'GemStone Objects';
+	add: 'GemStone Session';
+	add: 'Jade UI';
+	add: 'Jade UI Base';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+JadeShell subclass: #ObjectLogBrowser
+	instanceVariableNames: 'listPresenter fatalPresenter errorPresenter warningPresenter infoPresenter debugPresenter tracePresenter transcriptPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeShell subclass: #ObjectLogEntryViewer
+	instanceVariableNames: 'entryArray oopPresenter classNamePresenter pidPresenter stampPresenter labelPresenter priorityPresenter tagPresenter objectStringPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!JadeServer methodsFor!
+
+sbObjectLog: anOrderedCollection
+
+	| command priorities class log debuggerLogEntryClass | 
+	(class := self objectNamed: #'ObjectLogEntry') isNil ifTrue: [^self].
+	debuggerLogEntryClass := self objectNamed: #'DebuggerLogEntry'.
+	(command := anOrderedCollection removeFirst) = 'delete' ifTrue: [
+		anOrderedCollection do: [:each | 			| oop entry |
+			oop := each asNumber.			entry := class objectLog detect: [:each2 | (self oopOf: each2) = oop] ifNone: [nil].			entry notNil ifTrue: [class objectLog remove: entry].
+		].
+		^self systemBrowserCommand.
+	].
+	writeStream nextPutAll: 'objectLog'; lf.
+	priorities := anOrderedCollection removeFirst asArray collect: [:each | each asString asNumber].
+	log := class objectLog select: [:each | priorities includes: each priority].
+	log reverseDo: [:each | 
+		| labelString objectString |
+		objectString := String withAll: (each objectString asArray collect: [:char | 
+			char asciiValue < 32 ifTrue: [Character space] ifFalse: [
+			127 < char asciiValue ifTrue: [$?] ifFalse: [char]]]).
+		500 < objectString size ifTrue: [objectString := (objectString copyFrom: 1 to: 500) , '...'].
+		each label = each object printString ifTrue: [
+			labelString := ''.
+		] ifFalse: [
+			labelString := String withAll: (each labelString asArray collect: [:char | 
+				char asciiValue < 32 ifTrue: [Character space] ifFalse: [
+				127 < char asciiValue ifTrue: [$?] ifFalse: [char]]]).
+			500 < labelString size ifTrue: [labelString := (labelString copyFrom: 1 to: 500) , '...'].
+		].
+"1"	(self oopOf: each) printOn: writeStream.
+"2"	writeStream tab; nextPutAll: each class name; tab.
+"3"	each pid printOn: writeStream. 
+		writeStream tab.
+"4"	each stamp rounded printOn: writeStream.
+"5"	writeStream tab; nextPutAll: labelString; tab.
+"6"	each priority printOn: writeStream.
+		writeStream tab.
+"7"	each tag printOn: writeStream.
+"8"	writeStream tab; nextPutAll: objectString; tab.
+		(debuggerLogEntryClass notNil and: [each isKindOf: debuggerLogEntryClass]) ifTrue: [
+"9"		(self oopOf: each continuation) printOn: writeStream.
+		] ifFalse: [
+			writeStream nextPutAll: '0'.
+		].
+		writeStream lf.
+	].
+! !
+!JadeServer categoriesFor: #sbObjectLog:!public!System Browser! !
+
+!JadeTextDocument methodsFor!
+
+jadeBrowseObjectLog
+
+	gciSession hasServer ifTrue: [
+		^ObjectLogBrowser showOn: gciSession.
+	].
+	MessageBox
+		warning: 'Server initialization failed at login.'
+		caption: 'Unable to Open Browser'.
+! !
+!JadeTextDocument categoriesFor: #jadeBrowseObjectLog!Jade!private! !
+
+"End of package definition"!
+

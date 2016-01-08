@@ -1,0 +1,82 @@
+| package |
+package := Package name: 'Jade from Dolphin'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.010'.
+
+
+package classNames
+	add: #JadeExpressionStyler;
+	add: #JadeMethodStyler;
+	add: #JadeNumberStylingToken;
+	add: #JadeStyler;
+	add: #JadeStylingScanner;
+	yourself.
+
+package methodNames
+	add: #JadeTextPresenter -> #onViewOpened;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
+	add: 'Jade UI Base';
+	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+ScintillaStyler subclass: #JadeStyler
+	instanceVariableNames: 'arrayDepth view last inTag stack'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeStyler subclass: #JadeExpressionStyler
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeStyler subclass: #JadeMethodStyler
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+SmalltalkScanner subclass: #JadeStylingScanner
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+StNumberLiteralToken subclass: #JadeNumberStylingToken
+	instanceVariableNames: 'numberClass'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!JadeTextPresenter methodsFor!
+
+onViewOpened
+
+	super onViewOpened.
+	(view isKindOf: ScintillaView) ifFalse: [^self].
+	view lexer: #container.
+	view stylerClass: JadeMethodStyler.
+	view textStyles: self class textStyles.
+! !
+!JadeTextPresenter categoriesFor: #onViewOpened!public! !
+
+"End of package definition"!
+

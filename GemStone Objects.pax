@@ -1,0 +1,77 @@
+| package |
+package := Package name: 'GemStone Objects'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.054'.
+
+package basicScriptAt: #postinstall put: '''Loaded: GemStone Objects'' yourself.'.
+
+package classNames
+	add: #GsGlobal;
+	add: #GsMethod;
+	add: #GsObject;
+	add: #GsProcess;
+	add: #GsSession;
+	add: #GsStackFrame;
+	add: #GsString;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\ActiveX\Components\XML DOM\XML DOM';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+Object subclass: #GsObject
+	instanceVariableNames: 'gciSession name oopType'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsGlobal
+	instanceVariableNames: 'gsClassName data'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsMethod
+	instanceVariableNames: 'gsBehavior category source instVarReferences package isDirty symbolDictionaryName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsProcess
+	instanceVariableNames: 'stack type'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsSession
+	instanceVariableNames: 'process host primitive viewAge state transaction hasOldestCR serial id ip priority hostId quietTime lifeTime backlog description objects pages voteState'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsStackFrame
+	instanceVariableNames: 'ipOffset frameOffset stepPoint vars offsets breaks source'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsString
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+"End of package definition"!
+

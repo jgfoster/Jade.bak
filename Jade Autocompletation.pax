@@ -1,0 +1,134 @@
+| package |
+package := Package name: 'Jade Autocompletation'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.014'.
+
+
+package classNames
+	add: #JadeAutocompletationConfiguration;
+	add: #JadeAutocompletationConfigurationPresenter;
+	add: #JadeAutocompletationConfigurationShell;
+	add: #JadeAutocompletationRegistry;
+	add: #JadeAutoMap;
+	add: #JadeAutoTextPresenter;
+	add: #JadeGsClassShape;
+	add: #JadeMapAutocompletationPresenter;
+	add: #JadeParamAutocompletationPresenter;
+	add: #JadeRegistryPresenter;
+	yourself.
+
+package methodNames
+	add: #CodeSourcePresenter -> #createComponents;
+	add: #JadePresenter -> #registry;
+	add: #JadeTextDocument -> #registry;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Cards\Dolphin Card Containers';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'Jade UI Base';
+	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+Object subclass: #JadeAutocompletationConfiguration
+	instanceVariableNames: 'isEnabled logEnabled filterObjectMethods filterPrimitiveMethods hideClassVars hideInstClassVars hidePoolDictionaries'
+	classVariableNames: 'Default'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Object subclass: #JadeAutocompletationRegistry
+	instanceVariableNames: 'registry variableMap paramMap'
+	classVariableNames: 'Default'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Object subclass: #JadeAutoMap
+	instanceVariableNames: 'name gsClassShapeName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Object subclass: #JadeGsClassShape
+	instanceVariableNames: 'name gsInstVariables gsClassVariables gsInstClassVariables gsPoolDictionaries gsMethods gsClassMethods gsClassHierarchy'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePresenter subclass: #JadeAutocompletationConfigurationPresenter
+	instanceVariableNames: 'isEnabledPresenter logEnabledPresenter filterObjectPresenter filterPrimitivePresenter hideClassVarPresenter hideInstClassVarPresenter hidePoolDictionariesPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePresenter subclass: #JadeMapAutocompletationPresenter
+	instanceVariableNames: 'namePresenter gsClassListPresenter mapPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePresenter subclass: #JadeParamAutocompletationPresenter
+	instanceVariableNames: 'methodNamePresenter paramPresenter paramsPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePresenter subclass: #JadeRegistryPresenter
+	instanceVariableNames: 'registryPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Shell subclass: #JadeAutocompletationConfigurationShell
+	instanceVariableNames: 'configurationComposite registryComposite mapingComposite paramComposite'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeTextPresenter subclass: #JadeAutoTextPresenter
+	instanceVariableNames: 'lastGsShape lastWord lastCharacter currentWord temporaries arguments altMode'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!CodeSourcePresenter methodsFor!
+
+createComponents
+
+	super createComponents.
+	documentPresenter := self add: JadeAutoTextPresenter new name: 'document'.
+	self updateCodeFont.
+! !
+!CodeSourcePresenter categoriesFor: #createComponents!public! !
+
+!JadePresenter methodsFor!
+
+registry
+
+	^JadeAutocompletationRegistry default! !
+!JadePresenter categoriesFor: #registry!autocompletion!public! !
+
+!JadeTextDocument methodsFor!
+
+registry
+
+	^JadeAutocompletationRegistry default! !
+!JadeTextDocument categoriesFor: #registry!autocompletion!public! !
+
+"End of package definition"!
+

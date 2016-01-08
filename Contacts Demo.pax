@@ -1,0 +1,88 @@
+| package |
+package := Package name: 'Contacts Demo'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.021'.
+
+package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPFQAEAAAAQ29udGFjdHNJbWFnZVN0cmlwcGVyAAAAAFIAAAANAAAAQ29udGFjdHMg
+RGVtb1IAAAAUAAAAUnVudGltZVxDb250YWN0cy5leGWaAAAAUgAAAA0AAABDb250YWN0cyBEZW1v
+UgAAABYAAABDb250YWN0c1Nlc3Npb25NYW5hZ2Vy77clAFIAAABDAAAAc2VsZiBsb2FkSmFkZVNl
+cnZlclNvdXJjZUNhY2hlOyBjb3B5UnVudGltZUZpbGVzOyBjbG9zZUxvZ2luU2hlbGxzLgAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==').
+
+package classNames
+	add: #Contact;
+	add: #ContactEditor;
+	add: #ContactsBrowser;
+	add: #ContactsImageStripper;
+	add: #ContactsLoginShell;
+	add: #ContactsSessionManager;
+	add: #ContactsShell;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
+	add: 'Jade Deployment';
+	add: 'Jade Login';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+Model subclass: #Contact
+	instanceVariableNames: 'oop name title phone'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeImageStripper subclass: #ContactsImageStripper
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Shell subclass: #ContactsShell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ContactsShell subclass: #ContactEditor
+	instanceVariableNames: 'contact namePresenter titlePresenter phonePresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ContactsShell subclass: #ContactsBrowser
+	instanceVariableNames: 'listPresenter commitRecordPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeLoginShell subclass: #ContactsLoginShell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeSessionManager subclass: #ContactsSessionManager
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+"End of package definition"!
+

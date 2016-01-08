@@ -1,0 +1,365 @@
+| package |
+package := Package name: 'GemStone C Interface'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.161'.
+
+package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yourself.'.
+
+package classNames
+	add: #DoubleByteString;
+	add: #GciCommitFailure;
+	add: #GciError;
+	add: #GciErrSType;
+	add: #GciErrSType32;
+	add: #GciErrSType64;
+	add: #GciErrSType64_30;
+	add: #GciErrSType64_31;
+	add: #GciLibrary;
+	add: #GciLoginFailed;
+	add: #Gcilw61;
+	add: #Gcilw63;
+	add: #Gcilw65;
+	add: #Gcilw66;
+	add: #Gcilw6x;
+	add: #GciMtLibraryTestCase;
+	add: #GciMtLibraryTestResource;
+	add: #GciMultiThreadedLibrary;
+	add: #Gcirw62;
+	add: #GciSessionId;
+	add: #GciSingleThreadedLibrary;
+	add: #GciTsObjInfo;
+	add: #LibGciRpc64;
+	add: #LibGciRpc64_20;
+	add: #LibGciRpc64_21;
+	add: #LibGciRpc64_22;
+	add: #LibGciRpc64_23;
+	add: #LibGciRpc64_24;
+	add: #LibGciRpc64_3_0;
+	add: #LibGciRpc64_3_1;
+	add: #LibGciRpc64_3_2;
+	add: #LibGciRpc64_3_2_01;
+	add: #LibGciRpc64_3_2_02;
+	add: #LibGciRpc64_3_2_03;
+	add: #LibGciRpc64_3_2_04;
+	add: #LibGciRpc64_3_2_05;
+	add: #LibGciRpc64_3_2_06;
+	add: #LibGciRpc64_3_2_07;
+	add: #LibGciRpc64_3_2_08;
+	add: #LibGciRpc64_3_2_09;
+	add: #LibGciRpc64_3_2_10;
+	add: #LibGciRpc64_3_2_11;
+	add: #LibGciRpc64_3_2_12;
+	add: #LibGciRpc64_3_3;
+	add: #LibGciRpc64_310x;
+	add: #OopType32;
+	add: #OopType32Array;
+	add: #OopType32Field;
+	add: #OopType64;
+	add: #OopType64Array;
+	add: #OopType64Field;
+	add: #QuadByteString;
+	add: #Unicode16;
+	add: #Unicode32;
+	add: #Unicode7;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+DWORDField subclass: #OopType32Field
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+QWORDField subclass: #OopType64Field
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ByteArray variableByteSubclass: #DoubleByteString
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ByteArray variableByteSubclass: #QuadByteString
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ByteArray variableByteSubclass: #Unicode16
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ByteArray variableByteSubclass: #Unicode32
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ByteArray variableByteSubclass: #Unicode7
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Error subclass: #GciError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciError subclass: #GciCommitFailure
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciError subclass: #GciLoginFailed
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ExternalLibrary subclass: #GciLibrary
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciLibrary subclass: #GciMultiThreadedLibrary
+	instanceVariableNames: ''
+	classVariableNames: 'OOP_ILLEGAL OOP_NIL'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciLibrary subclass: #GciSingleThreadedLibrary
+	instanceVariableNames: 'semaphore'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciMultiThreadedLibrary subclass: #LibGciRpc64_3_3
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciSingleThreadedLibrary subclass: #Gcilw6x
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciSingleThreadedLibrary subclass: #LibGciRpc64
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Gcilw6x subclass: #Gcilw61
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Gcilw6x subclass: #Gcilw63
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Gcilw6x subclass: #Gcilw65
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Gcilw6x subclass: #Gcilw66
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Gcilw6x subclass: #Gcirw62
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64 subclass: #LibGciRpc64_20
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64 subclass: #LibGciRpc64_21
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64 subclass: #LibGciRpc64_22
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64 subclass: #LibGciRpc64_23
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64 subclass: #LibGciRpc64_24
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64 subclass: #LibGciRpc64_3_0
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64 subclass: #LibGciRpc64_3_1
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64 subclass: #LibGciRpc64_3_2
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_1 subclass: #LibGciRpc64_310x
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_01
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_02
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_03
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_04
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_05
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_06
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_07
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_08
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_09
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_10
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_11
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_12
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ExternalStructure subclass: #GciErrSType
+	instanceVariableNames: 'args stack'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ExternalStructure subclass: #GciTsObjInfo
+	instanceVariableNames: 'data'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ExternalArray subclass: #OopType32Array
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ExternalArray subclass: #OopType64Array
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+DWORD subclass: #GciSessionId
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+DWORD subclass: #OopType32
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ULARGE_INTEGER subclass: #OopType64
+	instanceVariableNames: 'objectInfo'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciErrSType subclass: #GciErrSType32
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciErrSType subclass: #GciErrSType64
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciErrSType subclass: #GciErrSType64_30
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciErrSType subclass: #GciErrSType64_31
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TestCase subclass: #GciMtLibraryTestCase
+	instanceVariableNames: 'library session'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TestResource subclass: #GciMtLibraryTestResource
+	instanceVariableNames: 'library session'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+"End of package definition"!
+

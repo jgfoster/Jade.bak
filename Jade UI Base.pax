@@ -1,0 +1,115 @@
+| package |
+package := Package name: 'Jade UI Base'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.068'.
+
+
+package classNames
+	add: #CodeSourcePresenter;
+	add: #JadeBrowserPresenter;
+	add: #JadePresenter;
+	add: #JadeShell;
+	add: #JadeTextDocument;
+	add: #JadeTextPresenter;
+	add: #JadeValueDialog;
+	add: #JadeWorkspace;
+	yourself.
+
+package methodNames
+	add: #JadeServer -> #fileInClass:;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'GemStone Session';
+	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+Presenter subclass: #JadePresenter
+	instanceVariableNames: 'gciSession'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePresenter subclass: #CodeSourcePresenter
+	instanceVariableNames: 'documentPresenter menuTitle'
+	classVariableNames: 'CodeFont'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePresenter subclass: #JadeBrowserPresenter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Shell subclass: #JadeShell
+	instanceVariableNames: 'myPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ValueDialog subclass: #JadeValueDialog
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TextDocument subclass: #JadeTextDocument
+	instanceVariableNames: 'gciSession codePane'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeTextDocument subclass: #JadeWorkspace
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TextPresenter subclass: #JadeTextPresenter
+	instanceVariableNames: ''
+	classVariableNames: 'ColorForCompileError ColorForNoEdits ColorForUnsavedEdits JadeTextStyles'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!JadeServer methodsFor!
+
+fileInClass: aString
+
+	| list className index dictionaryName dictionary oldClass oldString |
+	list := aString subStrings.
+	className := list at: 3.
+	className first = $' ifFalse: [self error: 'Class name ' , className printString , ' expected to begin and end with a quote!!'].
+	className last = $' ifFalse: [self error: 'Class name ' , className printString , ' expected to begin and end with a quote!!'].
+	className := className copyFrom: 2 to: className size - 1.
+	index := list indexOf: 'inDictionary:'.
+	dictionaryName := list at: index + 1.
+	dictionary := self objectNamed: dictionaryName.
+	oldClass := dictionary at: className ifAbsent: [nil].
+	oldClass notNil ifTrue: [
+		oldString := (oldClass _modifiableDefinitionInDictionary: dictionary named: dictionaryName) , '.'.
+	].
+	oldString = aString ifFalse: [aString evaluate].
+! !
+!JadeServer categoriesFor: #fileInClass:!Classes!public! !
+
+"End of package definition"!
+

@@ -1,0 +1,490 @@
+| package |
+package := Package name: 'Jade UI'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.204'.
+
+package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
+
+package classNames
+	add: #JadeCodeBrowser;
+	add: #JadeDebugger;
+	add: #JadeErrorShell;
+	add: #JadeFileIn;
+	add: #JadeMethodList;
+	yourself.
+
+package methodNames
+	add: #GsError -> #debugError;
+	add: #GsObject -> #gsInspect;
+	add: #GsProcess -> #stepInto:;
+	add: #GsProcess -> #stepOut:;
+	add: #GsProcess -> #stepOver:;
+	add: #GsProcess -> #terminate;
+	add: #GsProcess -> #trimStackToLevel:;
+	add: #JadeServer -> #_oopAndStringFor:;
+	add: #JadeServer -> #_sourceForProcess:frame:;
+	add: #JadeServer -> #_trimStackOf:toLevel:;
+	add: #JadeServer -> #asAsciiString:;
+	add: #JadeServer -> #compile:frame:process:;
+	add: #JadeServer -> #isResumableCategory:number:context:;
+	add: #JadeServer -> #step:inFrame:;
+	add: #JadeServer32bit -> #_oopAndStringFor:;
+	add: #JadeServer32bit -> #_trimStackOf:toLevel:;
+	add: #JadeServer32bit -> #recompile:withSource:;
+	add: #JadeServer32bit -> #sourceForProcess:frame:;
+	add: #JadeServer64bit -> #_oopAndStringFor:;
+	add: #JadeServer64bit -> #_trimStackOf:toLevel:;
+	add: #JadeServer64bit -> #recompile:withSource:;
+	add: #JadeServer64bit -> #sourceForProcess:frame:;
+	add: #JadeServer64bit33 -> #step:inFrame:;
+	add: #JadeTextDocument -> #fileIn;
+	add: #JadeTextDocument -> #jadeInspect;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'GemStone Objects';
+	add: 'GemStone Session';
+	add: 'Jade Inspector';
+	add: 'Jade Method Browser';
+	add: 'Jade UI Base';
+	add: 'VisualWorks Component';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+Object subclass: #JadeFileIn
+	instanceVariableNames: 'stream line words text category browser packageName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeValueDialog subclass: #JadeErrorShell
+	instanceVariableNames: 'messagePresenter stackPresenter textEditPresenter isResumable'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeTextDocument subclass: #JadeCodeBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeCodeBrowser subclass: #JadeDebugger
+	instanceVariableNames: 'answer errorMessagePresenter frame frameListOffset frameListPresenter gsProcess processList processListPresenter terminateOnClose variableDataPresenter variableListPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: 'debuggers'!
+JadeCodeBrowser subclass: #JadeMethodList
+	instanceVariableNames: 'methodListPresenter searchString captionString'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!GsError methodsFor!
+
+debugError
+
+	^JadeDebugger reportError: self.
+
+! !
+!GsError categoriesFor: #debugError!public! !
+
+!GsObject methodsFor!
+
+gsInspect
+
+	JadeInspector showOn: gciSession -> self oopType.
+! !
+!GsObject categoriesFor: #gsInspect!public! !
+
+!GsProcess methodsFor!
+
+stepInto: anInteger
+
+	stack := nil.
+	gciSession
+		stepInto: self
+		inFrame: anInteger.
+!
+
+stepOut: anInteger
+
+	stack := nil.
+	gciSession
+		stepOut: self
+		inFrame: anInteger.
+!
+
+stepOver: anInteger
+
+	stack := nil.
+	gciSession
+		stepOver: self
+		inFrame: anInteger.
+!
+
+terminate
+
+	gciSession terminate: oopType.
+	self error: 'Should not get here!!'.
+!
+
+trimStackToLevel: anInteger
+
+	stack := nil.
+	gciSession
+		send: #'_trimStackToLevel:'
+		to: self
+		withAll: (Array with: anInteger).
+! !
+!GsProcess categoriesFor: #stepInto:!public! !
+!GsProcess categoriesFor: #stepOut:!public! !
+!GsProcess categoriesFor: #stepOver:!public! !
+!GsProcess categoriesFor: #terminate!public! !
+!GsProcess categoriesFor: #trimStackToLevel:!public! !
+
+!JadeServer methodsFor!
+
+_oopAndStringFor: anObject
+
+	^(self oopOf: anObject) -> anObject printString.
+!
+
+_sourceForProcess: gsProcess frame: level
+
+	| frame stepPoint keys values gsMethod stream receiver |
+	stream := WriteStream on: String new.
+	(frame := gsProcess _frameContentsAt: level) isNil ifTrue: [^'No frame found for level ' , level printString].
+	gsMethod := frame at: 1.
+	stepPoint := (gsProcess respondsTo: #'_localStepPointAt:')  ifTrue: [
+		(gsProcess _localStepPointAt: level) at: 1.
+	] ifFalse: [(gsMethod respondsTo: #'_stepPointForIp:level:quick:')  ifTrue: [
+		gsMethod
+			_stepPointForIp: (frame at: 2) 
+			level: level 
+			quick: false.
+	] ifFalse: [
+		gsMethod
+			_stepPointForIp: (frame at: 2) 
+			level: level 
+			isNative: gsProcess _nativeStack.
+	]].
+	stream
+		nextPutAll: '<?xml version=''1.0'' ?><frame oop=';
+		nextPutAll: (self oopOf: frame) printString printString;
+		nextPutAll: ' ipOffset=';
+		nextPutAll: (frame at: 2) printString printString;
+		nextPutAll: ' frameOffset=';
+		nextPutAll: ((frame at: 3) isNil ifTrue: [''] ifFalse: [(frame at: 3) printString]) printString;
+		nextPutAll: ' stepPoint=';
+		nextPutAll: stepPoint printString printString;
+		nextPutAll: '>'; lf;
+		yourself.
+	receiver := frame at: 10.
+	values := OrderedCollection new.
+	(self isClientForwarder: receiver) ifTrue: [
+		keys := OrderedCollection with: 'clientObject'.
+		values add: receiver clientObject.
+		receiver := '[aClientForwarder(' , (self oopOf: receiver) printString , ')]'.
+	] ifFalse: [
+		((receiver isKindOf: BlockClosure) or: [receiver isKindOf: Class]) ifTrue: [
+			keys := OrderedCollection new.
+		] ifFalse: [
+			keys := receiver class allInstVarNames asOrderedCollection collect: [:each | '-' , each].
+			1 to: keys size do: [:i |
+				values add: (receiver instVarAt: i).
+			].
+		].
+	].
+	keys addFirst: #'receiver'.
+	values addFirst: receiver.
+	keys addAll: (frame at: 9).
+	keys := keys reject: [:each | each first == $.].
+	values addAll: (frame size >= 11
+		ifTrue: [frame copyFrom: 11 to: frame size]
+		ifFalse: [#()]).
+	1 to: (keys size min: values size) do: [:i | | oop assoc key value |
+		key := keys at: i.
+		value := values at: i.
+		assoc := self _oopAndStringFor: value.
+		oop := assoc key.
+		value := assoc value.
+		value size > 500 ifTrue: [value := (value copyFrom: 1 to: 500) , '...'].
+		value := value collect: [:char | (char asciiValue < 32 or: [127 < char asciiValue]) ifTrue: [$?] ifFalse: [char]].
+		stream
+			nextPutAll: '<var oop=';
+			nextPutAll: oop asString printString;
+			nextPutAll: ' name=';
+			nextPutAll: key asString printString;
+			nextPutAll: ' ><';
+			nextPutAll: '!![';
+			nextPutAll: 'CDATA';
+			nextPutAll: '[';
+			nextPutAll: value;
+			nextPutAll: ']';
+			nextPutAll: ']';
+			nextPutAll: '></var>'; lf;
+			yourself.
+	].
+	gsMethod _sourceOffsets do: [:each | 
+		stream
+			nextPutAll: '<offset x=';
+			nextPutAll: each printString printString;
+			nextPutAll: '/>'; lf;
+			yourself.
+	].
+	(gsMethod class canUnderstand: #'_breakpointIpOffsets') ifTrue: [
+		(gsMethod _stepPointsFromBreakIpOffsets: gsMethod _breakpointIpOffsets) do: [:each | 
+			stream
+				nextPutAll: '<break x=';
+				nextPutAll: each printString printString;
+				nextPutAll: '/>'; lf;
+				yourself.
+		].
+	].
+	stream 
+		nextPutAll: '<source';
+		nextPutAll: ' ><';
+		nextPutAll: '!![';
+		nextPutAll: 'CDATA';
+		nextPutAll: '[';
+		nextPutAll: gsMethod _sourceString;
+		nextPutAll: ']';
+		nextPutAll: ']';
+		nextPutAll: '></source>';
+		nextPutAll: '</frame>'; lf;
+		yourself.
+	^self asAsciiString: stream contents.
+!
+
+_trimStackOf: aGsProcess toLevel: anInteger
+
+	aGsProcess _trimStackToLevel: anInteger.
+	^aGsProcess.
+!
+
+asAsciiString: aString
+
+	^String withAll: (aString asArray collect: [:char | 
+		((32 <= char asciiValue and: [char asciiValue <= 127]) or: [char isSeparator])
+			ifTrue: [char]
+			ifFalse: [$?].
+	]).
+!
+
+compile: aString frame: anInteger process: aGsProcess
+	"Compile method from within debugger"
+
+	| oldMethod aBehavior selector category result |
+	oldMethod := aGsProcess localMethodAt: anInteger.
+	result := self 
+		recompile: oldMethod
+		withSource: aString.
+	(result isKindOf: Boolean) ifTrue: [^result].
+	aBehavior := oldMethod inClass.
+	selector := oldMethod selector.
+	selector isNil ifTrue: [^result].
+	category := aBehavior categoryOfSelector: selector.
+	result := self
+		compileMethod: aString 
+		behavior: aBehavior 
+		user: nil 
+		inCategory: category.
+	^result.!
+
+isResumableCategory: category number: number context: context
+
+	| exceptionA receiver |
+	category == GemStoneError ifTrue: [
+		^number // 1000 = 2 or: [number // 1000 = 6].
+	].
+	(exceptionA := Globals at: #ExceptionA ifAbsent: [nil]) isNil ifTrue: [
+		^true.
+	].
+	receiver := (context _frameContentsAt: 1) at: 8.
+	(receiver isKindOf: exceptionA) ifTrue: [
+		^receiver isResumable.
+	].
+	^true.
+!
+
+step: aGsProcess inFrame: anInteger
+
+	aGsProcess _stepOverInFrame: anInteger.
+! !
+!JadeServer categoriesFor: #_oopAndStringFor:!Debugger!public! !
+!JadeServer categoriesFor: #_sourceForProcess:frame:!Debugger!public! !
+!JadeServer categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
+!JadeServer categoriesFor: #asAsciiString:!Debugger!public! !
+!JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
+!JadeServer categoriesFor: #isResumableCategory:number:context:!Debugger!public! !
+!JadeServer categoriesFor: #step:inFrame:!Debugger!public! !
+
+!JadeServer32bit methodsFor!
+
+_oopAndStringFor: anObject
+
+	Exception
+		category: nil
+		number: nil
+		do: [:ex :cat :num :args | ^0 -> '<ERROR IN #printString>'].
+	^super _oopAndStringFor: anObject.
+!
+
+_trimStackOf: aGsProcess toLevel: anInteger
+
+	Exception
+		category: GemStoneError
+		number: 2023 
+		do: [:ex :cat :num :args | 
+			ex remove.
+			^self 
+				_trimStackOf: aGsProcess 
+				toLevel: anInteger - 1.
+	].
+	^super
+		_trimStackOf: aGsProcess 
+		toLevel: anInteger.
+!
+
+recompile: aMethod withSource: aString
+
+	Exception
+		category: nil 
+		number: nil 
+		do: [:ex :cat :num :args | ^'compile error found in JadeServer>>#compile:frame:process:'].
+	^aMethod _recompileWithSource: aString.
+!
+
+sourceForProcess: gsProcess frame: level
+
+	Exception
+		category: nil
+		number: nil
+		do: [:ex :cat :num :args | 
+			^self asAsciiString: ('?????' , ex printString , ' - ' , num printString , ' - ' ,  args printString , 
+				Character cr asString , (GsProcess stackReportToLevel: 50))].
+	^self
+		_sourceForProcess: gsProcess 
+		frame: level.
+! !
+!JadeServer32bit categoriesFor: #_oopAndStringFor:!Debugger!public! !
+!JadeServer32bit categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
+!JadeServer32bit categoriesFor: #recompile:withSource:!Debugger!public! !
+!JadeServer32bit categoriesFor: #sourceForProcess:frame:!Debugger!public! !
+
+!JadeServer64bit methodsFor!
+
+_oopAndStringFor: anObject
+
+	^[
+		super _oopAndStringFor: anObject.
+	] on: Error do: [:ex | 
+		ex return: 0 -> ('<ERROR IN #printString for ' , anObject class name , '>').
+	].
+!
+
+_trimStackOf: aGsProcess toLevel: anInteger
+
+	^[
+		super
+			_trimStackOf: aGsProcess 
+			toLevel: anInteger.
+	] on: Error do: [:ex | 
+		self 
+			_trimStackOf: aGsProcess 
+			toLevel: anInteger - 1.
+		ex return.
+	].
+!
+
+recompile: aMethod withSource: aString
+
+	^[
+		| result |
+		result := aMethod _recompileWithSource: aString.
+		result isNil ifTrue: [^true].		"Bug 41195 returns nil if success so assume it is the same method"
+		result.
+	] on: Error do: [:ex | 
+		ex description.
+	].
+!
+
+sourceForProcess: gsProcess frame: level
+
+	^[
+		self
+			_sourceForProcess: gsProcess 
+			frame: level.
+	] on: Error do: [:ex | 
+			ex return: (self asAsciiString: ('?????' , ex description , Character cr asString , (GsProcess stackReportToLevel: 50))).
+	].
+! !
+!JadeServer64bit categoriesFor: #_oopAndStringFor:!Debugger!public! !
+!JadeServer64bit categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
+!JadeServer64bit categoriesFor: #recompile:withSource:!Debugger!public! !
+!JadeServer64bit categoriesFor: #sourceForProcess:frame:!Debugger!public! !
+
+!JadeServer64bit33 methodsFor!
+
+step: aGsProcess inFrame: anInteger
+
+	aGsProcess _stepOverInFrame: anInteger.
+! !
+!JadeServer64bit33 categoriesFor: #step:inFrame:!Debugger!public!Socket! !
+
+!JadeTextDocument methodsFor!
+
+fileIn
+
+	[
+		JadeFileIn new
+			fileInString: self activeTextEdit selection
+			forBrowser: self.
+	] on: Error do: [:ex | 
+		| stream |
+		SessionManager current logError: ex.
+		stream := WriteStream on: String new.
+		ex printTraceOn: stream.
+		(JadeWorkspace showOn: model) showText: stream contents.
+		MessageBox notify: ex description.
+		Keyboard default isShiftDown ifTrue: [ex halt].
+	].
+!
+
+jadeInspect
+
+	| result |
+	result := self jadeExecuteAndDisplay: false.
+	JadeInspector showOn: gciSession -> result.
+! !
+!JadeTextDocument categoriesFor: #fileIn!private! !
+!JadeTextDocument categoriesFor: #jadeInspect!Jade!private! !
+
+"End of package definition"!
+

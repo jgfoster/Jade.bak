@@ -1,0 +1,94 @@
+| package |
+package := Package name: 'JGF Fading Dialog'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.006'.
+
+
+package classNames
+	add: #FadingDialog;
+	add: #LayeredDialogView;
+	yourself.
+
+package methodNames
+	add: #UserLibrary -> #setLayeredWindowAttributes:_:_:_:;
+	add: #View -> #alpha:;
+	add: #View -> #setLayeredWindowColorRef:alpha:;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+Dialog subclass: #FadingDialog
+	instanceVariableNames: 'fadeProcess'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+DialogView subclass: #LayeredDialogView
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!UserLibrary methodsFor!
+
+setLayeredWindowAttributes: hwnd _: crKey _: bAlpha _: dwFlags
+	"
+BOOL SetLayeredWindowAttributes(
+	HWND				hwnd,
+	COLORREF		crKey,
+	BYTE				bAlpha,
+	DWORD			dwFlags);"
+
+	<stdcall: bool SetLayeredWindowAttributes handle dword byte dword>
+	#JGF.
+	^self invalidCall! !
+!UserLibrary categoriesFor: #setLayeredWindowAttributes:_:_:_:!JGF!public! !
+
+!View methodsFor!
+
+alpha: anInteger
+	"From zero (transparent) to 255 (fully visible)"
+
+	#JGF.
+	self
+		setLayeredWindowColorRef: nil
+		alpha: anInteger.
+!
+
+setLayeredWindowColorRef: crKey alpha: bAlpha
+
+	| dwFlags |
+	#JGF.
+	dwFlags := 0.
+	crKey notNil ifTrue: [dwFlags := dwFlags bitOr: LWA_COLORKEY].
+	bAlpha notNil ifTrue: [dwFlags := dwFlags bitOr: LWA_ALPHA].
+	^UserLibrary default 
+		setLayeredWindowAttributes: self asParameter 
+		_: crKey 
+		_: (((bAlpha isNil ifTrue: [255] ifFalse: [bAlpha]) min: 255) max: 0)
+		_: dwFlags.
+! !
+!View categoriesFor: #alpha:!JGF!public! !
+!View categoriesFor: #setLayeredWindowColorRef:alpha:!JGF!public! !
+
+"End of package definition"!
+

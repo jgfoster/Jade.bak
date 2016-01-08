@@ -1,0 +1,141 @@
+| package |
+package := Package name: 'Jade Process Browser'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.014'.
+
+
+package classNames
+	add: #JadeProcessBrowser;
+	yourself.
+
+package methodNames
+	add: #JadeServer -> #addProcess:to:withStatus:scheduler:;
+	add: #JadeServer -> #processes;
+	add: #JadeServer -> #waitingProcesses;
+	add: #JadeServer64bit33 -> #waitingProcesses;
+	add: #JadeServer64bit3x -> #addProcess:to:withStatus:scheduler:;
+	add: #JadeTranscript -> #browseProcesses;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: 'GemStone Objects';
+	add: 'GemStone Session';
+	add: 'Jade Inspector';
+	add: 'Jade Transcript';
+	add: 'Jade UI';
+	add: 'Jade UI Base';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+JadeShell subclass: #JadeProcessBrowser
+	instanceVariableNames: 'prioritiesPresenter processesPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!JadeServer methodsFor!
+
+addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
+
+	| x |
+	aStream lf
+"1"	nextPutAll: aString; tab;
+"2"	nextPutAll: aProcess asOop printString; tab;
+"3"	nextPutAll: aProcess priority printString; tab;
+"4"	nextPutAll: (aProcess createdByApplication 	ifTrue: ['Y'] ifFalse: ['']); tab; 
+"5"	nextPutAll: ((x := aProcess stackId) == -1 	ifTrue: [''] ifFalse: [x printString]); tab;
+"6"	nextPutAll: ((x := aProcess waitingOn) 			isNil ifTrue: [''] ifFalse: [x asOop printString]); tab;
+"7"	nextPutAll: ((x := aProcess _signalTime) 	isNil ifTrue: [''] ifFalse: [(x - aScheduler _now) printString]); tab;
+"8"	nextPutAll: (aProcess isPartialContinuation		ifTrue: ['partial'] ifFalse: [aProcess isContinuation ifTrue: ['full'] ifFalse: ['']]); tab;
+		yourself.
+!
+
+processes
+
+	| scheduler stream |
+	scheduler := ProcessorScheduler scheduler.
+	stream := (WriteStream on: String new)
+		nextPutAll: 'highestPriority'; 						space; nextPutAll: scheduler highestPriority 					printString; tab;
+		nextPutAll: 'highIOPriority'; 						space; nextPutAll: scheduler highIOPriority 					printString; tab;
+		nextPutAll: 'lowestPriority'; 						space; nextPutAll: scheduler lowestPriority 					printString; tab;
+		nextPutAll: 'lowIOPriority'; 						space; nextPutAll: scheduler lowIOPriority 					printString; tab;
+		nextPutAll: 'systemBackgroundPriority'; 	space; nextPutAll: scheduler systemBackgroundPriority 	printString; tab;
+		nextPutAll: 'timingPriority'; 						space; nextPutAll: scheduler timingPriority 						printString; tab;
+		nextPutAll: 'userBackgroundPriority'; 		space; nextPutAll: scheduler userBackgroundPriority 		printString; tab;
+		nextPutAll: 'userInterruptPriority'; 				space; nextPutAll: scheduler userInterruptPriority 			printString; tab;
+		nextPutAll: 'userSchedulingPriority'; 			space; nextPutAll: scheduler userSchedulingPriority 		printString; tab;
+		yourself.
+	scheduler readyProcesses 			do: [:each | self addProcess: each to: stream withStatus: 'ready'			scheduler: scheduler].
+	scheduler suspendedProcesses 	do: [:each | self addProcess: each to: stream withStatus: 'suspended'	scheduler: scheduler].
+	self waitingProcesses				do: [:each | self addProcess: each to: stream withStatus: 'waiting'			scheduler: scheduler].
+	^stream contents.
+
+!
+
+waitingProcesses
+
+	^ProcessorScheduler scheduler waitingProcesses
+! !
+!JadeServer categoriesFor: #addProcess:to:withStatus:scheduler:!Processes!public! !
+!JadeServer categoriesFor: #processes!Processes!public! !
+!JadeServer categoriesFor: #waitingProcesses!Processes!public! !
+
+!JadeServer64bit33 methodsFor!
+
+waitingProcesses
+
+	| processToIgnore |
+	processToIgnore := Processor activeProcess environmentAt: #'parent' ifAbsent: [nil].
+	^ProcessorScheduler scheduler waitingProcesses reject: [:each | each == processToIgnore]
+
+! !
+!JadeServer64bit33 categoriesFor: #waitingProcesses!Processes!public! !
+
+!JadeServer64bit3x methodsFor!
+
+addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
+
+	| instVarNumber modeInfo modeInfo_forked modeInfo_terminated |
+	super addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler.
+	(instVarNumber := GsProcess instVarNames indexOf: #'modeInfo') == 0 ifTrue: [^self].
+	modeInfo := aProcess instVarAt: instVarNumber.
+	(modeInfo_forked := GsProcess _classVars at: #'ModeInfo_forked' ifAbsent: [nil]) ifNil: [^self].
+	(modeInfo_terminated := GsProcess _classVars at: #'ModeInfo_terminated' ifAbsent: [nil]) ifNil: [^self].
+	aStream
+"9"		nextPutAll: (0 < (modeInfo bitAnd: modeInfo_forked) ifTrue: ['forked'] ifFalse: ['main']); tab;
+"10"	nextPutAll: (0 < (modeInfo bitAnd: modeInfo_forked) ifTrue: ['terminated'] ifFalse: ['']); tab;
+			yourself.
+! !
+!JadeServer64bit3x categoriesFor: #addProcess:to:withStatus:scheduler:!Processes!public! !
+
+!JadeTranscript methodsFor!
+
+browseProcesses
+
+	JadeProcessBrowser showOn: gciSession.
+! !
+!JadeTranscript categoriesFor: #browseProcesses!public! !
+
+"End of package definition"!
+

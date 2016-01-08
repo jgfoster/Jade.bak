@@ -1,0 +1,72 @@
+| package |
+package := Package name: 'Jade Deployment'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.045'.
+
+package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
+bnRSAAAAFQAAAEphZGVccnVudGltZVxKYWRlLmV4ZZoAAABSAAAADwAAAEphZGUgRGVwbG95bWVu
+dFIAAAASAAAASmFkZVNlc3Npb25NYW5hZ2Vy77clAAAAAAAGAw8AVmVyc2lvblJlc291cmNlBgEQ
+AFZTX0ZJWEVERklMRUlORk9yAAAANAAAAL0E7/4AAAEAAAABAAEAAAAAAAEAAQAAAD8AAAAAAAAA
+BAAAAAIAAAAAAAAAAAAAAAAAAADqAAAA8AAAAGIAAAACAAAAUgAAAAgAAAAwNDA5MDRiMOoAAADw
+AAAAYgAAAA4AAABSAAAADgAAAFByb2R1Y3RWZXJzaW9uUgAAAAoAAAAxLCAwLCAwLCAxUgAAABAA
+AABPcmlnaW5hbEZpbGVuYW1lUgAAAAgAAABKYWRlLmV4ZVIAAAALAAAAUHJvZHVjdE5hbWVSAAAA
+HwAAAEEgRG9scGhpbiBYNi4xIFRvR28gQXBwbGljYXRpb25SAAAADgAAAExlZ2FsQ29weXJpZ2h0
+UgAAACsAAABQb3J0aW9ucyBDb3B5cmlnaHQgqSBPYmplY3QgQXJ0cyAxOTk3LTIwMDguUgAAAA8A
+AABGaWxlRGVzY3JpcHRpb25SAAAAHQAAAERvbHBoaW4gWDYuMSBUb0dvIEFwcGxpY2F0aW9uUgAA
+AAsAAABGaWxlVmVyc2lvblIAAAAKAAAAMSwgMCwgMCwgMVIAAAAIAAAAQ29tbWVudHNSAAAAHAAA
+AFBvd2VyZWQgYnkgRG9scGhpbiBTbWFsbHRhbGvKAAAA0AAAAGIAAAABAAAABgIKAERXT1JEQXJy
+YXlyAAAABAAAAAkEsAQDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=').
+package basicScriptAt: #postinstall put: 'SessionManager current 
+	when: #''sessionStarted'' 
+	send: #''sessionStarted'' 
+	to: JadeSessionManager.
+''Loaded: Jade Deployment'' yourself.'.
+
+package classNames
+	add: #JadeImageStripper;
+	add: #JadeSessionManager;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
+	add: 'GemStone C Interface';
+	add: 'GemStone Services';
+	add: 'GemStone Session';
+	add: 'Jade Login';
+	add: '..\Core\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper';
+	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+ImageStripper subclass: #JadeImageStripper
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RuntimeSessionManager subclass: #JadeSessionManager
+	instanceVariableNames: ''
+	classVariableNames: 'Version'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+"End of package definition"!
+

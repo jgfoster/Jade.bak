@@ -1,0 +1,255 @@
+| package |
+package := Package name: 'Jade Transcript'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.057'.
+
+
+package classNames
+	add: #JadeTranscript;
+	yourself.
+
+package methodNames
+	add: #GsSession -> #sendSigAbort;
+	add: #GsSession -> #sendSigUsr1;
+	add: #GsSession -> #stopSession;
+	add: #JadeServer -> #addSessionWithId:toStream:;
+	add: #JadeServer -> #allSessions;
+	add: #JadeServer -> #descriptionOfErrorNumber:;
+	add: #JadeServer -> #sendSigAbortToSession:;
+	add: #JadeServer -> #sendSigUsr1ToSession:;
+	add: #JadeServer -> #sleepAndCommit;
+	add: #JadeServer -> #stopSession:;
+	add: #JadeServer32bit -> #addSessionWithId:toStream:;
+	add: #JadeServer64bit -> #addSessionWithId:toStream:;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Cards\Dolphin Card Containers';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'GemStone Objects';
+	add: 'GemStone Session';
+	add: 'Jade Autocompletation';
+	add: 'Jade Inspector';
+	add: 'Jade UI Base';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+JadeWorkspace subclass: #JadeTranscript
+	instanceVariableNames: 'gciVersionPresenter userIDPresenter stoneHostPresenter stoneNamePresenter gemTypePresenter gemHostPresenter netPortPresenter netTaskPresenter sessionListPresenter sessionListErrorPresenter stoneSessionIDPresenter stoneSerialPresenter gciSessionIdPresenter autoUpdatePresenter autoUpdateProcess'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!GsSession methodsFor!
+
+sendSigAbort
+
+	gciSession 
+		serverPerform: #'sendSigAbortToSession:'
+		with: id.
+!
+
+sendSigUsr1
+
+	gciSession 
+		serverPerform: #'sendSigUsr1ToSession:'
+		with: id.
+!
+
+stopSession
+
+	gciSession 
+		serverPerform: #'stopSession:'
+		with: id.
+! !
+!GsSession categoriesFor: #sendSigAbort!accessing!public! !
+!GsSession categoriesFor: #sendSigUsr1!accessing!public! !
+!GsSession categoriesFor: #stopSession!accessing!public! !
+
+!JadeServer methodsFor!
+
+addSessionWithId: anInteger toStream: aStream
+
+	| array gsSession timeGmt x |
+	array := System descriptionOfSession: anInteger.
+	array size: 20.
+	gsSession := GsSession sessionWithSerialNumber: (array at: 9).
+	timeGmt := System timeGmt.
+	aStream
+		nextPutAll: '<session oop=';
+		nextPutAll: (self oopOf: gsSession) printString printString;
+		nextPutAll: ' name=';
+		nextPutAll: (array at: 1) userId printString;
+		nextPutAll: ' process=';
+		nextPutAll: (array at: 2) printString printString;
+		nextPutAll: ' host=';
+		nextPutAll: (array at: 3) printString;
+		nextPutAll: ' primitive=';
+		nextPutAll: (array at: 4) printString printString;
+		nextPutAll: ' viewAge=';
+		nextPutAll: (timeGmt - (array at: 5)) printString printString;
+		nextPutAll: ' state=';
+		nextPutAll: (array at: 6) printString printString;
+		nextPutAll: ' transaction=';
+		nextPutAll: (array at: 7) printString printString;
+		nextPutAll: ' hasOldestCR=';
+		nextPutAll: (array at: 8) printString printString;
+		nextPutAll: ' serial=';
+		nextPutAll: (array at: 9) printString printString;
+		nextPutAll: ' id=';
+		nextPutAll: (array at: 10) printString printString;
+		nextPutAll: ' ip=';
+		nextPutAll: (array at: 11) printString;
+		nextPutAll: ' priority=';
+		nextPutAll: ((x := array at: 12) isNil ifTrue: [''] ifFalse: [x printString]) printString;
+		nextPutAll: ' hostId=';
+		nextPutAll: ((x := array at: 13)  isNil ifTrue: [''] ifFalse: [x printString]) printString;
+		nextPutAll: ' quietTime=';
+		nextPutAll: ((x := array at: 14) isNil ifTrue: [''] ifFalse: [(timeGmt - x)  printString]) printString;
+		nextPutAll: ' lifeTime=';
+		nextPutAll: ((x := array at: 15) isNil ifTrue: [''] ifFalse: [(timeGmt - x)  printString]) printString;
+		nextPutAll: ' backlog=';
+		nextPutAll: ((x := array at: 16) isNil ifTrue: [''] ifFalse: [x printString]) printString;
+		nextPutAll: ' description=';
+		nextPutAll: ((x := array at: 17) isNil ifTrue: [''] ifFalse: [x]) printString;
+		nextPutAll: ' objects=';
+		nextPutAll: ((x := array at: 18) isNil ifTrue: [''] ifFalse: [x printString]) printString;
+		nextPutAll: ' pages=';
+		nextPutAll: ((x := array at: 19) isNil ifTrue: [''] ifFalse: [x printString]) printString;
+		nextPutAll: ' voteState=';
+		nextPutAll: ((x := array at: 20) isNil ifTrue: [''] ifFalse: [x printString]) printString;
+		nextPutAll: ' />';
+		yourself.
+!
+
+allSessions
+
+	| list stream |
+	stream := WriteStream on: String new.
+	stream nextPutAll: '<?xml version=''1.0'' ?><sessions>'.
+	list := System currentSessionNames subStrings: Character lf.
+	list := list reject: [:each | each isEmpty].
+	list := list collect: [:each | (each subStrings at: 3) asNumber].
+	list do: [:each | 
+		self
+			addSessionWithId: each
+			toStream: stream.
+	].
+	^stream 
+		nextPutAll: '</sessions>';
+		contents.
+!
+
+descriptionOfErrorNumber: anInteger
+
+	| array stream |
+	array := GemStoneError at: #'English'.
+	anInteger <= 0 ifTrue: [^'Invalid number!!'].
+	array size < anInteger ifTrue: [^'Invalid number!!'].
+	stream := WriteStream on: String new.
+	array := array at: anInteger.
+	array isNil ifTrue: [^'No entry in GemStoneError for #' , anInteger printString , '!!'].
+	(array isKindOf: String) ifTrue: [array := Array with: array].
+	array do: [:each | 
+		(each isKindOf: Integer) ifTrue: [
+			stream space; nextPut: $%.
+			each printOn: stream.
+		] ifFalse: [
+			stream nextPutAll: each.
+		].
+	].
+	^stream contents.
+!
+
+sendSigAbortToSession: anInteger
+
+	System sendSigAbortToSession: anInteger negated.
+!
+
+sendSigUsr1ToSession: anInteger
+
+	| description command result |
+	description := System descriptionOfSession: anInteger.
+	command := 'kill -usr1 ' , (description at: 2) printString.
+	result := System performOnServer: command.
+	result trimSeparators notEmpty ifTrue: [self error: result trimSeparators].
+!
+
+sleepAndCommit
+
+	[
+		System commitTransaction.
+	] whileTrue: [
+		(Delay forSeconds: 30) wait.
+	].
+!
+
+stopSession: anInteger
+
+	System stopSession: anInteger.
+! !
+!JadeServer categoriesFor: #addSessionWithId:toStream:!private!Sessions! !
+!JadeServer categoriesFor: #allSessions!public!Sessions! !
+!JadeServer categoriesFor: #descriptionOfErrorNumber:!public!Sessions! !
+!JadeServer categoriesFor: #sendSigAbortToSession:!public!Sessions! !
+!JadeServer categoriesFor: #sendSigUsr1ToSession:!public!Sessions! !
+!JadeServer categoriesFor: #sleepAndCommit!public!Transcript! !
+!JadeServer categoriesFor: #stopSession:!public!Sessions! !
+
+!JadeServer32bit methodsFor!
+
+addSessionWithId: anInteger toStream: aStream
+
+	Exception
+		category: nil
+		number: nil
+		do: [:ex :cat :num :args | '?????'].
+	super
+		addSessionWithId: anInteger 
+		toStream: aStream.
+! !
+!JadeServer32bit categoriesFor: #addSessionWithId:toStream:!public!Sessions! !
+
+!JadeServer64bit methodsFor!
+
+addSessionWithId: anInteger toStream: aStream
+
+	[
+		super
+			addSessionWithId: anInteger
+			toStream: aStream.
+	] on: Error do: [:ex | 
+		ex resume: '?????'.
+	].
+! !
+!JadeServer64bit categoriesFor: #addSessionWithId:toStream:!public!Sessions! !
+
+"End of package definition"!
+

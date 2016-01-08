@@ -1,0 +1,270 @@
+| package |
+package := Package name: 'GemStone Session'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.247'.
+
+package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
+
+package classNames
+	add: #GciSession;
+	add: #GciSessionWithSocket;
+	add: #GsAnsiError;
+	add: #GsApplicationError;
+	add: #GsClientForwarderSend;
+	add: #GsCompileError;
+	add: #GsDoesNotUnderstand;
+	add: #GsError;
+	add: #GsEventError;
+	add: #GsFatalError;
+	add: #GsHaltError;
+	add: #GsHardBreak;
+	add: #GsInvalidSessionError;
+	add: #GsPause;
+	add: #GsRuntimeError;
+	add: #GsSoftBreak;
+	add: #GsStackBreakpoint;
+	add: #GsTestFailure;
+	add: #JadeServer;
+	add: #JadeServer32bit;
+	add: #JadeServer64bit;
+	add: #JadeServer64bit24;
+	add: #JadeServer64bit32;
+	add: #JadeServer64bit33;
+	add: #JadeServer64bit3x;
+	add: #JadeServerTestCase;
+	add: #TerminateProcess;
+	add: #WaitOnGemStoneDialog;
+	yourself.
+
+package methodNames
+	add: #Gcilw6x -> #jadeServerClass;
+	add: #LibGciRpc64 -> #jadeServerClass;
+	add: #LibGciRpc64_3_0 -> #jadeServerClass;
+	add: #LibGciRpc64_3_1 -> #jadeServerClass;
+	add: #LibGciRpc64_3_2 -> #jadeServerClass;
+	add: #LibGciRpc64_3_3 -> #jadeServerClass;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'GemStone C Interface';
+	add: 'GemStone Objects';
+	add: '..\JGF\JGF Fading Dialog';
+	add: '..\Core\Object Arts\Dolphin\Sockets\Sockets Connection';
+	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+Object subclass: #GciSession
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	classVariableNames: 'GemCursor'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Object subclass: #JadeServer
+	instanceVariableNames: 'classList classOrganizer readStream writeStream selectedClass methodFilterType methodFilters selections'
+	classVariableNames: 'AllGroups AllUsers ClassOrganizer ClientForwarder GemStoneError Globals GsMethodDictionary ProcessorScheduler SymbolDictionary System UserGlobals UserProfile'
+	poolDictionaries: ''
+	classInstanceVariableNames: 'gsString'!
+Error subclass: #GsError
+	instanceVariableNames: 'gciErrSType gsProcess'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsError subclass: #GsAnsiError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsError subclass: #GsCompileError
+	instanceVariableNames: 'list'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsError subclass: #GsEventError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsError subclass: #GsFatalError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsError subclass: #GsRuntimeError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsAnsiError subclass: #GsTestFailure
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsEventError subclass: #GsClientForwarderSend
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsEventError subclass: #GsHardBreak
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsEventError subclass: #GsPause
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsEventError subclass: #GsSoftBreak
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsEventError subclass: #GsStackBreakpoint
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsFatalError subclass: #GsInvalidSessionError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsRuntimeError subclass: #GsApplicationError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsRuntimeError subclass: #GsDoesNotUnderstand
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsApplicationError subclass: #GsHaltError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Notification subclass: #TerminateProcess
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciSession subclass: #GciSessionWithSocket
+	instanceVariableNames: 'socket'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeServer subclass: #JadeServer32bit
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeServer subclass: #JadeServer64bit
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeServer64bit subclass: #JadeServer64bit24
+	instanceVariableNames: ''
+	classVariableNames: 'Reflection'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeServer64bit24 subclass: #JadeServer64bit3x
+	instanceVariableNames: 'environment'
+	classVariableNames: 'Admonition ClientForwarderSend CompileError CompileWarning RubyHash SessionTemps Transcript'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeServer64bit3x subclass: #JadeServer64bit32
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeServer64bit32 subclass: #JadeServer64bit33
+	instanceVariableNames: 'socket'
+	classVariableNames: 'Breakpoint GsNMethod GsSocket'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+FadingDialog subclass: #WaitOnGemStoneDialog
+	instanceVariableNames: 'busySeconds codePresenter busySecondsPresenter gciSession timerProcess'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TestCase subclass: #JadeServerTestCase
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!Gcilw6x methodsFor!
+
+jadeServerClass
+
+	^JadeServer32bit
+! !
+!Gcilw6x categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit
+! !
+!LibGciRpc64 categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64_3_0 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit3x
+! !
+!LibGciRpc64_3_0 categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64_3_1 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit3x
+! !
+!LibGciRpc64_3_1 categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64_3_2 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit32
+! !
+!LibGciRpc64_3_2 categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64_3_3 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit33
+! !
+!LibGciRpc64_3_3 categoriesFor: #jadeServerClass!public! !
+
+"End of package definition"!
+
