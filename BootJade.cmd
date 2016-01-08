@@ -1,9 +1,9 @@
 @ECHO OFF
 cd ..
-Dolphin7 DBOOT.img7 Jade "Jade\Jade Development.pax"
+Dolphin7 DBOOT.img7 Jade "Jade\sources\Jade Development.pax"
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Boot failed, Code=%ERRORLEVEL%
-  PAUSE
+) ELSE (
+  move Jade.* Jade\ 1> nul
 )
-move Jade.* Jade\
 cd Jade
