@@ -14,32 +14,32 @@ contents
 	"Answer the list of package contents owned by the receiver"
 
 	^super contents
-		add: #('Jade\source\JGF Dolphin.pax' 			#plain #imageBased);
-		add: #('Jade\source\JGF Dolphin MVP Base.pax' 	#plain #imageBased);
-		add: #('Jade\source\JGF Fading Dialog.pax' 		#plain #imageBased);
-		add: #('Jade\source\GemStone C Interface.pax' 	#plain #imageBased);
-		add: #('Jade\source\GemStone Objects.pax' 		#plain #imageBased);
-		add: #('Jade\source\GemStone Session.pax' 		#plain #imageBased);
-		add: #('Jade\source\GemStone Services.pax' 	#plain #imageBased);
-		add: #('Jade\source\VisualWorks Component.pax' 	#plain #imageBased);
-		add: #('Jade\source\Jade UI Base.pax' 			#plain #imageBased);
-		add: #('Jade\source\Jade from Dolphin.pax' 		#plain #imageBased);
-		add: #('Jade\source\Jade Autocompletation.pax' 	#plain #imageBased);
-		add: #('Jade\source\Jade Inspector.pax' 		#plain #imageBased);
-		add: #('Jade\source\Jade Class Browser.pax' 		#plain #imageBased);
-		add: #('Jade\source\Jade Method Browser.pax' 	#plain #imageBased);
-		add: #('Jade\source\Jade User Browser.pax' 		#plain #imageBased);
-		add: #('Jade\source\Monticello.pax' 			#plain #imageBased);
-		add: #('Jade\source\Jade UI.pax' 				#plain #imageBased);
-		add: #('Jade\source\Jade System Browser.pax' 	#plain #imageBased);
-		add: #('Jade\source\Jade Transcript.pax' 		#plain #imageBased);
-		add: #('Jade\source\Jade Process Browser.pax' 	#plain #imageBased);
-		add: #('Jade\source\Object Log Browser.pax' 	#plain #imageBased);
-		add: #('Jade\source\Jade Login.pax' 			#plain #imageBased);
-		add: #('Jade\source\Jade Deployment.pax' 		#plain #imageBased);
-		add: #('Jade\source\Contacts Demo.pax' 		#plain #imageBased);
-		add: #('Jade\source\Jade in Dolphin.pax' 		#plain #imageBased);
-		add: #('Jade\source\Jade Development.pax' 	#plain #imageBased);
+		add: #('Jade\sources\JGF Dolphin.pax' 			#plain #imageBased);
+		add: #('Jade\sources\JGF Dolphin MVP Base.pax' 	#plain #imageBased);
+		add: #('Jade\sources\JGF Fading Dialog.pax' 		#plain #imageBased);
+		add: #('Jade\sources\GemStone C Interface.pax' 	#plain #imageBased);
+		add: #('Jade\sources\GemStone Objects.pax' 		#plain #imageBased);
+		add: #('Jade\sources\GemStone Session.pax' 		#plain #imageBased);
+		add: #('Jade\sources\GemStone Services.pax' 	#plain #imageBased);
+		add: #('Jade\sources\VisualWorks Component.pax' 	#plain #imageBased);
+		add: #('Jade\sources\Jade UI Base.pax' 			#plain #imageBased);
+		add: #('Jade\sources\Jade from Dolphin.pax' 		#plain #imageBased);
+		add: #('Jade\sources\Jade Autocompletation.pax' 	#plain #imageBased);
+		add: #('Jade\sources\Jade Inspector.pax' 		#plain #imageBased);
+		add: #('Jade\sources\Jade Class Browser.pax' 		#plain #imageBased);
+		add: #('Jade\sources\Jade Method Browser.pax' 	#plain #imageBased);
+		add: #('Jade\sources\Jade User Browser.pax' 		#plain #imageBased);
+		add: #('Jade\sources\Monticello.pax' 			#plain #imageBased);
+		add: #('Jade\sources\Jade UI.pax' 				#plain #imageBased);
+		add: #('Jade\sources\Jade System Browser.pax' 	#plain #imageBased);
+		add: #('Jade\sources\Jade Transcript.pax' 		#plain #imageBased);
+		add: #('Jade\sources\Jade Process Browser.pax' 	#plain #imageBased);
+		add: #('Jade\sources\Object Log Browser.pax' 	#plain #imageBased);
+		add: #('Jade\sources\Jade Login.pax' 			#plain #imageBased);
+		add: #('Jade\sources\Jade Deployment.pax' 		#plain #imageBased);
+		add: #('Jade\sources\Contacts Demo.pax' 		#plain #imageBased);
+		add: #('Jade\sources\Jade in Dolphin.pax' 		#plain #imageBased);
+		add: #('Jade\sources\Jade Development.pax' 	#plain #imageBased);
 		yourself!
 
 fullName
