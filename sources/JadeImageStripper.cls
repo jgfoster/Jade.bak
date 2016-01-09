@@ -19,7 +19,7 @@ closeLoginShells
 copyRuntimeFiles
 
 	| basePath |
-	basePath := SessionManager current imageBase.
+	basePath := SessionManager current imageBase , 'Jade\'.
 	#('bin' 'icons') do: [:eachDir | 
 		(File exists: basePath , 'runtime\' , eachDir) ifTrue: [
 			(File isDirectory: basePath , 'runtime\' , eachDir) ifFalse: [eachDir error: 'not a directory'].
@@ -97,7 +97,8 @@ requiredClasses
 requiredPackageNames
 
 	^super requiredPackageNames
-		add: 'Dolphin MVP (Deprecated)';		"Referenced by EditableListView"
+		add: 'Dolphin MVP (Deprecated)';	"Referenced by EditableListView"
+		add: 'Dialect Abstraction Layer';		"to get #'isNilOrEmpty'"
 		add: 'GemStone C Interface';
 		add: 'GemStone Session';
 		add: 'GemStone Objects';
@@ -114,11 +115,7 @@ requiredPackageNames
 		add: 'Object Log Browser';
 		add: 'Jade from Dolphin';
 		add: 'Jade Process Browser';
-		yourself
-
-
-
-!
+		yourself!
 
 savePackages
 "
