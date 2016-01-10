@@ -63,7 +63,7 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
-	add: '..\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\..\Core\Object Arts\Dolphin\Base\Dolphin';
 	yourself).
 
 package!
@@ -122,7 +122,6 @@ dbfFileTypes
 		#('All Files (*.*)' '*.*')
 	)
 ! !
-
 !File class categoriesFor: #dbfFileTypes!constants!JGF!public! !
 
 !Integer methodsFor!
@@ -354,7 +353,6 @@ asYMDFormat
 
 	^''.
 !
-
 
 mustBeKindOf: aClass
 

@@ -38,12 +38,12 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\IDE\Base\Development System';
-	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\..\Core\Object Arts\Dolphin\IDE\Base\Development System';
+	add: '..\..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: 'Jade Deployment';
 	add: 'Jade Login';
 	add: 'Jade System Browser';
-	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
+	add: '..\..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	yourself).
 
 package!

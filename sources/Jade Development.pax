@@ -15,7 +15,7 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\Installation Manager\Dolphin Products';
+	add: '..\..\Core\Object Arts\Dolphin\Installation Manager\Dolphin Products';
 	yourself).
 
 package!
