@@ -12,7 +12,7 @@ JadeValueDialog comment: ''!
 
 icon
 
-	^Icon fromFile: 'icons\GS32x32.ico'.
+	^Icon fromFile: 'Jade\icons\GS32x32.ico'.
 ! !
 !JadeValueDialog class categoriesFor: #icon!public! !
 

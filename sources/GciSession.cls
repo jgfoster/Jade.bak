@@ -1016,7 +1016,7 @@ withExplanation: aString doA: aBlock
 cursor
 
 	GemCursor isNil ifTrue: [
-		GemCursor := Cursor fromFile: 'icons\GS32x32.ico'.
+		GemCursor := Cursor fromFile: 'Jade\icons\GS32x32.ico'.
 	].
 	^GemCursor.
 !

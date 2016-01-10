@@ -91,7 +91,7 @@ updateCaption
 
 icon
 
-	^Icon fromFile: 'icons\GS32x32.ico'.
+	^Icon fromFile: 'Jade\icons\GS32x32.ico'.
 ! !
 !JadeShell class categoriesFor: #icon!public! !
 

@@ -94,7 +94,7 @@ gciSession: aGciSession message: aString havingWaited: anInteger
 
 icon
 
-	^Icon fromFile: 'icons\GS32x32.ico'.
+	^Icon fromFile: 'Jade\icons\GS32x32.ico'.
 !
 
 resource_Default_view
