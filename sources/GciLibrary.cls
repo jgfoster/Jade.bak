@@ -335,11 +335,16 @@ fileName
 	list := OrderedCollection new.
 	File
 		for: self fileNameSearch
-		in: SessionManager current imageBase , 'bin'
+		in: SessionManager current imageBase , 'Jade\bin'
 		do: [:each | list add: each fileName].
 	list := list reject: [:each | each = '.'].	"This is needed after upgrading to Fusion 2 beta 1"
 	list isEmpty ifTrue: [self error: 'library not found!!'].
 	^list first.
+!
+
+fileNameSearch
+
+	self subclassResponsibility.
 !
 
 onStartup2
@@ -354,7 +359,7 @@ open: pathString
 	self addMissingMethods.
 	currentWorkingDirectory := File workingDirectory.
 	[
-		File workingDirectory: SessionManager current imageBase , 'bin'.
+		File workingDirectory: SessionManager current imageBase , 'Jade\bin'.
 		result := super open: pathString.
 		self default: result.
 	] ensure: [
@@ -385,6 +390,7 @@ withDisplayName: aString
 !GciLibrary class categoriesFor: #addMissingMethods!public! !
 !GciLibrary class categoriesFor: #displayName!public! !
 !GciLibrary class categoriesFor: #fileName!public! !
+!GciLibrary class categoriesFor: #fileNameSearch!public! !
 !GciLibrary class categoriesFor: #onStartup2!public! !
 !GciLibrary class categoriesFor: #open:!public! !
 !GciLibrary class categoriesFor: #sessionStarted!public! !

@@ -18,7 +18,6 @@ package methodNames
 	add: #KernelLibrary -> #hoursSinceSystemStartup;
 	add: #KernelLibrary -> #minutesSinceSystemStartup;
 	add: #KernelLibrary -> #secondsSinceSystemStartup;
-	add: #KernelLibrary -> #setCurrentDirectory:;
 	add: #Number -> #asNumber;
 	add: #Number -> #asStringWithTwoDecimals;
 	add: #Object -> #asStringWithTwoDecimals;
@@ -49,7 +48,6 @@ package methodNames
 	add: #UserLibrary -> #getLastInputInfo:;
 	add: #WriteStream -> #lf;
 	add: 'File class' -> #dbfFileTypes;
-	add: 'File class' -> #workingDirectory:;
 	add: 'ScaledDecimal class' -> #demoScaleA;
 	yourself.
 
@@ -122,16 +120,10 @@ dbfFileTypes
 	^#(
 		#('DBF Files (*.DBF)' '*.DBF')
 		#('All Files (*.*)' '*.*')
-	).
+	)
+! !
 
-!
-
-workingDirectory: aString
-	"Set the current working directory."
-
-	^KernelLibrary default setCurrentDirectory: aString! !
 !File class categoriesFor: #dbfFileTypes!constants!JGF!public! !
-!File class categoriesFor: #workingDirectory:!filename manipulation!JGF!public! !
 
 !Integer methodsFor!
 
@@ -176,19 +168,12 @@ minutesSinceSystemStartup
 
 secondsSinceSystemStartup
 
-	^self getTickCount // 1000.
-!
-
-setCurrentDirectory: aStringDirectoryName
-
-	<stdcall: bool SetCurrentDirectoryA lpstr>
-	^self invalidCall
+	^self getTickCount // 1000
 ! !
 !KernelLibrary categoriesFor: #getTickCount!JGF!public!win32 functions-date and time! !
 !KernelLibrary categoriesFor: #hoursSinceSystemStartup!JGF!public!win32 functions-date and time! !
 !KernelLibrary categoriesFor: #minutesSinceSystemStartup!JGF!public!win32 functions-date and time! !
 !KernelLibrary categoriesFor: #secondsSinceSystemStartup!JGF!public!win32 functions-date and time! !
-!KernelLibrary categoriesFor: #setCurrentDirectory:!JGF!public!win32 functions-file! !
 
 !Number methodsFor!
 
@@ -205,8 +190,6 @@ asStringWithTwoDecimals
 		printOn: stream
 		decimalPlaces: 2.
 	^stream contents
-
-
 ! !
 !Number categoriesFor: #asNumber!converting!JGF!public! !
 !Number categoriesFor: #asStringWithTwoDecimals!converting!JGF!public! !
@@ -224,7 +207,8 @@ mustBeKindOf: aClass
 !
 
 notNilOrEmpty
-	^true!
+	^true
+!
 
 stbInstVarAt: anInteger put: anObject inFiler: anSTBInFiler id: idInteger
 
@@ -293,7 +277,8 @@ asBoolean
 asNumberEx
 	"Handle '.5' as a number"
 
-	^Number fromString: '0' , self!
+	^Number fromString: '0' , self
+!
 
 replaceCrLfWithLf
 
