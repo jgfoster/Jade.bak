@@ -176,7 +176,7 @@ restoreLayoutAndContents
 restoreLayoutAndContentsFromFile
 
 	| path file bytes data |
-	path := SessionManager current imageBase , 'Jade System Browser Layout.stb'.
+	path := SessionManager current imageBase , 'Jade\Jade System Browser Layout.stb'.
 	(File exists: path) ifFalse: [^false].
 	file := File 
 		open: path
@@ -197,7 +197,7 @@ restoreLayoutAndContentsFromFile
 saveLayoutAndContents
 
 	| path data |
-	path := SessionManager current imageBase , 'Jade System Browser Layout.stb' .
+	path := SessionManager current imageBase , 'Jade\Jade System Browser Layout.stb' .
 	data := OrderedCollection new
 		add: 1;	"file version number"
 		add: self view rectangle;

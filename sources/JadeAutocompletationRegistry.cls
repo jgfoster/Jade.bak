@@ -20,7 +20,7 @@ configuration
 
 defaultFileName
 
-	^SessionManager current imageBase, 'autocompletationInfo.obj'!
+	^SessionManager current imageBase, 'Jade\autocompletationInfo.obj'!
 
 fileOut
 	| fileStream |

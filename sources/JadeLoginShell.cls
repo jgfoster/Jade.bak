@@ -169,7 +169,7 @@ fileOpen
 	openFilename := FileOpenDialog new
 		fileTypes: self class fileTypes;
 		defaultExtension: self class defaultFileExtension;
-		value: SessionManager current imageBase , 'connections\*.GSS';
+		value: SessionManager current imageBase , 'Jade\connections\*.GSS';
 		showModal.
 	openFilename isNil ifTrue: [^self].
 	self filename: openFilename.
@@ -281,7 +281,7 @@ openHomePage
 openScintillaLibrary
 
 	ScintillaLibrary default isNil ifTrue: [
-		ScintillaLibrary open: SessionManager current imageBase , 'bin\SciLexer.dll'.
+		ScintillaLibrary open: SessionManager current imageBase , 'Jade\bin\SciLexer.dll'.
 	].
 !
 
