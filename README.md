@@ -8,9 +8,11 @@ Jade is built in (and inspired by) Dolphin Smalltalk from [Object-Arts](https://
 ### Runtime Installation
 To install Jade runtime, download a 25 MB zip file with the executable and supporting libraries from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.zip). Once you have the environment, you can get just the latest executable (about 1.5 MB) from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.exe).
 
+Version 2 of Jade is build in [Dolphin 7](https://github.com/dolphinsmalltalk/Dolphin) and can be downloaded [here](https://github.com/jgfoster/Jade/blob/for_Dolphin_7/runtime/Jade.zip). 
+
 ### Development Installation
 
-To install Jade in Dolphin to do development, follow these steps:
+To install Jade in Dolphin 6.1 to do development, follow these steps:
 
 1. Install a Github client such as [SourceTree](http://www.sourcetreeapp.com/)
 2. Clone https://github.com/jgfoster/Jade to Documents\Dolphin\Jade.
@@ -58,17 +60,4 @@ PackageManager current
 	install: 'Jade\Jade in Dolphin.pac';
 	install: 'Jade\Jade Deployment.pac';
 	yourself.
-```
-#### Dolphin Community Edition
-
-Dolphin CE is on version 6.0 while the main development work
-has been done on Dolphin Pro 6.1b2. This means that things don't
-really work. You can, however, load things without errors and
-look at the code if you start with the following:
-```
-PackageManager current
-    install: 'Jade\Jade in Dolphin CE.pac';
-    install: 'Steve Waring\YAXO Base.pac';
-    install: 'Steve Waring\YAXO DOM.pac';
-    yourself.
 ```
