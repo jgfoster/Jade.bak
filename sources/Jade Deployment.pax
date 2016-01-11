@@ -7,7 +7,7 @@ package basicPackageVersion: '0.045'.
 
 package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAUgAAAA8AAABKYWRlIERlcGxveW1l
 bnRSAAAAFQAAAEphZGVccnVudGltZVxKYWRlLmV4ZZoAAABSAAAADwAAAEphZGUgRGVwbG95bWVu
-dFIAAAASAAAASmFkZVNlc3Npb25NYW5hZ2Vy778lAAAAAAAGAw8AVmVyc2lvblJlc291cmNlBgEQ
+dFIAAAASAAAASmFkZVNlc3Npb25NYW5hZ2Vy77clAAAAAAAGAw8AVmVyc2lvblJlc291cmNlBgEQ
 AFZTX0ZJWEVERklMRUlORk9yAAAANAAAAL0E7/4AAAEAAAABAAEAAAAAAAEAAQAAAD8AAAAAAAAA
 BAAAAAIAAAAAAAAAAAAAAAAAAADqAAAA8AAAAGIAAAACAAAAUgAAAAgAAAAwNDA5MDRiMOoAAADw
 AAAAYgAAAA4AAABSAAAADgAAAFByb2R1Y3RWZXJzaW9uUgAAAAoAAAAxLCAwLCAwLCAxUgAAABAA
@@ -38,7 +38,6 @@ package globalAliases: (Set new
 package setPrerequisites: (IdentitySet new
 	add: '..\..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: '..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\..\Core\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog';
 	add: '..\..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: 'GemStone C Interface';
 	add: 'GemStone Services';

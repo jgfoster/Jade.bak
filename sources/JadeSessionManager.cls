@@ -38,12 +38,7 @@ version
 
 getVersion
 
-	| list |
-	list := [Package manager sourceControl getProjectEditionsFor: 'Jade'] on: Error do: [:ex | ^Date today printString].
-	^(list at: 1) projectVersion
-		ifNotNil: [:x | x]
-		ifNil: [(list at: 2) projectVersion , '+'].
-!
+	^'2.000'!
 
 mainShellClass
 

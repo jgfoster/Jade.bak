@@ -19,13 +19,13 @@ closeLoginShells
 copyRuntimeFiles
 
 	| basePath |
-	basePath := SessionManager current imageBase , 'Jade\Jade\'.
+	basePath := SessionManager current imageBase , 'Jade\'.
 	#('bin' 'icons') do: [:eachDir | 
-		(File exists: basePath , 'runtime\' , eachDir) ifTrue: [
-			(File isDirectory: basePath , 'runtime\' , eachDir) ifFalse: [eachDir error: 'not a directory'].
-			File deleteDirectory: basePath , 'runtime\' , eachDir.
+		(File exists: basePath , 'runtime\Jade\' , eachDir) ifTrue: [
+			(File isDirectory: basePath , 'runtime\Jade\' , eachDir) ifFalse: [eachDir error: 'not a directory'].
+			File deleteDirectory: basePath , 'runtime\Jade\' , eachDir.
 		].
-		File createDirectory: basePath , 'runtime\' , eachDir.
+		File createDirectory: basePath , 'runtime\Jade\' , eachDir.
 		File
 			forAll: '*.*' 
 			in: basePath , eachDir 
@@ -33,7 +33,7 @@ copyRuntimeFiles
 				(2 < each fileName size and: [(each fileName first == $.) not]) ifTrue: [
 					File
 						copy: basePath , eachDir , '\' , each fileName
-						to: basePath , 'runtime\' , eachDir , '\' , each fileName.
+						to: basePath , 'runtime\Jade\' , eachDir , '\' , each fileName.
 				].
 			].
 	].
@@ -70,7 +70,6 @@ prepareToStrip
 
 	JadeSessionManager setVersion.
 	self 
-		"savePackages;"
 		loadJadeServerSourceCache; 
 		copyRuntimeFiles; 
 		closeLoginShells;
@@ -116,28 +115,7 @@ requiredPackageNames
 		add: 'Object Log Browser';
 		add: 'Jade from Dolphin';
 		add: 'Jade Process Browser';
-		yourself!
-
-savePackages
-"
-	JadeImageStripper new savePackages.
-"
-	(ProgressDialog showModalWhile: [:progress | 
-		| list |
-		list := PackageManager current packages asArray.
-		1 to: list size do: [:i | 
-			| each |
-			each := list at: i.
-			progress
-				value: i // list size * 100;
-				text: each name;
-				yourself.
-			(each packagePathname beginsWith: 'Jade\') ifTrue: [
-				(each isChanged and: [each name ~= 'Jade Deployment']) ifTrue: [self halt].	"Are you deploying without saving the packages?"
-				each save.
-			].
-		].
-	]) ifNil: [self halt].! !
+		yourself! !
 !JadeImageStripper categoriesFor: #closeLoginShells!public! !
 !JadeImageStripper categoriesFor: #copyRuntimeFiles!public! !
 !JadeImageStripper categoriesFor: #exeIconFile!operations!public! !
@@ -147,7 +125,6 @@ savePackages
 !JadeImageStripper categoriesFor: #prepareToStrip!public! !
 !JadeImageStripper categoriesFor: #requiredClasses!public! !
 !JadeImageStripper categoriesFor: #requiredPackageNames!public! !
-!JadeImageStripper categoriesFor: #savePackages!public! !
 
 !JadeImageStripper class methodsFor!
 
