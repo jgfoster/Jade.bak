@@ -10,3 +10,7 @@ Jade/Connections/*.GSS
 Jade.img7
 *.pac
 Jade.xml
+*.chg
+*.ERRORS
+*.img7
+*.sml
