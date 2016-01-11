@@ -19,7 +19,7 @@ closeLoginShells
 copyRuntimeFiles
 
 	| basePath |
-	basePath := SessionManager current imageBase , 'Jade\'.
+	basePath := SessionManager current imageBase , 'Jade\Jade\'.
 	#('bin' 'icons') do: [:eachDir | 
 		(File exists: basePath , 'runtime\' , eachDir) ifTrue: [
 			(File isDirectory: basePath , 'runtime\' , eachDir) ifFalse: [eachDir error: 'not a directory'].
@@ -41,7 +41,7 @@ copyRuntimeFiles
 
 exeIconFile
 
-	^'icons\GS32x32.ico'.
+	^'Jade\icons\GS32x32.ico'.
 !
 
 finishedWith: selector
@@ -70,7 +70,7 @@ prepareToStrip
 
 	JadeSessionManager setVersion.
 	self 
-		savePackages;
+		"savePackages;"
 		loadJadeServerSourceCache; 
 		copyRuntimeFiles; 
 		closeLoginShells;
@@ -99,6 +99,7 @@ requiredPackageNames
 	^super requiredPackageNames
 		add: 'Dolphin MVP (Deprecated)';	"Referenced by EditableListView"
 		add: 'Dialect Abstraction Layer';		"to get #'isNilOrEmpty'"
+		add: 'Development System'; 		"to get StKeywordToken>>#preComments"
 		add: 'GemStone C Interface';
 		add: 'GemStone Session';
 		add: 'GemStone Objects';
