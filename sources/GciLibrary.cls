@@ -335,7 +335,7 @@ fileName
 	list := OrderedCollection new.
 	File
 		for: self fileNameSearch
-		in: SessionManager current imageBase , 'Jade\bin'
+		in: SessionManager current imageBase , 'bin'
 		do: [:each | list add: each fileName].
 	list := list reject: [:each | each = '.'].	"This is needed after upgrading to Fusion 2 beta 1"
 	list isEmpty ifTrue: [self error: 'library not found!!'].
@@ -359,7 +359,7 @@ open: pathString
 	self addMissingMethods.
 	currentWorkingDirectory := File workingDirectory.
 	[
-		File workingDirectory: SessionManager current imageBase , 'Jade\bin'.
+		File workingDirectory: SessionManager current imageBase , 'bin'.
 		result := super open: pathString.
 		self default: result.
 	] ensure: [

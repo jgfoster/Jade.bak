@@ -12,7 +12,7 @@ ContactsShell comment: ''!
 
 icon
 
-	^Icon fromFile: 'Jade\icons\GS32x32.ico'.
+	^Icon fromFile: 'icons\GS32x32.ico'.
 ! !
 !ContactsShell class categoriesFor: #icon!public! !
 

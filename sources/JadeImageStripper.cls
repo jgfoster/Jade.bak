@@ -19,13 +19,13 @@ closeLoginShells
 copyRuntimeFiles
 
 	| basePath |
-	basePath := SessionManager current imageBase , 'Jade\'.
+	basePath := SessionManager current imageBase.
 	#('bin' 'icons') do: [:eachDir | 
-		(File exists: basePath , 'runtime\Jade\' , eachDir) ifTrue: [
-			(File isDirectory: basePath , 'runtime\Jade\' , eachDir) ifFalse: [eachDir error: 'not a directory'].
-			File deleteDirectory: basePath , 'runtime\Jade\' , eachDir.
+		(File exists: basePath , 'runtime\' , eachDir) ifTrue: [
+			(File isDirectory: basePath , 'runtime\' , eachDir) ifFalse: [eachDir error: 'not a directory'].
+			File deleteDirectory: basePath , 'runtime\' , eachDir.
 		].
-		File createDirectory: basePath , 'runtime\Jade\' , eachDir.
+		File createDirectory: basePath , 'runtime\' , eachDir.
 		File
 			forAll: '*.*' 
 			in: basePath , eachDir 
@@ -33,7 +33,7 @@ copyRuntimeFiles
 				(2 < each fileName size and: [(each fileName first == $.) not]) ifTrue: [
 					File
 						copy: basePath , eachDir , '\' , each fileName
-						to: basePath , 'runtime\Jade\' , eachDir , '\' , each fileName.
+						to: basePath , 'runtime\' , eachDir , '\' , each fileName.
 				].
 			].
 	].
@@ -41,7 +41,7 @@ copyRuntimeFiles
 
 exeIconFile
 
-	^'Jade\icons\GS32x32.ico'.
+	^'icons\GS32x32.ico'.
 !
 
 finishedWith: selector

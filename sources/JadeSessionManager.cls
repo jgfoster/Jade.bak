@@ -13,7 +13,7 @@ JadeSessionManager comment: ''!
 defaultResLibPath
 	"Answer the path of the development resource library."
 
-	^'Jade\bin\Jade'!
+	^'bin\Jade'!
 
 main
 "
