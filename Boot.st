@@ -1,7 +1,6 @@
 "Boot a Jade development image"
 
 | list |
-File workingDirectory: File workingDirectory , 'Jade\'.
 list := #(
 	'JGF Dolphin'
 	'JGF Dolphin MVP Base'
