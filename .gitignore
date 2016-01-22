@@ -1,16 +1,7 @@
+*.pac
 Redist.txt
-Jade.img
-Jade.sml
-Jade.chg
-Jade.errors
+JadeDev.*
 *.DS_Store
 ._*
 Jade System Browser Layout.stb
 Jade/Connections/*.GSS
-Jade.img7
-*.pac
-Jade.xml
-*.chg
-*.ERRORS
-*.img7
-*.sml
