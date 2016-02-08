@@ -313,8 +313,7 @@ addMissingMethods
 	"The external function address is cached in the method and if it is inherited we will use the first one called.
 	Having our own method allows us to have multiple libraries loaded and to call the proper function."
 
-	| methodCategory |
-	methodCategory := self methodCategoryClass name: 'generated'.
+	SessionManager current class name == #'DevelopmentSessionManager' ifTrue: [^self].
 	self allSelectors do: [:eachSelector |
 		| class method |
 		class := self whichClassIncludesSelector: eachSelector.
@@ -322,9 +321,6 @@ addMissingMethods
 			method := class methodDictionary at: eachSelector.
 			method isExternalCall ifTrue: [
 				self addSelector: eachSelector withMethod: method copy clear; yourself.
-				method := self compiledMethodAt: eachSelector.
-				(self categoriesOfMethod: method) do: [:eachCategory | self removeSelector: eachSelector fromCategory: eachCategory].
-				self includeSelector: eachSelector inCategory: methodCategory.
 			].
 		].
 	].!
