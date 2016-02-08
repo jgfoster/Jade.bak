@@ -945,7 +945,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #fetchBytes:!private! !
 !GciSession categoriesFor: #forceLogout!Jade!public! !
 !GciSession categoriesFor: #gciSessionId!public! !
-!GciSession categoriesFor: #gciSessionId:!public! !
+!GciSession categoriesFor: #gciSessionId:!private! !
 !GciSession categoriesFor: #gciVersion!public! !
 !GciSession categoriesFor: #gemHost!accessing!public! !
 !GciSession categoriesFor: #handlingClientForwarderSendDo:!long running!private! !
