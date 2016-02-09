@@ -98,7 +98,6 @@ gsInstVariables
 
 gsMethods
 
-
 	^methodListPresenter model collect: [:each | each first]!
 
 hasClassSideSelected

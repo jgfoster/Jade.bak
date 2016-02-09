@@ -318,7 +318,7 @@ withSelectorDo: aBlock
 		aBlock value: selector.
 		^self.
 	].
-	result := self model 
+	result := gciSession
 		serverPerform: #selectorsMatching:
 		with: selector.
 	result isNil ifTrue: [^self].

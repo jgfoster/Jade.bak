@@ -79,7 +79,7 @@ GsObject subclass: #GsUserProfile
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-Presenter subclass: #AllUsersPresenter
+JadePresenter subclass: #AllUsersPresenter
 	instanceVariableNames: 'userListPresenter userProfilePresenter passwordLimitsPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''

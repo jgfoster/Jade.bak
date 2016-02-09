@@ -139,7 +139,7 @@ editSelectAll
 executeSelectionOrLine
 
 	[
-		^true -> (self gciSession executeString: self currentSelectionOrLine fromContext: model).
+		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: model).
 	] on: GsCompileError do: [:ex | 
 		^false -> ex list.
 	].

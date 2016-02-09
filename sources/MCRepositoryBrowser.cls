@@ -17,7 +17,7 @@ addDirectoryRepository
 		title: 'Please select a Monticello folder';
 		showModal.
 	path isNil ifTrue: [^self].
-	self model
+	gciSession
 		serverPerform: #'mcNewDirectoryRepository:' 
 		with: path.
 	self updateRepositoryList.
@@ -27,7 +27,7 @@ addFileTreeRepository
 
 	| path |
 	(path := Prompter prompt: 'Enter server path:') isNil ifTrue: [^self].
-	self model
+	gciSession
 		serverPerform: #'mcNewFileTreeRepository:' 
 		with: path.
 	self updateRepositoryList.
@@ -37,7 +37,7 @@ addGitHubRepository
 
 	| path |
 	(path := Prompter prompt: 'Enter location (e.g., ''github://glassdb/zinc:gemstone3.1/repository''):') isNil ifTrue: [^self].
-	self model
+	gciSession
 		serverPerform: #'mcNewGitHubRepository:' 
 		with: path.
 	self updateRepositoryList.
@@ -74,7 +74,7 @@ addServerDirectoryRepository
 
 	| path |
 	(path := Prompter prompt: 'Enter server path:') isNil ifTrue: [^self].
-	self model
+	gciSession
 		serverPerform: #'mcNewServerDirectoryRepository:' 
 		with: path.
 	self updateRepositoryList.
@@ -192,7 +192,7 @@ mergeVersion
 	(package := packageListPresenter selectionOrNil) isNil ifTrue: [^self].
 	(versionName := versionListPresenter selectionOrNil) isNil ifTrue: [^self].
 	versionFullName := package name , '-' , versionName name.
-	self model
+	gciSession
 		serverPerform: #'mcVersionMerge:from:autoMigrate:' 
 		with: versionFullName
 		with: repository
@@ -311,7 +311,7 @@ updateRepositoryList
 
 	| list |
 	repositoryCreationTemplatePresenter view ensureVisible.
-	list := MCRepository allIn: self model.
+	list := MCRepository allIn: gciSession.
 	repositoryListPresenter list: list asSortedCollection.
 !
 

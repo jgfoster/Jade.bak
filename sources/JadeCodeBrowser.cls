@@ -124,7 +124,7 @@ stream contents'.
 		ifFalse: ['Jade Method Browser on ' , (searchString notNil
 			ifTrue: [searchString]
 			ifFalse: [codeString])].
-	(JadeMethodList showOn: gciSession)
+	(JadeMethodList showOnSession: gciSession)
 		methodList: list;
 		captionString: title;
 		searchFor: searchString;

@@ -471,7 +471,7 @@ fileIn
 		SessionManager current logError: ex.
 		stream := WriteStream on: String new.
 		ex printTraceOn: stream.
-		(JadeWorkspace showOn: model) showText: stream contents.
+		(JadeWorkspace showOnSession: gciSession) showText: stream contents.
 		MessageBox notify: ex description.
 		Keyboard default isShiftDown ifTrue: [ex halt].
 	].

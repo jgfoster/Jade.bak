@@ -6,7 +6,7 @@ JadePresenter subclass: #UserProfileDetailsPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 UserProfileDetailsPresenter guid: (GUID fromString: '{F6811F82-8AFC-4569-A453-15B155F97432}')!
-UserProfileDetailsPresenter comment: ''!
+UserProfileDetailsPresenter comment: 'Presents details about a UserProfile instance in the AllUsersPresenter in the AllUsersShell.'!
 !UserProfileDetailsPresenter categoriesForClass!Unclassified! !
 !UserProfileDetailsPresenter methodsFor!
 

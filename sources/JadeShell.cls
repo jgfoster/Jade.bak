@@ -19,7 +19,7 @@ createComponents
 gciSession: aGciSession
 
 	gciSession := aGciSession.
-	myPresenter notNil ifTrue: [myPresenter model: aGciSession].
+	myPresenter notNil ifTrue: [myPresenter gciSession: aGciSession].
 	gciSession
 		when: #'logoutRequested:'	send: #'logoutRequested:'	to: self;
 		when: #'logoutPending'	send: #'exit'			to: self;
@@ -96,9 +96,12 @@ icon
 
 showOnSession: aGciSession
 
-	^self create
+	^self new 
 		gciSession: aGciSession;
-		showShell.
+		createView: self defaultView;
+		showShell;
+		yourself.
+
 ! !
 !JadeShell class categoriesFor: #icon!public! !
 !JadeShell class categoriesFor: #showOnSession:!public! !

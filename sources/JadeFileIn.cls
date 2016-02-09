@@ -85,7 +85,7 @@ fileInXML: aString forBrowser: aBrowser
 	source := VWSourceFile fromString: aString.
 	source removeSPort.
 	source := source asTopazFileIn.
-	(JadeWorkspace showOn: aBrowser gciSession)
+	(JadeWorkspace showOnSession: aBrowser gciSession)
 		caption: 'Jade Workspace - GemStone File-In';
 		fileIn: source;
 		yourself.
@@ -236,7 +236,7 @@ readWithProgress: progress
 		SessionManager current logError: ex.
 		myStream := WriteStream on: String new.
 		ex printTraceOn: myStream.
-		(JadeWorkspace showOn: browser gciSession) showText: myStream contents.
+		(JadeWorkspace showOnSession: browser gciSession) showText: myStream contents.
 		MessageBox notify: ex description.
 		Keyboard default isShiftDown ifTrue: [ex halt].
 	].

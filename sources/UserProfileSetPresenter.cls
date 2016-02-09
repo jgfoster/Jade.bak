@@ -28,7 +28,7 @@ createComponents
 fillFields
 
 	| string lines numbers |
-	string := self model serverPerform: #'allUsersPasswordLimits'.
+	string := gciSession serverPerform: #'allUsersPasswordLimits'.
 	lines := string subStrings: Character lf.
 	numbers := lines first subStrings: Character tab.
 	disallowUsedPasswordsPresenter 	value: numbers first = 'true'.

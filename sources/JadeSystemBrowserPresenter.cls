@@ -268,7 +268,7 @@ browseMethodHistory
 		MessageBox notify: 'No history available!!'.
 		^self.
 	].
-	(JadeMethodHistoryBrowser showOnSession: model)
+	(JadeMethodHistoryBrowser showOnSession: gciSession)
 		setContents: readStream;
 		yourself.
 !
@@ -815,7 +815,7 @@ editSaveClassA
 	[
 		answer = 'compileError'.
 	] whileTrue: [
-		(JadeWorkspace showOn: self gciSession)
+		(JadeWorkspace showOnSession: self gciSession)
 			caption: 'Jade Workspace - Compile errors found when compiling class';
 			showText: self nextParagraph.
 		answer := self nextLine.
@@ -1758,7 +1758,7 @@ onSetFocus: aView stack: aString
 		(Delay forMilliseconds: 50) wait.
 		aView ~~ (activeView := View active) ifTrue: [^self].		"If view changed then there is no point in updating it!!"
 		view = DeafObject current ifTrue: [^self].
-		eventCount = self gciSession eventCount ifTrue: [^self].
+		eventCount = gciSession eventCount ifTrue: [^self].
 		super onSetFocus.
 		[
 			self updateAndSelect: nil.
@@ -1772,7 +1772,7 @@ onSetFocus: aView stack: aString
 				SessionManager current isRuntime ifFalse: [ | x | x := TimeStamp current asMilliseconds - startTime asMilliseconds. (x -> aView -> activeView -> aString) halt].
 				stream := WriteStream on: String new.
 				ex printTraceOn: stream.
-				(JadeWorkspace showOn: model) showText: stream contents.
+				(JadeWorkspace showOnSession: gciSession) showText: stream contents.
 			].
 		].
 	] ensure: [
@@ -2236,19 +2236,19 @@ setHomeDictionary
 
 setSearchPolicy
 
-	packageListPresenter 			view model searchPolicy: SearchPolicy equality.
-	dictionaryListPresenter 			view model searchPolicy: SearchPolicy equality.
-	classCategoryPresenter			view model searchPolicy: SearchPolicy equality.
-	classListPresenter					view model searchPolicy: SearchPolicy equality.
-	classHierarchyPresenter		view model searchPolicy: SearchPolicy equality.
-	categoryListPresenter 			view model searchPolicy: SearchPolicy equality.
-	variableListPresenter	 			view model searchPolicy: SearchPolicy equality.
-	superclassListPresenter			view model searchPolicy: SearchPolicy equality.
-	methodListPresenter				view model searchPolicy: SearchPolicy equality.
-	overrideListPresenter			view model searchPolicy: SearchPolicy equality.
-	ancestorListPresenter 			view model searchPolicy: SearchPolicy equality.
-	repositoryListPresenter			view model searchPolicy: SearchPolicy equality.
-	globalsPresenter					view model searchPolicy: SearchPolicy equality.
+	packageListPresenter 	view model searchPolicy: SearchPolicy equality.
+	dictionaryListPresenter 	view model searchPolicy: SearchPolicy equality.
+	classCategoryPresenter	view model searchPolicy: SearchPolicy equality.
+	classListPresenter		view model searchPolicy: SearchPolicy equality.
+	classHierarchyPresenter	view model searchPolicy: SearchPolicy equality.
+	categoryListPresenter 	view model searchPolicy: SearchPolicy equality.
+	variableListPresenter	 	view model searchPolicy: SearchPolicy equality.
+	superclassListPresenter	view model searchPolicy: SearchPolicy equality.
+	methodListPresenter		view model searchPolicy: SearchPolicy equality.
+	overrideListPresenter	view model searchPolicy: SearchPolicy equality.
+	ancestorListPresenter 	view model searchPolicy: SearchPolicy equality.
+	repositoryListPresenter	view model searchPolicy: SearchPolicy equality.
+	globalsPresenter		view model searchPolicy: SearchPolicy equality.
 !
 
 showPackageChanges

@@ -6,7 +6,8 @@ DocumentShell subclass: #JadeLoginShell
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeLoginShell guid: (GUID fromString: '{0FA658CE-D1B0-40D0-9305-5830B29AED32}')!
-JadeLoginShell comment: ''!
+JadeLoginShell comment: 'model - an instance of JadeLogin (treated as a document)
+'!
 !JadeLoginShell categoriesForClass!Unclassified! !
 !JadeLoginShell methodsFor!
 
@@ -291,7 +292,7 @@ postLogin: aGciSession
 		openScintillaLibrary;
 		setWorkingDirectory;
 		yourself.
-	JadeTranscript showOn: aGciSession.
+	JadeTranscript showOnSession: aGciSession.
 !
 
 queryCommand: query

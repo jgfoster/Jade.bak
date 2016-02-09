@@ -50,7 +50,7 @@ fileSave
 	(theClass := self trigger: #'needClass') isNil ifTrue: [^true].
 	newSelector := self newSelector.
 	currentSelector = newSelector ifFalse: [
-		methodExists := self model
+		methodExists := gciSession
 			serverPerform: #'class:includesSelector:'
 			with: theClass
 			with: newSelector.
@@ -60,7 +60,7 @@ fileSave
 	].
 	user := self trigger: #'needUser'.
 	(category := self trigger: #'needMethodCategory') isNil ifTrue: [self error: 'We need a method category!!?'].
-	string := self model
+	string := gciSession
 		serverPerform: #'compileMethod:behavior:user:inCategory:'
 		with: documentPresenter value replaceCrLfWithLf
 		with: theClass 

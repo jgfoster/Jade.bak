@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-Presenter subclass: #AllUsersPresenter
+JadePresenter subclass: #AllUsersPresenter
 	instanceVariableNames: 'userListPresenter userProfilePresenter passwordLimitsPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -25,26 +25,23 @@ createSchematicWiring
 	userProfilePresenter 	when: #'needSelectedUser' 	send: #'selection' 	to: userListPresenter.
 !
 
-model: aGciSession
+gciSession: aGciSession
 
-	super model: aGciSession.
-	userListPresenter 		model: aGciSession.
-	userProfilePresenter 		model: aGciSession.
-	passwordLimitsPresenter	model: aGciSession.
+	super gciSession: aGciSession.
+	userListPresenter 		gciSession: aGciSession.
+	userProfilePresenter 		gciSession: aGciSession.
+	passwordLimitsPresenter	gciSession: aGciSession.
 !
 
 onViewOpened
 
 	super onViewOpened.
 	userListPresenter selectFirstUser.
-!
-
-updateMenuBar: aMenuBar! !
+! !
 !AllUsersPresenter categoriesFor: #createComponents!private! !
 !AllUsersPresenter categoriesFor: #createSchematicWiring!private! !
-!AllUsersPresenter categoriesFor: #model:!private! !
+!AllUsersPresenter categoriesFor: #gciSession:!private! !
 !AllUsersPresenter categoriesFor: #onViewOpened!private! !
-!AllUsersPresenter categoriesFor: #updateMenuBar:!private! !
 
 !AllUsersPresenter class methodsFor!
 

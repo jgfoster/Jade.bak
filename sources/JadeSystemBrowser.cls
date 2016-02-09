@@ -37,13 +37,13 @@ addSystemBrowserWithLayoutInfo: each
 
 	(JadeAutoSystemBrowserPresenter
 		createIn: cardsPresenter 
-		on: gciSession)
+		gciSession: gciSession)
 		layoutInfo: each.
 !
 
 addWorkspace
 
-	JadeWorkspace showOn: self model.
+	JadeWorkspace showOnSession: self model.
 !
 
 closeCard

@@ -6,7 +6,7 @@ JadePresenter subclass: #UserListPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 UserListPresenter guid: (GUID fromString: '{4556FB52-1146-43B0-94FD-10FE7D352252}')!
-UserListPresenter comment: ''!
+UserListPresenter comment: 'Presents a list of UserProfile instances in the AllUsersPresenter in the AllUsersShell.'!
 !UserListPresenter categoriesForClass!Unclassified! !
 !UserListPresenter methodsFor!
 
@@ -24,7 +24,7 @@ createSchematicWiring
 
 fillUserList
 
-	userListPresenter list: (GsUserProfile allIn: self model).
+	userListPresenter list: (GsUserProfile allIn: gciSession).
 !
 
 newUser
@@ -41,12 +41,12 @@ newUser
 		userListPresenter selection: existingUser.
 		^self
 	].
-	string := self model
+	string := gciSession
 		serverPerform: #'newUser:'
 		with: newUserID.
 	list := GsUserProfile
 		listFromString: string 
-		session: self model.
+		session: gciSession.
 	list := userListPresenter list , list.
 	userListPresenter
 		list: list;

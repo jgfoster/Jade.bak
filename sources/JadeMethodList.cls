@@ -87,7 +87,7 @@ doSearchFork
 
 filename: aString
 
-	(JadeWorkspace showOn: gciSession)
+	(JadeWorkspace showOnSession: gciSession)
 		filename: aString;
 		fileLoad.
 !

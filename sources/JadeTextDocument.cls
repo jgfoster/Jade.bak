@@ -95,7 +95,7 @@ defineClass: aString inPackageNamed: anUndefinedObject
 			serverPerform: #'fileInClass:' 
 			with: aString.
 	] on: GsCompileError do: [:ex | 
-		(JadeWorkspace showOn: gciSession)
+		(JadeWorkspace showOnSession: gciSession)
 			caption: 'Jade Workspace - Compile Error';
 			showError: ex list on: aString.
 	].
@@ -121,7 +121,7 @@ defineMethod: methodString inClassNamed: className inPackageNamed: packageName i
 	[
 		(result := gciSession executeString: string) isNil ifTrue: [^self].
 	] on: GsCompileError do: [:ex | 
-		(JadeWorkspace showOn: gciSession)
+		(JadeWorkspace showOnSession: gciSession)
 			caption: 'Jade Workspace - Compile Error';
 			showError: ex list on: string.
 		^self.
@@ -139,7 +139,7 @@ doIt: aString
 	[
 		gciSession executeString: aString.
 	] on: GsCompileError do: [:ex | 
-		(JadeWorkspace showOn: gciSession)
+		(JadeWorkspace showOnSession: gciSession)
 			caption: 'Jade Workspace - Compile Error';
 			showError: ex list on: aString.
 	].
@@ -237,7 +237,7 @@ fileInStart: aPackage
 
 fileNew
 
-	JadeWorkspace showOn: gciSession.
+	JadeWorkspace showOnSession: gciSession.
 !
 
 fileOpen
@@ -246,8 +246,17 @@ fileOpen
 	| openFilename |
 	openFilename := self class getFilename.
 	openFilename isNil ifTrue: [^self].
-	(JadeWorkspace showOn: gciSession)
+	(JadeWorkspace showOnSession: gciSession)
 		openOn: openFilename;
+		yourself.
+!
+
+gciSession: aGciSession
+
+	gciSession := aGciSession.
+	gciSession
+		when: #'logoutRequested:'	send: #'logoutRequested:'	to: self;
+		when: #'logoutPending'	send: #'exit'			to: self;
 		yourself.
 !
 
@@ -324,21 +333,6 @@ logoutRequested: aValueHolder
 	aValueHolder value: true.
 !
 
-model: anObject
-
-	codePane ifNotNil: [codePane gciSession: gciSession].
-!
-
-on: aGciSession
-
-	gciSession := aGciSession.
-	gciSession
-		when: #'logoutRequested:'	send: #'logoutRequested:'	to: self;
-		when: #'logoutPending'		send: #'exit'						to: self;
-		yourself.
-	super on: aGciSession.
-!
-
 onCloseRequested: boolValueHolder
 
 	super onCloseRequested: boolValueHolder.
@@ -374,6 +368,7 @@ onViewClosed
 
 onViewOpened
 
+	codePane ifNotNil: [codePane gciSession: gciSession].
 	super onViewOpened.
 	self updateStatusBar.
 	(documentPresenter view isKindOf: ScintillaView) ifFalse: [^self].
@@ -528,14 +523,13 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #fileInStart:!public! !
 !JadeTextDocument categoriesFor: #fileNew!private! !
 !JadeTextDocument categoriesFor: #fileOpen!private! !
+!JadeTextDocument categoriesFor: #gciSession:!private! !
 !JadeTextDocument categoriesFor: #getDocumentData!accessing!private! !
 !JadeTextDocument categoriesFor: #help!private! !
 !JadeTextDocument categoriesFor: #jadeDisplay!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeExecute!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeExecuteAndDisplay:!Jade!public! !
 !JadeTextDocument categoriesFor: #logoutRequested:!private! !
-!JadeTextDocument categoriesFor: #model:!overrides!private! !
-!JadeTextDocument categoriesFor: #on:!private! !
 !JadeTextDocument categoriesFor: #onCloseRequested:!private! !
 !JadeTextDocument categoriesFor: #onPromptToSaveChanges:!private! !
 !JadeTextDocument categoriesFor: #onViewClosed!private! !
@@ -574,6 +568,16 @@ icon
 	^Icon fromFile: 'icons\GS32x32.ico'.
 !
 
+showOnSession: aGciSession
+
+	^self new 
+		gciSession: aGciSession;
+		createView: self defaultView;
+		showShell;
+		yourself.
+
+!
+
 shutdownOnExit
 
 	^false.
@@ -581,5 +585,6 @@ shutdownOnExit
 !JadeTextDocument class categoriesFor: #defaultFileExtension!public! !
 !JadeTextDocument class categoriesFor: #fileTypes!public! !
 !JadeTextDocument class categoriesFor: #icon!public! !
+!JadeTextDocument class categoriesFor: #showOnSession:!public! !
 !JadeTextDocument class categoriesFor: #shutdownOnExit!public! !
 

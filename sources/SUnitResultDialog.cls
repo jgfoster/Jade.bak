@@ -42,7 +42,7 @@ openWorkspaceWithList
 	listPresenter list do: [:each | 
 		stream nextPutAll: each; nextPut: $.; cr.
 	].
-	(JadeWorkspace showOn: (self model value at: 1)) showText: stream contents.
+	(JadeWorkspace showOnSession: (self model value at: 1)) showText: stream contents.
 !
 
 queryCommand: aCommandQuery

@@ -146,7 +146,7 @@ labelOf: oldString editedTo: newString accept: aValueHolder
 
 model: anObject
 
-	anObject class == GciSession ifTrue: [gciSession := anObject].
+	anObject class == GciSession ifTrue: [self error: 'should call gciSession: method'].
 	super model: anObject.
 !
 
@@ -425,4 +425,20 @@ userSelection
 !JadePresenter categoriesFor: #updateMenuBar:!menus!public! !
 !JadePresenter categoriesFor: #updateMenuBar:withName:itemsFrom:!menus!public! !
 !JadePresenter categoriesFor: #userSelection!public! !
+
+!JadePresenter class methodsFor!
+
+createIn: aCompositePresenter gciSession: aGciSession
+	"Answers an instance of the receiver created as a sub-presenter of aCompositePresenter
+	and wired up to a view identified by the resource name aResourceNameString. The new
+	presenter is to be connected to aModel. It is assumed that, at this stage, aCompositePresenter
+	is already opened in a view. For this reason we must force an #onViewOpened message to
+	the newly created presenter"
+
+	| newOne |
+	newOne := aCompositePresenter add: (self new gciSession: aGciSession; yourself).
+	newOne createView: self defaultView.
+	^newOne onViewOpened; yourself
+	! !
+!JadePresenter class categoriesFor: #createIn:gciSession:!public! !
 
