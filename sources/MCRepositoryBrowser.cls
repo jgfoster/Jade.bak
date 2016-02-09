@@ -49,7 +49,7 @@ addHttpRepository
 	(info := MCHttpRepositoryInfoDialog showModalOn: MCHttpRepositoryInfo new) isNil ifTrue: [^self].
 	delimiter := (Character codePoint: 255) asString.
 	string := info location , delimiter , info user , delimiter , info password.
-	model
+	gciSession
 		serverPerform: #'mcAddHttpRepository:' 
 		with: string.
 	self updateRepositoryList.
@@ -147,7 +147,7 @@ fileTypes
 getLoadedVersionNames
 
 	| string list |
-	(string := model serverPerform: #'mcLoadedVersionNames') isNil ifTrue: [^self].
+	(string := gciSession serverPerform: #'mcLoadedVersionNames') isNil ifTrue: [^self].
 	loadedVersionNames := Dictionary new.
 	list := string subStrings: Character lf.
 	list := list collect: [:each | each subStrings: Character tab].
@@ -236,7 +236,7 @@ removeRepository
 
 	| repository |
 	repository := repositoryListPresenter selection.
-	model
+	gciSession
 		serverPerform: #'mcRemoveRepository:'
 		with: repository.
 	self updateRepositoryList.

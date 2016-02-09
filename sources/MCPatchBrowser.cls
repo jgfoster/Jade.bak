@@ -38,7 +38,7 @@ inspectLine
 model: anMCPatch
 
 	patch := anMCPatch.
-	super model: anMCPatch gciSession.
+	self gciSession: anMCPatch gciSession.
 !
 
 onViewOpened

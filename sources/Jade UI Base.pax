@@ -60,7 +60,7 @@ JadePresenter subclass: #JadeBrowserPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Shell subclass: #JadeShell
-	instanceVariableNames: 'myPresenter'
+	instanceVariableNames: 'gciSession myPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

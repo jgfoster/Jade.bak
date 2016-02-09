@@ -2282,7 +2282,7 @@ selectedClassOverridesSelector: aSymbol
 jadeBrowseClasses
 
 	gciSession hasServer ifTrue: [
-		^JadeSystemBrowser showOn: gciSession.
+		^JadeSystemBrowser showOnSession: gciSession.
 	].
 	MessageBox
 		warning: 'Server initialization failed at login.'

@@ -26,7 +26,7 @@ createComponents
 model: anAssociation
 	"aGciSession -> entryArray"
 
-	super model: anAssociation key.
+	self gciSession: anAssociation key.
 	entryArray := anAssociation value.
 !
 

@@ -133,7 +133,7 @@ addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
 
 browseProcesses
 
-	JadeProcessBrowser showOn: gciSession.
+	JadeProcessBrowser showOnSession: gciSession.
 ! !
 !JadeTranscript categoriesFor: #browseProcesses!public! !
 

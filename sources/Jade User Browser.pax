@@ -398,7 +398,7 @@ addUser: aUserProfile toStream: aStream
 jadeBrowseUsers
 
 	gciSession hasServer ifTrue: [
-		^AllUsersShell showOn: gciSession.
+		^AllUsersShell showOnSession: gciSession.
 	].
 	MessageBox
 		warning: 'Server initialization failed at login.'

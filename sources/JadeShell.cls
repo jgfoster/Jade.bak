@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Shell subclass: #JadeShell
-	instanceVariableNames: 'myPresenter'
+	instanceVariableNames: 'gciSession myPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -16,28 +16,28 @@ createComponents
 	self presenterClass ifNotNil: [:class | myPresenter := self add: class new name: 'myPresenter'].
 !
 
+gciSession: aGciSession
+
+	gciSession := aGciSession.
+	myPresenter notNil ifTrue: [myPresenter model: aGciSession].
+	gciSession
+		when: #'logoutRequested:'	send: #'logoutRequested:'	to: self;
+		when: #'logoutPending'	send: #'exit'			to: self;
+		yourself.
+!
+
 logoutRequested: aValueHolder
 	"Private - Opportunity to save changes."
 
 	aValueHolder value: true.
 !
 
-model: aGciSession
-
-	super model: aGciSession.
-	myPresenter notNil ifTrue: [myPresenter model: aGciSession].
-	model
-		when: #'logoutRequested:'	send: #'logoutRequested:'	to: self;
-		when: #'logoutPending'		send: #'exit'						to: self;
-		yourself.
-!
-
 onViewClosed
 
-	model notNil ifTrue: [
+	gciSession notNil ifTrue: [
 		| temp |
-		temp := model.
-		model := nil.
+		temp := gciSession.
+		gciSession := nil.
 		temp removeEventsTriggeredFor: self.
 	].
 	super onViewClosed.
@@ -76,11 +76,11 @@ shellName
 
 updateCaption
 
-	self caption: (model titleBarFor: self shellName).
+	self caption: (gciSession titleBarFor: self shellName).
 ! !
 !JadeShell categoriesFor: #createComponents!private! !
+!JadeShell categoriesFor: #gciSession:!private! !
 !JadeShell categoriesFor: #logoutRequested:!private! !
-!JadeShell categoriesFor: #model:!private! !
 !JadeShell categoriesFor: #onViewClosed!private! !
 !JadeShell categoriesFor: #onViewOpened!private! !
 !JadeShell categoriesFor: #presenterClass!overrides!private! !
@@ -92,6 +92,14 @@ updateCaption
 icon
 
 	^Icon fromFile: 'icons\GS32x32.ico'.
+!
+
+showOnSession: aGciSession
+
+	^self create
+		gciSession: aGciSession;
+		showShell.
 ! !
 !JadeShell class categoriesFor: #icon!public! !
+!JadeShell class categoriesFor: #showOnSession:!public! !
 

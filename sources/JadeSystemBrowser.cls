@@ -13,7 +13,7 @@ JadeSystemBrowser comment: ''!
 abortTransaction
 
 	self isOkayToChange ifTrue: [
-		model abort.
+		gciSession abort.
 		self update.
 	].
 !
@@ -27,7 +27,7 @@ addSystemBrowserForClass: anArray
 
 	(JadeAutoSystemBrowserPresenter
 		createIn: cardsPresenter 
-		on: model)
+		on: gciSession)
 		updateAfterFindClass: anArray
 		isMeta: nil 
 		selector: ''.
@@ -37,7 +37,7 @@ addSystemBrowserWithLayoutInfo: each
 
 	(JadeAutoSystemBrowserPresenter
 		createIn: cardsPresenter 
-		on: model)
+		on: gciSession)
 		layoutInfo: each.
 !
 
@@ -104,7 +104,7 @@ handleInvalidSession
 			warning: 'All windows for this session will close due to unexpected logout.'
 			caption: 'Invalid session!!'.
 	].
-	model forceLogout.
+	gciSession forceLogout.
 !
 
 initialize
@@ -146,7 +146,7 @@ moveCardRight
 onViewOpened
 
 	super onViewOpened.
-	cardsPresenter model: model.
+	cardsPresenter model: gciSession.
 	self restoreLayoutAndContents.
 !
 

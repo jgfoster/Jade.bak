@@ -44,7 +44,7 @@ browseMethodsContaining
 
 	| string |
 	(string := Prompter prompt: 'Enter substring:') isNil ifTrue: [^self].
-	(JadeMethodListBrowser showOn: self gciSession) browseMethodsContaining: string.
+	(JadeMethodListBrowser showOnSession: self gciSession) browseMethodsContaining: string.
 !
 
 browseSenders

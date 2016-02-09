@@ -13,23 +13,23 @@ AllUsersPresenter comment: ''!
 createComponents
 
 	super createComponents.
-	userListPresenter 				:= self add: UserListPresenter 			new name: 'userList'.
-	userProfilePresenter 			:= self add: UserProfilePresenter 		new name: 'userProfile'.
+	userListPresenter 		:= self add: UserListPresenter 		new name: 'userList'.
+	userProfilePresenter 		:= self add: UserProfilePresenter 	new name: 'userProfile'.
 	passwordLimitsPresenter 	:= self add: UserProfileSetPresenter 	new name: 'passwordLimits'.
 !
 
 createSchematicWiring
 
 	super createSchematicWiring.
-	userListPresenter when: #'selectionChanged' send: #'update' to: userProfilePresenter.
-	userProfilePresenter when: #'needSelectedUser' send: #'selection' to: userListPresenter.
+	userListPresenter 	when: #'selectionChanged' 	send: #'update' 		to: userProfilePresenter.
+	userProfilePresenter 	when: #'needSelectedUser' 	send: #'selection' 	to: userListPresenter.
 !
 
 model: aGciSession
 
 	super model: aGciSession.
-	userListPresenter 				model: aGciSession.
-	userProfilePresenter 			model: aGciSession.
+	userListPresenter 		model: aGciSession.
+	userProfilePresenter 		model: aGciSession.
 	passwordLimitsPresenter	model: aGciSession.
 !
 

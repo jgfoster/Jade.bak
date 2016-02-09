@@ -26,9 +26,9 @@ debugProcess
 
 	| oop oopType |
 	oop := (processesPresenter selection at: 2) asNumber.
-	oopType := model oopTypeWithOop: oop.
+	oopType := gciSession oopTypeWithOop: oop.
 	JadeDebugger 
-		openOn: (GsProcess session: model oop: oopType) 
+		openOn: (GsProcess session: gciSession oop: oopType) 
 		message: 'background process'
 		terminateOnClose: false.
 !
@@ -37,8 +37,8 @@ inspectProcess
 
 	| oop oopType |
 	oop := (processesPresenter selection at: 2) asNumber.
-	oopType := model oopTypeWithOop: oop.
-	JadeInspector showOn: model -> oopType.
+	oopType := gciSession oopTypeWithOop: oop.
+	JadeInspector showOn: gciSession -> oopType.
 !
 
 onViewOpened
@@ -83,9 +83,15 @@ sendToSelectedProcess: aSymbol
 
 	| oop oopType |
 	oop := (processesPresenter selection at: 2) asNumber.
-	oopType := model oopTypeWithOop: oop.
-	model send: aSymbol to: oopType.
+	oopType := gciSession oopTypeWithOop: oop.
+	gciSession send: aSymbol to: oopType.
 	self update.!
+
+shellName
+
+	^'Processes'
+
+!
 
 suspend
 
@@ -105,7 +111,7 @@ terminate9
 update
 
 	| string lines priorities |
-	string := model serverPerform: #'processes'.
+	string := gciSession serverPerform: #'processes'.
 	lines := (string subStrings: Character lf) asOrderedCollection.
 	priorities := lines removeFirst subStrings: Character tab.
 	priorities := priorities collect: [:each | | pieces | pieces := each subStrings: Character space. pieces first -> pieces last asNumber].
@@ -113,11 +119,6 @@ update
 	prioritiesPresenter model list: priorities.
 	lines := lines collect: [:each | (each subStrings: Character tab) , #('?' '?')].
 	processesPresenter model list: lines.
-!
-
-updateCaption
-
-	self caption: (model titleBarFor: 'Processes').
 ! !
 !JadeProcessBrowser categoriesFor: #createComponents!public! !
 !JadeProcessBrowser categoriesFor: #createSchematicWiring!public! !
@@ -128,11 +129,11 @@ updateCaption
 !JadeProcessBrowser categoriesFor: #refresh!public! !
 !JadeProcessBrowser categoriesFor: #resume!public! !
 !JadeProcessBrowser categoriesFor: #sendToSelectedProcess:!public! !
+!JadeProcessBrowser categoriesFor: #shellName!public! !
 !JadeProcessBrowser categoriesFor: #suspend!public! !
 !JadeProcessBrowser categoriesFor: #terminate!public! !
 !JadeProcessBrowser categoriesFor: #terminate9!public! !
 !JadeProcessBrowser categoriesFor: #update!public! !
-!JadeProcessBrowser categoriesFor: #updateCaption!public! !
 
 !JadeProcessBrowser class methodsFor!
 

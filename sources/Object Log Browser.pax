@@ -113,7 +113,7 @@ sbObjectLog: anOrderedCollection
 jadeBrowseObjectLog
 
 	gciSession hasServer ifTrue: [
-		^ObjectLogBrowser showOn: gciSession.
+		^ObjectLogBrowser showOnSession: gciSession.
 	].
 	MessageBox
 		warning: 'Server initialization failed at login.'

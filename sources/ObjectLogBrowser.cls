@@ -49,9 +49,9 @@ createSchematicWiring
 debug: anArray
 
 	| oop |
-	oop := model oopTypeWithOop: (anArray at: 9) asNumber.
+	oop := gciSession oopTypeWithOop: (anArray at: 9) asNumber.
 	JadeDebugger 
-		openOn: (GsProcess session: model oop: oop) 
+		openOn: (GsProcess session: gciSession oop: oop) 
 		message: (anArray at: 8)
 		terminateOnClose: false.
 !
@@ -144,7 +144,7 @@ updateA: aString
 
 	| time1 time2 time3 string stream |
 	time1 := Time millisecondsToRun: [
-		string := model 
+		string := gciSession 
 			serverPerform: #'systemBrowser:' 
 			with: aString.
 	].
@@ -189,7 +189,7 @@ updateB: stream
 
 viewEntry: anArray
 
-	ObjectLogEntryViewer showOn: model -> anArray.
+	ObjectLogEntryViewer showOn: gciSession -> anArray.
 ! !
 !ObjectLogBrowser categoriesFor: #commit!public! !
 !ObjectLogBrowser categoriesFor: #commitTransaction!public! !

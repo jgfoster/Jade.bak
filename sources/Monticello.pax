@@ -1176,7 +1176,7 @@ gsPackagePolicy
 jadeBrowseMonticello
 
 	gciSession hasServer ifTrue: [
-		^MCRepositoryBrowser showOn: gciSession.
+		^MCRepositoryBrowser showOnSession: gciSession.
 	].
 	MessageBox
 		warning: 'Server initialization failed at login.'

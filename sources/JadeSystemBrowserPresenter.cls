@@ -268,14 +268,14 @@ browseMethodHistory
 		MessageBox notify: 'No history available!!'.
 		^self.
 	].
-	(JadeMethodHistoryBrowser showOn: model)
+	(JadeMethodHistoryBrowser showOnSession: model)
 		setContents: readStream;
 		yourself.
 !
 
 browseMethodsAndSelect: aString
 
-	(JadeMethodListBrowser showOn: self gciSession) 
+	(JadeMethodListBrowser showOnSession: self gciSession) 
 		browseMethodsFromString: readStream upToEnd;
 		selecting: aString.
 !
