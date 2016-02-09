@@ -38,7 +38,7 @@ version
 
 getVersion
 
-	^SessionManager current class git: 'describe'.!
+	^(ReadStream on: (SessionManager current class git: 'describe')) nextLine!
 
 mainShellClass
 
