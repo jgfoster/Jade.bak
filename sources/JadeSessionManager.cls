@@ -38,7 +38,7 @@ version
 
 getVersion
 
-	^'2.000'!
+	^SessionManager current class git: 'describe'.!
 
 mainShellClass
 
