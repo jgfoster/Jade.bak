@@ -74,7 +74,7 @@ onViewOpened
 	(view isKindOf: ScintillaView) ifFalse: [^self].
 	view lexer: #container.
 	view stylerClass: JadeMethodStyler.
-	view textStyles: self class textStyles.
+	view textStyles: JadeTextStyles default textStyles.
 ! !
 !JadeTextPresenter categoriesFor: #onViewOpened!public! !
 

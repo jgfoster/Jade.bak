@@ -168,6 +168,8 @@ resetColors
 !
 
 textStyles
+
+	textStyles isNil ifTrue: [self textStyles: self defaultTextStyles].
 	^textStyles!
 
 textStyles: anObject
