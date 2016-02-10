@@ -439,6 +439,54 @@ createIn: aCompositePresenter gciSession: aGciSession
 	newOne := aCompositePresenter add: (self new gciSession: aGciSession; yourself).
 	newOne createView: self defaultView.
 	^newOne onViewOpened; yourself
-	! !
+	!
+
+script
+
+	| myPackages myPresenters myShells dict stream buildHierarchy reportHierarchy |
+	myPackages := PackageManager current packages select: [:each | each packagePathname beginsWith: 'sources\'].
+	myPresenters := Presenter allSubclasses select: [:eachPresenter | myPackages anySatisfy: [:eachPackage | eachPackage includesClass: eachPresenter]].
+	myShells := myPresenters select: [:each | each inheritsFrom: Shell].
+	myPresenters := myPresenters copy reject: [:each | myShells includes: each].
+	buildHierarchy := [:eachClass |
+		| child parent |
+		child := eachClass.
+		[
+			parent := child superclass.
+			parent notNil.
+		] whileTrue: [
+			(dict at: parent ifAbsentPut: [Set new]) add: child.
+			child := parent.
+		].
+	].
+	reportHierarchy := [:class :indent :printBlock| 
+		indent timesRepeat: [stream nextPut: $-].
+		printBlock value: class.
+		(dict at: class ifAbsent: [nil]) ifNotNil: [:aSet | 
+			(aSet asSortedCollection: [:a :b | a name <= b name]) do: [:each | reportHierarchy value: each value: indent + 1 value: printBlock].
+		].
+	].
+	dict := Dictionary new.
+	myShells do: buildHierarchy.
+	dict := Dictionary new.
+	myPresenters do: buildHierarchy.
+	stream := WriteStream on: String new.
+	reportHierarchy value: Object value: 0 value: [:aClass | 
+		stream nextPutAll: aClass name.
+		(myPackages anySatisfy: [:eachPackage | eachPackage includesClass: aClass]) ifTrue: [
+			stream nextPutAll: ' ( '.
+			aClass allReferences do: [:each | 
+				((each isKindOf: CompiledMethod) and: [each isClassMethod]) ifTrue: [
+					stream nextPutAll: each methodClass instanceClass name.
+					stream space.
+				].
+			].
+			stream nextPutAll: ')'.
+		].
+		stream cr.
+	].
+	^stream contents.
+! !
 !JadePresenter class categoriesFor: #createIn:gciSession:!public! !
+!JadePresenter class categoriesFor: #script!public! !
 

@@ -13,6 +13,7 @@ package classNames
 	add: #JadeShell;
 	add: #JadeTextDocument;
 	add: #JadeTextPresenter;
+	add: #JadeTextStyles;
 	add: #JadeValueDialog;
 	add: #JadeWorkspace;
 	yourself.
@@ -44,6 +45,11 @@ package!
 
 "Class Definitions"!
 
+Object subclass: #JadeTextStyles
+	instanceVariableNames: 'colorForCompileError colorForNoEdits colorForUnsavedEdits textStyles'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: 'default'!
 Presenter subclass: #JadePresenter
 	instanceVariableNames: 'gciSession'
 	classVariableNames: ''
@@ -81,7 +87,7 @@ JadeTextDocument subclass: #JadeWorkspace
 	classInstanceVariableNames: ''!
 TextPresenter subclass: #JadeTextPresenter
 	instanceVariableNames: ''
-	classVariableNames: 'ColorForCompileError ColorForNoEdits ColorForUnsavedEdits JadeTextStyles'
+	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 

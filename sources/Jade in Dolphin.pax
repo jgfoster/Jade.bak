@@ -20,12 +20,7 @@ GciErrSType64 template.
 '.
 package basicScriptAt: #preuninstall put: 'JadeLoginShell removeFromDevelopmentTools.'.
 
-package classNames
-	add: #JadeMethodWorkspace;
-	yourself.
-
 package methodNames
-	add: #JadeSystemBrowserPresenter -> #newMethodPresenter;
 	add: 'JadeLoginShell class' -> #addToDevelopmentTools;
 	add: 'JadeLoginShell class' -> #removeFromDevelopmentTools;
 	add: 'JadeLoginShell class' -> #toolsFolderIcon;
@@ -42,19 +37,12 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: 'Jade Deployment';
 	add: 'Jade Login';
-	add: 'Jade System Browser';
-	add: '..\..\..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	yourself).
 
 package!
 
 "Class Definitions"!
 
-MethodWorkspace subclass: #JadeMethodWorkspace
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 
 "Global Aliases"!
 
@@ -87,16 +75,6 @@ toolsFolderIcon
 !JadeLoginShell class categoriesFor: #addToDevelopmentTools!Development Image!public! !
 !JadeLoginShell class categoriesFor: #removeFromDevelopmentTools!Development Image!public! !
 !JadeLoginShell class categoriesFor: #toolsFolderIcon!Development Image!public! !
-
-!JadeSystemBrowserPresenter methodsFor!
-
-newMethodPresenter
-
-	^1 = 1
-		ifTrue: [super newMethodPresenter]
-		ifFalse: [JadeMethodWorkspace new].
-! !
-!JadeSystemBrowserPresenter categoriesFor: #newMethodPresenter!overrides!public! !
 
 "End of package definition"!
 

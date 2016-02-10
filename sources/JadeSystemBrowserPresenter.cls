@@ -412,23 +412,23 @@ contextObject
 
 createComponents
 
-	ancestorListPresenter 		:= self add: ListPresenter			new 		name: 'ancestorList'.
-	categoryListPresenter		:= self add: ListPresenter			new 		name: 'categoryList'.
-	classCategoryPresenter		:= self add: TreePresenter			new 		name: 'classCategoryList'.
-	classCommentPresenter 	:= self add: TextPresenter 		new 		name: 'classDocumentation'.
+	ancestorListPresenter 	:= self add: ListPresenter		new 		name: 'ancestorList'.
+	categoryListPresenter	:= self add: ListPresenter		new 		name: 'categoryList'.
+	classCategoryPresenter	:= self add: TreePresenter		new 		name: 'classCategoryList'.
+	classCommentPresenter 	:= self add: TextPresenter 	new 		name: 'classDocumentation'.
 	classDefinitionPresenter	:= self add: JadeTextPresenter 	new 		name: 'classDefinition'.
-	classHierarchyPresenter	:= self add: TreePresenter			new 		name: 'classHierarchy'.
-	classListPresenter				:= self add: ListPresenter			new 		name: 'classList'.
-	dictionaryListPresenter 		:= self add: ListPresenter 			new 		name: 'dictionaryList'.
-	globalsPresenter				:= self add: ListPresenter			new 		name: 'globals'.
-	methodListPresenter			:= self add: ListPresenter			new 		name: 'methodList'.
-	methodSourcePresenter		:= self add: self newMethodPresenter 	name: 'methodSource'.
-	originalSourcePresenter		:= self add: self newMethodPresenter 	name: 'originalSource'.
-	overrideListPresenter		:= self add: ListPresenter			new 		name: 'overrideList'.
-	packageListPresenter 		:= self add: ListPresenter			new 		name: 'packageList'.
-	repositoryListPresenter		:= self add: ListPresenter			new 		name: 'repositoryList'.
-	superclassListPresenter		:= self add: ListPresenter			new 		name: 'superclassList'.
-	variableListPresenter			:= self add: ListPresenter			new 		name: 'variableList'.
+	classHierarchyPresenter	:= self add: TreePresenter		new 		name: 'classHierarchy'.
+	classListPresenter		:= self add: ListPresenter		new 		name: 'classList'.
+	dictionaryListPresenter 	:= self add: ListPresenter 		new 		name: 'dictionaryList'.
+	globalsPresenter		:= self add: ListPresenter		new 		name: 'globals'.
+	methodListPresenter		:= self add: ListPresenter		new 		name: 'methodList'.
+	methodSourcePresenter	:= self add: self newMethodPresenter 	name: 'methodSource'.
+	originalSourcePresenter	:= self add: self newMethodPresenter 	name: 'originalSource'.
+	overrideListPresenter	:= self add: ListPresenter		new 		name: 'overrideList'.
+	packageListPresenter 	:= self add: ListPresenter		new 		name: 'packageList'.
+	repositoryListPresenter	:= self add: ListPresenter		new 		name: 'repositoryList'.
+	superclassListPresenter	:= self add: ListPresenter		new 		name: 'superclassList'.
+	variableListPresenter		:= self add: ListPresenter		new 		name: 'variableList'.
 !
 
 createSchematicWiring
@@ -1409,14 +1409,14 @@ methodValueChanged
 	inUpdate ifTrue: [^self].
 	methodSourcePresenter value = methodSource ifTrue: [
 		methodSourcePresenter view 
-			backcolor: JadeTextPresenter colorForNoEdits;
+			backcolor: JadeTextStyles default colorForNoEdits;
 			isModified: false;
 			yourself.
 		self updateMethodStepPoints.
 		self statusBarText: ''.
 	] ifFalse: [
 		methodSourcePresenter view 
-			backcolor: JadeTextPresenter colorForUnsavedEdits;
+			backcolor: JadeTextStyles default colorForUnsavedEdits;
 			clearContainerIndicators;
 			yourself.
 	].
@@ -1803,7 +1803,7 @@ openSourceStyler
 
 	| textStyles |
 	textStyles := methodSourcePresenter view editStyles textStyles.
-	JadeTextPresenter textStyles: textStyles.
+	JadeTextStyles default textStyles: textStyles.
 	classDefinitionPresenter view textStyles: textStyles.
 	originalSourcePresenter view textStyles: textStyles.
 !
@@ -2029,7 +2029,7 @@ reportCompileError: anArrayOfArray
 			range: (start to: (start + 10 min: source size)) 
 			tag: string).
 	].
-	methodSourcePresenter view backcolor: JadeTextPresenter colorForCompileError.
+	methodSourcePresenter view backcolor: JadeTextStyles default colorForCompileError.
 	methodSourcePresenter view indicators: indicators.
 	string := stream contents.
 	self statusBarText: (string copyFrom: 1 to: string size - 2).
@@ -2054,7 +2054,7 @@ requestStringForUpdate
 
 resetColors
 
-	JadeTextPresenter resetColors.
+	JadeTextStyles default resetColors.
 !
 
 revertNewClass
@@ -2197,22 +2197,22 @@ selectedClassNameWithoutVersion
 setColorForCompileErrors
 
 	| newColor |
-	newColor := ColorDialog showModalOn: JadeTextPresenter colorForNoEdits.
-	JadeTextPresenter colorForCompileError: newColor.
+	newColor := ColorDialog showModalOn: JadeTextStyles default colorForNoEdits.
+	JadeTextStyles default colorForCompileError: newColor.
 !
 
 setColorForNoEdits
 
 	| newColor |
-	newColor := ColorDialog showModalOn: JadeTextPresenter colorForNoEdits.
-	JadeTextPresenter colorForNoEdits: newColor.
+	newColor := ColorDialog showModalOn: JadeTextStyles default colorForNoEdits.
+	JadeTextStyles default colorForNoEdits: newColor.
 !
 
 setColorForUnsavedEdits
 
 	| newColor |
-	newColor := ColorDialog showModalOn: JadeTextPresenter colorForUnsavedEdits.
-	JadeTextPresenter colorForUnsavedEdits: newColor.
+	newColor := ColorDialog showModalOn: JadeTextStyles default colorForUnsavedEdits.
+	JadeTextStyles default colorForUnsavedEdits: newColor.
 	!
 
 setEnvironment
@@ -2742,7 +2742,7 @@ updateMethod
 	].
 	self updateMethodStepPoints.
 	methodSourcePresenter view 
-		backcolor: JadeTextPresenter colorForNoEdits;
+		backcolor: JadeTextStyles default colorForNoEdits;
 		isModified: false;
 		isReadOnly: isReadOnly;
 		yourself.
