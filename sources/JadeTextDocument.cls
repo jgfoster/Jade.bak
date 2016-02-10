@@ -251,6 +251,9 @@ fileOpen
 		yourself.
 !
 
+gciSession
+	^gciSession!
+
 gciSession: aGciSession
 
 	gciSession := aGciSession.
@@ -499,16 +502,16 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #aboutJade!private! !
 !JadeTextDocument categoriesFor: #activeTextEdit!private! !
 !JadeTextDocument categoriesFor: #addQuotesToSelection!edit!private! !
-!JadeTextDocument categoriesFor: #codePresenterIsMethod!public! !
+!JadeTextDocument categoriesFor: #codePresenterIsMethod!private! !
 !JadeTextDocument categoriesFor: #commitTransaction!Jade!private! !
 !JadeTextDocument categoriesFor: #contextObject!Jade!private! !
 !JadeTextDocument categoriesFor: #continueTransaction!Jade!private! !
-!JadeTextDocument categoriesFor: #createComponents!public! !
+!JadeTextDocument categoriesFor: #createComponents!private! !
 !JadeTextDocument categoriesFor: #currentSelectionOrLine!Jade!private! !
-!JadeTextDocument categoriesFor: #defineClass:inPackageNamed:!public! !
-!JadeTextDocument categoriesFor: #defineClassMethod:inClassNamed:inPackageNamed:inCategory:!public! !
-!JadeTextDocument categoriesFor: #defineMethod:inClassNamed:inPackageNamed:inCategory:!public! !
-!JadeTextDocument categoriesFor: #doIt:!public! !
+!JadeTextDocument categoriesFor: #defineClass:inPackageNamed:!private! !
+!JadeTextDocument categoriesFor: #defineClassMethod:inClassNamed:inPackageNamed:inCategory:!private! !
+!JadeTextDocument categoriesFor: #defineMethod:inClassNamed:inPackageNamed:inCategory:!private! !
+!JadeTextDocument categoriesFor: #doIt:!private! !
 !JadeTextDocument categoriesFor: #editCopy!edit!private! !
 !JadeTextDocument categoriesFor: #editCut!edit!private! !
 !JadeTextDocument categoriesFor: #editDelete!edit!private! !
@@ -518,17 +521,18 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #editReplace!edit!private! !
 !JadeTextDocument categoriesFor: #editSelectAll!edit!private! !
 !JadeTextDocument categoriesFor: #executeSelectionOrLine!Jade!private! !
-!JadeTextDocument categoriesFor: #fileIn:!public! !
-!JadeTextDocument categoriesFor: #fileInEnd:!public! !
-!JadeTextDocument categoriesFor: #fileInStart:!public! !
+!JadeTextDocument categoriesFor: #fileIn:!private! !
+!JadeTextDocument categoriesFor: #fileInEnd:!private! !
+!JadeTextDocument categoriesFor: #fileInStart:!private! !
 !JadeTextDocument categoriesFor: #fileNew!private! !
 !JadeTextDocument categoriesFor: #fileOpen!private! !
+!JadeTextDocument categoriesFor: #gciSession!private! !
 !JadeTextDocument categoriesFor: #gciSession:!private! !
 !JadeTextDocument categoriesFor: #getDocumentData!accessing!private! !
 !JadeTextDocument categoriesFor: #help!private! !
 !JadeTextDocument categoriesFor: #jadeDisplay!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeExecute!Jade!private! !
-!JadeTextDocument categoriesFor: #jadeExecuteAndDisplay:!Jade!public! !
+!JadeTextDocument categoriesFor: #jadeExecuteAndDisplay:!Jade!private! !
 !JadeTextDocument categoriesFor: #logoutRequested:!private! !
 !JadeTextDocument categoriesFor: #onCloseRequested:!private! !
 !JadeTextDocument categoriesFor: #onPromptToSaveChanges:!private! !
@@ -537,13 +541,13 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #print!private! !
 !JadeTextDocument categoriesFor: #queryCommand:!commands!private! !
 !JadeTextDocument categoriesFor: #removeQuotesFromSelection!edit!private! !
-!JadeTextDocument categoriesFor: #saveDocument!public! !
+!JadeTextDocument categoriesFor: #saveDocument!private! !
 !JadeTextDocument categoriesFor: #selectLfIfEndingOnCr!edit!private! !
 !JadeTextDocument categoriesFor: #setDocumentData:!accessing!private! !
-!JadeTextDocument categoriesFor: #showError:on:!public! !
+!JadeTextDocument categoriesFor: #showError:on:!private! !
 !JadeTextDocument categoriesFor: #showSelection!edit!private! !
-!JadeTextDocument categoriesFor: #showText:!public! !
-!JadeTextDocument categoriesFor: #updateCodeFont!public! !
+!JadeTextDocument categoriesFor: #showText:!private! !
+!JadeTextDocument categoriesFor: #updateCodeFont!private! !
 !JadeTextDocument categoriesFor: #updateStatusBar!private! !
 !JadeTextDocument categoriesFor: #updateStatusBarItem:with:!private! !
 !JadeTextDocument categoriesFor: #validateUserInterface!overrides!private! !

@@ -187,7 +187,7 @@ inspectOop
 		^self.
 	].
 	result := gciSession executeString: 'Object _objectForOop: ' , string.
-	JadeInspector showOn: gciSession -> result.
+	JadeInspector showOn: result session: gciSession.
 !
 
 invalidateUserInterface

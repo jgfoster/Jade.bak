@@ -13,23 +13,23 @@ UserProfilePasswordPresenter comment: ''!
 createComponents
 
 	super createComponents.
-	whenPasswordChangedPresenter 	:= self add: TextPresenter 		new name: 'whenPasswordChanged'.
-	loginsRemainingPresenter 				:= self add: NumberPresenter 	new name: 'loginsRemaining'.
-	isSpecialUserPresenter 					:= self add: BooleanPresenter 	new name: 'isSpecialUser'.
+	whenPasswordChangedPresenter := self add: TextPresenter 	new name: 'whenPasswordChanged'.
+	loginsRemainingPresenter 		:= self add: NumberPresenter 	new name: 'loginsRemaining'.
+	isSpecialUserPresenter 		:= self add: BooleanPresenter 	new name: 'isSpecialUser'.
 !
 
 updateForUser: aGsUserProfile 
 
 	whenPasswordChangedPresenter 	value: nil.
-	loginsRemainingPresenter 				value: nil.
-	isSpecialUserPresenter 					value: nil.
+	loginsRemainingPresenter 			value: nil.
+	isSpecialUserPresenter 			value: nil.
 	aGsUserProfile isNil ifTrue: [^self].
 	whenPasswordChangedPresenter 	value: aGsUserProfile lastPasswordChange.
-	loginsRemainingPresenter 				value: aGsUserProfile remainingLogins.
-	isSpecialUserPresenter 					value: aGsUserProfile isSpecial.
+	loginsRemainingPresenter 			value: aGsUserProfile remainingLogins.
+	isSpecialUserPresenter 			value: aGsUserProfile isSpecial.
 ! !
-!UserProfilePasswordPresenter categoriesFor: #createComponents!public! !
-!UserProfilePasswordPresenter categoriesFor: #updateForUser:!public! !
+!UserProfilePasswordPresenter categoriesFor: #createComponents!private! !
+!UserProfilePasswordPresenter categoriesFor: #updateForUser:!private! !
 
 !UserProfilePasswordPresenter class methodsFor!
 

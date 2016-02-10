@@ -118,7 +118,7 @@ debugError
 
 gsInspect
 
-	JadeInspector showOn: gciSession -> self oopType.
+	JadeInspector showOn: self oopType session: gciSession.
 ! !
 !GsObject categoriesFor: #gsInspect!public! !
 
@@ -481,7 +481,7 @@ jadeInspect
 
 	| result |
 	result := self jadeExecuteAndDisplay: false.
-	JadeInspector showOn: gciSession -> result.
+	JadeInspector showOn: result session: gciSession.
 ! !
 !JadeTextDocument categoriesFor: #fileIn!private! !
 !JadeTextDocument categoriesFor: #jadeInspect!Jade!private! !

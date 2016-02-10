@@ -14,15 +14,15 @@ createComponents
 
 	super createComponents.
 	disallowUsedPasswordsPresenter 	:= self add: BooleanPresenter 	new name: 'disallowUsedPasswords'.
-	minPasswordSizePresenter 			:= self add: NumberPresenter 	new name: 'minPasswordSize'.
-	maxPasswordSizePresenter 			:= self add: NumberPresenter 	new name: 'maxPasswordSize'.
+	minPasswordSizePresenter 		:= self add: NumberPresenter 	new name: 'minPasswordSize'.
+	maxPasswordSizePresenter 		:= self add: NumberPresenter 	new name: 'maxPasswordSize'.
 	maxRepeatingCharsPresenter 		:= self add: NumberPresenter 	new name: 'maxRepeatingChars'.
-	maxConsecutiveCharsPresenter 	:= self add: NumberPresenter 	new name: 'maxConsecutiveChars'.
+	maxConsecutiveCharsPresenter 		:= self add: NumberPresenter 	new name: 'maxConsecutiveChars'.
 	maxCharsOfSameTypePresenter 	:= self add: NumberPresenter 	new name: 'maxCharsOfSameType'.
-	staleAccountAgeLimitPresenter 	:= self add: NumberPresenter 	new name: 'staleAccountAgeLimit'.
-	passwordAgeLimitPresenter 			:= self add: NumberPresenter 	new name: 'passwordAgeLimit'.
-	passwordAgeWarningPresenter 	:= self add: TextPresenter 		new name: 'passwordAgeWarning'.
-	disallowedPasswordListPresenter 	:= self add: ListPresenter 			new name: 'disallowedPasswordList'.
+	staleAccountAgeLimitPresenter 		:= self add: NumberPresenter 	new name: 'staleAccountAgeLimit'.
+	passwordAgeLimitPresenter 		:= self add: NumberPresenter 	new name: 'passwordAgeLimit'.
+	passwordAgeWarningPresenter 		:= self add: TextPresenter 	new name: 'passwordAgeWarning'.
+	disallowedPasswordListPresenter 	:= self add: ListPresenter 		new name: 'disallowedPasswordList'.
 	!
 
 fillFields
@@ -37,16 +37,16 @@ fillFields
 			ifTrue: [each asNumber]
 			ifFalse: [nil].
 	].
-	minPasswordSizePresenter 			value: (numbers at: 2).
-	maxPasswordSizePresenter 			value: (numbers at: 3).
+	minPasswordSizePresenter 		value: (numbers at: 2).
+	maxPasswordSizePresenter 		value: (numbers at: 3).
 	maxRepeatingCharsPresenter 		value: (numbers at: 4).
-	maxConsecutiveCharsPresenter 	value: (numbers at: 5).
+	maxConsecutiveCharsPresenter 		value: (numbers at: 5).
 	maxCharsOfSameTypePresenter 	value: (numbers at: 6).
-	staleAccountAgeLimitPresenter 	value: (numbers at: 7).
-	passwordAgeLimitPresenter 			value: (numbers at: 8).
+	staleAccountAgeLimitPresenter 		value: (numbers at: 7).
+	passwordAgeLimitPresenter 		value: (numbers at: 8).
 	disallowedPasswordListPresenter 	list: ((lines at: 2) subStrings: Character tab).
 	(string := lines at: 3) = 'nil' ifTrue: [string := ''].
-	passwordAgeWarningPresenter 	value: string.
+	passwordAgeWarningPresenter 		value: string.
 !
 
 onViewOpened
@@ -54,9 +54,9 @@ onViewOpened
 	super onViewOpened.
 	self fillFields.
 ! !
-!UserProfileSetPresenter categoriesFor: #createComponents!public! !
-!UserProfileSetPresenter categoriesFor: #fillFields!public! !
-!UserProfileSetPresenter categoriesFor: #onViewOpened!public! !
+!UserProfileSetPresenter categoriesFor: #createComponents!private! !
+!UserProfileSetPresenter categoriesFor: #fillFields!private! !
+!UserProfileSetPresenter categoriesFor: #onViewOpened!private! !
 
 !UserProfileSetPresenter class methodsFor!
 

@@ -13,16 +13,16 @@ MCHttpRepositoryInfoDialog comment: ''!
 createComponents
 
 	super createComponents.
-	locationPresenter 		:= self add: TextPresenter new name: 'location'.
-	userPresenter			:= self add: TextPresenter new name: 'user'.
+	locationPresenter 	:= self add: TextPresenter new name: 'location'.
+	userPresenter		:= self add: TextPresenter new name: 'user'.
 	passwordPresenter	:= self add: TextPresenter new name: 'password'.
 !
 
 createSchematicWiring
 
 	super createSchematicWiring.
-	locationPresenter 		when: #'valueChanged' send: #'locationChanged' 	to: self.
-	userPresenter 			when: #'valueChanged' send: #'userChanged' 			to: self.
+	locationPresenter 	when: #'valueChanged' send: #'locationChanged' 		to: self.
+	userPresenter 		when: #'valueChanged' send: #'userChanged' 		to: self.
 	passwordPresenter	when: #'valueChanged' send: #'passwordChanged' 	to: self.
 !
 
@@ -44,9 +44,9 @@ model: anMCHttpRepositoryInfo
 onViewOpened
 
 	super onViewOpened.
-	locationPresenter value: model location.
-	userPresenter value: model user.
-	passwordPresenter value: model password.
+	locationPresenter 	value: model location.
+	userPresenter 		value: model user.
+	passwordPresenter 	value: model password.
 !
 
 passwordChanged
@@ -58,13 +58,13 @@ userChanged
 
 	model user: userPresenter value.
 ! !
-!MCHttpRepositoryInfoDialog categoriesFor: #createComponents!public! !
-!MCHttpRepositoryInfoDialog categoriesFor: #createSchematicWiring!public! !
-!MCHttpRepositoryInfoDialog categoriesFor: #locationChanged!public! !
-!MCHttpRepositoryInfoDialog categoriesFor: #model:!public! !
-!MCHttpRepositoryInfoDialog categoriesFor: #onViewOpened!public! !
-!MCHttpRepositoryInfoDialog categoriesFor: #passwordChanged!public! !
-!MCHttpRepositoryInfoDialog categoriesFor: #userChanged!public! !
+!MCHttpRepositoryInfoDialog categoriesFor: #createComponents!private! !
+!MCHttpRepositoryInfoDialog categoriesFor: #createSchematicWiring!private! !
+!MCHttpRepositoryInfoDialog categoriesFor: #locationChanged!private! !
+!MCHttpRepositoryInfoDialog categoriesFor: #model:!private! !
+!MCHttpRepositoryInfoDialog categoriesFor: #onViewOpened!private! !
+!MCHttpRepositoryInfoDialog categoriesFor: #passwordChanged!private! !
+!MCHttpRepositoryInfoDialog categoriesFor: #userChanged!private! !
 
 !MCHttpRepositoryInfoDialog class methodsFor!
 

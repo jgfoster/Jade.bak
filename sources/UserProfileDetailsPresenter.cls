@@ -13,40 +13,29 @@ UserProfileDetailsPresenter comment: 'Presents details about a UserProfile insta
 createComponents
 
 	super createComponents.
-	userIDPresenter 				:= self add: TextPresenter new name: 'userID'.
-	maxLoginsPresenter 			:= self add: TextPresenter new name: 'maxLogins'.
-	languagePresenter 			:= self add: TextPresenter new name: 'language'.
-	lastLoginPresenter 			:= self add: TextPresenter new name: 'lastLogin'.
+	userIDPresenter 		:= self add: TextPresenter new name: 'userID'.
+	maxLoginsPresenter 		:= self add: TextPresenter new name: 'maxLogins'.
+	languagePresenter 		:= self add: TextPresenter new name: 'language'.
+	lastLoginPresenter 		:= self add: TextPresenter new name: 'lastLogin'.
 	disabledReasonPresenter 	:= self add: TextPresenter new name: 'disabledReason'.
 !
 
-onViewOpened
-
-	super onViewOpened.
-"	userIDPresenter 				value: model userID.
-	maxLoginsPresenter 			value: model maxSessions.
-	languagePresenter 			value: model language.
-	lastLoginPresenter 			value: model lastLoginTime.
-	disabledReasonPresenter 	value: model disabledReason.
-"!
-
 updateForUser: aGsUser
 
-	userIDPresenter 				value: nil.
-	maxLoginsPresenter 			value: nil.
-	languagePresenter 			value: nil.
-	lastLoginPresenter 			value: nil.
+	userIDPresenter 		value: nil.
+	maxLoginsPresenter 		value: nil.
+	languagePresenter 		value: nil.
+	lastLoginPresenter 		value: nil.
 	disabledReasonPresenter 	value: nil.
 	aGsUser isNil ifTrue: [^self].
-	userIDPresenter 				value: aGsUser name.
-	maxLoginsPresenter 			value: aGsUser maxSessions.
-	languagePresenter 			value: aGsUser language.
-	lastLoginPresenter 			value: aGsUser lastLoginTime.
+	userIDPresenter 		value: aGsUser name.
+	maxLoginsPresenter 		value: aGsUser maxSessions.
+	languagePresenter 		value: aGsUser language.
+	lastLoginPresenter 		value: aGsUser lastLoginTime.
 	disabledReasonPresenter 	value: aGsUser disabledReason.
 ! !
-!UserProfileDetailsPresenter categoriesFor: #createComponents!public! !
-!UserProfileDetailsPresenter categoriesFor: #onViewOpened!public! !
-!UserProfileDetailsPresenter categoriesFor: #updateForUser:!public! !
+!UserProfileDetailsPresenter categoriesFor: #createComponents!private! !
+!UserProfileDetailsPresenter categoriesFor: #updateForUser:!private! !
 
 !UserProfileDetailsPresenter class methodsFor!
 

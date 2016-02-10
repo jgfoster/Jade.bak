@@ -61,21 +61,21 @@ onViewOpened
 
 selectFirstUser
 
-		userListPresenter list isEmpty ifTrue: [^self].
-		userListPresenter selectionByIndex: 1.
+	userListPresenter list isEmpty ifTrue: [^self].
+	userListPresenter selectionByIndex: 1.
 !
 
 selection
 
 	^userListPresenter selectionOrNil.
 ! !
-!UserListPresenter categoriesFor: #createComponents!public! !
-!UserListPresenter categoriesFor: #createSchematicWiring!public! !
-!UserListPresenter categoriesFor: #fillUserList!public! !
-!UserListPresenter categoriesFor: #newUser!public! !
-!UserListPresenter categoriesFor: #onViewOpened!public! !
-!UserListPresenter categoriesFor: #selectFirstUser!public! !
-!UserListPresenter categoriesFor: #selection!public! !
+!UserListPresenter categoriesFor: #createComponents!private! !
+!UserListPresenter categoriesFor: #createSchematicWiring!private! !
+!UserListPresenter categoriesFor: #fillUserList!private! !
+!UserListPresenter categoriesFor: #newUser!private! !
+!UserListPresenter categoriesFor: #onViewOpened!private! !
+!UserListPresenter categoriesFor: #selectFirstUser!private! !
+!UserListPresenter categoriesFor: #selection!private! !
 
 !UserListPresenter class methodsFor!
 

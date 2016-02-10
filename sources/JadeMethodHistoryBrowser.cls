@@ -13,8 +13,8 @@ JadeMethodHistoryBrowser comment: ''!
 createComponents
 
 	super createComponents.
-	versionListPresenter 		:= self add: ListPresenter		new name: 'versionList'.
-	editorPresenter				:= self add: TextPresenter		new name: 'editor'.
+	versionListPresenter 	:= self add: ListPresenter	new name: 'versionList'.
+	editorPresenter		:= self add: TextPresenter	new name: 'editor'.
 
 !
 
@@ -59,11 +59,11 @@ shellName
 
 	^'Jade Method History Browser'.
 ! !
-!JadeMethodHistoryBrowser categoriesFor: #createComponents!public! !
-!JadeMethodHistoryBrowser categoriesFor: #createSchematicWiring!public! !
-!JadeMethodHistoryBrowser categoriesFor: #fillMethodSource!public! !
-!JadeMethodHistoryBrowser categoriesFor: #setContents:!public! !
-!JadeMethodHistoryBrowser categoriesFor: #shellName!public! !
+!JadeMethodHistoryBrowser categoriesFor: #createComponents!private! !
+!JadeMethodHistoryBrowser categoriesFor: #createSchematicWiring!private! !
+!JadeMethodHistoryBrowser categoriesFor: #fillMethodSource!private! !
+!JadeMethodHistoryBrowser categoriesFor: #setContents:!private! !
+!JadeMethodHistoryBrowser categoriesFor: #shellName!private! !
 
 !JadeMethodHistoryBrowser class methodsFor!
 

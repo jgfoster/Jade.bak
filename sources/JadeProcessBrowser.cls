@@ -13,8 +13,8 @@ JadeProcessBrowser comment: ''!
 createComponents  
 
 	super createComponents.
-	prioritiesPresenter :=  self add: ListPresenter new name: 'priorities'.
-	processesPresenter :=  self add: ListPresenter new name: 'processes'.
+	prioritiesPresenter 	:=  self add: ListPresenter new name: 'priorities'.
+	processesPresenter 	:=  self add: ListPresenter new name: 'processes'.
 !
 
 createSchematicWiring
@@ -38,7 +38,7 @@ inspectProcess
 	| oop oopType |
 	oop := (processesPresenter selection at: 2) asNumber.
 	oopType := gciSession oopTypeWithOop: oop.
-	JadeInspector showOn: gciSession -> oopType.
+	JadeInspector showOn: oopType session: gciSession.
 !
 
 onViewOpened
@@ -120,20 +120,20 @@ update
 	lines := lines collect: [:each | (each subStrings: Character tab) , #('?' '?')].
 	processesPresenter model list: lines.
 ! !
-!JadeProcessBrowser categoriesFor: #createComponents!public! !
-!JadeProcessBrowser categoriesFor: #createSchematicWiring!public! !
-!JadeProcessBrowser categoriesFor: #debugProcess!public! !
-!JadeProcessBrowser categoriesFor: #inspectProcess!public! !
-!JadeProcessBrowser categoriesFor: #onViewOpened!public! !
-!JadeProcessBrowser categoriesFor: #queryCommand:!public! !
-!JadeProcessBrowser categoriesFor: #refresh!public! !
-!JadeProcessBrowser categoriesFor: #resume!public! !
-!JadeProcessBrowser categoriesFor: #sendToSelectedProcess:!public! !
-!JadeProcessBrowser categoriesFor: #shellName!public! !
-!JadeProcessBrowser categoriesFor: #suspend!public! !
-!JadeProcessBrowser categoriesFor: #terminate!public! !
-!JadeProcessBrowser categoriesFor: #terminate9!public! !
-!JadeProcessBrowser categoriesFor: #update!public! !
+!JadeProcessBrowser categoriesFor: #createComponents!private! !
+!JadeProcessBrowser categoriesFor: #createSchematicWiring!private! !
+!JadeProcessBrowser categoriesFor: #debugProcess!private! !
+!JadeProcessBrowser categoriesFor: #inspectProcess!private! !
+!JadeProcessBrowser categoriesFor: #onViewOpened!private! !
+!JadeProcessBrowser categoriesFor: #queryCommand:!private! !
+!JadeProcessBrowser categoriesFor: #refresh!private! !
+!JadeProcessBrowser categoriesFor: #resume!private! !
+!JadeProcessBrowser categoriesFor: #sendToSelectedProcess:!private! !
+!JadeProcessBrowser categoriesFor: #shellName!private! !
+!JadeProcessBrowser categoriesFor: #suspend!private! !
+!JadeProcessBrowser categoriesFor: #terminate!private! !
+!JadeProcessBrowser categoriesFor: #terminate9!private! !
+!JadeProcessBrowser categoriesFor: #update!private! !
 
 !JadeProcessBrowser class methodsFor!
 

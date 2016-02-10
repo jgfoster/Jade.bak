@@ -54,7 +54,7 @@ statusBarText: aString
 !JadeMethodListBrowser categoriesFor: #browseMethodsFromString:!private! !
 !JadeMethodListBrowser categoriesFor: #browseSendersOf:!private! !
 !JadeMethodListBrowser categoriesFor: #presenterClass!overrides!private! !
-!JadeMethodListBrowser categoriesFor: #selecting:!public! !
+!JadeMethodListBrowser categoriesFor: #selecting:!private! !
 !JadeMethodListBrowser categoriesFor: #shellName!overrides!private! !
 !JadeMethodListBrowser categoriesFor: #statusBarText:!private! !
 

@@ -50,7 +50,7 @@ package!
 "Class Definitions"!
 
 JadeTextDocument subclass: #JadeInspector
-	instanceVariableNames: 'object instVarListPresenter'
+	instanceVariableNames: 'instVarListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -66,7 +66,7 @@ jadeInspect
 
 	| result |
 	result := self jadeExecuteAndDisplay: false.
-	JadeInspector showOn: self gciSession -> result.
+	JadeInspector showOn: result session: gciSession.
 ! !
 !CodeSourcePresenter categoriesFor: #jadeInspect!Jade!private! !
 

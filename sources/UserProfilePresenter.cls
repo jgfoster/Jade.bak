@@ -13,24 +13,24 @@ UserProfilePresenter comment: ''!
 createComponents
 
 	super createComponents.
-	detailsPresenter 			:= self add: UserProfileDetailsPresenter 		new 	name: 'detailsTab'.
+	detailsPresenter 		:= self add: UserProfileDetailsPresenter 	new 	name: 'detailsTab'.
 	passwordPresenter 		:= self add: UserProfilePasswordPresenter 	new 	name: 'passwordTab'.
-	symbolListPresenter 		:= self add: ListPresenter 								new 	name: 'symbolList'.
-	groupListPresenter 		:= self add: ListPresenter 								new 	name: 'groupList'.
-	privilegeListPresenter 	:= self add: ListPresenter 								new 	name: 'privilegeList'.
+	symbolListPresenter 		:= self add: ListPresenter 				new 	name: 'symbolList'.
+	groupListPresenter 		:= self add: ListPresenter 				new 	name: 'groupList'.
+	privilegeListPresenter 	:= self add: ListPresenter 				new 	name: 'privilegeList'.
 	!
 
-model: aGciSession
+gciSession: aGciSession
 
-	super model: aGciSession.
-	detailsPresenter model: aGciSession.
-	passwordPresenter model: aGciSession.
+	super 			gciSession: aGciSession.
+	detailsPresenter 	gciSession: aGciSession.
+	passwordPresenter 	gciSession: aGciSession.
 !
 
 update
 
 	user := self trigger: #'needSelectedUser'.
-	detailsPresenter 			updateForUser: user.
+	detailsPresenter 		updateForUser: user.
 	passwordPresenter 		updateForUser: user.
 	symbolListPresenter		list: #().
 	groupListPresenter		list: #().
@@ -40,9 +40,9 @@ update
 	groupListPresenter 		list: user groupList.
 	privilegeListPresenter	list: user privilegeList.
 ! !
-!UserProfilePresenter categoriesFor: #createComponents!public! !
-!UserProfilePresenter categoriesFor: #model:!public! !
-!UserProfilePresenter categoriesFor: #update!public! !
+!UserProfilePresenter categoriesFor: #createComponents!private! !
+!UserProfilePresenter categoriesFor: #gciSession:!private! !
+!UserProfilePresenter categoriesFor: #update!private! !
 
 !UserProfilePresenter class methodsFor!
 

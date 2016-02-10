@@ -128,7 +128,7 @@ registry
 registry
 
 	^JadeAutocompletationRegistry default! !
-!JadeTextDocument categoriesFor: #registry!autocompletion!public! !
+!JadeTextDocument categoriesFor: #registry!autocompletion!private! !
 
 "End of package definition"!
 

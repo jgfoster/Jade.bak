@@ -10,14 +10,11 @@ JadeWorkspace comment: 'model is an instance of GciSession'!
 !JadeWorkspace categoriesForClass!Unclassified! !
 !JadeWorkspace methodsFor!
 
-gciSession
-	^gciSession!
-
 onViewOpened
 
 	super onViewOpened.
-
-	codePane setDocumentPresenterWith: (self registry getClass: 'Object')!
+	codePane setDocumentPresenterWith: (self registry getClass: 'Object').
+!
 
 updateCaption
 
@@ -27,8 +24,7 @@ updateCaption
 		ifFalse: [self filename].
 	self caption: (gciSession titleBarFor: string).
 ! !
-!JadeWorkspace categoriesFor: #gciSession!public! !
-!JadeWorkspace categoriesFor: #onViewOpened!public! !
+!JadeWorkspace categoriesFor: #onViewOpened!private! !
 !JadeWorkspace categoriesFor: #updateCaption!private!updating! !
 
 !JadeWorkspace class methodsFor!
