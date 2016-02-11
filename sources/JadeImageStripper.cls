@@ -53,12 +53,12 @@ createVersionResource
 			at: '040904b0' 
 			put: (LookupTable new
 				at: 'CompanyName' 		put: 'GemTalk Systems LLC';
-				at: 'FileDescription' 		put: 'GemStone/S IDE Tools';
+				at: 'FileDescription' 		put: 'IDE for GemStone/S';
 				at: 'FileVersion' 			put: versionString;
 				at: 'InternalName' 		put: 'Jade';
 				at: 'LegalCopyright' 		put: 'Copyright © GemTalk Systems LLC 2016';
 				at: 'OriginalFilename' 	put: 'Jade.exe';
-				at: 'Product Name' 		put: 'Jade';
+				at: 'ProductName' 		put: 'Jade';
 				at: 'ProductVersion' 		put: versionString;
 				yourself);
 			yourself);

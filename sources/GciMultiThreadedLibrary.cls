@@ -736,16 +736,17 @@ session: session fetchObject: anOop
 		^gciTsObjInfo.
 	]. 
 	implementation == 2 "NSC" ifTrue: [^gciTsObjInfo].
-	class := gciTsObjInfo objClass.
+	class := gciTsObjInfo objClassOop.
+	(class isKindOf: OopType64) ifFalse: [self error: 'class isKindOf: ' , class class name].
 	implementation == 3 "Special" ifTrue: [
-		anOop = self oopNil 						ifTrue: [gciTsObjInfo data: nil	] ifFalse: [
-		anOop = self oopTrue 					ifTrue: [gciTsObjInfo data: true	] ifFalse: [
-		anOop = self oopFalse 					ifTrue: [gciTsObjInfo data: false	] ifFalse: [
+		anOop = self oopNil 				ifTrue: [gciTsObjInfo data: nil	] ifFalse: [
+		anOop = self oopTrue 			ifTrue: [gciTsObjInfo data: true	] ifFalse: [
+		anOop = self oopFalse 			ifTrue: [gciTsObjInfo data: false] ifFalse: [
 		class = self oopClassSmallInteger 	ifTrue: [gciTsObjInfo data: (self session: session integerForOop: anOop)	] ifFalse: [
 		class = self oopClassSmallDouble 	ifTrue: [gciTsObjInfo data: (self session: session doubleForOop: anOop)	] ifFalse: [
-		class = self oopClassCharacter		ifTrue: [gciTsObjInfo data: (self characterForOop: anOop)						] ifFalse: [
-		class = self oopClassSmallFraction	ifTrue: [gciTsObjInfo data: anOop asFraction											] ifFalse: [
-		self error: 'Unrecognized special: ' , anOop printString]]]]]]].
+		class = self oopClassCharacter		ifTrue: [gciTsObjInfo data: (self characterForOop: anOop)				] ifFalse: [
+		class = self oopClassSmallFraction	ifTrue: [gciTsObjInfo data: anOop asFraction						] ifFalse: [
+		self error: 'Unrecognized special: ' , anOop printString , ' in class with OOP ' , class printString]]]]]]].
 		^gciTsObjInfo
 	].
 	"bytes"
