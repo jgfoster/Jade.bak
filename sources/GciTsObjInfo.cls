@@ -117,12 +117,17 @@ namedSize: anObject
 objClass
 	"Answer the receiver's objClass field as a Smalltalk object."
 
-	^OopType64 fromInteger: (bytes qwordAtOffset: 8)!
+	^(bytes qwordAtOffset: 8)!
 
 objClass: anObject
 	"Set the receiver's objClass field to the value of anObject."
 
 	bytes qwordAtOffset: 8 put: anObject value!
+
+objClassOop
+
+	^OopType64 fromInteger: self objClass.
+!
 
 objectSecurityPolicyId
 	"Answer the receiver's objectSecurityPolicyId field as a Smalltalk object."
@@ -168,6 +173,7 @@ objSize: anObject
 !GciTsObjInfo categoriesFor: #namedSize:!**compiled accessors**!public! !
 !GciTsObjInfo categoriesFor: #objClass!**compiled accessors**!public! !
 !GciTsObjInfo categoriesFor: #objClass:!**compiled accessors**!public! !
+!GciTsObjInfo categoriesFor: #objClassOop!public! !
 !GciTsObjInfo categoriesFor: #objectSecurityPolicyId!**compiled accessors**!public! !
 !GciTsObjInfo categoriesFor: #objectSecurityPolicyId:!**compiled accessors**!public! !
 !GciTsObjInfo categoriesFor: #objId!**compiled accessors**!public! !

@@ -5,3 +5,5 @@ JadeDev.*
 ._*
 Jade System Browser Layout.stb
 Jade/Connections/*.GSS
+*.ERRORS
+Jade.xml
