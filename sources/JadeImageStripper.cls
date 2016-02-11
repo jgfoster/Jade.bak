@@ -39,6 +39,32 @@ copyRuntimeFiles
 	].
 !
 
+createVersionResource
+"
+	JadeImageStripper new createVersionResource.
+"
+	| versionString version |
+	versionString := JadeSessionManager getVersion.
+	version := (versionString subStrings: $-) first.
+	self versionResource
+		fileVersion: version;
+		productVersion: version;
+		stringTables: (LookupTable new
+			at: '040904b0' 
+			put: (LookupTable new
+				at: 'CompanyName' 		put: 'GemTalk Systems LLC';
+				at: 'FileDescription' 		put: 'GemStone/S IDE Tools';
+				at: 'FileVersion' 			put: versionString;
+				at: 'InternalName' 		put: 'Jade';
+				at: 'LegalCopyright' 		put: 'Copyright © GemTalk Systems LLC 2016';
+				at: 'OriginalFilename' 	put: 'Jade.exe';
+				at: 'Product Name' 		put: 'Jade';
+				at: 'ProductVersion' 		put: versionString;
+				yourself);
+			yourself);
+		yourself.
+!
+
 exeIconFile
 
 	^'icons\GS32x32.ico'.
@@ -73,6 +99,7 @@ prepareToStrip
 		loadJadeServerSourceCache; 
 		copyRuntimeFiles; 
 		closeLoginShells;
+		createVersionResource;
 		yourself.
 	^super prepareToStrip.
 !
@@ -118,6 +145,7 @@ requiredPackageNames
 		yourself! !
 !JadeImageStripper categoriesFor: #closeLoginShells!public! !
 !JadeImageStripper categoriesFor: #copyRuntimeFiles!public! !
+!JadeImageStripper categoriesFor: #createVersionResource!public! !
 !JadeImageStripper categoriesFor: #exeIconFile!operations!public! !
 !JadeImageStripper categoriesFor: #finishedWith:!public! !
 !JadeImageStripper categoriesFor: #loadJadeServerSourceCache!public! !
