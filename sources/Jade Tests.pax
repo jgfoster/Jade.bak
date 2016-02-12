@@ -1,0 +1,40 @@
+| package |
+package := Package name: 'Jade Tests'.
+package paxVersion: 1;
+	basicComment: ''.
+
+
+package classNames
+	add: #JadeLoginTest;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: 'Jade Login';
+	add: 'Jade Transcript';
+	add: '..\..\..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+TestCase subclass: #JadeLoginTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+"End of package definition"!
+

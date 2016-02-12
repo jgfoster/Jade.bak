@@ -8,6 +8,7 @@ package basicPackageVersion: '0.057'.
 
 package classNames
 	add: #JadeTranscript;
+	add: #MySessionPresenter;
 	yourself.
 
 package methodNames
@@ -56,8 +57,13 @@ package!
 
 "Class Definitions"!
 
+JadePresenter subclass: #MySessionPresenter
+	instanceVariableNames: 'gciSessionIdPresenter gciVersionPresenter gemHostPresenter gemTypePresenter netPortPresenter netTaskPresenter stoneHostPresenter stoneNamePresenter stoneSerialPresenter stoneSessionIDPresenter userIDPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeWorkspace subclass: #JadeTranscript
-	instanceVariableNames: 'gciVersionPresenter userIDPresenter stoneHostPresenter stoneNamePresenter gemTypePresenter gemHostPresenter netPortPresenter netTaskPresenter sessionListPresenter sessionListErrorPresenter stoneSessionIDPresenter stoneSerialPresenter gciSessionIdPresenter autoUpdatePresenter autoUpdateProcess'
+	instanceVariableNames: 'autoUpdatePresenter autoUpdateProcess mySessionPresenter sessionListPresenter sessionListErrorPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

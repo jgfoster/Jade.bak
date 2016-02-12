@@ -442,6 +442,11 @@ createIn: aCompositePresenter gciSession: aGciSession
 	!
 
 script
+=======
+script
+"
+	JadePresenter script.
+"
 
 	| myPackages myPresenters myShells dict stream buildHierarchy reportHierarchy |
 	myPackages := PackageManager current packages select: [:each | each packagePathname beginsWith: 'sources\'].
@@ -468,8 +473,8 @@ script
 	].
 	dict := Dictionary new.
 	myShells do: buildHierarchy.
-	dict := Dictionary new.
-	myPresenters do: buildHierarchy.
+	"dict := Dictionary new.
+	myPresenters do: buildHierarchy."
 	stream := WriteStream on: String new.
 	reportHierarchy value: Object value: 0 value: [:aClass | 
 		stream nextPutAll: aClass name.
@@ -489,4 +494,3 @@ script
 ! !
 !JadePresenter class categoriesFor: #createIn:gciSession:!public! !
 !JadePresenter class categoriesFor: #script!public! !
-
