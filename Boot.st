@@ -27,6 +27,7 @@ list := #(
 	'Jade Deployment'
 	'Contacts Demo'
 	'Jade in Dolphin'
+	'Jade Tests'
 ).
 ProgressDialog showModalWhile: [:progress |
 	1 to: list size do: [:i |
