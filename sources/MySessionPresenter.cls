@@ -53,12 +53,12 @@ fillSessionInfo
 	] ifFalse: [
 		gemTypePresenter	value: 'RPC'.
 		gemHostPresenter	value: gciSession gemHost.
-		netPortPresenter		value: gciSession netPort.
-		netTaskPresenter		value: gciSession netTask.
+		netPortPresenter	value: gciSession netPort.
+		netTaskPresenter	value: gciSession netTask.
 	].
 	stoneSessionIDPresenter	value: gciSession stoneSessionID.
-	stoneSerialPresenter			value: gciSession stoneSerial.
-	gciSessionIdPresenter		value: gciSession gciSessionId.
+	stoneSerialPresenter		value: gciSession stoneSerial.
+	gciSessionIdPresenter	value: gciSession gciSessionId.
 !
 
 hardBreak

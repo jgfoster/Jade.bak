@@ -88,24 +88,13 @@ briefDescription
 			nextPutAll: ' as session ';
 			yourself.
 		stoneSessionID printOn: stream.
-		list := stoneNRS subStrings: $!!.
-		stoneName := list at: 3.
 		stream 
 			nextPutAll: ' in ';
 			nextPutAll: stoneName;
-			yourself.
-		list := (list at: 2) subStrings: $#.
-		list := (list at: 1) subStrings: $@.
-		stoneHost := list at: 2.
-		stream
 			nextPutAll: ' on ';
 			nextPutAll: stoneHost;
 			yourself.
 		self isRemoteGem ifTrue: [
-			list := gemNRS subStrings: $#.
-			netPort := ((list at: 2) subStrings: $:) at: 2.
-			netTask := ((list at: 3) subStrings: $!!) at: 2.
-			gemHost := ((list at: 1) subStrings: $@) at: 2.
 			stream
 				nextPutAll: ' with remote gem on ';
 				nextPutAll: gemHost;
@@ -318,11 +307,23 @@ initials: initials
 useSocket: useSocket
 debugPath: debugPath
 
+	| list |
 	isHandlingClientForwarderSend := false.
 	eventCount := 0.
 	stoneNRS := stoneString.
 	gemNRS := gemString.
 	userID := gsUserID.
+	list := stoneNRS subStrings: $!!.
+	stoneName := list at: 3.
+	list := (list at: 2) subStrings: $#.
+	list := (list at: 1) subStrings: $@.
+	stoneHost := list at: 2.
+	self isLinkedGem ifFalse: [
+		list := gemNRS subStrings: $#.
+		netPort := ((list at: 2) subStrings: $:) at: 2.
+		netTask := ((list at: 3) subStrings: $!!) at: 2.
+		gemHost := ((list at: 1) subStrings: $@) at: 2.
+	].
 	self 
 		loadLibrary: libraryClass debugPath: debugPath;
 		gciSessionId: (library

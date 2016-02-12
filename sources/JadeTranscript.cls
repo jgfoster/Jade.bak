@@ -10,6 +10,11 @@ JadeTranscript comment: ''!
 !JadeTranscript categoriesForClass!Unclassified! !
 !JadeTranscript methodsFor!
 
+_mySessionPresenter
+
+	^mySessionPresenter.
+!
+
 autocompletion
 
 	JadeAutocompletationConfigurationShell show.
@@ -181,6 +186,11 @@ invalidateUserInterface
 	].
 !
 
+model: anObject
+
+	super model: anObject.
+	(anObject isKindOf: GciSession) ifTrue: [mySessionPresenter gciSession: anObject].!
+
 nextPut: aCharacter
 
 	^self nextPutAll: aCharacter asString.
@@ -333,6 +343,7 @@ updateCaption
 
 	self caption: (gciSession titleBarFor: 'Transcript').
 ! !
+!JadeTranscript categoriesFor: #_mySessionPresenter!private! !
 !JadeTranscript categoriesFor: #autocompletion!event handling!public! !
 !JadeTranscript categoriesFor: #autoUpdateChanged!public! !
 !JadeTranscript categoriesFor: #browseMonticelloRepositories!event handling!public! !
@@ -351,6 +362,7 @@ updateCaption
 !JadeTranscript categoriesFor: #hardBreak!public! !
 !JadeTranscript categoriesFor: #inspectOop!event handling!public! !
 !JadeTranscript categoriesFor: #invalidateUserInterface!public!updating! !
+!JadeTranscript categoriesFor: #model:!public! !
 !JadeTranscript categoriesFor: #nextPut:!public!Transcript! !
 !JadeTranscript categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeTranscript categoriesFor: #onCloseRequested:!event handling!public! !
