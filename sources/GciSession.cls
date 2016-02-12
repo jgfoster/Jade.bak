@@ -892,13 +892,13 @@ withExplanation: aString doA: aBlock
 		haveResult := true.
 		shouldRunEventLoop := false.
 		SessionManager inputState prod.
-	] fork.
+	] newProcess name: 'GciSession>>withExplanation:doA: - 1'; resume.
 	[
 		proc := [
 			(Delay forSeconds: 1) wait.
 			shouldRunEventLoop := false.
 			SessionManager inputState prod.
-		] fork.
+		] newProcess name: 'GciSession>>withExplanation:doA: - 2'; resume.
 		isHandlingClientForwarderSend ifTrue: [
 			SessionManager inputState loopWhile: [shouldRunEventLoop].
 			shouldRunEventLoop := true.
@@ -908,10 +908,7 @@ withExplanation: aString doA: aBlock
 				shouldRunEventLoop := true.
 			].
 		].
-		haveResult ifTrue: [
-			proc terminate.
-			^result
-		].
+		haveResult ifTrue: [^result].
 		isHandlingClientForwarderSend.
 	] whileTrue: [].
 	dialog := WaitOnGemStoneDialog
@@ -922,7 +919,7 @@ withExplanation: aString doA: aBlock
 		SessionManager inputState loopWhile: [shouldRunEventLoop].
 		shouldRunEventLoop := true.
 		dialog view close.
-	] fork.
+	] newProcess name: 'GciSession>>withExplanation:doA: - 3'; resume.
 	dialog showModal.
 	SessionManager inputState pumpMessages.
 	^result.
@@ -1017,7 +1014,7 @@ withExplanation: aString doA: aBlock
 cursor
 
 	GemCursor isNil ifTrue: [
-		GemCursor := Cursor fromFile: 'icons\GS32x32.ico'.
+		GemCursor := Cursor fromFile: 'icons\GS16.ico'.
 	].
 	^GemCursor.
 !

@@ -478,3 +478,4 @@ script
 	^stream contents.
 ! !
 !JadePresenter class categoriesFor: #script!public! !
+

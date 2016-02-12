@@ -67,7 +67,7 @@ createVersionResource
 
 exeIconFile
 
-	^'icons\GS32x32.ico'.
+	^'icons\GS32.ico'.
 !
 
 finishedWith: selector
