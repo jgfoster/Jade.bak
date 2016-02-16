@@ -91,7 +91,7 @@ updateCaption
 
 icon
 
-	^Icon fromFile: 'icons\GS32x32.ico'.
+	^Icon fromFile: 'icons\GS32.ico'.
 !
 
 showOnSession: aGciSession
@@ -101,7 +101,6 @@ showOnSession: aGciSession
 		createView: self defaultView;
 		showShell;
 		yourself.
-
 ! !
 !JadeShell class categoriesFor: #icon!public! !
 !JadeShell class categoriesFor: #showOnSession:!public! !

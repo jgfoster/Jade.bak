@@ -569,7 +569,7 @@ fileTypes
 
 icon
 
-	^Icon fromFile: 'icons\GS32x32.ico'.
+	^Icon fromFile: 'icons\GS32.ico'.
 !
 
 showOnSession: aGciSession

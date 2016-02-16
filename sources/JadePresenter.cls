@@ -442,8 +442,6 @@ createIn: aCompositePresenter gciSession: aGciSession
 	!
 
 script
-=======
-script
 "
 	JadePresenter script.
 "
@@ -494,3 +492,4 @@ script
 ! !
 !JadePresenter class categoriesFor: #createIn:gciSession:!public! !
 !JadePresenter class categoriesFor: #script!public! !
+

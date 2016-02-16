@@ -24,6 +24,7 @@ package methodNames
 	add: 'JadeLoginShell class' -> #addToDevelopmentTools;
 	add: 'JadeLoginShell class' -> #removeFromDevelopmentTools;
 	add: 'JadeLoginShell class' -> #toolsFolderIcon;
+	add: 'JadeLoginShell class' -> #toolsIcon;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -35,6 +36,7 @@ package globalAliases: (Set new
 package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\IDE\Base\Development System';
 	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: 'Jade Deployment';
 	add: 'Jade Login';
 	yourself).
@@ -68,13 +70,19 @@ removeFromDevelopmentTools
 toolsFolderIcon
 
 	^SmalltalkSystemIcon 
-		icon: self icon
-		description: 'Jade Login'
+		icon: self toolsIcon
+		description: 'Jade Login for GemStone/S'
 		openBlock: [:folder :item | self show].
+!
+
+toolsIcon
+
+	^Icon fromFile: 'icons\GS128.ico'.
 ! !
 !JadeLoginShell class categoriesFor: #addToDevelopmentTools!Development Image!public! !
 !JadeLoginShell class categoriesFor: #removeFromDevelopmentTools!Development Image!public! !
 !JadeLoginShell class categoriesFor: #toolsFolderIcon!Development Image!public! !
+!JadeLoginShell class categoriesFor: #toolsIcon!Development Image!public! !
 
 "End of package definition"!
 
