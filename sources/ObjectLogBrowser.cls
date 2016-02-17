@@ -20,7 +20,7 @@ commit
 
 commitTransaction
 
-	self model commit ifTrue: [
+	gciSession commit ifTrue: [
 		Sound informationBeep.
 		self update.
 	] ifFalse: [

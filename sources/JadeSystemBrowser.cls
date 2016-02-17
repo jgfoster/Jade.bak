@@ -43,7 +43,7 @@ addSystemBrowserWithLayoutInfo: each
 
 addWorkspace
 
-	JadeWorkspace showOnSession: self model.
+	JadeWorkspace showOnSession: gciSession.
 !
 
 closeCard
@@ -63,7 +63,7 @@ closeRequested: anAssociation
 
 commitTransaction
 
-	self model commit ifTrue: [
+	gciSession commit ifTrue: [
 		Sound informationBeep.
 		self update.
 	] ifFalse: [

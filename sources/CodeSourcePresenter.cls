@@ -6,7 +6,7 @@ JadePresenter subclass: #CodeSourcePresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 CodeSourcePresenter guid: (GUID fromString: '{549A5009-CDD1-42B3-8907-C3C5C1C9E532}')!
-CodeSourcePresenter comment: ''!
+CodeSourcePresenter comment: 'model - the context in which code can be executed'!
 !CodeSourcePresenter categoriesForClass!Unclassified! !
 !CodeSourcePresenter methodsFor!
 
