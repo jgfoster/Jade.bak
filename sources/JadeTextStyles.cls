@@ -162,9 +162,9 @@ resetColors
 	JadeTextStyles default resetColors.
 	ColorDialog showModalOn: JadeTextStyles default colorForNoEdits.
 "
-	colorForCompileError 	:= nil.
-	colorForNoEdits 		:= nil.
-	colorForUnsavedEdits 	:= nil.
+	colorForCompileError 	:= Color face3d.
+	colorForNoEdits 		:= Color face3d.
+	colorForUnsavedEdits 	:= Color face3d.
 !
 
 textStyles
