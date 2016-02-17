@@ -81,7 +81,7 @@ begin
 briefDescription
 
 	briefDescription ifNil: [
-		| stream list |
+		| stream |
 		stream := WriteStream on: String new.
 		stream 
 			nextPutAll: userID;
@@ -448,11 +448,11 @@ oopIllegal
 
 oopTypeFor: anObject 
 
-	anObject isNil 										ifTrue: [^library oopNil].
+	anObject isNil 					ifTrue: [^library oopNil].
 	(anObject isKindOf: ExternalInteger) 	ifTrue: [^anObject].
-	(anObject isKindOf: Boolean) 				ifTrue: [^anObject ifTrue: [library oopTrue] ifFalse: [library oopFalse]].
-	(anObject isKindOf: SmallInteger) 			ifTrue: [^library session: gciSessionId oopForInteger: anObject].
-	(anObject isKindOf: GsObject) 				ifTrue: [^anObject oopType].
+	(anObject isKindOf: Boolean) 		ifTrue: [^anObject ifTrue: [library oopTrue] ifFalse: [library oopFalse]].
+	(anObject isKindOf: SmallInteger) 	ifTrue: [^library session: gciSessionId oopForInteger: anObject].
+	(anObject isKindOf: GsObject) 		ifTrue: [^anObject oopType].
 	MessageBox notify: 'Sorry, we are not yet prepared to convert ' , anObject printString , ' to an OOP!!'.
 	Keyboard default isShiftDown ifTrue: [self halt].
 !

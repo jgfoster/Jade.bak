@@ -207,7 +207,11 @@ editSelectAll
 !
 
 executeSelectionOrLine
-
+	"Returns anAssociation
+		key:	true if compiled and returned a result
+			false if we have a compile error
+			nil if compile error with no details
+		value: result, compile errors, or general description of error"
 	[
 		^true -> (gciSession 
 			executeString: self currentSelectionOrLine 
@@ -216,7 +220,7 @@ executeSelectionOrLine
 		ex list notEmpty ifTrue: [^false -> ex list].
 		^nil -> ex description.
 	].
-	^false -> #(nil).
+	self error: 'How did we get here!!?'.
 !
 
 fileIn: aString
@@ -275,6 +279,7 @@ help
 
 jadeDisplay
 
+self halt.
 	self jadeExecuteAndDisplay: true.
 
 !
@@ -286,12 +291,22 @@ jadeExecute
 
 jadeExecuteAndDisplay: showResult 
 
+	[
+		| result |
+		result := self executeSelectionOrLine.
+		[self jadeExecuteAndDisplay: showResult result: result] postToInputQueue.
+	] newProcess 
+		name: 'GciSession';
+		resume.!
+
+jadeExecuteAndDisplay: showResult result: anAssociation
+
 	| textView result value selectionRange offset |
-	textView := self activeTextEdit.
-	(result := self executeSelectionOrLine) key isNil ifTrue: [
+	(result := anAssociation) key isNil ifTrue: [
 		MessageBox notify: result value.
 		^self.
 	].
+	textView := self activeTextEdit.
 	result key ifTrue: [
 		value := result value.
 		result := ''.
@@ -533,6 +548,7 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #jadeDisplay!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeExecute!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeExecuteAndDisplay:!Jade!private! !
+!JadeTextDocument categoriesFor: #jadeExecuteAndDisplay:result:!Jade!private! !
 !JadeTextDocument categoriesFor: #logoutRequested:!private! !
 !JadeTextDocument categoriesFor: #onCloseRequested:!private! !
 !JadeTextDocument categoriesFor: #onPromptToSaveChanges:!private! !

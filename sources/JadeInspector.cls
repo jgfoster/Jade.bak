@@ -70,7 +70,7 @@ isModified
 model: anObject
 	"often a GsObject, but could be an Integer, String, etc."
 
-	super model: anObject.
+	model := anObject.
 	codePane model: anObject.
 !
 
