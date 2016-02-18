@@ -22,8 +22,8 @@ setUp
 		session := library 
 			loginUser: 'DataCurator'
 			password: 'swordfish'
-			gemNRS: '!!@portugal#netldi:ldijfoster#task!!gemnetobject'
-			stoneNRS: 'jfoster0'.
+			gemNRS: '!!@portugal#netldi:ldijfoster1#task!!gemnetobject'
+			stoneNRS: 'jfoster1'.
 	]!
 
 tearDown

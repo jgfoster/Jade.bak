@@ -852,7 +852,7 @@ userID
 valueOfArrayOop: anOopType
 
 	| array |
-	(array := library session: gciSessionId fetchObjects: anOopType) ifNil: [^nil].
+	array := library session: gciSessionId fetchObjects: anOopType.
 	array := array collect: [:each | self valueOfOop: each].
 	^array.
 !

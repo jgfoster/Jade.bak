@@ -7,3 +7,4 @@ Jade System Browser Layout.stb
 Jade/Connections/*.GSS
 *.ERRORS
 Jade.xml
+gci*trace.log

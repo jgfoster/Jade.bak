@@ -195,7 +195,7 @@ test_fetchObject1
 	object := library session: session fetchObject: oop.
 	self
 		assert: object objId == oop value;
-		assert: object objClass = class;
+		assert: object objClassOop = class;
 		assert: object objectSecurityPolicyId == policy;
 		assert: object namedSize == namedSize;
 		assert: object isWriteable;
@@ -239,7 +239,7 @@ test_fetchObjects
 	object := library session: session execute: '#(true false nil)'.
 	objects := library session: session fetchObjects: object.
 	self 
-		assert: objects class == library oopTypeArrayClass;
+		assert: objects class == Array;
 		assert: (objects at: 1) = library oopTrue;
 		assert: (objects at: 2) = library oopFalse;
 		assert: (objects at: 3) = library oopNil;
@@ -482,6 +482,15 @@ test_version
 		assert: string last codePoint ~~ 0;
 		assert: (string beginsWith: '3.3');
 		yourself.
+!
+
+testUserActionCallback
+
+	| x |
+	self 
+		assert: (x := library session: session execute: '2 + 3') == 5;
+		assert: (x := library session: session execute: 'GsFile exists: ''foo.bar''') == false;
+		yourself.
 ! !
 !GciMtLibraryTestCase categoriesFor: #setUp!private! !
 !GciMtLibraryTestCase categoriesFor: #test_abort!public! !
@@ -521,6 +530,7 @@ test_version
 !GciMtLibraryTestCase categoriesFor: #test_resolveSymbolOop!public! !
 !GciMtLibraryTestCase categoriesFor: #test_sessionIsRemote!public! !
 !GciMtLibraryTestCase categoriesFor: #test_version!public! !
+!GciMtLibraryTestCase categoriesFor: #testUserActionCallback!public! !
 
 !GciMtLibraryTestCase class methodsFor!
 

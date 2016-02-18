@@ -775,15 +775,16 @@ session: session fetchObjects: anOop
 	objects := self oopTypeArrayClass new: count.
 	result := self GciMtFetchOops: session _: anOop _: 1 _: objects _: count _: gciErrSType.
 	result < 0 ifTrue: [self gciError: gciErrSType].
-	result == 0 ifTrue: [^self oopTypeArrayClass new].
-	result == count ifTrue: [
+	result == 0 ifTrue: [^#()].
+	result == count ifFalse: [
+		count := result.
+	] ifTrue: [
 		count := self session: session fetchSize: anOop.
 		objects := self oopTypeArrayClass new: count.
 		result := self GciMtFetchOops: session _: anOop _: 1 _: objects _: count _: gciErrSType.
 		result < 0 ifTrue: [self gciError: gciErrSType].
-	] ifFalse: [
-		objects := objects copyFrom: 1 to: result.
 	].
+	objects := objects copyFrom: 1 to: count.
 	^objects!
 
 session: session fetchSize: anOop
