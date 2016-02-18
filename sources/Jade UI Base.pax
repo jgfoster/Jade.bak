@@ -5,6 +5,7 @@ package paxVersion: 1;
 
 package basicPackageVersion: '0.068'.
 
+package basicScriptAt: #postinstall put: 'JadeTextStyles default resetColors.'.
 
 package classNames
 	add: #CodeSourcePresenter;

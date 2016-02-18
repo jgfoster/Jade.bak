@@ -56,7 +56,7 @@ createVersionResource
 				at: 'FileDescription' 		put: 'IDE for GemStone/S';
 				at: 'FileVersion' 			put: versionString;
 				at: 'InternalName' 		put: 'Jade';
-				at: 'LegalCopyright' 		put: 'Copyright © GemTalk Systems LLC 2016';
+				at: 'LegalCopyright' 		put: 'Copyright © James Foster 2001-2016';
 				at: 'OriginalFilename' 	put: 'Jade.exe';
 				at: 'ProductName' 		put: 'Jade';
 				at: 'ProductVersion' 		put: versionString;

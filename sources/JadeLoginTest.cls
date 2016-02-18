@@ -6,7 +6,26 @@ TestCase subclass: #JadeLoginTest
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeLoginTest guid: (GUID fromString: '{C02B6503-FFD6-49CF-A51E-8A389FB7E5F8}')!
-JadeLoginTest comment: ''!
+JadeLoginTest comment: 'Transcript:
+	Transcript show: ''Transcript test''.	"Copy, Delete"
+My Session:
+	UserGlobals at: #''James'' put: 42.	"Commit"
+	UserGlobals at: #''James''.
+	UserGlobals at: #''James'' put: 24.
+	UserGlobals at: #''James''.				"Abort"
+	UserGlobals at: #''James''.
+All Sessions:
+	"Menus"
+	"Auto-update"
+Workspace:
+	2 + 3.	"Display, Execute, Inspect"
+	2 -> 3.	"Inspect"
+		self key.
+		self value.
+User Browser:
+	"New user: Seaside"
+	"Missing edit of Details & Password"
+'!
 !JadeLoginTest categoriesForClass!SUnit! !
 !JadeLoginTest methodsFor!
 
