@@ -782,7 +782,7 @@ session: session fetchObjects: anOop
 		result := self GciMtFetchOops: session _: anOop _: 1 _: objects _: count _: gciErrSType.
 		result < 0 ifTrue: [self gciError: gciErrSType].
 	] ifFalse: [
-		objects size: count.
+		objects := objects copyFrom: 1 to: result.
 	].
 	^objects!
 

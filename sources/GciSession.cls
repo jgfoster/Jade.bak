@@ -859,7 +859,7 @@ valueOfArrayOop: anOopType
 
 valueOfOop: anOopType
 
-	^library valueOfOop: anOopType.!
+	^library session: gciSessionId valueOfOop: anOopType.!
 
 withExplanation: aString do: aBlock
 	"Here we make the call and handle any error."

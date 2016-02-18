@@ -10,6 +10,12 @@ CodeSourcePresenter comment: 'model - the context in which code can be executed'
 !CodeSourcePresenter categoriesForClass!Unclassified! !
 !CodeSourcePresenter methodsFor!
 
+abortTransaction
+
+	gciSession abort.
+	Sound informationBeep.
+!
+
 addMenu
 
 	| menuBar |
@@ -346,6 +352,7 @@ updateCodeFont
 		documentPresenter view font: CodeFont.
 	].
 ! !
+!CodeSourcePresenter categoriesFor: #abortTransaction!Jade!public! !
 !CodeSourcePresenter categoriesFor: #addMenu!menus!public! !
 !CodeSourcePresenter categoriesFor: #addMenuTo:!menus!public! !
 !CodeSourcePresenter categoriesFor: #addQuotesToSelection!edit!private! !

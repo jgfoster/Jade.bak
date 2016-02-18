@@ -42,6 +42,21 @@ ProgressDialog showModalWhile: [:progress |
 	].
 ].
 SessionManager current splashShowAtStartup: false.
-SourceManager default compressSources.
-SessionManager current saveImage.
+SmalltalkSystemShell allInstances first 
+	position: 20@50;
+	yourself.
+IdeaSpaceShell show
+	absorbCard: SmalltalkWorkspaceDocument show;
+	absorbCard: SystemBrowserShell show;
+	position: 50@50; extent: 1200@750;
+	yourself.
+!
+JadeLoginShell show
+	position: 80@20;
+	yourself.
+(Delay forMilliseconds: 200) wait.
+Cursor wait showWhile: [
+	SourceManager default compressSources.
+	SessionManager current saveImage.
+].
 !
