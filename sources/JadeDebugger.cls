@@ -368,7 +368,7 @@ openDebuggerOnException: gciError
 
 openOn: gsProcess message: aString terminateOnClose: aBoolean
 
-	^(self showOn: gsProcess gciSession)
+	^(self showOnSession: gsProcess gciSession)
 		initializeProcess: gsProcess message: aString terminateOnClose: aBoolean;
 		answer.
 !
