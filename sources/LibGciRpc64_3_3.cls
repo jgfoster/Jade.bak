@@ -26,7 +26,7 @@ threadSafeLibraryName
 
 displayName
 
-	^'64-bit 3.3'.
+	^'64-bit 3.3.0 (MT)'.
 !
 
 fileNameSearch

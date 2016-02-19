@@ -32,7 +32,7 @@ displayName
 
 fileNameSearch
 
-	^'libgcits-3.2.0-32.dll'.
+	^'libgcirpc-3.2.0-32.dll'.
 ! !
 !LibGciRpc64_3_2 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2 class categoriesFor: #fileNameSearch!public! !

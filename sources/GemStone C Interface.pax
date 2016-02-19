@@ -29,6 +29,7 @@ package classNames
 	add: #Gcirw62;
 	add: #GciSessionId;
 	add: #GciSingleThreadedLibrary;
+	add: #GciThreadSafeLibrary;
 	add: #GciTsObjInfo;
 	add: #LibGciRpc64;
 	add: #LibGciRpc64_20;
@@ -53,6 +54,7 @@ package classNames
 	add: #LibGciRpc64_3_2_12;
 	add: #LibGciRpc64_3_3;
 	add: #LibGciRpc64_310x;
+	add: #LibGciTs_3_3_0;
 	add: #OopType32;
 	add: #OopType32Array;
 	add: #OopType32Field;
@@ -142,6 +144,11 @@ GciLibrary subclass: #GciMultiThreadedLibrary
 	classInstanceVariableNames: ''!
 GciLibrary subclass: #GciSingleThreadedLibrary
 	instanceVariableNames: 'semaphore'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciLibrary subclass: #GciThreadSafeLibrary
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -286,6 +293,11 @@ LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_11
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_12
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciThreadSafeLibrary subclass: #LibGciTs_3_3_0
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
