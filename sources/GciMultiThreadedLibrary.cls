@@ -58,7 +58,7 @@ expect: typeName errorIfResultIs: errorResult inThreadDo: aTwoArgumentBlock
 	callback := ExternalCallback 
 		block: [:result | mainResult := result. doneFlag := true. 0]
 		argumentTypes: typeName.
-	forkResult := aTwoArgumentBlock value: gciErrSType asParameter value: callback asParameter.
+	forkResult := aTwoArgumentBlock value: gciErrSType value: callback.
 	forkResult == 0 ifFalse: [self error: 'CreateThread() returned error #' , forkResult printString].
 	[doneFlag] whileFalse: [SessionManager inputState pumpMessages. (Delay forMilliseconds: 1) wait].
 	mainResult = errorResult ifTrue: [self gciError: gciErrSType].
@@ -384,8 +384,8 @@ loginToStone: stoneNRS
 			_: gsPasswordEx asParameter
 			_: loginFlags
 			_: errNum
-			_: gciErrSType 
-			_: callback.
+			_: gciErrSType asParameter 
+			_: callback asParameter.
 	].
 !
 
@@ -627,8 +627,8 @@ session: session continue: gsProcessOop with: anOop error: aGciErrSType flags: f
 			_: anOop 
 			_: aGciErrSType 
 			_: flags 
-			_: gciErrSType  
-			_: callback.
+			_: gciErrSType asParameter 
+			_: callback asParameter.
 	].
 	^self session: session valueOfOop: result
 
@@ -688,8 +688,8 @@ session: session execute: stringOrOop context: contextOop symbolList: symbolList
 			_: symbolListOop 
 			_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
 			_: 0 "environment" 
-			_: gciErrSType  
-			_: callback.
+			_: gciErrSType asParameter 
+			_: callback asParameter.
 	].
 	^self session: session valueOfOop: result
 !
