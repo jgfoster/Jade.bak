@@ -13,8 +13,15 @@ LibGciTs_3_3_0 comment: ''!
 errorStructureClass
 
 	^GciErrSType64_31.
+!
+
+gciErr: errorReport
+
+	<cdecl: bool GciErr GciErrSType64_31*>
+	^self invalidCall
 ! !
 !LibGciTs_3_3_0 categoriesFor: #errorStructureClass!private! !
+!LibGciTs_3_3_0 categoriesFor: #gciErr:!private! !
 
 !LibGciTs_3_3_0 class methodsFor!
 

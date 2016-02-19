@@ -15,16 +15,15 @@ session
 	^session!
 
 setUp
-
 	super setUp.
-	library := LibGciRpc64_3_3 default.
-	session ifNil: [
-		session := library 
-			loginUser: 'DataCurator'
-			password: 'swordfish'
-			gemNRS: '!!@portugal#netldi:ldijfoster1#task!!gemnetobject'
-			stoneNRS: 'jfoster1'.
-	]!
+	library := LibGciMt_3_3 default.
+	session 
+		ifNil: 
+			[session := library 
+						loginUser: 'DataCurator'
+						password: 'swordfish'
+						gemNRS: '!!@portugal#netldi:ldijfoster1#task!!gemnetobject'
+						stoneNRS: 'jfoster1']!
 
 tearDown
 

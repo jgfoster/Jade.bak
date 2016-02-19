@@ -31,6 +31,7 @@ package classNames
 	add: #GciSingleThreadedLibrary;
 	add: #GciThreadSafeLibrary;
 	add: #GciTsObjInfo;
+	add: #LibGciMt_3_3;
 	add: #LibGciRpc64;
 	add: #LibGciRpc64_20;
 	add: #LibGciRpc64_21;
@@ -152,7 +153,7 @@ GciLibrary subclass: #GciThreadSafeLibrary
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciMultiThreadedLibrary subclass: #LibGciRpc64_3_3
+GciMultiThreadedLibrary subclass: #LibGciMt_3_3
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -228,6 +229,11 @@ LibGciRpc64 subclass: #LibGciRpc64_3_1
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 LibGciRpc64 subclass: #LibGciRpc64_3_2
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64 subclass: #LibGciRpc64_3_3
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''

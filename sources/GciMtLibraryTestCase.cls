@@ -11,9 +11,8 @@ GciMtLibraryTestCase comment: ''!
 !GciMtLibraryTestCase methodsFor!
 
 setUp
-
 	super setUp.
-	library := LibGciRpc64_3_3 default.
+	library := LibGciMt_3_3 default.
 	session := GciMtLibraryTestResource current session!
 
 test_abort

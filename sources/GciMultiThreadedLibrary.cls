@@ -946,14 +946,6 @@ softBreakSession: session
 
 	self session: session breakHard: false.!
 
-specialFromOop: anOop
-
-	anOop isSmallFraction ifTrue: [
-		^anOop asFraction.
-	].
-	^super specialFromOop: anOop
-!
-
 threadSafeLibraryName
 
 	self subclassResponsibility!
@@ -1083,7 +1075,6 @@ version
 !GciMultiThreadedLibrary categoriesFor: #session:valueOfOop:!public! !
 !GciMultiThreadedLibrary categoriesFor: #sessionIsRemote:!public! !
 !GciMultiThreadedLibrary categoriesFor: #softBreakSession:!public!required! !
-!GciMultiThreadedLibrary categoriesFor: #specialFromOop:!public! !
 !GciMultiThreadedLibrary categoriesFor: #threadSafeLibraryName!private! !
 !GciMultiThreadedLibrary categoriesFor: #version!public! !
 

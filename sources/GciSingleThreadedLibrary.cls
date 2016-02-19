@@ -563,6 +563,14 @@ session: anInteger send: aString to: anOopType with: anArray
 	].
 !
 
+session: session valueOfOop: anOopType
+
+	self critical: [
+		self gciSetSessionId: session.
+		^self valueOfOop: anOopType.
+	].
+!
+
 signalIfError
 
 	| error |
@@ -673,6 +681,7 @@ version
 !GciSingleThreadedLibrary categoriesFor: #session:oopForString:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:releaseOops:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:send:to:with:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:valueOfOop:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #signalIfError!private! !
 !GciSingleThreadedLibrary categoriesFor: #signalLastError!private! !
 !GciSingleThreadedLibrary categoriesFor: #signalSemaphoreIfNeeded:!private! !
