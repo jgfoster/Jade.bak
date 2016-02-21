@@ -46,10 +46,6 @@ commitSession: session
 	didCommit ifFalse: [self gciError: gciErrSType].
 !
 
-DllRegisterServer
-	<stdcall: hresult DllRegisterServer>
-	^self invalidCall!
-
 expect: typeName errorIfResultIs: errorResult inThreadDo: aTwoArgumentBlock
 
 	| callback doneFlag gciErrSType forkResult mainResult |
@@ -963,7 +959,6 @@ version
 !GciMultiThreadedLibrary categoriesFor: #characterForOop:!public! !
 !GciMultiThreadedLibrary categoriesFor: #classForSpecial:!public! !
 !GciMultiThreadedLibrary categoriesFor: #commitSession:!public!required! !
-!GciMultiThreadedLibrary categoriesFor: #DllRegisterServer!private! !
 !GciMultiThreadedLibrary categoriesFor: #expect:errorIfResultIs:inThreadDo:!private!threaded! !
 !GciMultiThreadedLibrary categoriesFor: #fetchObjImpl:!private!subclassResponsibility! !
 !GciMultiThreadedLibrary categoriesFor: #gciError:!private! !

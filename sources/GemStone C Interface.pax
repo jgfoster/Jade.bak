@@ -17,6 +17,8 @@ package classNames
 	add: #GciErrSType64_30;
 	add: #GciErrSType64_31;
 	add: #GciLibrary;
+	add: #GciLibraryTestCase;
+	add: #GciLibraryTestResource;
 	add: #GciLoginFailed;
 	add: #Gcilw61;
 	add: #Gcilw63;
@@ -30,6 +32,8 @@ package classNames
 	add: #GciSessionId;
 	add: #GciSingleThreadedLibrary;
 	add: #GciThreadSafeLibrary;
+	add: #GciTsLibraryTestCase;
+	add: #GciTsLibraryTestResource;
 	add: #GciTsObjInfo;
 	add: #LibGciMt_3_3;
 	add: #LibGciRpc64;
@@ -55,7 +59,7 @@ package classNames
 	add: #LibGciRpc64_3_2_12;
 	add: #LibGciRpc64_3_3;
 	add: #LibGciRpc64_310x;
-	add: #LibGciTs_3_3_0;
+	add: #LibGciTs_3_3;
 	add: #OopType32;
 	add: #OopType32Array;
 	add: #OopType32Field;
@@ -150,7 +154,7 @@ GciLibrary subclass: #GciSingleThreadedLibrary
 	classInstanceVariableNames: ''!
 GciLibrary subclass: #GciThreadSafeLibrary
 	instanceVariableNames: ''
-	classVariableNames: ''
+	classVariableNames: 'OOP_ILLEGAL OOP_NIL'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciMultiThreadedLibrary subclass: #LibGciMt_3_3
@@ -303,7 +307,7 @@ LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_12
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciThreadSafeLibrary subclass: #LibGciTs_3_3_0
+GciThreadSafeLibrary subclass: #LibGciTs_3_3
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -363,13 +367,33 @@ GciErrSType subclass: #GciErrSType64_31
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-TestCase subclass: #GciMtLibraryTestCase
+TestCase subclass: #GciLibraryTestCase
 	instanceVariableNames: 'library session'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-TestResource subclass: #GciMtLibraryTestResource
+GciLibraryTestCase subclass: #GciMtLibraryTestCase
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciLibraryTestCase subclass: #GciTsLibraryTestCase
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TestResource subclass: #GciLibraryTestResource
 	instanceVariableNames: 'library session'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciLibraryTestResource subclass: #GciMtLibraryTestResource
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciLibraryTestResource subclass: #GciTsLibraryTestResource
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

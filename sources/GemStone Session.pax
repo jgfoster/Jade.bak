@@ -46,7 +46,7 @@ package methodNames
 	add: #LibGciRpc64_3_1 -> #jadeServerClass;
 	add: #LibGciRpc64_3_2 -> #jadeServerClass;
 	add: #LibGciRpc64_3_3 -> #jadeServerClass;
-	add: #LibGciTs_3_3_0 -> #jadeServerClass;
+	add: #LibGciTs_3_3 -> #jadeServerClass;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -276,13 +276,13 @@ jadeServerClass
 ! !
 !LibGciRpc64_3_3 categoriesFor: #jadeServerClass!public! !
 
-!LibGciTs_3_3_0 methodsFor!
+!LibGciTs_3_3 methodsFor!
 
 jadeServerClass
 
 	^JadeServer64bit33
 ! !
-!LibGciTs_3_3_0 categoriesFor: #jadeServerClass!public! !
+!LibGciTs_3_3 categoriesFor: #jadeServerClass!public! !
 
 "End of package definition"!
 

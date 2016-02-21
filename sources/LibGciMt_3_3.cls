@@ -31,7 +31,6 @@ displayName
 
 fileNameSearch
 
-self halt.
 	^'libgcimt-3.3.0-32.dll'.
 ! !
 !LibGciMt_3_3 class categoriesFor: #displayName!public! !
