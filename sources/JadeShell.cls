@@ -58,7 +58,7 @@ onViewOpened
 		MessageBox
 			notify: ex description 
 			caption: 'Unable to Open ' , self class name.
-		Keyboard default isShiftDown ifTrue: [ex halt].
+		SessionManager current pause.
 		self view close.
 	].
 

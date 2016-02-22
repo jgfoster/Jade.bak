@@ -171,7 +171,7 @@ methodSelector
 			ifFalse: [^stream contents].
 	].
 	MessageBox notify: 'Sorry, we are not yet prepared to handle this feature!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 ! !
 !JadeCodeBrowser categoriesFor: #browseMethodImplementors!browse!public! !
 !JadeCodeBrowser categoriesFor: #browseMethodImplementorsOf!browse!public! !

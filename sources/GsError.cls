@@ -78,7 +78,7 @@ reportError
 		(ex isKindOf: GsError) ifTrue: [ex pass].
 		SessionManager current logError: ex.
 		MessageBox warning: 'Error while processing error: ' , ex description.
-		Keyboard default isShiftDown ifTrue: [self halt].
+		SessionManager current pause.
 		self reportErrorMessage.
 	].
 !
@@ -93,7 +93,7 @@ reportErrorMessage
 	MessageBox 
 		errorMsg: stream contents
 		caption: 'GemStone Error #' , gciErrSType number printString.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 	self gciSession terminate: gciErrSType contextOop.
 !
 

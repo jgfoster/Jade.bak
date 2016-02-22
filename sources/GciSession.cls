@@ -255,7 +255,7 @@ heartbeat: receiver arguments: arguments
 		result := GsError 
 			signalGCI: self
 			gciErrSType: error tag.
-		result = #'resume' ifFalse: [self halt].
+		result = #'resume' ifFalse: [self error: 'Unrecognized response of ' , result printString].
 		result := self returningResultOrErrorDo: [
 			library
 				session: gciSessionId
@@ -351,7 +351,7 @@ initializeServer
 		number = 2151 ifTrue: [notes := ' (code modification?)'].
 		MessageBox warning: ex description , notes , '
 Server initialization failed. Most functionality will be broken!!'.
-		Keyboard default isShiftDown ifTrue: [ex halt].
+		SessionManager current pause.
 		ex return: nil.
 	].
 
@@ -454,7 +454,7 @@ oopTypeFor: anObject
 	(anObject isKindOf: SmallInteger) 	ifTrue: [^library session: gciSessionId oopForInteger: anObject].
 	(anObject isKindOf: GsObject) 		ifTrue: [^anObject oopType].
 	MessageBox notify: 'Sorry, we are not yet prepared to convert ' , anObject printString , ' to an OOP!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 oopTypeWithOop: anInteger
@@ -873,7 +873,7 @@ withExplanation: aString do: aBlock
 
 	error := result.
 	result := error signal.
-	result = #'resume' ifFalse: [self halt].
+	result = #'resume' ifFalse: [self error: 'Unrecognized response of ' , result printString].
 	^self
 		withExplanation: aString 
 		do: [library

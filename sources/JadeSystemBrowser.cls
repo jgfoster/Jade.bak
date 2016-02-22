@@ -162,7 +162,7 @@ queryCommand: aCommandQuery
 renameSelection
 
 	MessageBox notify: 'Sorry, we are not yet prepared to handle this feature!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 restoreLayoutAndContents

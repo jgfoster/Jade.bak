@@ -70,7 +70,7 @@ contextObject
 continueTransaction
 
 	MessageBox notify: 'Sorry, we are not yet prepared to handle this feature!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 createComponents
@@ -279,7 +279,6 @@ help
 
 jadeDisplay
 
-self halt.
 	self jadeExecuteAndDisplay: true.
 
 !

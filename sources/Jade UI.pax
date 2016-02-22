@@ -473,7 +473,7 @@ fileIn
 		ex printTraceOn: stream.
 		(JadeWorkspace showOnSession: gciSession) showText: stream contents.
 		MessageBox notify: ex description.
-		Keyboard default isShiftDown ifTrue: [ex halt].
+		SessionManager current pause.
 	].
 !
 

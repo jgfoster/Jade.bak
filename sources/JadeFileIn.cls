@@ -141,7 +141,7 @@ processLine
 	(ucLine beginsWith: 'SET COMPILE_ENV:') ifTrue: [^self readSetCompileEnv].
 
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , ucLine printString , ' during file-in!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 read
@@ -238,7 +238,7 @@ readWithProgress: progress
 		ex printTraceOn: myStream.
 		(JadeWorkspace showOnSession: browser gciSession) showText: myStream contents.
 		MessageBox notify: ex description.
-		Keyboard default isShiftDown ifTrue: [ex halt].
+		SessionManager current pause.
 	].
 !
 

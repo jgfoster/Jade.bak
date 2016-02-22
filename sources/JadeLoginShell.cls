@@ -236,7 +236,7 @@ login
 		MessageBox 
 			errorMsg: ex description
 			caption: 'Jade Login Error'.
-		Keyboard default isShiftDown ifTrue: [ex halt].
+		SessionManager current pause.
 		^self.
 	]. 
 	self postLogin: session.

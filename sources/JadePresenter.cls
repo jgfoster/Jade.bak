@@ -67,7 +67,7 @@ drop: sourceObject on: targetObject description: aString
 	MessageBox 
 		warning: 'Sorry, drop ' , aString , ' ' , sourceObject printString , ' on ' , targetObject printString , ' in ' , self class name , ' not yet supported.'
 		caption: 'Jade System Browser'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 dropClass: anOopType on: aTarget
@@ -141,7 +141,7 @@ labelOf: oldString editedTo: newString accept: aValueHolder
 		warning: 'Sorry. Item rename not yet supported.' 
 		caption: 'Jade System Browser'.
 	aValueHolder value: false.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 model: anObject
@@ -174,13 +174,13 @@ onDragCut: aSession
 
 onDragDrop: aSession 
 
-	(aSession isFormatAvailable: #'method') 				ifTrue: [^self onDragDropMethods: aSession].
+	(aSession isFormatAvailable: #'method') 			ifTrue: [^self onDragDropMethods: aSession].
 	(aSession isFormatAvailable: #'methodCategory') 	ifTrue: [^self onDragDropMethodCategories: aSession].
-	(aSession isFormatAvailable: #'class') 					ifTrue: [^self onDragDropClasses: aSession].
+	(aSession isFormatAvailable: #'class') 			ifTrue: [^self onDragDropClasses: aSession].
 	(aSession isFormatAvailable: #'classCategory')		ifTrue: [^self onDragDropClassCategories: aSession].
 	(aSession isFormatAvailable: #'symbolDictionary')	ifTrue: [^self onDragDropSymbolDictionaries: aSession].
 	MessageBox notify: 'Sorry, we are not yet able to drag/drop ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 onDragDropClassCategories: aSession 
@@ -256,13 +256,13 @@ onDragOver: aSession
 	aSession operation: nil.
 	aSession dragObjects isEmpty ifTrue: [^self].
 	aSession suggestedTarget isNil ifTrue: [^self].
-	(aSession isFormatAvailable: #'method') 				ifTrue: [^self onDragMethodsOver: aSession].
+	(aSession isFormatAvailable: #'method') 			ifTrue: [^self onDragMethodsOver: aSession].
 	(aSession isFormatAvailable: #'methodCategory') 	ifTrue: [^self onDragMethodCategoriesOver: aSession].
-	(aSession isFormatAvailable: #'class') 					ifTrue: [^self onDragClassesOver: aSession].
+	(aSession isFormatAvailable: #'class') 			ifTrue: [^self onDragClassesOver: aSession].
 	(aSession isFormatAvailable: #'classCategory')		ifTrue: [^self onDragClassCategoriesOver: aSession].
 	(aSession isFormatAvailable: #'symbolDictionary')	ifTrue: [^self onDragSymbolDictionariesOver: aSession].
 	MessageBox notify: 'Sorry, we are not yet able to drag over ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 onDragOver: aSession operations: aList

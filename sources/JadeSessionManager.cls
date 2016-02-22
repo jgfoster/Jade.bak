@@ -45,6 +45,11 @@ mainShellClass
 	^JadeLoginShell.
 !
 
+pause
+
+	Keyboard default isShiftDown ifTrue: [self error: 'Generate walkback!!'].
+!
+
 sessionStarted
 
 	GciLibrary sessionStarted!
@@ -61,6 +66,7 @@ version
 ! !
 !JadeSessionManager class categoriesFor: #getVersion!public! !
 !JadeSessionManager class categoriesFor: #mainShellClass!public! !
+!JadeSessionManager class categoriesFor: #pause!public! !
 !JadeSessionManager class categoriesFor: #sessionStarted!public! !
 !JadeSessionManager class categoriesFor: #setVersion!public! !
 !JadeSessionManager class categoriesFor: #version!public! !

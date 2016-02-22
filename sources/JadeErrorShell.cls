@@ -91,7 +91,7 @@ return: aSymbol
 textEntry
 
 	MessageBox notify: 'Sorry, we are not yet prepared to handle this feature!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 ! !
 !JadeErrorShell categoriesFor: #createComponents!public! !
 !JadeErrorShell categoriesFor: #createSchematicWiring!public! !

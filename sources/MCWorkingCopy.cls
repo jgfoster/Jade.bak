@@ -109,7 +109,7 @@ newVersionWithName: nameString message: messageString
 		with: nameString 
 		with: messageString.
 	MessageBox notify: 'Sorry, we are not yet implemented this feature!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 removeRepository: aRepository 

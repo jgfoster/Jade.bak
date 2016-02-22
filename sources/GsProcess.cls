@@ -30,7 +30,7 @@ frameForLevel: anInteger
 'Error when attempting to read stack frame.
 Maybe an object got an error on a #printString method.
 ' , ex description.
-		Keyboard default isShiftDown ifTrue: [self halt].
+		SessionManager current pause.
 		^nil.
 	].
 	^GsStackFrame

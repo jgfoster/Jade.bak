@@ -1562,13 +1562,12 @@ onDragOverClassCategory: aSession
 onDragOverClassHierarchy: aSession 
 
 	aSession operation: nil.
-	aSession dragObjects isEmpty 				ifTrue: [^self].
-	aSession suggestedTarget isNil 				ifTrue: [^self].
+	aSession dragObjects isEmpty 			ifTrue: [^self].
+	aSession suggestedTarget isNil 			ifTrue: [^self].
 	(aSession isFormatAvailable: #'class') 	ifTrue: [^self].
-	(aSession isFormatAvailable: #'method') ifTrue: [^self onDragMethodsOverClassHierarchy: aSession].
+	(aSession isFormatAvailable: #'method')	ifTrue: [^self onDragMethodsOverClassHierarchy: aSession].
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
-!
+	SessionManager current pause.!
 
 onDragOverClassList: aSession 
 
@@ -1578,7 +1577,7 @@ onDragOverClassList: aSession
 	(aSession isFormatAvailable: #'class')			ifTrue: [^self].
 	(aSession isFormatAvailable: #'method') 	ifTrue: [^self onDragMethodsOverClassList: aSession].
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 onDragOverDictionary: aSession 
@@ -1588,7 +1587,7 @@ onDragOverDictionary: aSession
 	aSession suggestedTarget isNil ifTrue: [^self].
 	(aSession isFormatAvailable: #'class') 				ifTrue: [^self onDragClassesOverDictionary: aSession].
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 onDragOverMethodCategory: aSession 
@@ -1611,7 +1610,7 @@ onDragOverPackageList: aSession
 	(aSession isFormatAvailable: #'package') ifTrue: [^self].
 	(aSession isFormatAvailable: #'class') 	ifTrue: [^self onDragClassesOverPackageList: aSession].
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 onDropClassesOnDictionary: aSession 
@@ -1635,7 +1634,7 @@ onDropClassesOnPackage: aString session: aSession
 	| classes stream |
 	classes := aSession dragObjects collect: [:each | each format: #'class'].
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 "
 	stream := (WriteStream on: String new)
 		nextPutAll: 'methodClass'; tab;
@@ -1697,23 +1696,23 @@ onDropOnClassCategory: aSession
 
 onDropOnClassHierarchy: aSession 
 
-	(aSession isFormatAvailable: #'method') 				ifTrue: [^self onDropMethodsOnClassHierarchy: aSession].
+	(aSession isFormatAvailable: #'method') ifTrue: [^self onDropMethodsOnClassHierarchy: aSession].
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 onDropOnClassList: aSession 
 
 	(aSession isFormatAvailable: #'method') ifTrue: [^self onDropMethodsOnClassList: aSession].
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 onDropOnDictionary: aSession 
 
-	(aSession isFormatAvailable: #'class') 				ifTrue: [^self onDropClassesOnDictionary: aSession].
+	(aSession isFormatAvailable: #'class') ifTrue: [^self onDropClassesOnDictionary: aSession].
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
+	SessionManager current pause.
 !
 
 onDropOnMethodCategory: aSession 
@@ -1734,8 +1733,7 @@ onDropOnPackageList: aSession
 
 	(aSession isFormatAvailable: #'class') 	ifTrue: [^self onDropClassesOnPackageList: aSession].
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , aSession printString , '!!'.
-	Keyboard default isShiftDown ifTrue: [self halt].
-!
+	SessionManager current pause.!
 
 onSetFocus
 
@@ -1769,7 +1767,6 @@ onSetFocus: aView stack: aString
 				caption: 'Jade Error'.
 			Keyboard default isShiftDown ifTrue: [
 				| stream |
-				SessionManager current isRuntime ifFalse: [ | x | x := TimeStamp current asMilliseconds - startTime asMilliseconds. (x -> aView -> activeView -> aString) halt].
 				stream := WriteStream on: String new.
 				ex printTraceOn: stream.
 				(JadeWorkspace showOnSession: gciSession) showText: stream contents.
@@ -2397,7 +2394,6 @@ updateAfterFindClass: anArray isMeta: aBoolean selector: aString
 
 updateAndSelect: aView
 
-self halt.
 	updateCount := updateCount + 1.
 	keystrokeTime < Time millisecondClockValue ifTrue: [
 		self updateAndSelectA: aView.

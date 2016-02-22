@@ -210,7 +210,7 @@ session: session continue: gsProcessOop
 	^self 
 		session: session 
 		continue: gsProcessOop 
-		withObject: self oopNil
+		withObject: self oopIllegal
 !
 
 session: session continue: gsProcessOop withObject: anOop

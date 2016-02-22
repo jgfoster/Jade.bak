@@ -105,7 +105,7 @@ fromStringXML: aString session: gciSession
 		^self fromXML: xmlElement session: gciSession.
 	] on: DOMParseError do: [:ex | 
 		MessageBox notify: ex description.
-		Keyboard default isShiftDown ifTrue: [ex halt].
+		SessionManager current pause.
 		SessionManager current logError: ex.
 	].
 !

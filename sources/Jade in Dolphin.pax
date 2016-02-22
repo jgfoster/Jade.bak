@@ -21,6 +21,7 @@ GciErrSType64 template.
 package basicScriptAt: #preuninstall put: 'JadeLoginShell removeFromDevelopmentTools.'.
 
 package methodNames
+	add: #DevelopmentSessionManager -> #pause;
 	add: 'JadeLoginShell class' -> #addToDevelopmentTools;
 	add: 'JadeLoginShell class' -> #removeFromDevelopmentTools;
 	add: 'JadeLoginShell class' -> #toolsFolderIcon;
@@ -50,6 +51,15 @@ package!
 
 
 "Loose Methods"!
+
+!DevelopmentSessionManager methodsFor!
+
+pause
+	"Isolate halt in one place."
+
+	Keyboard default isShiftDown ifTrue: [self halt].
+! !
+!DevelopmentSessionManager categoriesFor: #pause!public! !
 
 !JadeLoginShell class methodsFor!
 

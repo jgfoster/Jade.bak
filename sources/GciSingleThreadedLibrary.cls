@@ -88,7 +88,7 @@ critical: aBlock
 	] on: Error do: [:ex | 
 		self signalSemaphoreIfNeeded: array.
 		result := ex pass.
-		SessionManager current isRuntime ifFalse: [self halt].
+		SessionManager current pause.
 		^result.
 	].
 !

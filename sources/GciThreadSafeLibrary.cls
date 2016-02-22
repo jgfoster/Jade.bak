@@ -720,15 +720,15 @@ session: session fetchObject: anOop
 			result < 0 ifTrue: [self gciError: gciErrSType].
 	].
 	buffer := buffer copyFrom: 1 to: result.
-	class = self oopClassByteArray 			value ifTrue: [gciTsObjInfo data: buffer											] ifFalse: [
-	class = self oopClassString 					value ifTrue: [gciTsObjInfo data: buffer asString								] ifFalse: [
-	class = self oopClassSymbol 					value ifTrue: [gciTsObjInfo data: buffer asString asSymbol				] ifFalse: [
-	class = self oopClassUnicode7 				value ifTrue: [gciTsObjInfo data: (Unicode7 withAll: buffer				)] ifFalse: [
-	class = self oopClassUnicode16 			value ifTrue: [gciTsObjInfo data: (Unicode16 withAll: buffer			)] ifFalse: [
-	class = self oopClassUnicode32 			value ifTrue: [gciTsObjInfo data: (Unicode32 withAll: buffer			)] ifFalse: [
+	class = self oopClassByteArray 			value ifTrue: [gciTsObjInfo data: buffer						] ifFalse: [
+	class = self oopClassString 			value ifTrue: [gciTsObjInfo data: buffer asString				] ifFalse: [
+	class = self oopClassSymbol 			value ifTrue: [gciTsObjInfo data: buffer asString asSymbol			] ifFalse: [
+	class = self oopClassUnicode7 			value ifTrue: [gciTsObjInfo data: (Unicode7 withAll: buffer			)] ifFalse: [
+	class = self oopClassUnicode16 			value ifTrue: [gciTsObjInfo data: (Unicode16 withAll: buffer		)] ifFalse: [
+	class = self oopClassUnicode32 			value ifTrue: [gciTsObjInfo data: (Unicode32 withAll: buffer		)] ifFalse: [
 	class = self oopClassDoubleByteString 	value ifTrue: [gciTsObjInfo data: (DoubleByteString withAll: buffer	)] ifFalse: [
 	class = self oopClassQuadByteString 		value ifTrue: [gciTsObjInfo data: (QuadByteString withAll: buffer	)] ifFalse: [
-	self halt]]]]]]]].
+	self error: 'Unrecognized class ' , class printString]]]]]]]].
 	^gciTsObjInfo!
 
 session: session fetchObjects: anOop
