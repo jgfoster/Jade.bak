@@ -587,6 +587,15 @@ releaseAllObjectsInSession: session
 	didRelease ifFalse: [self gciError: gciErrSType].
 !
 
+sendInterpreted: aString to: anOopType with: anArray session: anInteger
+
+	^self
+		session: anInteger
+		send: aString
+		to: anOopType
+		with: anArray.
+!
+
 session: session breakHard: isHard
 
 	| flag gciErrSType |
@@ -1038,6 +1047,7 @@ version
 !GciMultiThreadedLibrary categoriesFor: #oopTypeWithOop:!public! !
 !GciMultiThreadedLibrary categoriesFor: #oopZero!public!Reserved OOPs! !
 !GciMultiThreadedLibrary categoriesFor: #releaseAllObjectsInSession:!public!required! !
+!GciMultiThreadedLibrary categoriesFor: #sendInterpreted:to:with:session:!public!subclassResponsibility! !
 !GciMultiThreadedLibrary categoriesFor: #session:breakHard:!public! !
 !GciMultiThreadedLibrary categoriesFor: #session:clearStack:!public!required! !
 !GciMultiThreadedLibrary categoriesFor: #session:continue:with:error:!public! !

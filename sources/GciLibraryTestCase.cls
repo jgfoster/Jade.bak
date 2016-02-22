@@ -476,16 +476,6 @@ test_version
 		assert: string last codePoint ~~ 0;
 		assert: (string beginsWith: '3.3');
 		yourself.
-!
-
-testUserActionCallback
-
-	| x |
-	self 
-		assert: (x := library session: session execute: '2 + 3') == 5;
-		assert: (x := library session: session execute: 'GsFile existsOnServer: ''foo.bar''') == false;
-		assert: (x := library session: session execute: 'GsFile exists: ''foo.bar''') == false;
-		yourself.
 ! !
 !GciLibraryTestCase categoriesFor: #test_abort!public! !
 !GciLibraryTestCase categoriesFor: #test_begin!public! !
@@ -524,7 +514,6 @@ testUserActionCallback
 !GciLibraryTestCase categoriesFor: #test_resolveSymbolOop!public! !
 !GciLibraryTestCase categoriesFor: #test_sessionIsRemote!public! !
 !GciLibraryTestCase categoriesFor: #test_version!public! !
-!GciLibraryTestCase categoriesFor: #testUserActionCallback!public! !
 
 !GciLibraryTestCase class methodsFor!
 
