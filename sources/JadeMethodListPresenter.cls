@@ -81,8 +81,8 @@ codePresenterIsMethod
 createComponents
 
 	super createComponents.
-	methodListPresenter 				:= self add: MethodListPresenter					new name: 'methodList'.
-	methodSourcePresenter				:= (self add: MethodSourcePresenter				new name: 'methodSource') 			menuTitle: '&Method Source'; yourself.
+	methodListPresenter 	:= self add: MethodListPresenter	new name: 'methodList'.
+	methodSourcePresenter	:= (self add: MethodSourcePresenter	new name: 'methodSource') menuTitle: '&Method Source'; yourself.
 !
 
 createSchematicWiring
@@ -107,6 +107,13 @@ doSearch
 	searchBlock notNil ifTrue: [searchBlock value].
 !
 
+gciSession: aGciSession
+
+	super gciSession: aGciSession.
+	methodListPresenter gciSession: aGciSession .
+	methodSourcePresenter gciSession: aGciSession.
+!
+
 jadeMenuStrings
 
 	^#(
@@ -119,13 +126,6 @@ jadeMenuStrings
 		'-'
 		'E&xit/Shift+F4/exit'
 	).
-!
-
-model: aGciSession
-
-	super model: aGciSession.
-	methodListPresenter model: aGciSession .
-	methodSourcePresenter model: aGciSession.
 !
 
 onViewOpened
@@ -205,8 +205,8 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #createComponents!public! !
 !JadeMethodListPresenter categoriesFor: #createSchematicWiring!public! !
 !JadeMethodListPresenter categoriesFor: #doSearch!public! !
+!JadeMethodListPresenter categoriesFor: #gciSession:!public! !
 !JadeMethodListPresenter categoriesFor: #jadeMenuStrings!public! !
-!JadeMethodListPresenter categoriesFor: #model:!public! !
 !JadeMethodListPresenter categoriesFor: #onViewOpened!public! !
 !JadeMethodListPresenter categoriesFor: #searchFor:!public! !
 !JadeMethodListPresenter categoriesFor: #selectedCategory!public! !
