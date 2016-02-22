@@ -156,14 +156,14 @@ stepPointsFor: aGsMethod
 
 browseImplementorsOf: aGsMethodOrString
 
-	(JadeMethodListBrowser showOnSession: self gciSession)
+	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseImplementorsOf: aGsMethodOrString;
 		yourself.
 !
 
 browseSendersOf: aGsMethodOrString
 
-	(JadeMethodListBrowser showOnSession: self gciSession)
+	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseSendersOf: aGsMethodOrString;
 		yourself.
 ! !

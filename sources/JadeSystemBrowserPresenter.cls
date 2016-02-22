@@ -275,7 +275,7 @@ browseMethodHistory
 
 browseMethodsAndSelect: aString
 
-	(JadeMethodListBrowser showOnSession: self gciSession) 
+	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseMethodsFromString: readStream upToEnd;
 		selecting: aString.
 !

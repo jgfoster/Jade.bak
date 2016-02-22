@@ -69,6 +69,10 @@ presenterClass
 	^nil.
 !
 
+primaryPresenter
+
+	^myPresenter!
+
 shellName
 
 	^'Jade Shell'.
@@ -84,6 +88,7 @@ updateCaption
 !JadeShell categoriesFor: #onViewClosed!private! !
 !JadeShell categoriesFor: #onViewOpened!private! !
 !JadeShell categoriesFor: #presenterClass!overrides!private! !
+!JadeShell categoriesFor: #primaryPresenter!public! !
 !JadeShell categoriesFor: #shellName!overrides!private! !
 !JadeShell categoriesFor: #updateCaption!overrides!private! !
 

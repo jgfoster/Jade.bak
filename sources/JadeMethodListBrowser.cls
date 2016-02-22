@@ -10,34 +10,9 @@ JadeMethodListBrowser comment: ''!
 !JadeMethodListBrowser categoriesForClass!Unclassified! !
 !JadeMethodListBrowser methodsFor!
 
-browseImplementorsOf: aGsMethod
-
-	myPresenter browseImplementorsOf: aGsMethod.
-!
-
-browseMethodsContaining: aString
-
-	myPresenter browseMethodsContaining: aString.
-!
-
-browseMethodsFromString: aString
-
-	myPresenter browseMethodsFromString: aString.
-!
-
-browseSendersOf: aGsMethodOrString
-
-	myPresenter browseSendersOf: aGsMethodOrString.
-!
-
 presenterClass
 
 	^JadeMethodListPresenter.
-!
-
-selecting: aString
-
-	myPresenter selecting: aString.
 !
 
 shellName
@@ -49,12 +24,7 @@ statusBarText: aString
 
 	(self view viewNamed: 'statusBarField') model: (ValueHolder with: aString).
 ! !
-!JadeMethodListBrowser categoriesFor: #browseImplementorsOf:!private! !
-!JadeMethodListBrowser categoriesFor: #browseMethodsContaining:!private! !
-!JadeMethodListBrowser categoriesFor: #browseMethodsFromString:!private! !
-!JadeMethodListBrowser categoriesFor: #browseSendersOf:!private! !
 !JadeMethodListBrowser categoriesFor: #presenterClass!overrides!private! !
-!JadeMethodListBrowser categoriesFor: #selecting:!private! !
 !JadeMethodListBrowser categoriesFor: #shellName!overrides!private! !
 !JadeMethodListBrowser categoriesFor: #statusBarText:!private! !
 
