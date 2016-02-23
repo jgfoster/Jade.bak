@@ -172,10 +172,10 @@ fromStream: aStream
 	| processName array status type newClass |
 	processName := aStream nextLine.
 	array := aStream nextLine subStrings: $=.
-	array isNilOrEmpty ifTrue: [array := #( '' )].
+	array isEmpty ifTrue: [array := #( '' )].
 	status := array last trimBlanks.
 	array := aStream nextLine subStrings: $=.
-	array isNilOrEmpty ifTrue: [array := #( '' )].
+	array isEmpty ifTrue: [array := #( '' )].
 	type := array last trimBlanks.
 	newClass := self subclasses 
 		detect: [:each | each type = type]

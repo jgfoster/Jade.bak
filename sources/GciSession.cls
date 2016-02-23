@@ -399,7 +399,7 @@ libraryVersion
 loadLibrary: aClass debugPath: debugPath
 
 	library := aClass open: aClass fileName.
-	debugPath isNilOrEmpty ifFalse: [
+	debugPath notEmpty ifTrue: [
 		(self debugToFilePath: debugPath) ifFalse: [self error: 'Unable to open ' , debugPath printString , ' for GCI debugging'].
 		library gemTrace: 2.
 	].!

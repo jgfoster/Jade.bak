@@ -48,7 +48,7 @@ debugPath: aString
 
 gemHost
 
-	gemHost isNilOrEmpty ifTrue: [^'localhost'].
+	gemHost isEmpty ifTrue: [^'localhost'].
 	^gemHost
 !
 
@@ -91,7 +91,7 @@ gemService: aString
 
 gemTask
 
-	gemTask isNilOrEmpty ifTrue: [^'gemnetobject'].
+	gemTask isEmpty ifTrue: [^'gemnetobject'].
 	^gemTask
 !
 
@@ -117,7 +117,7 @@ gemType: aSymbol
 !
 
 gemVersion
-	gemVersion isNilOrEmpty ifTrue: [^Gcilw6x displayName].
+	gemVersion isEmpty ifTrue: [^Gcilw6x displayName].
 	^gemVersion!
 
 gemVersion: aString 
@@ -135,7 +135,7 @@ generateStoneNRS
 
 gsPassword
 
-	gsPassword isNilOrEmpty ifTrue: [^'swordfish'].
+	gsPassword isEmpty ifTrue: [^'swordfish'].
 	^gsPassword.
 !
 
@@ -148,7 +148,7 @@ gsPassword: aString
 
 gsUserID
 
-	gsUserID isNilOrEmpty ifTrue: [^'DataCurator'].
+	gsUserID isEmpty ifTrue: [^'DataCurator'].
 	^gsUserID.
 !
 
@@ -184,26 +184,27 @@ initializeFromXML: aString
 	| element |
 	element := (IXMLDOMDocument new loadText: aString) documentElement.
 	element baseName = 'JadeLogin' ifFalse: [self error: 'Invalid document!!'].
-	gemVersion		:= element getAttribute: 'gemVersion'.
-	stoneHost			:= element getAttribute: 'stoneHost'.
-	stoneName		:= element getAttribute: 'stoneName'.
-	stoneNRS			:= element getAttribute: 'stoneNRS'.
-	gemType			:= (element getAttribute: 'gemType') asSymbol.
-	gemHost			:= element getAttribute: 'gemHost'.
-	gemService		:= element getAttribute: 'gemService'.
-	gemNRS			:= element getAttribute: 'gemNRS'.
-	loginType			:= element getAttribute: 'loginType'.
-	loginType 			:= loginType isNil ifTrue: [#'guest'] ifFalse: [loginType asSymbol].
-	hostUserID		:= element getAttribute: 'hostUserID'.
-	hostPassword	:= element getAttribute: 'hostPassword'.
-	gsUserID			:= element getAttribute: 'gsUserID'.
-	gsPassword		:= element getAttribute: 'gsPassword'.
-	initials				:= element getAttribute: 'initials'.
-	useSocket			:= (element getAttribute: 'useSocket') = 'true'.!
+	gemVersion	:= (element getAttribute: 'gemVersion'	) ifNil: [''].
+	stoneHost		:= (element getAttribute: 'stoneHost'		) ifNil: [''].
+	stoneName	:= (element getAttribute: 'stoneName'	) ifNil: [''].
+	stoneNRS		:= (element getAttribute: 'stoneNRS'		) ifNil: [''].
+	gemType		:= (element getAttribute: 'gemType'		) asSymbol.
+	gemHost		:= (element getAttribute: 'gemHost'		) ifNil: [''].
+	gemService	:= (element getAttribute: 'gemService'	) ifNil: [''].
+	gemNRS		:= (element getAttribute: 'gemNRS'		) ifNil: [''].
+	loginType		:= (element getAttribute: 'loginType'		) ifNil: [''].
+	loginType 		:= loginType isNil ifTrue: [#'guest'] ifFalse: [loginType asSymbol].
+	hostUserID	:= (element getAttribute: 'hostUserID'		) ifNil: [''].
+	hostPassword	:= (element getAttribute: 'hostPassword'	) ifNil: [''].
+	gsUserID		:= (element getAttribute: 'gsUserID'		) ifNil: [''].
+	gsPassword	:= (element getAttribute: 'gsPassword'	) ifNil: [''].
+	initials		:= (element getAttribute: 'initials'		) ifNil: [''].
+	useSocket		:= (element getAttribute: 'useSocket') 	= 'true'.
+!
 
 initials
 
-	initials isNilOrEmpty ifTrue: [^'Jade'].
+	initials isEmpty ifTrue: [^'Jade'].
 	^initials.
 !
 
@@ -254,7 +255,7 @@ saveDefault
 
 stoneHost
 
-	stoneHost isNilOrEmpty ifTrue: [^'localhost'].
+	stoneHost isEmpty ifTrue: [^'localhost'].
 	^stoneHost!
 
 stoneHost: aString
@@ -437,7 +438,9 @@ publishedEventsOfInstances
 !
 
 sample
-
+"
+	JadeLogin sample.
+"
 	^self fromXML: self defaultXML.
 ! !
 !JadeLogin class categoriesFor: #defaultPath!public! !

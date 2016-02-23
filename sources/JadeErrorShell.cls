@@ -56,12 +56,7 @@ onViewOpened
 	message := gsError errorReport message.
 	stack := gsProcess stack.
 	isResumable := gsError isResumableInGem.
-	detail := gsError errorReport args at: 3.
-	detail := (detail isKindOf: String) 
-		ifTrue: [self halt. "session executeString: (session oopFishing: detail)"] 
-		ifFalse: [nil].
-
-	detail isNilOrEmpty ifTrue: [detail := message].
+	detail := message.
 	message := message notEmpty
 		ifTrue: [(message subStrings: Character lf) first]
 		ifFalse: [''].
