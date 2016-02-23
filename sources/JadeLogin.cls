@@ -48,6 +48,7 @@ debugPath: aString
 
 gemHost
 
+	gemHost ifNil: [gemHost := ''].
 	gemHost isEmpty ifTrue: [^'localhost'].
 	^gemHost
 !
@@ -91,6 +92,7 @@ gemService: aString
 
 gemTask
 
+	gemTask ifNil: [gemTask := ''].
 	gemTask isEmpty ifTrue: [^'gemnetobject'].
 	^gemTask
 !
@@ -117,6 +119,8 @@ gemType: aSymbol
 !
 
 gemVersion
+
+	gemVersion ifNil: [gemVersion := ''].
 	gemVersion isEmpty ifTrue: [^Gcilw6x displayName].
 	^gemVersion!
 
@@ -135,6 +139,7 @@ generateStoneNRS
 
 gsPassword
 
+	gsPassword ifNil: [gsPassword := ''].
 	gsPassword isEmpty ifTrue: [^'swordfish'].
 	^gsPassword.
 !
@@ -148,6 +153,7 @@ gsPassword: aString
 
 gsUserID
 
+	gsUserID ifNil: [gsUserID := ''].
 	gsUserID isEmpty ifTrue: [^'DataCurator'].
 	^gsUserID.
 !
@@ -204,6 +210,7 @@ initializeFromXML: aString
 
 initials
 
+	initials ifNil: [initials := ''].
 	initials isEmpty ifTrue: [^'Jade'].
 	^initials.
 !
@@ -255,6 +262,7 @@ saveDefault
 
 stoneHost
 
+	stoneHost ifNil: [stoneHost := ''].
 	stoneHost isEmpty ifTrue: [^'localhost'].
 	^stoneHost!
 
