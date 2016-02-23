@@ -32,6 +32,7 @@ package classNames
 	add: #JadeServer64bit24;
 	add: #JadeServer64bit32;
 	add: #JadeServer64bit33;
+	add: #JadeServer64bit34;
 	add: #JadeServer64bit3x;
 	add: #JadeServerTestCase;
 	add: #TerminateProcess;
@@ -46,6 +47,7 @@ package methodNames
 	add: #LibGciRpc64_3_1 -> #jadeServerClass;
 	add: #LibGciRpc64_3_2 -> #jadeServerClass;
 	add: #LibGciRpc64_3_3 -> #jadeServerClass;
+	add: #LibGciRpc64_3_4 -> #jadeServerClass;
 	add: #LibGciTs_3_3 -> #jadeServerClass;
 	yourself.
 
@@ -204,6 +206,11 @@ JadeServer64bit32 subclass: #JadeServer64bit33
 	classVariableNames: 'Breakpoint GsNMethod GsSocket'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadeServer64bit32 subclass: #JadeServer64bit34
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 FadingDialog subclass: #WaitOnGemStoneDialog
 	instanceVariableNames: 'busySeconds codePresenter busySecondsPresenter gciSession timerProcess'
 	classVariableNames: ''
@@ -275,6 +282,14 @@ jadeServerClass
 	^JadeServer64bit33
 ! !
 !LibGciRpc64_3_3 categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64_3_4 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit33
+! !
+!LibGciRpc64_3_4 categoriesFor: #jadeServerClass!public! !
 
 !LibGciTs_3_3 methodsFor!
 

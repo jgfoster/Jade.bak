@@ -27,7 +27,8 @@ gciErr: errorReport
 
 displayName
 
-	^'64-bit 3.3.0 (TS)'.
+	'64-bit 3.3.0 (TS)'.
+	^nil
 !
 
 fileNameSearch

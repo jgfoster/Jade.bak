@@ -15,6 +15,7 @@ package methodNames
 	add: #JadeServer -> #processes;
 	add: #JadeServer -> #waitingProcesses;
 	add: #JadeServer64bit33 -> #waitingProcesses;
+	add: #JadeServer64bit34 -> #waitingProcesses;
 	add: #JadeServer64bit3x -> #addProcess:to:withStatus:scheduler:;
 	add: #JadeTranscript -> #browseProcesses;
 	yourself.
@@ -111,6 +112,17 @@ waitingProcesses
 
 ! !
 !JadeServer64bit33 categoriesFor: #waitingProcesses!Processes!public! !
+
+!JadeServer64bit34 methodsFor!
+
+waitingProcesses
+
+	| processToIgnore |
+	processToIgnore := Processor activeProcess environmentAt: #'parent' ifAbsent: [nil].
+	^ProcessorScheduler scheduler waitingProcesses reject: [:each | each == processToIgnore]
+
+! !
+!JadeServer64bit34 categoriesFor: #waitingProcesses!Processes!public! !
 
 !JadeServer64bit3x methodsFor!
 

@@ -39,6 +39,7 @@ package methodNames
 	add: #JadeServer64bit -> #recompile:withSource:;
 	add: #JadeServer64bit -> #sourceForProcess:frame:;
 	add: #JadeServer64bit33 -> #step:inFrame:;
+	add: #JadeServer64bit34 -> #step:inFrame:;
 	add: #JadeTextDocument -> #fileIn;
 	add: #JadeTextDocument -> #jadeInspect;
 	yourself.
@@ -457,6 +458,14 @@ step: aGsProcess inFrame: anInteger
 	aGsProcess _stepOverInFrame: anInteger.
 ! !
 !JadeServer64bit33 categoriesFor: #step:inFrame:!Debugger!public!Socket! !
+
+!JadeServer64bit34 methodsFor!
+
+step: aGsProcess inFrame: anInteger
+
+	aGsProcess _stepOverInFrame: anInteger.
+! !
+!JadeServer64bit34 categoriesFor: #step:inFrame:!Debugger!public!Socket! !
 
 !JadeTextDocument methodsFor!
 
