@@ -17,7 +17,7 @@ allowedToDeleteMethods
 
 anyMethod
 
-	^methodListPresenter list any.
+	^methodListPresenter list anyOne.
 !
 
 browseClass

@@ -53,22 +53,25 @@ createSchematicWiring
 
 doSearch
 
-	| myView foundString lineNumber string |
+	| findDetails myView foundString lineNumber string |
 	searchString isNil ifTrue: [^self].
 	myView := documentPresenter view.
 	string := searchString.
 	(string includes: $:) ifTrue: [string := (string subStrings: $:) first , ':'].
-	foundString := myView 
-		findNextWrappedEx: string 
-		down: true 
-		wholeWord: true 
-		matchCase: true.
+	findDetails := FindDetails new
+		pattern: string;
+		isForwards: true;
+		isWholeWord: true;
+		isCaseSensitive: true;
+		isRegularExpression: false;
+		action: #findNext;
+		yourself.
+	foundString := myView findNextWrapped: findDetails.
+	(foundString isKindOf: Boolean) ifFalse: [foundString := foundString notEmpty].
 	foundString ifFalse: [
-		foundString := myView 
-			findNextWrappedEx: string 
-			down: true 
-			wholeWord: false  
-			matchCase: true.
+		findDetails isWholeWord: false.
+		foundString := myView findNextWrapped: findDetails.
+		(foundString isKindOf: Boolean) ifFalse: [foundString := foundString notEmpty].
 	].
 	foundString ifFalse: [^self].
 	lineNumber := myView lineFromPosition: myView selectionRange first.

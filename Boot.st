@@ -3,7 +3,6 @@
 | list |
 list := #(
 	'JGF Dolphin'
-	'JGF Dolphin MVP Base'
 	'JGF Fading Dialog'
 	'GemStone C Interface'
 	'GemStone Objects'

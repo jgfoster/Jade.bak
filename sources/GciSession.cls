@@ -520,7 +520,7 @@ send: aSymbol to: anObject withAll: anArray
 		nextPutAll: '	withAll: (Array';
 		yourself.
 	anArray do: [:each | 
-		stream lf; nextPutAll: '		with: '; print: each.
+		stream cr; nextPutAll: '		with: '; print: each.
 	].
 	stream nextPut: $).
 	^self
@@ -545,7 +545,7 @@ sendInterpreted: aString to: anObject withAll: anArray
 		nextPutAll: '	withAll: (Array';
 		yourself.
 	anArray do: [:each | 
-		stream lf; nextPutAll: '		with: '; print: each.
+		stream cr; nextPutAll: '		with: '; print: each.
 	].
 	stream nextPut: $).
 	arguments := self serverArrayFor: anArray.

@@ -252,10 +252,10 @@ selectLfIfEndingOnCr
 	| text selectionRange |
 	selectionRange := documentPresenter view selectionRange.
 	text := documentPresenter view "hide; show;" value.			"somehow the value gets out of synch"
-	selectionRange stop < selectionRange start 						ifFalse: [^self ].
+	selectionRange stop < selectionRange start 			ifFalse: [^self ].
 	selectionRange start < documentPresenter view value size 	ifFalse: [^self ].
-	(text at: selectionRange start) = Character cr 						ifFalse: [^self ].
-	(text at: selectionRange start + 1) = Character lf 				ifFalse: [^self ].
+	(text at: selectionRange start) = Character cr 			ifFalse: [^self ].
+	(text at: selectionRange start + 1) = Character lf 		ifFalse: [^self ].
 	documentPresenter view selectionRange: (selectionRange start to: selectionRange start + 1).
 !
 

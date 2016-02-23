@@ -7,38 +7,13 @@ package basicPackageVersion: '0.010'.
 
 
 package methodNames
-	add: #Collection -> #any;
-	add: #Collection -> #notNilOrEmpty;
-	add: #Date -> #asMDYFormat;
-	add: #Date -> #asYMDFormat;
-	add: #Integer -> #asHex;
-	add: #Integer -> #factorsOf:;
-	add: #Integer -> #trimBlanks;
 	add: #KernelLibrary -> #getTickCount;
 	add: #KernelLibrary -> #hoursSinceSystemStartup;
 	add: #KernelLibrary -> #minutesSinceSystemStartup;
 	add: #KernelLibrary -> #secondsSinceSystemStartup;
-	add: #Number -> #asNumber;
-	add: #Number -> #asStringWithTwoDecimals;
-	add: #Object -> #asStringWithTwoDecimals;
-	add: #Object -> #mustBeKindOf:;
-	add: #Object -> #notNilOrEmpty;
-	add: #Object -> #stbInstVarAt:put:inFiler:id:;
-	add: #ScaledDecimal -> #scaleA;
-	add: #SessionManager -> #imageDirectory;
 	add: #String -> #asBoolean;
-	add: #String -> #asNumberEx;
 	add: #String -> #replaceCrLfWithLf;
 	add: #String -> #replaceLfWithCrLf;
-	add: #String -> #trimNilAndBlanks;
-	add: #Time -> #asFormat:;
-	add: #Time -> #asHourMinutesCivilianText;
-	add: #UndefinedObject -> #+;
-	add: #UndefinedObject -> #asScaledDecimal:;
-	add: #UndefinedObject -> #asYMDFormat;
-	add: #UndefinedObject -> #mustBeKindOf:;
-	add: #UndefinedObject -> #notNilOrEmpty;
-	add: #UndefinedObject -> #trimBlanks;
 	add: #UserLibrary -> #exitWindowsEx:;
 	add: #UserLibrary -> #exitWindowsEx:_:;
 	add: #UserLibrary -> #forceSystemLogoff;
@@ -47,8 +22,6 @@ package methodNames
 	add: #UserLibrary -> #getLastInputInfo;
 	add: #UserLibrary -> #getLastInputInfo:;
 	add: #WriteStream -> #lf;
-	add: 'File class' -> #dbfFileTypes;
-	add: 'ScaledDecimal class' -> #demoScaleA;
 	yourself.
 
 package globalNames
@@ -75,77 +48,6 @@ package!
 
 
 "Loose Methods"!
-
-!Collection methodsFor!
-
-any
-
-	#JGF.
-	^self
-		detect: [:each | true]
-		ifNone: [nil]
-!
-
-notNilOrEmpty
-	^self notEmpty! !
-!Collection categoriesFor: #any!JGF!public!searching! !
-!Collection categoriesFor: #notNilOrEmpty!JGF!public!testing! !
-
-!Date methodsFor!
-
-asMDYFormat
-
-	| mm dd yy |
-	mm := (self monthIndex + 100) printString copyFrom: 2 to: 3.
-	dd := (self dayOfMonth + 100) printString copyFrom: 2 to: 3.
-	yy := self year printString.
-	^mm , '/' , dd , '/' , yy .
-!
-
-asYMDFormat
-
-	| mm dd yy |
-	mm := (self monthIndex + 100) printString copyFrom: 2 to: 3.
-	dd := (self dayOfMonth + 100) printString copyFrom: 2 to: 3.
-	yy := self year printString.
-	^yy , '/' , mm , '/' , dd.
-! !
-!Date categoriesFor: #asMDYFormat!converting!JGF!public! !
-!Date categoriesFor: #asYMDFormat!JGF!operations!public! !
-
-!File class methodsFor!
-
-dbfFileTypes
-
-	^#(
-		#('DBF Files (*.DBF)' '*.DBF')
-		#('All Files (*.*)' '*.*')
-	)
-! !
-!File class categoriesFor: #dbfFileTypes!constants!JGF!public! !
-
-!Integer methodsFor!
-
-asHex
-
-	| string |
-	string := self printStringRadix: 16.
-	string := string copyFrom: 4 to: string size.
-	string := ('0x00000' copyFrom: 1 to: (7 - string size max: 2)) , string.
-	^string.
-!
-
-factorsOf: n
-
-	self = 0 ifTrue: [^SmallInteger maximum].
-	self \\ n = 0 ifFalse: [^0].
-	^((self / n) factorsOf: n) + 1.
-!
-
-trimBlanks! !
-!Integer categoriesFor: #asHex!JGF!public! !
-!Integer categoriesFor: #factorsOf:!JGF!public! !
-!Integer categoriesFor: #trimBlanks!JGF!public! !
 
 !KernelLibrary methodsFor!
 
@@ -174,109 +76,11 @@ secondsSinceSystemStartup
 !KernelLibrary categoriesFor: #minutesSinceSystemStartup!JGF!public!win32 functions-date and time! !
 !KernelLibrary categoriesFor: #secondsSinceSystemStartup!JGF!public!win32 functions-date and time! !
 
-!Number methodsFor!
-
-asNumber
-
-	^self.
-!
-
-asStringWithTwoDecimals
-
-	| stream |
-	stream := WriteStream on: String new.
-	self asFloat
-		printOn: stream
-		decimalPlaces: 2.
-	^stream contents
-! !
-!Number categoriesFor: #asNumber!converting!JGF!public! !
-!Number categoriesFor: #asStringWithTwoDecimals!converting!JGF!public! !
-
-!Object methodsFor!
-
-asStringWithTwoDecimals
-
-	^''
-!
-
-mustBeKindOf: aClass
-
-	(self isKindOf: aClass) ifFalse: [self error: 'object expected to be ' , aClass name]
-!
-
-notNilOrEmpty
-	^true
-!
-
-stbInstVarAt: anInteger put: anObject inFiler: anSTBInFiler id: idInteger
-
-	self
-		instVarAt: anInteger
-		put: anObject
-! !
-!Object categoriesFor: #asStringWithTwoDecimals!converting!JGF!public! !
-!Object categoriesFor: #mustBeKindOf:!JGF!operations!public!testing! !
-!Object categoriesFor: #notNilOrEmpty!JGF!public!testing! !
-!Object categoriesFor: #stbInstVarAt:put:inFiler:id:!binary filing!JGF!public! !
-
-!ScaledDecimal methodsFor!
-
-scaleA
-
-	| "numerator2s numerator5s" denominator2s denominator5s |
-	fraction numerator = 0 ifTrue: [^0].
-	"numerator2s := fraction numerator factorsOf: 2.
-	numerator5s := fraction numerator factorsOf: 5."
-	denominator2s := fraction denominator factorsOf: 2.
-	denominator5s := fraction denominator factorsOf: 5.
-	(2 raisedToInteger: denominator2s) * (5 raisedToInteger: denominator5s) = fraction denominator ifTrue: [
-		^(denominator2s "- numerator2s") max: (denominator5s "- numerator5s").
-	].
-	^SmallInteger maximum.
-! !
-!ScaledDecimal categoriesFor: #scaleA!JGF!public! !
-
-!ScaledDecimal class methodsFor!
-
-demoScaleA
-"
-	ScaledDecimal demoScaleA.
-"
-	| stream |
-	stream := WriteStream on: String new.
-	(1 to: 100) do: [:i |  (1 to: 1000) do: [:j | 
-		| rational scale |
-		rational := (i / j) asScaledDecimal: 99.
-		scale := rational scaleA.
-		scale ~= SmallInteger maximum ifTrue: [
-			rational := rational asScaledDecimal: scale.
-			stream nextPutAll: i printString , ' / ' , j printString , '	= ' , rational printString , scale printString; cr.
-		].
-	]].
-	^stream contents.
-! !
-!ScaledDecimal class categoriesFor: #demoScaleA!JGF!public! !
-
-!SessionManager methodsFor!
-
-imageDirectory
-
-	^self imageBase.
-! !
-!SessionManager categoriesFor: #imageDirectory!JGF!public! !
-
 !String methodsFor!
 
 asBoolean
 
 	^self = 'T'.
-!
-
-asNumberEx
-	"Handle '.5' as a number"
-
-	^Number fromString: '0' , self
 !
 
 replaceCrLfWithLf
@@ -291,87 +95,10 @@ replaceLfWithCrLf
 	^self 
 		copyReplaceAll: Character lf asString 
 		with: Character cr asString , Character lf asString.
-!
-
-trimNilAndBlanks
-
-	| index |
-	index := self indexOf: (Character value: 0).
-	^index = 0
-		ifTrue:  [self trimBlanks]
-		ifFalse: [(self copyFrom: 1 to: index - 1) trimBlanks].
 ! !
 !String categoriesFor: #asBoolean!converting!JGF!public! !
-!String categoriesFor: #asNumberEx!converting!JGF!public! !
 !String categoriesFor: #replaceCrLfWithLf!converting!JGF!public! !
 !String categoriesFor: #replaceLfWithCrLf!converting!JGF!public! !
-!String categoriesFor: #trimNilAndBlanks!converting!JGF!public! !
-
-!Time methodsFor!
-
-asFormat: aString
-
-	| stream |
-	stream := WriteStream on: String new.
-	self printOn: stream format: aString.
-	^stream contents.
-!
-
-asHourMinutesCivilianText
-
-	|hoursString minutesString amPm|
-	hoursString := self hours > 12
-			ifTrue: [ (self hours - 12) printString]
-			ifFalse: [self hours printString].
-	minutesString := self minutes printString.
-	amPm := self hours > 12
-			ifTrue: ['pm']
-			ifFalse: ['am'].
-	^hoursString, ':', minutesString, amPm
-! !
-!Time categoriesFor: #asFormat:!converting!JGF!public! !
-!Time categoriesFor: #asHourMinutesCivilianText!converting!JGF!public! !
-
-!UndefinedObject methodsFor!
-
-+ anInteger
-
-	VMLibrary default 
-		dump: 'nil + ' , anInteger printString
-		path: nil 
-		stackDepth: 0 
-		walkbackDepth: -1.
-	self error: 'unable to add ' , anInteger printString , ' to nil!!'.
-!
-
-asScaledDecimal: anInteger
-
-	^nil.
-!
-
-asYMDFormat
-
-	^''.
-!
-
-mustBeKindOf: aClass
-
-	^self
-!
-
-notNilOrEmpty
-	^self notNil!
-
-trimBlanks
-
-	^''.
-! !
-!UndefinedObject categoriesFor: #+!JGF!ODBC!public! !
-!UndefinedObject categoriesFor: #asScaledDecimal:!JGF!ODBC!public! !
-!UndefinedObject categoriesFor: #asYMDFormat!JGF!public! !
-!UndefinedObject categoriesFor: #mustBeKindOf:!JGF!public!testing! !
-!UndefinedObject categoriesFor: #notNilOrEmpty!JGF!public!testing! !
-!UndefinedObject categoriesFor: #trimBlanks!JGF!ODBC!public! !
 
 !UserLibrary methodsFor!
 

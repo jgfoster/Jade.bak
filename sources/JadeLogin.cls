@@ -48,8 +48,8 @@ debugPath: aString
 
 gemHost
 
-	gemHost notNilOrEmpty ifTrue: [^gemHost].
-	^'localhost'.
+	gemHost isNilOrEmpty ifTrue: [^'localhost'].
+	^gemHost
 !
 
 gemHost: aString
@@ -91,8 +91,8 @@ gemService: aString
 
 gemTask
 
-	gemTask notNilOrEmpty ifTrue: [^gemTask].
-	^'gemnetobject'.
+	gemTask isNilOrEmpty ifTrue: [^'gemnetobject'].
+	^gemTask
 !
 
 gemTask: aString
@@ -254,9 +254,8 @@ saveDefault
 
 stoneHost
 
-	stoneHost notNilOrEmpty ifTrue: [^stoneHost].
-	^'localhost'.
-!
+	stoneHost isNilOrEmpty ifTrue: [^'localhost'].
+	^stoneHost!
 
 stoneHost: aString
 

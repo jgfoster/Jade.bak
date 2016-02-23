@@ -69,16 +69,6 @@ viewComposer exit.
 
 ''JGF Dolphin MVP Base'' yourself.'.
 
-package methodNames
-	add: #CommandQuery -> #command:enable:;
-	add: #FileSaveDialog -> #overwritePrompt;
-	add: #KeyEvent -> #upshift;
-	add: #MultilineTextEdit -> #wmPaint:wParam:lParam:;
-	add: #NumberPresenter -> #onTextOverflow;
-	add: #ShellView -> #maximize;
-	add: #TextEdit -> #findNextWrappedEx:down:wholeWord:matchCase:;
-	yourself.
-
 package binaryGlobalNames: (Set new
 	yourself).
 
@@ -86,11 +76,6 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
-	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Number\Dolphin Number Presenter';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	yourself).
 
 package!
@@ -102,96 +87,6 @@ package!
 
 
 "Loose Methods"!
-
-!CommandQuery methodsFor!
-
-command: aSymbol enable: aBoolean
-
-	#JGF.
-	self command = aSymbol ifTrue: [
-		self isEnabled: aBoolean.
-	].
-! !
-!CommandQuery categoriesFor: #command:enable:!accessing!JGF!public! !
-
-!FileSaveDialog methodsFor!
-
-overwritePrompt
-
-	#JGF.
-	self style: self style | OFN_OVERWRITEPROMPT.
-! !
-!FileSaveDialog categoriesFor: #overwritePrompt!JGF!public! !
-
-!KeyEvent methodsFor!
-
-upshift
-
-	| char |
-	#JGF.
-	char := Character value: wParam.
-	char isLowerCase ifTrue: [
-		wParam := char asUppercase codePoint.
-	].
-! !
-!KeyEvent categoriesFor: #upshift!accessing!JGF!public! !
-
-!MultilineTextEdit methodsFor!
-
-wmPaint: message wParam: wParam lParam: lParam
-
-	"Somehow it seems we can come here while the widget is being destroyed."
-	#JGF.
-	[
-		^super
-			wmPaint: message 
-			wParam: wParam 
-			lParam: lParam.
-	] on: Error do: [:ex | 
-		handle isNil ifTrue: [^1].
-		ex pass.
-	].
-! !
-!MultilineTextEdit categoriesFor: #wmPaint:wParam:lParam:!event handling-win32!JGF!private! !
-
-!NumberPresenter methodsFor!
-
-onTextOverflow
-	"Default handler for EN_MAXTEXT notification. Can be overridden, but the
-	preferred customization route is to observe the #textOverflow event."
-
-	#JGF.
-	^self view onTextOverflow.
-! !
-!NumberPresenter categoriesFor: #onTextOverflow!error handling!JGF!public! !
-
-!ShellView methodsFor!
-
-maximize
-
-	#JGF.
-	self showWithStyle: SW_MAXIMIZE.
-! !
-!ShellView categoriesFor: #maximize!JGF!operations!public! !
-
-!TextEdit methodsFor!
-
-findNextWrappedEx: aString down: downBoolean wholeWord: wordBoolean matchCase: caseBoolean 
-
-	| answer |
-	#JGF.
-	answer := self findNextWrapped: ((FindDetails new)
-		pattern: aString;
-		isForwards: downBoolean;
-		isWholeWord: wordBoolean;
-		isCaseSensitive: caseBoolean;
-		isRegularExpression: false;
-		action: #findNext;
-		yourself).
-	(answer isKindOf: Boolean) ifTrue: [^answer].
-	^answer notEmpty.
-! !
-!TextEdit categoriesFor: #findNextWrappedEx:down:wholeWord:matchCase:!JGF!public!searching & replacing! !
 
 "End of package definition"!
 

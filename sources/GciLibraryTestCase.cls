@@ -149,21 +149,21 @@ test_fetchBytes
 	self 
 		assert: x class == ByteArray;
 		assert: x size == 999;
-		assert: x asSet any == 1;
+		assert: x asSet anyOne == 1;
 		yourself.
 	x := library session: session execute: '(ByteArray new: 1000) atAllPut: 1; asOop'.
 	x := library session: session fetchBytes: (OopType64 fromInteger: x).
 	self 
 		assert: x class == ByteArray;
 		assert: x size == 1000;
-		assert: x asSet any == 1;
+		assert: x asSet anyOne == 1;
 		yourself.
 	x := library session: session execute: '(ByteArray new: 1001) atAllPut: 1; asOop'.
 	x := library session: session fetchBytes: (OopType64 fromInteger: x).
 	self 
 		assert: x class == ByteArray;
 		assert: x size == 1001;
-		assert: x asSet any == 1;
+		assert: x asSet anyOne == 1;
 		yourself.
 
 !
@@ -292,21 +292,21 @@ test_fetchString
 	self 
 		assert: x class == String;
 		assert: x size == 999;
-		assert: x asSet any == $a;
+		assert: x asSet anyOne == $a;
 		yourself.
 	x := library session: session execute: '(String new: 1000) atAllPut: $a; asOop'.
 	x := library session: session fetchString: (OopType64 fromInteger: x).
 	self 
 		assert: x class == String;
 		assert: x size == 1000;
-		assert: x asSet any == $a;
+		assert: x asSet anyOne == $a;
 		yourself.
 	x := library session: session execute: '(String new: 1001) atAllPut: $a; asOop'.
 	x := library session: session fetchString: (OopType64 fromInteger: x).
 	self 
 		assert: x class == String;
 		assert: x size == 1001;
-		assert: x asSet any == $a;
+		assert: x asSet anyOne == $a;
 		yourself.
 
 !

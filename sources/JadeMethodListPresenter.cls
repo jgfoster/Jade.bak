@@ -89,16 +89,16 @@ createSchematicWiring
 
 	super createSchematicWiring.
 	methodListPresenter
-		when: #'methodSelectionChanged'		send: #'updateSource'			to: self;
-		when: #'selectionChanging:'				send: #'selectionChanging:'		to: self;
+		when: #'methodSelectionChanged'	send: #'updateSource'		to: self;
+		when: #'selectionChanging:'		send: #'selectionChanging:'	to: self;
 		yourself.
 	methodSourcePresenter
-		when: #'needMethodCategory'			send: #'selectedCategory'		to: self;
-		when: #'needClass'							send: #'selectedClass'			to: self;
-		when: #'needMethodClass'				send: #'selectedClass'			to: self;
-		when: #'needMethod'						send: #'selectedMethod'			to: methodListPresenter;
-		when: #'needUser'							send: #'userSelection'			to: self;
-		when: #'savedMethod:inClass:' 			send: #'doSearch'					to: self;
+		when: #'needMethodCategory'		send: #'selectedCategory'		to: self;
+		when: #'needClass'				send: #'selectedClass'			to: self;
+		when: #'needMethodClass'			send: #'selectedClass'			to: self;
+		when: #'needMethod'				send: #'selectedMethod'		to: methodListPresenter;
+		when: #'needUser'				send: #'userSelection'			to: self;
+		when: #'savedMethod:inClass:' 		send: #'doSearch'			to: self;
 		yourself.
 !
 
