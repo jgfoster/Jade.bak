@@ -144,6 +144,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbUpdateMethodStepPointsFor:;
 	add: #JadeServer64bit3x -> #selectedClassOverridesSelector:;
 	add: #JadeTextDocument -> #jadeBrowseClasses;
+	add: #JadeToolsToolBarPresenter -> #browseClasses;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -2289,6 +2290,14 @@ jadeBrowseClasses
 		caption: 'Unable to Open Browser'.
 ! !
 !JadeTextDocument categoriesFor: #jadeBrowseClasses!Jade!private! !
+
+!JadeToolsToolBarPresenter methodsFor!
+
+browseClasses
+
+	JadeSystemBrowser showOnSession: gciSession.
+! !
+!JadeToolsToolBarPresenter categoriesFor: #browseClasses!public! !
 
 "End of package definition"!
 

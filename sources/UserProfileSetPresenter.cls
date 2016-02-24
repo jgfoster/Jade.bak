@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-JadePresenter subclass: #UserProfileSetPresenter
+JadePresenterA subclass: #UserProfileSetPresenter
 	instanceVariableNames: 'disallowUsedPasswordsPresenter minPasswordSizePresenter maxPasswordSizePresenter maxRepeatingCharsPresenter maxConsecutiveCharsPresenter maxCharsOfSameTypePresenter staleAccountAgeLimitPresenter passwordAgeLimitPresenter passwordAgeWarningPresenter disallowedPasswordListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''

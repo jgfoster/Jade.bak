@@ -19,8 +19,8 @@ package methodNames
 	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
 	add: #GsClass -> #sourceFor:;
 	add: #GsClass -> #stepPointsFor:;
-	add: #JadePresenter -> #browseImplementorsOf:;
-	add: #JadePresenter -> #browseSendersOf:;
+	add: #JadePresenterA -> #browseImplementorsOf:;
+	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeServer -> #_addMethod:toStream:;
 	add: #JadeServer -> #_methodsFor:categories:;
 	add: #JadeServer -> #_methodsFor:filter:isVariables:;
@@ -84,7 +84,7 @@ GsObject subclass: #GsMethod2
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #MethodListPresenter
+JadePresenterA subclass: #MethodListPresenter
 	instanceVariableNames: 'classListPresenter methodListPresenter inheritanceListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -152,7 +152,7 @@ stepPointsFor: aGsMethod
 !GsClass categoriesFor: #sourceFor:!Methods!public! !
 !GsClass categoriesFor: #stepPointsFor:!Methods!public! !
 
-!JadePresenter methodsFor!
+!JadePresenterA methodsFor!
 
 browseImplementorsOf: aGsMethodOrString
 
@@ -167,8 +167,8 @@ browseSendersOf: aGsMethodOrString
 		browseSendersOf: aGsMethodOrString;
 		yourself.
 ! !
-!JadePresenter categoriesFor: #browseImplementorsOf:!public! !
-!JadePresenter categoriesFor: #browseSendersOf:!public! !
+!JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
+!JadePresenterA categoriesFor: #browseSendersOf:!public! !
 
 !JadeServer methodsFor!
 

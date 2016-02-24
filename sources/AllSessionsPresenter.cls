@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-JadePresenter subclass: #AllSessionsPresenter
+JadePresenterA subclass: #AllSessionsPresenter
 	instanceVariableNames: 'autoUpdatePresenter autoUpdateProcess sessionListPresenter sessionListErrorPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''

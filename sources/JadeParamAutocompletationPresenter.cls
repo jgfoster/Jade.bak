@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-JadePresenter subclass: #JadeParamAutocompletationPresenter
+JadePresenterA subclass: #JadeParamAutocompletationPresenter
 	instanceVariableNames: 'methodNamePresenter paramPresenter paramsPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''

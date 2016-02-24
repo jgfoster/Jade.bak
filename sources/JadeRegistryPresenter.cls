@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-JadePresenter subclass: #JadeRegistryPresenter
+JadePresenterA subclass: #JadeRegistryPresenter
 	instanceVariableNames: 'registryPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''

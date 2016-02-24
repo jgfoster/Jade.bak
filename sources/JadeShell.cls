@@ -101,6 +101,11 @@ icon
 
 showOnSession: aGciSession
 
+	aGciSession hasServer ifFalse: [
+		MessageBox
+			warning: 'Server initialization failed at login.'
+			caption: 'Unable to Open Browser'.
+	].
 	^self new 
 		gciSession: aGciSession;
 		createView: self defaultView;

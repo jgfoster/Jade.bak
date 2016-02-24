@@ -57,12 +57,12 @@ package!
 
 "Class Definitions"!
 
-JadePresenter subclass: #AllSessionsPresenter
+JadePresenterA subclass: #AllSessionsPresenter
 	instanceVariableNames: 'autoUpdatePresenter autoUpdateProcess sessionListPresenter sessionListErrorPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #MySessionPresenter
+JadePresenterA subclass: #MySessionPresenter
 	instanceVariableNames: 'gciSessionIdPresenter gciVersionPresenter gemHostPresenter gemTypePresenter netPortPresenter netTaskPresenter stoneHostPresenter stoneNamePresenter stoneSerialPresenter stoneSessionIDPresenter userIDPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -73,7 +73,7 @@ CodeSourcePresenter subclass: #TranscriptPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeWorkspace subclass: #JadeTranscript
-	instanceVariableNames: 'allSessionsPresenter mySessionPresenter transcriptPresenter'
+	instanceVariableNames: 'allSessionsPresenter mySessionPresenter toolbarPresenter transcriptPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

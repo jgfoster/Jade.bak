@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-JadePresenter subclass: #MySessionPresenter
+JadePresenterA subclass: #MySessionPresenter
 	instanceVariableNames: 'gciSessionIdPresenter gciVersionPresenter gemHostPresenter gemTypePresenter netPortPresenter netTaskPresenter stoneHostPresenter stoneNamePresenter stoneSerialPresenter stoneSessionIDPresenter userIDPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''

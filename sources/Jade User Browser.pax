@@ -37,6 +37,7 @@ package methodNames
 	add: #JadeServer32bit -> #addUser:toStream:;
 	add: #JadeServer64bit -> #addUser:toStream:;
 	add: #JadeTextDocument -> #jadeBrowseUsers;
+	add: #JadeToolsToolBarPresenter -> #browseUsers;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -79,32 +80,32 @@ GsObject subclass: #GsUserProfile
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #AllUsersPresenter
+JadePresenterA subclass: #AllUsersPresenter
 	instanceVariableNames: 'userListPresenter userProfilePresenter passwordLimitsPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #UserListPresenter
+JadePresenterA subclass: #UserListPresenter
 	instanceVariableNames: 'userListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #UserProfileDetailsPresenter
+JadePresenterA subclass: #UserProfileDetailsPresenter
 	instanceVariableNames: 'userIDPresenter maxLoginsPresenter languagePresenter lastLoginPresenter disabledReasonPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #UserProfilePasswordPresenter
+JadePresenterA subclass: #UserProfilePasswordPresenter
 	instanceVariableNames: 'whenPasswordChangedPresenter loginsRemainingPresenter isSpecialUserPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #UserProfilePresenter
+JadePresenterA subclass: #UserProfilePresenter
 	instanceVariableNames: 'user detailsPresenter passwordPresenter symbolListPresenter groupListPresenter privilegeListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #UserProfileSetPresenter
+JadePresenterA subclass: #UserProfileSetPresenter
 	instanceVariableNames: 'disallowUsedPasswordsPresenter minPasswordSizePresenter maxPasswordSizePresenter maxRepeatingCharsPresenter maxConsecutiveCharsPresenter maxCharsOfSameTypePresenter staleAccountAgeLimitPresenter passwordAgeLimitPresenter passwordAgeWarningPresenter disallowedPasswordListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -405,6 +406,14 @@ jadeBrowseUsers
 		caption: 'Unable to Open Browser'.
 ! !
 !JadeTextDocument categoriesFor: #jadeBrowseUsers!Jade!private! !
+
+!JadeToolsToolBarPresenter methodsFor!
+
+browseUsers
+
+	AllUsersShell showOnSession: gciSession.
+! !
+!JadeToolsToolBarPresenter categoriesFor: #browseUsers!public! !
 
 "End of package definition"!
 

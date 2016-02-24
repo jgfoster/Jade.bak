@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-JadePresenter subclass: #MethodListPresenter
+JadePresenterA subclass: #MethodListPresenter
 	instanceVariableNames: 'classListPresenter methodListPresenter inheritanceListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''

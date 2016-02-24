@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-JadePresenter subclass: #JadeAutocompletationConfigurationPresenter
+JadePresenterA subclass: #JadeAutocompletationConfigurationPresenter
 	instanceVariableNames: 'isEnabledPresenter logEnabledPresenter filterObjectPresenter filterPrimitivePresenter hideClassVarPresenter hideInstClassVarPresenter hidePoolDictionariesPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''

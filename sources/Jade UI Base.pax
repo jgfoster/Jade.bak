@@ -11,10 +11,12 @@ package classNames
 	add: #CodeSourcePresenter;
 	add: #JadeBrowserPresenter;
 	add: #JadePresenter;
+	add: #JadePresenterA;
 	add: #JadeShell;
 	add: #JadeTextDocument;
 	add: #JadeTextPresenter;
 	add: #JadeTextStyles;
+	add: #JadeToolsToolBarPresenter;
 	add: #JadeValueDialog;
 	add: #JadeWorkspace;
 	yourself.
@@ -56,12 +58,22 @@ Presenter subclass: #JadePresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #CodeSourcePresenter
+JadePresenter subclass: #JadePresenterA
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePresenter subclass: #JadeToolsToolBarPresenter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePresenterA subclass: #CodeSourcePresenter
 	instanceVariableNames: 'documentPresenter menuTitle'
 	classVariableNames: 'CodeFont'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #JadeBrowserPresenter
+JadePresenterA subclass: #JadeBrowserPresenter
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''

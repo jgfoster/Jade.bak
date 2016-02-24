@@ -21,7 +21,7 @@ package classNames
 
 package methodNames
 	add: #CodeSourcePresenter -> #createComponents;
-	add: #JadePresenter -> #registry;
+	add: #JadePresenterA -> #registry;
 	add: #JadeTextDocument -> #registry;
 	yourself.
 
@@ -70,22 +70,22 @@ Object subclass: #JadeGsClassShape
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #JadeAutocompletationConfigurationPresenter
+JadePresenterA subclass: #JadeAutocompletationConfigurationPresenter
 	instanceVariableNames: 'isEnabledPresenter logEnabledPresenter filterObjectPresenter filterPrimitivePresenter hideClassVarPresenter hideInstClassVarPresenter hidePoolDictionariesPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #JadeMapAutocompletationPresenter
+JadePresenterA subclass: #JadeMapAutocompletationPresenter
 	instanceVariableNames: 'namePresenter gsClassListPresenter mapPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #JadeParamAutocompletationPresenter
+JadePresenterA subclass: #JadeParamAutocompletationPresenter
 	instanceVariableNames: 'methodNamePresenter paramPresenter paramsPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter subclass: #JadeRegistryPresenter
+JadePresenterA subclass: #JadeRegistryPresenter
 	instanceVariableNames: 'registryPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -116,12 +116,12 @@ createComponents
 ! !
 !CodeSourcePresenter categoriesFor: #createComponents!public! !
 
-!JadePresenter methodsFor!
+!JadePresenterA methodsFor!
 
 registry
 
 	^JadeAutocompletationRegistry default! !
-!JadePresenter categoriesFor: #registry!autocompletion!public! !
+!JadePresenterA categoriesFor: #registry!autocompletion!public! !
 
 !JadeTextDocument methodsFor!
 

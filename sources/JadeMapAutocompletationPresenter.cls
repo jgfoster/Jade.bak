@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-JadePresenter subclass: #JadeMapAutocompletationPresenter
+JadePresenterA subclass: #JadeMapAutocompletationPresenter
 	instanceVariableNames: 'namePresenter gsClassListPresenter mapPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''

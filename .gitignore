@@ -8,3 +8,4 @@ Jade/Connections/*.GSS
 *.ERRORS
 Jade.xml
 gci*trace.log
+connections

@@ -100,6 +100,7 @@ package methodNames
 	add: #JadeServer64bit -> #mcInitialsA:;
 	add: #JadeServer64bit32 -> #gsPackagePolicy;
 	add: #JadeTextDocument -> #jadeBrowseMonticello;
+	add: #JadeToolsToolBarPresenter -> #browseMonticello;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -1183,6 +1184,14 @@ jadeBrowseMonticello
 		caption: 'Unable to Open Browser'.
 ! !
 !JadeTextDocument categoriesFor: #jadeBrowseMonticello!Jade!private! !
+
+!JadeToolsToolBarPresenter methodsFor!
+
+browseMonticello
+
+	MCRepositoryBrowser showOnSession: gciSession.
+! !
+!JadeToolsToolBarPresenter categoriesFor: #browseMonticello!public! !
 
 "End of package definition"!
 
