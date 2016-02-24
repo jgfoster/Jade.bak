@@ -123,8 +123,6 @@ requiredClasses
 requiredPackageNames
 
 	^super requiredPackageNames
-		add: 'Dolphin MVP (Deprecated)';	"Referenced by EditableListView"
-		add: 'Dialect Abstraction Layer';		"to get #'isNilOrEmpty'"
 		add: 'Development System'; 		"to get StKeywordToken>>#preComments"
 		add: 'GemStone C Interface';
 		add: 'GemStone Session';

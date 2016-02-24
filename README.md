@@ -12,11 +12,9 @@ To install Jade runtime, download a 25 MB zip file with the executable and suppo
 
 To install Jade in Dolphin 7, follow these steps:
 
-1. Install a Github client such as [SourceTree](http://www.sourcetreeapp.com/)
-2. Clone https://github.com/dolphinsmalltalk/Dolphin to Documents\Dolphin.
-2. Clone https://github.com/jgfoster/Jade to Documents\Dolphin\Jade.
-4. Run Documents\Dolphin\Jade\Boot.cmd.
-5. Finally, open a login window:
-```
-    JadeLoginShell show.
-```
+1. Install a Github client such as [SourceTree](http://www.sourcetreeapp.com/).
+2. Clone [Dolphin](https://github.com/jgfoster/Dolphin) to Documents\Dolphin.
+3. Run Documents\Dolphin\BootPRO.cmd to build the DPRO image.
+4. Clone [Jade](https://github.com/jgfoster/Jade) to Documents\Dolphin\Jade.
+4. Run Documents\Dolphin\Jade\Boot.cmd to build the JadeDev image.
+5. Finally, from the Additional Tools folder in the System Shell open the Jade Login.

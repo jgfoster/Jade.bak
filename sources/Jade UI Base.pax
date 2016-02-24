@@ -19,6 +19,7 @@ package classNames
 	add: #JadeToolsToolBarPresenter;
 	add: #JadeValueDialog;
 	add: #JadeWorkspace;
+	add: #ToolbarA;
 	yourself.
 
 package methodNames
@@ -99,6 +100,11 @@ JadeTextDocument subclass: #JadeWorkspace
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 TextPresenter subclass: #JadeTextPresenter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Toolbar subclass: #ToolbarA
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
