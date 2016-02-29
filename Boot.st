@@ -47,7 +47,7 @@ SmalltalkSystemShell allInstances first
 IdeaSpaceShell show
 	absorbCard: SmalltalkWorkspaceDocument show;
 	absorbCard: SystemBrowserShell show;
-	position: 50@50; extent: 1200@750;
+	position: 50@80; extent: 1200@750;
 	yourself.
 !
 JadeLoginShell show
