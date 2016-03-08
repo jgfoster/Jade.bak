@@ -1,7 +1,7 @@
 Jade
 ====
 
-Jade is an Alternative Development Environment (IDE) for GemStone/S that runs on Microsoft Windows.
+Jade is an Alternative Development Environment (IDE) for GemStone/S that runs on Microsoft Windows. This [screencast](https://www.youtube.com/watch?v=dnRB5rBbkiI) gives a brief demo from 2013. 
 
 Jade is built in (and inspired by) Dolphin Smalltalk from [Object-Arts](https://github.com/dolphinsmalltalk/Dolphin).
 
