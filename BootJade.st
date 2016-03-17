@@ -49,6 +49,7 @@ IdeaSpaceShell show
 	absorbCard: SystemBrowserShell show;
 	position: 50@80; extent: 1200@750;
 	yourself.
+Debugger defaultExtent: 1000@600.
 !
 JadeLoginShell show
 	position: 80@20;
