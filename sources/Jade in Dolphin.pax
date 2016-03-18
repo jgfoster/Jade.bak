@@ -20,6 +20,10 @@ GciErrSType64 template.
 '.
 package basicScriptAt: #preuninstall put: 'JadeLoginShell removeFromDevelopmentTools.'.
 
+package classNames
+	add: #JGFormatter;
+	yourself.
+
 package methodNames
 	add: #DevelopmentSessionManager -> #pause;
 	add: 'JadeLoginShell class' -> #addToDevelopmentTools;
@@ -40,12 +44,18 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: 'Jade Deployment';
 	add: 'Jade Login';
+	add: '..\..\..\Core\Contributions\Refactory\Refactoring Browser\Formatters\RBFormatters';
 	yourself).
 
 package!
 
 "Class Definitions"!
 
+RBFormatter subclass: #JGFormatter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 
 "Global Aliases"!
 
