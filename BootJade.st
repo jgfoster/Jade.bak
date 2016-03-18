@@ -44,11 +44,13 @@ SessionManager current splashShowAtStartup: false.
 SmalltalkSystemShell allInstances first 
 	position: 20@50;
 	yourself.
-IdeaSpaceShell show
-	absorbCard: SmalltalkWorkspaceDocument show;
-	absorbCard: SystemBrowserShell show;
-	position: 50@80; extent: 1200@750;
-	yourself.
+IdeaSpaceShell allInstances isEmpty ifTrue: [
+	IdeaSpaceShell show
+		absorbCard: SmalltalkWorkspaceDocument show;
+		absorbCard: SystemBrowserShell show;
+		position: 50@80; extent: 1200@750;
+		yourself.
+].
 Debugger defaultExtent: 1000@600.
 !
 JadeLoginShell show
