@@ -1,4 +1,5 @@
 "Boot a DPRO development image"
+| list |
 SessionManager current splashShowAtStartup: false.
 SmalltalkSystemShell allInstances first 
 	position: 20@50;
@@ -14,6 +15,22 @@ TestRunner show
 TranscriptShell show.
 Debugger defaultExtent: 1000@600.
 SourceManager default fileIn: 'RegressionTestsLoad.st'.
+list := #(
+	'Core\Contributions\JGFoster\StoreString for Views.pax'
+	'Core\Contributions\JGFoster\StoreString for Views Test.pax'
+).
+ProgressDialog showModalWhile: [:progress |
+	1 to: list size do: [:i |
+		| name percent |
+		name := list at: i.
+		percent := (i * 100 / list size) asInteger.
+		progress
+			value: percent;
+			text: 'Loading package: ' , name;
+			yourself.
+		PackageManager current install: name.
+	].
+].
 (Delay forMilliseconds: 200) wait.
 Cursor wait showWhile: [
 	SourceManager default compressSources.
