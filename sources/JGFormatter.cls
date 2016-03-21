@@ -10,16 +10,6 @@ JGFormatter comment: ''!
 !JGFormatter categoriesForClass!System-Compiler-Formatters! !
 !JGFormatter methodsFor!
 
-acceptAssignmentNode: anAssignmentNode 
-	
-	self 
-		indent: 0
-		around: [
-			self visitNode: anAssignmentNode variable.
-			codeStream nextPutAll: ' := '.
-			self visitNode: anAssignmentNode value].
-!
-
 acceptBlockNode: aBlockNode startBlockString: startBlockString endBlockString: endBlockString 
 	
 	| seqNode multiline formattedBody formatter |
@@ -36,47 +26,92 @@ acceptBlockNode: aBlockNode startBlockString: startBlockString endBlockString: e
 			self space].
 	aBlockNode arguments notEmpty ifTrue: [codeStream nextPutAll: '| '].
 	multiline ifTrue: [self newLine].
-	codeStream
-		nextPutAll: formattedBody;
-		nextPutAll: endBlockString.
+	codeStream nextPutAll: formattedBody.
+	multiline ifTrue: [codeStream nextPut: $.. self newLine].
+	codeStream nextPutAll: endBlockString.
+!
+
+acceptMessageNode: aMessageNode 
+
+	| newFormatter code |
+	newFormatter := self copy.
+	code := newFormatter format: aMessageNode receiver.
+	codeStream nextPutAll: code.
+	self space.
+	newFormatter isMultiLine ifTrue: [lineStart := codeStream position - newFormatter lastLineLength].
+	"self indent: (newFormatter isMultiLine ifTrue: [2] ifFalse: [1])
+		around: [self formatMessage: aMessageNode cascade: false]."
+	self 
+		formatMessage: aMessageNode
+		cascade: false.
 !
 
 formatMethodBodyFor: aMethodNode 
-	
+
 	super formatMethodBodyFor: aMethodNode.
 	codeStream cr.
 !
 
 formatMethodCommentFor: aNode indentBefore: aBoolean 
-	
-	| comments comment newLineAtEnd |
+
+	| comments comment |
 	comments := aNode source 
-		ifNil: [#()]
-		ifNotNil: [aNode methodComments].
-	comments isEmpty ifTrue: 
-			[aBoolean ifTrue: [self newLine].
-			^self].
-	newLineAtEnd := true.
+				ifNil: [#()]
+				ifNotNil: [aNode methodComments].
+	comments isEmpty ifTrue: [
+			aBoolean ifTrue: [codeStream cr].
+			^self.
+			].
 	comments 
-		do: 
-			[:each | 
+		do: [:each | 
 			comment := aNode source 
-				copyFrom: each first
-				to: each last.
-			aBoolean ifTrue: 
-					[((comment at: 2) == Character cr and: [(comment at: comment size - 1) == Character lf]) 
-						ifTrue: 
-							[codeStream cr.
-							newLineAtEnd := false]
-						ifFalse: [self newLine]].
-			codeStream nextPutAll: comment]
-		separatedBy: 
-			[codeStream cr.
-			aBoolean ifFalse: [self newLine]].
-	newLineAtEnd ifTrue: 
-			[aBoolean 
-				ifTrue: [codeStream cr]
-				ifFalse: [self newLine]].
+						copyFrom: each first
+						to: each last.
+			aBoolean ifTrue: [
+					((comment at: 2) == Character cr and: [(comment at: comment size - 1) == Character lf]) 
+						ifTrue: [codeStream cr]
+						ifFalse: [self newLine].
+					].
+			codeStream nextPutAll: comment.
+			]
+		separatedBy: [
+			codeStream cr.
+			aBoolean ifFalse: [self newLine].
+			].
+	codeStream cr.
+!
+
+formatStatementsFor: aSequenceNode 
+	| statements |
+	statements := aSequenceNode statements.
+	statements isEmpty ifTrue: [^self].
+	1 to: statements size - 1
+		do: 
+			[:i | 
+			self visitNode: (statements at: i).
+			codeStream nextPut: $..
+			self formatStatementCommentFor: (statements at: i).
+			self newLine].
+	self visitNode: statements last.
+	"1 < statements size ifTrue: [codeStream nextPut: $.]."
+	aSequenceNode parent 
+		ifNotNil: [:parent | (parent isMethod and: [self class periodsAtEndOfMethod]) ifTrue: [codeStream nextPut: $.]].
+	self formatStatementCommentFor: statements last.!
+
+indent: anInteger around: aBlock 
+
+	| x |
+	x := indent.
+	indent := indent + anInteger.
+	^aBlock ensure: [indent := indent - anInteger]!
+
+indentWhile: aBlock 
+	
+	| x |
+	x := indent.
+	self 
+		indent: 1
+		around: aBlock.
 !
 
 needsParenthesisFor: aNode 
@@ -85,11 +120,6 @@ needsParenthesisFor: aNode
 	aNode isValue ifFalse: [^false].
 	parent := aNode parent.
 	parent isNil ifTrue: [^false].
-	"(aNode isMessage and: [parent isMessage and: [parent receiver == aNode]]) 
-		ifTrue: 
-			[| grandparent |
-			grandparent := parent parent.
-			(grandparent notNil and: [grandparent isCascade]) ifTrue: [^true]]."
 	aNode precedence < parent precedence ifTrue: [^false].
 	aNode isAssignment & parent isAssignment ifTrue: [^false].
 	aNode isAssignment | aNode isCascade ifTrue: [^true].
@@ -103,10 +133,13 @@ needsParenthesisFor: aNode
 		precedenceOf: parent selector
 		greaterThan: aNode selector.
 ! !
-!JGFormatter categoriesFor: #acceptAssignmentNode:!public! !
 !JGFormatter categoriesFor: #acceptBlockNode:startBlockString:endBlockString:!public! !
+!JGFormatter categoriesFor: #acceptMessageNode:!public! !
 !JGFormatter categoriesFor: #formatMethodBodyFor:!public! !
 !JGFormatter categoriesFor: #formatMethodCommentFor:indentBefore:!public! !
+!JGFormatter categoriesFor: #formatStatementsFor:!public! !
+!JGFormatter categoriesFor: #indent:around:!public! !
+!JGFormatter categoriesFor: #indentWhile:!public! !
 !JGFormatter categoriesFor: #needsParenthesisFor:!public! !
 
 !JGFormatter class methodsFor!
@@ -125,7 +158,8 @@ test
 	
 	(1 to: 2) do: [:each | 
 			each size.
-			each + 1].
+			each + 1
+			].
 	2 + 3.
 ! !
 !JGFormatter class categoriesFor: #initialize!public! !
