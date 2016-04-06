@@ -56,6 +56,7 @@ Debugger defaultExtent: 1000@600.
 JadeLoginShell show
 	position: 80@20;
 	yourself.
+Transcript clear.
 (Delay forMilliseconds: 200) wait.
 Cursor wait showWhile: [
 	SourceManager default compressSources.

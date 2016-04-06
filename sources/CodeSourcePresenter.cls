@@ -107,11 +107,9 @@ editDelete
 !
 
 editFind
-	"I'm not sure how it works, but this method isn't called!! 
-	Somehow, the command is sent directly to the text widget."
 
-self error: 'Do we ever see this?'.
-	"self activeTextEdit editFind."
+	documentPresenter view editFind.
+	self showSelection.
 !
 
 editFindNext

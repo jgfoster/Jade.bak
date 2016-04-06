@@ -31,6 +31,7 @@ ProgressDialog showModalWhile: [:progress |
 		(File exists: name) ifTrue: [PackageManager current install: name].
 	].
 ].
+Transcript clear.
 (Delay forMilliseconds: 200) wait.
 Cursor wait showWhile: [
 	SourceManager default compressSources.
