@@ -693,17 +693,12 @@ editDelete
 !
 
 editFind
-	"I'm not sure how it works, but this method isn't called!! 
-	Somehow, the command is sent directly to the text widget."
 
-self error: 'Do we get here?'.
-	View focus editFind.
-!
+	textAreaTabs currentCard setFocus; editFind.!
 
 editFindNext
 
-	View focus findNext.
-!
+	textAreaTabs currentCard setFocus; editFind.!
 
 editMenuStrings
 
@@ -983,11 +978,11 @@ findClassList
 
 getViews
 
-	packageDictionaryTabs := self view viewNamed: 'packageDictionaryTabs'.
+	packageDictionaryTabs 	:= self view viewNamed: 'packageDictionaryTabs'.
 	classHierarchyTabs 		:= self view viewNamed: 'classHierarchyTabs'.
 	categoryVariableTabs 	:= self view viewNamed: 'categoryVariableTabs'.
-	instanceClassTabs			:= self view viewNamed: 'instanceClassTabs'.
-	textAreaTabs				:= self view viewNamed: 'textAreaTabs'.
+	instanceClassTabs		:= self view viewNamed: 'instanceClassTabs'.
+	textAreaTabs			:= self view viewNamed: 'textAreaTabs'.
 	packageInfoTab			:= self view viewNamed: 'packageInfo'.
 !
 
@@ -2340,8 +2335,8 @@ stuffToKeepFromPath: pathString andAddTo: newSource
 textTabChanged
 
 	methodSourcePresenter view cancelCallTip.
-	(textAreaTabs currentCard name = 'globals' 			and: [self isPackageListTabSelected	]) ifTrue: [packageInfoTab 	ensureVisible].
-	(textAreaTabs currentCard name = 'packageInfo' 	and: [self isDictionariesTabSelected	]) ifTrue: [globalsPresenter 	ensureVisible].
+	(textAreaTabs currentCard name = 'globals' 	and: [self isPackageListTabSelected	]) ifTrue: [packageInfoTab 	ensureVisible].
+	(textAreaTabs currentCard name = 'packageInfo' and: [self isDictionariesTabSelected	]) ifTrue: [globalsPresenter 	ensureVisible].
 	self updateMenuBar.
 !
 
