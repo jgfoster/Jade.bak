@@ -14,8 +14,8 @@ runExpressionTest: aString
 
 	| before after tree |
 	before := aString withCRs.
-	tree := RBParser  parseExpression: before.
-	after := RBFormatter1  format: tree.
+	tree := RBParser parseExpression: before.
+	after := JGFormatter new format: tree.
 	self  assert: before = after.
 !
 
@@ -23,8 +23,8 @@ runMethodTest: aString
 
 	| before after tree |
 	before := aString withCRs.
-	tree := RBParser  parseMethod: before.
-	after := RBFormatter1  format: tree.
+	tree := RBParser parseMethod: before.
+	after := JGFormatter format: tree.
 	self  assert: before = after.
 !
 
@@ -39,7 +39,7 @@ testAssignments
 
 testBeginningNewLines
 
-	self runMethodTest: 'test\	| x |\	^self size.'!
+	self runMethodTest: 'test\\	| x |\	^self size.\'!
 
 testBinaryMessage
 
@@ -58,10 +58,10 @@ testBlock
 	self 
 		runExpressionTest: '[]';
 		runExpressionTest: '[x := 3 + 4]';
-		runExpressionTest: '[x foo.\b := y + z]';
-		runExpressionTest: '[| x y |\x := y]';
+		runExpressionTest: '[\	x foo.\	b := y + z.\]';
+		runExpressionTest: '[\	| x y |\	x := y.\]';
 		runExpressionTest: '[:x :y | x := y]';
-		runExpressionTest: '[:x :y | \x := y.\y := z]';
+		runExpressionTest: '[:x :y | \	x := y.\	y := z.\]';
 		yourself.!
 
 testBlockArguments
@@ -91,18 +91,20 @@ testCascadeMessages
 
 testIndent
 
-	self runMethodTest: 'test\	^self size.'!
+	self runMethodTest: 'test\\	^self size.\'!
 
 testKeywordMessage
 
 	self
-		runExpressionTest: 'self at: x';
+		"runExpressionTest: 'self at: x';
 		runExpressionTest: 'self at: x put: y';
 		runExpressionTest: 'self\	at: x + y\	put: z\	with: self foo';
 		runExpressionTest: 'self at: (self at: foo)';
 		runExpressionTest: '(self at: foo) at: foo';
 		runExpressionTest: '(self at: foo) + z';
 		runExpressionTest: '(self at: foo) size';
+		runMethodTest: 'foo\	self\		at: x + y\		put: z\		with: self foo.';"
+		runMethodTest: 'testTranscriptToolbarClasses\	self \		doTranscriptToolbarCommand: #browseClasses\		shell: JadeSystemBrowser.';
 		yourself.
 !
 

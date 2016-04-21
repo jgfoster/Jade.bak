@@ -12,22 +12,33 @@ JGFormatter comment: ''!
 
 acceptBlockNode: aBlockNode startBlockString: startBlockString endBlockString: endBlockString 
 	
-	| seqNode multiline formattedBody formatter |
+	| seqNode isMultiline formattedBody formatter |
 	seqNode := aBlockNode body.
 	formatter := self copy
 		lineStart: 0;
 		yourself.
 	formattedBody := formatter format: seqNode.
-	multiline := self lineLength + formattedBody size > self maxLineSize or: [formatter isMultiLine].
+	isMultiline := self lineLength + formattedBody size > self maxLineSize or: [formatter isMultiLine].
 	codeStream nextPutAll: startBlockString.
 	aBlockNode arguments do: [:each | 
 			codeStream nextPut: $:.
 			self visitNode: each.
 			self space].
 	aBlockNode arguments notEmpty ifTrue: [codeStream nextPutAll: '| '].
-	multiline ifTrue: [self newLine].
-	codeStream nextPutAll: formattedBody.
-	multiline ifTrue: [codeStream nextPut: $.. self newLine].
+	isMultiline ifFalse: [
+		codeStream nextPutAll: formattedBody.
+	] ifTrue: [
+		| stream |
+		stream := ReadStream on: formattedBody.
+		self indentWhile: [
+			[stream atEnd not] whileTrue: [
+				self newLine.
+				codeStream nextPutAll: stream nextLine.
+			].
+		].
+		codeStream nextPut: $.. 
+		self newLine.
+	].
 	codeStream nextPutAll: endBlockString.
 !
 
@@ -37,7 +48,7 @@ acceptMessageNode: aMessageNode
 	newFormatter := self copy.
 	code := newFormatter format: aMessageNode receiver.
 	codeStream nextPutAll: code.
-	self space.
+	"self space."
 	newFormatter isMultiLine ifTrue: [lineStart := codeStream position - newFormatter lastLineLength].
 	"self indent: (newFormatter isMultiLine ifTrue: [2] ifFalse: [1])
 		around: [self formatMessage: aMessageNode cascade: false]."
@@ -152,16 +163,6 @@ initialize
 	self maximumArgumentsPerLine: 1.
 	self periodsAtEndOfMethod: true.
 	self selectorsToStartOnNewLine: #().
-!
-
-test
-	
-	(1 to: 2) do: [:each | 
-			each size.
-			each + 1
-			].
-	2 + 3.
 ! !
 !JGFormatter class categoriesFor: #initialize!public! !
-!JGFormatter class categoriesFor: #test!public! !
 
