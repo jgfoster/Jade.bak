@@ -13,6 +13,12 @@ LibGciRpc64_22 comment: ''!
 displayName
 
 	^'64-bit 2.2.x'.
+!
+
+fileNameSearch
+
+	^'libgcirpc64-225.dll'
 ! !
 !LibGciRpc64_22 class categoriesFor: #displayName!public! !
+!LibGciRpc64_22 class categoriesFor: #fileNameSearch!public! !
 

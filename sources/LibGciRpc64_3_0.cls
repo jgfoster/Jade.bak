@@ -28,6 +28,12 @@ gciErr: errorReport
 displayName
 
 	^'64-bit 3.0.x'.
+!
+
+fileNameSearch
+
+	^'libgcirpc64-301.dll'
 ! !
 !LibGciRpc64_3_0 class categoriesFor: #displayName!public! !
+!LibGciRpc64_3_0 class categoriesFor: #fileNameSearch!public! !
 

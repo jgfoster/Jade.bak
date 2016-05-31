@@ -13,6 +13,12 @@ LibGciRpc64_23 comment: ''!
 displayName
 
 	^'64-bit 2.3.x'.
+!
+
+fileNameSearch
+
+	^'libgcirpc64-230.dll'
 ! !
 !LibGciRpc64_23 class categoriesFor: #displayName!public! !
+!LibGciRpc64_23 class categoriesFor: #fileNameSearch!public! !
 

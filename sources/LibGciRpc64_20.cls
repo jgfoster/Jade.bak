@@ -13,6 +13,12 @@ LibGciRpc64_20 comment: ''!
 displayName
 
 	^'64-bit 2.0.x'.
+!
+
+fileNameSearch
+
+	^'libgcirpc64-205.dll'
 ! !
 !LibGciRpc64_20 class categoriesFor: #displayName!public! !
+!LibGciRpc64_20 class categoriesFor: #fileNameSearch!public! !
 

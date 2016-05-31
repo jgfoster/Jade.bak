@@ -294,3 +294,11 @@ specialFromOop: anOop
 !Gcilw6x categoriesFor: #oopZero!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #specialFromOop:!public! !
 
+!Gcilw6x class methodsFor!
+
+fileNameSearch
+
+	^self name
+! !
+!Gcilw6x class categoriesFor: #fileNameSearch!public! !
+
