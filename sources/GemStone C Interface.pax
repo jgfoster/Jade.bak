@@ -24,6 +24,7 @@ package classNames
 	add: #Gcilw63;
 	add: #Gcilw65;
 	add: #Gcilw66;
+	add: #Gcilw67;
 	add: #Gcilw6x;
 	add: #GciMtLibraryTestCase;
 	add: #GciMtLibraryTestResource;
@@ -193,6 +194,11 @@ Gcilw6x subclass: #Gcilw65
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Gcilw6x subclass: #Gcilw66
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Gcilw6x subclass: #Gcilw67
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''

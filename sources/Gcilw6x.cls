@@ -298,7 +298,7 @@ specialFromOop: anOop
 
 fileNameSearch
 
-	^self name
+	^self name , '.dll'
 ! !
 !Gcilw6x class categoriesFor: #fileNameSearch!public! !
 
