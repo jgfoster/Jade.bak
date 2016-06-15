@@ -1429,7 +1429,7 @@ sbUpdateDictionaries
 		string := String withAll: string asArray.
 		writeStream 
 "1"		nextPutAll: eachKey; tab; 
-"2"		nextPutAll: eachValue class name; tab; 
+"2"		nextPutAll: eachValue _class name; tab; 
 "3"		nextPutAll: string; tab; 
 "4"		nextPutAll: (self oopOf: eachValue) printString; tab; 
 "5"		nextPutAll: (self oopOf: eachAssociation) printString; lf.
@@ -1815,59 +1815,59 @@ systemBrowserCommand
 	| list command |
 	list := self nextLineAsList asOrderedCollection.
 	command := list removeFirst.
-	command = 'addDictionary'					ifTrue: [^self sbAddDictionary: list].
-	command = 'addMethodCategory' 			ifTrue: [^self sbAddMethodCategory: list].
+	command = 'addDictionary'				ifTrue: [^self sbAddDictionary: list].
+	command = 'addMethodCategory' 		ifTrue: [^self sbAddMethodCategory: list].
 	command = 'addMissingAccessors'		ifTrue: [^self sbAddMissingAccessors: list].
-	command = 'addPackage' 						ifTrue: [^self sbAddPackage: list].
-	command = 'addRepository'					ifTrue: [^self sbAddRepository: list].
+	command = 'addPackage' 				ifTrue: [^self sbAddPackage: list].
+	command = 'addRepository'			ifTrue: [^self sbAddRepository: list].
 
-	command = 'break' 								ifTrue: [^self sbBreak: list].
-	command = 'browseClassReferences'	ifTrue: [^self sbBrowseClassReferences: list].
-	command = 'browseGlobalReferences'	ifTrue: [^self sbBrowseGlobalReferences: list].
-	command = 'browseImplementors'			ifTrue: [^self sbBrowseImplementors: list].
+	command = 'break' 					ifTrue: [^self sbBreak: list].
+	command = 'browseClassReferences'		ifTrue: [^self sbBrowseClassReferences: list].
+	command = 'browseGlobalReferences'		ifTrue: [^self sbBrowseGlobalReferences: list].
+	command = 'browseImplementors'		ifTrue: [^self sbBrowseImplementors: list].
 	command = 'browseMethodHistory'		ifTrue: [^self sbBrowseMethodHistory: list].
 	command = 'browseMethodsContaining'	ifTrue: [^self sbBrowseMethodsContaining: list].
-	command = 'browseSenders'					ifTrue: [^self sbBrowseSenders: list].
+	command = 'browseSenders'			ifTrue: [^self sbBrowseSenders: list].
 
-	command = 'changeClassName'				ifTrue: [^self sbChangeClassName: list].
+	command = 'changeClassName'			ifTrue: [^self sbChangeClassName: list].
 	command = 'changesInPackage'			ifTrue: [^self sbChangesInPackage: list].
-	command = 'checkUniqueClassName'	ifTrue: [^self sbCheckUniqueClassName: list].
-	command = 'class' 								ifTrue: [^self sbClass: list].
-	command = 'classCategory'					ifTrue: [^self sbClassCategory: list].
-	command = 'classComment'					ifTrue: [^self sbClassComment: list].
-	command = 'classesToDictionary'			ifTrue: [^self sbClassesToDictionary: list].
-	command = 'comparePackages'				ifTrue: [^self sbComparePackages: list].
+	command = 'checkUniqueClassName'		ifTrue: [^self sbCheckUniqueClassName: list].
+	command = 'class' 					ifTrue: [^self sbClass: list].
+	command = 'classCategory'				ifTrue: [^self sbClassCategory: list].
+	command = 'classComment'			ifTrue: [^self sbClassComment: list].
+	command = 'classesToDictionary'		ifTrue: [^self sbClassesToDictionary: list].
+	command = 'comparePackages'			ifTrue: [^self sbComparePackages: list].
 
-	command = 'fileOutClass'						ifTrue: [^self sbFileOutClass: list].
-	command = 'fileOutDictionary'				ifTrue: [^self sbFileOutDictionary: list].
-	command = 'findClass' 							ifTrue: [^self sbFindClass].
-	command = 'findSelectors'						ifTrue: [^self sbFindSelectors: list].
+	command = 'fileOutClass'				ifTrue: [^self sbFileOutClass: list].
+	command = 'fileOutDictionary'			ifTrue: [^self sbFileOutDictionary: list].
+	command = 'findClass' 				ifTrue: [^self sbFindClass].
+	command = 'findSelectors'				ifTrue: [^self sbFindSelectors: list].
 
-	command = 'loadLatestVersion'				ifTrue: [^self sbLoadLatestVersionOfConfiguration: list].
+	command = 'loadLatestVersion'			ifTrue: [^self sbLoadLatestVersionOfConfiguration: list].
 
-	command = 'method' 							ifTrue: [^self sbSaveMethod: list].
-	command = 'methodCategory'				ifTrue: [^self sbMethodCategory: list].
-	command = 'methodClass'						ifTrue: [^self sbMethodClass: list].
+	command = 'method' 					ifTrue: [^self sbSaveMethod: list].
+	command = 'methodCategory'			ifTrue: [^self sbMethodCategory: list].
+	command = 'methodClass'				ifTrue: [^self sbMethodClass: list].
 
-	command = 'objectLog'							ifTrue: [^self sbObjectLog: list].
+	command = 'objectLog'				ifTrue: [^self sbObjectLog: list].
 
-	command = 'postSaveClass'					ifTrue: [^self sbPostSaveClass: list].
+	command = 'postSaveClass'			ifTrue: [^self sbPostSaveClass: list].
 
-	command = 'removeClasses'					ifTrue: [^self sbRemoveClasses].
+	command = 'removeClasses'			ifTrue: [^self sbRemoveClasses].
 	command = 'removeDictionaries'			ifTrue: [^self sbRemoveDictionaries: list].
-	command = 'removeGlobals'					ifTrue: [^self sbRemoveGlobals].
+	command = 'removeGlobals'			ifTrue: [^self sbRemoveGlobals].
 	command = 'removeMethodCategories' 	ifTrue: [^self sbRemoveMethodCategories: list].
-	command = 'removeMethods'				ifTrue: [^self sbRemoveMethods: list].
-	command = 'removePriorVersions'			ifTrue: [^self sbRemovePriorVersions].
-	command = 'removeRepository'				ifTrue: [^self sbRemoveRepository: list].
-	command = 'revertClass'						ifTrue: [^self sbRevertClass].
+	command = 'removeMethods'			ifTrue: [^self sbRemoveMethods: list].
+	command = 'removePriorVersions'		ifTrue: [^self sbRemovePriorVersions].
+	command = 'removeRepository'			ifTrue: [^self sbRemoveRepository: list].
+	command = 'revertClass'				ifTrue: [^self sbRevertClass].
 
-	command = 'savePackage'						ifTrue: [^self sbSavePackage: list].
+	command = 'savePackage'				ifTrue: [^self sbSavePackage: list].
 	command = 'setHomeDictionary'			ifTrue: [^self sbSetHomeDictionary: list].
 
-	command = 'uniqueVersionName'			ifTrue: [^self sbUniqueVersionName: list].
-	command = 'unloadPackage'					ifTrue: [^self sbUnloadPackage: list].
-	command = 'update' 								ifTrue: [^self systemBrowserUpdate].
+	command = 'uniqueVersionName'		ifTrue: [^self sbUniqueVersionName: list].
+	command = 'unloadPackage'			ifTrue: [^self sbUnloadPackage: list].
+	command = 'update' 					ifTrue: [^self systemBrowserUpdate].
 
 	self error: 'Unknown command: ' , command printString.
 !

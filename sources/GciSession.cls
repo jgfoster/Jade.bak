@@ -120,11 +120,9 @@ clientForwardError: gciErrSType
 		| receiver selector args |
 		isHandlingClientForwarderSend := true.
 		receiver := self valueOfOop: (gciErrSType args at: 2).
-		receiver := (receiver notNil and: [receiver <= self clientForwarders size])
-			ifTrue: [self clientForwarders at: receiver]
-			ifFalse: [Transcript].
 		selector := self valueOfOop: (gciErrSType args at: 3).
-		args := self valueOfArrayOop: (gciErrSType args at: 4).
+		args := self valueOfArrayOop: (gciErrSType args at: 4).		(receiver isNil or: [self clientForwarders size < receiver]) ifTrue: [^library oopNil].
+		receiver := self clientForwarders at: receiver.
 		^receiver
 			perform: selector
 			withArguments: args.

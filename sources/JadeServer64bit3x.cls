@@ -14,6 +14,7 @@ GciSession allInstances do: [:each | each initializeServer].'!
 asString: anObject
 
 	(anObject isKindOf: String) ifTrue: [^anObject].
+	(anObject _class name == #'ClientForwarder') ifTrue: [^'aClientForwarder(' , (self asString: anObject clientObject) , ')'].
 	^[
 		anObject printString.
 	] on: Error , Admonition do: [:ex | 
