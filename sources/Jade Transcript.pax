@@ -50,6 +50,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone Session';
 	add: 'Jade Autocompletation';
 	add: 'Jade Inspector';
+	add: 'Jade Method Browser';
 	add: 'Jade UI Base';
 	yourself).
 
