@@ -24,6 +24,11 @@ main
 		ifFalse: [self mainShellClass show].
 !
 
+pause
+
+	Keyboard default isShiftDown ifTrue: [self error: 'Generate walkback!!'].
+!
+
 version
 
 	^Version notNil 
@@ -32,6 +37,7 @@ version
 ! !
 !JadeSessionManager categoriesFor: #defaultResLibPath!public! !
 !JadeSessionManager categoriesFor: #main!public! !
+!JadeSessionManager categoriesFor: #pause!public! !
 !JadeSessionManager categoriesFor: #version!public! !
 
 !JadeSessionManager class methodsFor!
@@ -43,11 +49,6 @@ getVersion
 mainShellClass
 
 	^JadeLoginShell.
-!
-
-pause
-
-	Keyboard default isShiftDown ifTrue: [self error: 'Generate walkback!!'].
 !
 
 sessionStarted
@@ -66,7 +67,6 @@ version
 ! !
 !JadeSessionManager class categoriesFor: #getVersion!public! !
 !JadeSessionManager class categoriesFor: #mainShellClass!public! !
-!JadeSessionManager class categoriesFor: #pause!public! !
 !JadeSessionManager class categoriesFor: #sessionStarted!public! !
 !JadeSessionManager class categoriesFor: #setVersion!public! !
 !JadeSessionManager class categoriesFor: #version!public! !

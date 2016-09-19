@@ -56,3 +56,11 @@ nextPutAll: anObject
 !JadeServer64bit3x categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !
 
+!JadeServer64bit3x class methodsFor!
+
+gsMethodClassName
+
+	^'GsNMethod'
+! !
+!JadeServer64bit3x class categoriesFor: #gsMethodClassName!public! !
+

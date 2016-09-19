@@ -285,21 +285,23 @@ terminate: aGsProcess
 
 !JadeServer class methodsFor!
 
-addGsStringTo: aStream definingClassBlock: aBlock
+addGsStringForClass: aClass to: aStream
 
 	aStream
-		nextPutAll: 'class := ', (aBlock value: self); lf;
+		nextPutAll: 'class := ', (self gsClassDefinitionStringFor: aClass); lf;
 		yourself.
-	self selectors do: [:each | 
+	aClass selectors do: [:each | 
 		aStream nextPutAll: 'source := '.
-		((self sourceCodeAt: each) reject: [:char | char == Character cr]) printOn: aStream.
+		((aClass sourceCodeAt: each) reject: [:char | char == Character cr]) printOn: aStream.
 		aStream
 			nextPutAll: '.'; lf;
 			nextPutAll: 'result := class'; lf;
 			tab; nextPutAll: 'compileMethod: source'; lf;
 			tab; nextPutAll: 'dictionaries: symbolList'; lf;
 			tab; nextPutAll: 'category: ''category''.'; lf;
-			nextPutAll: 'result ~~ nil ifTrue: [^GsMethod _sourceWithErrors: result fromString: source].'; lf;
+			nextPutAll: 'result ~~ nil ifTrue: [^';
+			nextPutAll: self gsMethodClassName;
+			nextPutAll: ' _sourceWithErrors: result fromString: source].'; lf;
 			yourself.
 	].
 !
@@ -309,9 +311,14 @@ classVarsForGemStone
 	^(self == JadeServer ifTrue: ['ExternalInteger GciError GsObject OopType32 OopType64'] ifFalse: ['']).
 !
 
-gsClassDefinitionBlock
+gsClassDefinitionStringFor: aClass
 
 	self subclassResponsibility.
+!
+
+gsMethodClassName
+
+	^'GsMethod'
 !
 
 gsString
@@ -325,7 +332,7 @@ gsString
 		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
 		nextPutAll: 'class := Object.'; lf;
 		yourself.
-	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | eachClass addGsStringTo: stream definingClassBlock: self gsClassDefinitionBlock].
+	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | self addGsStringForClass: eachClass to: stream].
 	stream 
 		nextPutAll: '(mcPlatformSupport := System myUserProfile objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
 		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
@@ -340,9 +347,10 @@ gsString
 sessionStateCode
 
 	^'System _sessionStateAt: 3 put: server.'! !
-!JadeServer class categoriesFor: #addGsStringTo:definingClassBlock:!public! !
+!JadeServer class categoriesFor: #addGsStringForClass:to:!public! !
 !JadeServer class categoriesFor: #classVarsForGemStone!public! !
-!JadeServer class categoriesFor: #gsClassDefinitionBlock!public! !
+!JadeServer class categoriesFor: #gsClassDefinitionStringFor:!public! !
+!JadeServer class categoriesFor: #gsMethodClassName!public! !
 !JadeServer class categoriesFor: #gsString!public! !
 !JadeServer class categoriesFor: #sessionStateCode!public! !
 

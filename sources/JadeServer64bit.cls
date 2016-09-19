@@ -38,17 +38,17 @@ objectForOop: anInteger
 
 !JadeServer64bit class methodsFor!
 
-gsClassDefinitionBlock
+gsClassDefinitionStringFor: aClass
 	"Some class variables exist only in Dolphin and map to globals in GemStone; others exist only in GemStone and map to globals in Dolphin!!"
 
-	^[:aClass | 'class subclass: ''' , aClass name , '''
+	^'class subclass: ''' , aClass name , '''
 		instVarNames: ' , aClass instVarNames printString , '
 		classVars: #(' , aClass classVarsForGemStone , ')
 		classInstVars: #()
 		poolDictionaries: #()
 		inDictionary: SymbolDictionary new
 		instancesInvariant: false
-		isModifiable: false.'].
+		isModifiable: false.'
 ! !
-!JadeServer64bit class categoriesFor: #gsClassDefinitionBlock!public! !
+!JadeServer64bit class categoriesFor: #gsClassDefinitionStringFor:!public! !
 
