@@ -129,7 +129,7 @@ defineMethod: methodString inClassNamed: className inPackageNamed: packageName i
 	result := GsCompileError
 		errorListFor: result
 		inSession: gciSession.
-	(JadeWorkspace showOn: gciSession)
+	(JadeWorkspace showOnSession: gciSession)
 		caption: 'Jade Workspace - Compile Error on ' , className;
 		showError: result on: methodString.
 !
@@ -459,7 +459,7 @@ showError: aList on: aString
 	self setDocumentData: aString.
 	aList do: [:each | 
 		| offset error |
-		offset := (each at: 2) asNumber.
+		offset := (each at: 2).
 		error := (each at: 3).
 		self activeTextEdit 
 			caretPosition: offset;
