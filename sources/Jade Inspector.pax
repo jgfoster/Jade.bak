@@ -83,7 +83,7 @@ inspect: anObject
 	(anObject isKindOf: Dictionary superclass) ifTrue: [^self inspectDictionary: anObject on: stream].
 	self inspectNamedInstanceVariablesOf: anObject on: stream.
 	anObject class format > 0 ifTrue: [
-		1 to: (anObject _basicSize min: 100) do: [:i | 
+		1 to: (anObject _basicSize min: 200) do: [:i | 
 			i printOn: stream.
 			stream tab.
 			self print: (self oopOf: (anObject _at: i)) on: stream.
@@ -92,7 +92,7 @@ inspect: anObject
 	].
 	(string := anObject printString) size > 5000 ifTrue: [string := (string copyFrom: 1 to: 5000) , '...'].
 	string class == String ifFalse: [
-		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 127]) ifTrue: [each] ifFalse: [$?]]).
+		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
 	].
 	^stream 
 		nextPutAll: string; 
@@ -136,7 +136,7 @@ inspectNamedInstanceVariablesOf: anObject on: aStream
 	list := anObject class allInstVarNames.
 	size := list size.
 	anObject class format > 0 ifTrue: [
-		size := size + (anObject _basicSize min: 100).
+		size := size + (anObject _basicSize min: 200).
 	].
 	size printOn: aStream.
 	aStream lf.
@@ -158,7 +158,7 @@ print: anObject on: aStream
 	| string |
 	string := self printStringOf: anObject.
 	string class == String ifFalse: [
-		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 127]) ifTrue: [each] ifFalse: [$?]]).
+		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
 	].
 	aStream nextPutAll: string.
 !
@@ -171,7 +171,7 @@ printStringOf: anObject to: anInteger
 
 	| string |
 	(string := self printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
-	string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 127]) ifTrue: [each] ifFalse: [$?]]).
+	string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
 	^string.
 ! !
 !JadeServer categoriesFor: #inspect:!Inspector!public! !
@@ -226,8 +226,7 @@ printStringOf: anObject
 !JadeServer64bit3x methodsFor!
 
 inspect: anObject
-
-	| dynamic dynamicSize indexedSize instVarNames namedSize stream string |
+	| dynamic dynamicSize indexedSize instVarNames namedSize stream string isRcBag |
 	(self isClientForwarder: anObject) ifTrue: [^self inspectClientForwarder: anObject].
 	(stream := WriteStream on: String new)
 		nextPutAll: anObject class name; tab;
@@ -239,11 +238,13 @@ inspect: anObject
 	namedSize := instVarNames size.
 	dynamic := anObject dynamicInstanceVariables.
 	dynamicSize := dynamic size.
+	isRcBag := anObject class name == #RcIdentityBag.
 	indexedSize := (anObject class isNsc or: [anObject class isIndexable]) ifFalse: [
 		0.
 	] ifTrue: [
-		(anObject _primitiveSize min: 100) - namedSize.
+		isRcBag ifTrue: [ anObject size min: 200] ifFalse: [(anObject _primitiveSize - namedSize)  min: 200].
 	].
+	
 	namedSize + dynamicSize + indexedSize printOn: stream.
 	stream lf.
 	1 to: instVarNames size do: [:i | 
@@ -256,15 +257,24 @@ inspect: anObject
 		self print: (self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) on: stream.
 		stream lf.
 	].
-	1 to: indexedSize do: [:i | 
-		i printOn: stream.
-		stream tab.
-		self print: (self oopOf: (anObject _primitiveAt: i + namedSize)) on: stream.
-		stream lf.
-	].
+	isRcBag
+		ifTrue: [ |aBag |
+			aBag := anObject _asIdentityBag.
+			1 to: indexedSize do: [:i | 
+				i printOn: stream.
+				stream tab.
+				self print: (self oopOf: (aBag _at: i )) on: stream.
+				stream lf]]
+		ifFalse: [
+			1 to: indexedSize do: [:i | 
+				i printOn: stream.
+				stream tab.
+				self print: (self oopOf: (anObject _primitiveAt: i + namedSize)) on: stream.
+				stream lf] ].
+
 	(string := anObject printString) size > 5000 ifTrue: [string := (string copyFrom: 1 to: 5000) , '...'].
 	string class == String ifFalse: [
-		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 127]) ifTrue: [each] ifFalse: [$?]]).
+		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 255]) ifTrue: [each] ifFalse: [$?]]).
 	].
 	^stream 
 		nextPutAll: string; 
@@ -278,7 +288,7 @@ inspectNamedInstanceVariablesOf: anObject on: aStream
 	dynamic := anObject dynamicInstanceVariables.
 	size := list size + dynamic size.
 	anObject class format > 0 ifTrue: [
-		size := size + (anObject _basicSize min: 100).
+		size := size + (anObject _basicSize min: 200).
 	].
 	size printOn: aStream.
 	aStream lf.

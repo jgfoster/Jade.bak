@@ -48,6 +48,15 @@ browseImplementorsOf: aGsMethod
 		method: aGsMethod.
 !
 
+browseMethods: aGsMethodColl
+
+	| string |
+	string := self gciSession 
+		serverPerform: #streamOfMethods:
+		with: aGsMethodColl.
+	self browseMethodsFromString: string.
+!
+
 browseMethodsContaining: aString
 
 	self
@@ -198,6 +207,7 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #browse:method:!public! !
 !JadeMethodListPresenter categoriesFor: #browse:methodSelector:!public! !
 !JadeMethodListPresenter categoriesFor: #browseImplementorsOf:!public! !
+!JadeMethodListPresenter categoriesFor: #browseMethods:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsContaining:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
 !JadeMethodListPresenter categoriesFor: #browseSendersOf:!public! !
