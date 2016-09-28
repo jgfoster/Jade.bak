@@ -1,0 +1,74 @@
+"Filed out from Dolphin Smalltalk 7"!
+
+Object subclass: #GsTestMethod
+	instanceVariableNames: 'methodName result'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsTestMethod guid: (GUID fromString: '{49AC780A-E100-43D1-812C-5132B52980AB}')!
+GsTestMethod comment: ''!
+!GsTestMethod categoriesForClass!Unclassified! !
+!GsTestMethod methodsFor!
+
+icon
+
+	result ifNil: [^self class icon].
+
+	(result = 'passed') ifTrue: [^True icon].
+	(result = 'failure') ifTrue: [^Warning icon].
+	(result = 'error') ifTrue: [^False icon].
+
+	^self class icon
+
+	!
+
+methodName
+	^methodName!
+
+methodName: anObject
+	methodName := anObject!
+
+result
+	^result!
+
+result: anObject
+	result := anObject!
+
+setError
+
+	result := 'error'
+
+	!
+
+setFailure
+
+	result := 'failure'!
+
+setPassed
+
+	result := 'passed'
+	! !
+!GsTestMethod categoriesFor: #icon!public! !
+!GsTestMethod categoriesFor: #methodName!accessing!private! !
+!GsTestMethod categoriesFor: #methodName:!accessing!private! !
+!GsTestMethod categoriesFor: #result!accessing!private! !
+!GsTestMethod categoriesFor: #result:!accessing!private! !
+!GsTestMethod categoriesFor: #setError!public! !
+!GsTestMethod categoriesFor: #setFailure!public! !
+!GsTestMethod categoriesFor: #setPassed!public! !
+
+!GsTestMethod class methodsFor!
+
+icon
+	"Answers an <Icon> that can be used to represent this class"
+
+	^Icon fromId: 'COMInterface.ico'!
+
+name: aString
+
+	^super new initialize
+		methodName: aString;
+		yourself! !
+!GsTestMethod class categoriesFor: #icon!public! !
+!GsTestMethod class categoriesFor: #name:!public! !
+
