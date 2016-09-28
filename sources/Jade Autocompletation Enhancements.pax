@@ -3,7 +3,7 @@ package := Package name: 'Jade Autocompletation Enhancements'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.023'.
+package basicPackageVersion: '0.026'.
 
 package basicScriptAt: #preinstall put: '(JadeServer classVarNames includes: ''PackageOrganizer'')
 ifFalse: [JadeServer addClassVarName: ''PackageOrganizer''].
@@ -35,6 +35,7 @@ package methodNames
 	add: #JadeMethodListPresenter -> #hasClassSideSelected;
 	add: #JadeShell -> #gciSession;
 	add: #JadeSystemBrowser -> #maximizeCode;
+	add: #JadeTextDocument -> #hasClassSideSelected;
 	add: #JadeTranscript -> #hasClassSideSelected;
 	add: #MethodSourcePresenter -> #hasClassSideSelected;
 	yourself.
@@ -257,6 +258,15 @@ maximizeCode
 
 	^(JadeMaximizedCodeShell showOn: codePresenter  model) parentMethodPresenter: codePresenter ! !
 !JadeSystemBrowser categoriesFor: #maximizeCode!public! !
+
+!JadeTextDocument methodsFor!
+
+hasClassSideSelected
+	
+	documentPresenter currentText  isEmpty ifTrue: [^false].
+
+	^documentPresenter currentText first isUpperCase! !
+!JadeTextDocument categoriesFor: #hasClassSideSelected!public! !
 
 !JadeTranscript methodsFor!
 
