@@ -3,7 +3,7 @@ package := Package name: 'Jade Autocompletation Enhancements'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.026'.
+package basicPackageVersion: '0.029'.
 
 package basicScriptAt: #preinstall put: '(JadeServer classVarNames includes: ''PackageOrganizer'')
 ifFalse: [JadeServer addClassVarName: ''PackageOrganizer''].
@@ -28,15 +28,18 @@ package methodNames
 	add: #JadeAutoSystemBrowserPresenter -> #getClassName;
 	add: #JadeAutoSystemBrowserPresenter -> #newMethodPresenter;
 	add: #JadeAutoSystemBrowserPresenter -> #registerClassData;
+	add: #JadeAutoSystemBrowserPresenter -> #updateMethodList;
 	add: #JadeGsClassShape -> #getAllClassMethods;
 	add: #JadeGsClassShape -> #getClassInstanceVariableLike:;
 	add: #JadeGsClassShape -> #getClassVariableAndPoolDictionaryLike:;
+	add: #JadeInspector -> #onViewOpened;
 	add: #JadeMethodListPresenter -> #getSelectedClassName;
 	add: #JadeMethodListPresenter -> #hasClassSideSelected;
 	add: #JadeShell -> #gciSession;
 	add: #JadeSystemBrowser -> #maximizeCode;
 	add: #JadeTextDocument -> #hasClassSideSelected;
 	add: #JadeTranscript -> #hasClassSideSelected;
+	add: #JadeWorkspace -> #onViewOpened;
 	add: #MethodSourcePresenter -> #hasClassSideSelected;
 	yourself.
 
@@ -53,6 +56,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: 'Jade Autocompletation';
+	add: 'Jade from Dolphin';
 	add: 'Jade Inspector';
 	add: 'Jade Method Browser';
 	add: 'Jade System Browser';
@@ -205,11 +209,25 @@ registerClassData
 		yourself.
 
 	lastGsShape updateClassData.
-	methodSourcePresenter currentGsShape: lastGsShape.! !
+	methodSourcePresenter currentGsShape: lastGsShape.!
+
+updateMethodList
+    "The receiver must keep update with any add/remove of a method in order to be acurate in the autocompletation"
+
+	super updateMethodList.
+
+	lastGsShape ifNil: [^self].
+
+	categoryListPresenter hasSelection ifTrue: [^self]. "if a category is selected then not all methods are displayed --> we only register a class data with ALL methods (no category selected)"
+
+	self hasClassSideSelected ifTrue: [^lastGsShape gsClassMethods: self gsClassMethods].
+
+	^lastGsShape gsMethods: self gsMethods.! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #getClassHierarchy!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #getClassName!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #newMethodPresenter!public! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #registerClassData!public!updating! !
+!JadeAutoSystemBrowserPresenter categoriesFor: #updateMethodList!public!updating! !
 
 !JadeGsClassShape methodsFor!
 
@@ -227,6 +245,56 @@ getClassVariableAndPoolDictionaryLike: aString
 !JadeGsClassShape categoriesFor: #getAllClassMethods!auto methods!public! !
 !JadeGsClassShape categoriesFor: #getClassInstanceVariableLike:!public! !
 !JadeGsClassShape categoriesFor: #getClassVariableAndPoolDictionaryLike:!public! !
+
+!JadeInspector methodsFor!
+
+onViewOpened
+
+	super onViewOpened.
+	documentPresenter view styler: JadeExpressionStyler new.
+	(model isKindOf: String) ifTrue: [
+		documentPresenter value: model.
+		self view caption: 'String (' , model size printString , ' characters)'.
+		^self.
+	].
+	(model isKindOf: ByteArray) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: model class name , ' (' , model size printString , ' bytes)'.
+		^self.
+	].
+	(model isKindOf: Integer) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Integer'.
+		^self.
+	].
+	model isNil ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'UndefinedObject'.
+		^self.
+	].
+	(model isKindOf: Boolean) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Boolean'.
+		^self.
+	]. 
+	(model isKindOf: Character) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Character'.
+		^self.
+	]. 
+	(model isKindOf: Float) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Float'.
+		^self.
+	].
+	(model isKindOf: Fraction) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Fraction'.
+		^self.
+	].
+	self displayObject.
+! !
+!JadeInspector categoriesFor: #onViewOpened!accessing!private! !
 
 !JadeMethodListPresenter methodsFor!
 
@@ -273,6 +341,16 @@ hasClassSideSelected
 hasClassSideSelected
 	^false! !
 !JadeTranscript categoriesFor: #hasClassSideSelected!public! !
+
+!JadeWorkspace methodsFor!
+
+onViewOpened
+
+	super onViewOpened.
+	codePane setDocumentPresenterWith: (self registry getClass: 'Object').
+
+	documentPresenter view styler: JadeExpressionStyler new.! !
+!JadeWorkspace categoriesFor: #onViewOpened!private! !
 
 !MethodSourcePresenter methodsFor!
 
