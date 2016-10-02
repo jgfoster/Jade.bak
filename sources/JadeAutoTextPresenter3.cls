@@ -114,6 +114,11 @@ getClassInstancesVariables
 
 	^(parentPresenter hasClassSideSelected ifTrue: [currentGsShape getClassInstanceVariableLike: currentText] ifFalse: [#()]) asSortedCollection!
 
+getClassName
+	currentGsShape ifNil: [^''].
+
+	^currentGsShape name!
+
 getCurrentWord
 	""
 	| breakCharacters leftPosition rightPosition leftStream rightStream currentCharacter |
@@ -437,6 +442,7 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #getArgumentsNames!autocompletion list!public! !
 !JadeAutoTextPresenter3 categoriesFor: #getBreakCharacters!public! !
 !JadeAutoTextPresenter3 categoriesFor: #getClassInstancesVariables!autocompletion list!public! !
+!JadeAutoTextPresenter3 categoriesFor: #getClassName!public! !
 !JadeAutoTextPresenter3 categoriesFor: #getCurrentWord!public! !
 !JadeAutoTextPresenter3 categoriesFor: #getNamesForClassUnaryMessage!autocompletion list!public! !
 !JadeAutoTextPresenter3 categoriesFor: #getNamesForIdentifier!autocompletion list!public! !
