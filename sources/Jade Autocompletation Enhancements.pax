@@ -1,0 +1,362 @@
+| package |
+package := Package name: 'Jade Autocompletation Enhancements'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.031'.
+
+package basicScriptAt: #preinstall put: '(JadeServer classVarNames includes: ''PackageOrganizer'')
+ifFalse: [JadeServer addClassVarName: ''PackageOrganizer''].
+
+#(''inspector'' ''sunitPresenter'' ''inspectorContainer'' ''oopPresenter'' ''autoInfoPresenter'') do: [:instVarName | 
+	(JadeAutoSystemBrowserPresenter instVarNames includes: instVarName) ifFalse: [JadeAutoSystemBrowserPresenter addInstVarName: instVarName]].
+'.
+
+package classNames
+	add: #JadeAutoTextPresenter3;
+	add: #JadeMaximizedCodePresenter;
+	add: #JadeMaximizedCodeShell;
+	yourself.
+
+package methodNames
+	add: #CodeSourcePresenter -> #createComponents;
+	add: #CodeSourcePresenter -> #hasClassSideSelected;
+	add: #JadeAutocompletationRegistry -> #getAllClassMethodsFor:;
+	add: #JadeAutocompletationRegistry -> #initialize;
+	add: #JadeAutocompletationRegistry -> #initializeParamMap;
+	add: #JadeAutoSystemBrowserPresenter -> #getClassHierarchy;
+	add: #JadeAutoSystemBrowserPresenter -> #getClassName;
+	add: #JadeAutoSystemBrowserPresenter -> #newMethodPresenter;
+	add: #JadeAutoSystemBrowserPresenter -> #registerClassData;
+	add: #JadeAutoSystemBrowserPresenter -> #updateMethodList;
+	add: #JadeGsClassShape -> #getAllClassMethods;
+	add: #JadeGsClassShape -> #getClassInstanceVariableLike:;
+	add: #JadeGsClassShape -> #getClassVariableAndPoolDictionaryLike:;
+	add: #JadeInspector -> #onViewOpened;
+	add: #JadeMethodListPresenter -> #getSelectedClassName;
+	add: #JadeMethodListPresenter -> #hasClassSideSelected;
+	add: #JadeShell -> #gciSession;
+	add: #JadeSystemBrowser -> #maximizeCode;
+	add: #JadeTextDocument -> #hasClassSideSelected;
+	add: #JadeTranscript -> #hasClassSideSelected;
+	add: #JadeWorkspace -> #onViewOpened;
+	add: #MethodSourcePresenter -> #hasClassSideSelected;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: 'Jade Autocompletation';
+	add: 'Jade from Dolphin';
+	add: 'Jade Inspector';
+	add: 'Jade Method Browser';
+	add: 'Jade System Browser';
+	add: 'Jade Transcript';
+	add: 'Jade UI Base';
+	add: '..\..\..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+JadePresenter subclass: #JadeMaximizedCodePresenter
+	instanceVariableNames: 'parentMethodPresenter codePresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeShell subclass: #JadeMaximizedCodeShell
+	instanceVariableNames: 'maximizedPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeTextPresenter subclass: #JadeAutoTextPresenter3
+	instanceVariableNames: 'currentGsShape currentText previousText currentStyleName previousStyleName lastTimeKey wordRightSideIsEmpty lastParsedResult'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!CodeSourcePresenter methodsFor!
+
+createComponents
+
+	super createComponents.
+	documentPresenter := self add: JadeAutoTextPresenter3 new name: 'document'.
+	self updateCodeFont.
+!
+
+hasClassSideSelected
+	^parentPresenter hasClassSideSelected! !
+!CodeSourcePresenter categoriesFor: #createComponents!public! !
+!CodeSourcePresenter categoriesFor: #hasClassSideSelected!public! !
+
+!JadeAutocompletationRegistry methodsFor!
+
+getAllClassMethodsFor: aJadeGsClassShape
+	"Answer a collection of methods of <aJadeGsClassShape> including superclasses methods"
+	| methods hierarchy |
+
+	methods := OrderedCollection new.
+	hierarchy := aJadeGsClassShape gsClassHierarchy asOrderedCollection.
+
+	self configuration filterObjectMethods ifTrue: [hierarchy := hierarchy removeFirst; yourself ]. "we remove Object class from <hierarchy> Array"
+
+	hierarchy do: [:each | | methodsToDisplay |
+		methodsToDisplay := (self includesClassNamed: each) ifTrue: [(self getClass: each) gsClassMethods] ifFalse: [OrderedCollection new].
+		self configuration filterPrimitiveMethods ifTrue: [methodsToDisplay := methodsToDisplay reject: [:eachSymbol | eachSymbol first = $_]].
+		methods addAll: methodsToDisplay].
+
+	^methods copyWithoutDuplicates
+
+!
+
+initialize
+
+	super initialize.
+
+	registry := Dictionary new.
+	variableMap := Dictionary new. "for example: html -> WAHtmlCanvas"
+	self initializeParamMap.!
+
+initializeParamMap
+
+	paramMap := Dictionary new.
+	paramMap
+		at: 'detect:ifNone:' put: '[:each | each],[]';
+		at: 'inject:into:' put: '0, [:sum :each | ]';
+		at: 'ifEmpty:ifNotEmpty:' put: '[emptyOperation],[:collection | ]';
+		at: 'ifNotEmpty:ifEmpty:' put: '[:collection | ],[emptyOperation]';
+		at: 'ifNil:ifNotNil:' put: '[],[:value | value]';
+		at: 'ifNotNil:ifNil:' put: '[:value | value],[]';
+		at: 'ifTrue:ifFalse:' put: '[],[]';
+		at: 'ifFalse:ifTrue:' put: '[],[]';
+		at: 'select:' put: '[:each | each]';
+		at: 'allSatisfy:' put: '[:each | each]';
+		at: 'anySatisfy:' put: '[:each | each]';
+		at: 'ifNotNil:' put: '[:value | value]';
+		at: 'ifNil:' put: '[]';
+		at: 'detect:' put: '[:each | each]';
+		at: 'ifTrue:' put: '[]';
+		at: 'ifFalse:' put: '[]';
+		at: 'collect:' put: '[:each | each]';
+		at: 'do:' put: '[:each | each]';
+		yourself.
+
+	^paramMap! !
+!JadeAutocompletationRegistry categoriesFor: #getAllClassMethodsFor:!public! !
+!JadeAutocompletationRegistry categoriesFor: #initialize!public! !
+!JadeAutocompletationRegistry categoriesFor: #initializeParamMap!public! !
+
+!JadeAutoSystemBrowserPresenter methodsFor!
+
+getClassHierarchy
+	"
+classHierarchyPresenter model anArray of Arrays #(#('Object') #('Object' 'Boolean') #('Object' 'True'))"
+
+	^classHierarchyPresenter model asOrderedCollection detect: [:eachArray | eachArray last = self getClassName] ifNone: [#()]	
+"
+	^classHierarchyPresenter selection
+"!
+
+getClassName
+
+	"classHierarchyPresenter hasSelection ifFalse: [^'none'].
+
+	^classHierarchyPresenter selection last."
+
+	^(self selectedClasses size = 1) 
+	ifFalse: ['none']
+	ifTrue: [self selectedClasses last]!
+
+newMethodPresenter
+
+	^JadeAutoTextPresenter3 new.!
+
+registerClassData
+	"When a class is selected in the GemStone browser all meta data of that class is registered to be used in the autocompletion system"
+	| gsMethods gsClassMethods |
+
+	categoryListPresenter hasSelection ifTrue: [^self]. "if a category is selected then not all methods are displayed --> we only register a class data with ALL methods (no category selected)"
+	(self selectedClasses size = 1) ifFalse: [^self]. "with multiple classes we ignore the registration, which class own listed methods ???"
+	gsClassMethods := OrderedCollection new.
+	gsMethods := OrderedCollection new.
+
+	self hasClassSideSelected ifTrue: [gsClassMethods := self gsClassMethods] ifFalse: [gsMethods := self gsMethods].
+
+	lastGsShape := JadeGsClassShape new.
+	lastGsShape  name: self getClassName;
+		gsClassHierarchy: self getClassHierarchy;
+		gsInstVariables: self gsInstVariables;
+		gsClassVariables: self gsClassVariables;
+		gsInstClassVariables: self gsInstClassVariables; 
+		gsMethods: gsMethods; 
+		gsClassMethods: gsClassMethods;
+		gsPoolDictionaries: self gsClassPoolDictionaries;
+		yourself.
+
+	lastGsShape updateClassData.
+	methodSourcePresenter currentGsShape: lastGsShape.!
+
+updateMethodList
+    "The receiver must keep update with any add/remove of a method in order to be acurate in the autocompletation"
+
+	super updateMethodList.
+
+	lastGsShape ifNil: [^self].
+
+	categoryListPresenter hasSelection ifTrue: [^self]. "if a category is selected then not all methods are displayed --> we only register a class data with ALL methods (no category selected)"
+
+	self hasClassSideSelected ifTrue: [^lastGsShape gsClassMethods: self gsClassMethods].
+
+	^lastGsShape gsMethods: self gsMethods.! !
+!JadeAutoSystemBrowserPresenter categoriesFor: #getClassHierarchy!public!updating! !
+!JadeAutoSystemBrowserPresenter categoriesFor: #getClassName!public!updating! !
+!JadeAutoSystemBrowserPresenter categoriesFor: #newMethodPresenter!public! !
+!JadeAutoSystemBrowserPresenter categoriesFor: #registerClassData!public!updating! !
+!JadeAutoSystemBrowserPresenter categoriesFor: #updateMethodList!public!updating! !
+
+!JadeGsClassShape methodsFor!
+
+getAllClassMethods
+
+	^self registry getAllClassMethodsFor: self!
+
+getClassInstanceVariableLike: aString
+
+	^self gsInstClassVariables select: [:each | (aString, '*') match: each]!
+
+getClassVariableAndPoolDictionaryLike: aString
+
+	^(self gsClassVariables select: [:each | (aString, '*') match: each]), (self gsPoolDictionaries select: [:each | (aString, '*') match: each])! !
+!JadeGsClassShape categoriesFor: #getAllClassMethods!auto methods!public! !
+!JadeGsClassShape categoriesFor: #getClassInstanceVariableLike:!public! !
+!JadeGsClassShape categoriesFor: #getClassVariableAndPoolDictionaryLike:!public! !
+
+!JadeInspector methodsFor!
+
+onViewOpened
+
+	super onViewOpened.
+	documentPresenter view styler: JadeExpressionStyler new.
+	(model isKindOf: String) ifTrue: [
+		documentPresenter value: model.
+		self view caption: 'String (' , model size printString , ' characters)'.
+		^self.
+	].
+	(model isKindOf: ByteArray) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: model class name , ' (' , model size printString , ' bytes)'.
+		^self.
+	].
+	(model isKindOf: Integer) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Integer'.
+		^self.
+	].
+	model isNil ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'UndefinedObject'.
+		^self.
+	].
+	(model isKindOf: Boolean) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Boolean'.
+		^self.
+	]. 
+	(model isKindOf: Character) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Character'.
+		^self.
+	]. 
+	(model isKindOf: Float) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Float'.
+		^self.
+	].
+	(model isKindOf: Fraction) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Fraction'.
+		^self.
+	].
+	self displayObject.
+! !
+!JadeInspector categoriesFor: #onViewOpened!accessing!private! !
+
+!JadeMethodListPresenter methodsFor!
+
+getSelectedClassName
+
+	^(self selectedClass name subStrings: ' ') first!
+
+hasClassSideSelected
+
+	^(self selectedClass name subStrings: ' ') last = 'class'! !
+!JadeMethodListPresenter categoriesFor: #getSelectedClassName!public! !
+!JadeMethodListPresenter categoriesFor: #hasClassSideSelected!public! !
+
+!JadeShell methodsFor!
+
+gciSession
+
+	^gciSession! !
+!JadeShell categoriesFor: #gciSession!private! !
+
+!JadeSystemBrowser methodsFor!
+
+maximizeCode
+	| codePresenter |
+
+	(self currentCard class == JadeAutoSystemBrowserPresenter) ifFalse: [^self].
+
+	codePresenter := self currentCard methodSourcePresenter .
+
+	^(JadeMaximizedCodeShell showOn: codePresenter  model) parentMethodPresenter: codePresenter ! !
+!JadeSystemBrowser categoriesFor: #maximizeCode!public! !
+
+!JadeTextDocument methodsFor!
+
+hasClassSideSelected
+	
+	documentPresenter currentText  isEmpty ifTrue: [^false].
+
+	^documentPresenter currentText first isUpperCase! !
+!JadeTextDocument categoriesFor: #hasClassSideSelected!public! !
+
+!JadeTranscript methodsFor!
+
+hasClassSideSelected
+	^false! !
+!JadeTranscript categoriesFor: #hasClassSideSelected!public! !
+
+!JadeWorkspace methodsFor!
+
+onViewOpened
+
+	super onViewOpened.
+	codePane setDocumentPresenterWith: (self registry getClass: 'Object').
+
+	documentPresenter view styler: JadeExpressionStyler new.! !
+!JadeWorkspace categoriesFor: #onViewOpened!private! !
+
+!MethodSourcePresenter methodsFor!
+
+hasClassSideSelected
+	^parentPresenter hasClassSideSelected! !
+!MethodSourcePresenter categoriesFor: #hasClassSideSelected!public! !
+
+"End of package definition"!
+
