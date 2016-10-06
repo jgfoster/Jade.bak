@@ -116,7 +116,7 @@ updateClassData
 	| previousShape |
 
 	gsMethods ifNil: [gsMethods := LookupTable new].
-	gsClassMethods ifNil: [gsMethods := LookupTable new].
+	gsClassMethods ifNil: [gsClassMethods := LookupTable new].
 
 	self existInRegistry ifFalse: [^self registry register: self].
 
