@@ -3,7 +3,7 @@ package := Package name: 'Jade Autocompletation'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.014'.
+package basicPackageVersion: '0.050'.
 
 
 package classNames
@@ -20,7 +20,6 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #CodeSourcePresenter -> #createComponents;
 	add: #JadePresenterA -> #registry;
 	add: #JadeTextDocument -> #registry;
 	yourself.
@@ -105,16 +104,6 @@ JadeTextPresenter subclass: #JadeAutoTextPresenter
 
 
 "Loose Methods"!
-
-!CodeSourcePresenter methodsFor!
-
-createComponents
-
-	super createComponents.
-	documentPresenter := self add: JadeAutoTextPresenter new name: 'document'.
-	self updateCodeFont.
-! !
-!CodeSourcePresenter categoriesFor: #createComponents!public! !
 
 !JadePresenterA methodsFor!
 
