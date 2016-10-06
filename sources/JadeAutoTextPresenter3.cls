@@ -175,6 +175,8 @@ getNamesForIdentifier
 
 getNamesForUnaryMessage
 
+	currentText isEmpty ifTrue: [^self registry getAllGlobalMethods].
+
 	currentText first isUpperCase ifTrue: [^self getNamesForClassUnaryMessage].
 
 	^self registry getAllGlobalMethods select: [:each | (currentText, '*') match: each]!
@@ -391,7 +393,9 @@ processKeyPressed: aKeyEvent
 	 (currentStyleName = #unarySelector) ifTrue: [^self autocompleteForUnaryMessage]. 
 
 	(currentStyleName = #literalSymbol) ifTrue: [currentText := currentText allButFirst. 
-		currentText first isUpperCase ifTrue: [self autocompleteForUpperIdentifier] ifFalse: [self autocompleteForUnaryMessage]]. !
+		(currentText notEmpty and: [currentText first isUpperCase])
+			ifTrue: [self autocompleteForUpperIdentifier] 
+			ifFalse: [self autocompleteForUnaryMessage]]. !
 
 registry
 
