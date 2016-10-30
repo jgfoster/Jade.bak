@@ -3,7 +3,7 @@ package := Package name: 'Jade Test Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.012'.
+package basicPackageVersion: '0.014'.
 
 package basicScriptAt: #preinstall put: '(JadeServer classVarNames includes: ''PackageOrganizer'')
 ifFalse: [JadeServer addClassVarName: ''PackageOrganizer''].
@@ -141,7 +141,7 @@ updateAndSelect: aView
 		[self updateAndSelectB: aView] fork.
 	].
 
-	self registerClassData.
+	[self registerClassData] forkAt: 3.
 
 	sunitPresenter testClassName: self getClassName! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #createComponents!create schemantic wiring!public! !

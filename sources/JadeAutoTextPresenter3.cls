@@ -101,18 +101,21 @@ getBreakCharacters
 !
 
 getClassInstancesVariables
+	| isClassSide |
 
 	(parentPresenter parentPresenter class == JadeMethodListPresenter) 
-	ifTrue: [| listBrowser isClassSide className |
+	ifTrue: [| listBrowser className |
 		listBrowser := parentPresenter parentPresenter.
 		className := listBrowser selectedClass name subStrings: ' '.
-		isClassSide := className last = 'class'.
-		isClassSide ifTrue: [currentGsShape := self registry getClass: className first].
+		 isClassSide := className last = 'class'.
+		currentGsShape := self registry getClass: className first.
+		^(isClassSide ifTrue: [currentGsShape getClassInstanceVariableLike: currentText] ifFalse: [currentGsShape getInstanceVariableLike: currentText]) asSortedCollection.
 	].
 
 	currentGsShape ifNil: [^#()].
 
-	^(parentPresenter hasClassSideSelected ifTrue: [currentGsShape getClassInstanceVariableLike: currentText] ifFalse: [#()]) asSortedCollection!
+	^(parentPresenter hasClassSideSelected 
+		ifTrue: [currentGsShape getClassInstanceVariableLike: currentText] ifFalse: [currentGsShape getInstanceVariableLike: currentText]) asSortedCollection!
 
 getClassName
 	currentGsShape ifNil: [^''].
@@ -174,6 +177,8 @@ getNamesForIdentifier
 			select: [:each | (currentText, '*') match: each]!
 
 getNamesForUnaryMessage
+
+	currentText isEmpty ifTrue: [^self registry getAllGlobalMethods].
 
 	currentText first isUpperCase ifTrue: [^self getNamesForClassUnaryMessage].
 
@@ -391,7 +396,9 @@ processKeyPressed: aKeyEvent
 	 (currentStyleName = #unarySelector) ifTrue: [^self autocompleteForUnaryMessage]. 
 
 	(currentStyleName = #literalSymbol) ifTrue: [currentText := currentText allButFirst. 
-		currentText first isUpperCase ifTrue: [self autocompleteForUpperIdentifier] ifFalse: [self autocompleteForUnaryMessage]]. !
+		(currentText notEmpty and: [currentText first isUpperCase])
+			ifTrue: [self autocompleteForUpperIdentifier] 
+			ifFalse: [self autocompleteForUnaryMessage]]. !
 
 registry
 

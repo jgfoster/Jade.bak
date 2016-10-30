@@ -82,6 +82,7 @@ gsMethods
 	^gsMethods!
 
 gsMethods: anObject
+
 	gsMethods := anObject!
 
 gsPoolDictionaries
@@ -111,8 +112,11 @@ registry
 
 	^JadeAutocompletationRegistry default!
 
-update
+updateClassData
 	| previousShape |
+
+	gsMethods ifNil: [gsMethods := LookupTable new].
+	gsClassMethods ifNil: [gsClassMethods := LookupTable new].
 
 	self existInRegistry ifFalse: [^self registry register: self].
 
@@ -146,5 +150,5 @@ update
 !JadeGsClassShape categoriesFor: #name!accessing!private! !
 !JadeGsClassShape categoriesFor: #name:!accessing!private! !
 !JadeGsClassShape categoriesFor: #registry!public! !
-!JadeGsClassShape categoriesFor: #update!public! !
+!JadeGsClassShape categoriesFor: #updateClassData!public! !
 

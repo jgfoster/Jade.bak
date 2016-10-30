@@ -185,14 +185,6 @@ includesClassNamed: aString
 
 	^registry includesKey: aString!
 
-initialize
-
-	super initialize.
-
-	registry := Dictionary new.
-	variableMap := Dictionary new.
-	paramMap := Dictionary new.!
-
 mapFor: aString
 	"Answer the map (instance of JadeGsClassShape) for the name <aString> "
 
@@ -303,7 +295,7 @@ unregisterParam: methodName
 updateGsClassForMapStrings: aJadeGsClassShape
 	"The receiver update all variables map text that hold a class with same name as <aJadeGsClassShape> with this new update instance <aJadeGsClassShape>"
 	| keysToUpdate |
-	
+
 	keysToUpdate := variableMap keys select: [:eachKey | (variableMap at: eachKey) name = aJadeGsClassShape name]. "select keys which it's value is equal to <aJadeGsClassShape> name"
 
 	keysToUpdate do: [:eachKey | variableMap at: eachKey put: aJadeGsClassShape] "we update those keys with this new update instance"!
@@ -333,7 +325,6 @@ variableMap: anObject
 !JadeAutocompletationRegistry categoriesFor: #hasMapFor:!public! !
 !JadeAutocompletationRegistry categoriesFor: #hasMapForClassNamed:!public! !
 !JadeAutocompletationRegistry categoriesFor: #includesClassNamed:!public! !
-!JadeAutocompletationRegistry categoriesFor: #initialize!public! !
 !JadeAutocompletationRegistry categoriesFor: #mapFor:!public! !
 !JadeAutocompletationRegistry categoriesFor: #mapToDisplay!public! !
 !JadeAutocompletationRegistry categoriesFor: #paramFor:!public! !
