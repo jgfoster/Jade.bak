@@ -14,8 +14,6 @@ onViewOpened
 
 	super onViewOpened.
 	(view isKindOf: ScintillaView) ifFalse: [^self].
-	view lexer: #container.
-	view stylerClass: SmalltalkMethodStyler.
 	view textStyles: JadeTextStyles default textStyles.
 !
 

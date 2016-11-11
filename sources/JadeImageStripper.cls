@@ -113,6 +113,7 @@ requiredClasses
 		addAll: GsHostProcess withAllSubclasses;
 		addAll: GsShellCommand withAllSubclasses;
 		addAll: GsWin32Service withAllSubclasses;
+		add: NTLibrary;
 		add: StParseNodeVisitor;
 		addAll: StProgramNode withAllSubclasses;
 		addAll: StToken withAllSubclasses;
