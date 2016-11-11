@@ -33,6 +33,7 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
+	add: '..\..\..\Core\Object Arts\Dolphin\IDE\Base\Development System';
 	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';

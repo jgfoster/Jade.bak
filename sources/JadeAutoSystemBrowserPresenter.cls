@@ -132,7 +132,7 @@ registerClassData
 		gsPoolDictionaries: self gsClassPoolDictionaries;
 		yourself.
 
-	lastGsShape update.
+	lastGsShape updateClassData.
 	methodSourcePresenter lastGsShape: lastGsShape.!
 
 removeClass

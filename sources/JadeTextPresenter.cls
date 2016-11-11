@@ -10,9 +10,19 @@ JadeTextPresenter comment: ''!
 !JadeTextPresenter categoriesForClass!Unclassified! !
 !JadeTextPresenter methodsFor!
 
+onViewOpened
+
+	super onViewOpened.
+	(view isKindOf: ScintillaView) ifFalse: [^self].
+	view lexer: #container.
+	view stylerClass: SmalltalkMethodStyler.
+	view textStyles: JadeTextStyles default textStyles.
+!
+
 selection
 
 	^view selection.
 ! !
+!JadeTextPresenter categoriesFor: #onViewOpened!public! !
 !JadeTextPresenter categoriesFor: #selection!public! !
 
