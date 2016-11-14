@@ -7,7 +7,7 @@ SmalltalkSystemShell allInstances first
 IdeaSpaceShell show
 	absorbCard: SmalltalkWorkspaceDocument show;
 	absorbCard: SystemBrowserShell show;
-	position: 50@80; extent: 1200@750;
+	position: 50@80; extent: 1200@700;
 	yourself.
 TestRunner show
 	position: 900@40;

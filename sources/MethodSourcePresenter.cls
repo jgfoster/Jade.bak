@@ -133,7 +133,7 @@ newSelector
 onViewOpened
 
 	super onViewOpened.
-	(documentPresenter view margins at: 2) isSensitive: false.
+	"(documentPresenter view margins at: 2) isSensitive: false."
 	self 
 		updateCodeFont;
 		setDefaultMethod;

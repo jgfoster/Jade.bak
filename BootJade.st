@@ -10,7 +10,6 @@ list := #(
 	'GemStone Services'
 	'VisualWorks Component'
 	'Jade UI Base'
-	'Jade from Dolphin'
 	'Jade Autocompletation'
 	'Jade Inspector'
 	'Jade Class Browser'
@@ -48,7 +47,7 @@ IdeaSpaceShell allInstances isEmpty ifTrue: [
 	IdeaSpaceShell show
 		absorbCard: SmalltalkWorkspaceDocument show;
 		absorbCard: SystemBrowserShell show;
-		position: 50@80; extent: 1200@750;
+		position: 50@80; extent: 1200@700;
 		yourself.
 ].
 Debugger defaultExtent: 1000@600.
