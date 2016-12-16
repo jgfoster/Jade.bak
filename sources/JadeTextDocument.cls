@@ -53,6 +53,11 @@ codePresenterIsMethod
 
 	^false!
 
+codeSourcePresenterClass
+
+	^CodeSourcePresenter
+!
+
 commitTransaction
 
 	gciSession commit ifTrue: [
@@ -77,7 +82,7 @@ createComponents
 
 	super createComponents.
 	view viewNamed: 'codePane' ifNone: [^self].
-	codePane := self add: CodeSourcePresenter new name: 'codePane'.
+	codePane := self add: self codeSourcePresenterClass new name: 'codePane'.
 	documentPresenter := codePane documentPresenter.
 	self updateCodeFont.
 !
@@ -517,6 +522,7 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #activeTextEdit!private! !
 !JadeTextDocument categoriesFor: #addQuotesToSelection!edit!private! !
 !JadeTextDocument categoriesFor: #codePresenterIsMethod!private! !
+!JadeTextDocument categoriesFor: #codeSourcePresenterClass!private! !
 !JadeTextDocument categoriesFor: #commitTransaction!Jade!private! !
 !JadeTextDocument categoriesFor: #contextObject!Jade!private! !
 !JadeTextDocument categoriesFor: #continueTransaction!Jade!private! !

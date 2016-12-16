@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-JadeCodeBrowser subclass: #JadeDebugger
+JadeTextDocument subclass: #JadeDebugger
 	instanceVariableNames: 'answer errorMessagePresenter frame frameListOffset frameListPresenter gsProcess processList processListPresenter terminateOnClose variableDataPresenter variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -28,6 +28,11 @@ clearUI
 	variableListPresenter list: #().
 	variableDataPresenter value: ''.
 	documentPresenter value: ''.
+!
+
+codeSourcePresenterClass
+
+	^MethodSourcePresenter
 !
 
 contextObject
@@ -317,6 +322,7 @@ updateCaption
 ! !
 !JadeDebugger categoriesFor: #answer!public! !
 !JadeDebugger categoriesFor: #clearUI!public! !
+!JadeDebugger categoriesFor: #codeSourcePresenterClass!private! !
 !JadeDebugger categoriesFor: #contextObject!public! !
 !JadeDebugger categoriesFor: #createComponents!public! !
 !JadeDebugger categoriesFor: #createSchematicWiring!public! !
