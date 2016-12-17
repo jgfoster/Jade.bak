@@ -23,21 +23,26 @@ package methodNames
 	add: #GsProcess -> #trimStackToLevel:;
 	add: #JadeServer -> #_oopAndStringFor:;
 	add: #JadeServer -> #_sourceForProcess:frame:;
+	add: #JadeServer -> #_stepPointFromProcess:frame:method:level:;
+	add: #JadeServer -> #_stepPointsForBreaksInMethod:;
 	add: #JadeServer -> #_trimStackOf:toLevel:;
 	add: #JadeServer -> #asAsciiString:;
 	add: #JadeServer -> #compile:frame:process:;
 	add: #JadeServer -> #isResumableCategory:number:context:;
 	add: #JadeServer -> #step:inFrame:;
 	add: #JadeServer32bit -> #_oopAndStringFor:;
+	add: #JadeServer32bit -> #_stepPointFromProcess:frame:method:level:;
 	add: #JadeServer32bit -> #_trimStackOf:toLevel:;
 	add: #JadeServer32bit -> #recompile:withSource:;
 	add: #JadeServer32bit -> #sourceForProcess:frame:;
 	add: #JadeServer64bit -> #_oopAndStringFor:;
+	add: #JadeServer64bit -> #_stepPointFromProcess:frame:method:level:;
 	add: #JadeServer64bit -> #_trimStackOf:toLevel:;
 	add: #JadeServer64bit -> #recompile:withSource:;
 	add: #JadeServer64bit -> #sourceForProcess:frame:;
 	add: #JadeServer64bit33 -> #step:inFrame:;
 	add: #JadeServer64bit34 -> #step:inFrame:;
+	add: #JadeServer64bit3x -> #_stepPointsForBreaksInMethod:;
 	add: #JadeTextDocument -> #fileIn;
 	add: #JadeTextDocument -> #jadeInspect;
 	yourself.
@@ -168,19 +173,11 @@ _sourceForProcess: gsProcess frame: level
 	stream := WriteStream on: String new.
 	(frame := gsProcess _frameContentsAt: level) isNil ifTrue: [^'No frame found for level ' , level printString].
 	gsMethod := frame at: 1.
-	stepPoint := (gsProcess respondsTo: #'_localStepPointAt:')  ifTrue: [
-		(gsProcess _localStepPointAt: level) at: 1.
-	] ifFalse: [(gsMethod respondsTo: #'_stepPointForIp:level:quick:')  ifTrue: [
-		gsMethod
-			_stepPointForIp: (frame at: 2) 
-			level: level 
-			quick: false.
-	] ifFalse: [
-		gsMethod
-			_stepPointForIp: (frame at: 2) 
-			level: level 
-			isNative: gsProcess _nativeStack.
-	]].
+	stepPoint := self 
+		_stepPointFromProcess: gsProcess 
+		frame: frame 
+		method: gsMethod
+		level: level.
 	stream
 		nextPutAll: '<?xml version=''1.0'' ?><frame oop=';
 		nextPutAll: (self oopOf: frame) printString printString;
@@ -238,21 +235,19 @@ _sourceForProcess: gsProcess frame: level
 			nextPutAll: '></var>'; lf;
 			yourself.
 	].
-	gsMethod _sourceOffsets do: [:each | 
+	([gsMethod homeMethod] on: Error do: [:ex | gsMethod]) _sourceOffsets do: [:each | 
 		stream
 			nextPutAll: '<offset x=';
 			nextPutAll: each printString printString;
 			nextPutAll: '/>'; lf;
 			yourself.
 	].
-	(gsMethod class canUnderstand: #'_breakpointIpOffsets') ifTrue: [
-		(gsMethod _stepPointsFromBreakIpOffsets: gsMethod _breakpointIpOffsets) do: [:each | 
-			stream
-				nextPutAll: '<break x=';
-				nextPutAll: each printString printString;
-				nextPutAll: '/>'; lf;
-				yourself.
-		].
+	(self _stepPointsForBreaksInMethod: gsMethod) do: [:each | 
+		stream
+			nextPutAll: '<break x=';
+			nextPutAll: each printString printString;
+			nextPutAll: '/>'; lf;
+			yourself.
 	].
 	stream 
 		nextPutAll: '<source';
@@ -268,6 +263,24 @@ _sourceForProcess: gsProcess frame: level
 		yourself.
 	^self asAsciiString: stream contents.
 !
+
+_stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
+
+	self subclassResponsibility.
+
+	"
+	stepPoint := (gsProcess respondsTo: #'_localStepPointAt:')  ifTrue: [		""in 64-bit since 2004""
+		(gsProcess _localStepPointAt: level) at: 1.
+	] ifFalse: [(gsMethod respondsTo: #'_stepPointForIp:level:quick:')  ifTrue: [	""in 32-bit since 2002""
+		gsMethod
+			_stepPointForIp: (frame at: 2) 
+			level: level 
+			quick: false.
+	"!
+
+_stepPointsForBreaksInMethod: gsMethod
+
+	^gsMethod _stepPointsFromBreakIpOffsets: gsMethod _breakpointIpOffsets!
 
 _trimStackOf: aGsProcess toLevel: anInteger
 
@@ -326,6 +339,8 @@ step: aGsProcess inFrame: anInteger
 ! !
 !JadeServer categoriesFor: #_oopAndStringFor:!Debugger!public! !
 !JadeServer categoriesFor: #_sourceForProcess:frame:!Debugger!public! !
+!JadeServer categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!public! !
+!JadeServer categoriesFor: #_stepPointsForBreaksInMethod:!Debugger!public! !
 !JadeServer categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
 !JadeServer categoriesFor: #asAsciiString:!Debugger!public! !
 !JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
@@ -342,6 +357,13 @@ _oopAndStringFor: anObject
 		do: [:ex :cat :num :args | ^0 -> '<ERROR IN #printString>'].
 	^super _oopAndStringFor: anObject.
 !
+
+_stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
+
+	^gsMethod
+		_stepPointForIp: (aFrame at: 2) 
+		level: anInteger 
+		quick: false!
 
 _trimStackOf: aGsProcess toLevel: anInteger
 
@@ -381,6 +403,7 @@ sourceForProcess: gsProcess frame: level
 		frame: level.
 ! !
 !JadeServer32bit categoriesFor: #_oopAndStringFor:!Debugger!public! !
+!JadeServer32bit categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!public! !
 !JadeServer32bit categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
 !JadeServer32bit categoriesFor: #recompile:withSource:!Debugger!public! !
 !JadeServer32bit categoriesFor: #sourceForProcess:frame:!Debugger!public! !
@@ -394,6 +417,11 @@ _oopAndStringFor: anObject
 	] on: Error do: [:ex | 
 		ex return: 0 -> ('<ERROR IN #printString for ' , anObject class name , '>').
 	].
+!
+
+_stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
+
+	^(gsProcess _localStepPointAt: anInteger) at: 1.
 !
 
 _trimStackOf: aGsProcess toLevel: anInteger
@@ -433,6 +461,7 @@ sourceForProcess: gsProcess frame: level
 	].
 ! !
 !JadeServer64bit categoriesFor: #_oopAndStringFor:!Debugger!public! !
+!JadeServer64bit categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!public! !
 !JadeServer64bit categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
 !JadeServer64bit categoriesFor: #recompile:withSource:!Debugger!public! !
 !JadeServer64bit categoriesFor: #sourceForProcess:frame:!Debugger!public! !
@@ -452,6 +481,14 @@ step: aGsProcess inFrame: anInteger
 	aGsProcess _stepOverInFrame: anInteger.
 ! !
 !JadeServer64bit34 categoriesFor: #step:inFrame:!Debugger!public!Socket! !
+
+!JadeServer64bit3x methodsFor!
+
+_stepPointsForBreaksInMethod: gsMethod
+	"Presumably there is a way to do this, just not the same as 32-bit and 64-bit 2.x"
+
+	^#()! !
+!JadeServer64bit3x categoriesFor: #_stepPointsForBreaksInMethod:!Debugger!public! !
 
 !JadeTextDocument methodsFor!
 
