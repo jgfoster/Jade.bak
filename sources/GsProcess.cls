@@ -41,11 +41,6 @@ Maybe an object got an error on a #printString method.
 gciSession: aGciSession 
 	gciSession := aGciSession!
 
-oop: anOopType
-
-	oopType := anOopType.
-!
-
 printOn: aStream
 
 	aStream
@@ -78,7 +73,6 @@ type: anObject
 !GsProcess categoriesFor: #description!public! !
 !GsProcess categoriesFor: #frameForLevel:!public! !
 !GsProcess categoriesFor: #gciSession:!public! !
-!GsProcess categoriesFor: #oop:!public! !
 !GsProcess categoriesFor: #printOn:!public! !
 !GsProcess categoriesFor: #stack!public! !
 !GsProcess categoriesFor: #type!accessing!public! !
@@ -86,29 +80,11 @@ type: anObject
 
 !GsProcess class methodsFor!
 
-codeToGetProcess
-
-^'	| list stream |
-	stream := WriteStream on: String new.
-	stream nextPutAll: ''<?xml version=''''1.0'''' ?><sessions>''.
-	list := System currentSessionNames subStrings: Character lf.
-	list := list collect: [:each | (each subStrings at: 3) asNumber].
-	list do: [:each | 
-		[' , GsSession codeToGetSession , '] 
-			value: each 
-			value: stream.
-	].
-	stream 
-		nextPutAll: ''</sessions>'';
-		contents'.
-
-!
-
-session: aSession oop: anOop
+session: aGciSession oopType: anOopType
 
 	^self new
-		gciSession: aSession;
-		oop: anOop; 
+		gciSession: aGciSession;
+		oopType: anOopType; 
 		yourself.
 !
 
@@ -116,7 +92,6 @@ xmlBaseName
 
 	^'process'.
 ! !
-!GsProcess class categoriesFor: #codeToGetProcess!public! !
-!GsProcess class categoriesFor: #session:oop:!public! !
+!GsProcess class categoriesFor: #session:oopType:!public! !
 !GsProcess class categoriesFor: #xmlBaseName!public! !
 

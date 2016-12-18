@@ -172,6 +172,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Tree\Dolphin Tree Presenter';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'GemStone Objects';
 	add: 'GemStone Session';
 	add: 'Jade Autocompletation';
 	add: 'Jade Class Browser';
@@ -244,7 +245,9 @@ assignClass: aClass toCategory: aString
 
 categoryOfMethod: aMethod
 
-	^aMethod inClass categoryOfSelector: aMethod selector.
+	| selector |
+	(selector := aMethod selector) isNil ifTrue: [^''].
+	^aMethod inClass categoryOfSelector: selector.
 !
 
 class: aClass includesSelector: aSelector
@@ -1440,7 +1443,7 @@ sbUpdateDictionaries
 
 sbUpdateMethod: aSymbol
 
-	| selection classes names method string list oldGsMethod allSelectors |
+	| classes method names selection |
 
 	"Inherited implimentors"
 	classes := self sbUpdateMethodInheritedImplementationsOf: aSymbol.
@@ -1452,58 +1455,8 @@ sbUpdateMethod: aSymbol
 	(names includes: selection) ifFalse: [selection := names last].
 	writeStream nextPutAll: selection; lf.	"Line 2"
 
-	"May user edit method?"
 	method := self compiledMethodAt: aSymbol inClass: (classes detect: [:each | each name asString = selection]).
-	writeStream nextPutAll: (self currentUserMayEditMethod: method) asString; lf.	"Line 3"
-
-	"Method source"
-	writeStream nextPutAll: (string := method sourceString).
-	string last = Character lf ifFalse: [writeStream lf].
-	writeStream nextPut: $%; lf.	"Lines 4-N"
-
-	"unimplemented selectors"
-	((method class includesSelector: #'_selectorPool') and: [method class includesSelector: #'_sourceOffsetOfFirstSendOf:']) ifTrue: [
-		allSelectors := IdentitySet new.
-		self classOrganizer classes do: [:each | 
-			allSelectors addAll: each selectors; addAll: each class selectors.
-		].
-		(method _selectorPool reject: [:each | allSelectors includes: each]) do: [:each | 
-			(method _sourceOffsetOfFirstSendOf: each) printOn: writeStream.
-			writeStream space; nextPutAll: each; tab.
-		].
-	].
-	writeStream lf.	"Line N+1"
-
-	"Array of Associations (offset -> selector) indexed by step points"
-	list := self sbUpdateMethodStepPointsFor: method.
-	list := list collect: [:each | each key printString , ' ' , each value].
-	self writeList: list.	"Line N+2"
-
-	"breaks"
-	list := self  sbUpdateMethodBreakPointsFor: method.
-	self writeList: (list collect: [:each | each printString]).	"Line N+3"
-
-	"method category"
-	writeStream nextPutAll: (self categoryOfMethod: method); lf.	"Line N+4"
-
-	"original method"
-	oldGsMethod := (method inClass class canUnderstand: #'persistentMethodDictForEnv:')
-		ifTrue: [(method inClass persistentMethodDictForEnv: 0) at: aSymbol ifAbsent: [method]]
-		ifFalse: [(method inClass class canUnderstand: #'_rawMethodDict')
-			ifTrue: [method inClass _rawMethodDict at: aSymbol ifAbsent: [method]]
-			ifFalse: [method]].
-	method ~~ oldGsMethod ifTrue: [
-		string := oldGsMethod sourceString.
-		writeStream nextPutAll: string.
-		(string notEmpty and: [string last = Character lf]) ifFalse: [writeStream lf].
-	].
-	writeStream nextPut: $%; lf.
-
-	"method compile warnings"
-	string := selections at: #'methodWarnings' ifAbsent: [''].
-	string isNil ifTrue: [string := ''].
-	writeStream nextPutAll: string; nextPut: $%; lf.
- !
+	self _describeMethod: method.!
 
 sbUpdateMethodBreakPointsFor: aMethod
 	"Answers an Array of step points"
@@ -1567,14 +1520,14 @@ sbUpdateMethods
 	methodFilterType = 'categoryList' ifTrue: [selectors := self sbUpdateMethodsByCategories] ifFalse: [
 	methodFilterType = 'variableList' ifTrue: [selectors := self sbUpdateMethodsByVariables] ifFalse: [self error: 'Unrecognized methodFilterType: ' , methodFilterType printString]].
 	selectors := selectors asSortedCollection.
-	selectors do: [:each | 
+	selectors do: [:each | 	"JadeSystemBrowserPresenter>>#'updateMethodList' "
 		writeStream 
 "1"		nextPutAll: each; tab;
 "2"		nextPut: ((self selectedClassOverridesSelector: each) ifTrue: [$T] ifFalse: [$F]); tab;
 "3"		nextPut: isTestClass; tab;
 "4"		nextPut: ((self packagePolicy: gsPackagePolicy includesSelector: each forClass: selectedClass) ifTrue: [$T] ifFalse: [$F]); tab;
 "5"		nextPutAll: (self methodSignatureForSelector: each); tab;	"sometimes the method key is different from the selector and from the method signature (particularly in Ruby)"
-			lf.
+		lf.
 	].
 	writeStream nextPut: $%; lf.
 	self sbUpdateMethodSelectionsIn: selectors.
@@ -1619,7 +1572,7 @@ sbUpdateMethodStepPointsFor: aMethod
 	"Answers an Array of Associations (offset -> selector) indexed by step point"
 
 	| offsets selectors |
-	offsets := aMethod _sourceOffsets.
+	offsets := ([aMethod homeMethod] on: Error do: [:ex | aMethod])  _sourceOffsets.
 	selectors := Array new.
 	1 to: offsets size do: [:i | 		"exists as far back as 32-bit 6.3.0"
 		| offset ip association |
@@ -2076,11 +2029,11 @@ addMethodCategoryNamesToMethodFilters
 
 categoryOfMethod: aMethod
 
-	| category |
+	| category selector |
+	(selector := aMethod selector) isNil ifTrue: [^''].
 	category := aMethod inClass categoryOfSelector: aMethod selector.
 	category ifNil: [category := #'other'].
 	^category.
-
 !
 
 class: aClass includesSelector: aSelector
@@ -2247,7 +2200,8 @@ sbUpdateMethodStepPointsFor: aMethod
 
 	|  selectors list |
 	(selectors := aMethod _allDebugInfo: 10) ifNil: [^#()].
-	list := aMethod _sourceOffsets collect: [:each | 		"exists as far back as 32-bit 6.3.0"
+	list := ([aMethod homeMethod] on: Error do: [:ex | aMethod])  _sourceOffsets.
+	list :=list collect: [:each | 		"exists as far back as 32-bit 6.3.0"
 		| index selector |
 		selector := ''.
 		index := selectors indexOf: each.

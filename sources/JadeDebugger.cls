@@ -45,7 +45,7 @@ createComponents
 	super createComponents.
 	errorMessagePresenter	:= self add: TextPresenter		new name: 'errorMessage'.
 	frameListPresenter 		:= self add: ListPresenter		new name: 'frameList'.
-	frameListOffset			:= 0.
+	frameListOffset		:= 0.
 	processListPresenter 	:= self add: ListPresenter		new name: 'processList'.
 	variableDataPresenter 	:= self add: TextPresenter		new name: 'variableData'.
 	variableListPresenter		:= self add: ListPresenter		new name: 'variableList'.
@@ -70,8 +70,8 @@ getProcessList
 		fields := each subStrings: Character tab.
 		oopValue := (fields at: 2) asNumber.
 		oopType := gciSession oopTypeWithOop: oopValue.
-		type := fields at: 9.
-		(GsProcess session: gciSession oop: oopType)
+		type := fields at: 9.	"forked or main (see JadeServer64Bit3x>>#'addProcess:to:withStatus:scheduler:')"
+		(GsProcess session: gciSession oopType: oopType)
 			type: type;
 			yourself
 	].
@@ -162,7 +162,7 @@ saveMethod
 
 selectedFrame 
 
-	| index breaks offset source source1 source2 word wordLength range lineNumber |
+	| index breaks source |
 	(index := frameListPresenter selectionByIndex) = 0 ifTrue: [^self].
 	index := index + frameListOffset.
 	(frame := gsProcess frameForLevel: index) isNil ifTrue: [^self].
@@ -171,23 +171,10 @@ selectedFrame
 	breaks := breaks collect: [:each | ((source copyFrom: 1 to: each) select: [:char | char = Character lf]) size + 1].
 	breaks := breaks asSet asSortedCollection asArray.
 	variableListPresenter list: frame vars.
-	offset := (frame offsets at: (frame stepPoint min: frame offsets size)) abs.
-	source size < offset ifTrue: [offset := source size].
-	source1 := (source copyFrom: 1 to: offset) "replaceLfWithCrLf".
-	source2 := (source copyFrom: offset + 1 to: source size) "replaceLfWithCrLf".
-	source := source1 , source2.
-	offset := source1 size.
-	documentPresenter 
-		value: source;
-		isModified: false;
+	codePane 
+		gsMethod: frame gsMethod;
+		showStepPoint: frame stepPoint;
 		yourself.
-	word := (ReadStream on: source2) nextWord.
-	wordLength := (source2 indexOfSubCollection: word) + word size - 1.
-	documentPresenter view selectionRange: (offset to: offset + wordLength).
-	(range := documentPresenter view selectionRange) isEmpty ifTrue: [^self].
-	lineNumber := documentPresenter view lineFromPosition: range first.
-	lineNumber := lineNumber - 4 max: 1.
-	documentPresenter view lineScroll: lineNumber.
 	breaks do: [:each | 
 		documentPresenter view 
 			addMarkerType: #'breakpoint' 
@@ -271,6 +258,9 @@ stackInitialSelectionData
 		'TestAsserter >> assert: (envId 0) @5 line 4'
 	)!
 
+statusBarText: aString
+	"called by MethodSourcePresenter"!
+
 stepInto
 
 	gsProcess stepInto: frameListPresenter selectionByIndex + frameListOffset.
@@ -342,6 +332,7 @@ updateCaption
 !JadeDebugger categoriesFor: #stack:!public! !
 !JadeDebugger categoriesFor: #stackInitialSelection!public! !
 !JadeDebugger categoriesFor: #stackInitialSelectionData!public! !
+!JadeDebugger categoriesFor: #statusBarText:!public! !
 !JadeDebugger categoriesFor: #stepInto!public! !
 !JadeDebugger categoriesFor: #stepOut!public! !
 !JadeDebugger categoriesFor: #stepOver!public! !

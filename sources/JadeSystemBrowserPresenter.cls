@@ -813,8 +813,8 @@ editSaveClassA
 	] whileTrue: [
 		(JadeWorkspace showOnSession: self gciSession)
 			caption: 'Jade Workspace - Compile errors found when compiling class';
-			showText: self nextParagraph.
-		answer := self nextLine.
+			showText: readStream nextParagraph.
+		answer := readStream nextLine.
 	].
 	answer = 'update' ifFalse: [self error: 'Unexpected token'].
 	self updatePresenters.
@@ -1377,7 +1377,7 @@ methodsIdentifier
 
 methodsMenuStrings
 
-	false ifTrue: [
+	false ifTrue: [	"This helps us find senders"
 		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; removeMethods; runMethodTests; setEnvironment.
 	].
 	^#(
@@ -1416,43 +1416,6 @@ methodValueChanged
 			clearContainerIndicators;
 			yourself.
 	].
-!
-
-nextLine
-
-	^readStream upTo: Character lf.
-!
-
-nextLineAsList
-
-	^(self nextLine subStrings: Character tab) reject: [:each | each isEmpty].
-
-!
-
-nextList
-
-	| list line writeStream |
-	list := OrderedCollection new.
-	[
-		line := self nextLineAsList.
-		line notEmpty and: [line first = '%'].
-	] whileFalse: [
-		list add: line.
-	].
-	^list.
-!
-
-nextParagraph
-
-	| line writeStream |
-	writeStream := WriteStream on: String new.
-	[
-		line := readStream upTo: Character lf.
-		readStream atEnd or: [line = '%'].
-	] whileFalse: [
-		writeStream nextPutAll: line; lf.
-	].
-	^writeStream contents.
 !
 
 onDragClassesOverDictionary: aSession 
@@ -2428,7 +2391,7 @@ updateClassCategoryTree
 	cache := Dictionary new
 		at: root key put: root;
 		yourself.
-	self nextLineAsList asSortedCollection do: [:each | 
+	readStream nextLineAsList asSortedCollection do: [:each | 
 		| array |
 		array := each subStrings: $-.
 		1 to: array size do: [:i | 
@@ -2453,7 +2416,7 @@ updateClassCategoryTree
 			model: treeModel;
 			yourself.
 	].
-	newSelection := self nextLine subStrings: $-.
+	newSelection := readStream nextLine subStrings: $-.
 	newSelection isEmpty ifTrue: [newSelection := root key].
 	existingSelection := (classCategoryPresenter selectionIfNone: [nil -> nil]) key.
 	newSelection = existingSelection ifFalse: [
@@ -2473,9 +2436,9 @@ updateClassCategoryTree
 updateClassHierarchy
 
 	| list paths treeModel x y currentSelection newSelection flags |
-	list := self nextList.
-	newSelection := self nextLineAsList reverse.
-	flags := self nextLineAsList.
+	list := readStream nextList.
+	newSelection := readStream nextLineAsList reverse.
+	flags := readStream nextLineAsList.
 
 	classHierarchyPresenter ensureVisible.
 	list := list collect: [:each | each reverse].
@@ -2529,9 +2492,9 @@ updateClassHierarchy
 updateClassInfo
 
 	| index newClassDefinition |
-	selectedClassOop := self nextLine asNumber.
-	newClassDefinition := self nextParagraph.
-	classCommentPresenter value: self nextParagraph.
+	selectedClassOop := readStream nextLine asNumber.
+	newClassDefinition := readStream nextParagraph.
+	classCommentPresenter value: readStream nextParagraph.
 
 	classDefinitionPresenter view isModified ifTrue: [
 		newClassDefinition = classDefinition ifTrue: [^self].
@@ -2565,9 +2528,9 @@ updateClassList
 
 	| fullList newSelections flags |
 	classListPresenter ensureVisible.
-	fullList := self nextLineAsList.
-	newSelections := self nextLineAsList.
-	flags := self nextLineAsList.
+	fullList := readStream nextLineAsList.
+	newSelections := readStream nextLineAsList.
+	flags := readStream nextLineAsList.
 
 	fullList = classListPresenter list ifFalse: [
 		classListPresenter list: fullList.
@@ -2592,7 +2555,7 @@ updateClassList
 updateClassListOrHierarchy
 
 	| tab |
-	tab := self nextLine.
+	tab := readStream nextLine.
 	tab = 'classHierarchy' ifTrue: [^self updateClassHierarchy].
 	tab = 'classList' ifTrue: [^self updateClassList].
 	self error: 'Unexpected token!!'.
@@ -2617,10 +2580,10 @@ updateCommand: aString onSuccessDo: aBlock
 		].
 		time2 := Time millisecondsToRun: [
 			| responseType |
-			readStream := ReadStream on: string.
-			time3 := self nextLine asNumber.
+			readStream := JadeServerReadStream on: string.
+			time3 := readStream nextLine asNumber.
 			aBlock value.
-			(responseType := self nextLine) = 'update' ifFalse: [^responseType].
+			(responseType := readStream nextLine) = 'update' ifFalse: [^responseType].
 			self updatePresenters.
 		].
 		self statusBarServerRequestText:
@@ -2638,16 +2601,16 @@ updateDictionaryList
 
 	| fullList selections lines |
 	dictionaryListPresenter ensureVisible.
-	fullList := self nextLineAsList collect: [:each | (each copyFrom: 2 to: each size) -> (each first = $H)].
+	fullList := readStream nextLineAsList collect: [:each | (each copyFrom: 2 to: each size) -> (each first = $H)].
 	dictionaryListPresenter list = fullList ifFalse: [
 		dictionaryListPresenter list: fullList.
 	].
-	selections := self nextLineAsList collect: [:x | dictionaryListPresenter list detect: [:y | x = y key]].
+	selections := readStream nextLineAsList collect: [:x | dictionaryListPresenter list detect: [:y | x = y key]].
 	dictionaryListPresenter selections = selections ifFalse: [
 		dictionaryListPresenter selections: selections.
 	].
 	dictionaryListPresenter view ensureSelectionVisible.
-	lines := self nextList.
+	lines := readStream nextList.
 	globalsPresenter list: lines.
 !
 
@@ -2673,65 +2636,24 @@ updateMenuBar
 
 updateMethod
 
-	| isReadOnly newSource warnings |
+	| gsMethod isReadOnly newSource warnings |
 	methodSourcePresenter view cancelCallTip.
-	isReadOnly := self nextLine = 'false'.	"current user has write permission for the class"
-	(newSource := self nextParagraph) isEmpty ifTrue: [
-		newSource := 
-'newMethod: argument
-		"Method comment"
-
-	^self yourself.
-'.
-	].
+	gsMethod := GsMethod 
+		fromStream: readStream
+		session: gciSession.
+	isReadOnly := gsMethod isReadOnly.	"current user has write permission for the class"
+	newSource := gsMethod source.
 	methodSourcePresenter view isModified ifTrue: [
-		newSource = methodSource ifTrue: [
-			self nextLine; nextLine.
-			^self.
-		].
+		newSource = methodSource ifTrue: [^self].
 		(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!') ifTrue: [
 			methodSourcePresenter value copyToClipboard.
 		].
 	].
 	methodSource := newSource.
 	methodSourcePresenter value: methodSource.
-	"unimplemented selectors"
-	unimplementedSelectors := Dictionary new.
-	self nextLineAsList do: [:eachPair | 
-		| pieces |
-		pieces := eachPair subStrings.
-		unimplementedSelectors at: pieces first asNumber put: pieces last.
-	].
-	"step points"
-	stepPoints := self nextLineAsList collect: [:each |
-		| pieces offset selector | 
-		pieces := each subStrings.
-		offset := pieces first asNumber.
-		selector := (2 <= pieces size ifTrue: [pieces at: 2] ifFalse: ['']).
-		(offset to: 0) -> selector.
-	].
-	"breaks"
-	breakPoints := self nextLineAsList collect: [:each | each asNumber].
-	1 to: stepPoints size do: [:stepPoint |
-		| range start char length |
-		range := (stepPoints at: stepPoint) key.
-		start := range start.
-		char := methodSource at: start.
-		length := (char isAlphaNumeric or: [char = $_])
-			ifTrue: [(methodSource copyFrom: start + 1 to: methodSource size) findFirst: [:eachChar | (eachChar isAlphaNumeric or: [eachChar = $_ or: [eachChar = $:]]) not]]
-			ifFalse: [2].
-		length = 0 ifTrue: [length := methodSource size - start].
-		[
-			2 < length and: [(methodSource at: start) = $_].
-		] whileTrue: [
-			start := start + 1.
-			length := length - 1.
-		].
-		range 
-			start: start;
-			stop: start + length - 1;
-			yourself.
-	].
+	unimplementedSelectors := gsMethod unimplementedSelectors.
+	stepPoints := gsMethod stepPoints.
+	breakPoints := gsMethod breakPoints.
 	self updateMethodStepPoints.
 	methodSourcePresenter view 
 		backcolor: JadeTextStyles default colorForNoEdits;
@@ -2744,8 +2666,7 @@ updateMethod
 			isReadOnly: true;
 			yourself.
 	].
-	"method category"
-	((methodCategory := self nextLine) notEmpty and: [self isCategoriesTabSelected]) ifTrue: [
+	((methodCategory := gsMethod category) notEmpty and: [self isCategoriesTabSelected]) ifTrue: [
 		| fullList selections index newName |
 		fullList := categoryListPresenter list.
 		selections := categoryListPresenter selections.
@@ -2759,10 +2680,8 @@ updateMethod
 			categoryListPresenter view invalidate.
 		].
 	].
-	"original source"
-	originalSourcePresenter value: self nextParagraph.
-	"compiler warnings"
-	(warnings := self nextParagraph) notEmpty ifTrue: [
+	originalSourcePresenter value: gsMethod originalSource.
+	(warnings := gsMethod warnings) notEmpty ifTrue: [
 		MessageBox warning: warnings caption: 'Jade Compile Warning'.
 	].
 	!
@@ -2771,17 +2690,17 @@ updateMethodFilter
 
 	| listPresenter pieces type tabs tab filters selections |
 	listPresenter := self methodFilterListPresenter.
-	pieces := self nextLine subStrings: Character tab.
+	pieces := readStream nextLine subStrings: Character tab.
 	type := pieces at: 1.
 	1 < pieces size ifTrue: [environment := (pieces at: 2) asNumber].
 	(tabs := categoryVariableTabs cards) isEmpty ifTrue: [^self].
 	tab := tabs detect: [:each | each name = type].
 	tab ensureVisible.
-	filters := self nextLineAsList reverse.
+	filters := readStream nextLineAsList reverse.
 	filters = listPresenter list ifFalse: [
 		listPresenter list: filters.
 	].
-	selections := self nextLineAsList.
+	selections := readStream nextLineAsList.
 	selections := listPresenter list select: [:each | selections includes: each].
 	selections = listPresenter selections ifFalse: [
 		listPresenter selections: selections.
@@ -2798,8 +2717,8 @@ updateMethodFilter
 updateMethodList
 
 	| fullList selections |
-	fullList := (self nextParagraph subStrings: Character lf) collect: [:each | (each subStrings: Character tab) , #('' '' '' '' '')].
-	fullList := fullList do: [:each | 
+	fullList := (readStream nextParagraph subStrings: Character lf) collect: [:each | (each subStrings: Character tab) , #('' '' '' '' '')].
+	fullList := fullList do: [:each | 	"JadeServer>>#'sbUpdateMethods' "
 		each 
 			at: 2 put: (each at: 2) = 'T';		"has a superclass implementation"
 			at: 3 put: (each at: 3) = 'T';		"is in a TestCase class"
@@ -2809,7 +2728,7 @@ updateMethodList
 	fullList = methodListPresenter list ifFalse: [
 		methodListPresenter list: fullList.
 	].
-	selections := self nextLineAsList.
+	selections := readStream nextLineAsList.	"JadeServer>>#'sbUpdateMethodSelectionsIn:' "
 	selections := methodListPresenter list select: [:eachArray | selections includes: eachArray first].
 	selections = methodListPresenter selections ifFalse: [
 		methodListPresenter selections: selections.
@@ -2850,11 +2769,11 @@ updateMethodStepPoints
 updateOverrideList
 
 	| list selection |
-	list := self nextLineAsList.
+	list := readStream nextLineAsList.		"JadeServer>>#'sbUpdateMethod:' "
 	list = overrideListPresenter list ifFalse: [
 		overrideListPresenter list: list.
 	].
-	selection := self nextLine.
+	selection := readStream nextLine.
 	selection isEmpty ifTrue: [selection := nil].
 	selection notNil ifTrue: [
 		selection := overrideListPresenter list
@@ -2869,7 +2788,7 @@ updateOverrideList
 updatePackageDictionaryList
 
 	| next |
-	next := self nextLine.
+	next := readStream nextLine.
 	next = 'dictionaryList' ifTrue: [^self updateDictionaryList].
 	next = 'packageList' ifTrue: [^self updatePackageList].
 	self error: 'Unexpected token'.
@@ -2878,11 +2797,11 @@ updatePackageDictionaryList
 updatePackageInfo
 
 	| list |
-	list := self nextList collect: [:each | each , #('' '' '' '')].
+	list := readStream nextList collect: [:each | each , #('' '' '' '')].
 	list = ancestorListPresenter list ifFalse: [
 		ancestorListPresenter list: list.
 	].
-	list := self nextList collect: [:each | each , #('' '')].
+	list := readStream nextList collect: [:each | each , #('' '')].
 	list = repositoryListPresenter list ifFalse: [
 		repositoryListPresenter list: list.
 	].
@@ -2893,8 +2812,8 @@ updatePackageList
 	| dictionary fullList selections old new |
 	packageListPresenter ensureVisible.
 	dictionary := Dictionary new.
-	self nextLineAsList do: [:each | dictionary at: each put: false].
-	self nextLineAsList do: [:each | dictionary at: each put: true].
+	readStream nextLineAsList do: [:each | dictionary at: each put: false].
+	readStream nextLineAsList do: [:each | dictionary at: each put: true].
 	fullList := dictionary associations asSortedCollection asArray.
 	old := packageListPresenter list collect: [:each | each key].
 	new := fullList collect: [:each | each key].
@@ -2906,7 +2825,7 @@ updatePackageList
 	] ifFalse: [
 		packageListPresenter list: fullList.
 	].
-	selections :=  self nextLineAsList.
+	selections :=  readStream nextLineAsList.
 	selections := selections collect: [:x | packageListPresenter list detect: [:y | x = y key]].
 	packageListPresenter selections = selections ifFalse: [
 		packageListPresenter selections: selections.
@@ -2941,17 +2860,17 @@ updatePresenters
 updateSuperclassList
 
 	| tabs tabName tab list selected |
-	tabName := self nextLine.
+	tabName := readStream nextLine.
 	(tabs := instanceClassTabs cards) isEmpty ifTrue: [^self].
 	tab := tabs 
 		detect: [:each | each name = tabName]
 		ifNone: [self error: 'None of ' , tabs printString , ' match ' , tabName printString].
 	tab ensureVisible.
-	list := self nextLineAsList reverse.
+	list := readStream nextLineAsList reverse.
 	list = superclassListPresenter list ifFalse: [
 		superclassListPresenter list: list.
 	].
-	(selected := self nextLine) notEmpty ifTrue: [
+	(selected := readStream nextLine) notEmpty ifTrue: [
 		selected := (selected subStrings: Character tab) first.
 	].
 	selected := superclassListPresenter list
@@ -3116,10 +3035,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourcePresenter!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #methodValueChanged!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #nextLine!public!updating! !
-!JadeSystemBrowserPresenter categoriesFor: #nextLineAsList!public!updating! !
-!JadeSystemBrowserPresenter categoriesFor: #nextList!public!updating! !
-!JadeSystemBrowserPresenter categoriesFor: #nextParagraph!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #onDragClassesOverDictionary:!drag & drop!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onDragClassesOverPackageList:!drag & drop!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onDragClassHierarchy:!drag & drop!public! !

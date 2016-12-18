@@ -21,7 +21,6 @@ gsClassName
 !
 
 initialize: aList
-	"override if you have something beyond OOP and name"
 
 	super initialize: aList.
 	gsClassName := aList at: 3.

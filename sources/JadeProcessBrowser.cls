@@ -28,7 +28,7 @@ debugProcess
 	oop := (processesPresenter selection at: 2) asNumber.
 	oopType := gciSession oopTypeWithOop: oop.
 	JadeDebugger 
-		openOn: (GsProcess session: gciSession oop: oopType) 
+		openOn: (GsProcess session: gciSession oopType: oopType) 
 		message: 'background process'
 		terminateOnClose: false.
 !

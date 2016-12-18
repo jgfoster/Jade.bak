@@ -9,6 +9,7 @@ package basicPackageVersion: '0.031'.
 package classNames
 	add: #AllUsersPresenter;
 	add: #AllUsersShell;
+	add: #GsGlobal;
 	add: #GsSymbolDictionary;
 	add: #GsUserProfile;
 	add: #UserListPresenter;
@@ -61,7 +62,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'GemStone Objects';
 	add: 'GemStone Session';
-	add: 'Jade Class Browser';
 	add: 'Jade UI Base';
 	add: '..\..\..\Core\Contributions\Solutions Software\SSW EditableListView';
 	yourself).
@@ -70,6 +70,11 @@ package!
 
 "Class Definitions"!
 
+GsObject subclass: #GsGlobal
+	instanceVariableNames: 'gsClassName data'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 GsObject subclass: #GsSymbolDictionary
 	instanceVariableNames: ''
 	classVariableNames: ''

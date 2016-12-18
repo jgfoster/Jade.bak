@@ -32,18 +32,6 @@ authorInitials: aString
 		with: aString.
 !
 
-categoryList
-
-	| string list |
-	string := gciSession 
-		serverPerform: #'mcCategoryListFor:'
-		with: self.
-	list := GsString
-		listFromString: string 
-		session: gciSession.
-	^list.
-!
-
 classesInCategory: aGsString 
 
 	| string |
@@ -146,7 +134,6 @@ versionNameAndMessage
 !MCWorkingCopy categoriesFor: #addRepository:!public! !
 !MCWorkingCopy categoriesFor: #ancestors!public! !
 !MCWorkingCopy categoriesFor: #authorInitials:!public! !
-!MCWorkingCopy categoriesFor: #categoryList!public! !
 !MCWorkingCopy categoriesFor: #classesInCategory:!public! !
 !MCWorkingCopy categoriesFor: #globals!public! !
 !MCWorkingCopy categoriesFor: #initialize:!public! !

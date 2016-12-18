@@ -14,9 +14,6 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #GsSession -> #sendSigAbort;
-	add: #GsSession -> #sendSigUsr1;
-	add: #GsSession -> #stopSession;
 	add: #JadeServer -> #addSessionWithId:toStream:;
 	add: #JadeServer -> #allSessions;
 	add: #JadeServer -> #descriptionOfErrorNumber:;
@@ -83,32 +80,6 @@ JadeWorkspace subclass: #JadeTranscript
 
 
 "Loose Methods"!
-
-!GsSession methodsFor!
-
-sendSigAbort
-
-	gciSession 
-		serverPerform: #'sendSigAbortToSession:'
-		with: id.
-!
-
-sendSigUsr1
-
-	gciSession 
-		serverPerform: #'sendSigUsr1ToSession:'
-		with: id.
-!
-
-stopSession
-
-	gciSession 
-		serverPerform: #'stopSession:'
-		with: id.
-! !
-!GsSession categoriesFor: #sendSigAbort!accessing!public! !
-!GsSession categoriesFor: #sendSigUsr1!accessing!public! !
-!GsSession categoriesFor: #stopSession!accessing!public! !
 
 !JadeServer methodsFor!
 

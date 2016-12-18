@@ -40,7 +40,7 @@ gsProcess
 	gsProcess isNil ifTrue: [
 		gsProcess := GsProcess 
 			session: self gciSession 
-			oop: self errorReport contextOop.
+			oopType: self errorReport contextOop.
 	].
 	^gsProcess.
 !

@@ -48,10 +48,10 @@ createSchematicWiring
 
 debug: anArray
 
-	| oop |
-	oop := gciSession oopTypeWithOop: (anArray at: 9) asNumber.
+	| oopType |
+	oopType := gciSession oopTypeWithOop: (anArray at: 9) asNumber.
 	JadeDebugger 
-		openOn: (GsProcess session: gciSession oop: oop) 
+		openOn: (GsProcess session: gciSession oopType: oopType) 
 		message: (anArray at: 8)
 		terminateOnClose: false.
 !

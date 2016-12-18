@@ -8,13 +8,12 @@ package basicPackageVersion: '0.054'.
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Objects'' yourself.'.
 
 package classNames
-	add: #GsGlobal;
 	add: #GsMethod;
 	add: #GsObject;
 	add: #GsProcess;
 	add: #GsSession;
 	add: #GsStackFrame;
-	add: #GsString;
+	add: #JadeServerReadStream;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -37,13 +36,8 @@ Object subclass: #GsObject
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsObject subclass: #GsGlobal
-	instanceVariableNames: 'gsClassName data'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 GsObject subclass: #GsMethod
-	instanceVariableNames: 'gsBehavior category source instVarReferences package isDirty symbolDictionaryName'
+	instanceVariableNames: 'behavior behaviorName breakPoints category isReadOnly originalSource source stepPoints unimplementedSelectors warnings'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -58,11 +52,11 @@ GsObject subclass: #GsSession
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GsObject subclass: #GsStackFrame
-	instanceVariableNames: 'ipOffset frameOffset stepPoint vars offsets breaks source'
+	instanceVariableNames: 'ipOffset frameOffset gsMethod stepPoint vars offsets breaks source'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsObject subclass: #GsString
+ReadStream subclass: #JadeServerReadStream
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''

@@ -169,8 +169,8 @@ _oopAndStringFor: anObject
 
 _sourceForProcess: gsProcess frame: level
 
-	| frame stepPoint keys values gsMethod stream receiver |
-	stream := WriteStream on: String new.
+	| frame stepPoint keys values gsMethod receiver |
+	writeStream := WriteStream on: String new.
 	(frame := gsProcess _frameContentsAt: level) isNil ifTrue: [^'No frame found for level ' , level printString].
 	gsMethod := frame at: 1.
 	stepPoint := self 
@@ -178,7 +178,7 @@ _sourceForProcess: gsProcess frame: level
 		frame: frame 
 		method: gsMethod
 		level: level.
-	stream
+	writeStream
 		nextPutAll: '<?xml version=''1.0'' ?><frame oop=';
 		nextPutAll: (self oopOf: frame) printString printString;
 		nextPutAll: ' ipOffset=';
@@ -220,7 +220,7 @@ _sourceForProcess: gsProcess frame: level
 		value := assoc value.
 		value size > 500 ifTrue: [value := (value copyFrom: 1 to: 500) , '...'].
 		value := value collect: [:char | (char asciiValue < 32 or: [127 < char asciiValue]) ifTrue: [$?] ifFalse: [char]].
-		stream
+		writeStream
 			nextPutAll: '<var oop=';
 			nextPutAll: oop asString printString;
 			nextPutAll: ' name=';
@@ -236,32 +236,34 @@ _sourceForProcess: gsProcess frame: level
 			yourself.
 	].
 	([gsMethod homeMethod] on: Error do: [:ex | gsMethod]) _sourceOffsets do: [:each | 
-		stream
+		writeStream
 			nextPutAll: '<offset x=';
 			nextPutAll: each printString printString;
 			nextPutAll: '/>'; lf;
 			yourself.
 	].
 	(self _stepPointsForBreaksInMethod: gsMethod) do: [:each | 
-		stream
+		writeStream
 			nextPutAll: '<break x=';
 			nextPutAll: each printString printString;
 			nextPutAll: '/>'; lf;
 			yourself.
 	].
-	stream 
+	writeStream 
 		nextPutAll: '<source';
 		nextPutAll: ' ><';
 		nextPutAll: '!![';
 		nextPutAll: 'CDATA';
 		nextPutAll: '[';
-		nextPutAll: gsMethod _sourceString;
+		yourself.
+	self _describeMethod: gsMethod.
+	writeStream
 		nextPutAll: ']';
 		nextPutAll: ']';
 		nextPutAll: '></source>';
 		nextPutAll: '</frame>'; lf;
 		yourself.
-	^self asAsciiString: stream contents.
+	^self asAsciiString: writeStream contents.
 !
 
 _stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger

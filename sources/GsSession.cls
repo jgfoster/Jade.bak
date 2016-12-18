@@ -89,11 +89,32 @@ quietTime
 
 	^self stringFromSeconds: quietTime!
 
+sendSigAbort
+
+	gciSession 
+		serverPerform: #'sendSigAbortToSession:'
+		with: id.
+!
+
+sendSigUsr1
+
+	gciSession 
+		serverPerform: #'sendSigUsr1ToSession:'
+		with: id.
+!
+
 serial
 	^serial!
 
 state
 	^state!
+
+stopSession
+
+	gciSession 
+		serverPerform: #'stopSession:'
+		with: id.
+!
 
 stringFromSeconds: anInteger
 
@@ -136,8 +157,11 @@ voteState
 !GsSession categoriesFor: #priority!accessing!public! !
 !GsSession categoriesFor: #process!accessing!public! !
 !GsSession categoriesFor: #quietTime!accessing!public! !
+!GsSession categoriesFor: #sendSigAbort!accessing!public! !
+!GsSession categoriesFor: #sendSigUsr1!accessing!public! !
 !GsSession categoriesFor: #serial!accessing!public! !
 !GsSession categoriesFor: #state!accessing!public! !
+!GsSession categoriesFor: #stopSession!accessing!public! !
 !GsSession categoriesFor: #stringFromSeconds:!accessing!public! !
 !GsSession categoriesFor: #transaction!accessing!public! !
 !GsSession categoriesFor: #updatePrimitive!public! !
@@ -145,45 +169,6 @@ voteState
 !GsSession categoriesFor: #voteState!accessing!public! !
 
 !GsSession class methodsFor!
-
-codeToGetSession
-
-^':id :aStream | | array gsSession |
-	Exception
-		category: nil
-		number: nil
-		do: [:ex:cat:num:args | ''?????''].
-	array := System descriptionOfSession: id.
-	gsSession := GsSession sessionWithSerialNumber: (array at: 9).
-	stream
-		nextPutAll: ''<session oop='';
-		nextPutAll: gsSession asOop printString printString;
-		nextPutAll: '' name='';
-		nextPutAll: (array at: 1) userId printString;
-		nextPutAll: '' process='';
-		nextPutAll: (array at: 2) printString printString;
-		nextPutAll: '' host='';
-		nextPutAll: (array at: 3) printString;
-		nextPutAll: '' primitive='';
-		nextPutAll: (array at: 4) printString printString;
-		nextPutAll: '' time='';
-		nextPutAll: (System timeGmt - (array at: 5)) printString printString;
-		nextPutAll: '' state='';
-		nextPutAll: (array at: 6) printString printString;
-		nextPutAll: '' transaction='';
-		nextPutAll: (array at: 7) printString printString;
-		nextPutAll: '' hasOldestCR='';
-		nextPutAll: (array at: 8) printString printString;
-		nextPutAll: '' serial='';
-		nextPutAll: (array at: 9) printString printString;
-		nextPutAll: '' id='';
-		nextPutAll: (array at: 10) printString printString;
-		nextPutAll: '' ip='';
-		nextPutAll: (array at: 11) printString;
-		nextPutAll: '' />'';
-		yourself.
-'.
-!
 
 fromXML: xmlElement session: gciSession
 
@@ -201,7 +186,6 @@ xmlBaseName
 
 	^'sessions'.
 ! !
-!GsSession class categoriesFor: #codeToGetSession!public! !
 !GsSession class categoriesFor: #fromXML:session:!public! !
 !GsSession class categoriesFor: #xmlBaseName!public! !
 

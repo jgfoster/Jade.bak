@@ -69,6 +69,11 @@ oopType
 
 !
 
+oopType: anOopType
+
+	oopType := anOopType.
+!
+
 printOn: aStream
 
 	name isNil ifTrue: [^super printOn: aStream].
@@ -85,9 +90,17 @@ printOn: aStream
 !GsObject categoriesFor: #isGsNil!public! !
 !GsObject categoriesFor: #name!public! !
 !GsObject categoriesFor: #oopType!public! !
+!GsObject categoriesFor: #oopType:!public! !
 !GsObject categoriesFor: #printOn:!public! !
 
 !GsObject class methodsFor!
+
+fromStream: aStream session: aGciSession
+
+	^self new 
+		initialize: aStream
+		session:  aGciSession.
+!
 
 fromString: aString session: aGciSession
 
@@ -130,6 +143,7 @@ xmlBaseName
 
 	^self subclassResponsibility.
 ! !
+!GsObject class categoriesFor: #fromStream:session:!public! !
 !GsObject class categoriesFor: #fromString:session:!public! !
 !GsObject class categoriesFor: #fromStringXML:session:!public! !
 !GsObject class categoriesFor: #fromXML:session:!public! !

@@ -102,10 +102,6 @@ createSchematicWiring
 		when: #'selectionChanging:'		send: #'selectionChanging:'	to: self;
 		yourself.
 	methodSourcePresenter
-		when: #'needMethodCategory'		send: #'selectedCategory'		to: self;
-		when: #'needClass'				send: #'selectedClass'			to: self;
-		when: #'needMethodClass'			send: #'selectedClass'			to: self;
-		when: #'needMethod'				send: #'selectedMethod'		to: methodListPresenter;
 		when: #'needUser'				send: #'userSelection'			to: self;
 		when: #'savedMethod:inClass:' 		send: #'doSearch'			to: self;
 		yourself.
@@ -198,7 +194,16 @@ updateMenuBar: aMenuBar
 
 updateSource
 
-	methodSourcePresenter update.
+	| gsClass gsMethod2 gsMethod |
+	(gsClass := self selectedClass) ifNotNil: [
+		(gsMethod2 := methodListPresenter selectedMethod) ifNotNil: [
+			gsMethod2 gsClass ~= gsClass ifTrue: [self error: 'Method not from selected class!!'].
+			gsMethod := GsMethod
+				fromOopType: gsMethod2 oopType
+				session: gsMethod2 gciSession.
+		].
+	].
+	methodSourcePresenter gsMethod: gsMethod.
 	self doSearch.
 
 	methodListPresenter selectedMethod ifNil: [^self].

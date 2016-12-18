@@ -57,7 +57,6 @@ package methodNames
 	add: #JadeServer -> #mcAllFileNamesIn:;
 	add: #JadeServer -> #mcAllVersionInfoNamesIn:;
 	add: #JadeServer -> #mcAllVersionNamesInDict:;
-	add: #JadeServer -> #mcCategoryListFor:;
 	add: #JadeServer -> #mcClassesInCategory:package:;
 	add: #JadeServer -> #mcCreationTemplateFor:;
 	add: #JadeServer -> #mcHttpRepository;
@@ -578,33 +577,6 @@ mcAllVersionNamesInDict: anMCRepository
 	^stream contents.
 !
 
-mcCategoryListFor: aMCWorkingCopy
-
-	| categories stream |
-	categories := Set new.
-	aMCWorkingCopy package packageInfo classes do: [:each | 
-		categories add: each _classCategory.
-	].
-	categories copy do: [:each | 
-		1 to: each size do: [:i | 
-			(each at: i) = $- ifTrue: [
-				| string |
-				string := each copyFrom: 1 to: i - 1.
-				(categories includes: string) ifFalse: [
-					categories add: string.
-					self _addToPureExportSet: string.
-				].
-			].
-		].
-	].
-	stream := WriteStream on: String new.
-	categories asSortedCollection do: [:each | 
-		(self oopOf: each) printOn: stream.
-		stream tab; nextPutAll: each; lf.
-	].
-	^stream contents.
-!
-
 mcClassesInCategory: aString package: aMCWorkingCopy
 
 	| visibleClasses allClasses stream queue |
@@ -1094,7 +1066,6 @@ saveWorkingCopy: wc to: stream
 !JadeServer categoriesFor: #mcAllFileNamesIn:!Monticello!public! !
 !JadeServer categoriesFor: #mcAllVersionInfoNamesIn:!Monticello!public! !
 !JadeServer categoriesFor: #mcAllVersionNamesInDict:!Monticello!public! !
-!JadeServer categoriesFor: #mcCategoryListFor:!Monticello!public! !
 !JadeServer categoriesFor: #mcClassesInCategory:package:!Monticello!public! !
 !JadeServer categoriesFor: #mcCreationTemplateFor:!Monticello!public! !
 !JadeServer categoriesFor: #mcHttpRepository!Monticello!public! !

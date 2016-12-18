@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 CodeSourcePresenter subclass: #MethodSourcePresenter
-	instanceVariableNames: 'currentSelector'
+	instanceVariableNames: 'gsMethod currentSelector'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -29,9 +29,28 @@ canSetBreakpoints
 	^true.
 !
 
+clearBreakAtStepPoint: anInteger
+
+	gsMethod clearBreakAtStepPoint: anInteger.
+	self updateMethodStepPoints.
+!
+
 codePresenterIsMethod
 
 	^true!
+
+createSchematicWiring
+
+	super createSchematicWiring.
+	documentPresenter
+		when: #'hoverStart:'				send: #'hoverStart:'			to: self;
+		when: #'hoverEnd:'				send: #'hoverEnd:'			to: self;
+		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'		to: self;
+		"when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'	to: self;
+		when: #'valueChanged'			send: #'methodValueChanged'	to: self;"
+		when: #'focusLost'				send: #'cancelCallTip'			to: documentPresenter view;
+		yourself.
+!
 
 defaultMethod
 
@@ -43,11 +62,44 @@ defaultMethod
 '.
 !
 
+editMenuStrings
+
+	false ifTrue: [
+		self editSave; editUndo; editRedo; editCut; editCopy; editPaste; editDelete; editSelectAll; editFind; editFindNext; editReplace; 
+			jadeDisplay; jadeExecute; jadeInspect; browseSelectedClass.
+	].
+	^#(
+		'&Edit'
+		'&Save/Ctrl+S/editSave'
+		'-'
+		'&Undo/Ctrl+Z/editUndo'
+		'&Redo/Ctrl+Y/editRedo'
+		'-'
+		'&Reformat Source/Ctrl+R/reformatSource'
+		'-'
+		'&Cu&t/Ctrl+X/editCut'
+		'&Copy/Ctrl+C/editCopy'
+		'&Paste/Ctrl+V/editPaste'
+		'&Delete/Delete/editDelete'
+		'-'
+		'Select &All/Ctrl+A/editSelectAll'
+		'-'
+		'&Find/Ctrl+F/editFind'
+		'Find &Next/F3/editFindNext'
+		'&Replace/Ctrl+H/editReplace'
+		'-'
+		'Display/Ctrl+D/jadeDisplay'
+		'Execute/Ctrl+E/jadeExecute'
+		'Inspect/Ctrl+Q/jadeInspect'
+		'Browse Class/Ctrl+B/browseSelectedClass'
+	).
+!
+
 fileSave
 		"Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"
 
 	| user theClass newSelector category string stream list warnings errors index a b c methodExists |
-	(theClass := self trigger: #'needClass') isNil ifTrue: [^true].
+	(theClass := gsMethod behavior) isNil ifTrue: [^true].
 	newSelector := self newSelector.
 	currentSelector = newSelector ifFalse: [
 		methodExists := gciSession
@@ -59,7 +111,7 @@ fileSave
 		].
 	].
 	user := self trigger: #'needUser'.
-	(category := self trigger: #'needMethodCategory') isNil ifTrue: [self error: 'We need a method category!!?'].
+	(category := gsMethod category) isNil ifTrue: [self error: 'We need a method category!!?'].
 	string := gciSession
 		serverPerform: #'compileMethod:behavior:user:inCategory:'
 		with: documentPresenter value replaceCrLfWithLf
@@ -72,9 +124,8 @@ fileSave
 		documentPresenter isModified: false.
 		self 
 			trigger: #'savedMethod:inClass:' 
-				with: newSelector
-				with: theClass;
-			yourself.
+			with: newSelector
+			with: theClass.
 	].
 	(list := stream upToEnd subStrings: Character lf) isEmpty ifTrue: [^true].
 	warnings := list select: [:each | each beginsWith: 'WARNING:'].
@@ -99,6 +150,77 @@ fileSave
 		selectionStart: index 
 		length: b size.
 	^false.
+!
+
+gsMethod: aGsMethod
+
+	gsMethod := aGsMethod.
+	self update.!
+
+hoverEnd: anObject
+
+	documentPresenter view cancelCallTip.!
+
+hoverStart: aPoint
+
+	| charIndex indicator |
+	charIndex := documentPresenter view charNearestPosition: aPoint.
+	indicator := documentPresenter view indicators
+		detect: [:each | each range includes: charIndex]
+		ifNone: [^self].
+	documentPresenter view 
+		showCallTip: indicator tag
+		at: charIndex.
+!
+
+methodMenu: aMenu
+
+	| properSize |
+	properSize := self editMenuStrings size - 1.
+	[
+		properSize < aMenu items size.
+	] whileTrue: [
+		aMenu removeItemAt: aMenu items size.
+	].
+	self methodMenuBreak: aMenu.
+!
+
+methodMenuBreak: aMenu
+
+	| desc command message selector stepPoint |
+	documentPresenter view isModified ifTrue: [^self].
+	stepPoint := self stepPointAt: documentPresenter view cursorPosition.
+	stepPoint isNil ifTrue: [^self].
+	(gsMethod breakPoints includes: stepPoint) ifTrue: [
+		selector := #'clearBreakAtStepPoint:'.
+		desc := 'Clear break at step point ' , stepPoint printString.
+	] ifFalse: [
+		selector := #'setBreakAtStepPoint:'.
+		desc := 'Break at step point ' , stepPoint printString.
+	].
+	command := MessageSend 
+		receiver: self 
+		selector: selector 
+		arguments: (Array with: stepPoint).
+	aMenu 
+		addSeparator;
+		addCommand: command description: desc;
+		yourself.
+	(message := (gsMethod stepPoints at: stepPoint) value) isEmpty ifTrue: [^self].
+	command := MessageSend
+		receiver: self 
+		selector: #'browseImplementorsOf:' 
+		argument: message.
+	aMenu
+		addCommand: command
+		description: 'Browse Implementors of #' , message printString.
+	command := MessageSend
+		receiver: self 
+		selector: #'browseSendersOf:' 
+		argument: message.
+	aMenu
+		addCommand: command
+		description: 'Browse Senders of #' , message printString.
 !
 
 methodSource
@@ -133,11 +255,17 @@ newSelector
 onViewOpened
 
 	super onViewOpened.
-	"(documentPresenter view margins at: 2) isSensitive: false."
+	documentPresenter view contextMenu: (Menu fromStrings: self editMenuStrings).
 	self 
 		updateCodeFont;
 		setDefaultMethod;
 		yourself.
+!
+
+setBreakAtStepPoint: anInteger
+
+	gsMethod setBreakAtStepPoint: anInteger.
+	self updateMethodStepPoints.
 !
 
 setDefaultMethod
@@ -160,45 +288,106 @@ setEmptyMethod
 		yourself.
 !
 
+showStepPoint: anInteger
+
+	| lineNumber range stepPoint |
+	stepPoint := gsMethod stepPoints at: anInteger.
+	documentPresenter view selectionRange: stepPoint key.
+	(range := documentPresenter view selectionRange) isEmpty ifTrue: [^self].
+	lineNumber := documentPresenter view lineFromPosition: range first.
+	lineNumber := lineNumber - 4 max: 1.
+	documentPresenter view lineScroll: lineNumber.
+!
+
+stepPointAt: aPoint
+
+	| charIndex stepPoints |
+	stepPoints := gsMethod stepPoints.
+	charIndex := documentPresenter view charNearestPosition: aPoint.
+	stepPoints size to: 1 by: -1 do: [:stepPoint | 
+		| range |
+		range := (stepPoints at: stepPoint) key.
+		(range start <= charIndex and: [charIndex <= range stop]) ifTrue: [
+			^stepPoint.
+		].
+	].
+	^nil.
+!
+
 update
 
-	| theClass method string stream |
+	|string |
 	self setEmptyMethod.
-	(self trigger: #'needClass') isNil ifTrue: [^self].
+	gsMethod ifNil: [^self].
 	self setDefaultMethod.
-	(theClass := self trigger: #'needMethodClass') isNil ifTrue: [^self].
-	(method := self trigger: #'needMethod') isNil ifTrue: [^self].
-	string := theClass sourceFor: method.
-	stream := ReadStream on: string.
-	string := (stream upTo: Character tab) , ' -- ' , (stream upTo: Character tab) , ' -- ' , stream nextLine.
+	string := "package" ' -- ' , gsMethod category , ' -- ' "mcTimestamp".
 	self statusBarText: string.
 	documentPresenter 
-		value: stream upToEnd;
+		value: gsMethod source;
 		isModified: false;
 		isReadOnly: false;
 		yourself.
-	documentPresenter view isEnabled: true.
-	currentSelector := self newSelector.
+	documentPresenter view 
+		backcolor: JadeTextStyles default colorForNoEdits;
+		isEnabled: true;
+		yourself.
+	self updateMethodStepPoints.
+	currentSelector := gsMethod selector.
+!
+
+updateMethodStepPoints
+
+	| breakPoints indicators stepPoints unimplementedSelectors |
+	breakPoints := gsMethod breakPoints.
+	stepPoints := gsMethod stepPoints.
+	unimplementedSelectors := gsMethod unimplementedSelectors.
+	documentPresenter view clearContainerIndicators.
+	indicators := OrderedCollection new.
+	1 to: stepPoints size do: [:stepPoint |
+		| range string styleName |
+		range := (stepPoints at: stepPoint) key.
+		(unimplementedSelectors at: range start ifAbsent: [nil]) ifNotNil: [:value | 
+			styleName := 10.
+			string := 'No implementors of #' , value printString , ' (found at step point #' , stepPoint printString , ')'.
+		] ifNil: [
+			styleName := (breakPoints includes: stepPoint) ifTrue: [9] ifFalse: [8].
+			string := ((breakPoints includes: stepPoint) ifTrue: ['Break at '] ifFalse: ['']) , 'step point #' , stepPoint printString.
+		].
+		indicators add: (ScintillaIndicator
+			styleName: styleName 
+			range: range 
+			tag: string).
+	].
+	documentPresenter view indicators: indicators.
 ! !
 !MethodSourcePresenter categoriesFor: #canSetBreakpoints!Breakpoints!public! !
+!MethodSourcePresenter categoriesFor: #clearBreakAtStepPoint:!public! !
 !MethodSourcePresenter categoriesFor: #codePresenterIsMethod!public! !
+!MethodSourcePresenter categoriesFor: #createSchematicWiring!Jade!private! !
 !MethodSourcePresenter categoriesFor: #defaultMethod!public! !
+!MethodSourcePresenter categoriesFor: #editMenuStrings!Jade!private! !
 !MethodSourcePresenter categoriesFor: #fileSave!public! !
+!MethodSourcePresenter categoriesFor: #gsMethod:!public! !
+!MethodSourcePresenter categoriesFor: #hoverEnd:!Jade!private! !
+!MethodSourcePresenter categoriesFor: #hoverStart:!Jade!private! !
+!MethodSourcePresenter categoriesFor: #methodMenu:!Jade!private! !
+!MethodSourcePresenter categoriesFor: #methodMenuBreak:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodSource!public! !
 !MethodSourcePresenter categoriesFor: #newSelector!public! !
 !MethodSourcePresenter categoriesFor: #onViewOpened!public! !
+!MethodSourcePresenter categoriesFor: #setBreakAtStepPoint:!public! !
 !MethodSourcePresenter categoriesFor: #setDefaultMethod!public! !
 !MethodSourcePresenter categoriesFor: #setEmptyMethod!public! !
+!MethodSourcePresenter categoriesFor: #showStepPoint:!public! !
+!MethodSourcePresenter categoriesFor: #stepPointAt:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #update!public! !
+!MethodSourcePresenter categoriesFor: #updateMethodStepPoints!public! !
 
 !MethodSourcePresenter class methodsFor!
 
 publishedEventsOfInstances
     
     	^super publishedEventsOfInstances
-			add: #'needClass';
-			add: #'needMethodClass';
-			add: #'needMethod';
 			add: #'needUser';
 			add: #'savedMethod:inClass:';
 			yourself.

@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 GsObject subclass: #GsMethod
-	instanceVariableNames: 'gsBehavior category source instVarReferences package isDirty symbolDictionaryName'
+	instanceVariableNames: 'behavior behaviorName breakPoints category isReadOnly originalSource source stepPoints unimplementedSelectors warnings'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -22,55 +22,22 @@ GsMethod comment: ''!
 		self name = aGsMethod name]].
 !
 
+behavior
+	^behavior!
+
+breakPoints
+	^breakPoints!
+
 category
 	^category!
 
-category: anObject
-	category := anObject!
+clearBreakAtStepPoint: anInteger
 
-changeToCategory: aString
-
-	| string |
-	string := '| gsBehavior |
-	gsBehavior := ' , gsBehavior , '.
-	(gsBehavior categoryNames includes: #' , aString printString , ') ifFalse: [gsBehavior addCategory: ' , aString printString , '].
-	gsBehavior
-		moveMethod: #' , name printString , ' 
-		toCategory: ' , aString printString.
-	gciSession executeString: string.
-	self category: aString.
-	self isDirty: true.
-!
-
-changeToPackage: aPackage
-
-	package removeMethod: self.
-	aPackage addMethod: self.
-!
-
-codeForObject
-
-	^'(' , gsBehavior codeForObject , ' compiledMethodAt: #' , name , ')'.
-!
-
-fileOutTo: aStream
-
-	aStream 
-		nextPutAll: 'category: ';
-		nextPutAll: category printString; lf;
-		nextPutAll: gsBehavior methodPrefix;
-		nextPutAll: gsBehavior thisClass name; lf;
-		nextPutAll: self source replaceCrLfWithLf trimBlanks; lf;
-		nextPutAll: '%'; lf.
-!
-
-gsBehavior
-
-	^gsBehavior!
-
-gsBehavior: aGsBehavior
-
-	gsBehavior := aGsBehavior.
+	gciSession
+		serverPerform: #'clearBreakAtStepPoint:inMethod:'
+		with: anInteger
+		with: oopType.
+	breakPoints := breakPoints copyWithout: anInteger.
 !
 
 hash
@@ -78,54 +45,94 @@ hash
 	^self name hash.
 !
 
-initialize: xmlElement
+initialize: readStream session: aGciSession
 
-	self error: 'use #initializeXML:'.
+	gciSession := aGciSession.
+	behavior := gciSession oopTypeWithOop: readStream upToTab asNumber.
+	behaviorName := readStream upToTab.
+	oopType := gciSession oopTypeWithOop: readStream upToTab asNumber.
+	name := readStream upToTab.
+	category := readStream upToTab.
+	isReadOnly := readStream upToTab = 'false'.	"current user has write permission for the class"
+	readStream nextLine.	"should be empty"
+	(source := readStream nextParagraph) isEmpty ifTrue: [
+		source := 
+'newMethod: argument
+		"Method comment"
+
+	^self yourself.
+'.
+	].
+
+	"unimplemented selectors"
+	unimplementedSelectors := Dictionary new.
+	readStream nextLineAsList do: [:eachPair | 
+		| pieces |
+		pieces := eachPair subStrings.
+		unimplementedSelectors at: pieces first asNumber put: pieces last.
+	].
+	"step points"
+	stepPoints := readStream nextLineAsList collect: [:each |
+		| pieces offset selector | 
+		pieces := each subStrings.
+		offset := pieces first asNumber.
+		selector := (2 <= pieces size ifTrue: [pieces at: 2] ifFalse: ['']).
+		(offset to: 0) -> selector.
+	].
+	"breaks"
+	breakPoints := readStream nextLineAsList collect: [:each | each asNumber].
+	1 to: stepPoints size do: [:stepPoint |
+		| range start char length |
+		range := (stepPoints at: stepPoint) key.
+		start := range start.
+		char := source at: start.
+		length := (char isAlphaNumeric or: [char = $_])
+			ifTrue: [(source copyFrom: start + 1 to: source size) findFirst: [:eachChar | (eachChar isAlphaNumeric or: [eachChar = $_ or: [eachChar = $:]]) not]]
+			ifFalse: [2].
+		length = 0 ifTrue: [length := source size - start].
+		[
+			2 < length and: [(source at: start) = $_].
+		] whileTrue: [
+			start := start + 1.
+			length := length - 1.
+		].
+		range 
+			start: start;
+			stop: start + length - 1;
+			yourself.
+	].
+	originalSource := readStream nextParagraph.
+	warnings := readStream nextParagraph.
 !
 
-initializeXML: xmlElement
+isReadOnly
+	^isReadOnly!
 
-	super initializeXML: xmlElement.
-	name := (xmlElement getElementsByTagName: 'selector') first text.
-	category := xmlElement getAttribute: 'category'.
-	instVarReferences := (xmlElement getElementsByTagName: 'instVar') collect: [:each | each text].
-	isDirty := false.
-!
-
-instVarReferences
-	^instVarReferences!
-
-instVarReferences: anObject
-	instVarReferences := anObject!
-
-isDirty
-	^isDirty == true.
-!
-
-isDirty: anObject
-	isDirty := anObject!
-
-package
-	^package!
-
-package: anObject
-	package := anObject!
+originalSource
+	^originalSource!
 
 printOn: aStream
 
-	gsBehavior printOn: aStream.
 	aStream
-		nextPutAll: '>>';
-		nextPutAll: name.
+		nextPutAll: behaviorName;
+		nextPutAll: '>>#''';
+		nextPutAll: name;
+		nextPut: $';
+		yourself.
 !
 
-remove
+selector
 
-	| string |
-	string := gsBehavior codeForObject , ' removeSelector: ' , name printString , ' ifAbsent: []'.
-	gciSession executeString: string.
-	gsBehavior removeMethod: self.
-	package removeMethod: self.
+	^name asSymbol
+!
+
+setBreakAtStepPoint: anInteger
+
+	gciSession
+		serverPerform: #'setBreakAtStepPoint:inMethod:'
+		with: anInteger
+		with: oopType.
+	breakPoints := breakPoints asSortedCollection add: anInteger; asArray.
 !
 
 source
@@ -139,75 +146,43 @@ source
 	^source.
 !
 
-source: anObject
-	source := anObject!
+stepPoints
+	^stepPoints!
 
-symbolDictionaryName
+unimplementedSelectors
+	^unimplementedSelectors!
 
-	^symbolDictionaryName.
-!
-
-symbolDictionaryName: aString
-
-	symbolDictionaryName := aString.
-! !
+warnings
+	^warnings! !
 !GsMethod categoriesFor: #<=!public! !
 !GsMethod categoriesFor: #=!public! !
+!GsMethod categoriesFor: #behavior!accessing!public! !
+!GsMethod categoriesFor: #breakPoints!accessing!public! !
 !GsMethod categoriesFor: #category!accessing!public! !
-!GsMethod categoriesFor: #category:!accessing!public! !
-!GsMethod categoriesFor: #changeToCategory:!public! !
-!GsMethod categoriesFor: #changeToPackage:!public! !
-!GsMethod categoriesFor: #codeForObject!public! !
-!GsMethod categoriesFor: #fileOutTo:!public! !
-!GsMethod categoriesFor: #gsBehavior!public! !
-!GsMethod categoriesFor: #gsBehavior:!public! !
+!GsMethod categoriesFor: #clearBreakAtStepPoint:!accessing!public! !
 !GsMethod categoriesFor: #hash!public! !
-!GsMethod categoriesFor: #initialize:!private! !
-!GsMethod categoriesFor: #initializeXML:!private! !
-!GsMethod categoriesFor: #instVarReferences!accessing!public! !
-!GsMethod categoriesFor: #instVarReferences:!accessing!public! !
-!GsMethod categoriesFor: #isDirty!accessing!public! !
-!GsMethod categoriesFor: #isDirty:!accessing!public! !
-!GsMethod categoriesFor: #package!accessing!public! !
-!GsMethod categoriesFor: #package:!accessing!public! !
+!GsMethod categoriesFor: #initialize:session:!public! !
+!GsMethod categoriesFor: #isReadOnly!accessing!public! !
+!GsMethod categoriesFor: #originalSource!accessing!public! !
 !GsMethod categoriesFor: #printOn:!public! !
-!GsMethod categoriesFor: #remove!public! !
+!GsMethod categoriesFor: #selector!public! !
+!GsMethod categoriesFor: #setBreakAtStepPoint:!accessing!public! !
 !GsMethod categoriesFor: #source!accessing!public! !
-!GsMethod categoriesFor: #source:!accessing!public! !
-!GsMethod categoriesFor: #symbolDictionaryName!public! !
-!GsMethod categoriesFor: #symbolDictionaryName:!public! !
+!GsMethod categoriesFor: #stepPoints!accessing!public! !
+!GsMethod categoriesFor: #unimplementedSelectors!accessing!public! !
+!GsMethod categoriesFor: #warnings!accessing!public! !
 
 !GsMethod class methodsFor!
 
-codeToGetMethod 
+fromOopType: anOopType session: aGciSession
 
-^':gsClass :aSelector :aStream |
-	| compiledMethod |
-	compiledMethod := gsClass compiledMethodAt: aSelector.
-	aStream 
-		nextPut: Character cr; nextPut: Character lf; tab;
-		nextPutAll: ''<method oop='';
-		nextPutAll: compiledMethod asOop printString printString;
-		nextPutAll: '' category='';
-		nextPutAll: (gsClass categoryOfSelector: aSelector) asString printString;
-		nextPutAll: '' >''.
-	compiledMethod instVarsAccessed asSortedCollection do: [:each |
-		aStream
-			nextPutAll: ''<instVar>'';
-			nextPutAll: each;
-			nextPutAll: ''</instVar>''.
-	].
-	aStream
-		nextPutAll: ''<selector'';
-		nextPutAll: '' ><'';
-		nextPutAll: ''!!['';
-		nextPutAll: ''CDATA'';
-		nextPutAll: ''['';
-		nextPutAll: aSelector;
-		nextPutAll: '']'';
-		nextPutAll: '']'';
-		nextPutAll: ''></selector></method>''.
-'.
+	| string |
+	string := aGciSession 
+		serverPerform: #'describeMethod:'
+		with: anOopType.
+	^self new
+		initialize: (JadeServerReadStream on: string)
+		session: aGciSession
 ! !
-!GsMethod class categoriesFor: #codeToGetMethod!public! !
+!GsMethod class categoriesFor: #fromOopType:session:!public! !
 

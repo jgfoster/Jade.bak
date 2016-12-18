@@ -20,6 +20,68 @@ _addToPureExportSet: anObject
 		toGciSet: 39.  "PureExportSet"
 !
 
+_describeMethod: aMethod
+	"Provide info needed to create a GsMethod in Jade client"
+	"Nice to add packageName and mcTimestamp"
+
+	| allSelectors class list oldGsMethod string x |
+	writeStream 	"Line 1 for GsMethod (line 3 for JadeSystemBrowserPresenter)"
+"1"		nextPutAll: (class := aMethod inClass) asOop printString; tab;
+"2"		nextPutAll: class printString; tab;
+"3"		nextPutAll: aMethod asOop printString; tab;
+"4"		nextPutAll: ((x := aMethod selector) isNil ifFalse: [x] ifTrue: ['']); tab;
+"5"		nextPutAll: (self categoryOfMethod: aMethod); tab;
+"6"		nextPutAll: (self currentUserMayEditMethod: aMethod) asString; tab;
+		lf.
+
+	"Method source"
+	writeStream nextPutAll: (string := aMethod sourceString).
+	string last = Character lf ifFalse: [writeStream lf].
+	writeStream nextPut: $%; lf.	"Lines 2-N"
+
+	"unimplemented selectors"
+	((aMethod class includesSelector: #'_selectorPool') and: [aMethod class includesSelector: #'_sourceOffsetOfFirstSendOf:']) ifTrue: [
+		allSelectors := IdentitySet new.
+		self classOrganizer classes do: [:each | 
+			allSelectors addAll: each selectors; addAll: each class selectors.
+		].
+		(aMethod _selectorPool reject: [:each | allSelectors includes: each]) do: [:each | 
+			(aMethod _sourceOffsetOfFirstSendOf: each) printOn: writeStream.
+			writeStream space; nextPutAll: each; tab.
+		].
+	].
+	writeStream lf.	"Line N+1"
+
+	"Array of Associations (offset -> selector) indexed by step points"
+	list := self sbUpdateMethodStepPointsFor: aMethod.
+	list := list collect: [:each | each key printString , ' ' , each value].
+	self writeList: list.	"Line N+2"
+
+	"breaks"
+	list := self sbUpdateMethodBreakPointsFor: aMethod.
+	self writeList: (list collect: [:each | each printString]).	"Line N+3"
+
+	"original method"
+	oldGsMethod := (aMethod inClass class canUnderstand: #'persistentMethodDictForEnv:')
+		ifTrue: [(aMethod inClass persistentMethodDictForEnv: 0) at: aMethod selector ifAbsent: [aMethod]]
+		ifFalse: [(aMethod inClass class canUnderstand: #'_rawMethodDict')
+			ifTrue: [aMethod inClass _rawMethodDict at: aMethod selector ifAbsent: [aMethod]]
+			ifFalse: [aMethod]].
+	aMethod ~~ oldGsMethod ifTrue: [
+		string := oldGsMethod sourceString.
+		writeStream nextPutAll: string.
+		(string notEmpty and: [string last = Character lf]) ifFalse: [writeStream lf].
+	].
+	writeStream nextPut: $%; lf.
+
+	"method compile warnings"
+	string := selections isNil 
+		ifTrue: ['']
+		ifFalse: [selections at: #'methodWarnings' ifAbsent: ['']].
+	string isNil ifTrue: [string := ''].
+	writeStream nextPutAll: string; nextPut: $%; lf.
+ !
+
 abort
 
 	classOrganizer := nil.
@@ -45,6 +107,11 @@ beginTransaction
 	System beginTransaction.
 !
 
+clearBreakAtStepPoint: anInteger inMethod: aGsMethod
+
+	aGsMethod clearBreakAtStepPoint: anInteger.
+!
+
 commit
 
 	classOrganizer := nil.
@@ -65,6 +132,14 @@ cr
 delay
 
 	(Delay forMilliseconds: 10) wait.
+!
+
+describeMethod: aMethod
+	"Provide info needed to create a GsMethod in Jade client"
+
+	writeStream := WriteStream on: String new.
+	self _describeMethod: aMethod.
+	^writeStream contents
 !
 
 errorListFor: aCollection
@@ -226,10 +301,19 @@ registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
 reset
 	"WriteStream protocol"!
 
+setBreakAtStepPoint: anInteger inMethod: aGsMethod
+
+	aGsMethod setBreakAtStepPoint: anInteger.
+!
+
 show: anObject
 
 	self nextPutAll: anObject printString.
 !
+
+sourceForProcess: gsProcess frame: level
+
+	self subclassResponsibility!
 
 stackForProcess: aGsProcess
 
@@ -253,13 +337,16 @@ terminate: aGsProcess
 	(Delay forMilliseconds: 10) wait.	"allow forked processes to finish"
 ! !
 !JadeServer categoriesFor: #_addToPureExportSet:!private! !
+!JadeServer categoriesFor: #_describeMethod:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #abort!public! !
 !JadeServer categoriesFor: #asString:!public!Transcript! !
 !JadeServer categoriesFor: #beginTransaction!public! !
+!JadeServer categoriesFor: #clearBreakAtStepPoint:inMethod:!Methods!public! !
 !JadeServer categoriesFor: #commit!public! !
 !JadeServer categoriesFor: #contents!public! !
 !JadeServer categoriesFor: #cr!public!Transcript! !
 !JadeServer categoriesFor: #delay!public! !
+!JadeServer categoriesFor: #describeMethod:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #errorListFor:!public! !
 !JadeServer categoriesFor: #executeString:fromContext:!public! !
 !JadeServer categoriesFor: #initialize!public! !
@@ -279,7 +366,9 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #registerOBNotifications!public! !
 !JadeServer categoriesFor: #registerOBNotificationsForPlatform:clientForwarder:!public! !
 !JadeServer categoriesFor: #reset!public! !
+!JadeServer categoriesFor: #setBreakAtStepPoint:inMethod:!Methods!public! !
 !JadeServer categoriesFor: #show:!public!Transcript! !
+!JadeServer categoriesFor: #sourceForProcess:frame:!public! !
 !JadeServer categoriesFor: #stackForProcess:!public! !
 !JadeServer categoriesFor: #terminate:!Processes!public! !
 
