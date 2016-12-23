@@ -175,11 +175,11 @@ selectedFrame
 		gsMethod: frame gsMethod;
 		showStepPoint: frame stepPoint;
 		yourself.
-	breaks do: [:each | 
+	"breaks do: [:each | 
 		documentPresenter view 
 			addMarkerType: #'breakpoint' 
 			at: each.
-	].
+	]."
 !
 
 selectedProcess

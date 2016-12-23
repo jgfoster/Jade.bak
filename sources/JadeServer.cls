@@ -138,7 +138,7 @@ describeMethod: aMethod
 	"Provide info needed to create a GsMethod in Jade client"
 
 	writeStream := WriteStream on: String new.
-	self _describeMethod: aMethod.
+	self _describeMethod: ([aMethod homeContext] on: Error do: [:ex | aMethod]).
 	^writeStream contents
 !
 

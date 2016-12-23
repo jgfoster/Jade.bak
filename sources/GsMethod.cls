@@ -63,7 +63,6 @@ initialize: readStream session: aGciSession
 	^self yourself.
 '.
 	].
-
 	"unimplemented selectors"
 	unimplementedSelectors := Dictionary new.
 	readStream nextLineAsList do: [:eachPair | 

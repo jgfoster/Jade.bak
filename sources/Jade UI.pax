@@ -169,7 +169,7 @@ _oopAndStringFor: anObject
 
 _sourceForProcess: gsProcess frame: level
 
-	| frame stepPoint keys values gsMethod receiver |
+	| frame homeMethod stepPoint keys values gsMethod receiver |
 	writeStream := WriteStream on: String new.
 	(frame := gsProcess _frameContentsAt: level) isNil ifTrue: [^'No frame found for level ' , level printString].
 	gsMethod := frame at: 1.
@@ -235,20 +235,21 @@ _sourceForProcess: gsProcess frame: level
 			nextPutAll: '></var>'; lf;
 			yourself.
 	].
-	([gsMethod homeMethod] on: Error do: [:ex | gsMethod]) _sourceOffsets do: [:each | 
+	homeMethod := [gsMethod homeMethod] on: Error do: [:ex | gsMethod].
+"	homeMethod _sourceOffsets do: [:each | 
 		writeStream
 			nextPutAll: '<offset x=';
 			nextPutAll: each printString printString;
 			nextPutAll: '/>'; lf;
 			yourself.
 	].
-	(self _stepPointsForBreaksInMethod: gsMethod) do: [:each | 
+	(self _stepPointsForBreaksInMethod: homeMethod) do: [:each | 
 		writeStream
 			nextPutAll: '<break x=';
 			nextPutAll: each printString printString;
 			nextPutAll: '/>'; lf;
 			yourself.
-	].
+	]."
 	writeStream 
 		nextPutAll: '<source';
 		nextPutAll: ' ><';
@@ -256,7 +257,7 @@ _sourceForProcess: gsProcess frame: level
 		nextPutAll: 'CDATA';
 		nextPutAll: '[';
 		yourself.
-	self _describeMethod: gsMethod.
+	self _describeMethod: homeMethod.
 	writeStream
 		nextPutAll: ']';
 		nextPutAll: ']';
