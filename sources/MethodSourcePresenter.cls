@@ -6,21 +6,7 @@ CodeSourcePresenter subclass: #MethodSourcePresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 MethodSourcePresenter guid: (GUID fromString: '{4EDA4C47-5B55-436D-B9E2-EF2042660A98}')!
-MethodSourcePresenter comment: '
-| newClass ymbolList oldClass source category result |
-symbolList := System myUserProfile symbolList.
-newClass := SSPAffanRecord.
-oldClass := newClass classHistory at: 1.
-oldClass selectors do: [:each | 
-	source := oldClass sourceCodeAt: each.
-	category := oldClass categoryOfSelector: each.
-	result := newClass
-		compileMethod: source
-		dictionaries: symbolList
-		category: category.
-	result notNil ifTrue: [result halt].
-].
-'!
+MethodSourcePresenter comment: ''!
 !MethodSourcePresenter categoriesForClass!Unclassified! !
 !MethodSourcePresenter methodsFor!
 
@@ -99,6 +85,7 @@ fileSave
 		"Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"
 
 	| user theClass newSelector category string stream list warnings errors index a b c methodExists |
+Transcript cr; show: 'MethodSourcePresenter>>#fileSave'.
 	(theClass := gsMethod behavior) isNil ifTrue: [^true].
 	newSelector := self newSelector.
 	currentSelector = newSelector ifFalse: [

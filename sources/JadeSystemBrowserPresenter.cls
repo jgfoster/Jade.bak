@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
-	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
+	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -452,10 +452,10 @@ createSchematicWiring
 		createSchematicWiringForOverrideList;
 		createSchematicWiringForInstanceClassTabs;
 		yourself.
-	textAreaTabs					when: #'currentCardChanged'	send: #'textTabChanged'		to: self.
-	classHierarchyTabs			when: #'currentCardChanging:'	send: #'aboutToChange:'		to: self;		when: #'currentCardChanged'	send: #'updateAndSelect:'		to: self	with: classDefinitionPresenter.
-	categoryVariableTabs		when: #'currentCardChanging:'	send: #'aboutToChange:'		to: self;		when: #'currentCardChanged'	send: #'updateAndSelect:'		to: self	with: classDefinitionPresenter.
-	globalsPresenter				when: #'actionPerformed'			send: #'inspectGlobal'			to: self.
+	textAreaTabs			when: #'currentCardChanged'	send: #'textTabChanged'		to: self.
+	classHierarchyTabs		when: #'currentCardChanging:'	send: #'aboutToChange:'		to: self;	when: #'currentCardChanged'	send: #'updateAndSelect:'	to: self	with: classDefinitionPresenter.
+	categoryVariableTabs		when: #'currentCardChanging:'	send: #'aboutToChange:'		to: self;	when: #'currentCardChanged'	send: #'updateAndSelect:'	to: self	with: classDefinitionPresenter.
+	globalsPresenter		when: #'actionPerformed'		send: #'inspectGlobal'			to: self.
 !
 
 createSchematicWiringForClassCategoryList
@@ -1770,9 +1770,28 @@ parseContext
 
 pkgDictChanged
 
-	self isPackageListTabSelected
-		ifTrue: [packageInfoTab ensureVisible]
-		ifFalse: [globalsPresenter ensureVisible].
+	self isPackageListTabSelected ifTrue: [
+		packageInfoTab ensureVisible.
+	] ifFalse: [
+		globalsPresenter ensureVisible.
+	].
+!
+
+pkgDictChangedA
+
+	| listModel |
+	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
+	globalsLabel ifNil: [globalsLabel := listModel detect: [:each | each text = 'Globals']].
+	packageLabel ifNil: [packageLabel := listModel detect: [:each | each text = 'Package']].
+	self isPackageListTabSelected ifTrue: [
+		(listModel includes: packageLabel) ifFalse: [listModel addFirst: packageLabel].
+		packageInfoTab ensureVisible.
+		listModel remove: globalsLabel ifAbsent: [].
+	] ifFalse: [
+		(listModel includes: globalsLabel ) ifFalse: [listModel addFirst: globalsLabel].
+		globalsPresenter ensureVisible.
+		listModel remove: packageLabel ifAbsent: [].
+	].
 !
 
 pkgsMenuStrings
@@ -3069,6 +3088,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #openSourceStyler!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #parseContext!public! !
 !JadeSystemBrowserPresenter categoriesFor: #pkgDictChanged!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #pkgDictChangedA!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #preferencesMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #promptForSelector!menu handlers!public! !
