@@ -635,20 +635,25 @@ mcHttpRepositoryClass
 !
 
 mcInitials: aString
+	"Do initial setup and return useful information"
 
-	| mcPlatformSupport string |
+	| mcPlatformSupport packagePolicyEnabledFlag string x |
 	string := 'Jade-' , GsSession currentSession serialNumber printString , '-' , System myUserProfile userId.
 	[
 		self mcInitialsA: string.
-	] whileFalse: [
+	] whileFalse: [	"Keep shortening it till it fits!!"
 		string := string copyFrom: 1 to: string size - 1.
 	].
 	mcPlatformSupport := self objectNamed: #'MCPlatformSupport'.
 	mcPlatformSupport notNil ifTrue: [mcPlatformSupport setAuthorInitials: aString].
-	^System session printString , Character space asString , (GsSession serialOfSession: System session) printString.
+	packagePolicyEnabledFlag := (x := self objectNamed: #'GsPackagePolicy') isNil ifTrue: ['0'] ifFalse: [x current enabled ifTrue: ['1'] ifFalse: ['0']].
+	^System session printString , Character space asString , 
+		(GsSession serialOfSession: System session) printString , Character space asString , 
+		packagePolicyEnabledFlag
 !
 
 mcInitialsA: aString
+	"Subclasses provide error handling, typically means string is too long"
 
 	System _cacheName: aString.
 !

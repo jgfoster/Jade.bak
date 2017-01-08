@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
-	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
+	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -461,48 +461,48 @@ createSchematicWiring
 createSchematicWiringForClassCategoryList
 
 	classCategoryPresenter		
-		when: #'dragOver:'				send: #'onDragOverClassCategory:'	to: self;
-		when: #'drop:'						send: #'onDropOnClassCategory:'		to: self;
-		when: #'keyTyped:'				send: #'delayUpdate'							to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'					to: self;		
-		when: #'selectionChanged'		send: #'updateAndSelect:'					to: self	with: classDefinitionPresenter;
+		when: #'dragOver:'			send: #'onDragOverClassCategory:'	to: self;
+		when: #'drop:'				send: #'onDropOnClassCategory:'	to: self;
+		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;		
+		when: #'selectionChanged'		send: #'updateAndSelect:'			to: self	with: classDefinitionPresenter;
 		yourself.
 !
 
 createSchematicWiringForClassDefinition
 
 	classDefinitionPresenter
-		when: #'valueChanged'					send: #'classDefChanged'			to: self;
+		when: #'valueChanged'	send: #'classDefChanged'	to: self;
 		yourself.
 !
 
 createSchematicWiringForClassHierarchy
 
 	classHierarchyPresenter	
-		when: #'drag:'						send: #'onDragClassHierarchy:'			to: self;
-		when: #'dragCut:'					send: #'onDragCutClassHierarchy:'	to: self;
-		when: #'dragOver:'				send: #'onDragOverClassHierarchy:'	to: self;
-		when: #'drop:'						send: #'onDropOnClassHierarchy:'		to: self;
-		when: #'keyTyped:'				send: #'delayUpdate'							to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'					to: self;
-		when: #'selectionChanged'		send: #'selectedClassChanged:'			to: self	with: true;
-		when: #'selectionChanged'		send: #'updateAndSelect:'					to: self	with: classDefinitionPresenter;
+		when: #'drag:'				send: #'onDragClassHierarchy:'		to: self;
+		when: #'dragCut:'			send: #'onDragCutClassHierarchy:'	to: self;
+		when: #'dragOver:'			send: #'onDragOverClassHierarchy:'	to: self;
+		when: #'drop:'				send: #'onDropOnClassHierarchy:'	to: self;
+		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
+		when: #'selectionChanged'		send: #'selectedClassChanged:'		to: self	with: true;
+		when: #'selectionChanged'		send: #'updateAndSelect:'			to: self	with: classDefinitionPresenter;
 		yourself.
 !
 
 createSchematicWiringForClassList
 
 	classListPresenter				
-		when: #'drag:'								send: #'onDragClassList:'						to: self;
-		when: #'dragCut:'							send: #'onDragCutClassList:'					to: self;
-		when: #'dragOver:'						send: #'onDragOverClassList:'				to: self;
-		when: #'drop:'								send: #'onDropOnClassList:'					to: self;
-		when: #'keyTyped:'						send: #'delayUpdate'								to: self;
-		when: #'selectionChanging:'			send: #'aboutToChange:'						to: self;
-		when: #'selectionChanged'				send: #'selectedClassChanged:'				to: self	with: true;
-		when: #'selectionChanged'				send: #'updateAndSelect:'						to: self	with: classDefinitionPresenter;
+		when: #'drag:'					send: #'onDragClassList:'				to: self;
+		when: #'dragCut:'				send: #'onDragCutClassList:'			to: self;
+		when: #'dragOver:'				send: #'onDragOverClassList:'			to: self;
+		when: #'drop:'					send: #'onDropOnClassList:'			to: self;
+		when: #'keyTyped:'				send: #'delayUpdate'					to: self;
+		when: #'selectionChanging:'		send: #'aboutToChange:'				to: self;
+		when: #'selectionChanged'			send: #'selectedClassChanged:'			to: self	with: true;
+		when: #'selectionChanged'			send: #'updateAndSelect:'				to: self	with: classDefinitionPresenter;
 
-		when: #labelOf:changedTo: 			send: #labelOfClass:changedTo:				to: self;
+		when: #labelOf:changedTo: 		send: #labelOfClass:changedTo:			to: self;
 		when: #aboutToEditLabel:accept: 	send: #aboutToEditClassLabel:accept:	to: self;
 		when: #labelOf:editedTo:accept: 	send: #labelOfClass:editedTo:accept:		to: self;
 
@@ -512,43 +512,43 @@ createSchematicWiringForClassList
 createSchematicWiringForDictionaryList
 
 	dictionaryListPresenter
-		when: #'dragOver:'				send: #'onDragOverDictionary:'		to: self;
-		when: #'drop:'						send: #'onDropOnDictionary:'		to: self;
-		when: #'keyTyped:'				send: #'delayUpdate'						to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'				to: self;
-		when: #'selectionChanged'		send: #'updateAndSelect:'				to: self	with: globalsPresenter;
+		when: #'dragOver:'			send: #'onDragOverDictionary:'		to: self;
+		when: #'drop:'				send: #'onDropOnDictionary:'		to: self;
+		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
+		when: #'selectionChanged'		send: #'updateAndSelect:'			to: self	with: globalsPresenter;
 		yourself.
 !
 
 createSchematicWiringForInstanceClassTabs
 
 	instanceClassTabs
-		when: #'currentCardChanging:'	send: #'aboutToChange:'			to: self;
+		when: #'currentCardChanging:'	send: #'aboutToChange:'		to: self;
 		when: #'currentCardChanged'	send: #'selectedClassChanged:'	to: self	with: true;
-		when: #'currentCardChanged'	send: #'updateAndSelect:'			to: self	with: classDefinitionPresenter;
+		when: #'currentCardChanged'	send: #'updateAndSelect:'		to: self	with: classDefinitionPresenter;
 		yourself.
 !
 
 createSchematicWiringForMethodCategoryList
 
 	categoryListPresenter
-		when: #'dragOver:'				send: #'onDragOverMethodCategory:'	to: self;
-		when: #'drop:'						send: #'onDropOnMethodCategory:'		to: self;
-		when: #'keyTyped:'				send: #'delayUpdate'								to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'						to: self;
-		when: #'selectionChanged'		send: #'updateAndSelect:'						to: self	with: methodSourcePresenter;
-		when: #'selectionChanged'		send: #'updateTabLabel'						to: self;
+		when: #'dragOver:'			send: #'onDragOverMethodCategory:'	to: self;
+		when: #'drop:'				send: #'onDropOnMethodCategory:'	to: self;
+		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
+		when: #'selectionChanged'		send: #'updateAndSelect:'			to: self	with: methodSourcePresenter;
+		when: #'selectionChanged'		send: #'updateTabLabel'			to: self;
 		yourself.
 !
 
 createSchematicWiringForMethodList
 
 	methodListPresenter			
-		when: #'drag:'						send: #'onDragMethod:'			to: self;
-		when: #'dragCut:'					send: #'onDragCutMethod:'	to: self;
-		when: #'keyTyped:'				send: #'delayUpdate'				to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'		to: self;
-		when: #'selectionChanged'		send: #'updateAndSelect:'		to: self	with: methodSourcePresenter;
+		when: #'drag:'				send: #'onDragMethod:'	to: self;
+		when: #'dragCut:'			send: #'onDragCutMethod:'	to: self;
+		when: #'keyTyped:'			send: #'delayUpdate'		to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'	to: self;
+		when: #'selectionChanged'		send: #'updateAndSelect:'	to: self	with: methodSourcePresenter;
 		yourself.
 !
 
@@ -567,52 +567,50 @@ createSchematicWiringForMethodSource
 createSchematicWiringForOverrideList
 
 	overrideListPresenter		
-		when: #'keyTyped:'					send: #'delayUpdate'				to: self;
-		when: #'selectionChanging:'		send: #'aboutToChange:'		to: self;		
-		when: #'selectionChanged'			send: #'updateAndSelect:'		to: self	with: methodSourcePresenter;
+		when: #'keyTyped:'			send: #'delayUpdate'		to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'	to: self;		
+		when: #'selectionChanged'		send: #'updateAndSelect:'	to: self	with: methodSourcePresenter;
 		yourself.
 !
 
 createSchematicWiringForPackageDictionaryTabs
 
 	packageDictionaryTabs
-		when: #'currentCardChanging:'	send: #'aboutToChange:'		to: self;
-		when: #'currentCardChanged'	send: #'pkgDictChanged'		to: self;
-		when: #'currentCardChanged'	send: #'updateAndSelect:'		to: self	with: packageInfoTab;
-		yourself.
-!
+		when: #'currentCardChanging:'	send: #'aboutToChange:'	to: self;
+		when: #'currentCardChanged'	send: #'pkgDictChanged'	to: self;
+		yourself.!
 
 createSchematicWiringForPackageList
 
 	packageListPresenter
-		when: #'drag:'						send: #'onDragPackageList:'			to: self;
-		when: #'dragCut:'					send: #'onDragCutPackageList:'		to: self;
-		when: #'dragOver:'				send: #'onDragOverPackageList:'	to: self;
-		when: #'drop:'						send: #'onDropOnPackageList:'		to: self;
-		when: #'keyTyped:'				send: #'delayUpdate'						to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'				to: self;
-		when: #'selectionChanged' 	send: #'ensureVisible'					to: packageInfoTab;
-		when: #'selectionChanged' 	send: #'list:' 									to: globalsPresenter 	with: #();
-		when: #'selectionChanged'		send: #'updateAndSelect:'				to: self						with: packageInfoTab;
+		when: #'drag:'				send: #'onDragPackageList:'		to: self;
+		when: #'dragCut:'			send: #'onDragCutPackageList:'		to: self;
+		when: #'dragOver:'			send: #'onDragOverPackageList:'	to: self;
+		when: #'drop:'				send: #'onDropOnPackageList:'		to: self;
+		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
+		when: #'selectionChanged' 		send: #'ensureVisible'				to: packageInfoTab;
+		when: #'selectionChanged' 		send: #'list:' 					to: globalsPresenter 	with: #();
+		when: #'selectionChanged'		send: #'updateAndSelect:'			to: self			with: packageInfoTab;
 		yourself.
 !
 
 createSchematicWiringForSuperClassList
 
 	superclassListPresenter		
-		when: #'keyTyped:'					send: #'delayUpdate'				to: self;
-		when: #'selectionChanging:'		send: #'aboutToChange:'		to: self;		
-		when: #'selectionChanged'			send: #'updateAndSelect:'		to: self	with: methodSourcePresenter;
+		when: #'keyTyped:'			send: #'delayUpdate'		to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'	to: self;		
+		when: #'selectionChanged'		send: #'updateAndSelect:'	to: self	with: methodSourcePresenter;
 		yourself.
 !
 
 createSchematicWiringForVariableList
 
 	variableListPresenter
-		when: #'keyTyped:'				send: #'delayUpdate'							to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'					to: self;
-		when: #'selectionChanged'		send: #'updateAndSelect:'					to: self	with: methodSourcePresenter;
-		when: #'selectionChanged'		send: #'updateTabLabel'					to: self;
+		when: #'keyTyped:'			send: #'delayUpdate'		to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'	to: self;
+		when: #'selectionChanged'		send: #'updateAndSelect:'	to: self	with: methodSourcePresenter;
+		when: #'selectionChanged'		send: #'updateTabLabel'	to: self;
 		yourself.
 !
 
@@ -1739,20 +1737,27 @@ onSetFocus: aView stack: aString
 onViewOpened
 
 	super onViewOpened.
-	categoryListPresenter		view contextMenu: (Menu fromStrings: self categoriesMenuStrings	).
+	categoryListPresenter	view contextMenu: (Menu fromStrings: self categoriesMenuStrings	).
 	classCommentPresenter	view isReadOnly: false.
 	classHierarchyPresenter	view contextMenu: (Menu fromStrings: self classesMenuStrings		).
-	classListPresenter				view contextMenu: (Menu fromStrings: self classesMenuStrings		).
-	dictionaryListPresenter 		view contextMenu: (Menu fromStrings: self dictsMenuStrings			).
-	globalsPresenter				view contextMenu: (Menu fromStrings: self globalsMenuStrings		).
-	methodListPresenter			view contextMenu: (Menu fromStrings: self methodsMenuStrings	).
-	methodSourcePresenter		view contextMenu: (Menu fromStrings: self editMenuStrings			);
+	classListPresenter		view contextMenu: (Menu fromStrings: self classesMenuStrings		).
+	dictionaryListPresenter 	view contextMenu: (Menu fromStrings: self dictsMenuStrings		).
+	globalsPresenter		view contextMenu: (Menu fromStrings: self globalsMenuStrings		).
+	methodListPresenter		view contextMenu: (Menu fromStrings: self methodsMenuStrings		).
+	methodSourcePresenter	view contextMenu: (Menu fromStrings: self editMenuStrings		);
 		isBackgroundDwellEnabled: true;
 		isBraceHighlightingEnabled: true;
 		yourself.
-	packageListPresenter 		view contextMenu: (Menu fromStrings: self pkgsMenuStrings			).
-	variableListPresenter			view contextMenu: (Menu fromStrings: self variablesMenuStrings	).
+	packageListPresenter 	view contextMenu: (Menu fromStrings: self pkgsMenuStrings		).
+	variableListPresenter		view contextMenu: (Menu fromStrings: self variablesMenuStrings	).
 	self setSearchPolicy.
+	gciSession isPackagePolicyEnabled ifFalse: [
+		| aView aModel aLabel |
+		aView := packageDictionaryTabs parentView subViews detect: [:each | each isKindOf: TabViewXP].
+		aModel := aView model.
+		aLabel := aModel detect: [:each | each text = 'Packages'].
+		aModel remove: aLabel.
+	].
 !
 
 openSourceStyler
@@ -1770,15 +1775,6 @@ parseContext
 
 pkgDictChanged
 
-	self isPackageListTabSelected ifTrue: [
-		packageInfoTab ensureVisible.
-	] ifFalse: [
-		globalsPresenter ensureVisible.
-	].
-!
-
-pkgDictChangedA
-
 	| listModel |
 	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
 	globalsLabel ifNil: [globalsLabel := listModel detect: [:each | each text = 'Globals']].
@@ -1787,10 +1783,12 @@ pkgDictChangedA
 		(listModel includes: packageLabel) ifFalse: [listModel addFirst: packageLabel].
 		packageInfoTab ensureVisible.
 		listModel remove: globalsLabel ifAbsent: [].
+		self updateAndSelect: packageInfoTab.
 	] ifFalse: [
 		(listModel includes: globalsLabel ) ifFalse: [listModel addFirst: globalsLabel].
 		globalsPresenter ensureVisible.
 		listModel remove: packageLabel ifAbsent: [].
+		self updateAndSelect: globalsPresenter.
 	].
 !
 
@@ -2655,7 +2653,7 @@ updateMenuBar
 
 updateMethod
 
-	| gsMethod isReadOnly newSource warnings |
+	| gsMethod isReadOnly listModel methodSourceLabel newSource warnings x |
 	methodSourcePresenter view cancelCallTip.
 	gsMethod := GsMethod 
 		fromStream: readStream
@@ -2699,7 +2697,15 @@ updateMethod
 			categoryListPresenter view invalidate.
 		].
 	].
-	originalSourcePresenter value: gsMethod originalSource.
+	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
+	originalSourceLabel ifNil: [originalSourceLabel := listModel detect: [:each | (each isKindOf: CardLabel) and: [each text  = 'Original Source']]].
+	methodSourceLabel := listModel detect: [:each | each = 'Method Source'].
+	(x := gsMethod originalSource) isEmpty ifTrue: [
+		listModel remove: originalSourceLabel ifAbsent: [].
+	] ifFalse: [
+		(listModel includes: originalSourceLabel) ifFalse: [listModel add: originalSourceLabel before: methodSourceLabel].
+		originalSourcePresenter value: x.
+	].
 	(warnings := gsMethod warnings) notEmpty ifTrue: [
 		MessageBox warning: warnings caption: 'Jade Compile Warning'.
 	].
@@ -3088,7 +3094,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #openSourceStyler!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #parseContext!public! !
 !JadeSystemBrowserPresenter categoriesFor: #pkgDictChanged!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #pkgDictChangedA!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #preferencesMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #promptForSelector!menu handlers!public! !

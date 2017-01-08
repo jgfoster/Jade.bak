@@ -146,13 +146,7 @@ removeClass
 
 updateAndSelect: aView
 
-	updateCount := updateCount + 1.
-	keystrokeTime < Time millisecondClockValue ifTrue: [
-		self updateAndSelectA: aView.
-	] ifFalse: [
-		[self updateAndSelectB: aView] fork.
-	].
-
+	super updateAndSelect: aView.
 	self registerClassData.
 !
 

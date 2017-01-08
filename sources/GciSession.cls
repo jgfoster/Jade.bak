@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend library netPort netTask server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend isPackagePolicyEnabled library netPort netTask server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: 'GemCursor'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -379,6 +379,10 @@ isOopType: anObject
 	^anObject isKindOf: library oopTypeClass.
 !
 
+isPackagePolicyEnabled
+
+	^isPackagePolicyEnabled!
+
 isRemoteGem
 
 	^self isLinkedGem not.
@@ -659,7 +663,7 @@ setInitials: initials
 	pieces := string subStrings collect: [:each | each asNumber].
 	stoneSessionID := pieces at: 1.
 	stoneSerial := pieces at: 2.
-!
+	isPackagePolicyEnabled := (pieces at: 3) = 1.!
 
 signalConfirmationRequestUsing: anOopType64 
 
@@ -954,6 +958,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #initializeServer!private! !
 !GciSession categoriesFor: #isLinkedGem!public! !
 !GciSession categoriesFor: #isOopType:!public! !
+!GciSession categoriesFor: #isPackagePolicyEnabled!public! !
 !GciSession categoriesFor: #isRemoteGem!public! !
 !GciSession categoriesFor: #isValidSession!public! !
 !GciSession categoriesFor: #libraryVersion!public! !
