@@ -27,7 +27,7 @@ addSystemBrowserForClass: anArray
 
 	(JadeAutoSystemBrowserPresenter
 		createIn: cardsPresenter 
-		on: gciSession)
+		gciSession: gciSession)
 		updateAfterFindClass: anArray
 		isMeta: nil 
 		selector: ''.

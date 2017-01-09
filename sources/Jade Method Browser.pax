@@ -91,7 +91,7 @@ JadePresenterA subclass: #MethodListPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 CodeSourcePresenter subclass: #MethodSourcePresenter
-	instanceVariableNames: 'gsMethod currentSelector'
+	instanceVariableNames: 'currentSelector gsMethod originalSource'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

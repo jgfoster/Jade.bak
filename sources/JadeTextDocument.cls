@@ -407,7 +407,7 @@ queryCommand: query
 
 	| textEdit |
 	textEdit := self activeTextEdit.
-	(#(#editCut #editCopy #fileIn) includes: query commandSymbol) ifTrue: [
+	(#(#editCut #copySelection #fileIn) includes: query commandSymbol) ifTrue: [
 		query isEnabled: (textEdit notNil and: [(textEdit isKindOf: TextEdit) and: [textEdit hasSelection]]).
 		^true.
 	].

@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 CodeSourcePresenter subclass: #MethodSourcePresenter
-	instanceVariableNames: 'gsMethod currentSelector'
+	instanceVariableNames: 'currentSelector gsMethod originalSource'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -51,24 +51,24 @@ defaultMethod
 editMenuStrings
 
 	false ifTrue: [
-		self editSave; editUndo; editRedo; editCut; editCopy; editPaste; editDelete; editSelectAll; editFind; editFindNext; editReplace; 
+		self fileSave; undo; redo; cutSelection; copySelection; pasteClipboard; clearSelection; selectAll; editFind; editFindNext; editReplace; 
 			jadeDisplay; jadeExecute; jadeInspect; browseSelectedClass.
 	].
 	^#(
 		'&Edit'
-		'&Save/Ctrl+S/editSave'
+		'&Save/Ctrl+S/fileSave'
 		'-'
-		'&Undo/Ctrl+Z/editUndo'
-		'&Redo/Ctrl+Y/editRedo'
+		'&Undo/Ctrl+Z/undo'
+		'&Redo/Ctrl+Y/redo'
 		'-'
 		'&Reformat Source/Ctrl+R/reformatSource'
 		'-'
-		'&Cu&t/Ctrl+X/editCut'
-		'&Copy/Ctrl+C/editCopy'
-		'&Paste/Ctrl+V/editPaste'
-		'&Delete/Delete/editDelete'
+		'&Cu&t/Ctrl+X/cutSelection'
+		'&Copy/Ctrl+C/copySelection'
+		'&Paste/Ctrl+V/pasteClipboard'
+		'&Delete/Delete/clearSelection'
 		'-'
-		'Select &All/Ctrl+A/editSelectAll'
+		'Select &All/Ctrl+A/selectAll'
 		'-'
 		'&Find/Ctrl+F/editFind'
 		'Find &Next/F3/editFindNext'
@@ -158,6 +158,26 @@ hoverStart: aPoint
 	documentPresenter view 
 		showCallTip: indicator tag
 		at: charIndex.
+!
+
+isOkayToChange
+
+	documentPresenter isModified ifTrue: [
+		documentPresenter ensureVisible.
+		(MessageBox confirm: 'Stay on unsaved method?' caption: 'Method has unsaved changes!!') ifTrue: [^false].
+		documentPresenter isModified: false.
+	].
+	^true!
+
+methodDoubleClicked: anObject
+
+	| range string |
+	range := documentPresenter view selectionRange.
+	string := documentPresenter value.
+	string size = range stop ifTrue: [^self].
+	(string at: range stop + 1) = $: ifFalse: [^self].
+	range stop: range stop + 1.
+	documentPresenter view selectionRange: range.
 !
 
 methodMenu: aMenu
@@ -303,16 +323,24 @@ stepPointAt: aPoint
 
 update
 
-	|string |
+	| newSource string |
+	documentPresenter view cancelCallTip.
+	newSource := gsMethod source.
+	documentPresenter view isModified ifTrue: [
+		newSource = originalSource ifTrue: [^self].
+		(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!') ifTrue: [
+			originalSource value copyToClipboard.
+		].
+	].
 	self setEmptyMethod.
 	gsMethod ifNil: [^self].
-	self setDefaultMethod.
 	string := "package" ' -- ' , gsMethod category , ' -- ' "mcTimestamp".
 	self statusBarText: string.
+	originalSource := newSource.
 	documentPresenter 
-		value: gsMethod source;
+		value: originalSource;
 		isModified: false;
-		isReadOnly: false;
+		isReadOnly: gsMethod isReadOnly;
 		yourself.
 	documentPresenter view 
 		backcolor: JadeTextStyles default colorForNoEdits;
@@ -357,6 +385,8 @@ updateMethodStepPoints
 !MethodSourcePresenter categoriesFor: #gsMethod:!public! !
 !MethodSourcePresenter categoriesFor: #hoverEnd:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #hoverStart:!Jade!private! !
+!MethodSourcePresenter categoriesFor: #isOkayToChange!Jade!private! !
+!MethodSourcePresenter categoriesFor: #methodDoubleClicked:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodMenu:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodMenuBreak:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodSource!public! !
