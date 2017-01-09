@@ -1952,15 +1952,15 @@ savePackage
 		ifTrue: [#('' '' '' '')]
 		ifFalse: [array first].
 	dict := Dictionary new
-		at: #'httpPassword'			put: nil;
-		at: #'httpUser'					put: nil;
-		at: #'name' 						put: package key;
-		at: #'isModified'					put: package value;
+		at: #'httpPassword'		put: '';
+		at: #'httpUser'			put: '';
+		at: #'name' 			put: package key;
+		at: #'isModified'			put: package value;
 		at: #'uniqueVersionName'	put: string;
-		at: #'versionName'			put: (array at: 2);
+		at: #'versionName'		put: (array at: 2);
 		at: #'versionMessage'		put: (array at: 4);
-		at: #'repositoryList'			put: repositoryListPresenter list;
-		at: #'repository'					put: repositoryListPresenter selection;
+		at: #'repositoryList'		put: repositoryListPresenter list;
+		at: #'repository'			put: repositoryListPresenter selection;
 		yourself.
 	(MCVersionDialog showModalOn: dict) isNil ifTrue: [^self].
 	stream := (WriteStream on: String new)
