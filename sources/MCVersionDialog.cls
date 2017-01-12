@@ -12,19 +12,14 @@ MCVersionDialog comment: ''!
 
 apply
 
-	super apply.
-	self applyA.
-!
-
-applyA
-
-	model value 
-		at: #'httpPassword'		put: httpPasswordPresenter value;
-		at: #'httpUser'				put: httpUserPresenter value;
-		at: #'repository'				put: repositoryListPresenter selection;
-		at: #'versionMessage' 	put: messagePresenter value;
-		at: #'versionName'		put: namePresenter value;
+	self subject
+		at: #'httpPassword'		put: httpPasswordPresenter model value;
+		at: #'httpUser'			put: httpUserPresenter model value;
+		at: #'repository'			put: repositoryListPresenter selection;
+		at: #'versionMessage' 	put: messagePresenter model value;
+		at: #'versionName'		put: namePresenter model value;
 		yourself.
+	super apply.
 !
 
 createComponents
@@ -60,19 +55,14 @@ httpUser
 
 onViewOpened
 
-	super onViewOpened.
-	self onViewOpened2.
-!
-
-onViewOpened2
-
 	| dict |
+	super onViewOpened.
 	dict := model value.
 	self caption: 'Save ' , (dict at: #'name').
 	(dict at: #'isModified') ifTrue: [
-		namePresenter value: (dict at: #'uniqueVersionName').
+		namePresenter value: (dict at: #'nextVersionName').
 	] ifFalse: [
-		namePresenter value: (dict at: #'versionName').
+		namePresenter value: (dict at: #'priorVersionName').
 		messagePresenter value: (dict at: #'versionMessage').
 	].
 	repositoryListPresenter 
@@ -151,14 +141,12 @@ updateHttpTabWith: aRepository
 		ifFalse: ['']).
 ! !
 !MCVersionDialog categoriesFor: #apply!public! !
-!MCVersionDialog categoriesFor: #applyA!public! !
 !MCVersionDialog categoriesFor: #createComponents!public! !
 !MCVersionDialog categoriesFor: #createSchematicWiring!public! !
 !MCVersionDialog categoriesFor: #defaultRepository:!public! !
 !MCVersionDialog categoriesFor: #httpPassword!public! !
 !MCVersionDialog categoriesFor: #httpUser!public! !
 !MCVersionDialog categoriesFor: #onViewOpened!public! !
-!MCVersionDialog categoriesFor: #onViewOpened2!public! !
 !MCVersionDialog categoriesFor: #repositoryList!public! !
 !MCVersionDialog categoriesFor: #repositorySelectionChanged!public! !
 !MCVersionDialog categoriesFor: #repositoryTypeContainer!public! !

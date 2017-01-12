@@ -844,10 +844,9 @@ mcRepositoryList
 
 mcStore: aMCWorkingCopy name: nameString message: messageString repository: aRepository 
 
-	| versionClass version |
-	versionClass := self objectNamed: #'MCVersion'.
+	| version |
 	version := (aMCWorkingCopy needsSaving not and: [aMCWorkingCopy currentVersionInfo name = nameString]) ifTrue: [
-		versionClass
+		(self objectNamed: #'MCVersion')
 			package: aMCWorkingCopy package
 			info: aMCWorkingCopy currentVersionInfo.
 	] ifFalse: [

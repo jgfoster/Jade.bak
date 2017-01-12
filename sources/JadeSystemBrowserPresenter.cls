@@ -1716,7 +1716,8 @@ queryCommand: aCommandQuery
 	(#(#'addRepository') includes: command) ifTrue: [aCommandQuery isEnabled: packageListPresenter selections notEmpty. ^true].
 	(#(#'showPackageChanges') includes: command) ifTrue: [
 		aCommandQuery isEnabled: (packageListPresenter selections size = 1 and: [packageListPresenter selection value]). ^true].
-	(#(#'savePackage' #'removeRepository') includes: command) ifTrue: [
+	(#(#'savePackage') includes: command) ifTrue: [aCommandQuery isEnabled: packageListPresenter selections size = 1. ^true].
+	(#(#'removeRepository') includes: command) ifTrue: [
 		aCommandQuery isEnabled: (repositoryListPresenter hasSelection and: [packageListPresenter selections size = 1]). ^true].
 	(#(#'compareAncestor') includes: command) ifTrue: [
 		aCommandQuery isEnabled: (packageListPresenter selections size = 1 and: [ancestorListPresenter hasSelection]). ^true].
@@ -1956,11 +1957,11 @@ savePackage
 		at: #'httpUser'			put: '';
 		at: #'name' 			put: package key;
 		at: #'isModified'			put: package value;
-		at: #'uniqueVersionName'	put: string;
-		at: #'versionName'		put: (array at: 2);
+		at: #'nextVersionName'	put: string;
+		at: #'priorVersionName'	put: (array at: 2);
 		at: #'versionMessage'		put: (array at: 4);
 		at: #'repositoryList'		put: repositoryListPresenter list;
-		at: #'repository'			put: repositoryListPresenter selection;
+		at: #'repository'			put: (repositoryListPresenter selectionIfNone: [repositoryListPresenter model last]);
 		yourself.
 	(MCVersionDialog showModalOn: dict) isNil ifTrue: [^self].
 	stream := (WriteStream on: String new)

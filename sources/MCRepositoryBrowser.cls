@@ -278,7 +278,7 @@ updatePackageList
 
 	| repository list |
 	packageListPresenter list: #().
-	(repository := repositoryListPresenter selectionOrNil) isNil ifTrue: [^self].
+	(repository := repositoryListPresenter selectionOrNil) ifNil: [^self].
 	list := repository packageList.
 	list do: [:each | 
 		each loaded: (loadedVersionNames 
