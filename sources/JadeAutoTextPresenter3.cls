@@ -109,6 +109,7 @@ getClassInstancesVariables
 		className := listBrowser selectedClass name subStrings: ' '.
 		 isClassSide := className last = 'class'.
 		currentGsShape := self registry getClass: className first.
+		currentGsShape isNil ifTrue: [^#()].
 		^(isClassSide ifTrue: [currentGsShape getClassInstanceVariableLike: currentText] ifFalse: [currentGsShape getInstanceVariableLike: currentText]) asSortedCollection.
 	].
 
@@ -199,6 +200,7 @@ getSelectedGsShape
 	(self topShell class == JadeTranscript) ifTrue: [^nil].
 	(self topShell class == JadeMethodListBrowser) ifTrue: [^nil].
 	(self topShell class == JadeInspector) ifTrue: [^nil "self registry getClass: inspected object class"].
+	(self topShell class == JadeDebugger) ifTrue: [^nil].
 
 	^self registry getClass: parentPresenter getClassName!
 
