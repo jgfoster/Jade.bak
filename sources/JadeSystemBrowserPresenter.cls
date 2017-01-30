@@ -835,11 +835,14 @@ editSaveClassComment
 !
 
 editSaveMethod
+	| stream caretPosition firstVisibleLine |
 
-	| stream |
+	caretPosition := methodSourcePresenter view caretPosition.
+	firstVisibleLine := methodSourcePresenter view lineScroll.
 	(self isCategoriesTabSelected and: [categoryListPresenter hasSelection]) ifTrue: [
 		methodCategory := categoryListPresenter selection trimBlanks.
 	].
+
 	stream := (WriteStream on: String new)
 		nextPutAll: 'method'; tab;
 		nextPutAll: self selectedClassNameWithoutVersion; tab;
@@ -857,6 +860,8 @@ editSaveMethod
 	] on: GsCompileError do: [:ex | 
 		self reportCompileError: ex list.
 	].
+	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
+	methodSourcePresenter view goto: caretPosition.
 !
 
 editSelectAll
