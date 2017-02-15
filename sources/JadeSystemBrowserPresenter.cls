@@ -1066,7 +1066,7 @@ inspectGlobal
 
 	| oopType |
 	oopType := self gciSession oopTypeWithOop: (globalsPresenter selection at: 4) asNumber.
-	(Smalltalk at: #'JadeInspector' ifAbsent: [^self]) showOn: self gciSession -> oopType.
+	(Smalltalk at: #'JadeInspector' ifAbsent: [^self]) showOn: oopType session: self gciSession.
 !
 
 isCategoriesTabSelected
