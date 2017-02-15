@@ -57,7 +57,8 @@ testClassName: anObject
 
 	self reset.
 
-	tests := ((self topShell gciSession serverPerform: #getTestMethodsNamesOf: with: testClassName) subStrings: ',') collect: [:each | GsTestMethod name: each].
+	[tests := ((self topShell gciSession serverPerform: #getTestMethodsNamesOf: with: testClassName) subStrings: ',') collect: [:each | GsTestMethod name: each]] 
+	on: Error do: [:ex | ^ex]."fix error on system history navigation, sometime GS answer error #2106"
 
 	testClassName 
 	ifNotNil: [testCasesPresenter model: (ListModel on: tests asOrderedCollection)].! !
