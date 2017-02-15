@@ -40,6 +40,7 @@ package methodNames
 	add: #JadeServer64bit -> #_trimStackOf:toLevel:;
 	add: #JadeServer64bit -> #recompile:withSource:;
 	add: #JadeServer64bit -> #sourceForProcess:frame:;
+	add: #JadeServer64bit33 -> #_stepPointFromProcess:frame:method:level:;
 	add: #JadeServer64bit33 -> #step:inFrame:;
 	add: #JadeServer64bit34 -> #step:inFrame:;
 	add: #JadeServer64bit3x -> #_stepPointsForBreaksInMethod:;
@@ -236,20 +237,6 @@ _sourceForProcess: gsProcess frame: level
 			yourself.
 	].
 	homeMethod := [gsMethod homeMethod] on: Error do: [:ex | gsMethod].
-"	homeMethod _sourceOffsets do: [:each | 
-		writeStream
-			nextPutAll: '<offset x=';
-			nextPutAll: each printString printString;
-			nextPutAll: '/>'; lf;
-			yourself.
-	].
-	(self _stepPointsForBreaksInMethod: homeMethod) do: [:each | 
-		writeStream
-			nextPutAll: '<break x=';
-			nextPutAll: each printString printString;
-			nextPutAll: '/>'; lf;
-			yourself.
-	]."
 	writeStream 
 		nextPutAll: '<source';
 		nextPutAll: ' ><';
@@ -269,17 +256,7 @@ _sourceForProcess: gsProcess frame: level
 
 _stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
 
-	self subclassResponsibility.
-
-	"
-	stepPoint := (gsProcess respondsTo: #'_localStepPointAt:')  ifTrue: [		""in 64-bit since 2004""
-		(gsProcess _localStepPointAt: level) at: 1.
-	] ifFalse: [(gsMethod respondsTo: #'_stepPointForIp:level:quick:')  ifTrue: [	""in 32-bit since 2002""
-		gsMethod
-			_stepPointForIp: (frame at: 2) 
-			level: level 
-			quick: false.
-	"!
+	self subclassResponsibility.!
 
 _stepPointsForBreaksInMethod: gsMethod
 
@@ -424,7 +401,7 @@ _oopAndStringFor: anObject
 
 _stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
 
-	^(gsProcess _localStepPointAt: anInteger) at: 1.
+	^gsProcess _stepPointAt: anInteger
 !
 
 _trimStackOf: aGsProcess toLevel: anInteger
@@ -471,10 +448,27 @@ sourceForProcess: gsProcess frame: level
 
 !JadeServer64bit33 methodsFor!
 
+_stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
+	"http://kermit.gemtalksystems.com/bug?bug=45553
+	https://github.com/jgfoster/Jade/issues/51"
+
+	| array homeMethod index localMethod localStepPoint sourceOffset |
+	array := gsProcess _localStepPointAt: anInteger.
+	localStepPoint := array at: 1.
+	localMethod := array at: 2.
+	homeMethod := localMethod homeMethod.
+	localMethod == homeMethod ifTrue: [^localStepPoint].
+	array := localMethod _sourceOffsetsOfSends.
+	index := array indexOf: (localMethod _sourceOffsetsAt: localStepPoint).
+	sourceOffset := array at: index.
+	^homeMethod _sourceOffsets indexOf: sourceOffset.
+	!
+
 step: aGsProcess inFrame: anInteger
 
 	aGsProcess _stepOverInFrame: anInteger.
 ! !
+!JadeServer64bit33 categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!public! !
 !JadeServer64bit33 categoriesFor: #step:inFrame:!Debugger!public!Socket! !
 
 !JadeServer64bit34 methodsFor!
