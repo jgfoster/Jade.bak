@@ -26,6 +26,9 @@ list := #(
 	'Contacts Demo'
 	'Jade in Dolphin'
 	'Jade Tests'
+	'Jade Autocompletation Enhancements'
+	'Jade Test Browser'
+	'Jade System Browser Tracking'
 ).
 ProgressDialog showModalWhile: [:progress |
 	1 to: list size do: [:i |
@@ -36,7 +39,8 @@ ProgressDialog showModalWhile: [:progress |
 			value: percent;
 			text: 'Loading package: ' , name;
 			yourself.
-		PackageManager current install: 'sources\' , name , '.pax'.
+		"PackageManager current install: 'sources\' , name , '.pax'."
+		[PackageManager current install: ('sources\' , name , '.pax')] on: Package clashSignal do: [:ex | ex resume].
 	].
 ].
 SessionManager current splashShowAtStartup: false.
