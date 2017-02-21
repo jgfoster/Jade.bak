@@ -20,7 +20,6 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #CodeSourcePresenter -> #createComponents;
 	add: #JadePresenterA -> #registry;
 	add: #JadeTextDocument -> #registry;
 	yourself.
@@ -105,15 +104,6 @@ JadeTextPresenter subclass: #JadeAutoTextPresenter
 
 
 "Loose Methods"!
-
-!CodeSourcePresenter methodsFor!
-
-createComponents
-
-	super createComponents.
-	documentPresenter := self add: JadeAutoTextPresenter new name: 'document'.
-	self updateCodeFont.! !
-!CodeSourcePresenter categoriesFor: #createComponents!public! !
 
 !JadePresenterA methodsFor!
 

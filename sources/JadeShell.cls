@@ -76,11 +76,6 @@ primaryPresenter
 shellName
 
 	^'Jade Shell'.
-!
-
-updateCaption
-
-	self caption: (gciSession titleBarFor: self shellName).
 ! !
 !JadeShell categoriesFor: #createComponents!private! !
 !JadeShell categoriesFor: #gciSession:!private! !
@@ -90,7 +85,6 @@ updateCaption
 !JadeShell categoriesFor: #presenterClass!overrides!private! !
 !JadeShell categoriesFor: #primaryPresenter!public! !
 !JadeShell categoriesFor: #shellName!overrides!private! !
-!JadeShell categoriesFor: #updateCaption!overrides!private! !
 
 !JadeShell class methodsFor!
 

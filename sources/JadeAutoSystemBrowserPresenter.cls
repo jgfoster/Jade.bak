@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeSystemBrowserPresenter subclass: #JadeAutoSystemBrowserPresenter
-	instanceVariableNames: 'lastGsShape'
+	instanceVariableNames: 'lastGsShape inspector sunitPresenter inspectorContainer oopPresenter autoInfoPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -37,14 +37,6 @@ createSchematicWiringForMethodSource
 		when: #'focusLost'						send: #'cancelCallTip'					to: methodSourcePresenter view;
 		yourself.
 !
-
-getClassHierarchy
-
-	^classHierarchyPresenter selection!
-
-getClassName
-
-	^classHierarchyPresenter selection last!
 
 gsClassMethods
 
@@ -110,31 +102,6 @@ lastGsShape
 lastGsShape: anObject
 	lastGsShape := anObject!
 
-newMethodPresenter
-
-	^JadeAutoTextPresenter new.!
-
-registerClassData
-	| gsMethods gsClassMethods |
-
-	gsClassMethods := OrderedCollection new.
-	gsMethods := OrderedCollection new.
-	self hasClassSideSelected ifTrue: [gsClassMethods := self gsMethods] ifFalse: [gsMethods := self gsMethods].
-	classHierarchyPresenter hasSelection ifFalse: [^self].
-	lastGsShape := JadeGsClassShape new.
-	lastGsShape  name: self getClassName;
-		gsClassHierarchy: self getClassHierarchy;
-		gsInstVariables: self gsInstVariables;
-		gsClassVariables: self gsClassVariables;
-		gsInstClassVariables: self gsInstClassVariables; 
-		gsMethods: gsMethods; 
-		gsClassMethods: gsClassMethods;
-		gsPoolDictionaries: self gsClassPoolDictionaries;
-		yourself.
-
-	lastGsShape updateClassData.
-	methodSourcePresenter lastGsShape: lastGsShape.!
-
 removeClass
 	| list |
 
@@ -142,29 +109,10 @@ removeClass
 	
 	super removeClass.
 
-	list do: [:each | self registry unregister: each]!
-
-updateAndSelect: aView
-
-	super updateAndSelect: aView.
-	self registerClassData.
-!
-
-updateMethodList
-    "The receiver must keep update with any add/remove of a method in order to be acurate in the autocompletation"
-
-    super updateMethodList.
-
-    lastGsShape ifNil: [^self].
-
-    self hasClassSideSelected ifTrue: [^lastGsShape gsClassMethods: self gsMethods].
-
-    ^lastGsShape gsMethods: self gsMethods.! !
+	list do: [:each | self registry unregister: each]! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #codePresenterIsMethod!public! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #createArrayFromString:!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #createSchematicWiringForMethodSource!create schemantic wiring!public! !
-!JadeAutoSystemBrowserPresenter categoriesFor: #getClassHierarchy!public!updating! !
-!JadeAutoSystemBrowserPresenter categoriesFor: #getClassName!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #gsClassMethods!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #gsClassPoolDictionaries!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #gsClassVariables!public!updating! !
@@ -174,9 +122,5 @@ updateMethodList
 !JadeAutoSystemBrowserPresenter categoriesFor: #hasClassSideSelected!public! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #lastGsShape!accessing!private! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #lastGsShape:!accessing!private! !
-!JadeAutoSystemBrowserPresenter categoriesFor: #newMethodPresenter!public! !
-!JadeAutoSystemBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #removeClass!menu handlers!public! !
-!JadeAutoSystemBrowserPresenter categoriesFor: #updateAndSelect:!public!updating! !
-!JadeAutoSystemBrowserPresenter categoriesFor: #updateMethodList!public!updating! !
 

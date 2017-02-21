@@ -2,7 +2,7 @@
 
 Object subclass: #JadeServer
 	instanceVariableNames: 'classList classOrganizer readStream writeStream selectedClass methodFilterType methodFilters selections'
-	classVariableNames: 'AllGroups AllUsers ClassOrganizer ClientForwarder GemStoneError Globals GsMethodDictionary ProcessorScheduler SymbolDictionary System UserGlobals UserProfile'
+	classVariableNames: 'AllGroups AllUsers ClassOrganizer ClientForwarder GemStoneError Globals GsMethodDictionary PackageOrganizer ProcessorScheduler SymbolDictionary System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
 JadeServer guid: (GUID fromString: '{FC038152-9707-4C5F-8977-A1F8D02EB005}')!

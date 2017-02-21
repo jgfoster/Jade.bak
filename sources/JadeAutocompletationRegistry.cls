@@ -185,15 +185,6 @@ includesClassNamed: aString
 
 	^registry includesKey: aString!
 
-initialize
-
-	super initialize.
-
-	registry := Dictionary new.
-	variableMap := Dictionary new.
-	paramMap := Dictionary new.
-!
-
 mapFor: aString
 	"Answer the map (instance of JadeGsClassShape) for the name <aString> "
 
@@ -334,7 +325,6 @@ variableMap: anObject
 !JadeAutocompletationRegistry categoriesFor: #hasMapFor:!public! !
 !JadeAutocompletationRegistry categoriesFor: #hasMapForClassNamed:!public! !
 !JadeAutocompletationRegistry categoriesFor: #includesClassNamed:!public! !
-!JadeAutocompletationRegistry categoriesFor: #initialize!public! !
 !JadeAutocompletationRegistry categoriesFor: #mapFor:!public! !
 !JadeAutocompletationRegistry categoriesFor: #mapToDisplay!public! !
 !JadeAutocompletationRegistry categoriesFor: #paramFor:!public! !

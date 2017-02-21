@@ -39,8 +39,7 @@ ProgressDialog showModalWhile: [:progress |
 			value: percent;
 			text: 'Loading package: ' , name;
 			yourself.
-		"PackageManager current install: 'sources\' , name , '.pax'."
-		[PackageManager current install: ('sources\' , name , '.pax')] on: Package clashSignal do: [:ex | ex resume].
+		PackageManager current install: 'sources\' , name , '.pax'.
 	].
 ].
 SessionManager current splashShowAtStartup: false.

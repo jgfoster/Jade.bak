@@ -74,52 +74,6 @@ model: anObject
 	codePane model: anObject.
 !
 
-onViewOpened
-
-	super onViewOpened.
-	(model isKindOf: String) ifTrue: [
-		documentPresenter value: model.
-		self view caption: 'String (' , model size printString , ' characters)'.
-		^self.
-	].
-	(model isKindOf: ByteArray) ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: model class name , ' (' , model size printString , ' bytes)'.
-		^self.
-	].
-	(model isKindOf: Integer) ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'Integer'.
-		^self.
-	].
-	model isNil ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'UndefinedObject'.
-		^self.
-	].
-	(model isKindOf: Boolean) ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'Boolean'.
-		^self.
-	]. 
-	(model isKindOf: Character) ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'Character'.
-		^self.
-	]. 
-	(model isKindOf: Float) ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'Float'.
-		^self.
-	].
-	(model isKindOf: Fraction) ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'Fraction'.
-		^self.
-	].
-	self displayObject.
-!
-
 selectedInstVar
 
 	| string |
@@ -156,7 +110,6 @@ setLastGsShape: className
 !JadeInspector categoriesFor: #inspectInstVar!accessing!private! !
 !JadeInspector categoriesFor: #isModified!private! !
 !JadeInspector categoriesFor: #model:!private! !
-!JadeInspector categoriesFor: #onViewOpened!accessing!private! !
 !JadeInspector categoriesFor: #selectedInstVar!accessing!private! !
 !JadeInspector categoriesFor: #setLastGsShape:!accessing!private! !
 
