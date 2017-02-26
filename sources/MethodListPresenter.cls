@@ -32,7 +32,9 @@ browseClass
 
 browseImplementors
 
-	super browseImplementorsOf: methodListPresenter selection.
+	"super browseImplementorsOf: methodListPresenter selection."
+
+	parentPresenter browseImplementorsOf: methodListPresenter selection
 !
 
 browseImplementorsOf
@@ -49,7 +51,9 @@ browseMethodsContaining
 
 browseSenders
 
-	super browseSendersOf: methodListPresenter selection.
+	 "super browseSendersOf: methodListPresenter selection."
+
+	parentPresenter browseSendersOf: methodListPresenter selection
 !
 
 browseSendersOf
