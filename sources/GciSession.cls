@@ -22,7 +22,7 @@ GciSoftBreak'!
 _executeString: aString fromContextOop: anOopType
 	^library 
 		session: gciSessionId
-		execute: aString
+		execute: (aString copyWithout: Character cr)
 		context: anOopType
 !
 

@@ -25,9 +25,7 @@ asString: anObject
 executeString: aString fromContext: anObject
 
 	[
-		^aString
-			evaluateInContext: anObject 
-			symbolList: GsSession currentSession symbolList. 
+		^super executeString: aString fromContext: anObject.
 	] on: CompileWarning do: [:ex | 
 		ex resume.
 	].
