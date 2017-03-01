@@ -5,7 +5,7 @@ Model subclass: #JadeLogin
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeLogin guid: (GUID fromString: '{585BD13E-3A03-47F3-B78D-5C29EF797913}')!
+JadeLogin guid: (GUID fromString: '{585bd13e-3a03-47f3-b78d-5c29ef797913}')!
 JadeLogin comment: ''!
 !JadeLogin categoriesForClass!Unclassified! !
 !JadeLogin methodsFor!
@@ -241,8 +241,8 @@ loginType
 
 loginType: anObject
 
-	loginType 			:= anObject.
-	hostUserID 		:= ''.
+	loginType 		:= anObject.
+	hostUserID 	:= ''.
 	hostPassword 	:= ''.
 !
 
@@ -305,22 +305,22 @@ stoneNRS: aString
 updateFrom: aJadeLogin
 
 	aJadeLogin isNil ifTrue: [^self].
-	gemVersion 		:= aJadeLogin gemVersion.
-	stoneHost 		:= aJadeLogin stoneHost.
-	stoneName 		:= aJadeLogin stoneName.
+	gemVersion 	:= aJadeLogin gemVersion.
+	stoneHost 	:= aJadeLogin stoneHost.
+	stoneName 	:= aJadeLogin stoneName.
 	stoneNRS 		:= aJadeLogin stoneNRS.
-	gemType 			:= aJadeLogin gemType.
-	gemHost 			:= aJadeLogin gemHost.
-	gemService 		:= aJadeLogin gemService.
-	gemTask 			:= aJadeLogin gemTask.
-	gemNRS 			:= aJadeLogin gemNRS.
-	loginType			:= aJadeLogin loginType.
-	hostUserID 		:= aJadeLogin hostUserID.
+	gemType 		:= aJadeLogin gemType.
+	gemHost 		:= aJadeLogin gemHost.
+	gemService 	:= aJadeLogin gemService.
+	gemTask 		:= aJadeLogin gemTask.
+	gemNRS 		:= aJadeLogin gemNRS.
+	loginType		:= aJadeLogin loginType.
+	hostUserID 	:= aJadeLogin hostUserID.
 	hostPassword 	:= aJadeLogin hostPassword.
 	gsUserID 		:= aJadeLogin gsUserID.
-	gsPassword 		:= aJadeLogin gsPassword.
-	initials				:= aJadeLogin initials.
-	useSocket			:= aJadeLogin useSocket.
+	gsPassword 	:= aJadeLogin gsPassword.
+	initials		:= aJadeLogin initials.
+	useSocket		:= aJadeLogin useSocket.
 	debugPath		:= aJadeLogin debugPath.
 	self trigger: #changed.
 !
