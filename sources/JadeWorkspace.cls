@@ -5,7 +5,7 @@ JadeTextDocument subclass: #JadeWorkspace
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeWorkspace guid: (GUID fromString: '{5337E391-2108-4A4D-AE2F-C6C1AD3E4C1C}')!
+JadeWorkspace guid: (GUID fromString: '{5337e391-2108-4a4d-ae2f-c6c1ad3e4c1c}')!
 JadeWorkspace comment: 'model is an instance of GciSession'!
 !JadeWorkspace categoriesForClass!Unclassified! !
 !JadeWorkspace methodsFor!

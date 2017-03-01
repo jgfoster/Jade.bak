@@ -5,7 +5,7 @@ Presenter subclass: #JadePresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenter guid: (GUID fromString: '{B55F33EB-59FB-46D6-8FEC-7DF1571C7D45}')!
+JadePresenter guid: (GUID fromString: '{b55f33eb-59fb-46d6-8fec-7df1571c7d45}')!
 JadePresenter comment: ''!
 !JadePresenter categoriesForClass!MVP-Presenters! !
 !JadePresenter methodsFor!
@@ -18,6 +18,12 @@ gciSession
 gciSession: aGciSession
 
 	gciSession := aGciSession.
+!
+
+resetCursor
+
+	(Delay forMilliseconds: 20) wait.
+	[Cursor current: nil] forkAt: Processor userBackgroundPriority.
 !
 
 subMenuName
@@ -70,6 +76,7 @@ updateMenuBar: aMenuBar withName: aString itemsFrom: aPresenter
 ! !
 !JadePresenter categoriesFor: #gciSession!public! !
 !JadePresenter categoriesFor: #gciSession:!public! !
+!JadePresenter categoriesFor: #resetCursor!public! !
 !JadePresenter categoriesFor: #subMenuName!menus!public! !
 !JadePresenter categoriesFor: #subMenuPresenter!menus!public! !
 !JadePresenter categoriesFor: #updateMenuBar:!menus!public! !

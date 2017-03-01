@@ -5,7 +5,7 @@ Shell subclass: #JadeShell
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeShell guid: (GUID fromString: '{D1D000EE-0B26-4AF9-8C27-396116CB864D}')!
+JadeShell guid: (GUID fromString: '{d1d000ee-0b26-4af9-8c27-396116cb864d}')!
 JadeShell comment: ''!
 !JadeShell categoriesForClass!Unclassified! !
 !JadeShell methodsFor!

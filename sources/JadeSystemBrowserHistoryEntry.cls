@@ -5,7 +5,7 @@ JadeAbstractHistoryEntry subclass: #JadeSystemBrowserHistoryEntry
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeSystemBrowserHistoryEntry guid: (GUID fromString: '{C38CEE7E-DEE2-4387-AF72-86B7D7378670}')!
+JadeSystemBrowserHistoryEntry guid: (GUID fromString: '{c38cee7e-dee2-4387-af72-86b7d7378670}')!
 JadeSystemBrowserHistoryEntry comment: ''!
 !JadeSystemBrowserHistoryEntry categoriesForClass!Unclassified! !
 !JadeSystemBrowserHistoryEntry methodsFor!
@@ -71,18 +71,21 @@ populateFrom: aJadeAutoSystemBrowserPresenter
 	self isClassSideSelected: aJadeAutoSystemBrowserPresenter isClassSideSelected.
 	self isCategoriesSelected: aJadeAutoSystemBrowserPresenter isCategoriesTabSelected.
 
-	packageOrDictionary := isPackageSelected ifTrue: [aJadeAutoSystemBrowserPresenter packageListPresenter selections last] 
-						ifFalse: [aJadeAutoSystemBrowserPresenter dictionaryListPresenter selections last].
+	self packageOrDictionary: (isPackageSelected 
+						ifTrue: [aJadeAutoSystemBrowserPresenter packageListPresenter selections] 
+						ifFalse: [aJadeAutoSystemBrowserPresenter dictionaryListPresenter selections]).
 
-	classCategory := aJadeAutoSystemBrowserPresenter classCategoryPresenter selectionOrNil. 
+	self classCategory: aJadeAutoSystemBrowserPresenter classCategoryPresenter selectionOrNil. 
 
-	className := isHierarchySelected ifTrue: [aJadeAutoSystemBrowserPresenter classHierarchyPresenter selection] 
-					ifFalse: [aJadeAutoSystemBrowserPresenter classListPresenter selection].
+	self className: (isHierarchySelected 
+				ifTrue: [aJadeAutoSystemBrowserPresenter classHierarchyPresenter selection] 
+				ifFalse: [aJadeAutoSystemBrowserPresenter classListPresenter selection]).
 
-	categoriesOrVariables := isCategoriesSelected ifTrue: [aJadeAutoSystemBrowserPresenter categoryListPresenter selectionOrNil ifNotNil: [:value | value allButFirst]] 
-						ifFalse: [aJadeAutoSystemBrowserPresenter variableListPresenter selectionOrNil].
+	self categoriesOrVariables: (isCategoriesSelected 
+						ifTrue: [aJadeAutoSystemBrowserPresenter categoryListPresenter selectionOrNil ifNotNil: [:value | value allButFirst]] 
+						ifFalse: [aJadeAutoSystemBrowserPresenter variableListPresenter selectionOrNil]).
 
-	methodName := aJadeAutoSystemBrowserPresenter methodListPresenter selection
+	self methodName: aJadeAutoSystemBrowserPresenter methodListPresenter selection.
 ! !
 !JadeSystemBrowserHistoryEntry categoriesFor: #=!public! !
 !JadeSystemBrowserHistoryEntry categoriesFor: #categoriesOrVariables!accessing!private! !

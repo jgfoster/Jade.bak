@@ -5,7 +5,7 @@ Object subclass: #JadeTextStyles
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'default'!
-JadeTextStyles guid: (GUID fromString: '{2DADB98C-2AAA-4CE2-8457-7737A2104AC4}')!
+JadeTextStyles guid: (GUID fromString: '{2dadb98c-2aaa-4ce2-8457-7737a2104ac4}')!
 JadeTextStyles comment: ''!
 !JadeTextStyles categoriesForClass!Kernel-Objects! !
 !JadeTextStyles methodsFor!
