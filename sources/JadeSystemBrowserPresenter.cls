@@ -256,7 +256,7 @@ browseImplementorsOf: aString
 	| string |
 	string := 'browseImplementors' , Character tab asString , aString , Character lf asString.
 	(self updateCommand: string) = 'browseImplementors' ifFalse: [self error: 'unexpected response'].
-	self browseMethodsAndSelect: aString.
+	self browseMethodsAndSelect: aString type: #definitions.
 !
 
 browseMethodHistory
@@ -276,7 +276,14 @@ browseMethodHistory
 browseMethodsAndSelect: aString
 
 	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		browseMethodsFromString: readStream upToEnd;
+		browseMethodsFromString: readStream upToEnd methodName: aString;
+		selecting: aString.
+!
+
+browseMethodsAndSelect: aString type: browseType
+
+	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
+		browseMethodsFromString: readStream upToEnd methodName: aString type: browseType;
 		selecting: aString.
 !
 
@@ -318,7 +325,7 @@ browseSendersOf: aString
 	| string |
 	string := 'browseSenders' , Character tab asString , aString , Character lf asString.
 	(self updateCommand: string) = 'browseSenders' ifFalse: [self error: 'unexpected response'].
-	self browseMethodsAndSelect: aString.!
+	self browseMethodsAndSelect: aString type: #references.!
 
 categoriesMenuStrings
 
@@ -2914,6 +2921,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSelectedClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSenders!menu handlers!public! !

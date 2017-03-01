@@ -2,7 +2,7 @@
 
 JadeBrowserPresenter subclass: #JadeMethodListPresenter
 	instanceVariableNames: 'methodListPresenter methodSourcePresenter searchBlock'
-	classVariableNames: ''
+	classVariableNames: 'JadeMethodBrowserPresenterClass'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeMethodListPresenter guid: (GUID fromString: '{BCF7EDB6-114A-4E67-84D3-6FECD6C5AE0C}')!
@@ -65,8 +65,8 @@ browseMethodsContaining: aString
 !
 
 browseMethodsFromString: aString
-
 	| list |
+
 	list := GsMethod2
 		listFromString: aString
 		session: self gciSession.
@@ -75,6 +75,17 @@ browseMethodsFromString: aString
 		methodListPresenter selectFirstMethod.
 	].
 !
+
+browseMethodsFromString: aString methodName: methodName type: browseType
+	| list |
+
+	list := GsMethod2
+		listFromString: aString
+		session: self gciSession.
+	methodListPresenter list: list asSortedCollection.
+	list notEmpty ifTrue: [
+		methodListPresenter selectFirstMethod.
+	].!
 
 browseSendersOf: aGsMethodOrString
 
@@ -215,6 +226,7 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #browseMethods:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsContaining:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
+!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
 !JadeMethodListPresenter categoriesFor: #browseSendersOf:!public! !
 !JadeMethodListPresenter categoriesFor: #codePresenterIsMethod!public! !
 !JadeMethodListPresenter categoriesFor: #createComponents!public! !

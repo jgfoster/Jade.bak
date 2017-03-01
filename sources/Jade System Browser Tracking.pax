@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser Tracking'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.030'.
+package basicPackageVersion: '0.037'.
 
 package basicScriptAt: #preinstall put: '#(''historyEntriesDictionary'' ''historyCurrentIndexDictionary'') 
 	do: [:instVarName | 
@@ -12,7 +12,9 @@ package basicScriptAt: #preinstall put: '#(''historyEntriesDictionary'' ''histor
 	].'.
 
 package classNames
+	add: #JadeAbstractHistoryEntry;
 	add: #JadeHistoryEntry;
+	add: #JadeSystemBrowserHistoryEntry;
 	yourself.
 
 package methodNames
@@ -72,8 +74,18 @@ package!
 
 "Class Definitions"!
 
+Object subclass: #JadeAbstractHistoryEntry
+	instanceVariableNames: 'methodName className classCategory'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 Object subclass: #JadeHistoryEntry
 	instanceVariableNames: 'isPackageSelected isHierarchySelected isClassSideSelected isCategoriesSelected packageOrDictionary classCategory className categoriesOrVariables methodName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeAbstractHistoryEntry subclass: #JadeSystemBrowserHistoryEntry
+	instanceVariableNames: 'isPackageSelected isHierarchySelected isClassSideSelected isCategoriesSelected packageOrDictionary categoriesOrVariables'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -281,21 +293,23 @@ onViewOpened
 !
 
 updateHistoryFor: aJadeAutoSystemBrowserPresenter
+	"only one method must be selected"
 	| entry |
 
-	"only one method must be selected"
 	(aJadeAutoSystemBrowserPresenter methodListPresenter hasSelection and: [aJadeAutoSystemBrowserPresenter methodListPresenter selections size = 1]) ifFalse: [^self].
 
-	(historyEntriesDictionary includesKey: aJadeAutoSystemBrowserPresenter) "check if system browser already exist "
-	ifFalse: [historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter put: OrderedCollection new.
-			historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter put: 1].
+	(historyEntriesDictionary includesKey: aJadeAutoSystemBrowserPresenter) ifFalse: [
+		historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter put: OrderedCollection new.
+		historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter put: 1.
+	].	"check if system browser already exist "
 
-	entry := JadeHistoryEntry newFrom: aJadeAutoSystemBrowserPresenter.
+	entry := JadeSystemBrowserHistoryEntry newFrom: aJadeAutoSystemBrowserPresenter.
 
-	((historyEntriesDictionary at:  aJadeAutoSystemBrowserPresenter) includes: entry)
-	ifFalse: [(historyEntriesDictionary at:  aJadeAutoSystemBrowserPresenter) add:entry].
+	((historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) includes: entry)
+		ifFalse: [(historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) add: entry].
 
-	"historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter put: ((historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter) + 1)"! !
+	"historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter put: ((historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter) + 1)"
+! !
 !JadeSystemBrowser categoriesFor: #buildHistoryBackMenu!public! !
 !JadeSystemBrowser categoriesFor: #buildHistoryForwardMenu!public! !
 !JadeSystemBrowser categoriesFor: #buildHistoryMenuWith:command:!public! !

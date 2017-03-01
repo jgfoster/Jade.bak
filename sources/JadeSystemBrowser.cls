@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeShell subclass: #JadeSystemBrowser
-	instanceVariableNames: 'cardsPresenter roundTripCount'
+	instanceVariableNames: 'cardsPresenter roundTripCount historyEntriesDictionary historyCurrentIndexDictionary'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

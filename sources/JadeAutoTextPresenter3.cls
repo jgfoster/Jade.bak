@@ -103,7 +103,7 @@ getBreakCharacters
 getClassInstancesVariables
 	| isClassSide |
 
-	(parentPresenter parentPresenter class == JadeMethodListPresenter) 
+	(parentPresenter parentPresenter isKindOf: JadeMethodListPresenter) 
 	ifTrue: [| listBrowser className |
 		listBrowser := parentPresenter parentPresenter.
 		className := listBrowser selectedClass name subStrings: ' '.
@@ -187,7 +187,7 @@ getNamesForUnaryMessage
 
 getNameUpperIdentifier
 
-	(parentPresenter parentPresenter class == JadeMethodListPresenter)
+	(parentPresenter parentPresenter isKindOf: JadeMethodListPresenter)
 	ifTrue: [| listBrowser |
 		listBrowser := parentPresenter parentPresenter.
 		currentGsShape := self registry getClass: listBrowser getSelectedClassName].
