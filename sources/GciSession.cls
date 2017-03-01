@@ -5,7 +5,7 @@ Object subclass: #GciSession
 	classVariableNames: 'GemCursor'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciSession guid: (GUID fromString: '{C52A3E3C-B7F3-4C3C-AB3D-A925ECB8B114}')!
+GciSession guid: (GUID fromString: '{c52a3e3c-b7f3-4c3c-ab3d-a925ecb8b114}')!
 GciSession comment: 'Permitted calls from within a non-blocking call:
 
 GciCallInProgress
@@ -22,7 +22,7 @@ GciSoftBreak'!
 _executeString: aString fromContextOop: anOopType
 	^library 
 		session: gciSessionId
-		execute: aString
+		execute: (aString copyWithout: Character cr)
 		context: anOopType
 !
 
