@@ -5,7 +5,7 @@ JadeAbstractHistoryEntry subclass: #JadeMethodExplorerHistoryEntry
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeMethodExplorerHistoryEntry guid: (GUID fromString: '{40265F1F-8BAB-4DD7-9CB4-5D69D798C49C}')!
+JadeMethodExplorerHistoryEntry guid: (GUID fromString: '{40265f1f-8bab-4dd7-9cb4-5d69d798c49c}')!
 JadeMethodExplorerHistoryEntry comment: ''!
 !JadeMethodExplorerHistoryEntry categoriesForClass!Unclassified! !
 !JadeMethodExplorerHistoryEntry methodsFor!
