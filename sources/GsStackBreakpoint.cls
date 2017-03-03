@@ -5,7 +5,7 @@ GsEventError subclass: #GsStackBreakpoint
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsStackBreakpoint guid: (GUID fromString: '{601667A8-F7D5-4FAB-97F1-C753A26EBC27}')!
+GsStackBreakpoint guid: (GUID fromString: '{601667a8-f7d5-4fab-97f1-c753a26ebc27}')!
 GsStackBreakpoint comment: ''!
 !GsStackBreakpoint categoriesForClass!Unclassified! !
 !GsStackBreakpoint methodsFor!

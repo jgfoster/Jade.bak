@@ -5,7 +5,7 @@ GsFatalError subclass: #GsInvalidSessionError
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsInvalidSessionError guid: (GUID fromString: '{343D0696-B2FC-405F-9E96-01929DFB6CB6}')!
+GsInvalidSessionError guid: (GUID fromString: '{343d0696-b2fc-405f-9e96-01929dfb6cb6}')!
 GsInvalidSessionError comment: ''!
 !GsInvalidSessionError categoriesForClass!Unclassified! !
 !GsInvalidSessionError methodsFor!

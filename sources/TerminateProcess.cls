@@ -5,7 +5,7 @@ Notification subclass: #TerminateProcess
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-TerminateProcess guid: (GUID fromString: '{7389AE5E-CB19-4BFE-923B-860DCADADB60}')!
+TerminateProcess guid: (GUID fromString: '{7389ae5e-cb19-4bfe-923b-860dcadadb60}')!
 TerminateProcess comment: ''!
 !TerminateProcess categoriesForClass!Unclassified! !
 !TerminateProcess methodsFor!

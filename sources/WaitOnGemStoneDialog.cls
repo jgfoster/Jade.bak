@@ -5,7 +5,7 @@ FadingDialog subclass: #WaitOnGemStoneDialog
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-WaitOnGemStoneDialog guid: (GUID fromString: '{3C1B5A72-A9D7-4D7D-92EB-6BE38EFC109C}')!
+WaitOnGemStoneDialog guid: (GUID fromString: '{3c1b5a72-a9d7-4d7d-92eb-6be38efc109c}')!
 WaitOnGemStoneDialog comment: ''!
 !WaitOnGemStoneDialog categoriesForClass!Unclassified! !
 !WaitOnGemStoneDialog methodsFor!

@@ -5,7 +5,7 @@ GsError subclass: #GsFatalError
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsFatalError guid: (GUID fromString: '{71EABB54-3A5A-4CA2-BCA3-44B39D453586}')!
+GsFatalError guid: (GUID fromString: '{71eabb54-3a5a-4ca2-bca3-44b39d453586}')!
 GsFatalError comment: ''!
 !GsFatalError categoriesForClass!Unclassified! !
 !GsFatalError methodsFor!

@@ -5,7 +5,7 @@ Error subclass: #GsError
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsError guid: (GUID fromString: '{7299EB14-EE00-4BEC-8A87-E9EC616FAB36}')!
+GsError guid: (GUID fromString: '{7299eb14-ee00-4bec-8a87-e9ec616fab36}')!
 GsError comment: ''!
 !GsError categoriesForClass!Unclassified! !
 !GsError methodsFor!
