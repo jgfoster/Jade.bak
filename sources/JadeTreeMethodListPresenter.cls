@@ -5,7 +5,7 @@ JadeMethodListPresenter subclass: #JadeTreeMethodListPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeTreeMethodListPresenter guid: (GUID fromString: '{A158699E-3D99-4020-AC0F-0A2644BDCAEA}')!
+JadeTreeMethodListPresenter guid: (GUID fromString: '{a158699e-3d99-4020-ac0f-0a2644bdcaea}')!
 JadeTreeMethodListPresenter comment: ''!
 !JadeTreeMethodListPresenter categoriesForClass!Unclassified! !
 !JadeTreeMethodListPresenter methodsFor!
@@ -76,9 +76,9 @@ browseMethodsFromString: aString
 !
 
 browseMethodsFromString: aString methodName: methodName
-	| list |
+	| list node |
 
-	self hasTreeListSelection ifFalse: [self addTreeListRoot: methodName].
+	self hasTreeListSelection ifFalse: [node := self addTreeListRoot: methodName type: #references].
 
 	list := GsMethod2
 		listFromString: aString
@@ -87,7 +87,12 @@ browseMethodsFromString: aString methodName: methodName
 	list notEmpty ifTrue: [
 		methodListPresenter selectFirstMethod.
 	].
-!
+
+	node isNil ifTrue: [^self].
+
+	treeMethodsMap at: node put: list asSortedCollection.
+
+	treeMethodsPresenter selection: node!
 
 browseMethodsFromString: aString methodName: methodName type: browseType
 	| list  node |

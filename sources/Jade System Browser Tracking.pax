@@ -124,6 +124,8 @@ restoreFrom: aJadeHistoryEntry
 			variableListPresenter selection: aJadeHistoryEntry categoriesOrVariables ifAbsent: [].].
 
 	methodListPresenter selection: aJadeHistoryEntry methodName ifAbsent: [].
+
+	self resetCursor.
 !
 
 updateAndSelect: aView
@@ -168,8 +170,7 @@ buildHistoryBackMenu
 
 	^(self buildHistoryMenuWith: (entryCollection copyFrom: 1 to: currentIndex) command: #historyBack:)
 		text: 'Backward';
-		yourself	
-!
+		yourself!
 
 buildHistoryForwardMenu
 	| systemBrowser currentIndex entryCollection |

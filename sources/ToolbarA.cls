@@ -5,7 +5,7 @@ Toolbar subclass: #ToolbarA
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-ToolbarA guid: (GUID fromString: '{E387189D-713F-4B04-8016-160928617636}')!
+ToolbarA guid: (GUID fromString: '{e387189d-713f-4b04-8016-160928617636}')!
 ToolbarA comment: ''!
 !ToolbarA categoriesForClass!MVP-Views! !
 !ToolbarA methodsFor!
