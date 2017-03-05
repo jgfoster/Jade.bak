@@ -3,7 +3,7 @@ package := Package name: 'Jade Autocompletation Enhancements'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.043'.
+package basicPackageVersion: '0.050'.
 
 package basicScriptAt: #preinstall put: '(JadeServer classVarNames includes: ''PackageOrganizer'')
 ifFalse: [JadeServer addClassVarName: ''PackageOrganizer''].
@@ -33,6 +33,7 @@ package methodNames
 	add: #JadeGsClassShape -> #getClassInstanceVariableLike:;
 	add: #JadeGsClassShape -> #getClassVariableAndPoolDictionaryLike:;
 	add: #JadeInspector -> #onViewOpened;
+	add: #JadeInspector -> #setDocumentPresenterLabel;
 	add: #JadeMethodListPresenter -> #getSelectedClassName;
 	add: #JadeMethodListPresenter -> #hasClassSideSelected;
 	add: #JadeShell -> #gciSession;
@@ -251,7 +252,14 @@ getClassVariableAndPoolDictionaryLike: aString
 onViewOpened
 
 	super onViewOpened.
-	"(documentPresenter view isKindOf: MultilineTextEdit) ifFalse: [documentPresenter view styler: JadeExpressionStyler new]."
+	
+	self setDocumentPresenterLabel.
+
+	self displayObject.
+!
+
+setDocumentPresenterLabel
+
 	(model isKindOf: String) ifTrue: [
 		documentPresenter value: model.
 		self view caption: 'String (' , model size printString , ' characters)'.
@@ -292,9 +300,9 @@ onViewOpened
 		self view caption: 'Fraction'.
 		^self.
 	].
-	self displayObject.
 ! !
 !JadeInspector categoriesFor: #onViewOpened!accessing!private! !
+!JadeInspector categoriesFor: #setDocumentPresenterLabel!accessing!private! !
 
 !JadeMethodListPresenter methodsFor!
 

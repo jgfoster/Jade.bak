@@ -5,7 +5,7 @@ JadeValueDialog subclass: #JadeFindClassDialog
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeFindClassDialog guid: (GUID fromString: '{0681B51C-D226-407A-8BE0-49345512C4F9}')!
+JadeFindClassDialog guid: (GUID fromString: '{0681b51c-d226-407a-8be0-49345512c4f9}')!
 JadeFindClassDialog comment: ''!
 !JadeFindClassDialog categoriesForClass!Unclassified! !
 !JadeFindClassDialog methodsFor!

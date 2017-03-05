@@ -5,7 +5,7 @@ Object subclass: #GsTestMethod
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsTestMethod guid: (GUID fromString: '{49AC780A-E100-43D1-812C-5132B52980AB}')!
+GsTestMethod guid: (GUID fromString: '{49ac780a-e100-43d1-812c-5132b52980ab}')!
 GsTestMethod comment: ''!
 !GsTestMethod categoriesForClass!Unclassified! !
 !GsTestMethod methodsFor!

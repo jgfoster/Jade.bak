@@ -30,6 +30,7 @@ list := #(
 	'Jade Test Browser'
 	'Jade System Browser Tracking'
 	'Jade Method Tree Browser'
+	'Jade Inspector Enhancements'
 ).
 ProgressDialog showModalWhile: [:progress |
 	1 to: list size do: [:i |
