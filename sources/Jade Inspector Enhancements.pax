@@ -1,9 +1,7 @@
 | package |
-package := Package name: 'Jade Inspector Enhacements'.
+package := Package name: 'Jade Inspector Enhancements'.
 package paxVersion: 1;
 	basicComment: ''.
-
-package basicPackageVersion: '0.016'.
 
 package basicScriptAt: #postinstall put: 'JadeInspector setNavigationInspector'.
 
