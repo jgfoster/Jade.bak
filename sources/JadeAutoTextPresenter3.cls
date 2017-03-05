@@ -5,7 +5,7 @@ JadeTextPresenter subclass: #JadeAutoTextPresenter3
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeAutoTextPresenter3 guid: (GUID fromString: '{40C6FC5C-2470-4EB8-8841-FD5CE72A4C7A}')!
+JadeAutoTextPresenter3 guid: (GUID fromString: '{40c6fc5c-2470-4eb8-8841-fd5ce72a4c7a}')!
 JadeAutoTextPresenter3 comment: ''!
 !JadeAutoTextPresenter3 categoriesForClass!Unclassified! !
 !JadeAutoTextPresenter3 methodsFor!

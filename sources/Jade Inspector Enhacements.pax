@@ -1,0 +1,69 @@
+| package |
+package := Package name: 'Jade Inspector Enhacements'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.016'.
+
+package basicScriptAt: #postinstall put: 'JadeInspector setNavigationInspector'.
+
+package classNames
+	add: #JadeNavigationInspector;
+	yourself.
+
+package methodNames
+	add: #JadeInspector -> #openNavigationInspector;
+	add: 'JadeInspector class' -> #setNavigationInspector;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: 'Jade Inspector';
+	add: 'Jade UI Base';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+JadeInspector subclass: #JadeNavigationInspector
+	instanceVariableNames: 'oopsCollection objectIndex'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!JadeInspector methodsFor!
+
+openNavigationInspector
+
+	instVarListPresenter hasSelection ifFalse: [^JadeNavigationInspector showOn: self model session: gciSession].
+
+	^(instVarListPresenter selection key = 'self')
+		ifTrue: [JadeNavigationInspector showOn: self model session: gciSession] 
+		ifFalse: [JadeNavigationInspector showOn: instVarListPresenter selection value session: gciSession]! !
+!JadeInspector categoriesFor: #openNavigationInspector!public! !
+
+!JadeInspector class methodsFor!
+
+setNavigationInspector
+
+	self setDefaultInspectorClass: JadeNavigationInspector! !
+!JadeInspector class categoriesFor: #setNavigationInspector!public! !
+
+"End of package definition"!
+

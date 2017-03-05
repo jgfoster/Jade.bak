@@ -5,7 +5,7 @@ JadePresenter subclass: #JadeMaximizedCodePresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeMaximizedCodePresenter guid: (GUID fromString: '{11C3DFDA-E53E-4247-BC39-A79FFA963E3D}')!
+JadeMaximizedCodePresenter guid: (GUID fromString: '{11c3dfda-e53e-4247-bc39-a79ffa963e3d}')!
 JadeMaximizedCodePresenter comment: ''!
 !JadeMaximizedCodePresenter categoriesForClass!Unclassified! !
 !JadeMaximizedCodePresenter methodsFor!

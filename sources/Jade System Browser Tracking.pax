@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser Tracking'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.037'.
+package basicPackageVersion: '0.039'.
 
 package basicScriptAt: #preinstall put: '#(''historyEntriesDictionary'' ''historyCurrentIndexDictionary'') 
 	do: [:instVarName | 
