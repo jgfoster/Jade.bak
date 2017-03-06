@@ -206,8 +206,8 @@ getPackagesNamesWithTestClasses
 	packagesNames := Set new.
 	stream := WriteStream on: String new.
 
-	TestCase allSubclasses do: [:each | 
-		(PackageOrganizer default packageOfClass: each ifNone: [nil]) ifNotNil: [:value | packagesNames add: value packageName]].
+	(self objectNamed: #'TestCase') allSubclasses do: [:each | 
+		((self objectNamed: #'PackageOrganizer') default packageOfClass: each ifNone: [nil]) ifNotNil: [:value | packagesNames add: value packageName]].
 
 	packagesNames asSortedCollection do: [:each | stream nextPutAll: each, ','].
 
@@ -224,9 +224,9 @@ getTestCaseClassesNamesOf: packageNamed
 	"Answer a collection with all test classes of the GemStone/S package named <packageNamed>"
 	| packageInfo testCaseSubclasses stream |
 
-	packageInfo := PackageOrganizer default packageNamed: packageNamed  ifAbsent: [^''].
+	packageInfo := (self objectNamed: #'PackageOrganizer') default packageNamed: packageNamed  ifAbsent: [^''].
 
-	testCaseSubclasses := TestCase allSubclasses.
+	testCaseSubclasses := (self objectNamed: #'TestCase') allSubclasses.
 
 	stream := WriteStream on: String new.
 
