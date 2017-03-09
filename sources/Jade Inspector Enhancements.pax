@@ -3,6 +3,8 @@ package := Package name: 'Jade Inspector Enhancements'.
 package paxVersion: 1;
 	basicComment: ''.
 
+package basicPackageVersion: '0.001'.
+
 package basicScriptAt: #postinstall put: 'JadeInspector setNavigationInspector'.
 
 package classNames
