@@ -3,12 +3,9 @@ package := Package name: 'Jade Autocompletation Enhancements'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.053'.
+package basicPackageVersion: '0.054'.
 
-package basicScriptAt: #preinstall put: '(JadeServer classVarNames includes: ''PackageOrganizer'')
-ifFalse: [JadeServer addClassVarName: ''PackageOrganizer''].
-
-#(''inspector'' ''sunitPresenter'' ''inspectorContainer'' ''oopPresenter'' ''autoInfoPresenter'') do: [:instVarName | 
+package basicScriptAt: #preinstall put: '#(''inspector'' ''sunitPresenter'' ''inspectorContainer'' ''oopPresenter'' ''autoInfoPresenter'') do: [:instVarName | 
 	(JadeAutoSystemBrowserPresenter instVarNames includes: instVarName) ifFalse: [JadeAutoSystemBrowserPresenter addInstVarName: instVarName]].
 '.
 

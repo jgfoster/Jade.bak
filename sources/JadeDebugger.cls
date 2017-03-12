@@ -95,13 +95,6 @@ initializeProcess: aProcess message: aString terminateOnClose: aBoolean
 	self update.
 !
 
-inspectVariable
-
-	| object |
-	object := gciSession oopTypeWithOop: variableListPresenter selection key key asNumber.
-	JadeInspector showOn: object session: gciSession.
-!
-
 onViewClosed
 
 	gsProcess := processList first.
@@ -322,7 +315,6 @@ updateSaveMethod
 !JadeDebugger categoriesFor: #getProcessList!public! !
 !JadeDebugger categoriesFor: #implement!public! !
 !JadeDebugger categoriesFor: #initializeProcess:message:terminateOnClose:!public! !
-!JadeDebugger categoriesFor: #inspectVariable!public! !
 !JadeDebugger categoriesFor: #onViewClosed!public! !
 !JadeDebugger categoriesFor: #queryCommand:!public! !
 !JadeDebugger categoriesFor: #resumeProcess!public! !
