@@ -141,11 +141,6 @@ gciSession: aGciSession
 	methodSourcePresenter gciSession: aGciSession.
 !
 
-getNewMethod
-	"The receiver answer <aOopType64> to the new method"
-
-	^GsMethod fromOopType: self getOopToNewMethod session: gciSession!
-
 getNewMethodToUpdate: aGsMethod2
 	"The receiver answer <aOopType64> to the new method"
 	| stringToGetNewMethod |
@@ -292,7 +287,6 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #createSchematicWiring!public! !
 !JadeMethodListPresenter categoriesFor: #doSearch!public! !
 !JadeMethodListPresenter categoriesFor: #gciSession:!public! !
-!JadeMethodListPresenter categoriesFor: #getNewMethod!public! !
 !JadeMethodListPresenter categoriesFor: #getNewMethodToUpdate:!public! !
 !JadeMethodListPresenter categoriesFor: #getOopToNewMethod!public! !
 !JadeMethodListPresenter categoriesFor: #getSelectedMethod!public! !
