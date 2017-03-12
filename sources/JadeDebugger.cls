@@ -5,7 +5,7 @@ JadeTextDocument subclass: #JadeDebugger
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'debuggers'!
-JadeDebugger guid: (GUID fromString: '{54A4DDBF-2101-4884-8568-46D6D2790987}')!
+JadeDebugger guid: (GUID fromString: '{54a4ddbf-2101-4884-8568-46d6d2790987}')!
 JadeDebugger comment: ''!
 !JadeDebugger categoriesForClass!Unclassified! !
 !JadeDebugger methodsFor!
@@ -309,7 +309,10 @@ update
 updateCaption
 
 	self caption: (gciSession titleBarFor: 'Debugger').
-! !
+!
+
+updateSaveMethod
+	"do nothing"! !
 !JadeDebugger categoriesFor: #answer!public! !
 !JadeDebugger categoriesFor: #clearUI!public! !
 !JadeDebugger categoriesFor: #codeSourcePresenterClass!private! !
@@ -339,6 +342,7 @@ updateCaption
 !JadeDebugger categoriesFor: #terminateProcess!public! !
 !JadeDebugger categoriesFor: #update!public! !
 !JadeDebugger categoriesFor: #updateCaption!public! !
+!JadeDebugger categoriesFor: #updateSaveMethod!public! !
 
 !JadeDebugger class methodsFor!
 
