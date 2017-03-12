@@ -141,15 +141,6 @@ gciSession: aGciSession
 	methodSourcePresenter gciSession: aGciSession.
 !
 
-getNewMethodToUpdate: aGsMethod2
-	"The receiver answer <aOopType64> to the new method"
-	| stringToGetNewMethod |
-
-	stringToGetNewMethod := self getOopToNewMethod lowPart printString, Character tab asString, aGsMethod2 name, Character tab asString, aGsMethod2 category, Character tab asString, aGsMethod2 gsClass oopType lowPart printString, Character tab asString, aGsMethod2 gsClass name, Character tab asString, aGsMethod2 gsClass category, Character tab asString, aGsMethod2 isTestCase printString.
-	
-	^GsMethod2 fromString: stringToGetNewMethod session: aGsMethod2 gciSession.
-!
-
 getOopToNewMethod
 	"The receiver answer <aOopType64> to the new method"
 
@@ -246,7 +237,8 @@ updateSaveMethod
 
 	methodListPresenter selectedMethod isNil ifTrue: [^self].
 
-	newGsMethod := self getNewMethodToUpdate: methodListPresenter selectedMethod.
+	newGsMethod := methodListPresenter selectedMethod asUpdatedVersion: self getOopToNewMethod lowPart printString.
+
 	methodListPresenter primaryPresenter model add: newGsMethod.
 
 	methodListPresenter primaryPresenter model remove: methodListPresenter selectedMethod ifAbsent: [].
@@ -287,7 +279,6 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #createSchematicWiring!public! !
 !JadeMethodListPresenter categoriesFor: #doSearch!public! !
 !JadeMethodListPresenter categoriesFor: #gciSession:!public! !
-!JadeMethodListPresenter categoriesFor: #getNewMethodToUpdate:!public! !
 !JadeMethodListPresenter categoriesFor: #getOopToNewMethod!public! !
 !JadeMethodListPresenter categoriesFor: #getSelectedMethod!public! !
 !JadeMethodListPresenter categoriesFor: #getSelectedMethodName!public! !
