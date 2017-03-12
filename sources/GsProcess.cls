@@ -5,7 +5,7 @@ GsObject subclass: #GsProcess
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsProcess guid: (GUID fromString: '{0CB5149E-F4A3-413C-8AC6-2CAF13E5FB15}')!
+GsProcess guid: (GUID fromString: '{0cb5149e-f4a3-413c-8ac6-2caf13e5fb15}')!
 GsProcess comment: ''!
 !GsProcess categoriesForClass!Unclassified! !
 !GsProcess methodsFor!

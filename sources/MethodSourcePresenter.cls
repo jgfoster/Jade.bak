@@ -86,6 +86,7 @@ fileSave
 
 	| user theClass newSelector category string stream list warnings errors index a b c methodExists |
 Transcript cr; show: 'MethodSourcePresenter>>#fileSave'.
+
 	(theClass := gsMethod behavior) isNil ifTrue: [^true].
 	newSelector := self newSelector.
 	currentSelector = newSelector ifFalse: [
@@ -114,6 +115,7 @@ Transcript cr; show: 'MethodSourcePresenter>>#fileSave'.
 			with: newSelector
 			with: theClass.
 	].
+	parentPresenter updateSaveMethod.
 	(list := stream upToEnd subStrings: Character lf) isEmpty ifTrue: [^true].
 	warnings := list select: [:each | each beginsWith: 'WARNING:'].
 	warnings := warnings collect: [:each | each copyFrom: 10 to: each size].

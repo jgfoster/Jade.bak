@@ -3,7 +3,7 @@ package := Package name: 'Jade Autocompletation Enhancements'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.050'.
+package basicPackageVersion: '0.053'.
 
 package basicScriptAt: #preinstall put: '(JadeServer classVarNames includes: ''PackageOrganizer'')
 ifFalse: [JadeServer addClassVarName: ''PackageOrganizer''].

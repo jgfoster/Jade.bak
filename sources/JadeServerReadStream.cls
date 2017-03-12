@@ -5,7 +5,7 @@ ReadStream subclass: #JadeServerReadStream
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeServerReadStream guid: (GUID fromString: '{ED24CD81-A45E-4685-BBE8-B0DD53109F59}')!
+JadeServerReadStream guid: (GUID fromString: '{ed24cd81-a45e-4685-bbe8-b0dd53109f59}')!
 JadeServerReadStream comment: ''!
 !JadeServerReadStream categoriesForClass!Unclassified! !
 !JadeServerReadStream methodsFor!
