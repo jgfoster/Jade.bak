@@ -3,7 +3,7 @@ package := Package name: 'Jade Test Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.026'.
+package basicPackageVersion: '0.028'.
 
 package basicScriptAt: #preinstall put: '#(''inspector'' ''sunitPresenter'' ''inspectorContainer'' ''oopPresenter'' ''autoInfoPresenter'') do: [:instVarName | 
 	(JadeAutoSystemBrowserPresenter instVarNames includes: instVarName) ifFalse: [JadeAutoSystemBrowserPresenter addInstVarName: instVarName]].'.
@@ -238,7 +238,7 @@ getTestMethodsNamesOf: classNamed
 
 	stream := WriteStream on: String new.
 	gsClass := self objectNamed: classNamed.
-	gsClass ifNil: [^''].
+	gsClass isNil ifTrue: [^''].
 	(gsClass isSubclassOf: TestCase) ifFalse: [^''].
 	testSelectors :=  gsClass testSelectors asSortedCollection.
 	testSelectors isEmpty ifTrue: [^''].
