@@ -3,7 +3,7 @@ package := Package name: 'GemStone Objects'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.054'.
+package basicPackageVersion: '0.044'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Objects'' yourself.'.
 

@@ -3,12 +3,9 @@ package := Package name: 'Jade Test Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.022'.
+package basicPackageVersion: '0.028'.
 
-package basicScriptAt: #preinstall put: '(JadeServer classVarNames includes: ''PackageOrganizer'')
-ifFalse: [JadeServer addClassVarName: ''PackageOrganizer''].
-
-#(''inspector'' ''sunitPresenter'' ''inspectorContainer'' ''oopPresenter'' ''autoInfoPresenter'') do: [:instVarName | 
+package basicScriptAt: #preinstall put: '#(''inspector'' ''sunitPresenter'' ''inspectorContainer'' ''oopPresenter'' ''autoInfoPresenter'') do: [:instVarName | 
 	(JadeAutoSystemBrowserPresenter instVarNames includes: instVarName) ifFalse: [JadeAutoSystemBrowserPresenter addInstVarName: instVarName]].'.
 
 package classNames
@@ -233,7 +230,7 @@ getTestCaseClassesNamesOf: packageNamed
 	packageInfo classes isEmpty ifTrue: [^''].
 	((packageInfo classes select: [:each | testCaseSubclasses includes: each]) do: [:each | stream nextPutAll: (each name, ',')]).
 
-	^stream contents allButLast!
+	^stream contents copyFrom: 1 to: (stream contents size - 1)!
 
 getTestMethodsNamesOf: classNamed 
 	"Answer a collection with all test selectors of the GemStone/S class named <classNamed>"
@@ -241,14 +238,14 @@ getTestMethodsNamesOf: classNamed
 
 	stream := WriteStream on: String new.
 	gsClass := self objectNamed: classNamed.
-	gsClass ifNil: [^''].
+	gsClass isNil ifTrue: [^''].
 	(gsClass isSubclassOf: TestCase) ifFalse: [^''].
 	testSelectors :=  gsClass testSelectors asSortedCollection.
 	testSelectors isEmpty ifTrue: [^''].
 
 	 testSelectors do: [:each | stream nextPutAll: each, ','].
 
-	^stream contents allButLast!
+	^stream contents copyFrom: 1 to: (stream contents size - 1)!
 
 runTestNamed: testName in: gsClass
 	"The receiver run the test named <testName> of GemStone/S class named <gsClass>"
@@ -297,6 +294,9 @@ updateCaption
 !JadeSystemBrowser methodsFor!
 
 openSUnitBrowser
+
+	((gciSession executeString: 'System myUserProfile objectNamed: ''PackageOrganizer''') = nil) 
+	ifTrue: [^MessageBox notify: 'Jade SUnit Browser not yet implemented for this user or version.'].
 
 	JadeSUnitBrowser showOn: gciSession! !
 !JadeSystemBrowser categoriesFor: #openSUnitBrowser!public! !

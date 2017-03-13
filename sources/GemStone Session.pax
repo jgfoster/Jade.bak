@@ -3,7 +3,7 @@ package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.247'.
+package basicPackageVersion: '0.145'.
 
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.'.
 

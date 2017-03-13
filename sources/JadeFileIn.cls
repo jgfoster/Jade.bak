@@ -5,7 +5,7 @@ Object subclass: #JadeFileIn
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeFileIn guid: (GUID fromString: '{5EB74A05-1227-4D91-9750-01548085FA61}')!
+JadeFileIn guid: (GUID fromString: '{5eb74a05-1227-4d91-9750-01548085fa61}')!
 JadeFileIn comment: ''!
 !JadeFileIn categoriesForClass!Unclassified! !
 !JadeFileIn methodsFor!

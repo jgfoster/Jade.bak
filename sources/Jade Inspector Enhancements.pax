@@ -3,6 +3,8 @@ package := Package name: 'Jade Inspector Enhancements'.
 package paxVersion: 1;
 	basicComment: ''.
 
+package basicPackageVersion: '0.003'.
+
 package basicScriptAt: #postinstall put: 'JadeInspector setNavigationInspector'.
 
 package classNames
@@ -10,6 +12,7 @@ package classNames
 	yourself.
 
 package methodNames
+	add: #JadeDebugger -> #inspectVariable;
 	add: #JadeInspector -> #openNavigationInspector;
 	add: 'JadeInspector class' -> #setNavigationInspector;
 	yourself.
@@ -27,6 +30,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: 'Jade Inspector';
+	add: 'Jade UI';
 	add: 'Jade UI Base';
 	yourself).
 
@@ -44,6 +48,16 @@ JadeInspector subclass: #JadeNavigationInspector
 
 
 "Loose Methods"!
+
+!JadeDebugger methodsFor!
+
+inspectVariable
+
+	| object |
+	object := gciSession oopTypeWithOop: variableListPresenter selection key key asNumber.
+	JadeInspector defaultInspectorClass showOn: object session: gciSession.
+! !
+!JadeDebugger categoriesFor: #inspectVariable!public! !
 
 !JadeInspector methodsFor!
 

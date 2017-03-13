@@ -5,7 +5,7 @@ JadeTextDocument subclass: #JadeDebugger
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'debuggers'!
-JadeDebugger guid: (GUID fromString: '{54A4DDBF-2101-4884-8568-46D6D2790987}')!
+JadeDebugger guid: (GUID fromString: '{54a4ddbf-2101-4884-8568-46d6d2790987}')!
 JadeDebugger comment: ''!
 !JadeDebugger categoriesForClass!Unclassified! !
 !JadeDebugger methodsFor!
@@ -93,13 +93,6 @@ initializeProcess: aProcess message: aString terminateOnClose: aBoolean
 		at: gsProcess oopType asInteger
 		put: self.
 	self update.
-!
-
-inspectVariable
-
-	| object |
-	object := gciSession oopTypeWithOop: variableListPresenter selection key key asNumber.
-	JadeInspector showOn: object session: gciSession.
 !
 
 onViewClosed
@@ -309,7 +302,10 @@ update
 updateCaption
 
 	self caption: (gciSession titleBarFor: 'Debugger').
-! !
+!
+
+updateSaveMethod
+	"do nothing"! !
 !JadeDebugger categoriesFor: #answer!public! !
 !JadeDebugger categoriesFor: #clearUI!public! !
 !JadeDebugger categoriesFor: #codeSourcePresenterClass!private! !
@@ -319,7 +315,6 @@ updateCaption
 !JadeDebugger categoriesFor: #getProcessList!public! !
 !JadeDebugger categoriesFor: #implement!public! !
 !JadeDebugger categoriesFor: #initializeProcess:message:terminateOnClose:!public! !
-!JadeDebugger categoriesFor: #inspectVariable!public! !
 !JadeDebugger categoriesFor: #onViewClosed!public! !
 !JadeDebugger categoriesFor: #queryCommand:!public! !
 !JadeDebugger categoriesFor: #resumeProcess!public! !
@@ -339,6 +334,7 @@ updateCaption
 !JadeDebugger categoriesFor: #terminateProcess!public! !
 !JadeDebugger categoriesFor: #update!public! !
 !JadeDebugger categoriesFor: #updateCaption!public! !
+!JadeDebugger categoriesFor: #updateSaveMethod!public! !
 
 !JadeDebugger class methodsFor!
 
