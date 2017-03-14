@@ -5,7 +5,7 @@ Object subclass: #GsShellCommand
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsShellCommand guid: (GUID fromString: '{272E69BF-5238-421B-BBA3-FAA16A2A432D}')!
+GsShellCommand guid: (GUID fromString: '{272e69bf-5238-421b-bba3-faa16a2a432d}')!
 GsShellCommand comment: ''!
 !GsShellCommand categoriesForClass!Unclassified! !
 !GsShellCommand methodsFor!

@@ -5,7 +5,7 @@ StoneCommand subclass: #StartStone
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-StartStone guid: (GUID fromString: '{9B0D628F-C8EA-44BC-A3CE-5FC0A51DEC5E}')!
+StartStone guid: (GUID fromString: '{9b0d628f-c8ea-44bc-a3ce-5fc0a51dec5e}')!
 StartStone comment: ''!
 !StartStone categoriesForClass!Unclassified! !
 !StartStone methodsFor!

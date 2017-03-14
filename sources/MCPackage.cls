@@ -5,7 +5,7 @@ GsObject subclass: #MCPackage
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCPackage guid: (GUID fromString: '{C1DA7939-7500-412E-B95B-88C59221CEAF}')!
+MCPackage guid: (GUID fromString: '{c1da7939-7500-412e-b95b-88c59221ceaf}')!
 MCPackage comment: ''!
 !MCPackage categoriesForClass!Unclassified! !
 !MCPackage methodsFor!

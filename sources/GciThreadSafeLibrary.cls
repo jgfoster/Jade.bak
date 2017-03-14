@@ -5,7 +5,7 @@ GciLibrary subclass: #GciThreadSafeLibrary
 	classVariableNames: 'OOP_ILLEGAL OOP_NIL'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciThreadSafeLibrary guid: (GUID fromString: '{9EDD7A96-1BA3-4BE6-A416-2773AC69A324}')!
+GciThreadSafeLibrary guid: (GUID fromString: '{9edd7a96-1ba3-4be6-a416-2773ac69a324}')!
 GciThreadSafeLibrary comment: ''!
 !GciThreadSafeLibrary categoriesForClass!Unclassified! !
 !GciThreadSafeLibrary methodsFor!

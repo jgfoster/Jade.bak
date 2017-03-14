@@ -5,7 +5,7 @@ GsObject subclass: #MCPatch
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCPatch guid: (GUID fromString: '{F78F623F-4CC4-4E69-BC3D-F6320FC96009}')!
+MCPatch guid: (GUID fromString: '{f78f623f-4cc4-4e69-bc3d-f6320fc96009}')!
 MCPatch comment: ''!
 !MCPatch categoriesForClass!Unclassified! !
 !MCPatch methodsFor!

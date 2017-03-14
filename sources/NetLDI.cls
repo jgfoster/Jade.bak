@@ -5,7 +5,7 @@ GsHostProcess subclass: #NetLDI
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-NetLDI guid: (GUID fromString: '{80D5192F-B67F-4EC3-B641-8853BA42A584}')!
+NetLDI guid: (GUID fromString: '{80d5192f-b67f-4ec3-b641-8853ba42a584}')!
 NetLDI comment: ''!
 !NetLDI categoriesForClass!Unclassified! !
 !NetLDI methodsFor!

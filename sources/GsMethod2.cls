@@ -5,7 +5,7 @@ GsObject subclass: #GsMethod2
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsMethod2 guid: (GUID fromString: '{D21971C6-FA84-4D7B-A684-D1DE5B9F0519}')!
+GsMethod2 guid: (GUID fromString: '{d21971c6-fa84-4d7b-a684-d1de5b9f0519}')!
 GsMethod2 comment: ''!
 !GsMethod2 categoriesForClass!Unclassified! !
 !GsMethod2 methodsFor!

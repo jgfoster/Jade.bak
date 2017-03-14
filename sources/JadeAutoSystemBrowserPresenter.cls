@@ -5,7 +5,7 @@ JadeSystemBrowserPresenter subclass: #JadeAutoSystemBrowserPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeAutoSystemBrowserPresenter guid: (GUID fromString: '{A4B39CE8-DF3A-4C06-A336-25F599463AE0}')!
+JadeAutoSystemBrowserPresenter guid: (GUID fromString: '{a4b39ce8-df3a-4c06-a336-25f599463ae0}')!
 JadeAutoSystemBrowserPresenter comment: 'This class register information in the registry (JadeAutocompletationRegistry) each time a user select a class in the hierarchy browser.
 
 see:

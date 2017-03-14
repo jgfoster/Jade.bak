@@ -5,7 +5,7 @@ JadeSessionManager subclass: #ContactsSessionManager
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-ContactsSessionManager guid: (GUID fromString: '{639E76E3-B3C9-4DCE-A9EB-F50B3D878AC8}')!
+ContactsSessionManager guid: (GUID fromString: '{639e76e3-b3c9-4dce-a9eb-f50b3d878ac8}')!
 ContactsSessionManager comment: ''!
 !ContactsSessionManager categoriesForClass!Unclassified! !
 !ContactsSessionManager class methodsFor!

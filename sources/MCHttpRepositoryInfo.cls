@@ -5,7 +5,7 @@ Object subclass: #MCHttpRepositoryInfo
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCHttpRepositoryInfo guid: (GUID fromString: '{9297CE93-5E15-48CE-8BE4-01AA17099F34}')!
+MCHttpRepositoryInfo guid: (GUID fromString: '{9297ce93-5e15-48ce-8be4-01aa17099f34}')!
 MCHttpRepositoryInfo comment: ''!
 !MCHttpRepositoryInfo categoriesForClass!Unclassified! !
 !MCHttpRepositoryInfo methodsFor!

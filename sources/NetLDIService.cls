@@ -5,7 +5,7 @@ GsWin32Service subclass: #NetLDIService
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-NetLDIService guid: (GUID fromString: '{543D39F7-0A12-4645-A8B2-560938E69D84}')!
+NetLDIService guid: (GUID fromString: '{543d39f7-0a12-4645-a8b2-560938e69d84}')!
 NetLDIService comment: ''!
 !NetLDIService categoriesForClass!Unclassified! !
 !NetLDIService methodsFor!

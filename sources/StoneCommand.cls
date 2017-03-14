@@ -5,7 +5,7 @@ GsShellCommand subclass: #StoneCommand
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-StoneCommand guid: (GUID fromString: '{90CE9FE9-C045-4CAE-929D-5E834B1E310A}')!
+StoneCommand guid: (GUID fromString: '{90ce9fe9-c045-4cae-929d-5e834b1e310a}')!
 StoneCommand comment: ''!
 !StoneCommand categoriesForClass!Unclassified! !
 !StoneCommand methodsFor!

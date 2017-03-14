@@ -5,7 +5,7 @@ GsObject subclass: #GsSession
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsSession guid: (GUID fromString: '{15F90553-CCCF-4F17-BF73-85DC91C7F6D0}')!
+GsSession guid: (GUID fromString: '{15f90553-cccf-4f17-bf73-85dc91c7f6d0}')!
 GsSession comment: ''!
 !GsSession categoriesForClass!Unclassified! !
 !GsSession methodsFor!

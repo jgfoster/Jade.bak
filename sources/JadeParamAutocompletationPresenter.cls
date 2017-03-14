@@ -5,7 +5,7 @@ JadePresenterA subclass: #JadeParamAutocompletationPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeParamAutocompletationPresenter guid: (GUID fromString: '{C2C838B3-59B2-4713-B655-86630F98210D}')!
+JadeParamAutocompletationPresenter guid: (GUID fromString: '{c2c838b3-59b2-4713-b655-86630f98210d}')!
 JadeParamAutocompletationPresenter comment: ''!
 !JadeParamAutocompletationPresenter categoriesForClass!Unclassified! !
 !JadeParamAutocompletationPresenter methodsFor!

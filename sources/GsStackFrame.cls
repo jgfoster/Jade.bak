@@ -5,7 +5,7 @@ GsObject subclass: #GsStackFrame
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsStackFrame guid: (GUID fromString: '{06285EC9-259C-47B7-980F-C6ECA7CED95E}')!
+GsStackFrame guid: (GUID fromString: '{06285ec9-259c-47b7-980f-c6eca7ced95e}')!
 GsStackFrame comment: ''!
 !GsStackFrame categoriesForClass!Unclassified! !
 !GsStackFrame methodsFor!

@@ -5,7 +5,7 @@ GsEventError subclass: #GsHardBreak
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsHardBreak guid: (GUID fromString: '{DDC5CCC6-21B0-4B56-BAD1-F688B283CA6C}')!
+GsHardBreak guid: (GUID fromString: '{ddc5ccc6-21b0-4b56-bad1-f688b283ca6c}')!
 GsHardBreak comment: ''!
 !GsHardBreak categoriesForClass!Unclassified! !
 !GsHardBreak class methodsFor!

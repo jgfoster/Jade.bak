@@ -5,7 +5,7 @@ Object subclass: #JadeAutocompletationRegistry
 	classVariableNames: 'Default'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeAutocompletationRegistry guid: (GUID fromString: '{A71207C7-78A5-41B5-8B3C-BE4A42FD676F}')!
+JadeAutocompletationRegistry guid: (GUID fromString: '{a71207c7-78a5-41b5-8b3c-be4a42fd676f}')!
 JadeAutocompletationRegistry comment: 'This class is used to store JadeGsClassShape.
 
 With a collection of instances of JadeGsClassShape this class can hold information about GemStone/S classes and methods.

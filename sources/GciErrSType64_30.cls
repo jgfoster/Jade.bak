@@ -5,7 +5,7 @@ GciErrSType subclass: #GciErrSType64_30
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciErrSType64_30 guid: (GUID fromString: '{2CFF1EDF-058D-44C9-A9AB-9A6E7BF669F1}')!
+GciErrSType64_30 guid: (GUID fromString: '{2cff1edf-058d-44c9-a9ab-9a6e7bf669f1}')!
 GciErrSType64_30 comment: ''!
 !GciErrSType64_30 categoriesForClass!Unclassified! !
 !GciErrSType64_30 methodsFor!

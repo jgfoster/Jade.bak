@@ -5,7 +5,7 @@ Object subclass: #JadeAutoMap
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeAutoMap guid: (GUID fromString: '{15764AC6-5FD1-4C64-94F6-4DFE155108D4}')!
+JadeAutoMap guid: (GUID fromString: '{15764ac6-5fd1-4c64-94f6-4dfe155108d4}')!
 JadeAutoMap comment: 'This class is used to map <names> with JadeGsClassShape.
 
 The idea is to create instances of this classes to relate names with autocompleation classes.

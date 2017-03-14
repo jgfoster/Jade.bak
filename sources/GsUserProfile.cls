@@ -5,7 +5,7 @@ GsObject subclass: #GsUserProfile
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsUserProfile guid: (GUID fromString: '{399E972A-24DD-4E6C-A458-FC8E949470A5}')!
+GsUserProfile guid: (GUID fromString: '{399e972a-24dd-4e6c-a458-fc8e949470a5}')!
 GsUserProfile comment: ''!
 !GsUserProfile categoriesForClass!Unclassified! !
 !GsUserProfile methodsFor!

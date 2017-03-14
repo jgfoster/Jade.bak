@@ -5,7 +5,7 @@ GsRuntimeError subclass: #GsDoesNotUnderstand
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsDoesNotUnderstand guid: (GUID fromString: '{47A598C1-9046-44F2-BDB5-954383DD1EF5}')!
+GsDoesNotUnderstand guid: (GUID fromString: '{47a598c1-9046-44f2-bdb5-954383dd1ef5}')!
 GsDoesNotUnderstand comment: ''!
 !GsDoesNotUnderstand categoriesForClass!Unclassified! !
 !GsDoesNotUnderstand class methodsFor!

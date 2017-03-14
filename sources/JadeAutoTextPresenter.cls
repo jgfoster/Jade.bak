@@ -5,7 +5,7 @@ JadeTextPresenter subclass: #JadeAutoTextPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeAutoTextPresenter guid: (GUID fromString: '{F845E86E-2C61-4193-A936-E7C4D7078136}')!
+JadeAutoTextPresenter guid: (GUID fromString: '{f845e86e-2c61-4193-a936-e7c4d7078136}')!
 JadeAutoTextPresenter comment: 'This class use the registry (JadeAutocompletationRegistry)  to get information about the GsClasses and methods.
 
 It uses this information to show autocompletation options for the current text being typed.

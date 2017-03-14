@@ -5,7 +5,7 @@ JadeShell subclass: #ObjectLogEntryViewer
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-ObjectLogEntryViewer guid: (GUID fromString: '{EA1914B4-9890-4A42-A223-F1E04095018F}')!
+ObjectLogEntryViewer guid: (GUID fromString: '{ea1914b4-9890-4a42-a223-f1e04095018f}')!
 ObjectLogEntryViewer comment: ''!
 !ObjectLogEntryViewer categoriesForClass!Unclassified! !
 !ObjectLogEntryViewer methodsFor!

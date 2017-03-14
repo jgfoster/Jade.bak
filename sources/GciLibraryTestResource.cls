@@ -5,7 +5,7 @@ TestResource subclass: #GciLibraryTestResource
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciLibraryTestResource guid: (GUID fromString: '{689B0A0E-E39A-43AB-AE67-060AF181BB24}')!
+GciLibraryTestResource guid: (GUID fromString: '{689b0a0e-e39a-43ab-ae67-060af181bb24}')!
 GciLibraryTestResource comment: ''!
 !GciLibraryTestResource categoriesForClass!Unclassified! !
 !GciLibraryTestResource methodsFor!

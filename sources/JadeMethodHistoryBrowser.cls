@@ -5,7 +5,7 @@ JadeShell subclass: #JadeMethodHistoryBrowser
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeMethodHistoryBrowser guid: (GUID fromString: '{1A2BEFC8-8219-4AE2-BD65-318E08DAC9BF}')!
+JadeMethodHistoryBrowser guid: (GUID fromString: '{1a2befc8-8219-4ae2-bd65-318e08dac9bf}')!
 JadeMethodHistoryBrowser comment: ''!
 !JadeMethodHistoryBrowser categoriesForClass!Unclassified! !
 !JadeMethodHistoryBrowser methodsFor!

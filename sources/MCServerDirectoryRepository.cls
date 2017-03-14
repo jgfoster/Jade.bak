@@ -5,6 +5,6 @@ MCDirectoryRepository subclass: #MCServerDirectoryRepository
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCServerDirectoryRepository guid: (GUID fromString: '{45FEE87B-B286-47B5-852A-E006BFB4FC16}')!
+MCServerDirectoryRepository guid: (GUID fromString: '{45fee87b-b286-47b5-852a-e006bfb4fc16}')!
 MCServerDirectoryRepository comment: ''!
 !MCServerDirectoryRepository categoriesForClass!Unclassified! !

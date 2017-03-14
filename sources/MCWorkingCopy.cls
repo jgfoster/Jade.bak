@@ -5,7 +5,7 @@ GsObject subclass: #MCWorkingCopy
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCWorkingCopy guid: (GUID fromString: '{D388C1A7-ECC0-4FD6-B7CE-78433225BFA9}')!
+MCWorkingCopy guid: (GUID fromString: '{d388c1a7-ecc0-4fd6-b7ce-78433225bfa9}')!
 MCWorkingCopy comment: ''!
 !MCWorkingCopy categoriesForClass!Unclassified! !
 !MCWorkingCopy methodsFor!

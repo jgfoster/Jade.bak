@@ -5,7 +5,7 @@ Dialog subclass: #MCHttpRepositoryInfoDialog
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCHttpRepositoryInfoDialog guid: (GUID fromString: '{B2A7D8A5-B9A7-4DB2-BD09-28B3289D28F8}')!
+MCHttpRepositoryInfoDialog guid: (GUID fromString: '{b2a7d8a5-b9a7-4db2-bd09-28b3289d28f8}')!
 MCHttpRepositoryInfoDialog comment: ''!
 !MCHttpRepositoryInfoDialog categoriesForClass!Unclassified! !
 !MCHttpRepositoryInfoDialog methodsFor!

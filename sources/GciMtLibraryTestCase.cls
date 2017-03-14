@@ -5,7 +5,7 @@ GciLibraryTestCase subclass: #GciMtLibraryTestCase
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciMtLibraryTestCase guid: (GUID fromString: '{78C22419-3B80-4F29-83FC-85940ADA7460}')!
+GciMtLibraryTestCase guid: (GUID fromString: '{78c22419-3b80-4f29-83fc-85940ada7460}')!
 GciMtLibraryTestCase comment: ''!
 !GciMtLibraryTestCase categoriesForClass!Unclassified! !
 !GciMtLibraryTestCase methodsFor!

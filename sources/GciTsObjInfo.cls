@@ -5,7 +5,7 @@ ExternalStructure subclass: #GciTsObjInfo
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciTsObjInfo guid: (GUID fromString: '{6A0671AC-78FF-43D1-B841-525B61598094}')!
+GciTsObjInfo guid: (GUID fromString: '{6a0671ac-78ff-43d1-b841-525b61598094}')!
 GciTsObjInfo comment: '
 class GciTsObjInfo {
 	public:

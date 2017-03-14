@@ -5,7 +5,7 @@ ULARGE_INTEGER subclass: #OopType64
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-OopType64 guid: (GUID fromString: '{E5D12262-5936-4C83-B2C9-026C8197FBC9}')!
+OopType64 guid: (GUID fromString: '{e5d12262-5936-4c83-b2c9-026c8197fbc9}')!
 OopType64 comment: '#define OOP_TAG_RAM_OOP     0x0 /* 2r000  memory pointer ObjSType* */
 #define OOP_TAG_POM_OOP     0x1 /* 2r001  disk objId */
   // disk objIds have the form 0x0000nnnnnnnnnn01 , with the 

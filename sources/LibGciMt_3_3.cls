@@ -5,7 +5,7 @@ GciMultiThreadedLibrary subclass: #LibGciMt_3_3
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciMt_3_3 guid: (GUID fromString: '{68DB187D-A739-41BE-AD58-A476218B1B04}')!
+LibGciMt_3_3 guid: (GUID fromString: '{68db187d-a739-41be-ad58-a476218b1b04}')!
 LibGciMt_3_3 comment: ''!
 !LibGciMt_3_3 categoriesForClass!Unclassified! !
 !LibGciMt_3_3 methodsFor!

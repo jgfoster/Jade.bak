@@ -5,7 +5,7 @@ MCDefinition subclass: #MCClassDefinition
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCClassDefinition guid: (GUID fromString: '{4D46B46E-F290-4992-93C5-79CAEE623C11}')!
+MCClassDefinition guid: (GUID fromString: '{4d46b46e-f290-4992-93c5-79caee623c11}')!
 MCClassDefinition comment: ''!
 !MCClassDefinition categoriesForClass!Unclassified! !
 !MCClassDefinition methodsFor!

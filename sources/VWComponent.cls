@@ -5,7 +5,7 @@ Object subclass: #VWComponent
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-VWComponent guid: (GUID fromString: '{408B2BD9-180C-481F-970B-1EA93BA60CDD}')!
+VWComponent guid: (GUID fromString: '{408b2bd9-180c-481f-970b-1ea93ba60cdd}')!
 VWComponent comment: ''!
 !VWComponent categoriesForClass!Unclassified! !
 !VWComponent methodsFor!

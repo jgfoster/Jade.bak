@@ -5,7 +5,7 @@ GsShellCommand subclass: #CopyDBF
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-CopyDBF guid: (GUID fromString: '{99DF6986-C176-4009-9E4E-2EDEBF810C98}')!
+CopyDBF guid: (GUID fromString: '{99df6986-c176-4009-9e4e-2edebf810c98}')!
 CopyDBF comment: ''!
 !CopyDBF categoriesForClass!Unclassified! !
 !CopyDBF methodsFor!

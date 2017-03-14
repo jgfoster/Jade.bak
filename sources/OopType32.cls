@@ -5,7 +5,7 @@ DWORD subclass: #OopType32
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-OopType32 guid: (GUID fromString: '{5E753C2A-33E0-438C-8B48-549E19CCC28E}')!
+OopType32 guid: (GUID fromString: '{5e753c2a-33e0-438c-8b48-549e19ccc28e}')!
 OopType32 comment: ''!
 !OopType32 categoriesForClass!Unclassified! !
 !OopType32 methodsFor!

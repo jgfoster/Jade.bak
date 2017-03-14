@@ -5,7 +5,7 @@ GsShellCommand subclass: #NetLDICommand
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-NetLDICommand guid: (GUID fromString: '{FE6BC418-DBBC-4042-B124-01C2C1D2F276}')!
+NetLDICommand guid: (GUID fromString: '{fe6bc418-dbbc-4042-b124-01c2c1d2f276}')!
 NetLDICommand comment: ''!
 !NetLDICommand categoriesForClass!Unclassified! !
 !NetLDICommand methodsFor!

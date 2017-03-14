@@ -5,7 +5,7 @@ Object subclass: #VWSourceFile
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-VWSourceFile guid: (GUID fromString: '{E9CA297E-6F08-4DBD-AFC9-5DE48A98E4C0}')!
+VWSourceFile guid: (GUID fromString: '{e9ca297e-6f08-4dbd-afc9-5de48a98e4c0}')!
 VWSourceFile comment: ''!
 !VWSourceFile categoriesForClass!Unclassified! !
 !VWSourceFile methodsFor!

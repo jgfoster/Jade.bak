@@ -5,6 +5,6 @@ ByteArray variableByteSubclass: #QuadByteString
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-QuadByteString guid: (GUID fromString: '{6A0947B2-6DC5-44AD-A5FF-91BA5DBEDE53}')!
+QuadByteString guid: (GUID fromString: '{6a0947b2-6dc5-44ad-a5ff-91ba5dbede53}')!
 QuadByteString comment: ''!
 !QuadByteString categoriesForClass!Unclassified! !

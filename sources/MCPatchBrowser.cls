@@ -5,7 +5,7 @@ JadeShell subclass: #MCPatchBrowser
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCPatchBrowser guid: (GUID fromString: '{6A36F578-7C9D-4ACE-A3B0-D2E1313FBBCA}')!
+MCPatchBrowser guid: (GUID fromString: '{6a36f578-7c9d-4ace-a3b0-d2e1313fbbca}')!
 MCPatchBrowser comment: ''!
 !MCPatchBrowser categoriesForClass!Unclassified! !
 !MCPatchBrowser methodsFor!

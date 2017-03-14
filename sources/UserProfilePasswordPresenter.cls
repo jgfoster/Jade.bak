@@ -5,7 +5,7 @@ JadePresenterA subclass: #UserProfilePasswordPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-UserProfilePasswordPresenter guid: (GUID fromString: '{5BBE25B8-5AFD-4858-AC78-843769085AA8}')!
+UserProfilePasswordPresenter guid: (GUID fromString: '{5bbe25b8-5afd-4858-ac78-843769085aa8}')!
 UserProfilePasswordPresenter comment: ''!
 !UserProfilePasswordPresenter categoriesForClass!Unclassified! !
 !UserProfilePasswordPresenter methodsFor!

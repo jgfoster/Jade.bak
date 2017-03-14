@@ -5,7 +5,7 @@ JadePresenterA subclass: #JadeRegistryPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeRegistryPresenter guid: (GUID fromString: '{ADFFFC60-58D5-4425-979F-30FDCEA64884}')!
+JadeRegistryPresenter guid: (GUID fromString: '{adfffc60-58d5-4425-979f-30fdcea64884}')!
 JadeRegistryPresenter comment: ''!
 !JadeRegistryPresenter categoriesForClass!Unclassified! !
 !JadeRegistryPresenter methodsFor!

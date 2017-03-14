@@ -5,7 +5,7 @@ GsRuntimeError subclass: #GsApplicationError
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsApplicationError guid: (GUID fromString: '{D764751F-9E17-4F7E-ABC9-5BA5384631A1}')!
+GsApplicationError guid: (GUID fromString: '{d764751f-9e17-4f7e-abc9-5ba5384631a1}')!
 GsApplicationError comment: ''!
 !GsApplicationError categoriesForClass!Unclassified! !
 !GsApplicationError class methodsFor!

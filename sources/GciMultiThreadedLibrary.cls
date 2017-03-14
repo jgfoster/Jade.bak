@@ -5,7 +5,7 @@ GciLibrary subclass: #GciMultiThreadedLibrary
 	classVariableNames: 'OOP_ILLEGAL OOP_NIL'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciMultiThreadedLibrary guid: (GUID fromString: '{FB4CDA56-2508-4FD1-BAC4-FF32805C1DD5}')!
+GciMultiThreadedLibrary guid: (GUID fromString: '{fb4cda56-2508-4fd1-bac4-ff32805c1dd5}')!
 GciMultiThreadedLibrary comment: ''!
 !GciMultiThreadedLibrary categoriesForClass!Unclassified! !
 !GciMultiThreadedLibrary methodsFor!

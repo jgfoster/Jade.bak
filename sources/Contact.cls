@@ -5,7 +5,7 @@ Model subclass: #Contact
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-Contact guid: (GUID fromString: '{4F617257-BA88-4FCE-AD0B-5D8918FEA0EF}')!
+Contact guid: (GUID fromString: '{4f617257-ba88-4fce-ad0b-5d8918fea0ef}')!
 Contact comment: '
 | segment dict newUser |
 segment := Segment newInRepository: SystemRepository.

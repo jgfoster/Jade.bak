@@ -5,7 +5,7 @@ Object subclass: #MCVersionName
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCVersionName guid: (GUID fromString: '{F4AFBC1C-2C99-4741-8FBA-5C571F07CA36}')!
+MCVersionName guid: (GUID fromString: '{f4afbc1c-2c99-4741-8fba-5c571f07ca36}')!
 MCVersionName comment: ''!
 !MCVersionName categoriesForClass!Unclassified! !
 !MCVersionName methodsFor!

@@ -5,7 +5,7 @@ JadeTextDocument subclass: #JadeInspector
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeInspector guid: (GUID fromString: '{7CADE1F1-0352-4FF0-A34D-888A4DE0CD14}')!
+JadeInspector guid: (GUID fromString: '{7cade1f1-0352-4ff0-a34d-888a4de0cd14}')!
 JadeInspector comment: ''!
 !JadeInspector categoriesForClass!Unclassified! !
 !JadeInspector methodsFor!

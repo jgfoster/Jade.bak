@@ -5,7 +5,7 @@ DWORD subclass: #GciSessionId
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciSessionId guid: (GUID fromString: '{63B7B17D-EE05-4344-8A1F-E3EC5ABC32E8}')!
+GciSessionId guid: (GUID fromString: '{63b7b17d-ee05-4344-8a1f-e3ec5abc32e8}')!
 GciSessionId comment: ''!
 !GciSessionId categoriesForClass!Unclassified! !
 !GciSessionId methodsFor!

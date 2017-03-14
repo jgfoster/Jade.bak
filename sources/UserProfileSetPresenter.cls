@@ -5,7 +5,7 @@ JadePresenterA subclass: #UserProfileSetPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-UserProfileSetPresenter guid: (GUID fromString: '{2E2A392C-D8FE-4A26-84C1-770DA035658E}')!
+UserProfileSetPresenter guid: (GUID fromString: '{2e2a392c-d8fe-4a26-84c1-770da035658e}')!
 UserProfileSetPresenter comment: ''!
 !UserProfileSetPresenter categoriesForClass!Unclassified! !
 !UserProfileSetPresenter methodsFor!

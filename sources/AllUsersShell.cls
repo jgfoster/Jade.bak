@@ -5,7 +5,7 @@ JadeShell subclass: #AllUsersShell
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-AllUsersShell guid: (GUID fromString: '{2E98AD2C-4678-44A7-86F8-CD5D4C42CF12}')!
+AllUsersShell guid: (GUID fromString: '{2e98ad2c-4678-44a7-86f8-cd5d4c42cf12}')!
 AllUsersShell comment: ''!
 !AllUsersShell categoriesForClass!Unclassified! !
 !AllUsersShell methodsFor!

@@ -5,7 +5,7 @@ JadeServer subclass: #JadeServer64bit
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeServer64bit guid: (GUID fromString: '{36FD8C46-21B4-4852-977C-1A9889969313}')!
+JadeServer64bit guid: (GUID fromString: '{36fd8c46-21b4-4852-977c-1a9889969313}')!
 JadeServer64bit comment: ''!
 !JadeServer64bit categoriesForClass!Unclassified! !
 !JadeServer64bit methodsFor!

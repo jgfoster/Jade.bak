@@ -5,7 +5,7 @@ GsApplicationError subclass: #GsHaltError
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsHaltError guid: (GUID fromString: '{86CA4EF5-C363-4A19-820B-21230E7D7949}')!
+GsHaltError guid: (GUID fromString: '{86ca4ef5-c363-4a19-820b-21230e7d7949}')!
 GsHaltError comment: ''!
 !GsHaltError categoriesForClass!Unclassified! !
 !GsHaltError class methodsFor!

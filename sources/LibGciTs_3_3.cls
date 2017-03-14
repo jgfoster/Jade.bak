@@ -5,7 +5,7 @@ GciThreadSafeLibrary subclass: #LibGciTs_3_3
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciTs_3_3 guid: (GUID fromString: '{2312615D-0E2E-4E4E-8334-B0B5E5586E53}')!
+LibGciTs_3_3 guid: (GUID fromString: '{2312615d-0e2e-4e4e-8334-b0b5e5586e53}')!
 LibGciTs_3_3 comment: ''!
 !LibGciTs_3_3 categoriesForClass!Unclassified! !
 !LibGciTs_3_3 methodsFor!

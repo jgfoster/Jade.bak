@@ -5,7 +5,7 @@ RBFormatter subclass: #JGFormatter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JGFormatter guid: (GUID fromString: '{BB6283CA-3084-47F9-97DD-1B30DDD12D3A}')!
+JGFormatter guid: (GUID fromString: '{bb6283ca-3084-47f9-97dd-1b30ddd12d3a}')!
 JGFormatter comment: ''!
 !JGFormatter categoriesForClass!System-Compiler-Formatters! !
 !JGFormatter methodsFor!

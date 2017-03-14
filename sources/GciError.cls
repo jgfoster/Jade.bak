@@ -5,7 +5,7 @@ Error subclass: #GciError
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciError guid: (GUID fromString: '{071E2ED5-4EBD-4862-B435-48DE5B29CFD6}')!
+GciError guid: (GUID fromString: '{071e2ed5-4ebd-4862-b435-48de5b29cfd6}')!
 GciError comment: ''!
 !GciError categoriesForClass!Unclassified! !
 !GciError class methodsFor!

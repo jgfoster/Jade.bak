@@ -5,7 +5,7 @@ Object subclass: #VWMethods
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-VWMethods guid: (GUID fromString: '{2AD4F4DE-E467-49DE-BBB0-15E24ABEE6DF}')!
+VWMethods guid: (GUID fromString: '{2ad4f4de-e467-49de-bbb0-15e24abee6df}')!
 VWMethods comment: ''!
 !VWMethods categoriesForClass!Unclassified! !
 !VWMethods methodsFor!

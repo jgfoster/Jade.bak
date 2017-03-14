@@ -5,7 +5,7 @@ Object subclass: #System
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-System guid: (GUID fromString: '{BE3A2D98-7395-4E3B-9CC9-4D18F69E26DE}')!
+System guid: (GUID fromString: '{be3a2d98-7395-4e3b-9cc9-4d18f69e26de}')!
 System comment: ''!
 !System categoriesForClass!Unclassified! !
 !System class methodsFor!

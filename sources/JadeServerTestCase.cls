@@ -5,7 +5,7 @@ TestCase subclass: #JadeServerTestCase
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeServerTestCase guid: (GUID fromString: '{494DCD74-2E61-4AA2-9836-C23515C37947}')!
+JadeServerTestCase guid: (GUID fromString: '{494dcd74-2e61-4aa2-9836-c23515c37947}')!
 JadeServerTestCase comment: ''!
 !JadeServerTestCase categoriesForClass!Unclassified! !
 !JadeServerTestCase methodsFor!

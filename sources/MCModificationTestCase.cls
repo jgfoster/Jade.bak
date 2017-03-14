@@ -5,7 +5,7 @@ TestCase subclass: #MCModificationTestCase
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCModificationTestCase guid: (GUID fromString: '{C463B1C3-C30B-4A60-9509-7A646157E7DA}')!
+MCModificationTestCase guid: (GUID fromString: '{c463b1c3-c30b-4a60-9509-7a646157e7da}')!
 MCModificationTestCase comment: ''!
 !MCModificationTestCase categoriesForClass!Unclassified! !
 !MCModificationTestCase methodsFor!

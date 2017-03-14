@@ -5,7 +5,7 @@ CodeSourcePresenter subclass: #TranscriptPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-TranscriptPresenter guid: (GUID fromString: '{A7807134-2577-4A89-87CD-7070EBF8CD2B}')!
+TranscriptPresenter guid: (GUID fromString: '{a7807134-2577-4a89-87cd-7070ebf8cd2b}')!
 TranscriptPresenter comment: ''!
 !TranscriptPresenter categoriesForClass!Unclassified! !
 !TranscriptPresenter methodsFor!

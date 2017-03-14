@@ -5,7 +5,7 @@ TestCase subclass: #JGFormatterTest
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JGFormatterTest guid: (GUID fromString: '{596AFE05-96A1-4FD0-98C4-83157DF69411}')!
+JGFormatterTest guid: (GUID fromString: '{596afe05-96a1-4fd0-98c4-83157df69411}')!
 JGFormatterTest comment: ''!
 !JGFormatterTest categoriesForClass!SUnit! !
 !JGFormatterTest methodsFor!

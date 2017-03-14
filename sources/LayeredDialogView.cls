@@ -5,7 +5,7 @@ DialogView subclass: #LayeredDialogView
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LayeredDialogView guid: (GUID fromString: '{5A9072ED-06CC-4DA5-8C06-66054ABB7D70}')!
+LayeredDialogView guid: (GUID fromString: '{5a9072ed-06cc-4da5-8c06-66054abb7d70}')!
 LayeredDialogView comment: ''!
 !LayeredDialogView categoriesForClass!Unclassified! !
 !LayeredDialogView methodsFor!

@@ -5,7 +5,7 @@ JadeTextDocument subclass: #JadeDebugger
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'debuggers'!
-JadeDebugger guid: (GUID fromString: '{54A4DDBF-2101-4884-8568-46D6D2790987}')!
+JadeDebugger guid: (GUID fromString: '{54a4ddbf-2101-4884-8568-46d6d2790987}')!
 JadeDebugger comment: ''!
 !JadeDebugger categoriesForClass!Unclassified! !
 !JadeDebugger methodsFor!

@@ -5,7 +5,7 @@ Object subclass: #GsHostProcess
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsHostProcess guid: (GUID fromString: '{317D129C-B9F4-4DF1-8142-4D40E64D6102}')!
+GsHostProcess guid: (GUID fromString: '{317d129c-b9f4-4df1-8142-4d40e64d6102}')!
 GsHostProcess comment: ''!
 !GsHostProcess categoriesForClass!Unclassified! !
 !GsHostProcess methodsFor!

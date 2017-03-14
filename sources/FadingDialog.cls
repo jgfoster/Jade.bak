@@ -5,7 +5,7 @@ Dialog subclass: #FadingDialog
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-FadingDialog guid: (GUID fromString: '{81825E2C-53D9-43B4-8404-860898A3830F}')!
+FadingDialog guid: (GUID fromString: '{81825e2c-53d9-43b4-8404-860898a3830f}')!
 FadingDialog comment: ''!
 !FadingDialog categoriesForClass!Unclassified! !
 !FadingDialog methodsFor!

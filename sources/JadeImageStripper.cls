@@ -5,7 +5,7 @@ ImageStripper subclass: #JadeImageStripper
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeImageStripper guid: (GUID fromString: '{773AB738-9D79-41CB-B663-DF50BCE9C3E5}')!
+JadeImageStripper guid: (GUID fromString: '{773ab738-9d79-41cb-b663-df50bce9c3e5}')!
 JadeImageStripper comment: ''!
 !JadeImageStripper categoriesForClass!Unclassified! !
 !JadeImageStripper methodsFor!

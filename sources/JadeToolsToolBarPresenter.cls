@@ -5,7 +5,7 @@ JadePresenter subclass: #JadeToolsToolBarPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeToolsToolBarPresenter guid: (GUID fromString: '{7109CDBE-8FA3-4A9D-A3D2-0C1295A3256E}')!
+JadeToolsToolBarPresenter guid: (GUID fromString: '{7109cdbe-8fa3-4a9d-a3d2-0c1295a3256e}')!
 JadeToolsToolBarPresenter comment: ''!
 !JadeToolsToolBarPresenter categoriesForClass!Unclassified! !
 !JadeToolsToolBarPresenter methodsFor!

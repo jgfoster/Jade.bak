@@ -5,7 +5,7 @@ Object subclass: #GsNRS
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsNRS guid: (GUID fromString: '{DA99D714-2195-4901-A28B-776D4F8178A0}')!
+GsNRS guid: (GUID fromString: '{da99d714-2195-4901-a28b-776d4f8178a0}')!
 GsNRS comment: ''!
 !GsNRS categoriesForClass!Unclassified! !
 !GsNRS methodsFor!

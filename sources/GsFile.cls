@@ -5,7 +5,7 @@ Object subclass: #GsFile
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsFile guid: (GUID fromString: '{728CD08F-BD29-424A-A492-C0127A9CD064}')!
+GsFile guid: (GUID fromString: '{728cd08f-bd29-424a-a492-c0127a9cd064}')!
 GsFile comment: ''!
 !GsFile categoriesForClass!Unclassified! !
 !GsFile class methodsFor!
