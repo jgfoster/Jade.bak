@@ -138,7 +138,7 @@ describeMethod: aMethod
 	"Provide info needed to create a GsMethod in Jade client"
 
 	writeStream := WriteStream on: String new.
-	self _describeMethod: ([aMethod homeContext] on: Error do: [:ex | aMethod]).
+	self _describeMethod: (self homeMethodFor: aMethod).
 	^writeStream contents
 !
 
@@ -162,6 +162,10 @@ executeString: aString fromContext: anObject
 	^aString
 		evaluateInContext: anObject 
 		symbolList: GsSession currentSession symbolList. !
+
+homeMethodFor: aGsMethod
+
+	^aGsMethod!
 
 initialize
 
@@ -349,6 +353,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #describeMethod:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #errorListFor:!public! !
 !JadeServer categoriesFor: #executeString:fromContext:!public! !
+!JadeServer categoriesFor: #homeMethodFor:!public! !
 !JadeServer categoriesFor: #initialize!public! !
 !JadeServer categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer categoriesFor: #is32Bit!public! !

@@ -236,7 +236,7 @@ _sourceForProcess: gsProcess frame: level
 			nextPutAll: '></var>'; lf;
 			yourself.
 	].
-	homeMethod := [gsMethod homeMethod] on: Error do: [:ex | gsMethod].
+	homeMethod := self homeMethodFor: gsMethod.
 	writeStream 
 		nextPutAll: '<source';
 		nextPutAll: ' ><';
@@ -456,7 +456,7 @@ _stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
 	array := gsProcess _localStepPointAt: anInteger.
 	localStepPoint := array at: 1.
 	localMethod := array at: 2.
-	homeMethod := localMethod homeMethod.
+	homeMethod := self homeMethodFor: localMethod.
 	localMethod == homeMethod ifTrue: [^localStepPoint].
 	array := localMethod _sourceOffsetsOfSends.
 	index := array indexOf: (localMethod _sourceOffsetsAt: localStepPoint).
