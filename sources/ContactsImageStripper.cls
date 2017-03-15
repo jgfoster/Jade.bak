@@ -5,7 +5,7 @@ JadeImageStripper subclass: #ContactsImageStripper
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-ContactsImageStripper guid: (GUID fromString: '{9B58C50C-364B-4F25-B578-718999CB9C5B}')!
+ContactsImageStripper guid: (GUID fromString: '{9b58c50c-364b-4f25-b578-718999cb9c5b}')!
 ContactsImageStripper comment: ''!
 !ContactsImageStripper categoriesForClass!Unclassified! !
 !ContactsImageStripper methodsFor!

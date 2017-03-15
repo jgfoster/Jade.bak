@@ -5,7 +5,7 @@ GsError subclass: #GsAnsiError
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsAnsiError guid: (GUID fromString: '{F7430395-3A25-4EEB-BC48-8AAE8EB0A73B}')!
+GsAnsiError guid: (GUID fromString: '{f7430395-3a25-4eeb-bc48-8aae8eb0a73b}')!
 GsAnsiError comment: ''!
 !GsAnsiError categoriesForClass!Unclassified! !
 !GsAnsiError class methodsFor!

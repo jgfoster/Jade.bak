@@ -5,7 +5,7 @@ GciErrSType subclass: #GciErrSType32
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciErrSType32 guid: (GUID fromString: '{A4559093-6277-4975-A45B-6F8FA8285429}')!
+GciErrSType32 guid: (GUID fromString: '{a4559093-6277-4975-a45b-6f8fa8285429}')!
 GciErrSType32 comment: 'GciErrSType
 	<C: typedef struct {
 			OopType category;

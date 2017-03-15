@@ -5,7 +5,7 @@ ExternalLibrary subclass: #GciLibrary
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciLibrary guid: (GUID fromString: '{AD9A79E0-D6EF-4D77-83FC-015B118B2331}')!
+GciLibrary guid: (GUID fromString: '{ad9a79e0-d6ef-4d77-83fc-015b118b2331}')!
 GciLibrary comment: ''!
 !GciLibrary categoriesForClass!Unclassified! !
 !GciLibrary methodsFor!

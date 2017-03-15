@@ -5,7 +5,7 @@ JadePresenterA subclass: #MySessionPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MySessionPresenter guid: (GUID fromString: '{B36A1C7D-3698-4294-B47D-101C34EDF22D}')!
+MySessionPresenter guid: (GUID fromString: '{b36a1c7d-3698-4294-b47d-101c34edf22d}')!
 MySessionPresenter comment: ''!
 !MySessionPresenter categoriesForClass!Unclassified! !
 !MySessionPresenter methodsFor!

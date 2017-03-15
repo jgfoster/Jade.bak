@@ -5,7 +5,7 @@ MCRepository subclass: #MCFileBasedRepository
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCFileBasedRepository guid: (GUID fromString: '{02AB65A3-7933-4FF3-A1C8-7960C4414821}')!
+MCFileBasedRepository guid: (GUID fromString: '{02ab65a3-7933-4ff3-a1c8-7960c4414821}')!
 MCFileBasedRepository comment: ''!
 !MCFileBasedRepository categoriesForClass!Unclassified! !
 !MCFileBasedRepository methodsFor!

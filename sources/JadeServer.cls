@@ -5,7 +5,7 @@ Object subclass: #JadeServer
 	classVariableNames: 'AllGroups AllUsers ClassOrganizer ClientForwarder GemStoneError Globals GsMethodDictionary ProcessorScheduler SymbolDictionary System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
-JadeServer guid: (GUID fromString: '{FC038152-9707-4C5F-8977-A1F8D02EB005}')!
+JadeServer guid: (GUID fromString: '{fc038152-9707-4c5f-8977-a1f8d02eb005}')!
 JadeServer comment: '(System _sessionStateAt: 3).	"pre-3.2"
 (System __sessionStateAt: 3).	"3.2 and on"
 GciSession allInstances , GciSessionWithSocket allInstances do: [:each | each initializeServer].

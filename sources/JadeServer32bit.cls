@@ -5,7 +5,7 @@ JadeServer subclass: #JadeServer32bit
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeServer32bit guid: (GUID fromString: '{6BD4AC2A-D6A4-438A-9B0B-E050DD50B3A2}')!
+JadeServer32bit guid: (GUID fromString: '{6bd4ac2a-d6a4-438a-9b0b-e050dd50b3a2}')!
 JadeServer32bit comment: ''!
 !JadeServer32bit categoriesForClass!Unclassified! !
 !JadeServer32bit methodsFor!

@@ -5,7 +5,7 @@ StoneCommand subclass: #StopStone
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-StopStone guid: (GUID fromString: '{6E6EC07C-E746-4E12-BF17-08F6B080D49E}')!
+StopStone guid: (GUID fromString: '{6e6ec07c-e746-4e12-bf17-08f6b080d49e}')!
 StopStone comment: ''!
 !StopStone categoriesForClass!Unclassified! !
 !StopStone methodsFor!

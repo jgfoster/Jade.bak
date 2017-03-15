@@ -5,7 +5,7 @@ MCRepository subclass: #MCDictionaryRepository
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCDictionaryRepository guid: (GUID fromString: '{E3F38D70-6EDE-4358-AC87-4309206F17DB}')!
+MCDictionaryRepository guid: (GUID fromString: '{e3f38d70-6ede-4358-ac87-4309206f17db}')!
 MCDictionaryRepository comment: ''!
 !MCDictionaryRepository categoriesForClass!Unclassified! !
 !MCDictionaryRepository methodsFor!

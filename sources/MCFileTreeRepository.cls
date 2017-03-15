@@ -5,7 +5,7 @@ MCServerDirectoryRepository subclass: #MCFileTreeRepository
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCFileTreeRepository guid: (GUID fromString: '{55009128-51C7-4147-86A7-9ABD1FA99F29}')!
+MCFileTreeRepository guid: (GUID fromString: '{55009128-51c7-4147-86a7-9abd1fa99f29}')!
 MCFileTreeRepository comment: ''!
 !MCFileTreeRepository categoriesForClass!Unclassified! !
 !MCFileTreeRepository methodsFor!

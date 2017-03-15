@@ -5,7 +5,7 @@ JadeShell subclass: #ObjectLogBrowser
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-ObjectLogBrowser guid: (GUID fromString: '{D6406BCA-C1B0-4A7B-81CF-66AC7AB28E63}')!
+ObjectLogBrowser guid: (GUID fromString: '{d6406bca-c1b0-4a7b-81cf-66ac7ab28e63}')!
 ObjectLogBrowser comment: ''!
 !ObjectLogBrowser categoriesForClass!Unclassified! !
 !ObjectLogBrowser methodsFor!

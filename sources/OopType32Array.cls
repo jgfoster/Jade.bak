@@ -5,7 +5,7 @@ ExternalArray subclass: #OopType32Array
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-OopType32Array guid: (GUID fromString: '{73AA2718-0F19-4B5E-AF7F-A3D2D8FBB1C4}')!
+OopType32Array guid: (GUID fromString: '{73aa2718-0f19-4b5e-af7f-a3d2d8fbb1c4}')!
 OopType32Array comment: ''!
 !OopType32Array categoriesForClass!Unclassified! !
 !OopType32Array methodsFor!

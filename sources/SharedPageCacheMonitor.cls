@@ -5,7 +5,7 @@ GsHostProcess subclass: #SharedPageCacheMonitor
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-SharedPageCacheMonitor guid: (GUID fromString: '{81611FF5-3795-4F5A-83D0-98C55159048A}')!
+SharedPageCacheMonitor guid: (GUID fromString: '{81611ff5-3795-4f5a-83d0-98c55159048a}')!
 SharedPageCacheMonitor comment: ''!
 !SharedPageCacheMonitor categoriesForClass!Unclassified! !
 !SharedPageCacheMonitor methodsFor!

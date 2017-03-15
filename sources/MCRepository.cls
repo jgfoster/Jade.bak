@@ -5,7 +5,7 @@ GsObject subclass: #MCRepository
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCRepository guid: (GUID fromString: '{AE19DCB0-74D7-4643-B3CB-541231353C0F}')!
+MCRepository guid: (GUID fromString: '{ae19dcb0-74d7-4643-b3cb-541231353c0f}')!
 MCRepository comment: ''!
 !MCRepository categoriesForClass!Unclassified! !
 !MCRepository methodsFor!

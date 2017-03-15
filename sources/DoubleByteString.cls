@@ -5,6 +5,6 @@ ByteArray variableByteSubclass: #DoubleByteString
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-DoubleByteString guid: (GUID fromString: '{48552D00-1D75-4CBC-B980-D5401B007A59}')!
+DoubleByteString guid: (GUID fromString: '{48552d00-1d75-4cbc-b980-d5401b007a59}')!
 DoubleByteString comment: ''!
 !DoubleByteString categoriesForClass!Unclassified! !

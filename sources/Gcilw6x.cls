@@ -5,7 +5,7 @@ GciSingleThreadedLibrary subclass: #Gcilw6x
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-Gcilw6x guid: (GUID fromString: '{903182EE-3A32-4868-8468-77731D1B2FD5}')!
+Gcilw6x guid: (GUID fromString: '{903182ee-3a32-4868-8468-77731d1b2fd5}')!
 Gcilw6x comment: ''!
 !Gcilw6x categoriesForClass!Unclassified! !
 !Gcilw6x methodsFor!

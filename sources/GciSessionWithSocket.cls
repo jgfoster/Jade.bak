@@ -5,7 +5,7 @@ GciSession subclass: #GciSessionWithSocket
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciSessionWithSocket guid: (GUID fromString: '{604CBF33-D6BE-45FF-B250-4654B42AA062}')!
+GciSessionWithSocket guid: (GUID fromString: '{604cbf33-d6be-45ff-b250-4654b42aa062}')!
 GciSessionWithSocket comment: ''!
 !GciSessionWithSocket categoriesForClass!Unclassified! !
 !GciSessionWithSocket methodsFor!

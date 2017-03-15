@@ -5,7 +5,7 @@ JadeValueDialog subclass: #JadeErrorShell
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeErrorShell guid: (GUID fromString: '{3C339B99-4380-48FD-94FA-1B7BFEEF120C}')!
+JadeErrorShell guid: (GUID fromString: '{3c339b99-4380-48fd-94fa-1b7bfeef120c}')!
 JadeErrorShell comment: ''!
 !JadeErrorShell categoriesForClass!Unclassified! !
 !JadeErrorShell methodsFor!

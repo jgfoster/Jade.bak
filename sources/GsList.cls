@@ -5,7 +5,7 @@ GsShellCommand subclass: #GsList
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsList guid: (GUID fromString: '{E2BCCE18-152C-4329-BBAA-8EF9FC8F29DA}')!
+GsList guid: (GUID fromString: '{e2bcce18-152c-4329-bbaa-8ef9fc8f29da}')!
 GsList comment: ''!
 !GsList categoriesForClass!Unclassified! !
 !GsList methodsFor!

@@ -5,7 +5,7 @@ JadeWorkspace subclass: #JadeTranscript
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeTranscript guid: (GUID fromString: '{7D871BC4-1338-4BA1-AF6A-C1EDD936D683}')!
+JadeTranscript guid: (GUID fromString: '{7d871bc4-1338-4ba1-af6a-c1edd936d683}')!
 JadeTranscript comment: ''!
 !JadeTranscript categoriesForClass!Unclassified! !
 !JadeTranscript methodsFor!

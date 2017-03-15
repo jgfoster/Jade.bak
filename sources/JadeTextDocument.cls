@@ -5,7 +5,7 @@ TextDocument subclass: #JadeTextDocument
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeTextDocument guid: (GUID fromString: '{B31562B7-43A8-4F81-AE6B-ADD2DE2F1C0B}')!
+JadeTextDocument guid: (GUID fromString: '{b31562b7-43a8-4f81-ae6b-add2de2f1c0b}')!
 JadeTextDocument comment: 'This class probably should not have any subclasses except Workspace (and Transcript). The CodeBrowser subclasses should be elsewhere since we don''t want to treat the code as an external text file that can be loaded and saved. '!
 !JadeTextDocument categoriesForClass!Unclassified! !
 !JadeTextDocument methodsFor!

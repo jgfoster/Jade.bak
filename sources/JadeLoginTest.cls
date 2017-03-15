@@ -5,7 +5,7 @@ TestCase subclass: #JadeLoginTest
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeLoginTest guid: (GUID fromString: '{C02B6503-FFD6-49CF-A51E-8A389FB7E5F8}')!
+JadeLoginTest guid: (GUID fromString: '{c02b6503-ffd6-49cf-a51e-8a389fb7e5f8}')!
 JadeLoginTest comment: 'Transcript:
 	Transcript show: ''Transcript test''.	"Copy, Delete"
 My Session:

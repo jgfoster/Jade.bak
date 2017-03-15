@@ -5,7 +5,7 @@ Object subclass: #JadeAutocompletationConfiguration
 	classVariableNames: 'Default'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeAutocompletationConfiguration guid: (GUID fromString: '{001E8CDA-0541-471A-9188-4AD4B58206EF}')!
+JadeAutocompletationConfiguration guid: (GUID fromString: '{001e8cda-0541-471a-9188-4ad4b58206ef}')!
 JadeAutocompletationConfiguration comment: ''!
 !JadeAutocompletationConfiguration categoriesForClass!Unclassified! !
 !JadeAutocompletationConfiguration methodsFor!

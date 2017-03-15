@@ -5,7 +5,7 @@ JadeValueDialog subclass: #SUnitResultDialog
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-SUnitResultDialog guid: (GUID fromString: '{0FEF434A-DCF0-49C0-8D00-A179396ABF7B}')!
+SUnitResultDialog guid: (GUID fromString: '{0fef434a-dcf0-49c0-8d00-a179396abf7b}')!
 SUnitResultDialog comment: ''!
 !SUnitResultDialog categoriesForClass!Unclassified! !
 !SUnitResultDialog methodsFor!

@@ -5,7 +5,7 @@ JadePresenterA subclass: #CodeSourcePresenter
 	classVariableNames: 'CodeFont'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-CodeSourcePresenter guid: (GUID fromString: '{549A5009-CDD1-42B3-8907-C3C5C1C9E532}')!
+CodeSourcePresenter guid: (GUID fromString: '{549a5009-cdd1-42b3-8907-c3c5c1c9e532}')!
 CodeSourcePresenter comment: 'model - the context in which code can be executed'!
 !CodeSourcePresenter categoriesForClass!Unclassified! !
 !CodeSourcePresenter methodsFor!

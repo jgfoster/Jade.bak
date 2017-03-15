@@ -5,7 +5,7 @@ Gcilw6x subclass: #Gcirw62
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-Gcirw62 guid: (GUID fromString: '{C2E42069-D534-4F0C-ACB8-1C11EC0EB3F7}')!
+Gcirw62 guid: (GUID fromString: '{c2e42069-d534-4f0c-acb8-1c11ec0eb3f7}')!
 Gcirw62 comment: ''!
 !Gcirw62 categoriesForClass!Unclassified! !
 !Gcirw62 class methodsFor!

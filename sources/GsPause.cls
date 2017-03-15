@@ -5,7 +5,7 @@ GsEventError subclass: #GsPause
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsPause guid: (GUID fromString: '{2072DCC5-82C2-4AE5-8173-C6A980C0DC7D}')!
+GsPause guid: (GUID fromString: '{2072dcc5-82c2-4ae5-8173-c6a980c0dc7d}')!
 GsPause comment: ''!
 !GsPause categoriesForClass!Unclassified! !
 !GsPause class methodsFor!

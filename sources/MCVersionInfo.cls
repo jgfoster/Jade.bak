@@ -5,7 +5,7 @@ GsObject subclass: #MCVersionInfo
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCVersionInfo guid: (GUID fromString: '{202A46BC-0A0E-407F-A82D-5AD5B9DE8B87}')!
+MCVersionInfo guid: (GUID fromString: '{202a46bc-0a0e-407f-a82d-5ad5b9de8b87}')!
 MCVersionInfo comment: ''!
 !MCVersionInfo categoriesForClass!Unclassified! !
 !MCVersionInfo methodsFor!

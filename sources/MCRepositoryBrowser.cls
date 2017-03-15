@@ -5,7 +5,7 @@ JadeShell subclass: #MCRepositoryBrowser
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCRepositoryBrowser guid: (GUID fromString: '{ED52D4AC-3C47-4B09-830B-99228086125C}')!
+MCRepositoryBrowser guid: (GUID fromString: '{ed52d4ac-3c47-4b09-830b-99228086125c}')!
 MCRepositoryBrowser comment: ''!
 !MCRepositoryBrowser categoriesForClass!Unclassified! !
 !MCRepositoryBrowser methodsFor!

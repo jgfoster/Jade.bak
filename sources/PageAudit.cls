@@ -5,7 +5,7 @@ GsShellCommand subclass: #PageAudit
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-PageAudit guid: (GUID fromString: '{CB7BB9F1-3586-495F-9E8C-A09D1FDF20F5}')!
+PageAudit guid: (GUID fromString: '{cb7bb9f1-3586-495f-9e8c-a09d1fdf20f5}')!
 PageAudit comment: ''!
 !PageAudit categoriesForClass!Unclassified! !
 !PageAudit methodsFor!

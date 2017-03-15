@@ -5,7 +5,7 @@ ExternalStructure subclass: #GciErrSType
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciErrSType guid: (GUID fromString: '{9932DE27-ACC2-4E27-AD64-9A3FF8B6ECF9}')!
+GciErrSType guid: (GUID fromString: '{9932de27-acc2-4e27-ad64-9a3ff8b6ecf9}')!
 GciErrSType comment: ''!
 !GciErrSType categoriesForClass!Unclassified! !
 !GciErrSType methodsFor!

@@ -5,7 +5,7 @@ Object subclass: #GsWin32Service
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsWin32Service guid: (GUID fromString: '{C6EFB87C-A8A3-4E98-A917-61C6A02A96D9}')!
+GsWin32Service guid: (GUID fromString: '{c6efb87c-a8a3-4e98-a917-61c6a02a96d9}')!
 GsWin32Service comment: ''!
 !GsWin32Service categoriesForClass!Unclassified! !
 !GsWin32Service methodsFor!

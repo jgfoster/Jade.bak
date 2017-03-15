@@ -5,7 +5,7 @@ Dialog subclass: #MCVersionDialog
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCVersionDialog guid: (GUID fromString: '{781FA501-11CB-40EB-B958-CBA790F96317}')!
+MCVersionDialog guid: (GUID fromString: '{781fa501-11cb-40eb-b958-cba790f96317}')!
 MCVersionDialog comment: ''!
 !MCVersionDialog categoriesForClass!Unclassified! !
 !MCVersionDialog methodsFor!

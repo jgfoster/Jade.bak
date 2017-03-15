@@ -5,7 +5,7 @@ MCPatchOperation subclass: #MCModification
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCModification guid: (GUID fromString: '{29F0BDF4-C441-4F8E-BBA1-3613F678D6AE}')!
+MCModification guid: (GUID fromString: '{29f0bdf4-c441-4f8e-bba1-3613f678d6ae}')!
 MCModification comment: ''!
 !MCModification categoriesForClass!Unclassified! !
 !MCModification methodsFor!

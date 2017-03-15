@@ -5,7 +5,7 @@ JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeSystemBrowserPresenter guid: (GUID fromString: '{AA74F365-5E98-46B2-AF4C-19A7BF1E6E97}')!
+JadeSystemBrowserPresenter guid: (GUID fromString: '{aa74f365-5e98-46b2-af4c-19a7bf1e6e97}')!
 JadeSystemBrowserPresenter comment: ''!
 !JadeSystemBrowserPresenter categoriesForClass!Unclassified! !
 !JadeSystemBrowserPresenter methodsFor!

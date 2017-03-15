@@ -5,7 +5,7 @@ GsHostProcess subclass: #Stone
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-Stone guid: (GUID fromString: '{30D3A885-42AB-423A-8752-C86CE1F268C9}')!
+Stone guid: (GUID fromString: '{30d3a885-42ab-423a-8752-c86ce1f268c9}')!
 Stone comment: ''!
 !Stone categoriesForClass!Unclassified! !
 !Stone methodsFor!

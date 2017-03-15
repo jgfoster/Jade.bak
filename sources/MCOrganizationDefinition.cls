@@ -5,7 +5,7 @@ MCDefinition subclass: #MCOrganizationDefinition
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCOrganizationDefinition guid: (GUID fromString: '{80167200-683E-4723-81D0-1471BCA0142B}')!
+MCOrganizationDefinition guid: (GUID fromString: '{80167200-683e-4723-81d0-1471bca0142b}')!
 MCOrganizationDefinition comment: ''!
 !MCOrganizationDefinition categoriesForClass!Unclassified! !
 !MCOrganizationDefinition methodsFor!

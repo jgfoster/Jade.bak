@@ -5,7 +5,7 @@ RuntimeSessionManager subclass: #JadeSessionManager
 	classVariableNames: 'Version'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeSessionManager guid: (GUID fromString: '{8D7A4642-B8E1-43EA-94D5-E13390CA1F79}')!
+JadeSessionManager guid: (GUID fromString: '{8d7a4642-b8e1-43ea-94d5-e13390ca1f79}')!
 JadeSessionManager comment: ''!
 !JadeSessionManager categoriesForClass!Unclassified! !
 !JadeSessionManager methodsFor!

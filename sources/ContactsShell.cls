@@ -5,7 +5,7 @@ Shell subclass: #ContactsShell
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-ContactsShell guid: (GUID fromString: '{F11B768D-F9FA-4272-B4FA-17EC49F4D7AC}')!
+ContactsShell guid: (GUID fromString: '{f11b768d-f9fa-4272-b4fa-17ec49f4d7ac}')!
 ContactsShell comment: ''!
 !ContactsShell categoriesForClass!Unclassified! !
 !ContactsShell class methodsFor!

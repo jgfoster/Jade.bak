@@ -5,6 +5,6 @@ GsObject subclass: #GsSymbolDictionary
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsSymbolDictionary guid: (GUID fromString: '{EAE064DD-2265-4B2F-ACA0-766DFBFA394C}')!
+GsSymbolDictionary guid: (GUID fromString: '{eae064dd-2265-4b2f-aca0-766dfbfa394c}')!
 GsSymbolDictionary comment: ''!
 !GsSymbolDictionary categoriesForClass!Unclassified! !

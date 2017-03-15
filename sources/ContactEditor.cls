@@ -5,7 +5,7 @@ ContactsShell subclass: #ContactEditor
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-ContactEditor guid: (GUID fromString: '{8F931BE6-A07F-4B11-94DC-52527D28596D}')!
+ContactEditor guid: (GUID fromString: '{8f931be6-a07f-4b11-94dc-52527d28596d}')!
 ContactEditor comment: ''!
 !ContactEditor categoriesForClass!Unclassified! !
 !ContactEditor methodsFor!

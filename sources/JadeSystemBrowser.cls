@@ -5,7 +5,7 @@ JadeShell subclass: #JadeSystemBrowser
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeSystemBrowser guid: (GUID fromString: '{72210941-97B6-4113-8EC8-E23015415DE6}')!
+JadeSystemBrowser guid: (GUID fromString: '{72210941-97b6-4113-8ec8-e23015415de6}')!
 JadeSystemBrowser comment: ''!
 !JadeSystemBrowser categoriesForClass!Unclassified! !
 !JadeSystemBrowser methodsFor!

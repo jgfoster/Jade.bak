@@ -5,7 +5,7 @@ GsWin32Service subclass: #StoneService
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-StoneService guid: (GUID fromString: '{54671F79-0372-445B-96A3-C9DF632955F4}')!
+StoneService guid: (GUID fromString: '{54671f79-0372-445b-96a3-c9df632955f4}')!
 StoneService comment: ''!
 !StoneService categoriesForClass!Unclassified! !
 !StoneService methodsFor!

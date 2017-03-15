@@ -5,7 +5,7 @@ MCFileTreeRepository subclass: #MCGitHubRepository
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MCGitHubRepository guid: (GUID fromString: '{FD249A8C-2D38-4C39-88B8-A5C317D8C9CF}')!
+MCGitHubRepository guid: (GUID fromString: '{fd249a8c-2d38-4c39-88b8-a5c317d8c9cf}')!
 MCGitHubRepository comment: ''!
 !MCGitHubRepository categoriesForClass!Unclassified! !
 !MCGitHubRepository methodsFor!

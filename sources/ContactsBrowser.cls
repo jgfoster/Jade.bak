@@ -5,7 +5,7 @@ ContactsShell subclass: #ContactsBrowser
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-ContactsBrowser guid: (GUID fromString: '{C082A068-8D8D-4292-8200-6CC42C48D673}')!
+ContactsBrowser guid: (GUID fromString: '{c082a068-8d8d-4292-8200-6cc42c48d673}')!
 ContactsBrowser comment: ''!
 !ContactsBrowser categoriesForClass!Unclassified! !
 !ContactsBrowser methodsFor!

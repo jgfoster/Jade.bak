@@ -5,7 +5,7 @@ GsEventError subclass: #GsClientForwarderSend
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsClientForwarderSend guid: (GUID fromString: '{12AB69FE-6B24-4CB4-8CFC-7782A7B028C7}')!
+GsClientForwarderSend guid: (GUID fromString: '{12ab69fe-6b24-4cb4-8cfc-7782a7b028c7}')!
 GsClientForwarderSend comment: '
 System 
 	_signalGciError: 2336

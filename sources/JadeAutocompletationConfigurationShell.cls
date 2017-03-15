@@ -5,7 +5,7 @@ Shell subclass: #JadeAutocompletationConfigurationShell
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeAutocompletationConfigurationShell guid: (GUID fromString: '{FC1F72BB-A9F1-47FF-857D-675CF4028FA4}')!
+JadeAutocompletationConfigurationShell guid: (GUID fromString: '{fc1f72bb-a9f1-47ff-857d-675cf4028fa4}')!
 JadeAutocompletationConfigurationShell comment: ''!
 !JadeAutocompletationConfigurationShell categoriesForClass!Unclassified! !
 !JadeAutocompletationConfigurationShell methodsFor!

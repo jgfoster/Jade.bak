@@ -5,7 +5,7 @@ JadeServer64bit24 subclass: #JadeServer64bit3x
 	classVariableNames: 'Admonition ClientForwarderSend CompileError CompileWarning RubyHash SessionTemps Transcript'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeServer64bit3x guid: (GUID fromString: '{1DC3DEBB-81EC-4B7B-872E-82229E88781B}')!
+JadeServer64bit3x guid: (GUID fromString: '{1dc3debb-81ec-4b7b-872e-82229e88781b}')!
 JadeServer64bit3x comment: '(System _sessionStateAt: 3).
 GciSession allInstances do: [:each | each initializeServer].'!
 !JadeServer64bit3x categoriesForClass!Unclassified! !

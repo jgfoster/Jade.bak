@@ -5,7 +5,7 @@ GciSingleThreadedLibrary subclass: #LibGciRpc64
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64 guid: (GUID fromString: '{CE7FE05A-C8EE-4A13-B4AA-7C8AEF295620}')!
+LibGciRpc64 guid: (GUID fromString: '{ce7fe05a-c8ee-4a13-b4aa-7c8aef295620}')!
 LibGciRpc64 comment: ''!
 !LibGciRpc64 categoriesForClass!Unclassified! !
 !LibGciRpc64 methodsFor!

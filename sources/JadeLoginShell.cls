@@ -5,7 +5,7 @@ DocumentShell subclass: #JadeLoginShell
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeLoginShell guid: (GUID fromString: '{0FA658CE-D1B0-40D0-9305-5830B29AED32}')!
+JadeLoginShell guid: (GUID fromString: '{0fa658ce-d1b0-40d0-9305-5830b29aed32}')!
 JadeLoginShell comment: 'model - an instance of JadeLogin (treated as a document)
 '!
 !JadeLoginShell categoriesForClass!Unclassified! !

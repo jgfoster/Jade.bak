@@ -5,7 +5,7 @@ CodeSourcePresenter subclass: #MethodSourcePresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-MethodSourcePresenter guid: (GUID fromString: '{4EDA4C47-5B55-436D-B9E2-EF2042660A98}')!
+MethodSourcePresenter guid: (GUID fromString: '{4eda4c47-5b55-436d-b9e2-ef2042660a98}')!
 MethodSourcePresenter comment: ''!
 !MethodSourcePresenter categoriesForClass!Unclassified! !
 !MethodSourcePresenter methodsFor!

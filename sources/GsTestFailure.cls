@@ -5,7 +5,7 @@ GsAnsiError subclass: #GsTestFailure
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsTestFailure guid: (GUID fromString: '{BD39CA74-6D0F-4A45-A5ED-2ACF574AB10F}')!
+GsTestFailure guid: (GUID fromString: '{bd39ca74-6d0f-4a45-a5ed-2acf574ab10f}')!
 GsTestFailure comment: ''!
 !GsTestFailure categoriesForClass!Unclassified! !
 !GsTestFailure class methodsFor!

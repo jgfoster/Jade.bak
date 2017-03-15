@@ -5,7 +5,7 @@ LibGciRpc64 subclass: #LibGciRpc64_3_0
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-LibGciRpc64_3_0 guid: (GUID fromString: '{A8A6C6D6-29C1-4E0D-9C00-EC47F1078D4D}')!
+LibGciRpc64_3_0 guid: (GUID fromString: '{a8a6c6d6-29c1-4e0d-9c00-ec47f1078d4d}')!
 LibGciRpc64_3_0 comment: ''!
 !LibGciRpc64_3_0 categoriesForClass!Unclassified! !
 !LibGciRpc64_3_0 methodsFor!
