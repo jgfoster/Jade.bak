@@ -26,6 +26,7 @@ package methodNames
 	add: #JadeServer -> #runTestNamed:in:;
 	add: #JadeServer -> #runTestsNamed:in:;
 	add: #JadeTextDocument -> #jadeBrowseTests;
+	add: #JadeToolsToolBarPresenter -> #browseTests;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -213,6 +214,13 @@ jadeBrowseTests
 	JadeSUnitBrowser showOnSession: gciSession.
 ! !
 !JadeTextDocument categoriesFor: #jadeBrowseTests!Jade!private! !
+
+!JadeToolsToolBarPresenter methodsFor!
+
+browseTests
+
+	JadeSUnitBrowser showOnSession: gciSession.! !
+!JadeToolsToolBarPresenter categoriesFor: #browseTests!public! !
 
 "End of package definition"!
 
