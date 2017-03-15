@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeSystemBrowserPresenter subclass: #JadeAutoSystemBrowserPresenter
-	instanceVariableNames: 'lastGsShape'
+	instanceVariableNames: 'lastGsShape inspector sunitPresenter inspectorContainer oopPresenter autoInfoPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

@@ -193,7 +193,7 @@ JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeSystemBrowserPresenter subclass: #JadeAutoSystemBrowserPresenter
-	instanceVariableNames: 'lastGsShape'
+	instanceVariableNames: 'lastGsShape inspector sunitPresenter inspectorContainer oopPresenter autoInfoPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
