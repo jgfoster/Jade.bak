@@ -20,6 +20,12 @@ gciSession: aGciSession
 	gciSession := aGciSession.
 !
 
+resetCursor
+
+	(Delay forMilliseconds: 20) wait.
+	[Cursor current: nil] forkAt: Processor userBackgroundPriority.
+!
+
 subMenuName
 
 	^nil.
@@ -70,6 +76,7 @@ updateMenuBar: aMenuBar withName: aString itemsFrom: aPresenter
 ! !
 !JadePresenter categoriesFor: #gciSession!public! !
 !JadePresenter categoriesFor: #gciSession:!public! !
+!JadePresenter categoriesFor: #resetCursor!public! !
 !JadePresenter categoriesFor: #subMenuName!menus!public! !
 !JadePresenter categoriesFor: #subMenuPresenter!menus!public! !
 !JadePresenter categoriesFor: #updateMenuBar:!menus!public! !

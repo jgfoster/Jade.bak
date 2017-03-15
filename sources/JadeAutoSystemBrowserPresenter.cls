@@ -184,6 +184,8 @@ restoreFrom: aJadeHistoryEntry
 			variableListPresenter selection: aJadeHistoryEntry categoriesOrVariables ifAbsent: [].].
 
 	methodListPresenter selection: aJadeHistoryEntry methodName ifAbsent: [].
+
+	self resetCursor.
 !
 
 updateAndSelect: aView
