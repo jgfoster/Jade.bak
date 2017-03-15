@@ -51,6 +51,10 @@ getClassVariableAndPoolDictionaryLike: aString
 
 	^(self gsClassVariables select: [:each | (aString, '*') match: each]), (self gsPoolDictionaries select: [:each | (aString, '*') match: each])!
 
+getInstanceVariableLike: aString
+
+	^self getAllVarNames select: [:each | (aString, '*') match: each]!
+
 getNamesAfterAssigment
 
 	^self getAllVarNames
@@ -146,6 +150,7 @@ updateClassData
 !JadeGsClassShape categoriesFor: #getAllVarNames!public! !
 !JadeGsClassShape categoriesFor: #getClassInstanceVariableLike:!public! !
 !JadeGsClassShape categoriesFor: #getClassVariableAndPoolDictionaryLike:!public! !
+!JadeGsClassShape categoriesFor: #getInstanceVariableLike:!public! !
 !JadeGsClassShape categoriesFor: #getNamesAfterAssigment!public! !
 !JadeGsClassShape categoriesFor: #gsClassHierarchy!accessing!private! !
 !JadeGsClassShape categoriesFor: #gsClassHierarchy:!accessing!private! !

@@ -9,6 +9,7 @@ package basicPackageVersion: '0.277'.
 package classNames
 	add: #JadeAutoSystemBrowserPresenter;
 	add: #JadeFindClassDialog;
+	add: #JadeHistoryEntry;
 	add: #JadeSystemBrowser;
 	add: #JadeSystemBrowserPresenter;
 	add: #SUnitResultDialog;
@@ -188,6 +189,11 @@ package!
 
 "Class Definitions"!
 
+Object subclass: #JadeHistoryEntry
+	instanceVariableNames: 'isPackageSelected isHierarchySelected isClassSideSelected isCategoriesSelected packageOrDictionary classCategory className categoriesOrVariables methodName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
 	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints sunitPresenter superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
 	classVariableNames: ''
@@ -209,7 +215,7 @@ JadeValueDialog subclass: #SUnitResultDialog
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeShell subclass: #JadeSystemBrowser
-	instanceVariableNames: 'cardsPresenter roundTripCount'
+	instanceVariableNames: 'cardsPresenter roundTripCount historyEntriesDictionary historyCurrentIndexDictionary'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

@@ -38,6 +38,10 @@ createSchematicWiringForMethodSource
 		yourself.
 !
 
+createStateEntry
+
+	^packageDictionaryTabs currentCard == packageListPresenter view!
+
 getClassHierarchy
 	"
 classHierarchyPresenter model anArray of Arrays #(#('Object') #('Object' 'Boolean') #('Object' 'True'))"
@@ -157,11 +161,38 @@ removeClass
 
 	list do: [:each | self registry unregister: each]!
 
+restoreFrom: aJadeHistoryEntry
+
+	aJadeHistoryEntry isPackageSelected 
+	ifTrue: [self isPackageListTabSelected ifFalse: [packageDictionaryTabs previousCard].
+			packageListPresenter selection: aJadeHistoryEntry packageOrDictionary ifAbsent: []] 
+	ifFalse: [self isPackageListTabSelected ifTrue: [packageDictionaryTabs nextCard].
+			dictionaryListPresenter selection: aJadeHistoryEntry packageOrDictionary ifAbsent: []].
+
+	classCategoryPresenter selection: aJadeHistoryEntry classCategory ifAbsent: [].
+
+	aJadeHistoryEntry isHierarchySelected 
+	ifTrue: [self isClassListTabSelected ifTrue: [classHierarchyTabs nextCard].
+			classHierarchyPresenter selection: aJadeHistoryEntry className ifAbsent: []] 
+	ifFalse: [self isClassListTabSelected ifFalse: [classHierarchyTabs previousCard].
+			classListPresenter selection: aJadeHistoryEntry className ifAbsent: []].
+
+	aJadeHistoryEntry isCategoriesSelected 
+	ifTrue: [self isCategoriesTabSelected ifFalse: [categoryVariableTabs previousCard].
+			categoryListPresenter selection: aJadeHistoryEntry categoriesOrVariables ifAbsent: [].] 
+	ifFalse: [self isCategoriesTabSelected ifTrue: [categoryVariableTabs nextCard].
+			variableListPresenter selection: aJadeHistoryEntry categoriesOrVariables ifAbsent: [].].
+
+	methodListPresenter selection: aJadeHistoryEntry methodName ifAbsent: [].
+!
+
 updateAndSelect: aView
 
 	super updateAndSelect: aView.
-	self registerClassData.
-!
+	[
+		self registerClassData.
+		self topShell updateHistoryFor: self.
+	] forkAt: 3!
 
 updateMethodList
 	"The receiver must keep update with any add/remove of a method in order to be acurate in the autocompletation"
@@ -178,6 +209,7 @@ updateMethodList
 !JadeAutoSystemBrowserPresenter categoriesFor: #codePresenterIsMethod!public! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #createArrayFromString:!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #createSchematicWiringForMethodSource!create schemantic wiring!public! !
+!JadeAutoSystemBrowserPresenter categoriesFor: #createStateEntry!accessing!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #getClassHierarchy!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #getClassName!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #gsClassMethods!public!updating! !
@@ -192,6 +224,7 @@ updateMethodList
 !JadeAutoSystemBrowserPresenter categoriesFor: #newMethodPresenter!public! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #removeClass!menu handlers!public! !
+!JadeAutoSystemBrowserPresenter categoriesFor: #restoreFrom:!history!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #updateAndSelect:!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #updateMethodList!public!updating! !
 

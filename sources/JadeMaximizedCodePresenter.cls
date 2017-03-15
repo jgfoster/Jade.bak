@@ -28,6 +28,9 @@ doesNotUnderstand: aMessage
 
 	^aMessage forwardTo: parentMethodPresenter!
 
+hasClassSideSelected
+	^false!
+
 model: aModel
 
 	super model: aModel.
@@ -51,6 +54,7 @@ parentMethodPresenter: anObject
 !JadeMaximizedCodePresenter categoriesFor: #codePresenter:!accessing!private! !
 !JadeMaximizedCodePresenter categoriesFor: #createComponents!public! !
 !JadeMaximizedCodePresenter categoriesFor: #doesNotUnderstand:!public! !
+!JadeMaximizedCodePresenter categoriesFor: #hasClassSideSelected!accessing!public! !
 !JadeMaximizedCodePresenter categoriesFor: #model:!public! !
 !JadeMaximizedCodePresenter categoriesFor: #onViewOpened!public! !
 !JadeMaximizedCodePresenter categoriesFor: #parentMethodPresenter!accessing!private! !

@@ -332,6 +332,14 @@ categoriesMenuStrings
 	).
 !
 
+categoryListPresenter
+
+	^categoryListPresenter!
+
+classCategoryPresenter
+
+	^classCategoryPresenter!
+
 classDefChanged
 
 	inUpdate ifTrue: [^self].
@@ -366,6 +374,14 @@ classesMenuStrings
 		'Run &Tests//runClassTests'
 	).
 !
+
+classHierarchyPresenter
+
+	^classHierarchyPresenter!
+
+classListPresenter
+
+	^classListPresenter!
 
 clearPackageInfo
 
@@ -659,6 +675,10 @@ delayUpdate
 
 	keystrokeTime := Time millisecondClockValue + 500.
 !
+
+dictionaryListPresenter
+
+	^dictionaryListPresenter!
 
 dictsMenuStrings
 
@@ -1099,6 +1119,11 @@ isClassSelectedInEditor
 	^(string allSatisfy: [:each | each isAlphaNumeric]) and: [string first isLetter and: [string first isUppercase]]
 !
 
+isClassSideSelected
+
+	^instanceClassTabs currentCard name = 'classTab'.
+!
+
 isDictionariesTabSelected
 
 	^packageDictionaryTabs currentCard name = 'dictionaryList'.
@@ -1324,6 +1349,10 @@ methodHoverStart: aPoint
 		showCallTip: indicator tag
 		at: charIndex.
 !
+
+methodListPresenter
+
+	^methodListPresenter!
 
 methodMenu: aMenu
 
@@ -1780,6 +1809,10 @@ openSourceStyler
 	classDefinitionPresenter view textStyles: textStyles.
 	originalSourcePresenter view textStyles: textStyles.
 !
+
+packageListPresenter
+
+	^packageListPresenter!
 
 parseContext
 
@@ -2946,6 +2979,10 @@ updateTabLabel
 	self parentPresenter view updateTabs.
 !
 
+variableListPresenter
+
+	^variableListPresenter!
+
 variablesMenuStrings
 
 	false ifTrue: [
@@ -2989,8 +3026,12 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
+!JadeSystemBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !
+!JadeSystemBrowserPresenter categoriesFor: #classCategoryPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #classDefChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
+!JadeSystemBrowserPresenter categoriesFor: #classHierarchyPresenter!accessing!public! !
+!JadeSystemBrowserPresenter categoriesFor: #classListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #clearPackageInfo!public! !
 !JadeSystemBrowserPresenter categoriesFor: #closeRequested:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #compareAncestor!menu handlers!public! !
@@ -3015,6 +3056,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #currentSelectionOrLine!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #defaultFileExtension!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #delayUpdate!public!updating! !
+!JadeSystemBrowserPresenter categoriesFor: #dictionaryListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #dictsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editCopy!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editCut!menu handlers!public! !
@@ -3050,6 +3092,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #isCategoriesTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassListTabSelected!public!request string! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassSelectedInEditor!public! !
+!JadeSystemBrowserPresenter categoriesFor: #isClassSideSelected!accessing!public!request string! !
 !JadeSystemBrowserPresenter categoriesFor: #isDictionariesTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isGlobalsTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public! !
@@ -3070,6 +3113,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #methodFilterListPresenter!public!request string! !
 !JadeSystemBrowserPresenter categoriesFor: #methodHoverEnd:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodHoverStart:!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodMenu:!event handlers!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodMenuBreak:!event handlers!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodsIdentifier!menu handlers!public! !
@@ -3108,6 +3152,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #onSetFocus:stack:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #openSourceStyler!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #packageListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #parseContext!public! !
 !JadeSystemBrowserPresenter categoriesFor: #pkgDictChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
@@ -3172,6 +3217,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #updatePresenters!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateSuperclassList!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateTabLabel!public!updating! !
+!JadeSystemBrowserPresenter categoriesFor: #variableListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #variablesMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #viewActivated!event handlers!public! !
 
