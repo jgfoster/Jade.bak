@@ -154,7 +154,7 @@ getTestMethodsNamesOf: classNamed
 	| comma stream testSelectors gsClass |
 	stream := WriteStream on: String new.
 	gsClass := self objectNamed: classNamed.
-	gsClass ifNil: [^''].
+	gsClass isNil ifTrue: [^''].
 	(gsClass isSubclassOf: TestCase) ifFalse: [^''].
 	testSelectors :=  gsClass testSelectors asSortedCollection.
 	testSelectors isEmpty ifTrue: [^''].
