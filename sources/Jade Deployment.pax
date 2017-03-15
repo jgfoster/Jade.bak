@@ -39,6 +39,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
+	add: '..\..\..\Core\Contributions\Burning River\ExternalProcess\ExternalProcess';
 	add: 'GemStone C Interface';
 	add: 'GemStone Services';
 	add: 'GemStone Session';

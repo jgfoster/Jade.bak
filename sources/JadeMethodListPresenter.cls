@@ -141,6 +141,20 @@ gciSession: aGciSession
 	methodSourcePresenter gciSession: aGciSession.
 !
 
+getOopToNewMethod
+	"The receiver answer <aOopType64> to the new method"
+
+	^gciSession executeString: (self getSelectedClassName, ' perform: #compiledMethodAt: with: #',  self getSelectedMethodName)
+!
+
+getSelectedMethod
+
+	^methodListPresenter selectedMethod!
+
+getSelectedMethodName
+
+	^self getSelectedMethod name!
+
 jadeMenuStrings
 
 	^#(
@@ -154,6 +168,10 @@ jadeMenuStrings
 		'E&xit/Shift+F4/exit'
 	).
 !
+
+methodListPresenter
+
+	^methodListPresenter!
 
 onViewOpened
 
@@ -214,6 +232,19 @@ updateMenuBar: aMenuBar
 	methodListPresenter updateMenuBar: aMenuBar.
 !
 
+updateSaveMethod
+	| newGsMethod |
+
+	methodListPresenter selectedMethod isNil ifTrue: [^self].
+
+	newGsMethod := methodListPresenter selectedMethod asUpdatedVersion: self getOopToNewMethod lowPart printString.
+	methodListPresenter primaryPresenter model add: newGsMethod.
+
+	methodListPresenter primaryPresenter model remove: methodListPresenter selectedMethod ifAbsent: [].
+
+	methodListPresenter primaryPresenter selection: newGsMethod.
+!
+
 updateSource
 
 	| gsClass gsMethod2 gsMethod |
@@ -245,7 +276,11 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #createSchematicWiring!public! !
 !JadeMethodListPresenter categoriesFor: #doSearch!public! !
 !JadeMethodListPresenter categoriesFor: #gciSession:!public! !
+!JadeMethodListPresenter categoriesFor: #getOopToNewMethod!public! !
+!JadeMethodListPresenter categoriesFor: #getSelectedMethod!public! !
+!JadeMethodListPresenter categoriesFor: #getSelectedMethodName!public! !
 !JadeMethodListPresenter categoriesFor: #jadeMenuStrings!public! !
+!JadeMethodListPresenter categoriesFor: #methodListPresenter!public! !
 !JadeMethodListPresenter categoriesFor: #onViewOpened!public! !
 !JadeMethodListPresenter categoriesFor: #searchFor:!public! !
 !JadeMethodListPresenter categoriesFor: #selectedCategory!public! !
@@ -253,6 +288,7 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #selectFirstMethod!public! !
 !JadeMethodListPresenter categoriesFor: #selecting:!public! !
 !JadeMethodListPresenter categoriesFor: #updateMenuBar:!public! !
+!JadeMethodListPresenter categoriesFor: #updateSaveMethod!public! !
 !JadeMethodListPresenter categoriesFor: #updateSource!public! !
 
 !JadeMethodListPresenter class methodsFor!

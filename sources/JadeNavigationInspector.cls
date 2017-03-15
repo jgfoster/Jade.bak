@@ -12,12 +12,10 @@ JadeNavigationInspector comment: ''!
 
 addOop: aGsOop
 
+	aGsOop isNil ifTrue: [^self].
 	(aGsOop isKindOf: String) ifTrue: [^self].
-
 	(oopsCollection includes: aGsOop value) ifTrue: [^self].
-
 	oopsCollection add: aGsOop value.
-
 	objectIndex := objectIndex + 1.
 !
 

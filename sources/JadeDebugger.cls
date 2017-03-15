@@ -99,7 +99,7 @@ inspectVariable
 
 	| object |
 	object := gciSession oopTypeWithOop: variableListPresenter selection key key asNumber.
-	JadeInspector showOn: object session: gciSession.
+	JadeInspector defaultInspectorClass showOn: object session: gciSession.
 !
 
 onViewClosed
@@ -309,6 +309,10 @@ update
 updateCaption
 
 	self caption: (gciSession titleBarFor: 'Debugger').
+!
+
+updateSaveMethod
+	"do nothing"
 ! !
 !JadeDebugger categoriesFor: #answer!public! !
 !JadeDebugger categoriesFor: #clearUI!public! !
@@ -339,6 +343,7 @@ updateCaption
 !JadeDebugger categoriesFor: #terminateProcess!public! !
 !JadeDebugger categoriesFor: #update!public! !
 !JadeDebugger categoriesFor: #updateCaption!public! !
+!JadeDebugger categoriesFor: #updateSaveMethod!public! !
 
 !JadeDebugger class methodsFor!
 

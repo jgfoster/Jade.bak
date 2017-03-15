@@ -44,7 +44,10 @@ version
 
 getVersion
 
-	^(ReadStream on: (SessionManager current class git: 'describe')) nextLine!
+	| string |
+	string := [SessionManager current class git: 'describe'] on: ExternalProcessExecuteError do: [:ex | ^'???'].
+	^(ReadStream on: string) nextLine
+!
 
 mainShellClass
 
