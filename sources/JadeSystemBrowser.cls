@@ -371,21 +371,23 @@ update
 !
 
 updateHistoryFor: aJadeAutoSystemBrowserPresenter
+	"only one method must be selected"
 	| entry |
 
-	"only one method must be selected"
 	(aJadeAutoSystemBrowserPresenter methodListPresenter hasSelection and: [aJadeAutoSystemBrowserPresenter methodListPresenter selections size = 1]) ifFalse: [^self].
 
-	(historyEntriesDictionary includesKey: aJadeAutoSystemBrowserPresenter) "check if system browser already exist "
-	ifFalse: [historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter put: OrderedCollection new.
-			historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter put: 1].
+	(historyEntriesDictionary includesKey: aJadeAutoSystemBrowserPresenter) ifFalse: [
+		historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter put: OrderedCollection new.
+		historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter put: 1.
+	].	"check if system browser already exist "
 
-	entry := JadeHistoryEntry newFrom: aJadeAutoSystemBrowserPresenter.
+	entry := JadeSystemBrowserHistoryEntry newFrom: aJadeAutoSystemBrowserPresenter.
 
-	((historyEntriesDictionary at:  aJadeAutoSystemBrowserPresenter) includes: entry)
-	ifFalse: [(historyEntriesDictionary at:  aJadeAutoSystemBrowserPresenter) add:entry].
+	((historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) includes: entry)
+		ifFalse: [(historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) add: entry].
 
-	"historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter put: ((historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter) + 1)"! !
+	"historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter put: ((historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter) + 1)"
+! !
 !JadeSystemBrowser categoriesFor: #abortTransaction!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowser!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowserForClass:!public! !

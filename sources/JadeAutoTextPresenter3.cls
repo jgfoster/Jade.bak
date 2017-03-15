@@ -103,8 +103,8 @@ getBreakCharacters
 getClassInstancesVariables
 	| isClassSide |
 
-	(parentPresenter parentPresenter class == JadeMethodListPresenter) 
-	ifTrue: [| listBrowser className |
+	(parentPresenter parentPresenter isKindOf: JadeMethodListPresenter) ifTrue: [
+		| listBrowser className |
 		listBrowser := parentPresenter parentPresenter.
 		className := listBrowser selectedClass name subStrings: ' '.
 		 isClassSide := className last = 'class'.
@@ -187,13 +187,17 @@ getNamesForUnaryMessage
 
 getNameUpperIdentifier
 
-	(parentPresenter parentPresenter class == JadeMethodListPresenter)
-	ifTrue: [| listBrowser |
+	(parentPresenter parentPresenter isKindOf: JadeMethodListPresenter) ifTrue: [
+		| listBrowser |
 		listBrowser := parentPresenter parentPresenter.
-		currentGsShape := self registry getClass: listBrowser getSelectedClassName].
-
-	^(parentPresenter hasClassSideSelected ifFalse: [#()] ifTrue: [currentGsShape ifNotNil: [currentGsShape getClassVariableAndPoolDictionaryLike: currentText] ifNil: [#()]]), 
-		(self registry getClassesNamedWith: currentText) asSortedCollection!
+		currentGsShape := self registry getClass: listBrowser getSelectedClassName.
+	].
+	^(parentPresenter hasClassSideSelected 
+		ifFalse: [#()] 
+		ifTrue: [currentGsShape 
+			ifNotNil: [currentGsShape getClassVariableAndPoolDictionaryLike: currentText] 
+			ifNil: [#()]]), 
+	(self registry getClassesNamedWith: currentText) asSortedCollection!
 
 getSelectedGsShape
 
