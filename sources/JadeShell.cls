@@ -16,6 +16,10 @@ createComponents
 	self presenterClass ifNotNil: [:class | myPresenter := self add: class new name: 'myPresenter'].
 !
 
+gciSession
+
+	^gciSession!
+
 gciSession: aGciSession
 
 	gciSession := aGciSession.
@@ -83,6 +87,7 @@ updateCaption
 	self caption: (gciSession titleBarFor: self shellName).
 ! !
 !JadeShell categoriesFor: #createComponents!private! !
+!JadeShell categoriesFor: #gciSession!private! !
 !JadeShell categoriesFor: #gciSession:!private! !
 !JadeShell categoriesFor: #logoutRequested:!private! !
 !JadeShell categoriesFor: #onViewClosed!private! !

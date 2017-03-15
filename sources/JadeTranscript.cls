@@ -77,6 +77,9 @@ gciSession: aGciSession
 	transcriptPresenter	gciSession: aGciSession.
 !
 
+hasClassSideSelected
+	^false!
+
 inspectOop
 
 	| string result |
@@ -200,6 +203,7 @@ updateCaption
 !JadeTranscript categoriesFor: #describeErrorNumber!event handling!public! !
 !JadeTranscript categoriesFor: #disableNativeCode!event handling!public! !
 !JadeTranscript categoriesFor: #gciSession:!private! !
+!JadeTranscript categoriesFor: #hasClassSideSelected!public! !
 !JadeTranscript categoriesFor: #inspectOop!event handling!public! !
 !JadeTranscript categoriesFor: #methodsChanged24!event handling!public! !
 !JadeTranscript categoriesFor: #methodsChangedDays!event handling!public! !

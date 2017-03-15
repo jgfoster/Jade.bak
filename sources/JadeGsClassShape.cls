@@ -23,6 +23,10 @@ existInRegistry
 
 	^self registry includesClassNamed: name!
 
+getAllClassMethods
+
+	^self registry getAllClassMethodsFor: self!
+
 getAllInstVarNames
 
 	^self registry getAllInstVarNamesOf: self
@@ -38,6 +42,14 @@ getAllVarNames
 	^self registry getAllVarNamesOf: self
 
 !
+
+getClassInstanceVariableLike: aString
+
+	^self gsInstClassVariables select: [:each | (aString, '*') match: each]!
+
+getClassVariableAndPoolDictionaryLike: aString
+
+	^(self gsClassVariables select: [:each | (aString, '*') match: each]), (self gsPoolDictionaries select: [:each | (aString, '*') match: each])!
 
 getNamesAfterAssigment
 
@@ -128,9 +140,12 @@ updateClassData
 	^self registry register: self! !
 !JadeGsClassShape categoriesFor: #configuration!public! !
 !JadeGsClassShape categoriesFor: #existInRegistry!public! !
+!JadeGsClassShape categoriesFor: #getAllClassMethods!auto methods!public! !
 !JadeGsClassShape categoriesFor: #getAllInstVarNames!public! !
 !JadeGsClassShape categoriesFor: #getAllMethods!auto methods!public! !
 !JadeGsClassShape categoriesFor: #getAllVarNames!public! !
+!JadeGsClassShape categoriesFor: #getClassInstanceVariableLike:!public! !
+!JadeGsClassShape categoriesFor: #getClassVariableAndPoolDictionaryLike:!public! !
 !JadeGsClassShape categoriesFor: #getNamesAfterAssigment!public! !
 !JadeGsClassShape categoriesFor: #gsClassHierarchy!accessing!private! !
 !JadeGsClassShape categoriesFor: #gsClassHierarchy:!accessing!private! !

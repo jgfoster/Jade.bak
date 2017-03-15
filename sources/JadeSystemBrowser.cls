@@ -127,6 +127,15 @@ logoutRequested: aValueHolder
 	self closeRequested: aValueHolder.
 !
 
+maximizeCode
+	| codePresenter |
+
+	(self currentCard class == JadeAutoSystemBrowserPresenter) ifFalse: [^self].
+
+	codePresenter := self currentCard methodSourcePresenter .
+
+	^(JadeMaximizedCodeShell showOn: codePresenter  model) parentMethodPresenter: codePresenter !
+
 moveCardLeft
 
 	| cardView nextSibling |
@@ -253,6 +262,7 @@ update
 !JadeSystemBrowser categoriesFor: #initialize!public! !
 !JadeSystemBrowser categoriesFor: #isOkayToChange!public! !
 !JadeSystemBrowser categoriesFor: #logoutRequested:!public! !
+!JadeSystemBrowser categoriesFor: #maximizeCode!public! !
 !JadeSystemBrowser categoriesFor: #moveCardLeft!public! !
 !JadeSystemBrowser categoriesFor: #moveCardRight!public! !
 !JadeSystemBrowser categoriesFor: #onViewOpened!public! !

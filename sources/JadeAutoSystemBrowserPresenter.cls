@@ -39,12 +39,23 @@ createSchematicWiringForMethodSource
 !
 
 getClassHierarchy
+	"
+classHierarchyPresenter model anArray of Arrays #(#('Object') #('Object' 'Boolean') #('Object' 'True'))"
 
-	^classHierarchyPresenter selection!
+	^classHierarchyPresenter model asOrderedCollection detect: [:eachArray | eachArray last = self getClassName] ifNone: [#()]	
+"
+	^classHierarchyPresenter selection
+"!
 
 getClassName
 
-	^classHierarchyPresenter selection last!
+	"classHierarchyPresenter hasSelection ifFalse: [^'none'].
+
+	^classHierarchyPresenter selection last."
+
+	^(self selectedClasses size = 1) 
+	ifFalse: ['none']
+	ifTrue: [self selectedClasses last]!
 
 gsClassMethods
 
@@ -112,15 +123,18 @@ lastGsShape: anObject
 
 newMethodPresenter
 
-	^JadeAutoTextPresenter new.!
+	^JadeAutoTextPresenter3 new.!
 
 registerClassData
+	"When a class is selected in the GemStone browser all meta data of that class is registered to be used in the autocompletion system"
 	| gsMethods gsClassMethods |
 
+	categoryListPresenter hasSelection ifTrue: [^self]. "if a category is selected then not all methods are displayed --> we only register a class data with ALL methods (no category selected)"
+	(self selectedClasses size = 1) ifFalse: [^self]. "with multiple classes we ignore the registration, which class own listed methods ???"
 	gsClassMethods := OrderedCollection new.
 	gsMethods := OrderedCollection new.
-	self hasClassSideSelected ifTrue: [gsClassMethods := self gsMethods] ifFalse: [gsMethods := self gsMethods].
-	classHierarchyPresenter hasSelection ifFalse: [^self].
+	self hasClassSideSelected ifTrue: [gsClassMethods := self gsClassMethods] ifFalse: [gsMethods := self gsMethods].
+
 	lastGsShape := JadeGsClassShape new.
 	lastGsShape  name: self getClassName;
 		gsClassHierarchy: self getClassHierarchy;
@@ -131,9 +145,8 @@ registerClassData
 		gsClassMethods: gsClassMethods;
 		gsPoolDictionaries: self gsClassPoolDictionaries;
 		yourself.
-
 	lastGsShape updateClassData.
-	methodSourcePresenter lastGsShape: lastGsShape.!
+	methodSourcePresenter currentGsShape: lastGsShape.!
 
 removeClass
 	| list |
@@ -151,15 +164,17 @@ updateAndSelect: aView
 !
 
 updateMethodList
-    "The receiver must keep update with any add/remove of a method in order to be acurate in the autocompletation"
+	"The receiver must keep update with any add/remove of a method in order to be acurate in the autocompletation"
 
-    super updateMethodList.
+	super updateMethodList.
 
-    lastGsShape ifNil: [^self].
+	lastGsShape ifNil: [^self].
 
-    self hasClassSideSelected ifTrue: [^lastGsShape gsClassMethods: self gsMethods].
+	categoryListPresenter hasSelection ifTrue: [^self]. "if a category is selected then not all methods are displayed --> we only register a class data with ALL methods (no category selected)"
 
-    ^lastGsShape gsMethods: self gsMethods.! !
+	self hasClassSideSelected ifTrue: [^lastGsShape gsClassMethods: self gsClassMethods].
+
+	^lastGsShape gsMethods: self gsMethods.! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #codePresenterIsMethod!public! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #createArrayFromString:!public!updating! !
 !JadeAutoSystemBrowserPresenter categoriesFor: #createSchematicWiringForMethodSource!create schemantic wiring!public! !

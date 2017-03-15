@@ -77,6 +77,7 @@ model: anObject
 onViewOpened
 
 	super onViewOpened.
+	"(documentPresenter view isKindOf: MultilineTextEdit) ifFalse: [documentPresenter view styler: JadeExpressionStyler new]."
 	(model isKindOf: String) ifTrue: [
 		documentPresenter value: model.
 		self view caption: 'String (' , model size printString , ' characters)'.
