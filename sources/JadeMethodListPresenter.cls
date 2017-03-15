@@ -76,6 +76,17 @@ browseMethodsFromString: aString
 	].
 !
 
+browseMethodsFromString: aString methodName: methodName
+	| list |
+
+	list := GsMethod2
+		listFromString: aString
+		session: self gciSession.
+	methodListPresenter list: list asSortedCollection.
+	list notEmpty ifTrue: [
+		methodListPresenter selectFirstMethod.
+	].!
+
 browseMethodsFromString: aString methodName: methodName type: browseType
 	| list |
 
@@ -226,6 +237,7 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #browseMethods:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsContaining:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
+!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
 !JadeMethodListPresenter categoriesFor: #browseSendersOf:!public! !
 !JadeMethodListPresenter categoriesFor: #codePresenterIsMethod!public! !

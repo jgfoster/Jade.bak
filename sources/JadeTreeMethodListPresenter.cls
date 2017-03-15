@@ -73,9 +73,9 @@ browseMethodsFromString: aString
 	].!
 
 browseMethodsFromString: aString methodName: methodName
-	| list |
+	| list node |
 
-	self hasTreeListSelection ifFalse: [self addTreeListRoot: methodName].
+	self hasTreeListSelection ifFalse: [node := self addTreeListRoot: methodName type: #references].
 
 	list := GsMethod2
 		listFromString: aString
@@ -84,6 +84,11 @@ browseMethodsFromString: aString methodName: methodName
 	list notEmpty ifTrue: [
 		methodListPresenter selectFirstMethod.
 	].
+	node isNil ifTrue: [^self].
+
+	treeMethodsMap at: node put: list asSortedCollection.
+
+	treeMethodsPresenter selection: node
 !
 
 browseMethodsFromString: aString methodName: methodName type: browseType
