@@ -12,11 +12,11 @@ JadeSUnitAbstractPresenter comment: ''!
 
 abortTransaction
 
-	self model abort!
+	gciSession abort!
 
 commitTransaction
 
-	self model commit!
+	gciSession commit!
 
 createComponents
 
@@ -24,10 +24,6 @@ createComponents
 
 	testCasesPresenter := self add: ListPresenter new name: 'testCases'.
 	textResultPresenter := self add: TextPresenter new name: 'textResult'.!
-
-model: aGciSession
-
-	super model: aGciSession.!
 
 reset
 
@@ -58,11 +54,6 @@ runTests: anOrderedCollection in: testClassName
 
 	^jadeResult!
 
-server
-	"Answer a pointer to an instance of GemStone/S class <JadeServer64bit32>"
-
-	^model _server!
-
 setColorFor: aJadeTestResult
 
 	textResultPresenter value: aJadeTestResult summary.
@@ -74,9 +65,7 @@ setColorFor: aJadeTestResult
 !JadeSUnitAbstractPresenter categoriesFor: #abortTransaction!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #commitTransaction!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #createComponents!public! !
-!JadeSUnitAbstractPresenter categoriesFor: #model:!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #reset!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #runTests:in:!public! !
-!JadeSUnitAbstractPresenter categoriesFor: #server!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #setColorFor:!public! !
 

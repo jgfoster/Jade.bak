@@ -37,16 +37,6 @@ getTestCounter
 
 	^'Total Tests: ', testCounter first printString!
 
-model: aGciSession
-	| gsResult packagesNames |
-
-	super model: aGciSession.
-
-"	gsResult := model serverPerform: #getPackagesNamesWithTestClasses.
-	packagesNames := gsResult subStrings: ','.
-
-	packagesPresenter model: (ListModel on: packagesNames asSortedCollection). "!
-
 onClassesChanged
 	| gsResult testMethods |
 
@@ -125,7 +115,6 @@ testClassesSize
 !JadeSUnitPresenter categoriesFor: #createSchematicWiring!public! !
 !JadeSUnitPresenter categoriesFor: #debug!public! !
 !JadeSUnitPresenter categoriesFor: #getTestCounter!public! !
-!JadeSUnitPresenter categoriesFor: #model:!public! !
 !JadeSUnitPresenter categoriesFor: #onClassesChanged!public! !
 !JadeSUnitPresenter categoriesFor: #onPackageChanged!public! !
 !JadeSUnitPresenter categoriesFor: #onViewOpened!public! !
