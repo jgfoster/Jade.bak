@@ -203,7 +203,7 @@ getSelectedGsShape
 
 	(self topShell class name == #'JadeTranscript') ifTrue: [^nil].
 	(self topShell class name == #'JadeMethodListBrowser') ifTrue: [^nil].
-	(self topShell class name == #'JadeInspector') ifTrue: [^nil "self registry getClass: inspected object class"].
+	(self topShell isKindOf: JadeInspector) ifTrue: [^nil "self registry getClass: inspected object class"].
 	(self topShell class name == #'JadeDebugger') ifTrue: [^nil].
 
 	^self registry getClass: parentPresenter getClassName!

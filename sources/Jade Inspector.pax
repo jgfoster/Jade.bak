@@ -5,9 +5,11 @@ package paxVersion: 1;
 
 package basicPackageVersion: '0.026'.
 
+package basicScriptAt: #postinstall put: 'JadeInspector setNavigationInspector'.
 
 package classNames
 	add: #JadeInspector;
+	add: #JadeNavigationInspector;
 	yourself.
 
 package methodNames
@@ -36,6 +38,7 @@ package globalAliases: (Set new
 
 package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
@@ -51,6 +54,11 @@ package!
 
 JadeTextDocument subclass: #JadeInspector
 	instanceVariableNames: 'instVarListPresenter'
+	classVariableNames: 'DefaultInspectorClass'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeInspector subclass: #JadeNavigationInspector
+	instanceVariableNames: 'oopsCollection objectIndex'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -66,7 +74,7 @@ jadeInspect
 
 	| result |
 	result := self jadeExecuteAndDisplay: false.
-	JadeInspector showOn: result session: gciSession.
+	JadeInspector defaultInspectorClass showOn: result session: gciSession.
 ! !
 !CodeSourcePresenter categoriesFor: #jadeInspect!Jade!private! !
 

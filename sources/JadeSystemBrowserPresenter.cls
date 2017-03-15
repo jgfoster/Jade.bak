@@ -1232,7 +1232,7 @@ jadeInspect
 
 	| result |
 	result := self jadeExecuteAndDisplay: false.
-	JadeInspector showOn: result session: gciSession.
+	JadeInspector defaultInspectorClass  showOn: result session: gciSession.
 !
 
 jadeMenuStrings

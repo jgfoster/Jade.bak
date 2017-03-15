@@ -52,6 +52,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'Jade Inspector';
 	add: 'Jade Method Browser';
 	add: 'Jade UI Base';
 	add: '..\..\..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
