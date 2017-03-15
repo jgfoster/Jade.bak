@@ -17,6 +17,7 @@ list := #(
 	'Jade User Browser'
 	'Monticello'
 	'Jade UI'
+	'Jade Test Browser'
 	'Jade System Browser'
 	'Jade Transcript'
 	'Jade Process Browser'

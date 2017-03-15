@@ -19,6 +19,10 @@ asString: anObject
 	].
 !
 
+homeMethodFor: aGsMethod
+
+	^[aGsMethod homeMethod] on: Error do: [:ex | ex return: aGsMethod]!
+
 installTranscript
 
 	[
@@ -33,6 +37,7 @@ objectForOop: anInteger
 	^Object _objectForOop: anInteger.
 ! !
 !JadeServer64bit categoriesFor: #asString:!public!Transcript! !
+!JadeServer64bit categoriesFor: #homeMethodFor:!public! !
 !JadeServer64bit categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer64bit categoriesFor: #objectForOop:!public!System Browser! !
 

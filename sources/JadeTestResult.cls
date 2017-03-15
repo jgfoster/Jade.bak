@@ -5,7 +5,7 @@ Object subclass: #JadeTestResult
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeTestResult guid: (GUID fromString: '{8B60BB8A-1ADB-469B-9149-B9F15F68562E}')!
+JadeTestResult guid: (GUID fromString: '{8b60bb8a-1adb-469b-9149-b9f15f68562e}')!
 JadeTestResult comment: ''!
 !JadeTestResult categoriesForClass!Unclassified! !
 !JadeTestResult methodsFor!

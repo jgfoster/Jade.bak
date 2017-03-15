@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
-	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
+	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints sunitPresenter superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -289,6 +289,18 @@ browseMethodsContaining
 	self browseMethodsAndSelect: searchString.
 !
 
+browseSelectedClass
+
+	| range string list assoc |
+	range := methodSourcePresenter view selectionRange.
+	string := methodSourcePresenter value copyFrom: range start to: range stop.
+	list := self findClassList.
+	assoc := list 
+		detect: [:each | each key = string]
+		ifNone: [^MessageBox warning: 'Class ' , string printString , ' not found!!' caption: 'Jade'].
+	parentPresenter parentPresenter addSystemBrowserForClass: assoc value.
+!
+
 browseSenders
 
 	self browseSendersOf: methodListPresenter selections first first.
@@ -400,23 +412,24 @@ contextObject
 
 createComponents
 
-	ancestorListPresenter 	:= self add: ListPresenter			new 		name: 'ancestorList'.
-	categoryListPresenter	:= self add: ListPresenter			new 		name: 'categoryList'.
-	classCategoryPresenter	:= self add: TreePresenter			new 		name: 'classCategoryList'.
-	classCommentPresenter 	:= self add: TextPresenter 		new 		name: 'classDocumentation'.
-	classDefinitionPresenter	:= self add: JadeTextPresenter 		new 		name: 'classDefinition'.
-	classHierarchyPresenter	:= self add: TreePresenter			new 		name: 'classHierarchy'.
-	classListPresenter		:= self add: ListPresenter			new 		name: 'classList'.
-	dictionaryListPresenter 	:= self add: ListPresenter 			new 		name: 'dictionaryList'.
-	globalsPresenter		:= self add: ListPresenter			new 		name: 'globals'.
-	methodListPresenter		:= self add: ListPresenter			new 		name: 'methodList'.
-	methodSourcePresenter	:= self add: MethodSourcePresenter 	new 		name: 'methodSource'.
-	originalSourcePresenter	:= self add: self newMethodPresenter 		name: 'originalSource'.
-	overrideListPresenter	:= self add: ListPresenter			new 		name: 'overrideList'.
-	packageListPresenter 	:= self add: ListPresenter			new 		name: 'packageList'.
-	repositoryListPresenter	:= self add: ListPresenter			new 		name: 'repositoryList'.
-	superclassListPresenter	:= self add: ListPresenter			new 		name: 'superclassList'.
-	variableListPresenter		:= self add: ListPresenter			new 		name: 'variableList'.
+	ancestorListPresenter 	:= self add: ListPresenter		new 		name: 'ancestorList'.
+	categoryListPresenter	:= self add: ListPresenter		new 		name: 'categoryList'.
+	classCategoryPresenter	:= self add: TreePresenter		new 		name: 'classCategoryList'.
+	classCommentPresenter 	:= self add: TextPresenter 	new 		name: 'classDocumentation'.
+	classDefinitionPresenter	:= self add: JadeTextPresenter 	new 		name: 'classDefinition'.
+	classHierarchyPresenter	:= self add: TreePresenter		new 		name: 'classHierarchy'.
+	classListPresenter		:= self add: ListPresenter		new 		name: 'classList'.
+	dictionaryListPresenter 	:= self add: ListPresenter 		new 		name: 'dictionaryList'.
+	globalsPresenter		:= self add: ListPresenter		new 		name: 'globals'.
+	methodListPresenter		:= self add: ListPresenter		new 		name: 'methodList'.
+	methodSourcePresenter	:= self add: self newMethodPresenter 	name: 'methodSource'.
+	originalSourcePresenter	:= self add: self newMethodPresenter 	name: 'originalSource'.
+	overrideListPresenter	:= self add: ListPresenter		new 		name: 'overrideList'.
+	packageListPresenter 	:= self add: ListPresenter		new 		name: 'packageList'.
+	repositoryListPresenter	:= self add: ListPresenter		new 		name: 'repositoryList'.
+	sunitPresenter 			:= self add: JadeSUnitInClassPresenter new name: 'sunit'.
+	superclassListPresenter	:= self add: ListPresenter		new 		name: 'superclassList'.
+	variableListPresenter		:= self add: ListPresenter		new 		name: 'variableList'.
 
 	false ifTrue: [StNumberStylingToken new numberClass: nil]. "to prevent method from being stripped!!"!
 
@@ -431,6 +444,7 @@ createSchematicWiring
 		createSchematicWiringForDictionaryList;
 		createSchematicWiringForPackageList;
 		createSchematicWiringForPackageDictionaryTabs;
+		createSchematicWiringForMethodSource;
 		createSchematicWiringForClassDefinition;
 		createSchematicWiringForMethodCategoryList;
 		createSchematicWiringForVariableList;
@@ -539,6 +553,18 @@ createSchematicWiringForMethodList
 		yourself.
 !
 
+createSchematicWiringForMethodSource
+
+	methodSourcePresenter 	
+		when: #'hoverStart:'				send: #'methodHoverStart:'	to: self;
+		when: #'hoverEnd:'				send: #'methodHoverEnd:'		to: self;
+		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'		to: self;
+		when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'	to: self;
+		when: #'valueChanged'			send: #'methodValueChanged'	to: self;
+		when: #'focusLost'				send: #'cancelCallTip'			to: methodSourcePresenter view;
+		yourself.
+!
+
 createSchematicWiringForOverrideList
 
 	overrideListPresenter		
@@ -591,8 +617,6 @@ createSchematicWiringForVariableList
 
 currentMethodSource
 
-	self error: 'Should happen in MethodSourcePresenter'.
-"
 	| source fromStream writeStream |
 	fromStream := ReadStream on: methodSourcePresenter value.
 	writeStream := WriteStream on: String new.
@@ -615,7 +639,7 @@ currentMethodSource
 		source := source copyFrom: 1 to: source size - 1.
 	].
 	^source.
-"!
+!
 
 currentSelectionOrLine
 
@@ -678,7 +702,35 @@ editFindNext
 
 editMenuStrings
 
-	^methodSourcePresenter editMenuStrings
+	false ifTrue: [
+		self editSave; editUndo; editRedo; editCut; editCopy; editPaste; editDelete; editSelectAll; editFind; editFindNext; editReplace; 
+			jadeDisplay; jadeExecute; jadeInspect; browseSelectedClass.
+	].
+	^#(
+		'&Edit'
+		'&Save/Ctrl+S/editSave'
+		'-'
+		'&Undo/Ctrl+Z/editUndo'
+		'&Redo/Ctrl+Y/editRedo'
+		'-'
+		'&Reformat Source/Ctrl+R/reformatSource'
+		'-'
+		'&Cu&t/Ctrl+X/editCut'
+		'&Copy/Ctrl+C/editCopy'
+		'&Paste/Ctrl+V/editPaste'
+		'&Delete/Delete/editDelete'
+		'-'
+		'Select &All/Ctrl+A/editSelectAll'
+		'-'
+		'&Find/Ctrl+F/editFind'
+		'Find &Next/F3/editFindNext'
+		'&Replace/Ctrl+H/editReplace'
+		'-'
+		'Display/Ctrl+D/jadeDisplay'
+		'Execute/Ctrl+E/jadeExecute'
+		'Inspect/Ctrl+Q/jadeInspect'
+		'Browse Class/Ctrl+B/browseSelectedClass'
+	).
 !
 
 editPaste
@@ -704,7 +756,7 @@ editSave
 	| currentCard |
 	currentCard := textAreaTabs view currentCard.
 	currentCard = classDefinitionPresenter view ifTrue: [^self editSaveClass].
-	currentCard = methodSourcePresenter view ifTrue: [^methodSourcePresenter fileSave].
+	currentCard = methodSourcePresenter view ifTrue: [^self editSaveMethod].
 	currentCard = classCommentPresenter view ifTrue: [^self editSaveClassComment].
 	MessageBox notify: 'Save menu not effective for this text area tab'.
 !
@@ -784,13 +836,14 @@ editSaveClassComment
 !
 
 editSaveMethod
+	| stream caretPosition firstVisibleLine |
 
-	self error: 'Should happen in MethodSourcePresenter'.
-"
-	| stream |
+	caretPosition := methodSourcePresenter view caretPosition.
+	firstVisibleLine := methodSourcePresenter view lineScroll.
 	(self isCategoriesTabSelected and: [categoryListPresenter hasSelection]) ifTrue: [
 		methodCategory := categoryListPresenter selection trimBlanks.
 	].
+
 	stream := (WriteStream on: String new)
 		nextPutAll: 'method'; tab;
 		nextPutAll: self selectedClassNameWithoutVersion; tab;
@@ -808,7 +861,9 @@ editSaveMethod
 	] on: GsCompileError do: [:ex | 
 		self reportCompileError: ex list.
 	].
-"!
+	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
+	methodSourcePresenter view goto: caretPosition.
+!
 
 editSelectAll
 
@@ -926,6 +981,12 @@ findClassList
 	^list
 !
 
+gciSession: aGciSession
+
+	super gciSession: aGciSession.
+	sunitPresenter gciSession: aGciSession.
+!
+
 getViews
 
 	packageDictionaryTabs 	:= self view viewNamed: 'packageDictionaryTabs'.
@@ -952,8 +1013,17 @@ globalsMenuStrings
 handleInvalidSession
 
 	| hadDialog |
+	hadDialog := false.
 	inUpdate := true.
-	hadDialog := methodSourcePresenter handleInvalidSession.
+	methodSourcePresenter view isModified ifTrue: [
+		self ensureVisible.
+		methodSourcePresenter ensureVisible.
+		methodSourcePresenter view isModified: false.
+		(MessageBox confirm: 'Copy unsaved method to clipboard?' caption: 'Invalid Session!!') ifTrue: [
+			methodSourcePresenter view selectAll; copySelection.
+		].
+		hadDialog := true.
+	].
 	classDefinitionPresenter view isModified ifTrue: [
 		self ensureVisible.
 		classDefinitionPresenter ensureVisible.
@@ -1008,7 +1078,7 @@ inspectGlobal
 
 	| oopType |
 	oopType := self gciSession oopTypeWithOop: (globalsPresenter selection at: 4) asNumber.
-	(Smalltalk at: #'JadeInspector' ifAbsent: [^self]) showOn: self gciSession -> oopType.
+	(Smalltalk at: #'JadeInspector' ifAbsent: [^self]) showOn: oopType session: self gciSession.
 !
 
 isCategoriesTabSelected
@@ -1019,6 +1089,14 @@ isCategoriesTabSelected
 isClassListTabSelected
 
 	^classHierarchyTabs currentCard name = 'classList'.
+!
+
+isClassSelectedInEditor
+
+	| range string |
+	(range := methodSourcePresenter view selectionRange) isEmpty ifTrue: [^false].
+	string := methodSourcePresenter value copyFrom: range start to: range stop.
+	^(string allSatisfy: [:each | each isAlphaNumeric]) and: [string first isLetter and: [string first isUppercase]]
 !
 
 isDictionariesTabSelected
@@ -1033,7 +1111,11 @@ isGlobalsTabSelected
 
 isOkayToChange
 
-	methodSourcePresenter isOkayToChange ifFalse: [^false].
+	methodSourcePresenter view isModified ifTrue: [
+		methodSourcePresenter ensureVisible.
+		(MessageBox confirm: 'Stay on unsaved method?' caption: 'Method has unsaved changes!!') ifTrue: [^false].
+		methodSourcePresenter view isModified: false.
+	].
 	classDefinitionPresenter view isModified ifTrue: [
 		classDefinitionPresenter ensureVisible.
 		(MessageBox confirm: 'Stay on unsaved class definition?' caption: 'Class has unsaved changes!!') ifTrue: [^false].
@@ -1209,11 +1291,38 @@ loadLatestVersion
 	self updateCommand: stream contents.
 !
 
+methodDoubleClicked: anObject
+
+	| range string |
+	range := methodSourcePresenter view selectionRange.
+	string := methodSourcePresenter value.
+	string size = range stop ifTrue: [^self].
+	(string at: range stop + 1) = $: ifFalse: [^self].
+	range stop: range stop + 1.
+	methodSourcePresenter view selectionRange: range.
+!
+
 methodFilterListPresenter
 
 	^categoryVariableTabs currentCard name = 'categoryList'
 		ifTrue: [categoryListPresenter]
 		ifFalse: [variableListPresenter].
+!
+
+methodHoverEnd: anObject
+
+	methodSourcePresenter view cancelCallTip.!
+
+methodHoverStart: aPoint
+
+	| charIndex indicator |
+	charIndex := methodSourcePresenter view charNearestPosition: aPoint.
+	indicator := methodSourcePresenter view indicators
+		detect: [:each | each range includes: charIndex]
+		ifNone: [^self].
+	methodSourcePresenter view 
+		showCallTip: indicator tag
+		at: charIndex.
 !
 
 methodMenu: aMenu
@@ -1226,6 +1335,44 @@ methodMenu: aMenu
 		aMenu removeItemAt: aMenu items size.
 	].
 	self methodMenuBreak: aMenu.
+!
+
+methodMenuBreak: aMenu
+
+	| stepPoint args desc command message |
+	methodSourcePresenter view isModified ifTrue: [^self].
+	stepPoint := self stepPointAt: methodSourcePresenter view cursorPosition.
+	stepPoint isNil ifTrue: [^self].
+	(breakPoints includes: stepPoint) ifTrue: [
+		args := Array with: stepPoint with: 'clear'.
+		desc := 'Clear break at step point ' , stepPoint printString.
+	] ifFalse: [
+		args := Array with: stepPoint with: 'set'.
+		desc := 'Break at step point ' , stepPoint printString.
+	].
+	command := MessageSend 
+		receiver: self 
+		selector: #'breakAt:operation:' 
+		arguments: args.
+	aMenu 
+		addSeparator;
+		addCommand: command description: desc;
+		yourself.
+	(message := (stepPoints at: stepPoint) value) isEmpty ifTrue: [^self].
+	command := MessageSend
+		receiver: self 
+		selector: #'browseImplementorsOf:' 
+		argument: message.
+	aMenu
+		addCommand: command
+		description: 'Browse Implementors of #' , message printString.
+	command := MessageSend
+		receiver: self 
+		selector: #'browseSendersOf:' 
+		argument: message.
+	aMenu
+		addCommand: command
+		description: 'Browse Senders of #' , message printString.
 !
 
 methodsIdentifier
@@ -1258,10 +1405,13 @@ methodsMenuStrings
 	).
 !
 
+methodSourcePresenter
+
+	^methodSourcePresenter.
+!
+
 methodValueChanged
 
-	self error: 'Should be in MethodSourcePresenter'.
-"
 	inUpdate ifTrue: [^self].
 	methodSourcePresenter value = methodSource ifTrue: [
 		methodSourcePresenter view 
@@ -1276,7 +1426,7 @@ methodValueChanged
 			clearContainerIndicators;
 			yourself.
 	].
-"!
+!
 
 onDragClassesOverDictionary: aSession 
 
@@ -1598,14 +1748,18 @@ onSetFocus: aView stack: aString
 
 onViewOpened
 
-	| listModel |
 	super onViewOpened.
 	categoryListPresenter	view contextMenu: (Menu fromStrings: self categoriesMenuStrings	).
+	classCommentPresenter	view isReadOnly: false.
 	classHierarchyPresenter	view contextMenu: (Menu fromStrings: self classesMenuStrings		).
 	classListPresenter		view contextMenu: (Menu fromStrings: self classesMenuStrings		).
 	dictionaryListPresenter 	view contextMenu: (Menu fromStrings: self dictsMenuStrings		).
 	globalsPresenter		view contextMenu: (Menu fromStrings: self globalsMenuStrings		).
 	methodListPresenter		view contextMenu: (Menu fromStrings: self methodsMenuStrings		).
+	methodSourcePresenter	view contextMenu: (Menu fromStrings: self editMenuStrings		);
+		isBackgroundDwellEnabled: true;
+		isBraceHighlightingEnabled: true;
+		yourself.
 	packageListPresenter 	view contextMenu: (Menu fromStrings: self pkgsMenuStrings		).
 	variableListPresenter		view contextMenu: (Menu fromStrings: self variablesMenuStrings	).
 	self setSearchPolicy.
@@ -1616,17 +1770,12 @@ onViewOpened
 		aLabel := aModel detect: [:each | each text = 'Packages'].
 		aModel remove: aLabel.
 	].
-	methodSourcePresenter gciSession: gciSession.
-	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
-	globalsLabel := listModel detect: [:each | each text = 'Globals'].
-	packageLabel := listModel detect: [:each | each text = 'Package'].
-	originalSourceLabel := listModel detect: [:each | (each isKindOf: CardLabel) and: [each text  = 'Original Source']].
 !
 
 openSourceStyler
 
 	| textStyles |
-	textStyles := methodSourcePresenter textStyles.
+	textStyles := methodSourcePresenter view editStyles textStyles.
 	JadeTextStyles default textStyles: textStyles.
 	classDefinitionPresenter view textStyles: textStyles.
 	originalSourcePresenter view textStyles: textStyles.
@@ -1640,6 +1789,8 @@ pkgDictChanged
 
 	| listModel |
 	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
+	globalsLabel ifNil: [globalsLabel := listModel detect: [:each | each text = 'Globals']].
+	packageLabel ifNil: [packageLabel := listModel detect: [:each | each text = 'Package']].
 	self isPackageListTabSelected ifTrue: [
 		(listModel includes: packageLabel) ifFalse: [listModel addFirst: packageLabel].
 		packageInfoTab ensureVisible.
@@ -1733,6 +1884,7 @@ queryCommand: aCommandQuery
 		aCommandQuery isEnabled: self selectedClasses size == 1. ^true.
 	].
 	(#(#'runClassTests') includes: command) ifTrue: [aCommandQuery isEnabled: selectedClassesAreTestCases. ^true].
+	(#(#'browseSelectedClass') includes: command) ifTrue: [aCommandQuery isEnabled: self isClassSelectedInEditor. ^true].
 	^super queryCommand: aCommandQuery.
 !
 
@@ -1845,8 +1997,6 @@ removeRepository
 
 reportCompileError: anArrayOfArray 
 
-	self error: 'Should happen in MethodSourcePresenter'.
-"
 	| source position stream string indicators |
 	indicators := OrderedCollection new.
 	methodSourcePresenter view clearContainerIndicators.
@@ -1869,7 +2019,7 @@ reportCompileError: anArrayOfArray
 	methodSourcePresenter view indicators: indicators.
 	string := stream contents.
 	self statusBarText: (string copyFrom: 1 to: string size - 2).
-"!
+!
 
 requestString
 
@@ -2130,6 +2280,20 @@ statusBarText: aString
 	self parentPresenter parentPresenter statusBarText: aString.
 !
 
+stepPointAt: aPoint
+
+	| charIndex |
+	charIndex := methodSourcePresenter view charNearestPosition: aPoint.
+	stepPoints size to: 1 by: -1 do: [:stepPoint | 
+		| range |
+		range := (stepPoints at: stepPoint) key.
+		(range start <= charIndex and: [charIndex <= range stop]) ifTrue: [
+			^stepPoint.
+		].
+	].
+	^nil.
+!
+
 stuffToKeepFromPath: pathString andAddTo: newSource
 
 	| file existingSource i j string existingHeader newHeader x |
@@ -2164,6 +2328,7 @@ stuffToKeepFromPath: pathString andAddTo: newSource
 
 textTabChanged
 
+	methodSourcePresenter view cancelCallTip.
 	(textAreaTabs currentCard name = 'globals' 	and: [self isPackageListTabSelected	]) ifTrue: [packageInfoTab 	ensureVisible].
 	(textAreaTabs currentCard name = 'packageInfo' and: [self isDictionariesTabSelected	]) ifTrue: [globalsPresenter 	ensureVisible].
 	self updateMenuBar.
@@ -2352,7 +2517,8 @@ updateClassHierarchy
 	self selectedClassName: (newSelection notEmpty ifTrue: [newSelection last] ifFalse: ['']).
 	classListPresenter selectionOrNil: nil.
 
-	selectedClassesAreTestCases := (flags at: 1) = 'true'.!
+	selectedClassesAreTestCases := (flags at: 1) = 'true'.
+	sunitPresenter testClassName: (selectedClassesAreTestCases ifTrue: [selectedClassName] ifFalse: ['']).!
 
 updateClassInfo
 
@@ -2415,7 +2581,8 @@ updateClassList
 		].
 	].
 
-	selectedClassesAreTestCases := (flags at: 1) = 'true'.!
+	selectedClassesAreTestCases := (flags at: 1) = 'true'.
+	sunitPresenter testClassName: (selectedClassesAreTestCases ifTrue: [selectedClassName] ifFalse: ['']).!
 
 updateClassListOrHierarchy
 
@@ -2464,7 +2631,7 @@ updateCommand: aString onSuccessDo: aBlock
 
 updateDictionaryList
 
-	| fullList lines listModel selections |
+	| fullList selections lines |
 	dictionaryListPresenter ensureVisible.
 	fullList := readStream nextLineAsList collect: [:each | (each copyFrom: 2 to: each size) -> (each first = $H)].
 	dictionaryListPresenter list = fullList ifFalse: [
@@ -2477,10 +2644,6 @@ updateDictionaryList
 	dictionaryListPresenter view ensureSelectionVisible.
 	lines := readStream nextList.
 	globalsPresenter list: lines.
-
-	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
-	(listModel includes: globalsLabel ) ifFalse: [listModel addFirst: globalsLabel].
-	listModel remove: packageLabel ifAbsent: [].
 !
 
 updateMenuBar
@@ -2505,11 +2668,30 @@ updateMenuBar
 
 updateMethod
 
-	| gsMethod listModel methodSourceLabel warnings x |
+	| gsMethod isReadOnly listModel methodSourceLabel newSource warnings x |
+	methodSourcePresenter view cancelCallTip.
 	gsMethod := GsMethod 
 		fromStream: readStream
 		session: gciSession.
-	methodSourcePresenter gsMethod: gsMethod.
+	isReadOnly := gsMethod isReadOnly.	"current user has write permission for the class"
+	newSource := gsMethod source.
+	methodSourcePresenter view isModified ifTrue: [
+		newSource = methodSource ifTrue: [^self].
+		(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!') ifTrue: [
+			methodSourcePresenter value copyToClipboard.
+		].
+	].
+	methodSource := newSource.
+	methodSourcePresenter value: methodSource.
+	unimplementedSelectors := gsMethod unimplementedSelectors.
+	stepPoints := gsMethod stepPoints.
+	breakPoints := gsMethod breakPoints.
+	self updateMethodStepPoints.
+	methodSourcePresenter view 
+		backcolor: JadeTextStyles default colorForNoEdits;
+		isModified: false;
+		isReadOnly: isReadOnly;
+		yourself.
 	(overrideListPresenter list notEmpty and: [overrideListPresenter selectionOrNil ~= overrideListPresenter list last]) ifTrue: [
 		methodSourcePresenter view
 			backcolor: nil;
@@ -2531,7 +2713,8 @@ updateMethod
 		].
 	].
 	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
-	methodSourceLabel := listModel detect: [:each | each = 'Method Source'].
+	originalSourceLabel ifNil: [originalSourceLabel := listModel detect: [:each | each text  = 'Original Source']].
+	methodSourceLabel := listModel detect: [:each | each text = 'Method Source'].
 	(x := gsMethod originalSource) isEmpty ifTrue: [
 		listModel remove: originalSourceLabel ifAbsent: [].
 	] ifFalse: [
@@ -2666,7 +2849,7 @@ updatePackageInfo
 
 updatePackageList
 
-	| dictionary fullList listModel new old selections |
+	| dictionary fullList selections old new |
 	packageListPresenter ensureVisible.
 	dictionary := Dictionary new.
 	readStream nextLineAsList do: [:each | dictionary at: each put: false].
@@ -2691,10 +2874,6 @@ updatePackageList
 		ifTrue: [self updatePackageInfo]
 		ifFalse: [self clearPackageInfo].
 	packageListPresenter view ensureSelectionVisible.
-
-	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
-	(listModel includes: packageLabel) ifFalse: [listModel addFirst: packageLabel].
-	listModel remove: globalsLabel ifAbsent: [].
 !
 
 updatePresenters
@@ -2805,6 +2984,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseSelectedClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSenders!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
@@ -2825,6 +3005,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForInstanceClassTabs!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForMethodCategoryList!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForMethodList!create schemantic wiring!public! !
+!JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForMethodSource!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForOverrideList!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForPackageDictionaryTabs!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForPackageList!create schemantic wiring!public! !
@@ -2858,6 +3039,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #fileTypes!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #findClassList!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #gciSession:!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #getViews!public! !
 !JadeSystemBrowserPresenter categoriesFor: #globalsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #handleInvalidSession!public! !
@@ -2867,6 +3049,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #inspectGlobal!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isCategoriesTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassListTabSelected!public!request string! !
+!JadeSystemBrowserPresenter categoriesFor: #isClassSelectedInEditor!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isDictionariesTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isGlobalsTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public! !
@@ -2883,10 +3066,15 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #layoutInfo!public! !
 !JadeSystemBrowserPresenter categoriesFor: #layoutInfo:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #loadLatestVersion!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #methodDoubleClicked:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodFilterListPresenter!public!request string! !
+!JadeSystemBrowserPresenter categoriesFor: #methodHoverEnd:!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #methodHoverStart:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodMenu:!event handlers!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #methodMenuBreak:!event handlers!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodsIdentifier!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
+!JadeSystemBrowserPresenter categoriesFor: #methodSourcePresenter!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #methodValueChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onDragClassesOverDictionary:!drag & drop!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onDragClassesOverPackageList:!drag & drop!public! !
@@ -2956,6 +3144,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #splitterPosition:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #statusBarServerRequestText:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #statusBarText:!public!updating! !
+!JadeSystemBrowserPresenter categoriesFor: #stepPointAt:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #stuffToKeepFromPath:andAddTo:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #unloadPackage!menu handlers!public! !
@@ -3001,10 +3190,10 @@ resource_Default_view
 	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Default_view)
 	"
 
-	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ContainerView) 34 15 0 0 34 2 8 1409286144 131073 416 0 0 0 5 265030 4 ##(Smalltalk.Menu) 0 true 34 1 984134 2 ##(Smalltalk.CommandMenuItem) 1 1180998 4 ##(Smalltalk.CommandDescription) #savePackage 8 '&Save' 1 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 416 1180166 ##(Smalltalk.ProportionalLayout) 170 176 34 4 410 ##(Smalltalk.ContainerView) 34 15 0 416 34 2 8 1140850688 131073 688 0 0 0 5 0 0 0 688 626 170 176 34 4 410 ##(Smalltalk.ContainerView) 34 15 0 688 34 2 8 1140850688 131073 800 0 0 0 5 0 0 0 800 626 170 176 8 #() false 170 192 896 0 983302 ##(Smalltalk.MessageSequence) 138 144 34 1 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 328198 ##(Smalltalk.Point) 1075 1 1042 711 539 800 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 25 2 0 0 0 0 0 0 124 3 0 0 13 1 0 0] 34 3 410 ##(Smalltalk.SlideyInneyOuteyThing) 34 23 0 800 34 2 8 1409286144 131073 1152 0 524550 ##(Smalltalk.ColorRef) 8 4278190080 0 517 0 0 0 1152 655878 ##(Smalltalk.CardLayout) 138 144 34 2 721414 ##(Smalltalk.Association) 8 'Categories' 410 ##(Smalltalk.ListView) 34 30 0 410 ##(Smalltalk.SlidingCardTray) 34 22 0 1152 34 2 8 1140850688 131073 1408 0 1218 1248 0 5 0 0 0 1408 1280 170 192 34 4 410 ##(Smalltalk.ListView) 34 30 0 1408 34 2 8 1409372233 1025 1520 590662 2 ##(Smalltalk.ListModel) 138 144 896 0 1310726 ##(Smalltalk.IdentitySearchPolicy) 1218 8 4278190080 0 21 0 0 0 1520 0 8 4294902417 459270 ##(Smalltalk.Message) #displayString 8 #() 0 1049926 1 ##(Smalltalk.IconImageManager) 0 0 0 0 0 0 138 144 34 1 920646 5 ##(Smalltalk.ListViewColumn) 8 'Column 1' 283 #left 1714 #displayString 1744 ##(Smalltalk.SortedCollection) 0 0 1520 0 3 0 787814 3 ##(Smalltalk.BlockClosure) 0 0 1180966 ##(Smalltalk.CompiledExpression) 9 1 1888 8 'doIt' 8 '[:each | each item first = Character space ifTrue: [each font: (each font beBold; beItalic)]]' 8 #[37 105 226 0 159 31 161 132 221 9 17 226 4 100 163 97 164 183 106 60 106] #item #first ##(Smalltalk.Character) #space #font #beBold #beItalic #font: 1904 7 257 0 #report 896 0 131169 0 8 #(nil) 930 138 144 34 2 994 #createAt:extent: 34 2 1042 1 37 1042 291 487 1520 994 #text: 34 1 8 'Column 1' 1520 1090 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 18 0 0 0 145 0 0 0 5 1 0 0] 8 #() 1042 193 193 0 27 8 'variableList' 1376 8 'categoryList' 0 410 ##(Smalltalk.TabViewXP) 34 28 0 1152 34 2 8 1140916864 1 2272 1586 138 144 34 2 1360 8 'Variables' 0 1648 1218 1248 0 1 0 0 0 2272 0 8 4294901939 ##(Smalltalk.BasicListAbstract) ##(Smalltalk.IconicListAbstract) 1776 0 0 0 0 0 #noIcons 0 0 0 0 0 930 138 144 34 3 994 #createAt:extent: 34 2 1042 1 1 1042 351 539 2272 994 #basicSelectionsByIndex: 34 1 8 #(1) 2272 994 #tcmSetExtendedStyle:dwExStyle: 8 #(-1 0) 2272 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 175 0 0 0 13 1 0 0] 8 #() 2224 0 27 0 1152 1042 33 33 1049862 ##(Smalltalk.ButtonInteractor) 1408 0 590342 ##(Smalltalk.Rectangle) 1042 255 3 1042 287 35 1 562 #togglePin 8 'Pin or Unpin the tray' 1 1 0 0 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 53 9 1042 291 523 1408 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 26 0 0 0 4 0 0 0 171 0 0 0 9 1 0 0] 34 2 1376 1520 2224 0 27 34 2 8 1409372233 1025 1376 1586 138 144 896 0 1648 1218 1680 0 21 0 0 0 1376 0 8 4294902417 1714 #displayString 8 #() 0 1776 0 0 0 0 0 0 138 144 34 1 1826 8 'Column 1' 283 #left 1714 #displayString 3088 ##(Smalltalk.SortedCollection) 0 0 1376 0 3 0 1890 0 0 1922 9 1 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each item first = Character space ifTrue: [each font: (each font beBold; beItalic)]]' 8 #[37 105 226 0 159 31 161 132 221 9 17 226 4 100 163 97 164 183 106 60 106] #item #first ##(Smalltalk.Character) #space #font #beBold #beItalic #font: 3184 7 257 0 #report 896 0 131169 0 8 #(nil) 930 138 144 34 2 994 #createAt:extent: 34 2 1042 1 37 1042 291 487 1376 994 #text: 34 1 8 'Column 1' 1376 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 18 0 0 0 145 0 0 0 5 1 0 0] 8 #() 2224 0 27 1330 2384 1520 1376 170 192 34 2 1408 8 'categoryVariableTabs' 0 2272 1408 1042 201 201 401 1 31 0 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 1 1042 351 539 1152 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 175 0 0 0 13 1 0 0] 34 2 1408 2272 2224 0 27 410 ##(Smalltalk.Splitter) 34 12 0 800 34 2 8 1140850688 1 3728 0 1218 8 4278190080 0 517 0 0 0 3728 930 138 144 34 1 994 #createAt:extent: 34 2 1042 351 1 1042 11 539 3728 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 175 0 0 0 0 0 0 0 180 0 0 0 13 1 0 0] 8 #() 2224 0 27 410 ##(Smalltalk.ContainerView) 34 15 0 800 34 2 8 1140850688 131073 3984 0 0 0 5 0 0 0 3984 852230 ##(Smalltalk.FramingLayout) 170 176 34 6 410 ##(Smalltalk.ListView) 34 30 0 3984 34 2 8 1409372233 1025 4112 1586 138 144 896 0 1648 1218 1680 0 13 0 0 0 4112 0 8 4294902417 1714 #displayString 8 #() ##(Smalltalk.IconicListAbstract) 1776 0 0 0 0 0 0 138 144 34 2 1826 8 'Column 1' 311 #left 1714 #displayString 4256 ##(Smalltalk.SortedCollection) 1890 0 0 1922 1 83886081 1888 8 'doIt' 8 '[:each | each at: 5]' 8 #[29 105 17 214 5 148 106] 4352 7 257 0 0 4112 0 3 0 1890 0 0 1922 5 1 1888 8 'doIt' 8 '[:each | (each item at: 4) ifTrue: [each font: each font beItalic]]' 8 #[33 105 226 0 214 4 148 123 17 226 1 160 179 106 60 106] #item #font #beItalic #font: 4432 7 257 0 1826 8 '' 33 #center 994 #empty 8 #() 16 1714 #<= 8 #() 0 0 4112 1890 0 0 1922 6 1 1888 8 'doIt' 8 '[:each | ((each at: 2) ifTrue: [JadeSystemBrowserPresenter overriddenIcon] ifFalse: [Icon blank]) 
-	imageIndex]' 8 #[34 105 17 64 148 120 29 159 111 31 161 162 106] ##(Smalltalk.JadeSystemBrowserPresenter) #overriddenIcon ##(Smalltalk.Icon) #blank #imageIndex 4608 7 257 0 1 0 0 #report 896 0 131173 0 8 #(nil) 930 138 144 34 3 994 #createAt:extent: 34 2 1042 1 47 1042 351 447 4112 994 #text: 34 1 8 'Column 1' 4112 994 #columnOrder: 34 1 8 #(2 1) 4112 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 23 0 0 0 175 0 0 0 246 0 0 0] 8 #() 2224 0 27 1181766 2 ##(Smalltalk.FramingConstraints) 1180678 ##(Smalltalk.FramingCalculation) #fixedParentLeft 1 4994 #fixedParentRight 1 4994 #fixedParentTop 47 4994 #fixedParentBottom -45 410 ##(Smalltalk.ComboBox) 34 17 0 3984 34 2 8 1412498947 1025 5072 1586 138 144 896 0 1648 1218 8 4278190080 0 5 0 0 0 5072 0 8 4294903073 1714 #displayString 8 #() 896 401 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 1 1042 351 53 5072 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 175 0 0 0 26 0 0 0] 8 #() 2224 0 27 4962 5008 1 5024 1 5040 1 4994 #fixedViewTop 47 410 ##(Smalltalk.ComboBox) 34 17 0 3984 34 2 8 1412498947 1025 5440 1586 138 144 896 0 1648 1218 5184 0 5 0 0 0 5440 0 8 4294903073 1714 #displayString 8 #() 896 401 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 493 1042 351 53 5440 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 246 0 0 0 175 0 0 0 16 1 0 0] 8 #() 2224 0 27 4962 5008 1 5024 1 5056 -45 5424 47 170 192 34 6 4112 8 'methodList' 5072 8 'superclassList' 5440 8 'overrideList' 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 361 1 1042 351 539 3984 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 180 0 0 0 0 0 0 0 99 1 0 0 13 1 0 0] 34 3 5072 4112 5440 2224 0 27 2224 0 27 5 410 ##(Smalltalk.ContainerView) 34 15 0 688 34 2 8 1140850688 131073 6016 0 0 0 5 0 0 0 6016 626 170 176 34 6 410 ##(Smalltalk.ContainerView) 34 15 0 6016 34 2 8 1140850688 131073 6128 0 0 0 5 0 0 0 6128 626 170 176 896 false 170 192 34 2 410 ##(Smalltalk.TreeView) 34 27 0 6128 34 2 8 1409352231 1025 6256 590918 3 ##(Smalltalk.TreeModel) 0 1648 525062 ##(Smalltalk.TreeNode) 0 0 0 170 192 896 1218 8 4278190080 0 21 0 0 0 6256 0 8 4294903039 1890 0 0 1922 5 1 1888 8 'doIt' 8 '[:each | each key isEmpty ifTrue: [''--All Categories--''] ifFalse: [each key last]].' 8 #[33 105 226 0 159 119 31 106 226 0 161 106] #key #isEmpty 8 '--All Categories--' #last 6448 7 257 0 ##(Smalltalk.IconicListAbstract) 1776 0 0 0 0 0 170 176 896 17 #noIcons 1 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 1 1042 223 539 6256 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 111 0 0 0 13 1 0 0] 8 #() 2224 0 27 8 'classCategoryList' 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 383 1 1042 223 539 6128 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 191 0 0 0 0 0 0 0 46 1 0 0 13 1 0 0] 34 1 6256 2224 0 27 7 410 ##(Smalltalk.SlideyInneyOuteyThing) 34 23 0 6016 34 2 8 1409286144 131073 6896 0 1218 8 4278190080 0 517 0 0 0 6896 1266 138 144 34 2 1330 590662 1 ##(Smalltalk.CardLabel) 8 'Packages' 1890 0 0 1922 7 1 7056 8 'doIt' 8 '(CardLabel text: ''Packages'' iconBlock: [Icon fromId: ''Package.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 7056 7088 ##(Smalltalk.Icon) 8 'Package.ico' #fromId: #text:iconBlock: 7104 11 1 0 0 410 ##(Smalltalk.ListView) 34 30 0 410 ##(Smalltalk.SlidingCardTray) 34 22 0 6896 34 2 8 1140850688 131073 7232 0 1218 6976 0 5 0 0 0 7232 6992 170 192 34 4 7200 8 'packageList' 410 ##(Smalltalk.ListView) 34 30 0 7232 34 2 8 1409372233 1025 7360 1586 138 144 896 0 1648 1218 8 4278190080 0 21 0 0 0 7360 0 8 4294902417 1714 #displayString 8 #() 0 1776 0 0 0 0 0 0 138 144 34 1 1826 8 'Column 1' 305 #left 1714 #displayString 7520 ##(Smalltalk.SortedCollection) 1890 0 0 1922 2 1 1888 8 'doIt' 8 '[:each | each key]' 8 #[30 105 226 0 106] #key 7616 7 257 0 0 7360 0 3 0 1890 0 0 1922 5 1 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each item value ifTrue: [each font: (each font beBold)]]' 8 #[33 105 226 0 142 123 17 226 1 160 179 106 60 106] #item #font #beBold #font: 7696 7 257 0 #report 896 0 131169 0 8 #(nil) 930 138 144 34 2 994 #createAt:extent: 34 2 1042 1 37 1042 313 487 7360 994 #text: 34 1 8 'Column 1' 7360 1090 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 18 0 0 0 156 0 0 0 5 1 0 0] 8 #() 2224 0 27 8 'dictionaryList' 0 410 ##(Smalltalk.TabViewXP) 34 28 0 6896 34 2 8 1140916864 1 8016 1586 138 144 34 2 7072 7058 8 'Dictionaries' 1890 0 0 1922 7 1 16 8 'doIt' 8 '(CardLabel text: ''Dictionaries'' iconBlock: [Icon fromId: ''Dictionary.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 7056 8144 ##(Smalltalk.Icon) 8 'Dictionary.ico' #fromId: #text:iconBlock: 8160 11 1 0 0 0 1648 1218 6976 0 1 0 0 0 8016 0 8 4294901939 ##(Smalltalk.BasicListAbstract) ##(Smalltalk.IconicListAbstract) 1776 0 0 0 0 0 #smallIcons 0 0 0 0 0 930 138 144 34 3 994 #createAt:extent: 34 2 1042 1 1 1042 373 539 8016 994 #basicSelectionsByIndex: 34 1 8 #(1) 8016 994 #tcmSetExtendedStyle:dwExStyle: 8 #(-1 0) 8016 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 186 0 0 0 13 1 0 0] 8 #() 2224 0 27 0 6896 1042 33 33 2690 7232 0 2722 1042 277 3 1042 309 35 1 562 #togglePin 8 'Pin or Unpin the tray' 1 1 0 0 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 53 9 1042 313 523 7232 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 26 0 0 0 4 0 0 0 182 0 0 0 9 1 0 0] 34 2 7200 7360 2224 0 27 34 2 8 1409405001 1025 7200 1586 138 144 896 0 1648 1218 7472 0 5 0 0 0 7200 0 8 4294902417 1714 #displayString 8 #() 0 1776 0 0 0 0 0 0 138 144 34 1 1826 8 'Column 1' 305 #left 1714 #displayString 8912 ##(Smalltalk.SortedCollection) 1890 0 0 1922 2 1 1888 8 'doIt' 8 '[:each | each key]' 8 #[30 105 226 0 106] #key 9008 7 257 0 0 7200 0 3 0 1890 0 0 1922 6 1 1888 8 'doIt' 8 '[:each | each item value ifTrue: [each font: (each font beBold; beItalic)]]' 8 #[34 105 226 0 142 221 9 17 226 1 100 160 97 161 180 106 60 106] #item #font #beBold #beItalic #font: 9088 7 257 0 #report 896 0 131169 0 8 #(nil) 930 138 144 34 2 994 #createAt:extent: 34 2 1042 1 37 1042 313 487 7200 994 #text: 34 1 8 'Column 1' 7200 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 18 0 0 0 156 0 0 0 5 1 0 0] 8 #() 2224 0 27 1330 8128 7360 7200 170 192 34 2 7232 8 'packageDictionaryTabs' 0 8016 7232 1042 201 201 401 1 31 0 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 1 1042 373 539 6896 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 186 0 0 0 13 1 0 0] 34 2 7232 8016 2224 0 27 11 410 ##(Smalltalk.ContainerView) 34 15 0 6016 34 2 8 1140850688 131073 9632 0 0 0 5 0 0 0 9632 4050 170 176 34 4 410 ##(Smalltalk.CardContainer) 34 16 0 9632 34 2 8 1409286144 131073 9744 0 1218 8 4278190080 0 5 0 0 0 9744 1266 138 144 34 2 1330 7058 8 'Instance' 1890 0 0 1922 7 1 16 8 'doIt' 8 '(CardLabel text: ''Instance'' iconBlock: [Icon fromId: ''Class.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 7056 9920 ##(Smalltalk.Icon) 8 'Class.ico' #fromId: #text:iconBlock: 9936 11 1 0 0 410 ##(Smalltalk.ContainerView) 34 15 0 9744 34 2 8 1140850688 131073 10032 0 0 0 5 0 0 0 10032 0 170 192 896 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 9 9 1042 435 1 10032 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 4 0 0 0 221 0 0 0 4 0 0 0] 8 #() 2224 0 27 1330 7058 8 'Class' 1890 0 0 1922 7 1 16 8 'doIt' 8 '(CardLabel text: ''Class'' iconBlock: [Icon fromId: ''Metaclass.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 7056 10304 ##(Smalltalk.Icon) 8 'Metaclass.ico' #fromId: #text:iconBlock: 10320 11 1 0 0 410 ##(Smalltalk.ContainerView) 34 15 0 9744 34 2 8 1140850688 131073 10416 0 0 0 5 0 0 0 10416 0 170 192 896 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 9 9 1042 435 1 10416 1090 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 4 0 0 0 221 0 0 0 4 0 0 0] 8 #() 2224 0 27 10032 170 192 34 4 10032 8 'instanceTab' 10416 8 'classTab' 0 410 ##(Smalltalk.TabViewXP) 34 28 0 9744 34 2 8 1140916738 1 10720 1586 138 144 34 2 9904 10288 0 1648 0 0 1 0 0 0 10720 0 8 4294901939 1890 0 0 918822 ##(Smalltalk.CompiledMethod) 2 3 ##(Smalltalk.ListControlView) #defaultGetTextBlock 575230339 8 #[30 105 226 0 106] #displayString 10848 7 257 0 1890 0 0 10866 2 3 ##(Smalltalk.IconicListAbstract) #defaultGetImageBlock 579598755 8 #[30 105 226 0 106] #iconImageIndex 10912 7 257 0 1776 0 0 0 0 0 #smallIcons 0 0 0 0 0 930 138 144 34 3 994 #createAt:extent: 34 2 1042 1 1 1042 451 51 10720 994 #basicSelectionsByIndex: 34 1 8 #(1) 10720 994 #tcmSetExtendedStyle:dwExStyle: 8 #(-1 0) 10720 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 225 0 0 0 25 0 0 0] 8 #() 2224 0 27 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 489 1042 451 51 9744 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 244 0 0 0 225 0 0 0 13 1 0 0] 34 3 10032 10416 10720 2224 0 27 4962 5008 1 5024 1 5056 -49 5424 51 410 ##(Smalltalk.CardContainer) 34 16 0 9632 34 2 8 1409286144 131073 11376 0 1218 8 4278190080 0 5 0 0 0 11376 1266 138 144 34 2 1330 7058 8 'Classes' 1890 0 0 1922 7 1 16 8 'doIt' 8 '(CardLabel text: ''Classes'' iconBlock: [Icon fromId: ''Class.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 7056 11552 ##(Smalltalk.Icon) 8 'Class.ico' #fromId: #text:iconBlock: 11568 11 1 0 0 410 ##(Smalltalk.ListView) 34 30 0 11376 34 2 8 1409372745 1025 11664 1586 138 144 896 0 1648 1218 7472 0 29 0 0 0 11664 0 8 4294902417 1714 #displayString 8 #() 0 1776 0 0 0 0 0 0 138 144 34 2 1826 8 'Column 1' 359 #left 1890 0 0 1922 5 1 1888 8 'doIt' 8 '[:each | (each subStrings: Character space) first]' 8 #[33 105 17 29 159 178 161 106] ##(Smalltalk.Character) #space #subStrings: #first 11888 7 257 0 ##(Smalltalk.SortedCollection) 0 0 11664 0 3 0 0 1826 8 '' 69 #left 1890 0 0 1922 6 1 1888 8 'doIt' 8 '[:each | | index |
+	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ContainerView) 34 15 0 0 34 2 8 1409286144 131073 416 0 0 0 5 265030 4 ##(Smalltalk.Menu) 0 true 34 1 984134 2 ##(Smalltalk.CommandMenuItem) 1 1180998 4 ##(Smalltalk.CommandDescription) #savePackage 8 '&Save' 1 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 416 1180166 ##(Smalltalk.ProportionalLayout) 170 176 34 4 410 ##(Smalltalk.ContainerView) 34 15 0 416 34 2 8 1140850688 131073 688 0 0 0 5 0 0 0 688 626 170 176 34 4 410 ##(Smalltalk.ContainerView) 34 15 0 688 34 2 8 1140850688 131073 800 0 0 0 5 0 0 0 800 626 170 176 34 6 410 ##(Smalltalk.SlideyInneyOuteyThing) 34 23 0 800 34 2 8 1409286144 131073 912 0 524550 ##(Smalltalk.ColorRef) 8 4278190080 0 517 0 0 0 912 655878 ##(Smalltalk.CardLayout) 138 144 34 2 721414 ##(Smalltalk.Association) 590662 1 ##(Smalltalk.CardLabel) 8 'Packages' 787814 3 ##(Smalltalk.BlockClosure) 0 0 1180966 ##(Smalltalk.CompiledExpression) 7 1 1120 8 'doIt' 8 '(CardLabel text: ''Packages'' iconBlock: [Icon fromId: ''Package.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 1120 1152 ##(Smalltalk.Icon) 8 'Package.ico' #fromId: #text:iconBlock: 1184 11 1 0 0 410 ##(Smalltalk.ListView) 34 30 0 410 ##(Smalltalk.SlidingCardTray) 34 22 0 912 34 2 8 1140850688 131073 1328 0 978 1008 0 5 0 0 0 1328 1040 170 192 34 4 1296 8 'packageList' 410 ##(Smalltalk.ListView) 34 30 0 1328 34 2 8 1409372233 1025 1456 590662 2 ##(Smalltalk.ListModel) 138 144 8 #() 0 1310726 ##(Smalltalk.IdentitySearchPolicy) 978 8 4278190080 0 21 0 0 0 1456 0 8 4294903283 459270 ##(Smalltalk.Message) #displayString 8 #() 0 1049926 1 ##(Smalltalk.IconImageManager) 0 0 0 0 0 0 138 144 34 1 920646 5 ##(Smalltalk.ListViewColumn) 8 'Column 1' 305 #left 1666 #displayString 1696 ##(Smalltalk.SortedCollection) 1170 0 0 1202 2 1 1168 8 'doIt' 8 '[:each | each key]' 8 #[30 105 226 0 106] #key 1840 7 257 0 0 1456 0 3 0 1170 0 0 1202 5 1 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each item value ifTrue: [each font: (each font beBold)]]' 8 #[33 105 226 0 142 123 17 226 1 160 179 106 60 106] #item #font #beBold #font: 1920 7 257 0 #report 1568 0 131169 0 8 #(nil) 983302 ##(Smalltalk.MessageSequence) 138 144 34 2 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 328198 ##(Smalltalk.Point) 1 37 2130 313 487 1456 2082 #text: 34 1 8 'Column 1' 1456 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 18 0 0 0 156 0 0 0 5 1 0 0] 8 #() 2130 193 193 0 27 8 'dictionaryList' 0 410 ##(Smalltalk.TabViewXP) 34 28 0 912 34 2 8 1140916864 1 2320 1522 138 144 34 2 1136 1122 8 'Dictionaries' 1170 0 0 1202 7 1 16 8 'doIt' 8 '(CardLabel text: ''Dictionaries'' iconBlock: [Icon fromId: ''Dictionary.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 1120 2448 ##(Smalltalk.Icon) 8 'Dictionary.ico' #fromId: #text:iconBlock: 2464 11 1 0 0 0 1600 978 1008 0 1 0 0 0 2320 0 8 4294903549 ##(Smalltalk.BasicListAbstract) ##(Smalltalk.IconicListAbstract) 1728 0 0 0 0 0 #smallIcons 0 0 0 0 0 2018 138 144 34 3 2082 #createAt:extent: 34 2 2130 1 1 2130 373 539 2320 2082 #basicSelectionsByIndex: 34 1 8 #(1) 2320 2082 #tcmSetExtendedStyle:dwExStyle: 8 #(-1 0) 2320 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 186 0 0 0 13 1 0 0] 8 #() 2288 0 27 0 912 2130 33 33 1049862 ##(Smalltalk.ButtonInteractor) 1328 0 590342 ##(Smalltalk.Rectangle) 2130 277 3 2130 309 35 1 562 #togglePin 8 'Pin or Unpin the tray' 1 1 0 0 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 53 9 2130 313 523 1328 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 26 0 0 0 4 0 0 0 182 0 0 0 9 1 0 0] 34 2 1296 1456 2288 0 27 34 2 8 1409405001 1025 1296 1522 138 144 1568 0 1600 978 1632 0 5 0 0 0 1296 0 8 4294903283 1666 #displayString 8 #() 0 1728 0 0 0 0 0 0 138 144 34 1 1778 8 'Column 1' 305 #left 1666 #displayString 3248 ##(Smalltalk.SortedCollection) 1170 0 0 1202 2 1 1168 8 'doIt' 8 '[:each | each key]' 8 #[30 105 226 0 106] #key 3344 7 257 0 0 1296 0 3 0 1170 0 0 1202 6 1 1168 8 'doIt' 8 '[:each | each item value ifTrue: [each font: (each font beBold; beItalic)]]' 8 #[34 105 226 0 142 221 9 17 226 1 100 160 97 161 180 106 60 106] #item #font #beBold #beItalic #font: 3424 7 257 0 #report 1568 0 131169 0 8 #(nil) 2018 138 144 34 2 2082 #createAt:extent: 34 2 2130 1 37 2130 313 487 1296 2082 #text: 34 1 8 'Column 1' 1296 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 18 0 0 0 156 0 0 0 5 1 0 0] 8 #() 2288 0 27 1090 2432 1456 1296 170 192 34 2 1328 8 'packageDictionaryTabs' 0 2320 1328 2130 201 201 401 1 31 0 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 1 2130 373 539 912 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 186 0 0 0 13 1 0 0] 34 2 1328 2320 2288 0 27 11 410 ##(Smalltalk.ContainerView) 34 15 0 800 34 2 8 1140850688 131073 3968 0 0 0 5 0 0 0 3968 626 170 176 1568 false 170 192 34 2 410 ##(Smalltalk.TreeView) 34 27 0 3968 34 2 8 1409352231 1025 4096 590918 3 ##(Smalltalk.TreeModel) 0 1600 525062 ##(Smalltalk.TreeNode) 0 0 0 170 192 1568 978 8 4278190080 0 21 0 0 0 4096 0 8 4294901985 1170 0 0 1202 5 1 1168 8 'doIt' 8 '[:each | each key isEmpty ifTrue: [''--All Categories--''] ifFalse: [each key last]].' 8 #[33 105 226 0 159 119 31 106 226 0 161 106] #key #isEmpty 8 '--All Categories--' #last 4288 7 257 0 ##(Smalltalk.IconicListAbstract) 1728 0 0 0 0 0 170 176 1568 17 #noIcons 1 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 1 2130 223 539 4096 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 111 0 0 0 13 1 0 0] 8 #() 2288 0 27 8 'classCategoryList' 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 383 1 2130 223 539 3968 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 191 0 0 0 0 0 0 0 46 1 0 0 13 1 0 0] 34 1 4096 2288 0 27 7 410 ##(Smalltalk.ContainerView) 34 15 0 800 34 2 8 1140850688 131073 4736 0 0 0 5 0 0 0 4736 852230 ##(Smalltalk.FramingLayout) 170 176 34 4 410 ##(Smalltalk.CardContainer) 34 16 0 4736 34 2 8 1409286144 131073 4864 0 978 8 4278190080 0 5 0 0 0 4864 1026 138 144 34 2 1090 1122 8 'Classes' 1170 0 0 1202 7 1 16 8 'doIt' 8 '(CardLabel text: ''Classes'' iconBlock: [Icon fromId: ''Class.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 1120 5040 ##(Smalltalk.Icon) 8 'Class.ico' #fromId: #text:iconBlock: 5056 11 1 0 0 410 ##(Smalltalk.ListView) 34 30 0 4864 34 2 8 1409372745 1025 5152 1522 138 144 1568 0 1600 978 1632 0 29 0 0 0 5152 0 8 4294903283 1666 #displayString 8 #() 0 1728 0 0 0 0 0 0 138 144 34 2 1778 8 'Column 1' 359 #left 1170 0 0 1202 5 1 1168 8 'doIt' 8 '[:each | (each subStrings: Character space) first]' 8 #[33 105 17 29 159 178 161 106] ##(Smalltalk.Character) #space #subStrings: #first 5376 7 257 0 ##(Smalltalk.SortedCollection) 0 0 5152 0 3 0 0 1778 8 '' 69 #left 1170 0 0 1202 6 1 1168 8 'doIt' 8 '[:each | | index |
 	index := each indexOf: Character space.
-	0 < index ifTrue: [each copyFrom: index + 2 to: each size - 1] ifFalse: ['''']]' 8 #[34 105 17 29 159 178 90 62 18 128 221 9 233 1 64 126 17 145 99 193 106 33 106] ##(Smalltalk.Character) #space #indexOf: #copyFrom:to: 11984 12000 7 65793 0 1714 #<= 8 #() 0 0 11664 0 1 0 0 #report 896 0 131169 0 8 #(nil) 930 138 144 34 3 994 #createAt:extent: 34 2 1042 9 55 1042 435 433 11664 994 #text: 34 1 8 'Column 1' 11664 994 #columnOrder: 34 1 8 #(2 1) 11664 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 221 0 0 0 243 0 0 0] 8 #() 2224 0 27 1330 7058 8 'Hierarchy' 1890 0 0 1922 7 1 16 8 'doIt' 8 '(CardLabel text: ''Hierarchy'' iconBlock: [Icon fromId: ''ClassHierarchyDiagram.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 7056 12416 ##(Smalltalk.Icon) 8 'ClassHierarchyDiagram.ico' #fromId: #text:iconBlock: 12432 11 1 0 0 410 ##(Smalltalk.TreeView) 34 27 0 11376 34 2 8 1409352231 1025 12528 6322 0 1648 6354 0 0 0 170 192 896 1218 8 4278190080 0 29 0 0 0 12528 0 8 4294903039 1890 0 0 1922 2 1 1712 8 'doIt' 8 '[:each | each last]' 8 #[30 105 226 0 106] #last 12688 7 257 0 ##(Smalltalk.IconicListAbstract) 1776 0 0 0 0 0 170 176 896 17 #noIcons 1 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 9 55 1042 435 433 12528 1090 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 221 0 0 0 243 0 0 0] 8 #() 2224 0 27 11664 170 192 34 4 11664 8 'classList' 12528 8 'classHierarchy' 0 410 ##(Smalltalk.TabViewXP) 34 28 0 11376 34 2 8 1140916736 1 13008 1586 138 144 34 2 11536 12400 0 1648 0 0 1 0 0 0 13008 0 8 4294901939 1890 0 0 10866 2 3 ##(Smalltalk.ListControlView) #defaultGetTextBlock 575230339 8 #[30 105 226 0 106] #displayString 13136 7 257 0 1890 0 0 10866 2 3 ##(Smalltalk.IconicListAbstract) #defaultGetImageBlock 579598755 8 #[30 105 226 0 106] #iconImageIndex 13184 7 257 0 1776 0 0 0 0 0 #smallIcons 0 0 0 0 0 930 138 144 34 3 994 #createAt:extent: 34 2 1042 1 1 1042 451 495 13008 994 #basicSelectionsByIndex: 34 1 8 #(1) 13008 994 #tcmSetExtendedStyle:dwExStyle: 8 #(-1 0) 13008 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 225 0 0 0 247 0 0 0] 8 #() 2224 0 27 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 1 1042 451 495 11376 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 225 0 0 0 247 0 0 0] 34 3 11664 12528 13008 2224 0 27 4962 5008 1 5024 1 5040 1 5056 -43 170 192 34 4 9744 8 'instanceClassTabs' 11376 8 'classHierarchyTabs' 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 615 1 1042 451 539 9632 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 51 1 0 0 0 0 0 0 20 2 0 0 13 1 0 0] 34 2 11376 9744 2224 0 27 13 false 170 192 896 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 1 1042 1065 539 6016 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 20 2 0 0 13 1 0 0] 34 5 6896 410 ##(Smalltalk.Splitter) 34 12 0 6016 34 2 8 1140850688 1 14048 0 1218 3808 0 517 0 0 0 14048 930 138 144 34 1 994 #createAt:extent: 34 2 1042 373 1 1042 11 539 14048 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 186 0 0 0 0 0 0 0 191 0 0 0 13 1 0 0] 8 #() 2224 0 27 6128 410 ##(Smalltalk.Splitter) 34 12 0 6016 34 2 8 1140850688 1 14288 0 1218 3808 0 517 0 0 0 14288 930 138 144 34 1 994 #createAt:extent: 34 2 1042 605 1 1042 11 539 14288 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 46 1 0 0 0 0 0 0 51 1 0 0 13 1 0 0] 8 #() 2224 0 27 9632 2224 0 27 7 false 170 192 896 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 1 1042 1785 539 688 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 124 3 0 0 13 1 0 0] 34 3 6016 410 ##(Smalltalk.Splitter) 34 12 0 688 34 2 8 1140850688 1 14704 0 1218 3808 0 517 0 0 0 14704 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1065 1 1042 11 539 14704 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 20 2 0 0 0 0 0 0 25 2 0 0 13 1 0 0] 8 #() 2224 0 27 800 2224 0 27 524806 ##(Smalltalk.Fraction) 3 5 410 ##(Smalltalk.CardContainer) 34 16 0 416 34 2 8 1409286144 131073 14976 0 1218 11456 0 5 0 0 0 14976 1266 138 144 34 6 1330 8 'Class Definition' 410 ##(Smalltalk.ScintillaView) 34 50 0 14976 34 2 8 1445007428 1025 15136 721990 2 ##(Smalltalk.ValueHolder) 0 false 1310726 ##(Smalltalk.EqualitySearchPolicy) 0 1218 8 4278190080 0 5 482 0 true 34 11 530 1 562 #editSave 8 '&Save' 9383 1 0 0 0 983366 1 ##(Smalltalk.DividerMenuItem) 4097 530 1 562 #editUndo 8 '&Undo' 9397 1 0 0 0 530 1 562 #editRedo 8 '&Redo' 9395 1 0 0 0 15378 4097 530 1 562 #editCut 8 'Cu&t' 9393 1 0 0 0 530 1 562 #editCopy 8 '&Copy' 9351 1 0 0 0 530 1 562 #editPaste 8 '&Paste' 9389 1 0 0 0 530 1 562 #editDelete 8 '&Delete' 1629 1 0 0 0 15378 4097 530 1 562 #editSelectAll 8 'Select &All' 9347 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 263174 ##(Smalltalk.Font) 0 true 459014 ##(Smalltalk.LOGFONT) 8 #[244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 86 101 114 100 97 110 97 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 1042 193 193 0 15136 0 8 4294902831 852486 ##(Smalltalk.NullConverter) 0 0 13 0 170 192 34 4 #callTip 1182790 1 ##(Smalltalk.ScintillaTextStyle) 77 786694 ##(Smalltalk.IndexedColor) 33554457 16002 33554471 1 0 0 0 0 #callTip 0 0 0 #normal 15970 1 0 0 1 0 0 0 0 #normal 0 0 0 34 256 16048 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15984 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1639686 ##(Smalltalk.SmalltalkExpressionStyler) 1 0 0 false 138 144 896 170 192 34 2 #default 1641542 1 ##(Smalltalk.ScintillaMarkerDefinition) 1 0 0 0 15136 #circle 0 0 0 0 0 0 138 ##(Smalltalk.IdentitySet) 896 0 170 176 896 9215 0 0 0 0 16002 33554447 0 0 65 0 0 170 192 34 6 #literalArray 8 '()' #specialCharacter 8 '()[]<>' #literalBytes 8 '[]' 8 '' 3 170 192 34 2 #container 170 192 34 2 #normal 16048 0 0 0 0 1 0 170 192 34 6 1 1510470 2 ##(Smalltalk.ScintillaIndicatorStyle) 1 15136 65025 3 false 1 0 0 0 0 0 0 3 16434 3 15136 33423361 5 false 3 0 0 0 0 0 0 5 16434 5 15136 511 1 false 5 0 0 0 0 0 0 0 0 170 192 34 6 #Notification 15970 1029 0 196934 1 ##(Smalltalk.RGB) 31185883 1 0 0 0 0 #Notification 0 0 0 #Error 15970 1031 16546 335 16546 31317503 1 0 0 0 0 #Error 0 0 0 #Warning 15970 1027 16546 60239 16546 31326207 1 0 0 0 0 #Warning 0 0 0 0 930 138 144 34 7 994 #createAt:extent: 34 2 1042 9 55 1042 1769 479 15136 994 #contextMenu: 34 1 15296 15136 994 #modificationEventMask: 8 #(4607) 15136 994 #caretPeriod: 8 #(530) 15136 994 #wordWrap: 8 #(true) 15136 994 #margins: 34 1 34 3 985158 2 ##(Smalltalk.ScintillaMargin) 1 15136 1 3 0 0 5 0 16962 3 15136 33 0 3 67108863 5 0 16962 5 15136 1 0 3 -67108863 5 0 15136 994 #tabWidth: 8 #(4) 15136 1090 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 8 #() 2224 0 29 1330 8 'Class Documentation' 410 ##(Smalltalk.ScintillaView) 34 50 0 14976 34 2 8 1445007428 1025 17136 15202 0 false 15248 0 1218 15280 0 5 0 15794 0 true 15826 8 #[244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 86 101 114 100 97 110 97 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 1042 193 193 0 17136 0 8 4294902831 15906 0 0 9 0 170 192 34 4 #callTip 15970 77 16016 16032 1 0 0 0 0 #callTip 0 0 0 #normal 15970 1 0 0 1 0 0 0 0 #normal 0 0 0 34 256 17376 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 17360 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1245510 1 ##(Smalltalk.NullScintillaStyler) #normal 170 192 34 2 #default 16162 1 0 0 0 17136 #circle 0 0 0 0 0 0 138 ##(Smalltalk.IdentitySet) 896 0 170 176 896 9215 0 0 0 0 16224 0 0 65 0 0 0 8 '' 3 170 192 34 2 #container 170 192 34 2 #normal 17376 0 0 0 0 1 0 170 192 34 6 1 16434 1 17136 65025 3 false 1 0 0 0 0 0 0 3 16434 3 17136 33423361 5 false 3 0 0 0 0 0 0 5 16434 5 17136 511 1 false 5 0 0 0 0 0 0 0 0 170 192 34 6 #Notification 15970 1029 0 16546 31185883 1 0 0 0 0 #Notification 0 0 0 #Error 15970 1031 16546 335 16546 31317503 1 0 0 0 0 #Error 0 0 0 #Warning 15970 1027 16546 60239 16546 31326207 1 0 0 0 0 #Warning 0 0 0 0 930 138 144 34 6 994 #createAt:extent: 34 2 1042 9 55 1042 1769 479 17136 994 #modificationEventMask: 8 #(4607) 17136 994 #caretPeriod: 8 #(530) 17136 994 #wordWrap: 8 #(true) 17136 994 #margins: 34 1 34 3 16962 1 17136 1 3 0 0 5 0 16962 3 17136 33 0 3 67108863 5 0 16962 5 17136 1 0 3 -67108863 5 0 17136 994 #tabWidth: 8 #(4) 17136 1090 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 8 #() 2224 0 29 1330 7058 8 'Package' 1890 0 0 1922 7 1 7056 8 'doIt' 8 '(CardLabel text: ''Package'' iconBlock: [Icon fromId: ''Package.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 7056 18256 ##(Smalltalk.Icon) 8 'Package.ico' #fromId: #text:iconBlock: 18272 11 1 0 0 410 ##(Smalltalk.ContainerView) 34 15 0 14976 34 2 8 1140850688 131073 18368 0 0 0 5 0 0 0 18368 626 170 176 34 4 410 ##(Smalltalk.ListView) 34 30 0 18368 34 2 8 1409355853 1025 18480 1586 138 144 896 0 1648 1218 8 4278190080 0 5 482 0 true 34 1 530 1 562 #compareAncestor 8 '&Compare' 1 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 18480 0 8 4294902417 1714 #displayString 8 #() 0 1776 0 0 0 0 0 0 138 144 34 4 1826 8 'Ancestor' 131 #left 1714 #displayString 8 #() 1714 #<= 18832 1890 0 0 1922 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 1]' 8 #[29 105 17 63 148 106] 18864 7 257 0 0 18480 0 1 0 0 1826 8 'Name' 401 #left 1714 #displayString 18736 ##(Smalltalk.SortedCollection) 1890 0 0 1922 1 83886081 1888 8 'doIt' 8 '[:each | each at: 2]' 8 #[29 105 17 64 148 106] 18992 7 257 0 0 18480 0 1 0 0 1826 8 'Timestamp' 301 #left 1714 #displayString 8 #() 1714 #<= 19120 1890 0 0 1922 1 83886081 1888 8 'doIt' 8 '[:each | each at: 3]' 8 #[29 105 17 214 3 148 106] 19152 7 257 0 0 18480 0 1 0 0 1826 8 'Message' 941 #left 1714 #displayString 19120 1714 #<= 19120 1890 0 0 1922 1 83886081 1888 8 'doIt' 8 '[:each | each at: 4]' 8 #[29 105 17 214 4 148 106] 19296 7 257 0 0 18480 0 3 0 0 #report 896 0 131169 0 34 4 0 0 1042 1 1 0 930 138 144 34 3 994 #createAt:extent: 34 2 1042 1 1 1042 1769 263 18480 994 #contextMenu: 34 1 18608 18480 994 #text: 34 1 8 'Ancestor' 18480 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 116 3 0 0 131 0 0 0] 8 #() 2224 0 27 23 410 ##(Smalltalk.ListView) 34 30 0 18368 34 2 8 1409355853 1025 19648 1586 138 144 896 0 1648 1218 18592 0 5 482 0 true 34 5 530 1 562 #addRepository 8 'Add &Repository' 1 1 0 0 0 530 1 562 #removeRepository 8 'Remo&ve Repository' 1025 1 0 0 0 15378 4097 530 1 562 #savePackage 8 '&Save Package' 1 1 0 0 0 530 1 562 #showPackageChanges 8 'Show &Changes' 1 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 19648 0 8 4294902417 1714 #displayString 8 #() 0 1776 0 0 0 0 0 0 138 144 34 4 1826 8 'Repository Type' 211 #left 1714 #displayString 20048 ##(Smalltalk.SortedCollection) 1890 0 0 1922 2 1 1888 8 'doIt' 8 '[:each | (each at: 1) copyFrom: 3 to: (each at: 1) size - 10]' 8 #[30 105 17 63 148 214 3 17 63 148 145 214 10 127 190 106] #copyFrom:to: 20144 7 257 0 0 19648 0 1 0 0 1826 8 'Description' 1161 #left 1714 #displayString 19120 1714 #<= 19120 1890 0 0 1922 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 2]' 8 #[29 105 17 64 148 106] 20288 7 257 0 0 19648 0 3 0 0 1826 8 'User' 201 #left 1714 #displayString 18832 1714 #<= 18832 1890 0 0 1922 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 3]' 8 #[29 105 17 214 3 148 106] 20432 7 257 0 0 19648 0 1 0 0 1826 8 'Password' 201 #left 1714 #displayString 18832 1714 #<= 18832 1890 0 0 1922 3 1 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | (each at: 4) collect: [:char | $*]]' 8 #[30 105 17 214 4 148 31 112 215 42 106 176 106] #collect: 20576 1890 0 0 20592 19 257 0 7 257 0 0 19648 0 1 0 0 #report 896 0 131169 0 34 4 0 0 1042 1 1 0 930 138 144 34 3 994 #createAt:extent: 34 2 1042 1 263 1042 1769 217 19648 994 #contextMenu: 34 1 19760 19648 994 #text: 34 1 8 'Repository Type' 19648 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 131 0 0 0 116 3 0 0 239 0 0 0] 8 #() 2224 0 27 19 true 170 192 34 4 18480 8 'ancestorList' 19648 8 'repositoryList' 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 9 55 1042 1769 479 18368 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 34 2 18480 19648 2224 0 27 1330 7058 8 'Globals' 1890 0 0 1922 7 1 16 8 'doIt' 8 '(CardLabel text: ''Globals'' iconBlock: [Icon fromId: ''Dictionary.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 7056 21200 ##(Smalltalk.Icon) 8 'Dictionary.ico' #fromId: #text:iconBlock: 21216 11 1 0 0 410 ##(Smalltalk.ListView) 34 30 0 14976 34 2 8 1409355853 1025 21312 1586 138 144 896 0 1648 1218 18592 0 5 0 0 0 21312 0 8 4294902417 1714 #displayString 8 #() 0 1776 0 0 0 0 0 0 138 144 34 3 1826 8 'Name' 587 #left 1714 #displayString 21456 ##(Smalltalk.SortedCollection) 1890 0 0 1922 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 1]' 8 #[29 105 17 63 148 106] 21552 7 257 0 0 21312 0 3 0 0 1826 8 'Class' 589 #left 1714 #displayString 19120 1714 #<= 19120 1890 0 0 1922 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 2]' 8 #[29 105 17 64 148 106] 21696 7 257 0 0 21312 0 3 0 0 1826 8 'Value' 587 #left 1714 #displayString 19120 1714 #<= 19120 1890 0 0 1922 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 3]' 8 #[29 105 17 214 3 148 106] 21840 7 257 0 0 21312 0 3 0 0 #report 896 0 131169 0 34 4 0 0 1042 1 1 0 930 138 144 34 2 994 #createAt:extent: 34 2 1042 9 55 1042 1769 479 21312 994 #text: 34 1 8 'Name' 21312 1090 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 8 #() 2224 0 27 1330 7058 8 'Original Source' 1890 0 0 1922 7 1 16 8 'doIt' 8 '(CardLabel text: ''Original Source'' iconBlock: [Icon fromId: ''COMPILEDMETHOD_PRIVATE.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 7056 22192 ##(Smalltalk.Icon) 8 'COMPILEDMETHOD_PRIVATE.ico' #fromId: #text:iconBlock: 22208 11 1 0 0 410 ##(Smalltalk.ScintillaView) 34 50 0 14976 34 2 8 1445007428 1025 22304 15202 0 false 15248 0 1218 8 4278190080 0 5 0 15794 0 true 15826 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 86 101 114 100 97 110 97 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 1042 193 193 0 22304 0 8 4294902831 15906 0 0 11 0 170 192 34 4 #callTip 15970 77 16016 16032 1 0 0 0 0 #callTip 0 0 0 #normal 15970 1 0 0 1 0 0 0 0 #normal 0 0 0 34 256 22560 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 22544 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1377542 ##(Smalltalk.SmalltalkMethodStyler) 1 0 0 false 138 144 896 170 192 34 2 #default 16162 1 0 0 0 22304 #circle 0 0 0 0 0 0 138 ##(Smalltalk.IdentitySet) 896 0 170 176 896 9215 0 0 0 0 16224 0 0 65 0 0 170 192 34 6 #literalArray 8 '()' #specialCharacter 8 '()[]<>' #literalBytes 8 '[]' 8 '' 3 170 192 34 2 #container 170 192 34 2 #normal 22560 0 0 0 0 1 0 170 192 34 6 1 16434 1 22304 65025 3 false 1 0 0 0 0 0 0 3 16434 3 22304 33423361 5 false 3 0 0 0 0 0 0 5 16434 5 22304 511 1 false 5 0 0 0 0 0 0 0 0 170 192 34 6 #Notification 15970 1029 0 16546 31185883 1 0 0 0 0 #Notification 0 0 0 #Error 15970 1031 16546 335 16546 31317503 1 0 0 0 0 #Error 0 0 0 #Warning 15970 1027 16546 60239 16546 31326207 1 0 0 0 0 #Warning 0 0 0 0 930 138 144 34 6 994 #createAt:extent: 34 2 1042 9 55 1042 1769 479 22304 994 #modificationEventMask: 8 #(4607) 22304 994 #caretPeriod: 8 #(530) 22304 994 #wordWrap: 8 #(true) 22304 994 #margins: 34 1 34 3 16962 1 22304 61 3 0 0 5 0 16962 3 22304 1 0 3 67108863 5 0 16962 5 22304 1 0 3 -67108863 5 0 22304 994 #tabWidth: 8 #(4) 22304 1090 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 8 #() 2224 0 29 1330 8 'Method Source' 410 ##(Smalltalk.ReferenceView) 34 14 0 14976 34 2 8 1140850688 131073 23536 0 0 0 5 0 0 0 23536 1180166 ##(Smalltalk.ResourceIdentifier) ##(Smalltalk.MethodSourcePresenter) #resource_Default_view 0 930 138 144 34 1 994 #createAt:extent: 34 2 1042 9 55 1042 1769 479 23536 1090 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 896 2224 0 27 18368 170 192 34 12 15136 8 'classDefinition' 21312 8 'globals' 23536 8 'methodSource' 17136 8 'classDocumentation' 22304 8 'originalSource' 18368 8 'packageInfo' 0 410 ##(Smalltalk.TabViewXP) 34 28 0 14976 34 2 8 1140916736 1 23904 1586 138 144 34 6 18240 21184 15120 17120 22176 23520 0 1648 0 0 1 0 0 0 23904 0 8 4294901939 1890 0 0 10866 2 3 ##(Smalltalk.ListControlView) #defaultGetTextBlock 575230339 8 #[30 105 226 0 106] #displayString 24032 7 257 0 1890 0 0 10866 2 3 ##(Smalltalk.IconicListAbstract) #defaultGetImageBlock 579598755 8 #[30 105 226 0 106] #iconImageIndex 24080 7 257 0 1776 0 0 0 0 0 #smallIcons 0 0 0 0 0 930 138 144 34 3 994 #createAt:extent: 34 2 1042 1 1 1042 1785 541 23904 994 #basicSelectionsByIndex: 34 1 8 #(1) 23904 994 #tcmSetExtendedStyle:dwExStyle: 8 #(-1 0) 23904 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 124 3 0 0 14 1 0 0] 8 #() 2224 0 27 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 549 1042 1785 541 14976 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 18 1 0 0 124 3 0 0 32 2 0 0] 34 7 18368 21312 15136 17136 22304 23536 23904 2224 0 27 14946 3 5 true 170 192 34 4 410 ##(Smalltalk.Splitter) 34 12 0 416 34 2 8 1140850688 1 24576 0 1218 3808 0 517 0 0 0 24576 930 138 144 34 1 994 #createAt:extent: 34 2 1042 1 539 1042 1785 11 24576 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 13 1 0 0 124 3 0 0 18 1 0 0] 8 #() 2224 0 27 8 'splitter' 14976 8 'textAreaTabs' 0 930 138 144 34 2 994 #createAt:extent: 34 2 1042 2879 21 1042 1785 1089 416 994 #contextMenu: 34 1 496 416 1090 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 27 9 0 0 42 2 0 0] 34 3 688 24576 14976 2224 0 27 )! !
+	0 < index ifTrue: [each copyFrom: index + 2 to: each size - 1] ifFalse: ['''']]' 8 #[34 105 17 29 159 178 90 62 18 128 221 9 233 1 64 126 17 145 99 193 106 33 106] ##(Smalltalk.Character) #space #indexOf: #copyFrom:to: 5472 5488 7 65793 0 1666 #<= 8 #() 0 0 5152 0 1 0 0 #report 1568 0 131169 0 8 #(nil) 2018 138 144 34 3 2082 #createAt:extent: 34 2 2130 9 55 2130 435 433 5152 2082 #text: 34 1 8 'Column 1' 5152 2082 #columnOrder: 34 1 8 #(2 1) 5152 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 221 0 0 0 243 0 0 0] 8 #() 2288 0 27 1090 1122 8 'Hierarchy' 1170 0 0 1202 7 1 16 8 'doIt' 8 '(CardLabel text: ''Hierarchy'' iconBlock: [Icon fromId: ''ClassHierarchyDiagram.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 1120 5904 ##(Smalltalk.Icon) 8 'ClassHierarchyDiagram.ico' #fromId: #text:iconBlock: 5920 11 1 0 0 410 ##(Smalltalk.TreeView) 34 27 0 4864 34 2 8 1409352231 1025 6016 4162 0 1600 4194 0 0 0 170 192 1568 978 8 4278190080 0 29 0 0 0 6016 0 8 4294901985 1170 0 0 1202 2 1 1664 8 'doIt' 8 '[:each | each last]' 8 #[30 105 226 0 106] #last 6176 7 257 0 ##(Smalltalk.IconicListAbstract) 1728 0 0 0 0 0 170 176 1568 17 #noIcons 1 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 9 55 2130 435 433 6016 2226 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 221 0 0 0 243 0 0 0] 8 #() 2288 0 27 5152 170 192 34 4 6016 8 'classHierarchy' 5152 8 'classList' 0 410 ##(Smalltalk.TabViewXP) 34 28 0 4864 34 2 8 1140916736 1 6496 1522 138 144 34 2 5024 5888 0 1600 0 0 1 0 0 0 6496 0 8 4294903549 1170 0 0 918822 ##(Smalltalk.CompiledMethod) 2 3 ##(Smalltalk.ListControlView) #defaultGetTextBlock 575230339 8 #[30 105 226 0 106] #displayString 6624 7 257 0 1170 0 0 6642 2 3 ##(Smalltalk.IconicListAbstract) #defaultGetImageBlock 579598755 8 #[30 105 226 0 106] #iconImageIndex 6688 7 257 0 1728 0 0 0 0 0 #smallIcons 0 0 0 0 0 2018 138 144 34 3 2082 #createAt:extent: 34 2 2130 1 1 2130 451 495 6496 2082 #basicSelectionsByIndex: 34 1 8 #(1) 6496 2082 #tcmSetExtendedStyle:dwExStyle: 8 #(-1 0) 6496 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 225 0 0 0 247 0 0 0] 8 #() 2288 0 27 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 1 2130 451 495 4864 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 225 0 0 0 247 0 0 0] 34 3 5152 6016 6496 2288 0 27 1181766 2 ##(Smalltalk.FramingConstraints) 1180678 ##(Smalltalk.FramingCalculation) #fixedParentLeft 1 7170 #fixedParentRight 1 7170 #fixedParentTop 1 7170 #fixedParentBottom -43 410 ##(Smalltalk.CardContainer) 34 16 0 4736 34 2 8 1409286144 131073 7248 0 978 8 4278190080 0 5 0 0 0 7248 1026 138 144 34 2 1090 1122 8 'Instance' 1170 0 0 1202 7 1 16 8 'doIt' 8 '(CardLabel text: ''Instance'' iconBlock: [Icon fromId: ''Class.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 1120 7424 ##(Smalltalk.Icon) 8 'Class.ico' #fromId: #text:iconBlock: 7440 11 1 0 0 410 ##(Smalltalk.ContainerView) 34 15 0 7248 34 2 8 1140850688 131073 7536 0 0 0 5 0 0 0 7536 0 170 192 1568 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 9 9 2130 435 1 7536 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 4 0 0 0 221 0 0 0 4 0 0 0] 8 #() 2288 0 27 1090 1122 8 'Class' 1170 0 0 1202 7 1 16 8 'doIt' 8 '(CardLabel text: ''Class'' iconBlock: [Icon fromId: ''Metaclass.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 1120 7808 ##(Smalltalk.Icon) 8 'Metaclass.ico' #fromId: #text:iconBlock: 7824 11 1 0 0 410 ##(Smalltalk.ContainerView) 34 15 0 7248 34 2 8 1140850688 131073 7920 0 0 0 5 0 0 0 7920 0 170 192 1568 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 9 9 2130 435 1 7920 2226 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 4 0 0 0 221 0 0 0 4 0 0 0] 8 #() 2288 0 27 7536 170 192 34 4 7536 8 'instanceTab' 7920 8 'classTab' 0 410 ##(Smalltalk.TabViewXP) 34 28 0 7248 34 2 8 1140916738 1 8224 1522 138 144 34 2 7408 7792 0 1600 0 0 1 0 0 0 8224 0 8 4294903549 1170 0 0 6642 2 3 ##(Smalltalk.ListControlView) #defaultGetTextBlock 575230339 8 #[30 105 226 0 106] #displayString 8352 7 257 0 1170 0 0 6642 2 3 ##(Smalltalk.IconicListAbstract) #defaultGetImageBlock 579598755 8 #[30 105 226 0 106] #iconImageIndex 8400 7 257 0 1728 0 0 0 0 0 #smallIcons 0 0 0 0 0 2018 138 144 34 3 2082 #createAt:extent: 34 2 2130 1 1 2130 451 51 8224 2082 #basicSelectionsByIndex: 34 1 8 #(1) 8224 2082 #tcmSetExtendedStyle:dwExStyle: 8 #(-1 0) 8224 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 225 0 0 0 25 0 0 0] 8 #() 2288 0 27 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 489 2130 451 51 7248 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 244 0 0 0 225 0 0 0 13 1 0 0] 34 3 7536 7920 8224 2288 0 27 7138 7184 1 7200 1 7232 -49 7170 #fixedViewTop 51 170 192 34 4 4864 8 'classHierarchyTabs' 7248 8 'instanceClassTabs' 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 615 1 2130 451 539 4736 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 51 1 0 0 0 0 0 0 20 2 0 0 13 1 0 0] 34 2 4864 7248 2288 0 27 13 false 170 192 1568 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 1 2130 1065 539 800 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 20 2 0 0 13 1 0 0] 34 5 912 410 ##(Smalltalk.Splitter) 34 12 0 800 34 2 8 1140850688 1 9280 0 978 8 4278190080 0 517 0 0 0 9280 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 373 1 2130 11 539 9280 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 186 0 0 0 0 0 0 0 191 0 0 0 13 1 0 0] 8 #() 2288 0 27 3968 410 ##(Smalltalk.Splitter) 34 12 0 800 34 2 8 1140850688 1 9536 0 978 9360 0 517 0 0 0 9536 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 605 1 2130 11 539 9536 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 46 1 0 0 0 0 0 0 51 1 0 0 13 1 0 0] 8 #() 2288 0 27 4736 2288 0 27 7 410 ##(Smalltalk.ContainerView) 34 15 0 688 34 2 8 1140850688 131073 9776 0 0 0 5 0 0 0 9776 626 170 176 1568 false 170 192 1568 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1075 1 2130 711 539 9776 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 25 2 0 0 0 0 0 0 124 3 0 0 13 1 0 0] 34 3 410 ##(Smalltalk.SlideyInneyOuteyThing) 34 23 0 9776 34 2 8 1409286144 131073 10048 0 978 8 4278190080 0 517 0 0 0 10048 1026 138 144 34 2 1090 8 'Categories' 410 ##(Smalltalk.ListView) 34 30 0 410 ##(Smalltalk.SlidingCardTray) 34 22 0 10048 34 2 8 1140850688 131073 10256 0 978 10128 0 5 0 0 0 10256 10144 170 192 34 4 10224 8 'categoryList' 410 ##(Smalltalk.ListView) 34 30 0 10256 34 2 8 1409372233 1025 10384 1522 138 144 1568 0 1600 978 8 4278190080 0 21 0 0 0 10384 0 8 4294903283 1666 #displayString 8 #() 0 1728 0 0 0 0 0 0 138 144 34 1 1778 8 'Column 1' 283 #left 1666 #displayString 10544 ##(Smalltalk.SortedCollection) 0 0 10384 0 3 0 1170 0 0 1202 9 1 1168 8 'doIt' 8 '[:each | each item first = Character space ifTrue: [each font: (each font beBold; beItalic)]]' 8 #[37 105 226 0 159 31 161 132 221 9 17 226 4 100 163 97 164 183 106 60 106] #item #first ##(Smalltalk.Character) #space #font #beBold #beItalic #font: 10640 7 257 0 #report 1568 0 131169 0 8 #(nil) 2018 138 144 34 2 2082 #createAt:extent: 34 2 2130 1 37 2130 291 487 10384 2082 #text: 34 1 8 'Column 1' 10384 2226 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 18 0 0 0 145 0 0 0 5 1 0 0] 8 #() 2288 0 27 8 'variableList' 0 410 ##(Smalltalk.TabViewXP) 34 28 0 10048 34 2 8 1140916864 1 10960 1522 138 144 34 2 10208 8 'Variables' 0 1600 978 10128 0 1 0 0 0 10960 0 8 4294903549 ##(Smalltalk.BasicListAbstract) ##(Smalltalk.IconicListAbstract) 1728 0 0 0 0 0 #noIcons 0 0 0 0 0 2018 138 144 34 3 2082 #createAt:extent: 34 2 2130 1 1 2130 351 539 10960 2082 #basicSelectionsByIndex: 34 1 8 #(1) 10960 2082 #tcmSetExtendedStyle:dwExStyle: 8 #(-1 0) 10960 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 175 0 0 0 13 1 0 0] 8 #() 2288 0 27 0 10048 2130 33 33 2850 10256 0 2882 2130 255 3 2130 287 35 1 562 #togglePin 8 'Pin or Unpin the tray' 1 1 0 0 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 53 9 2130 291 523 10256 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 26 0 0 0 4 0 0 0 171 0 0 0 9 1 0 0] 34 2 10224 10384 2288 0 27 34 2 8 1409372233 1025 10224 1522 138 144 1568 0 1600 978 10496 0 21 0 0 0 10224 0 8 4294903283 1666 #displayString 8 #() 0 1728 0 0 0 0 0 0 138 144 34 1 1778 8 'Column 1' 283 #left 1666 #displayString 11744 ##(Smalltalk.SortedCollection) 0 0 10224 0 3 0 1170 0 0 1202 9 1 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each item first = Character space ifTrue: [each font: (each font beBold; beItalic)]]' 8 #[37 105 226 0 159 31 161 132 221 9 17 226 4 100 163 97 164 183 106 60 106] #item #first ##(Smalltalk.Character) #space #font #beBold #beItalic #font: 11840 7 257 0 #report 1568 0 131169 0 8 #(nil) 2018 138 144 34 2 2082 #createAt:extent: 34 2 2130 1 37 2130 291 487 10224 2082 #text: 34 1 8 'Column 1' 10224 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 18 0 0 0 145 0 0 0 5 1 0 0] 8 #() 2288 0 27 1090 11072 10384 10224 170 192 34 2 10256 8 'categoryVariableTabs' 0 10960 10256 2130 201 201 401 1 31 0 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 1 2130 351 539 10048 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 175 0 0 0 13 1 0 0] 34 2 10256 10960 2288 0 27 410 ##(Smalltalk.Splitter) 34 12 0 9776 34 2 8 1140850688 1 12384 0 978 9360 0 517 0 0 0 12384 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 351 1 2130 11 539 12384 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 175 0 0 0 0 0 0 0 180 0 0 0 13 1 0 0] 8 #() 2288 0 27 410 ##(Smalltalk.ContainerView) 34 15 0 9776 34 2 8 1140850688 131073 12624 0 0 0 5 0 0 0 12624 4802 170 176 34 6 410 ##(Smalltalk.ComboBox) 34 17 0 12624 34 2 8 1412498947 1025 12736 1522 138 144 1568 0 1600 978 8 4278190080 0 5 0 0 0 12736 0 8 4294902851 1666 #displayString 8 #() 1568 401 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 493 2130 351 53 12736 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 246 0 0 0 175 0 0 0 16 1 0 0] 8 #() 2288 0 27 7138 7184 1 7200 1 7232 -45 8864 47 410 ##(Smalltalk.ComboBox) 34 17 0 12624 34 2 8 1412498947 1025 13088 1522 138 144 1568 0 1600 978 12848 0 5 0 0 0 13088 0 8 4294902851 1666 #displayString 8 #() 1568 401 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 1 2130 351 53 13088 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 175 0 0 0 26 0 0 0] 8 #() 2288 0 27 7138 7184 1 7200 1 7216 1 8864 47 410 ##(Smalltalk.ListView) 34 30 0 12624 34 2 8 1409372233 1025 13424 1522 138 144 1568 0 1600 978 10496 0 13 0 0 0 13424 0 8 4294903283 1666 #displayString 8 #() ##(Smalltalk.IconicListAbstract) 1728 0 0 0 0 0 0 138 144 34 2 1778 8 'Column 1' 311 #left 1666 #displayString 13568 ##(Smalltalk.SortedCollection) 1170 0 0 1202 1 83886081 1168 8 'doIt' 8 '[:each | each at: 5]' 8 #[29 105 17 214 5 148 106] 13664 7 257 0 0 13424 0 3 0 1170 0 0 1202 5 1 1168 8 'doIt' 8 '[:each | (each item at: 4) ifTrue: [each font: each font beItalic]]' 8 #[33 105 226 0 214 4 148 123 17 226 1 160 179 106 60 106] #item #font #beItalic #font: 13744 7 257 0 1778 8 '' 33 #center 2082 #empty 8 #() 16 1666 #<= 8 #() 0 0 13424 1170 0 0 1202 6 1 1168 8 'doIt' 8 '[:each | ((each at: 2) ifTrue: [JadeSystemBrowserPresenter overriddenIcon] ifFalse: [Icon blank]) 
+	imageIndex]' 8 #[34 105 17 64 148 120 29 159 111 31 161 162 106] ##(Smalltalk.JadeSystemBrowserPresenter) #overriddenIcon ##(Smalltalk.Icon) #blank #imageIndex 13920 7 257 0 1 0 0 #report 1568 0 131173 0 8 #(nil) 2018 138 144 34 3 2082 #createAt:extent: 34 2 2130 1 47 2130 351 447 13424 2082 #text: 34 1 8 'Column 1' 13424 2082 #columnOrder: 34 1 8 #(2 1) 13424 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 23 0 0 0 175 0 0 0 246 0 0 0] 8 #() 2288 0 27 7138 7184 1 7200 1 7216 47 7232 -45 170 192 34 6 12736 8 'overrideList' 13088 8 'superclassList' 13424 8 'methodList' 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 361 1 2130 351 539 12624 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 180 0 0 0 0 0 0 0 99 1 0 0 13 1 0 0] 34 3 13088 13424 12736 2288 0 27 2288 0 27 5 false 170 192 1568 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 1 2130 1785 539 688 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 124 3 0 0 13 1 0 0] 34 3 800 410 ##(Smalltalk.Splitter) 34 12 0 688 34 2 8 1140850688 1 14704 0 978 9360 0 517 0 0 0 14704 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1065 1 2130 11 539 14704 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 20 2 0 0 0 0 0 0 25 2 0 0 13 1 0 0] 8 #() 2288 0 27 9776 2288 0 27 524806 ##(Smalltalk.Fraction) 3 5 410 ##(Smalltalk.CardContainer) 34 16 0 416 34 2 8 1409286144 131073 14976 0 978 4944 0 5 0 0 0 14976 1026 138 144 34 7 1090 1122 8 'Package' 1170 0 0 1202 7 1 1120 8 'doIt' 8 '(CardLabel text: ''Package'' iconBlock: [Icon fromId: ''Package.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 1120 15136 ##(Smalltalk.Icon) 8 'Package.ico' #fromId: #text:iconBlock: 15152 11 1 0 0 410 ##(Smalltalk.ContainerView) 34 15 0 14976 34 2 8 1140850688 131073 15248 0 0 0 5 0 0 0 15248 626 170 176 34 4 410 ##(Smalltalk.ListView) 34 30 0 15248 34 2 8 1409355853 1025 15360 1522 138 144 1568 0 1600 978 8 4278190080 0 5 482 0 true 34 5 530 1 562 #addRepository 8 'Add &Repository' 1 1 0 0 0 530 1 562 #removeRepository 8 'Remo&ve Repository' 1025 1 0 0 0 983366 1 ##(Smalltalk.DividerMenuItem) 4097 530 1 562 #savePackage 8 '&Save Package' 1 1 0 0 0 530 1 562 #showPackageChanges 8 'Show &Changes' 1 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 15360 0 8 4294903283 1666 #displayString 8 #() 0 1728 0 0 0 0 0 0 138 144 34 4 1778 8 'Repository Type' 211 #left 1666 #displayString 15792 ##(Smalltalk.SortedCollection) 1170 0 0 1202 2 1 1168 8 'doIt' 8 '[:each | (each at: 1) copyFrom: 3 to: (each at: 1) size - 10]' 8 #[30 105 17 63 148 214 3 17 63 148 145 214 10 127 190 106] #copyFrom:to: 15888 7 257 0 0 15360 0 1 0 0 1778 8 'Description' 1161 #left 1666 #displayString 8 #() 1666 #<= 16016 1170 0 0 1202 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 2]' 8 #[29 105 17 64 148 106] 16048 7 257 0 0 15360 0 3 0 0 1778 8 'User' 201 #left 1666 #displayString 8 #() 1666 #<= 16176 1170 0 0 1202 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 3]' 8 #[29 105 17 214 3 148 106] 16208 7 257 0 0 15360 0 1 0 0 1778 8 'Password' 201 #left 1666 #displayString 16176 1666 #<= 16176 1170 0 0 1202 3 1 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | (each at: 4) collect: [:char | $*]]' 8 #[30 105 17 214 4 148 31 112 215 42 106 176 106] #collect: 16352 1170 0 0 16368 19 257 0 7 257 0 0 15360 0 1 0 0 #report 1568 0 131169 0 34 4 0 0 2130 1 1 0 2018 138 144 34 3 2082 #createAt:extent: 34 2 2130 1 263 2130 1769 217 15360 2082 #contextMenu: 34 1 15488 15360 2082 #text: 34 1 8 'Repository Type' 15360 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 131 0 0 0 116 3 0 0 239 0 0 0] 8 #() 2288 0 27 19 410 ##(Smalltalk.ListView) 34 30 0 15248 34 2 8 1409355853 1025 16720 1522 138 144 1568 0 1600 978 15472 0 5 482 0 true 34 1 530 1 562 #compareAncestor 8 '&Compare' 1 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 16720 0 8 4294903283 1666 #displayString 8 #() 0 1728 0 0 0 0 0 0 138 144 34 4 1778 8 'Ancestor' 131 #left 1666 #displayString 16176 1666 #<= 16176 1170 0 0 1202 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 1]' 8 #[29 105 17 63 148 106] 17072 7 257 0 0 16720 0 1 0 0 1778 8 'Name' 401 #left 1666 #displayString 16960 ##(Smalltalk.SortedCollection) 1170 0 0 1202 1 83886081 1168 8 'doIt' 8 '[:each | each at: 2]' 8 #[29 105 17 64 148 106] 17200 7 257 0 0 16720 0 1 0 0 1778 8 'Timestamp' 301 #left 1666 #displayString 16016 1666 #<= 16016 1170 0 0 1202 1 83886081 1168 8 'doIt' 8 '[:each | each at: 3]' 8 #[29 105 17 214 3 148 106] 17344 7 257 0 0 16720 0 1 0 0 1778 8 'Message' 941 #left 1666 #displayString 16016 1666 #<= 16016 1170 0 0 1202 1 83886081 1168 8 'doIt' 8 '[:each | each at: 4]' 8 #[29 105 17 214 4 148 106] 17488 7 257 0 0 16720 0 3 0 0 #report 1568 0 131169 0 34 4 0 0 2130 1 1 0 2018 138 144 34 3 2082 #createAt:extent: 34 2 2130 1 1 2130 1769 263 16720 2082 #contextMenu: 34 1 16832 16720 2082 #text: 34 1 8 'Ancestor' 16720 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 116 3 0 0 131 0 0 0] 8 #() 2288 0 27 23 true 170 192 34 4 15360 8 'repositoryList' 16720 8 'ancestorList' 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 9 55 2130 1769 479 15248 2226 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 34 2 16720 15360 2288 0 27 1090 1122 8 'Globals' 1170 0 0 1202 7 1 16 8 'doIt' 8 '(CardLabel text: ''Globals'' iconBlock: [Icon fromId: ''Dictionary.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 1120 18096 ##(Smalltalk.Icon) 8 'Dictionary.ico' #fromId: #text:iconBlock: 18112 11 1 0 0 410 ##(Smalltalk.ListView) 34 30 0 14976 34 2 8 1409355853 1025 18208 1522 138 144 1568 0 1600 978 15472 0 5 0 0 0 18208 0 8 4294903283 1666 #displayString 8 #() 0 1728 0 0 0 0 0 0 138 144 34 3 1778 8 'Name' 587 #left 1666 #displayString 18352 ##(Smalltalk.SortedCollection) 1170 0 0 1202 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 1]' 8 #[29 105 17 63 148 106] 18448 7 257 0 0 18208 0 3 0 0 1778 8 'Class' 589 #left 1666 #displayString 16016 1666 #<= 16016 1170 0 0 1202 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 2]' 8 #[29 105 17 64 148 106] 18592 7 257 0 0 18208 0 3 0 0 1778 8 'Value' 587 #left 1666 #displayString 16016 1666 #<= 16016 1170 0 0 1202 1 83886081 ##(Smalltalk.UndefinedObject) 8 'doIt' 8 '[:each | each at: 3]' 8 #[29 105 17 214 3 148 106] 18736 7 257 0 0 18208 0 3 0 0 #report 1568 0 131169 0 34 4 0 0 2130 1 1 0 2018 138 144 34 2 2082 #createAt:extent: 34 2 2130 9 55 2130 1769 479 18208 2082 #text: 34 1 8 'Name' 18208 2226 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 8 #() 2288 0 27 1090 1122 8 'Original Source' 1170 0 0 1202 7 1 16 8 'doIt' 8 '(CardLabel text: ''Original Source'' iconBlock: [Icon fromId: ''COMPILEDMETHOD_PRIVATE.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 1120 19088 ##(Smalltalk.Icon) 8 'COMPILEDMETHOD_PRIVATE.ico' #fromId: #text:iconBlock: 19104 11 1 0 0 410 ##(Smalltalk.ScintillaView) 34 50 0 14976 34 2 8 1445007428 1025 19200 721990 2 ##(Smalltalk.ValueHolder) 0 false 1310726 ##(Smalltalk.EqualitySearchPolicy) 0 978 8 4278190080 0 5 0 263174 ##(Smalltalk.Font) 0 true 459014 ##(Smalltalk.LOGFONT) 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 86 101 114 100 97 110 97 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 2130 193 193 0 19200 0 8 4294903305 852486 ##(Smalltalk.NullConverter) 0 0 11 0 170 192 34 4 #callTip 1182790 1 ##(Smalltalk.ScintillaTextStyle) 77 786694 ##(Smalltalk.IndexedColor) 33554457 19570 33554471 1 0 0 0 0 #callTip 0 0 0 #normal 19538 1 0 0 1 0 0 0 0 #normal 0 0 0 34 256 19616 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 19552 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1377542 ##(Smalltalk.SmalltalkMethodStyler) 1 0 0 false 138 144 1568 170 192 34 2 #default 1641542 1 ##(Smalltalk.ScintillaMarkerDefinition) 1 0 0 0 19200 #circle 0 0 0 0 0 0 138 ##(Smalltalk.IdentitySet) 1568 0 170 176 1568 9215 0 0 0 0 19570 33554447 0 0 65 0 0 170 192 34 6 #literalBytes 8 '[]' #literalArray 8 '()' #specialCharacter 8 '()[]<>' 8 '' 3 170 192 34 2 #container 170 192 34 2 #normal 19616 0 0 0 0 1 0 170 192 34 6 1 1510470 2 ##(Smalltalk.ScintillaIndicatorStyle) 1 19200 65025 3 false 1 0 0 0 0 0 0 3 20002 3 19200 33423361 5 false 3 0 0 0 0 0 0 5 20002 5 19200 511 1 false 5 0 0 0 0 0 0 0 0 170 192 34 6 #Notification 19538 1029 0 196934 1 ##(Smalltalk.RGB) 31185883 1 0 0 0 0 #Notification 0 0 0 #Warning 19538 1027 20114 60239 20114 31326207 1 0 0 0 0 #Warning 0 0 0 #Error 19538 1031 20114 335 20114 31317503 1 0 0 0 0 #Error 0 0 0 0 2018 138 144 34 6 2082 #createAt:extent: 34 2 2130 9 55 2130 1769 479 19200 2082 #modificationEventMask: 8 #(4607) 19200 2082 #caretPeriod: 8 #(530) 19200 2082 #wordWrap: 8 #(true) 19200 2082 #margins: 34 1 34 3 985158 2 ##(Smalltalk.ScintillaMargin) 1 19200 61 3 0 0 5 0 20498 3 19200 1 0 3 67108863 5 0 20498 5 19200 1 0 3 -67108863 5 0 19200 2082 #tabWidth: 8 #(4) 19200 2226 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 8 #() 2288 0 29 1090 1122 8 'SUnit' 1170 0 0 1202 7 1 ##(Smalltalk.SmallInteger) 8 'doIt' 8 '(CardLabel text: ''SUnit'' iconBlock: [Icon fromId: ''UnitTestPlugin.ico''])' 8 #[29 30 35 113 31 32 180 106 195 105] 1120 20672 ##(Smalltalk.Icon) 8 'UnitTestPlugin.ico' #fromId: #text:iconBlock: 20688 11 1 0 0 410 ##(Smalltalk.ReferenceView) 34 14 0 14976 34 2 8 1140850688 131073 20784 0 978 8 4278190080 0 5 0 0 0 20784 1180166 ##(Smalltalk.ResourceIdentifier) ##(Smalltalk.JadeSUnitInClassPresenter) #resource_Default_view 0 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 9 55 2130 1769 479 20784 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 1568 2288 0 27 1090 1122 8 'Class Definition' 0 0 410 ##(Smalltalk.ScintillaView) 34 50 0 14976 34 2 8 1445007428 1025 21104 19266 0 false 19312 0 978 8 4278190080 0 5 482 0 true 34 11 530 1 562 #editSave 8 '&Save' 9383 1 0 0 0 15618 4097 530 1 562 #editUndo 8 '&Undo' 9397 1 0 0 0 530 1 562 #editRedo 8 '&Redo' 9395 1 0 0 0 15618 4097 530 1 562 #editCut 8 'Cu&t' 9393 1 0 0 0 530 1 562 #editCopy 8 '&Copy' 9351 1 0 0 0 530 1 562 #editPaste 8 '&Paste' 9389 1 0 0 0 530 1 562 #editDelete 8 '&Delete' 1629 1 0 0 0 15618 4097 530 1 562 #editSelectAll 8 'Select &All' 9347 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 19362 0 true 19394 8 #[244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 86 101 114 100 97 110 97 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 2130 193 193 0 21104 0 8 4294903305 19474 0 0 13 0 170 192 34 4 #callTip 19538 77 19584 19600 1 0 0 0 0 #callTip 0 0 0 #normal 19538 1 0 0 1 0 0 0 0 #normal 0 0 0 34 256 21840 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 21824 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1639686 ##(Smalltalk.SmalltalkExpressionStyler) 1 0 0 false 138 144 1568 170 192 34 2 #default 19730 1 0 0 0 21104 #circle 0 0 0 0 0 0 138 ##(Smalltalk.IdentitySet) 1568 0 170 176 1568 9215 0 0 0 0 19792 0 0 65 0 0 170 192 34 6 #literalBytes 8 '[]' #literalArray 8 '()' #specialCharacter 8 '()[]<>' 8 '' 3 170 192 34 2 #container 170 192 34 2 #normal 21840 0 0 0 0 1 0 170 192 34 6 1 20002 1 21104 65025 3 false 1 0 0 0 0 0 0 3 20002 3 21104 33423361 5 false 3 0 0 0 0 0 0 5 20002 5 21104 511 1 false 5 0 0 0 0 0 0 0 0 170 192 34 6 #Notification 19538 1029 0 20114 31185883 1 0 0 0 0 #Notification 0 0 0 #Warning 19538 1027 20114 60239 20114 31326207 1 0 0 0 0 #Warning 0 0 0 #Error 19538 1031 20114 335 20114 31317503 1 0 0 0 0 #Error 0 0 0 0 2018 138 144 34 7 2082 #createAt:extent: 34 2 2130 9 55 2130 1769 479 21104 2082 #contextMenu: 34 1 21216 21104 2082 #modificationEventMask: 8 #(4607) 21104 2082 #caretPeriod: 8 #(530) 21104 2082 #wordWrap: 8 #(true) 21104 2082 #margins: 34 1 34 3 20498 1 21104 1 3 0 0 5 0 20498 3 21104 33 0 3 67108863 5 0 20498 5 21104 1 0 3 -67108863 5 0 21104 2082 #tabWidth: 8 #(4) 21104 2226 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 8 #() 2288 0 29 1090 1122 8 'Class Documentation' 0 0 410 ##(Smalltalk.ScintillaView) 34 50 0 14976 34 2 8 1445007428 1025 22864 19266 0 false 19312 0 978 21200 0 5 0 19362 0 true 19394 8 #[244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 86 101 114 100 97 110 97 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 2130 193 193 0 22864 0 8 4294903305 19474 0 0 11 0 170 192 34 4 #callTip 19538 77 19584 19600 1 0 0 0 0 #callTip 0 0 0 #normal 19538 1 0 0 1 0 0 0 0 #normal 0 0 0 34 256 23104 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 23088 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1245510 1 ##(Smalltalk.NullScintillaStyler) #normal 170 192 34 2 #default 19730 1 0 0 0 22864 #circle 0 0 0 0 0 0 138 ##(Smalltalk.IdentitySet) 1568 0 170 176 1568 9215 0 0 0 0 19792 0 0 65 0 0 0 8 '' 3 170 192 34 2 #container 170 192 34 2 #normal 23104 0 0 0 0 1 0 170 192 34 6 1 20002 1 22864 65025 3 false 1 0 0 0 0 0 0 3 20002 3 22864 33423361 5 false 3 0 0 0 0 0 0 5 20002 5 22864 511 1 false 5 0 0 0 0 0 0 0 0 170 192 34 6 #Notification 19538 1029 0 20114 31185883 1 0 0 0 0 #Notification 0 0 0 #Warning 19538 1027 20114 60239 20114 31326207 1 0 0 0 0 #Warning 0 0 0 #Error 19538 1031 20114 335 20114 31317503 1 0 0 0 0 #Error 0 0 0 0 2018 138 144 34 6 2082 #createAt:extent: 34 2 2130 9 55 2130 1769 479 22864 2082 #modificationEventMask: 8 #(4607) 22864 2082 #caretPeriod: 8 #(530) 22864 2082 #wordWrap: 8 #(true) 22864 2082 #margins: 34 1 34 3 20498 1 22864 1 3 0 0 5 0 20498 3 22864 33 0 3 67108863 5 0 20498 5 22864 1 0 3 -67108863 5 0 22864 2082 #tabWidth: 8 #(4) 22864 2226 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 8 #() 2288 0 29 1090 1122 8 'Method Source' 0 0 410 ##(Smalltalk.ScintillaView) 34 50 0 14976 34 2 8 1445007428 1025 24000 19266 0 false 19312 0 978 8 4278190080 0 5 0 0 0 24000 0 8 4294903305 19474 0 0 9 0 170 192 34 4 #callTip 19538 77 19584 19600 1 0 0 0 0 #callTip 0 0 0 #normal 19538 1 0 0 1 0 0 0 0 #normal 0 0 0 34 256 24192 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 24176 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 19650 1 0 0 false 138 144 1568 170 192 34 2 #default 19730 1 0 0 0 24000 #circle 0 0 0 0 0 0 138 ##(Smalltalk.IdentitySet) 1568 0 170 176 1568 9215 0 0 0 0 19792 0 0 65 0 0 22000 8 '' 3 170 192 34 2 #container 170 192 34 4 #callTip 24176 #normal 24192 0 0 0 0 1 0 170 192 34 12 1 20002 1 24000 65025 3 false 1 0 0 0 0 0 0 3 20002 3 24000 33423361 5 false 3 0 0 0 0 0 0 5 20002 5 24000 511 1 false 5 0 0 0 0 0 0 8 'indicator8' 20002 17 24000 33554447 1 0 0 0 0 0 0 0 0 8 'indicator10' 20002 21 24000 33554459 3 0 0 0 0 0 0 0 0 8 'indicator9' 20002 19 24000 33554459 13 0 0 0 0 0 0 0 0 0 0 170 192 34 6 #Notification 19538 1029 0 20114 31185883 1 0 0 0 0 #Notification 0 0 0 #Warning 19538 1027 20114 60239 20114 31326207 1 0 0 0 0 #Warning 0 0 0 #Error 19538 1031 20114 335 20114 31317503 1 0 0 0 0 #Error 0 0 0 0 2018 138 144 34 6 2082 #createAt:extent: 34 2 2130 9 55 2130 1769 479 24000 2082 #modificationEventMask: 8 #(4607) 24000 2082 #hoverTime: 8 #(200) 24000 2082 #caretPeriod: 8 #(530) 24000 2082 #margins: 34 1 34 3 20498 1 24000 61 3 0 0 5 0 20498 3 24000 1 0 3 67108863 0 0 20498 5 24000 1 0 3 -67108863 0 0 24000 2082 #tabWidth: 8 #(4) 24000 2226 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 0 27 0 0 0 120 3 0 0 10 1 0 0] 8 #() 2288 0 29 20784 170 192 34 14 15248 8 'packageInfo' 21104 8 'classDefinition' 22864 8 'classDocumentation' 24000 8 'methodSource' 20784 8 'sunit' 19200 8 'originalSource' 18208 8 'globals' 0 410 ##(Smalltalk.TabViewXP) 34 28 0 14976 34 2 8 1140916736 1 25280 1522 138 144 34 7 15120 18080 21072 22832 19072 23968 20656 0 1600 0 0 1 0 0 0 25280 0 8 4294903549 1170 0 0 6642 2 3 ##(Smalltalk.ListControlView) #defaultGetTextBlock 575230339 8 #[30 105 226 0 106] #displayString 25408 7 257 0 1170 0 0 6642 2 3 ##(Smalltalk.IconicListAbstract) #defaultGetImageBlock 579598755 8 #[30 105 226 0 106] #iconImageIndex 25456 7 257 0 1728 0 0 0 0 0 #smallIcons 0 0 0 0 0 2018 138 144 34 3 2082 #createAt:extent: 34 2 2130 1 1 2130 1785 541 25280 2082 #basicSelectionsByIndex: 34 1 8 #(7) 25280 2082 #tcmSetExtendedStyle:dwExStyle: 8 #(-1 0) 25280 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 124 3 0 0 14 1 0 0] 8 #() 2288 0 27 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 549 2130 1785 541 14976 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 18 1 0 0 124 3 0 0 32 2 0 0] 34 8 15248 18208 21104 22864 19200 24000 20784 25280 2288 0 27 14946 3 5 true 170 192 34 4 410 ##(Smalltalk.Splitter) 34 12 0 416 34 2 8 1140850688 1 25952 0 978 9360 0 517 0 0 0 25952 2018 138 144 34 1 2082 #createAt:extent: 34 2 2130 1 539 2130 1785 11 25952 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 13 1 0 0 124 3 0 0 18 1 0 0] 8 #() 2288 0 27 8 'splitter' 14976 8 'textAreaTabs' 0 2018 138 144 34 2 2082 #createAt:extent: 34 2 2130 2559 21 2130 1785 1089 416 2082 #contextMenu: 34 1 496 416 2226 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 4 0 0 10 0 0 0 123 8 0 0 42 2 0 0] 34 3 688 25952 14976 2288 0 27 )! !
 !JadeSystemBrowserPresenter class categoriesFor: #overriddenIcon!public! !
 !JadeSystemBrowserPresenter class categoriesFor: #resource_Default_view!private!resources-views! !
 

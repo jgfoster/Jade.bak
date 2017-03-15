@@ -3,7 +3,7 @@ package := Package name: 'Jade Autocompletation Enhancements'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.035'.
+package basicPackageVersion: '0.039'.
 
 package basicScriptAt: #preinstall put: '(JadeServer classVarNames includes: ''PackageOrganizer'')
 ifFalse: [JadeServer addClassVarName: ''PackageOrganizer''].
@@ -56,11 +56,11 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: 'Jade Autocompletation';
-	add: 'Jade from Dolphin';
 	add: 'Jade Inspector';
 	add: 'Jade Method Browser';
 	add: 'Jade System Browser';
 	add: 'Jade Transcript';
+	add: 'Jade UI';
 	add: 'Jade UI Base';
 	add: '..\..\..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	yourself).
@@ -251,7 +251,7 @@ getClassVariableAndPoolDictionaryLike: aString
 onViewOpened
 
 	super onViewOpened.
-	documentPresenter view styler: JadeExpressionStyler new.
+	"(documentPresenter view isKindOf: MultilineTextEdit) ifFalse: [documentPresenter view styler: JadeExpressionStyler new]."
 	(model isKindOf: String) ifTrue: [
 		documentPresenter value: model.
 		self view caption: 'String (' , model size printString , ' characters)'.
@@ -349,7 +349,7 @@ onViewOpened
 	super onViewOpened.
 	codePane setDocumentPresenterWith: (self registry getClass: 'Object').
 
-	documentPresenter view styler: JadeExpressionStyler new.! !
+	"documentPresenter view styler: JadeExpressionStyler new."! !
 !JadeWorkspace categoriesFor: #onViewOpened!private! !
 
 !MethodSourcePresenter methodsFor!

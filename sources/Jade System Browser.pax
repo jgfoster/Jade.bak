@@ -178,6 +178,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade Class Browser';
 	add: 'Jade Inspector';
 	add: 'Jade Method Browser';
+	add: 'Jade Test Browser';
 	add: 'Jade UI';
 	add: 'Jade UI Base';
 	add: 'Monticello';
@@ -188,7 +189,7 @@ package!
 "Class Definitions"!
 
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
-	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
+	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints sunitPresenter superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1572,7 +1573,7 @@ sbUpdateMethodStepPointsFor: aMethod
 	"Answers an Array of Associations (offset -> selector) indexed by step point"
 
 	| offsets selectors |
-	offsets := ([aMethod homeMethod] on: Error do: [:ex | aMethod])  _sourceOffsets.
+	offsets := (self homeMethodFor: aMethod)  _sourceOffsets.
 	selectors := Array new.
 	1 to: offsets size do: [:i | 		"exists as far back as 32-bit 6.3.0"
 		| offset ip association |
@@ -2200,7 +2201,7 @@ sbUpdateMethodStepPointsFor: aMethod
 
 	|  selectors list |
 	(selectors := aMethod _allDebugInfo: 10) ifNil: [^#()].
-	list := ([aMethod homeMethod] on: Error do: [:ex | aMethod])  _sourceOffsets.
+	list := (self homeMethodFor: aMethod)  _sourceOffsets.
 	list :=list collect: [:each | 		"exists as far back as 32-bit 6.3.0"
 		| index selector |
 		selector := ''.

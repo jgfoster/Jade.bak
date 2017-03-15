@@ -5,7 +5,7 @@ JadeSUnitAbstractPresenter subclass: #JadeSUnitPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeSUnitPresenter guid: (GUID fromString: '{F0D7615E-1A5A-4D8A-B979-C2AD927A9F74}')!
+JadeSUnitPresenter guid: (GUID fromString: '{f0d7615e-1a5a-4d8a-b979-c2ad927a9f74}')!
 JadeSUnitPresenter comment: ''!
 !JadeSUnitPresenter categoriesForClass!Unclassified! !
 !JadeSUnitPresenter methodsFor!
@@ -31,28 +31,18 @@ debug
 	testClassesPresenter hasSelection ifFalse: [^self].
 	(testCasesPresenter selection size = 1) ifFalse: [^MessageBox  notify: 'Select only one TestCase to debug'].
 
-	^model serverPerform: #debugTestNamed:of: with: testCasesPresenter selection last methodName with: testClassesPresenter selection!
+	^gciSession serverPerform: #debugTestNamed:of: with: testCasesPresenter selection last methodName with: testClassesPresenter selection!
 
 getTestCounter
 
 	^'Total Tests: ', testCounter first printString!
-
-model: aGciSession
-	| gsResult packagesNames |
-
-	super model: aGciSession.
-
-"	gsResult := model serverPerform: #getPackagesNamesWithTestClasses.
-	packagesNames := gsResult subStrings: ','.
-
-	packagesPresenter model: (ListModel on: packagesNames asSortedCollection). "!
 
 onClassesChanged
 	| gsResult testMethods |
 
 	testClassesPresenter hasSelection ifFalse: [status value: self. ^testCasesPresenter model: ListModel  new].
 
-	gsResult := model serverPerform: #getTestMethodsNamesOf: with: testClassesPresenter selection.
+	gsResult := gciSession serverPerform: #getTestMethodsNamesOf: with: testClassesPresenter selection.
 	testMethods := (gsResult  subStrings: ',') collect: [:each | GsTestMethod name: each].
 
 	testCasesPresenter model: (ListModel on: testMethods).
@@ -71,7 +61,7 @@ onPackageChanged
 
 	packagesPresenter hasSelection ifFalse: [testClassesPresenter model: ListModel new. testCasesPresenter model: ListModel  new. ^status value: self.].
 
-	gsResult := model serverPerform: #getTestCaseClassesNamesOf: with: packagesPresenter selection.
+	gsResult := gciSession serverPerform: #getTestCaseClassesNamesOf: with: packagesPresenter selection.
 
 	testClassesPresenter model: (ListModel on: (gsResult subStrings: ',') asSortedCollection).
 	status value: nil.
@@ -85,7 +75,7 @@ onViewOpened
 
  	status := ValueHolder new.
 
-	gsResult := model serverPerform: #getPackagesNamesWithTestClasses.
+	gsResult := gciSession serverPerform: #getPackagesNamesWithTestClasses.
 	packagesNames := gsResult subStrings: ','.
 
 	packagesPresenter model: (ListModel on: packagesNames asSortedCollection).
@@ -125,7 +115,6 @@ testClassesSize
 !JadeSUnitPresenter categoriesFor: #createSchematicWiring!public! !
 !JadeSUnitPresenter categoriesFor: #debug!public! !
 !JadeSUnitPresenter categoriesFor: #getTestCounter!public! !
-!JadeSUnitPresenter categoriesFor: #model:!public! !
 !JadeSUnitPresenter categoriesFor: #onClassesChanged!public! !
 !JadeSUnitPresenter categoriesFor: #onPackageChanged!public! !
 !JadeSUnitPresenter categoriesFor: #onViewOpened!public! !

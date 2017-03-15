@@ -390,21 +390,21 @@ updateCaption
 updateModel
 
 	self model
-		gemVersion:		versionListPresenter 		selection;
-		stoneHost: 		stoneHostPresenter 		value;
-		stoneName: 		stoneNamePresenter 	value;
-		gemType: 		gemTypePresenter 		value;
-		gemHost: 			gemHostPresenter 		value;
-		gemService: 		gemServicePresenter 	value;
-		gemTask: 			gemTaskPresenter 		value;
-		gsUserID: 		userIDPresenter 			value;
-		gsPassword: 	passwordPresenter 		value;
-		loginType: 		loginTypePresenter 		value;
-		hostUserID:		hostUserIDPresenter	value;
-		hostPassword:	hostPasswordPresenter	value;
-		initials:				initialsPresenter				value;
-		useSocket: 		useSocketPresenter		value;
-		debugPath: 		debugPathPresenter		value;
+		gemVersion:	versionListPresenter 		selection;
+		stoneHost: 	stoneHostPresenter 		value trimBlanks;
+		stoneName: 	stoneNamePresenter 		value trimBlanks;
+		gemType: 	gemTypePresenter 		value;
+		gemHost: 		gemHostPresenter 		value trimBlanks;
+		gemService: 	gemServicePresenter 	value trimBlanks;
+		gemTask: 	gemTaskPresenter 		value trimBlanks;
+		gsUserID: 		userIDPresenter 		value trimBlanks;
+		gsPassword: 	passwordPresenter 		value trimBlanks;
+		loginType: 	loginTypePresenter 		value;
+		hostUserID:	hostUserIDPresenter		value trimBlanks;
+		hostPassword:	hostPasswordPresenter	value trimBlanks;
+		initials:		initialsPresenter		value trimBlanks;
+		useSocket: 	useSocketPresenter		value;
+		debugPath: 	debugPathPresenter		value trimBlanks;
 		yourself.
 !
 
