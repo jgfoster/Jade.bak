@@ -25,6 +25,7 @@ package methodNames
 	add: #JadeServer -> #getTestMethodsNamesOf:;
 	add: #JadeServer -> #runTestNamed:in:;
 	add: #JadeServer -> #runTestsNamed:in:;
+	add: #JadeTextDocument -> #jadeBrowseTests;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -80,7 +81,7 @@ JadeSUnitAbstractPresenter subclass: #JadeSUnitPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeShell subclass: #JadeSUnitBrowser
-	instanceVariableNames: 'sunitPresenter'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -120,13 +121,18 @@ getPackagesNamesOfAll: classesNameCollection
 getPackagesNamesWithTestClasses
 	"Answer a collection with all package names that contain at least one Test class (subclass of TestCase)"
 
-	| comma packagesNames stream |
+	| comma packageOrganizer packagesNames stream |
+	packageOrganizer := self objectNamed: #'PackageOrganizer'.
+	packageOrganizer isNil ifTrue: [^'<All>'].
+	packageOrganizer := packageOrganizer default.
 	packagesNames := Set new.
-	stream := WriteStream on: String new.
 	TestCase allSubclasses do: [:each | 
-		((self objectNamed: #'PackageOrganizer') default packageOfClass: each ifNone: [nil]) ifNotNil: [:value | packagesNames add: value packageName]].
-	packagesNames isEmpty ifTrue: [^''].
+		| package |
+		package := packageOrganizer packageOfClass: each ifNone: [nil].
+		package notNil ifTrue: [packagesNames add: package packageName].
+	].
 	comma := ''.
+	stream := WriteStream on: String new.
 	packagesNames asSortedCollection do: [:each | stream nextPutAll: comma; nextPutAll: each. comma := ','].
 	^stream contents!
 
@@ -136,16 +142,21 @@ getSubclassesNamesOf: classNamed
 
 	^((self objectNamed: classNamed) allSubclasses collect: [:each | each name]) asSortedCollection!
 
-getTestCaseClassesNamesOf: packageNamed
+getTestCaseClassesNamesOf: packageName
 	"Answer a collection with all test classes of the GemStone/S package named <packageNamed>"
 
-	| comma packageInfo testCaseSubclasses stream |
-	packageInfo := (self objectNamed: #'PackageOrganizer') default packageNamed: packageNamed  ifAbsent: [^''].
-	testCaseSubclasses := TestCase allSubclasses.
+	| classes comma stream |
+	classes := TestCase allSubclasses.
+	packageName = '<All>' ifFalse: [
+		| packageInfo packageOrganizer |
+		packageOrganizer := (self objectNamed: #'PackageOrganizer') default.
+		packageInfo := packageOrganizer packageNamed: packageName ifAbsent: [^''].
+		packageInfo classes isEmpty ifTrue: [^''].
+		classes := packageInfo classes select: [:each | classes includes: each].
+	].
 	stream := WriteStream on: String new.
-	packageInfo classes isEmpty ifTrue: [^''].
 	comma := ''.
-	((packageInfo classes select: [:each | testCaseSubclasses includes: each]) do: [:each | stream nextPutAll: comma; nextPutAll: each name. comma := ',']).
+	classes do: [:each | stream nextPutAll: comma; nextPutAll: each name. comma := ','].
 	^stream contents!
 
 getTestMethodsNamesOf: classNamed 
@@ -194,6 +205,14 @@ runTestsNamed: testCollection in: gsClass
 !JadeServer categoriesFor: #getTestMethodsNamesOf:!public!Test Browser! !
 !JadeServer categoriesFor: #runTestNamed:in:!public!Test Browser! !
 !JadeServer categoriesFor: #runTestsNamed:in:!public!Test Browser! !
+
+!JadeTextDocument methodsFor!
+
+jadeBrowseTests
+
+	JadeSUnitBrowser showOnSession: gciSession.
+! !
+!JadeTextDocument categoriesFor: #jadeBrowseTests!Jade!private! !
 
 "End of package definition"!
 
