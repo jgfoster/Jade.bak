@@ -51,6 +51,24 @@ getAllClassMethodsButObject
 
 	^methods copyWithoutDuplicates!
 
+getAllClassMethodsFor: aJadeGsClassShape
+	"Answer a collection of methods of <aJadeGsClassShape> including superclasses methods"
+	| methods hierarchy |
+
+	methods := OrderedCollection new.
+	hierarchy := aJadeGsClassShape gsClassHierarchy asOrderedCollection.
+
+	self configuration filterObjectMethods ifTrue: [hierarchy := hierarchy removeFirst; yourself ]. "we remove Object class from <hierarchy> Array"
+
+	hierarchy do: [:each | | methodsToDisplay |
+		methodsToDisplay := (self includesClassNamed: each) ifTrue: [(self getClass: each) gsClassMethods] ifFalse: [OrderedCollection new].
+		self configuration filterPrimitiveMethods ifTrue: [methodsToDisplay := methodsToDisplay reject: [:eachSymbol | eachSymbol first = $_]].
+		methods addAll: methodsToDisplay].
+
+	^methods copyWithoutDuplicates
+
+!
+
 getAllClassVarOf: aJadeGsClassShape
 	"Answer a collection with all instance variable names of argument <aJadeGsClassShape> including inst var of super classes"
 	| vars |
@@ -190,9 +208,34 @@ initialize
 	super initialize.
 
 	registry := Dictionary new.
-	variableMap := Dictionary new.
+	variableMap := Dictionary new. "for example: html -> WAHtmlCanvas"
+	self initializeParamMap.!
+
+initializeParamMap
+
 	paramMap := Dictionary new.
-!
+	paramMap
+		at: 'detect:ifNone:' put: '[:each | each],[]';
+		at: 'inject:into:' put: '0, [:sum :each | ]';
+		at: 'ifEmpty:ifNotEmpty:' put: '[emptyOperation],[:collection | ]';
+		at: 'ifNotEmpty:ifEmpty:' put: '[:collection | ],[emptyOperation]';
+		at: 'ifNil:ifNotNil:' put: '[],[:value | value]';
+		at: 'ifNotNil:ifNil:' put: '[:value | value],[]';
+		at: 'ifTrue:ifFalse:' put: '[],[]';
+		at: 'ifFalse:ifTrue:' put: '[],[]';
+		at: 'select:' put: '[:each | each]';
+		at: 'allSatisfy:' put: '[:each | each]';
+		at: 'anySatisfy:' put: '[:each | each]';
+		at: 'ifNotNil:' put: '[:value | value]';
+		at: 'ifNil:' put: '[]';
+		at: 'detect:' put: '[:each | each]';
+		at: 'ifTrue:' put: '[]';
+		at: 'ifFalse:' put: '[]';
+		at: 'collect:' put: '[:each | each]';
+		at: 'do:' put: '[:each | each]';
+		yourself.
+
+	^paramMap!
 
 mapFor: aString
 	"Answer the map (instance of JadeGsClassShape) for the name <aString> "
@@ -320,6 +363,7 @@ variableMap: anObject
 !JadeAutocompletationRegistry categoriesFor: #getAllClassesNames!public! !
 !JadeAutocompletationRegistry categoriesFor: #getAllClassMethods!public! !
 !JadeAutocompletationRegistry categoriesFor: #getAllClassMethodsButObject!public! !
+!JadeAutocompletationRegistry categoriesFor: #getAllClassMethodsFor:!public! !
 !JadeAutocompletationRegistry categoriesFor: #getAllClassVarOf:!public! !
 !JadeAutocompletationRegistry categoriesFor: #getAllGlobalMethods!public! !
 !JadeAutocompletationRegistry categoriesFor: #getAllInstClassVarOf:!public! !
@@ -335,6 +379,7 @@ variableMap: anObject
 !JadeAutocompletationRegistry categoriesFor: #hasMapForClassNamed:!public! !
 !JadeAutocompletationRegistry categoriesFor: #includesClassNamed:!public! !
 !JadeAutocompletationRegistry categoriesFor: #initialize!public! !
+!JadeAutocompletationRegistry categoriesFor: #initializeParamMap!public! !
 !JadeAutocompletationRegistry categoriesFor: #mapFor:!public! !
 !JadeAutocompletationRegistry categoriesFor: #mapToDisplay!public! !
 !JadeAutocompletationRegistry categoriesFor: #paramFor:!public! !

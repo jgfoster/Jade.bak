@@ -32,7 +32,9 @@ browseClass
 
 browseImplementors
 
-	super browseImplementorsOf: methodListPresenter selection.
+	"super browseImplementorsOf: methodListPresenter selection."
+
+	parentPresenter browseImplementorsOf: methodListPresenter selection
 !
 
 browseImplementorsOf
@@ -49,7 +51,9 @@ browseMethodsContaining
 
 browseSenders
 
-	super browseSendersOf: methodListPresenter selection.
+	"super browseImplementorsOf: methodListPresenter selection."
+
+	parentPresenter browseImplementorsOf: methodListPresenter selection
 !
 
 browseSendersOf
@@ -208,6 +212,10 @@ selectionOrNil
 	^methodListPresenter selectionOrNil.
 !
 
+selectMethod: aGsMethod
+
+	methodListPresenter selection: aGsMethod ifAbsent: []!
+
 subMenuName
 
 	^'&Methods'.
@@ -350,6 +358,7 @@ withSelectorDo: aBlock
 !MethodListPresenter categoriesFor: #selectedMethodClass!public! !
 !MethodListPresenter categoriesFor: #selectFirstMethod!public! !
 !MethodListPresenter categoriesFor: #selectionOrNil!public! !
+!MethodListPresenter categoriesFor: #selectMethod:!public! !
 !MethodListPresenter categoriesFor: #subMenuName!menus!public! !
 !MethodListPresenter categoriesFor: #subMenuPresenter!menus!public! !
 !MethodListPresenter categoriesFor: #update!public! !

@@ -10,10 +10,10 @@ list := #(
 	'GemStone Services'
 	'VisualWorks Component'
 	'Jade UI Base'
-	'Jade Autocompletation'
-	'Jade Inspector'
 	'Jade Class Browser'
 	'Jade Method Browser'
+	'Jade Inspector'
+	'Jade Autocompletation'
 	'Jade User Browser'
 	'Monticello'
 	'Jade UI'
@@ -47,6 +47,7 @@ SmalltalkSystemShell allInstances first
 IdeaSpaceShell allInstances isEmpty ifTrue: [
 	IdeaSpaceShell show
 		absorbCard: SmalltalkWorkspaceDocument show;
+		absorbCard: PackageBrowserShell show;
 		absorbCard: SystemBrowserShell show;
 		position: 50@80; extent: 1200@700;
 		yourself.

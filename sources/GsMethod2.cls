@@ -18,6 +18,21 @@ GsMethod2 comment: ''!
 	^self name <= aGsMethod name.
 !
 
+asUpdatedVersion: stringOop
+	"Answer <aGsMethod2> of the new method based on the receiver."
+	| stringToGetNewMethod |
+
+	stringToGetNewMethod := stringOop, Character tab asString, 
+						name, Character tab asString, 
+						category, Character tab asString, 
+						gsClass oopType lowPart printString, Character tab asString, 
+						gsClass name, Character tab asString, 
+						gsClass category, Character tab asString, 
+						isTestCase printString.
+
+	^GsMethod2 fromString: stringToGetNewMethod session: gciSession.
+!
+
 category
 	^category!
 
@@ -68,6 +83,7 @@ setBreakAtStepPoint: anInteger
 		with: anInteger.
 ! !
 !GsMethod2 categoriesFor: #<=!public! !
+!GsMethod2 categoriesFor: #asUpdatedVersion:!public! !
 !GsMethod2 categoriesFor: #category!public! !
 !GsMethod2 categoriesFor: #classCategory!public! !
 !GsMethod2 categoriesFor: #clearBreakAtStepPoint:!Breakpoints!public! !

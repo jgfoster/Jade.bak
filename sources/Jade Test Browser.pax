@@ -26,6 +26,7 @@ package methodNames
 	add: #JadeServer -> #runTestNamed:in:;
 	add: #JadeServer -> #runTestsNamed:in:;
 	add: #JadeTextDocument -> #jadeBrowseTests;
+	add: #JadeToolsToolBarPresenter -> #browseTests;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -47,7 +48,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'GemStone Session';
 	add: 'Jade UI Base';
-	add: '..\..\..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
 	add: '..\..\..\Core\Contributions\Odellsoft\SUnitBrowser\SUnitBrowser';
 	yourself).
 
@@ -121,12 +121,14 @@ getPackagesNamesOfAll: classesNameCollection
 getPackagesNamesWithTestClasses
 	"Answer a collection with all package names that contain at least one Test class (subclass of TestCase)"
 
-	| comma packageOrganizer packagesNames stream |
-	packageOrganizer := self objectNamed: #'PackageOrganizer'.
-	packageOrganizer isNil ifTrue: [^'<All>'].
-	packageOrganizer := packageOrganizer default.
+	| comma packageOrganizer packageOrganizerClass packagesNames stream testCaseClass |
+	testCaseClass := self objectNamed: #'TestCase'.
+	testCaseClass isNil ifTrue: [^''].
+	packageOrganizerClass := self objectNamed: #'PackageOrganizer'.
+	packageOrganizerClass isNil ifTrue: [^'<All>'].
+	packageOrganizer := packageOrganizerClass default.
 	packagesNames := Set new.
-	TestCase allSubclasses do: [:each | 
+	testCaseClass allSubclasses do: [:each | 
 		| package |
 		package := packageOrganizer packageOfClass: each ifNone: [nil].
 		package notNil ifTrue: [packagesNames add: package packageName].
@@ -146,7 +148,8 @@ getTestCaseClassesNamesOf: packageName
 	"Answer a collection with all test classes of the GemStone/S package named <packageNamed>"
 
 	| classes comma stream |
-	classes := TestCase allSubclasses.
+	packageName isEmpty ifTrue: [^''].
+	classes := (self objectNamed: #'TestCase') allSubclasses.
 	packageName = '<All>' ifFalse: [
 		| packageInfo packageOrganizer |
 		packageOrganizer := (self objectNamed: #'PackageOrganizer') default.
@@ -162,11 +165,12 @@ getTestCaseClassesNamesOf: packageName
 getTestMethodsNamesOf: classNamed 
 	"Answer a collection with all test selectors of the GemStone/S class named <classNamed>"
 
-	| comma stream testSelectors gsClass |
+	| class comma stream testSelectors gsClass |
 	stream := WriteStream on: String new.
 	gsClass := self objectNamed: classNamed.
 	gsClass isNil ifTrue: [^''].
-	(gsClass isSubclassOf: TestCase) ifFalse: [^''].
+	(class := self objectNamed: #'TestCase') isNil ifTrue: [^''].
+	(gsClass isSubclassOf: class) ifFalse: [^''].
 	testSelectors :=  gsClass testSelectors asSortedCollection.
 	testSelectors isEmpty ifTrue: [^''].
 	comma := ''.
@@ -213,6 +217,13 @@ jadeBrowseTests
 	JadeSUnitBrowser showOnSession: gciSession.
 ! !
 !JadeTextDocument categoriesFor: #jadeBrowseTests!Jade!private! !
+
+!JadeToolsToolBarPresenter methodsFor!
+
+browseTests
+
+	JadeSUnitBrowser showOnSession: gciSession.! !
+!JadeToolsToolBarPresenter categoriesFor: #browseTests!public! !
 
 "End of package definition"!
 

@@ -8,9 +8,14 @@ package basicPackageVersion: '0.087'.
 
 package classNames
 	add: #GsMethod2;
+	add: #JadeAbstractHistoryEntry;
+	add: #JadeHistoryEntry;
+	add: #JadeMethodExplorerHistoryEntry;
 	add: #JadeMethodHistoryBrowser;
 	add: #JadeMethodListBrowser;
 	add: #JadeMethodListPresenter;
+	add: #JadeSystemBrowserHistoryEntry;
+	add: #JadeTreeMethodListPresenter;
 	add: #MethodListPresenter;
 	add: #MethodSourcePresenter;
 	yourself.
@@ -68,6 +73,8 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\Tree\Dolphin Tree Models';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Tree\Dolphin Tree Presenter';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'GemStone Objects';
@@ -80,8 +87,28 @@ package!
 
 "Class Definitions"!
 
+Object subclass: #JadeAbstractHistoryEntry
+	instanceVariableNames: 'methodName className classCategory'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Object subclass: #JadeHistoryEntry
+	instanceVariableNames: 'isPackageSelected isHierarchySelected isClassSideSelected isCategoriesSelected packageOrDictionary classCategory className categoriesOrVariables methodName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 GsObject subclass: #GsMethod2
 	instanceVariableNames: 'gsClass category isTestCase'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeAbstractHistoryEntry subclass: #JadeMethodExplorerHistoryEntry
+	instanceVariableNames: 'treeSelection methodCategory gsMethod'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeAbstractHistoryEntry subclass: #JadeSystemBrowserHistoryEntry
+	instanceVariableNames: 'isPackageSelected isHierarchySelected isClassSideSelected isCategoriesSelected packageOrDictionary categoriesOrVariables'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -97,6 +124,11 @@ CodeSourcePresenter subclass: #MethodSourcePresenter
 	classInstanceVariableNames: ''!
 JadeBrowserPresenter subclass: #JadeMethodListPresenter
 	instanceVariableNames: 'methodListPresenter methodSourcePresenter searchBlock'
+	classVariableNames: 'JadeMethodBrowserPresenterClass'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeMethodListPresenter subclass: #JadeTreeMethodListPresenter
+	instanceVariableNames: 'treeMethodsPresenter treeMethodsMap historyEntries entriesIndex'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -157,12 +189,16 @@ stepPointsFor: aGsMethod
 
 browseImplementorsOf: aGsMethodOrString
 
+	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
+
 	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseImplementorsOf: aGsMethodOrString;
 		yourself.
 !
 
 browseSendersOf: aGsMethodOrString
+
+	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseSendersOf: aGsMethodOrString].
 
 	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseSendersOf: aGsMethodOrString;

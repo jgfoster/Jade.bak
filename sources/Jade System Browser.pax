@@ -209,7 +209,7 @@ JadeValueDialog subclass: #SUnitResultDialog
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeShell subclass: #JadeSystemBrowser
-	instanceVariableNames: 'cardsPresenter roundTripCount'
+	instanceVariableNames: 'cardsPresenter roundTripCount historyEntriesDictionary historyCurrentIndexDictionary'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

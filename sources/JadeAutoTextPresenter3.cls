@@ -5,7 +5,7 @@ JadeTextPresenter subclass: #JadeAutoTextPresenter3
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeAutoTextPresenter3 guid: (GUID fromString: '{40C6FC5C-2470-4EB8-8841-FD5CE72A4C7A}')!
+JadeAutoTextPresenter3 guid: (GUID fromString: '{40c6fc5c-2470-4eb8-8841-fd5ce72a4c7a}')!
 JadeAutoTextPresenter3 comment: ''!
 !JadeAutoTextPresenter3 categoriesForClass!Unclassified! !
 !JadeAutoTextPresenter3 methodsFor!
@@ -103,8 +103,8 @@ getBreakCharacters
 getClassInstancesVariables
 	| isClassSide |
 
-	(parentPresenter parentPresenter class == JadeMethodListPresenter) 
-	ifTrue: [| listBrowser className |
+	(parentPresenter parentPresenter isKindOf: JadeMethodListPresenter) ifTrue: [
+		| listBrowser className |
 		listBrowser := parentPresenter parentPresenter.
 		className := listBrowser selectedClass name subStrings: ' '.
 		 isClassSide := className last = 'class'.
@@ -187,20 +187,25 @@ getNamesForUnaryMessage
 
 getNameUpperIdentifier
 
-	(parentPresenter parentPresenter class == JadeMethodListPresenter)
-	ifTrue: [| listBrowser |
+	(parentPresenter parentPresenter isKindOf: JadeMethodListPresenter) ifTrue: [
+		| listBrowser |
 		listBrowser := parentPresenter parentPresenter.
-		currentGsShape := self registry getClass: listBrowser getSelectedClassName].
-
-	^(parentPresenter hasClassSideSelected ifFalse: [#()] ifTrue: [currentGsShape ifNotNil: [currentGsShape getClassVariableAndPoolDictionaryLike: currentText] ifNil: [#()]]), 
-		(self registry getClassesNamedWith: currentText) asSortedCollection!
+		currentGsShape := self registry getClass: listBrowser getSelectedClassName.
+	].
+	^(parentPresenter hasClassSideSelected 
+		ifFalse: [#()] 
+		ifTrue: [currentGsShape 
+			ifNotNil: [currentGsShape getClassVariableAndPoolDictionaryLike: currentText] 
+			ifNil: [#()]]), 
+	(self registry getClassesNamedWith: currentText) asSortedCollection!
 
 getSelectedGsShape
 
-	(self topShell class == JadeTranscript) ifTrue: [^nil].
-	(self topShell class == JadeMethodListBrowser) ifTrue: [^nil].
-	(self topShell class == JadeInspector) ifTrue: [^nil "self registry getClass: inspected object class"].
-	(self topShell class == JadeDebugger) ifTrue: [^nil].
+	(self topShell class name == #'JadeTranscript') ifTrue: [^nil].
+	(self topShell class name == #'JadeMethodListBrowser') ifTrue: [^nil].
+	(self topShell isKindOf: JadeInspector) ifTrue: [^nil "self registry getClass: inspected object class"].
+	(self topShell class name == #'JadeDebugger') ifTrue: [^nil].
+	(self topShell class == JadeWorkspace) ifTrue: [^nil].
 
 	^self registry getClass: parentPresenter getClassName!
 

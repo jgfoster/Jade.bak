@@ -14,7 +14,8 @@ onViewOpened
 
 	super onViewOpened.
 	codePane setDocumentPresenterWith: (self registry getClass: 'Object').
-!
+
+	"documentPresenter view styler: JadeExpressionStyler new."!
 
 updateCaption
 
