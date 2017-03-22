@@ -99,7 +99,7 @@ inspectVariable
 
 	| object |
 	object := gciSession oopTypeWithOop: variableListPresenter selection key key asNumber.
-	JadeInspector defaultInspectorClass showOn: object session: gciSession.
+	JadeInspector showOn: object session: gciSession.
 !
 
 onViewClosed

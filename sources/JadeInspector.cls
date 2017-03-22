@@ -219,10 +219,18 @@ setNormalInspector
 
 showOn: anObject session: aGciSession
 
-	^self new 
+	| class view |
+	(anObject isKindOf: ExternalInteger) ifTrue: [	"OopType"
+		class := self defaultInspectorClass.
+		view := self defaultView.
+	] ifFalse: [	"Special object (Boolean, SmallInteger, Character, etc."
+		class := JadeInspector.
+		view := 'Special view'.
+	].
+	^class new 
 		gciSession: aGciSession;
 		model: anObject;
-		createView: ((anObject isKindOf: ExternalInteger "OopType") ifTrue: [self defaultView] ifFalse: ['Special view']);
+		createView: view;
 		showShell;
 		yourself.
 ! !
