@@ -41,6 +41,16 @@ basicCaption
 	^'Jade Login'.
 !
 
+checkScintillaVersion
+
+	| expected actual |
+	expected := ScintillaLibrary versionString.
+	actual := ScintillaLibrary versionInfo productVersionString.
+	expected = actual ifTrue: [^self].
+	MessageBox warning: 'SciLexer.dll is version ' , actual , ' and we expected ' , expected , '
+Please consider downloading the latest product package!!'
+!
+
 createComponents
 
 	super createComponents.
@@ -269,6 +279,7 @@ onViewOpened
 		fillVersionList;
 		updateView;
 		sendRequiredMessages;
+		checkScintillaVersion;
 		yourself.
 !
 
@@ -433,6 +444,7 @@ updateView
 ! !
 !JadeLoginShell categoriesFor: #aboutJade!public! !
 !JadeLoginShell categoriesFor: #basicCaption!accessing!public! !
+!JadeLoginShell categoriesFor: #checkScintillaVersion!public! !
 !JadeLoginShell categoriesFor: #createComponents!public! !
 !JadeLoginShell categoriesFor: #createSchematicWiring!public! !
 !JadeLoginShell categoriesFor: #debugGCI!commands!public! !
