@@ -2496,7 +2496,7 @@ updateClassCategoryTree
 		0 to: newSelection size do: [:i | 
 			| key |
 			key := newSelection copyFrom: 1 to: i.
-			item := items detect: [:each | each key = key].
+			item := items detect: [:each | each key = key] ifNone: [nil].
 			classCategoryPresenter expand: item.
 		].
 		classCategoryPresenter selection: item.

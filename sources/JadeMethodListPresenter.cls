@@ -256,8 +256,8 @@ updateSource
 				session: gsMethod2 gciSession.
 		].
 	].
-	methodSourcePresenter gsMethod: gsMethod.
-	self doSearch.
+	gsMethod ifNotNil: [methodSourcePresenter gsMethod: gsMethod.
+					self doSearch].
 
 	methodListPresenter selectedMethod ifNil: [^self].
 	methodSourcePresenter documentPresenter lastGsShape: (self registry getClass: methodListPresenter selectedMethod gsClass name).! !
