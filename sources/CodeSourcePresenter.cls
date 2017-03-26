@@ -241,6 +241,9 @@ menuTitle: aString
 mySave
 !
 
+pasteClipboard
+	^self editPaste!
+
 queryCommand: query
 
 	(#(#'fileSave') includes: query commandSymbol) ifTrue: [
@@ -445,6 +448,7 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #jadeExecuteAndDisplay:!Jade!private! !
 !CodeSourcePresenter categoriesFor: #menuTitle:!menus!public! !
 !CodeSourcePresenter categoriesFor: #mySave!private! !
+!CodeSourcePresenter categoriesFor: #pasteClipboard!public! !
 !CodeSourcePresenter categoriesFor: #queryCommand:!public! !
 !CodeSourcePresenter categoriesFor: #removeMenu!menus!public! !
 !CodeSourcePresenter categoriesFor: #removeQuotesFromSelection!edit!private! !
