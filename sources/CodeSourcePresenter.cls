@@ -97,6 +97,9 @@ currentSelector
 	]
 !
 
+cutSelection
+	^self editCut!
+
 documentPresenter
 
 	^documentPresenter!
@@ -403,7 +406,7 @@ textStyles
 
 undo
 
-	self halt!
+	documentPresenter view undo!
 
 update
 
@@ -429,6 +432,7 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #copySelection!edit!private! !
 !CodeSourcePresenter categoriesFor: #currentSelectionOrLine!Jade!private! !
 !CodeSourcePresenter categoriesFor: #currentSelector!public! !
+!CodeSourcePresenter categoriesFor: #cutSelection!public! !
 !CodeSourcePresenter categoriesFor: #documentPresenter!public! !
 !CodeSourcePresenter categoriesFor: #editCut!edit!private! !
 !CodeSourcePresenter categoriesFor: #editDelete!edit!private! !

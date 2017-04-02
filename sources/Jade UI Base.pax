@@ -3,7 +3,7 @@ package := Package name: 'Jade UI Base'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.044'.
+package basicPackageVersion: '0.046'.
 
 package basicScriptAt: #postinstall put: 'JadeTextStyles default resetColors.'.
 
