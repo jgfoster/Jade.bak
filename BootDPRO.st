@@ -4,6 +4,7 @@ SessionManager current splashShowAtStartup: false.
 SmalltalkSystemShell allInstances first 
 	position: 20@50;
 	yourself.
+ClassBrowserAbstract allSubclasses do: [:each | each plugins add: DebugInfoPlugin].
 IdeaSpaceShell show
 	absorbCard: SmalltalkWorkspaceDocument show;
 	absorbCard: SystemBrowserShell show;
