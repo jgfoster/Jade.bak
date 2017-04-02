@@ -305,6 +305,10 @@ getJadeShellViewName
 	ifTrue: ['List view']
 	ifFalse: ['Tree view']!
 
+isTreeBrowser
+
+	^JadeMethodBrowserPresenterClass == JadeTreeMethodListPresenter!
+
 resource_Default_view
 	"Answer the literal data from which the 'Default view' resource can be reconstituted.
 	DO NOT EDIT OR RECATEGORIZE THIS METHOD.
@@ -328,6 +332,7 @@ setTreeView
 	self setJadeMethodBrowserPresenterClass: JadeTreeMethodListPresenter! !
 !JadeMethodListPresenter class categoriesFor: #getJadeMethodBrowserPresenterClass!public! !
 !JadeMethodListPresenter class categoriesFor: #getJadeShellViewName!public! !
+!JadeMethodListPresenter class categoriesFor: #isTreeBrowser!public! !
 !JadeMethodListPresenter class categoriesFor: #resource_Default_view!public!resources-views! !
 !JadeMethodListPresenter class categoriesFor: #setJadeMethodBrowserPresenterClass:!public! !
 !JadeMethodListPresenter class categoriesFor: #setListView!public! !

@@ -3,7 +3,7 @@ package := Package name: 'Jade Transcript'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.057'.
+package basicPackageVersion: '0.041'.
 
 
 package classNames
@@ -49,6 +49,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade Inspector';
 	add: 'Jade Method Browser';
 	add: 'Jade UI Base';
+	add: 'Jade User Preferences';
 	yourself).
 
 package!

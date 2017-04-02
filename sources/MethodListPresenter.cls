@@ -53,7 +53,7 @@ browseSenders
 
 	"super browseImplementorsOf: methodListPresenter selection."
 
-	parentPresenter browseImplementorsOf: methodListPresenter selection
+	parentPresenter browseSendersOf: methodListPresenter selection
 !
 
 browseSendersOf
