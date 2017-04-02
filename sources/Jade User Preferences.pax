@@ -3,9 +3,11 @@ package := Package name: 'Jade User Preferences'.
 package paxVersion: 1;
 	basicComment: ''.
 
+package basicPackageVersion: '0.001'.
+
 
 package classNames
-	add: #JadeUserPreferences;
+	add: #JadeUserPreferencesPresenter;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -22,7 +24,7 @@ package!
 
 "Class Definitions"!
 
-JadePresenterA subclass: #JadeUserPreferences
+JadePresenterA subclass: #JadeUserPreferencesPresenter
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
