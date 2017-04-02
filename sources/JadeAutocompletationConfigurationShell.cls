@@ -11,15 +11,21 @@ JadeAutocompletationConfigurationShell comment: ''!
 !JadeAutocompletationConfigurationShell methodsFor!
 
 createComponents
+
 	super createComponents.
-
-	configurationComposite := self add: JadeAutocompletationConfigurationPresenter new name: 'referee'.
-
-	registryComposite := self add: JadeRegistryPresenter new name: 'registryReferee'.
-
-	mapingComposite := self add: JadeMapAutocompletationPresenter new  name: 'mappingReferee'.
-
-	paramComposite := self add: JadeParamAutocompletationPresenter new name: 'paramReferee'.!
+	configurationComposite := self
+				add: JadeAutocompletationFilterOptionsPresenter new
+				name: 'referee'.
+	registryComposite := self
+				add: JadeRegistryPresenter new
+				name: 'registryReferee'.
+	mapingComposite := self
+				add: JadeMapAutocompletationPresenter new
+				name: 'mappingReferee'.
+	paramComposite := self
+				add: JadeParamAutocompletationPresenter new
+				name: 'paramReferee'.
+!
 
 model: anObject
 
@@ -41,7 +47,7 @@ registry
 
 icon
 
-	^Icon fromFile: 'icons\GS32x32.ico'.
+	^Icon fromFile: 'icons\GS128.ico'.
 !
 
 resource_Default_view

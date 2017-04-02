@@ -1,0 +1,37 @@
+| package |
+package := Package name: 'Jade User Preferences'.
+package paxVersion: 1;
+	basicComment: ''.
+
+
+package classNames
+	add: #JadeUserPreferences;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: 'Jade UI Base';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+JadePresenterA subclass: #JadeUserPreferences
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+"End of package definition"!
+

@@ -3,13 +3,13 @@ package := Package name: 'Jade Autocompletation'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.051'.
+package basicPackageVersion: '0.054'.
 
 
 package classNames
 	add: #JadeAutocompletationConfiguration;
-	add: #JadeAutocompletationConfigurationPresenter;
 	add: #JadeAutocompletationConfigurationShell;
+	add: #JadeAutocompletationFilterOptionsPresenter;
 	add: #JadeAutocompletationRegistry;
 	add: #JadeAutoMap;
 	add: #JadeAutoTextPresenter;
@@ -87,7 +87,7 @@ JadePresenter subclass: #JadeMaximizedCodePresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadePresenterA subclass: #JadeAutocompletationConfigurationPresenter
+JadePresenterA subclass: #JadeAutocompletationFilterOptionsPresenter
 	instanceVariableNames: 'isEnabledPresenter logEnabledPresenter filterObjectPresenter filterPrimitivePresenter hideClassVarPresenter hideInstClassVarPresenter hidePoolDictionariesPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
