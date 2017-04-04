@@ -7,6 +7,7 @@ SmalltalkSystemShell allInstances first
 ClassBrowserAbstract allSubclasses do: [:each | each plugins add: DebugInfoPlugin].
 IdeaSpaceShell show
 	absorbCard: SmalltalkWorkspaceDocument show;
+	absorbCard: PackageBrowserShell show;
 	absorbCard: SystemBrowserShell show;
 	position: 50@80; extent: 1200@700;
 	yourself.

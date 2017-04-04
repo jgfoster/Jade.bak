@@ -279,9 +279,8 @@ onViewOpened
 		fillVersionList;
 		updateView;
 		sendRequiredMessages;
-		checkScintillaVersion;
 		yourself.
-!
+	[self checkScintillaVersion] postToMessageQueue.!
 
 openHomePage
 
@@ -290,19 +289,9 @@ openHomePage
 		directory: ''.
 !
 
-openScintillaLibrary
-
-	ScintillaLibrary default isNil ifTrue: [
-		ScintillaLibrary open: SessionManager current imageBase , 'bin\SciLexer.dll'.
-	].
-!
-
 postLogin: aGciSession
 
-	self 
-		openScintillaLibrary;
-		setWorkingDirectory;
-		yourself.
+	self setWorkingDirectory.
 	JadeTranscript showOnSession: aGciSession.
 !
 
@@ -469,7 +458,6 @@ updateView
 !JadeLoginShell categoriesFor: #onViewClosed!public! !
 !JadeLoginShell categoriesFor: #onViewOpened!public! !
 !JadeLoginShell categoriesFor: #openHomePage!public! !
-!JadeLoginShell categoriesFor: #openScintillaLibrary!public! !
 !JadeLoginShell categoriesFor: #postLogin:!public! !
 !JadeLoginShell categoriesFor: #queryCommand:!public! !
 !JadeLoginShell categoriesFor: #saveDocument!public! !

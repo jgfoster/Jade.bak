@@ -56,7 +56,8 @@ mainShellClass
 
 sessionStarted
 
-	GciLibrary sessionStarted!
+	ScintillaLibrary open: 'bin\SciLexer.dll'.
+	GciLibrary sessionStarted.!
 
 setVersion
 

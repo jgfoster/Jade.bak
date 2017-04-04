@@ -377,7 +377,6 @@ initialize
 
 	super initialize.
 	semaphore := Semaphore forMutualExclusion.
-	self class sessionStarted.
 	self gciInit ifFalse: [self error: 'GciInit() failed!!'].
 !
 
