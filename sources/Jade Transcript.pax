@@ -71,7 +71,7 @@ CodeSourcePresenter subclass: #TranscriptPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeWorkspace subclass: #JadeTranscript
-	instanceVariableNames: 'allSessionsPresenter mySessionPresenter toolbarPresenter transcriptPresenter'
+	instanceVariableNames: 'allSessionsPresenter historyPresenter mySessionPresenter toolbarPresenter transcriptPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
