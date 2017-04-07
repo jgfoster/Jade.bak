@@ -1,0 +1,52 @@
+| package |
+package := Package name: 'Jade User Preferences'.
+package paxVersion: 1;
+	basicComment: ''.
+
+package basicPackageVersion: '0.004'.
+
+
+package classNames
+	add: #JadeUserPreferencesPresenter;
+	add: #JadeUserPreferencesShell;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Radio\Dolphin Radio Buttons';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'Jade Method Browser';
+	add: 'Jade UI Base';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+JadePresenterA subclass: #JadeUserPreferencesPresenter
+	instanceVariableNames: 'normalExplorerPresenter treeExplorerPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeShell subclass: #JadeUserPreferencesShell
+	instanceVariableNames: 'userPreferencesComposite'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+"End of package definition"!
+
