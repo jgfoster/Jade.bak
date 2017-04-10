@@ -17,6 +17,7 @@ package methodNames
 	add: #JadeServer -> #addSessionWithId:toStream:;
 	add: #JadeServer -> #allSessions;
 	add: #JadeServer -> #descriptionOfErrorNumber:;
+	add: #JadeServer -> #mySessionInfo;
 	add: #JadeServer -> #sendSigAbortToSession:;
 	add: #JadeServer -> #sendSigUsr1ToSession:;
 	add: #JadeServer -> #sleepAndCommit;
@@ -61,7 +62,7 @@ JadePresenterA subclass: #AllSessionsPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #MySessionPresenter
-	instanceVariableNames: 'gciSessionIdPresenter gciVersionPresenter gemHostPresenter gemTypePresenter netPortPresenter netTaskPresenter stoneHostPresenter stoneNamePresenter stoneSerialPresenter stoneSessionIDPresenter userIDPresenter'
+	instanceVariableNames: 'configurationReportPresenter gciSessionIdPresenter gciVersionPresenter gemHostPresenter gemTypePresenter logPathPresenter netPortPresenter netTaskPresenter stoneHostPresenter stoneNamePresenter stoneSerialPresenter stoneSessionIDPresenter userIDPresenter versionReportPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -176,6 +177,23 @@ descriptionOfErrorNumber: anInteger
 	^stream contents.
 !
 
+mySessionInfo
+
+	| dict stream |
+	stream := WriteStream on: String new.
+	stream nextPutAll: System gemLogPath; cr.
+	dict := System gemVersionReport.
+	dict keys asSortedCollection do: [:each | 
+		stream nextPutAll: each; tab; nextPutAll: (dict at: each) asString; cr.
+	].
+	stream nextPut: $%; cr.
+	dict := System gemConfigurationReport.
+	dict keys asSortedCollection do: [:each | 
+		stream nextPutAll: each; tab; nextPutAll: (dict at: each) asString; cr.
+	].
+	stream nextPut: $%; cr.
+	^stream contents!
+
 sendSigAbortToSession: anInteger
 
 	System sendSigAbortToSession: anInteger negated.
@@ -206,6 +224,7 @@ stopSession: anInteger
 !JadeServer categoriesFor: #addSessionWithId:toStream:!private!Sessions! !
 !JadeServer categoriesFor: #allSessions!public!Sessions! !
 !JadeServer categoriesFor: #descriptionOfErrorNumber:!public!Sessions! !
+!JadeServer categoriesFor: #mySessionInfo!public!Transcript! !
 !JadeServer categoriesFor: #sendSigAbortToSession:!public!Sessions! !
 !JadeServer categoriesFor: #sendSigUsr1ToSession:!public!Sessions! !
 !JadeServer categoriesFor: #sleepAndCommit!public!Transcript! !

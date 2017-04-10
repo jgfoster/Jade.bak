@@ -42,7 +42,8 @@ currentCardChanged
 	currentCard := (self view viewNamed: 'cardContainer') currentCard.
 	(currentCard isKindOf: TextEdit) 	ifTrue: [currentCard setFocus].
 	(currentCard name = 'codePane')		ifTrue: [[(currentCard viewNamed: 'document') setFocus] postToInputQueue. ^self].
-	(currentCard name = 'history')		ifTrue: [historyPresenter value isEmpty ifTrue: [historyPresenter value: (gciSession executeString: 'DbfHistory')]. ^self].!
+	(currentCard name = 'history')		ifTrue: [historyPresenter value isEmpty ifTrue: [historyPresenter value: (gciSession executeString: 'DbfHistory')]. ^self].
+	(currentCard name = 'My Session')	ifTrue: [mySessionPresenter fillSessionInfo. ^self].!
 
 describeErrorNumber
 
