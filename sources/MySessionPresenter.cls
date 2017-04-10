@@ -20,6 +20,16 @@ commitTransaction
 	parentPresenter commitTransaction.
 !
 
+configDetailsFor: aPresenter
+
+	| line string |
+	line := aPresenter selection.	string := gciSession serverPerform: #'descriptionOfConfigOption:' with: line first.
+	string := string , 'System gemConfigurationAt: #' , (line at: 1) , ' "' , (line at: 2) , '"'.
+	(JadeWorkspace showOnSession: gciSession)
+		model: string;
+		isModified: false;
+		yourself.!
+
 createComponents
 
 	super createComponents.
@@ -42,15 +52,9 @@ createComponents
 createSchematicWiring
 
 	super createSchematicWiring.
-	versionReportPresenter 		when: #'actionPerformed' send: #'detailsFor:' to: self with: versionReportPresenter.
-	configurationReportPresenter 	when: #'actionPerformed' send: #'detailsFor:' to: self with: configurationReportPresenter.
+	configurationReportPresenter 	when: #'actionPerformed' send: #'configDetailsFor:' 	to: self with: configurationReportPresenter.
+	versionReportPresenter 		when: #'actionPerformed' send: #'versionDetailsFor:' 	to: self with: versionReportPresenter.
 !
-
-detailsFor: aPresenter
-
-	| line |
-	line := aPresenter selection.
-	MessageBox notify: line first , '->' , line last.!
 
 fillSessionInfo
 
@@ -96,15 +100,25 @@ hardBreak
 softBreak
 
 	gciSession softBreak.
-! !
+!
+
+versionDetailsFor: aPresenter
+
+	| line string |
+	line := aPresenter selection.	string := 'System gemVersionAt: #' , (line at: 1) , ' "' , (line at: 2) , '"'.
+	(JadeWorkspace showOnSession: gciSession)
+		model: string;
+		isModified: false;
+		yourself.! !
 !MySessionPresenter categoriesFor: #abortTransaction!public! !
 !MySessionPresenter categoriesFor: #commitTransaction!public! !
+!MySessionPresenter categoriesFor: #configDetailsFor:!public! !
 !MySessionPresenter categoriesFor: #createComponents!public! !
 !MySessionPresenter categoriesFor: #createSchematicWiring!public! !
-!MySessionPresenter categoriesFor: #detailsFor:!public! !
 !MySessionPresenter categoriesFor: #fillSessionInfo!public!updating! !
 !MySessionPresenter categoriesFor: #hardBreak!public! !
 !MySessionPresenter categoriesFor: #softBreak!public! !
+!MySessionPresenter categoriesFor: #versionDetailsFor:!public! !
 
 !MySessionPresenter class methodsFor!
 

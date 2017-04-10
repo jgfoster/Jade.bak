@@ -10,18 +10,22 @@ package classNames
 	add: #AllSessionsPresenter;
 	add: #JadeTranscript;
 	add: #MySessionPresenter;
+	add: #StoneInfoPresenter;
 	add: #TranscriptPresenter;
 	yourself.
 
 package methodNames
 	add: #JadeServer -> #addSessionWithId:toStream:;
 	add: #JadeServer -> #allSessions;
+	add: #JadeServer -> #descriptionOfConfigOption:;
 	add: #JadeServer -> #descriptionOfErrorNumber:;
 	add: #JadeServer -> #mySessionInfo;
 	add: #JadeServer -> #sendSigAbortToSession:;
 	add: #JadeServer -> #sendSigUsr1ToSession:;
 	add: #JadeServer -> #sleepAndCommit;
+	add: #JadeServer -> #stoneInfo;
 	add: #JadeServer -> #stopSession:;
+	add: #JadeServer -> #systemConfigAsDictionary;
 	add: #JadeServer32bit -> #addSessionWithId:toStream:;
 	add: #JadeServer64bit -> #addSessionWithId:toStream:;
 	yourself.
@@ -45,6 +49,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'GemStone Objects';
+	add: 'GemStone Services';
 	add: 'GemStone Session';
 	add: 'Jade Autocompletation';
 	add: 'Jade Inspector';
@@ -66,13 +71,18 @@ JadePresenterA subclass: #MySessionPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadePresenterA subclass: #StoneInfoPresenter
+	instanceVariableNames: 'configurationReportPresenter versionReportPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 CodeSourcePresenter subclass: #TranscriptPresenter
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeWorkspace subclass: #JadeTranscript
-	instanceVariableNames: 'allSessionsPresenter historyPresenter mySessionPresenter toolbarPresenter transcriptPresenter'
+	instanceVariableNames: 'allSessionsPresenter historyPresenter mySessionPresenter stoneInfoPresenter toolbarPresenter transcriptPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -156,6 +166,17 @@ allSessions
 		contents.
 !
 
+descriptionOfConfigOption: aString
+
+	| dict key string |
+	dict := self systemConfigAsDictionary.
+	(string := dict at: aString ifAbsent: [nil]) notNil ifTrue: [^string].	string := aString asUppercase.
+	dict keys do: [:each | 
+		key := (each reject: [:each | each = $_]) asUppercase.
+		key = string ifTrue: [^dict at: each].
+	].
+	^''!
+
 descriptionOfErrorNumber: anInteger
 
 	| array stream |
@@ -217,18 +238,72 @@ sleepAndCommit
 	].
 !
 
+stoneInfo
+
+	| dict stream |
+	stream := WriteStream on: String new.
+	dict := System stoneVersionReport.
+	dict keys asSortedCollection do: [:each | 
+		stream nextPutAll: each; tab; nextPutAll: (dict at: each) asString; cr.
+	].
+	stream nextPut: $%; cr.
+	dict := System stoneConfigurationReport.
+	dict keys asSortedCollection do: [:each | 
+		stream nextPutAll: each; tab; nextPutAll: (dict at: each) asString; cr.
+	].
+	stream nextPut: $%; cr.
+	^stream contents!
+
 stopSession: anInteger
 
 	System stopSession: anInteger.
-! !
+!
+
+systemConfigAsDictionary
+
+	| char dict i line list stream |
+	list := Array new.
+	stream := FileStream read: '$GEMSTONE/data/system.conf'.
+	[
+		[
+			line := stream nextLine reject: [:each | each == Character cr or: [each == Character lf]].
+			(2 < line size and: [(line copyFrom: 1 to: 2) = '#=']) ifTrue: [
+				list add: (WriteStream on: String new).
+			] ifFalse: [
+				list last nextPutAll: line; cr.
+			].
+			stream atEnd not.
+		] whileTrue: [].
+	] ensure: [
+		stream close.
+	].
+	list := list copyFrom: 3 to: list size.
+	list := list collect: [:each | each contents].
+	dict := Dictionary new.
+	list do: [:each | 
+		line := (ReadStream on: each) nextLine.
+		line = '# End of Default GemStone Configuration Options' ifTrue: [^dict].
+		(line copyFrom: 1 to: 2) = '# ' ifFalse: [line error: 'Unrecognized config file format!!'].
+		i := 3.
+		[
+			i <= line size and: [(char := line at: i) == $_ or: [char isAlphaNumeric]].
+		] whileTrue: [
+			i := i + 1.
+		].
+		dict at: (line copyFrom: 3 to: i - 1) put: each.
+	].
+	self error: 'End of file not recognized!!'.! !
 !JadeServer categoriesFor: #addSessionWithId:toStream:!private!Sessions! !
 !JadeServer categoriesFor: #allSessions!public!Sessions! !
+!JadeServer categoriesFor: #descriptionOfConfigOption:!public!Transcript! !
 !JadeServer categoriesFor: #descriptionOfErrorNumber:!public!Sessions! !
 !JadeServer categoriesFor: #mySessionInfo!public!Transcript! !
 !JadeServer categoriesFor: #sendSigAbortToSession:!public!Sessions! !
 !JadeServer categoriesFor: #sendSigUsr1ToSession:!public!Sessions! !
 !JadeServer categoriesFor: #sleepAndCommit!public!Transcript! !
+!JadeServer categoriesFor: #stoneInfo!public!Transcript! !
 !JadeServer categoriesFor: #stopSession:!public!Sessions! !
+!JadeServer categoriesFor: #systemConfigAsDictionary!public!Transcript! !
 
 !JadeServer32bit methodsFor!
 
