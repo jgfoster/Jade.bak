@@ -30,6 +30,7 @@ package methodNames
 	add: #JadeServer -> #systemConfigAsDictionary;
 	add: #JadeServer32bit -> #addSessionWithId:toStream:;
 	add: #JadeServer64bit -> #addSessionWithId:toStream:;
+	add: #JadeServer64bit -> #metacelloConfigurations;
 	add: #JadeServer64bit -> #streamType;
 	add: #JadeServer64bit -> #stringType;
 	yourself.
@@ -351,6 +352,20 @@ addSessionWithId: anInteger toStream: aStream
 	].
 !
 
+metacelloConfigurations
+
+	| list |
+	list := Array new.
+	GsSession currentSession symbolList do: [:eachSymbolList | 
+		eachSymbolList do: [:eachGlobal | 
+			(eachGlobal isBehavior and: [
+			(eachGlobal class includesSelector: #'isMetacelloConfig') and: [
+			eachGlobal isMetacelloConfig]]) ifTrue: [list add: eachGlobal].
+		].
+	].
+	^list
+!
+
 streamType
 
 	| isLegacy type |
@@ -366,6 +381,7 @@ stringType
 	^(Globals at: #StringConfiguration ifAbsent: [String]) name
 ! !
 !JadeServer64bit categoriesFor: #addSessionWithId:toStream:!public!Sessions! !
+!JadeServer64bit categoriesFor: #metacelloConfigurations!public!Transcript! !
 !JadeServer64bit categoriesFor: #streamType!public!Transcript! !
 !JadeServer64bit categoriesFor: #stringType!public!Transcript! !
 
