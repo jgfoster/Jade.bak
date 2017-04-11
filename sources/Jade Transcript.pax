@@ -271,17 +271,17 @@ stopSession: anInteger
 
 streamType
 
-	^'legacy'!
+	^'Legacy'!
 
 stringType
 
-	^'string'!
+	^'String'!
 
 systemConfigAsDictionary
 
 	| char dict i line list stream |
 	list := Array new.
-	stream := FileStream read: '$GEMSTONE/data/system.conf'.
+	stream := GsFile openReadOnServer: '$GEMSTONE/data/system.conf'.
 	[
 		[
 			line := stream nextLine reject: [:each | each == Character cr or: [each == Character lf]].
