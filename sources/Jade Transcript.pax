@@ -25,9 +25,13 @@ package methodNames
 	add: #JadeServer -> #sleepAndCommit;
 	add: #JadeServer -> #stoneInfo;
 	add: #JadeServer -> #stopSession:;
+	add: #JadeServer -> #streamType;
+	add: #JadeServer -> #stringType;
 	add: #JadeServer -> #systemConfigAsDictionary;
 	add: #JadeServer32bit -> #addSessionWithId:toStream:;
 	add: #JadeServer64bit -> #addSessionWithId:toStream:;
+	add: #JadeServer64bit -> #streamType;
+	add: #JadeServer64bit -> #stringType;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -45,6 +49,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
+	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Radio\Dolphin Radio Buttons';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
@@ -72,7 +77,7 @@ JadePresenterA subclass: #MySessionPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #StoneInfoPresenter
-	instanceVariableNames: 'configurationReportPresenter versionReportPresenter'
+	instanceVariableNames: 'configurationReportPresenter streamTypePresenter stringTypePresenter versionReportPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -241,7 +246,11 @@ sleepAndCommit
 stoneInfo
 
 	| dict stream |
-	stream := WriteStream on: String new.
+	stream := (WriteStream on: String new)
+		nextPutAll: self streamType; tab;
+		nextPutAll: self stringType; tab;
+		cr;
+		yourself.
 	dict := System stoneVersionReport.
 	dict keys asSortedCollection do: [:each | 
 		stream nextPutAll: each; tab; nextPutAll: (dict at: each) asString; cr.
@@ -258,6 +267,14 @@ stopSession: anInteger
 
 	System stopSession: anInteger.
 !
+
+streamType
+
+	^'legacy'!
+
+stringType
+
+	^'string'!
 
 systemConfigAsDictionary
 
@@ -303,6 +320,8 @@ systemConfigAsDictionary
 !JadeServer categoriesFor: #sleepAndCommit!public!Transcript! !
 !JadeServer categoriesFor: #stoneInfo!public!Transcript! !
 !JadeServer categoriesFor: #stopSession:!public!Sessions! !
+!JadeServer categoriesFor: #streamType!public!Transcript! !
+!JadeServer categoriesFor: #stringType!public!Transcript! !
 !JadeServer categoriesFor: #systemConfigAsDictionary!public!Transcript! !
 
 !JadeServer32bit methodsFor!
@@ -330,8 +349,25 @@ addSessionWithId: anInteger toStream: aStream
 	] on: Error do: [:ex | 
 		ex resume: '?????'.
 	].
+!
+
+streamType
+
+	| isLegacy type |
+	type := Globals at: #'PositionableStream_position' ifAbsent: ['Legacy'].
+	(Globals includesKey: #'PositionableStreamLegacy') ifFalse: [^type].
+	isLegacy := PositionableStream isLegacyStreamImplementation.
+	(type = 'Legacy') == isLegacy ifTrue: [^type].
+	self error: 'Inconsistent PositionableStream configuration'.
+!
+
+stringType
+
+	^(Globals at: #StringConfiguration ifAbsent: [String]) name
 ! !
 !JadeServer64bit categoriesFor: #addSessionWithId:toStream:!public!Sessions! !
+!JadeServer64bit categoriesFor: #streamType!public!Transcript! !
+!JadeServer64bit categoriesFor: #stringType!public!Transcript! !
 
 "End of package definition"!
 
