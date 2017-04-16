@@ -16,69 +16,62 @@ addDirectoryRepository
 	path := BrowseFolderDialog new 
 		title: 'Please select a Monticello folder';
 		showModal.
-	path isNil ifTrue: [^self].
-	gciSession
+	path isNil ifTrue: [^nil].
+	^gciSession
 		serverPerform: #'mcNewDirectoryRepository:' 
-		with: path.
-	self updateRepositoryList.
-!
+		with: path!
 
 addFileTreeRepository
 
 	| path |
-	(path := Prompter prompt: 'Enter server path:') isNil ifTrue: [^self].
-	gciSession
+	(path := Prompter prompt: 'Enter server path:') isNil ifTrue: [^nil].
+	^gciSession
 		serverPerform: #'mcNewFileTreeRepository:' 
-		with: path.
-	self updateRepositoryList.
-!
+		with: path!
 
 addGitHubRepository
 
 	| path |
-	(path := Prompter prompt: 'Enter location (e.g., ''github://glassdb/zinc:gemstone3.1/repository''):') isNil ifTrue: [^self].
-	gciSession
+	(path := Prompter prompt: 'Enter location (e.g., ''github://glassdb/zinc:gemstone3.1/repository''):') isNil ifTrue: [^nil].
+	^gciSession
 		serverPerform: #'mcNewGitHubRepository:' 
-		with: path.
-	self updateRepositoryList.
-!
+		with: path!
 
 addHttpRepository
 
 	| info string delimiter |
-	(info := MCHttpRepositoryInfoDialog showModalOn: MCHttpRepositoryInfo new) isNil ifTrue: [^self].
+	(info := MCHttpRepositoryInfoDialog showModalOn: MCHttpRepositoryInfo new) isNil ifTrue: [^nil].
 	delimiter := (Character codePoint: 255) asString.
 	string := info location , delimiter , info user , delimiter , info password.
-	gciSession
+	^gciSession
 		serverPerform: #'mcAddHttpRepository:' 
-		with: string.
-	self updateRepositoryList.
-!
+		with: string!
 
 addRepository
 
-	| type |
+	| repository type |
 	type := ChoicePrompter
 		choices: #(#'HTTP' #'Client Directory' #'Server Directory' #'Server Directory with FileTree' #'Server Directory with GitHub' ) 
 		caption: 'Choose Repository Type'.
 	type isNil ifTrue: [^self].
-	type = #'HTTP' ifTrue: [^self addHttpRepository].
-	type = #'Client Directory' ifTrue: [^self addDirectoryRepository].
-	type = #'Server Directory' ifTrue: [^self addServerDirectoryRepository].
-	type = #'Server Directory with FileTree' ifTrue: [^self addFileTreeRepository].
-	type = #'Server Directory with GitHub' ifTrue: [^self addGitHubRepository].
-	self error: 'Unrecognized repository type: ' , type printString.
+	repository := type = #'HTTP' ifTrue: [self addHttpRepository] ifFalse: [
+		type = #'Client Directory' ifTrue: [self addDirectoryRepository] ifFalse: [
+		type = #'Server Directory' ifTrue: [self addServerDirectoryRepository] ifFalse: [
+		type = #'Server Directory with FileTree' ifTrue: [self addFileTreeRepository] ifFalse: [
+		type = #'Server Directory with GitHub' ifTrue: [self addGitHubRepository] ifFalse: [
+		self error: 'Unrecognized repository type: ' , type printString]]]]].
+	self updateRepositoryListAndSelect: repository.
+
+
 !
 
 addServerDirectoryRepository
 
 	| path |
-	(path := Prompter prompt: 'Enter server path:') isNil ifTrue: [^self].
-	gciSession
+	(path := Prompter prompt: 'Enter server path:') isNil ifTrue: [^nil].
+	^gciSession
 		serverPerform: #'mcNewServerDirectoryRepository:' 
-		with: path.
-	self updateRepositoryList.
-!
+		with: path!
 
 compareVersion
 
@@ -211,7 +204,7 @@ onViewOpened
 	super onViewOpened.
 	self 
 		getLoadedVersionNames;
-		updateRepositoryList;
+		updateRepositoryListAndSelect: nil;
 		yourself.
 !
 
@@ -239,7 +232,7 @@ removeRepository
 	gciSession
 		serverPerform: #'mcRemoveRepository:'
 		with: repository.
-	self updateRepositoryList.
+	self updateRepositoryListAndSelect: nil.
 !
 
 saveAsTopazFileIn
@@ -276,17 +269,18 @@ shellName
 
 updatePackageList
 
-	| repository list |
 	packageListPresenter list: #().
-	(repository := repositoryListPresenter selectionOrNil) ifNil: [^self].
-	list := repository packageList.
-	list do: [:each | 
-		each loaded: (loadedVersionNames 
-			at: each name
-			ifAbsent: [nil]).
+	(repositoryListPresenter selectionOrNil) ifNotNil: [:repository | 
+		| list |
+		list := repository packageList.
+		list do: [:each | 
+			each loaded: (loadedVersionNames 
+				at: each name
+				ifAbsent: [nil]).
+		].
+		packageListPresenter list: list.
 	].
-	packageListPresenter list: list.
-!
+	self updateVersionList.!
 
 updateRepositoryCreationTemplate
 
@@ -307,65 +301,72 @@ updateRepositoryCreationTemplate
 	repositoryCreationTemplatePresenter value: string.
 !
 
-updateRepositoryList
+updateRepositoryListAndSelect: anOopType
 
-	| list |
-	repositoryCreationTemplatePresenter view ensureVisible.
+	| list repository |
 	list := MCRepository allIn: gciSession.
 	repositoryListPresenter list: list asSortedCollection.
-!
+	anOopType ifNotNil: [
+		repository := list detect: [:each | each oopType = anOopType] ifNone: [nil].
+	].
+	repositoryListPresenter selectionOrNil: repository.
+	self updatePackageList.!
 
 updateVersionInfo
 
-	| repository package versionName version |
-	(self view viewNamed: 'versionInfo') ensureVisible.
-	versionNamePresenter 				value: ''.
-	versionDatePresenter 				value: ''.
-	versionTimePresenter 				value: ''.
-	versionAuthorPresenter 			value: ''.
-	versionIDPresenter 					value: ''.
-	versionAncestorsPresenter 		list: #().
+	| package versionName version |
+	repositoryCreationTemplatePresenter view ensureVisible.
+	versionNamePresenter 		value: ''.
+	versionDatePresenter 		value: ''.
+	versionTimePresenter 		value: ''.
+	versionAuthorPresenter 		value: ''.
+	versionIDPresenter 			value: ''.
+	versionAncestorsPresenter 	list: #().
 	versionStepChildrenPresenter 	list: #().
-	versionMessagePresenter 			value: ''.
-	(repository := repositoryListPresenter selectionOrNil) isNil ifTrue: [^self].
+	versionMessagePresenter 		value: ''.
+	(repositoryListPresenter selectionOrNil) isNil ifTrue: [^self].
 	(package := packageListPresenter selectionOrNil) isNil ifTrue: [^self].
 	(versionName := versionListPresenter selectionOrNil) isNil ifTrue: [^self].
 	(version := package infoForVersion: versionName name) isNil ifTrue: [^self].
-	versionNamePresenter 				value: 	version name.
-	versionDatePresenter 				value: 	version date.
-	versionTimePresenter 				value: 	version time.
-	versionAuthorPresenter 			value: 	version author.
-	versionIDPresenter 					value: 	version id.
-	versionAncestorsPresenter 		list: 		version ancestors.
+	versionNamePresenter 		value: 	version name.
+	versionDatePresenter 		value: 	version date.
+	versionTimePresenter 		value: 	version time.
+	versionAuthorPresenter 		value: 	version author.
+	versionIDPresenter 			value: 	version id.
+	versionAncestorsPresenter 	list: 		version ancestors.
 	versionStepChildrenPresenter 	list: 		version stepChildren.
-	versionMessagePresenter 			value: 	version message.
+	versionMessagePresenter 		value: 	version message.
+	(self view viewNamed: 'versionInfo') ensureVisible.
 !
 
 updateVersionList
 
-	| package list name |
 	versionListPresenter list: #().
-	(package := packageListPresenter selectionOrNil) isNil ifTrue: [^self].
-	list := package versionNames.
-	package isLoaded ifTrue: [
-		name := package loadedEditionName.
-		list do: [:each | 
-			each printString = name ifTrue: [
-				each 
-					isLoaded: true;
-					isModified: package isModified;
-					yourself.
+	packageListPresenter selectionOrNil ifNotNil: [:package |
+		| list |
+		list := package versionNames.
+		package isLoaded ifTrue: [
+			| name |
+			name := package loadedEditionName.
+			list do: [:each | 
+				each printString = name ifTrue: [
+					each 
+						isLoaded: true;
+						isModified: package isModified;
+						yourself.
+				].
 			].
 		].
+		versionListPresenter list: list reverse.
+		self updateVersionInfo.
 	].
-	versionListPresenter list: list reverse.
 ! !
-!MCRepositoryBrowser categoriesFor: #addDirectoryRepository!public! !
-!MCRepositoryBrowser categoriesFor: #addFileTreeRepository!public! !
-!MCRepositoryBrowser categoriesFor: #addGitHubRepository!public! !
-!MCRepositoryBrowser categoriesFor: #addHttpRepository!public! !
-!MCRepositoryBrowser categoriesFor: #addRepository!public! !
-!MCRepositoryBrowser categoriesFor: #addServerDirectoryRepository!public! !
+!MCRepositoryBrowser categoriesFor: #addDirectoryRepository!add repository!public! !
+!MCRepositoryBrowser categoriesFor: #addFileTreeRepository!add repository!public! !
+!MCRepositoryBrowser categoriesFor: #addGitHubRepository!add repository!public! !
+!MCRepositoryBrowser categoriesFor: #addHttpRepository!add repository!public! !
+!MCRepositoryBrowser categoriesFor: #addRepository!add repository!public! !
+!MCRepositoryBrowser categoriesFor: #addServerDirectoryRepository!add repository!public! !
 !MCRepositoryBrowser categoriesFor: #compareVersion!public! !
 !MCRepositoryBrowser categoriesFor: #createComponents!public! !
 !MCRepositoryBrowser categoriesFor: #createSchematicWiring!public! !
@@ -379,11 +380,11 @@ updateVersionList
 !MCRepositoryBrowser categoriesFor: #removeRepository!public! !
 !MCRepositoryBrowser categoriesFor: #saveAsTopazFileIn!public! !
 !MCRepositoryBrowser categoriesFor: #shellName!public! !
-!MCRepositoryBrowser categoriesFor: #updatePackageList!public! !
-!MCRepositoryBrowser categoriesFor: #updateRepositoryCreationTemplate!public! !
-!MCRepositoryBrowser categoriesFor: #updateRepositoryList!public! !
-!MCRepositoryBrowser categoriesFor: #updateVersionInfo!public! !
-!MCRepositoryBrowser categoriesFor: #updateVersionList!public! !
+!MCRepositoryBrowser categoriesFor: #updatePackageList!public!update view! !
+!MCRepositoryBrowser categoriesFor: #updateRepositoryCreationTemplate!public!update view! !
+!MCRepositoryBrowser categoriesFor: #updateRepositoryListAndSelect:!public!update view! !
+!MCRepositoryBrowser categoriesFor: #updateVersionInfo!public!update view! !
+!MCRepositoryBrowser categoriesFor: #updateVersionList!public!update view! !
 
 !MCRepositoryBrowser class methodsFor!
 

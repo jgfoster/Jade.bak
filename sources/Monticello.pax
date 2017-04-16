@@ -526,7 +526,7 @@ mcAddHttpRepository: aString
 		password: (list at: 3).
 	(group := self mcRepositoryGroup) isNil ifTrue: [self error: 'MCRepositoryGroup not found!!'].
 	group addRepository: repository.
-!
+	^repository!
 
 mcAddPackage: aString
 
@@ -687,7 +687,7 @@ mcNewDirectoryRepository: aString
 	(fileDirectoryClass := self objectNamed: #'FileDirectory') isNil ifTrue: [self error: 'Monticello not available!!'].
 	repository := mcRepositoryClass new directory: (fileDirectoryClass on: aString).
 	self mcRepositoryGroup addRepository: repository.
-!
+	^repository!
 
 mcNewFileTreeRepository: aString
 
@@ -696,16 +696,15 @@ mcNewFileTreeRepository: aString
 	(fileDirectoryClass := self objectNamed: #'ServerFileDirectory') isNil ifTrue: [self error: 'Monticello not available!!'].
 	repository := mcRepositoryClass new directory: (fileDirectoryClass on: aString).
 	self mcRepositoryGroup addRepository: repository.
-!
+	^repository!
 
 mcNewGitHubRepository: aString
 
-	| mcRepositoryClass fileDirectoryClass repository |
+	| mcRepositoryClass repository |
 	(mcRepositoryClass := self objectNamed: #'MCGitHubRepository') isNil ifTrue: [self error: 'Monticello not available!!'].
-	(fileDirectoryClass := self objectNamed: #'ServerFileDirectory') isNil ifTrue: [self error: 'Monticello not available!!'].
 	repository := mcRepositoryClass location: aString.
 	self mcRepositoryGroup addRepository: repository.
-!
+	^mcRepositoryClass!
 
 mcNewServerDirectoryRepository: aString
 
@@ -714,7 +713,7 @@ mcNewServerDirectoryRepository: aString
 	(fileDirectoryClass := self objectNamed: #'ServerFileDirectory') isNil ifTrue: [self error: 'Monticello not available!!'].
 	repository := mcDirectoryRepositoryClass new directory: (fileDirectoryClass on: aString).
 	self mcRepositoryGroup addRepository: repository.
-!
+	^repository!
 
 mcPackageClass
 

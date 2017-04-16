@@ -23,6 +23,10 @@ OopType64 comment: '#define OOP_TAG_RAM_OOP     0x0 /* 2r000  memory pointer Obj
 !OopType64 categoriesForClass!Unclassified! !
 !OopType64 methodsFor!
 
+= anOopType64
+
+	^self class == anOopType64 class and: [self value == anOopType64 value]!
+
 asFraction
 	"SmallFractions are special objects that can represent Fractions
 	  with   -268435456 <= numerator   <= 268435455
@@ -135,6 +139,7 @@ smallDoubleAsFloat
 	].
 	^(frac + 16r8000000000000 / 16r8000000000000 * (2 raisedTo: expn - 127) * sign) asFloat.
 ! !
+!OopType64 categoriesFor: #=!public! !
 !OopType64 categoriesFor: #asFraction!public! !
 !OopType64 categoriesFor: #asSmallInteger!public! !
 !OopType64 categoriesFor: #isBoolean!public! !
