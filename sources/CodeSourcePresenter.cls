@@ -233,6 +233,7 @@ jadeExecuteAndDisplay: showResult
 		^result value.
 	] ifFalse: [
 		self showCompileError: result value first.
+		^self		"flag for compile error"
 	].
 !
 

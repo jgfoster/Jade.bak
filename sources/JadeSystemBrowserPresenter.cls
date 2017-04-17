@@ -1191,7 +1191,7 @@ jadeExecuteAndDisplay: aBoolean
 	| textView result value selectionRange offset |
 	textView := View focus.
 	result := self executeSelectionOrLine.
-	result key ifTrue: [
+	result key ifTrue: [	"success"
 		value := result value.
 		result := ''.
 		aBoolean ifTrue: [
@@ -1206,7 +1206,8 @@ jadeExecuteAndDisplay: aBoolean
 			caretPosition: selectionRange stop + 1;
 			replaceSelection: result;
 			selectionStart: textView caretPosition - result size length: result size.
-	] ifFalse: [
+		^value.
+	] ifFalse: [		"compile error"
 		| string count |
 		(result := result value first) isNil ifTrue: [^self].
 		offset := result at: 2.
@@ -1223,15 +1224,15 @@ jadeExecuteAndDisplay: aBoolean
 		textView
 			caretPosition: selectionRange start + offset - 1;
 			replaceSelection: result;
-			selectionStart: textView caretPosition - result size length: result size.
+			selectionStart: textView caretPosition - result size length: result size.
+		^self
 	].
-	^value.
 !
 
 jadeInspect
 
 	| result |
-	result := self jadeExecuteAndDisplay: false.
+	result := self jadeExecuteAndDisplay: false.	result == self ifTrue: [^self].	"flag for compile error"
 	JadeInspector showOn: result session: gciSession.
 !
 
