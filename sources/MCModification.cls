@@ -108,7 +108,7 @@ firstMatchAfter: anInteger
 			0 < k ifTrue: [x add: (Array with: i with: j with: k)].
 		].
 	].
-	MessageBox notify: 'Sorry, we are not yet implemented this feature!!'.
+	MessageBox notify: 'Sorry, we have not yet implemented this feature!!'.
 	SessionManager current pause.
 !
 

@@ -22,7 +22,7 @@ allVersionInfoNames
 
 fullNameOfPackage: packageName versionName: versionName 
 
-	^packageName , '-' , versionName.!
+	^packageName , '.package'.!
 
 loadPackageNamed: packageName versionName: versionName
 

@@ -415,13 +415,17 @@ loginHostUser: hostUser hostPassword: hostPassword gsUser: gsUser gsPassword: gs
 logoutSession: anInteger
 
 	self critical: [
-		self 
-			gciSetSessionId: anInteger;
-			gciLogout;
-			signalIfError;
-			yourself.
-	].
-!
+		[
+			self 
+				gciSetSessionId: anInteger;
+				gciLogout;
+				signalIfError;
+				yourself.
+		] on: GciError do: [:ex | 
+			ex tag number == 4100 ifTrue: [ex return].
+			ex pass.
+		].
+	].!
 
 nbResult
 

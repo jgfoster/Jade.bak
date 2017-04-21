@@ -43,6 +43,7 @@ initialize: aString session: aGciSession
 
 	| list |
 	gciSession := aGciSession.
+	aString isEmpty ifTrue: [^self].
 	list := aString subStrings: Character lf.
 	oopType := gciSession oopTypeWithOop: (list at: 1) asNumber.
 	name := list at: 2.

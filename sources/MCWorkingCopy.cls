@@ -96,7 +96,7 @@ newVersionWithName: nameString message: messageString
 		with: self
 		with: nameString 
 		with: messageString.
-	MessageBox notify: 'Sorry, we are not yet implemented this feature!!'.
+	MessageBox notify: 'Sorry, we have not yet implemented this feature!!'.
 	SessionManager current pause.
 !
 
