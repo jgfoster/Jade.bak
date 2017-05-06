@@ -47,39 +47,37 @@ addWorkspace
 !
 
 buildHistoryBackMenu
-	| systemBrowser currentIndex entryCollection |
+	| systemBrowser entryCollection |
 
 	systemBrowser := self currentCard.
 	entryCollection := historyEntriesDictionary at: systemBrowser ifAbsent: [^Menu new].
 	((historyCurrentIndexDictionary at: systemBrowser ifAbsent: [0]) <= 1) ifTrue: [^Menu new].
 
-	currentIndex := historyCurrentIndexDictionary at: systemBrowser put: (historyCurrentIndexDictionary at: systemBrowser).
-
-	^(self buildHistoryMenuWith: (entryCollection copyFrom: 1 to: currentIndex) command: #historyBack:)
+	^(self buildHistoryMenuWith: (entryCollection copyFrom: 1 to: self getCurrentEntryIndex - 1) command: #historyBack:)
 		text: 'Backward';
 		yourself	
 !
 
 buildHistoryForwardMenu
-	| systemBrowser currentIndex entryCollection |
+	| systemBrowser entryCollection |
 
 	systemBrowser := self currentCard.
 	entryCollection := historyEntriesDictionary at: systemBrowser ifAbsent: [^Menu new].
 	((historyCurrentIndexDictionary at: systemBrowser ifAbsent: [0]) >= entryCollection size) ifTrue: [^Menu new].
 
-	currentIndex := historyCurrentIndexDictionary at: systemBrowser put: (historyCurrentIndexDictionary at: systemBrowser).
-
-	^(self buildHistoryMenuWith: (entryCollection copyFrom: currentIndex to: entryCollection size) command: #historyForward:)
+	^(self buildHistoryMenuWith: (entryCollection copyFrom: self getCurrentEntryIndex to: entryCollection size) command: #historyForward:)
 		text: 'Forward';
 		yourself!
 
 buildHistoryMenuWith: entryCollection command: command
-	| popup subMenu classesNames |
+	| popup subMenu classesNames currentSelectedMethod |
 
 	classesNames := Set new.
 	popup := Menu new.
+	
+	currentSelectedMethod := self currentCard getSelectedMethod.
 
-	entryCollection do: [:historyEntry | 
+	(entryCollection reject: [:historyEntry | historyEntry getMethodName = currentSelectedMethod ]) do: [:historyEntry |  "the #reject: remove the current method from the list"
 		(classesNames includes: historyEntry getClassName) 
 		ifFalse: [subMenu := popup addSubmenu: historyEntry getClassName.
 				classesNames add: historyEntry getClassName].
@@ -139,6 +137,24 @@ currentCard
 	^cardsPresenter view currentCard ifNotNil: [:cardView | cardView presenter].
 !
 
+getCurrentEntryCollection
+	| systemBrowser |
+
+	systemBrowser := self currentCard.
+
+	^historyEntriesDictionary at: systemBrowser ifAbsent: [^#()].
+	!
+
+getCurrentEntryIndex
+	| entryCollection |
+
+	entryCollection := self getCurrentEntryCollection.
+	entryCollection isEmpty ifTrue: [^0].
+
+	entryCollection keysAndValuesDo: [:eachKey :eachValue | (eachValue getMethodName = self currentCard getSelectedMethod) ifTrue: [^eachKey]].
+
+	^0!
+
 handleInvalidSession
 
 	| hadDialog |
@@ -156,19 +172,20 @@ handleInvalidSession
 	gciSession forceLogout.
 !
 
+hasCommandHistoryBack
+
+	^self getCurrentEntryIndex > 1!
+
+hasCommandHistoryForward
+
+	^self getCurrentEntryIndex < self getCurrentEntryCollection size!
+
 historyBack
-	| systemBrowser currentIndex entryCollection |
+	| currentIndex |
 
-	systemBrowser := self currentCard.
-	entryCollection := historyEntriesDictionary at: systemBrowser ifAbsent: [^self].
-	entryCollection isEmpty ifTrue: [^self].
+	currentIndex := self getCurrentEntryIndex - 1.
 
-	currentIndex := historyCurrentIndexDictionary at: systemBrowser put: 
-				(((historyCurrentIndexDictionary at: systemBrowser ifAbsent: [0]) <= 1) 
-				ifTrue: [entryCollection size]
-				ifFalse: [(historyCurrentIndexDictionary at: systemBrowser) - 1]).
-
-	systemBrowser restoreFrom: (entryCollection at: currentIndex).!
+	self currentCard restoreFrom: (self getCurrentEntryCollection at: currentIndex).!
 
 historyBack: aJadeHistoryEntry
 
@@ -187,18 +204,11 @@ historyEntriesDictionary: anObject
 	historyEntriesDictionary := anObject!
 
 historyForward
-	| systemBrowser currentIndex entryCollection |
+	| currentIndex |
 
-	systemBrowser := self currentCard.
-	entryCollection := historyEntriesDictionary at: systemBrowser ifAbsent: [^self].
-	entryCollection isEmpty ifTrue: [^self].
+	currentIndex := self getCurrentEntryIndex + 1.
 
-	currentIndex := historyCurrentIndexDictionary at: systemBrowser put: 
-				(((historyCurrentIndexDictionary at: systemBrowser ifAbsent: [0]) >= entryCollection size) 
-				ifTrue: [1]
-				ifFalse: [(historyCurrentIndexDictionary at: systemBrowser) + 1]).
-
-	systemBrowser restoreFrom: (entryCollection at: currentIndex)!
+	self currentCard restoreFrom: (self getCurrentEntryCollection at: currentIndex).!
 
 historyForward: aJadeHistoryEntry
 
@@ -287,6 +297,10 @@ queryCommand: aCommandQuery
 		aCommandQuery isEnabled: 1 < cardsPresenter view cards size. 
 		^true.
 	].
+
+	(aCommandQuery command = #historyBack) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryBack. ^true].
+	(aCommandQuery command = #historyForward) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryForward. ^true].
+
 	^super queryCommand: aCommandQuery.
 !
 
@@ -402,7 +416,11 @@ updateHistoryFor: aJadeAutoSystemBrowserPresenter
 !JadeSystemBrowser categoriesFor: #createComponents!public! !
 !JadeSystemBrowser categoriesFor: #createSchematicWiring!public! !
 !JadeSystemBrowser categoriesFor: #currentCard!public! !
+!JadeSystemBrowser categoriesFor: #getCurrentEntryCollection!history!public! !
+!JadeSystemBrowser categoriesFor: #getCurrentEntryIndex!history!public! !
 !JadeSystemBrowser categoriesFor: #handleInvalidSession!public! !
+!JadeSystemBrowser categoriesFor: #hasCommandHistoryBack!history!public! !
+!JadeSystemBrowser categoriesFor: #hasCommandHistoryForward!history!public! !
 !JadeSystemBrowser categoriesFor: #historyBack!history!public! !
 !JadeSystemBrowser categoriesFor: #historyBack:!history!public! !
 !JadeSystemBrowser categoriesFor: #historyCurrentIndexDictionary!accessing!history!private! !

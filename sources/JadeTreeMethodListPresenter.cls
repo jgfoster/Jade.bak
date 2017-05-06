@@ -15,6 +15,7 @@ addList
 
 	node := Prompter prompt: 'Enter List Name'.
 	node ifNil: [^self].
+	node isEmpty ifTrue: [].
 
 	treeMethodsPresenter model add: node asChildOf: treeMethodsPresenter selectionOrNil.
 

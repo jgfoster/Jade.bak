@@ -50,7 +50,13 @@ methodName
 !
 
 methodName: anObject
-	methodName := anObject! !
+	methodName := anObject!
+
+printOn: target
+
+	super printOn: target.
+
+	target nextPutAll: (' #', self getMethodName)! !
 !JadeAbstractHistoryEntry categoriesFor: #classCategory!accessing!private! !
 !JadeAbstractHistoryEntry categoriesFor: #classCategory:!accessing!private! !
 !JadeAbstractHistoryEntry categoriesFor: #className!accessing!private! !
@@ -59,4 +65,5 @@ methodName: anObject
 !JadeAbstractHistoryEntry categoriesFor: #getMethodName!public! !
 !JadeAbstractHistoryEntry categoriesFor: #methodName!accessing!private! !
 !JadeAbstractHistoryEntry categoriesFor: #methodName:!accessing!private! !
+!JadeAbstractHistoryEntry categoriesFor: #printOn:!public! !
 
