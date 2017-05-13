@@ -3,7 +3,7 @@ package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.174'.
+package basicPackageVersion: '0.176'.
 
 
 package classNames
@@ -209,7 +209,7 @@ JadeValueDialog subclass: #SUnitResultDialog
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeShell subclass: #JadeSystemBrowser
-	instanceVariableNames: 'cardsPresenter roundTripCount historyEntriesDictionary historyCurrentIndexDictionary'
+	instanceVariableNames: 'cardsPresenter roundTripCount historyEntriesDictionary'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

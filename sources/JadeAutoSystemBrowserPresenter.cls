@@ -194,7 +194,7 @@ updateAndSelect: aView
 	[
 		self registerClassData.
 		self topShell updateHistoryFor: self.
-	] forkAt: 3!
+	] fork!
 
 updateMethodList
 	"The receiver must keep update with any add/remove of a method in order to be acurate in the autocompletation"

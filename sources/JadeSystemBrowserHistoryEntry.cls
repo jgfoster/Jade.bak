@@ -79,14 +79,14 @@ populateFrom: aJadeAutoSystemBrowserPresenter
 	self classCategory: aJadeAutoSystemBrowserPresenter classCategoryPresenter selectionOrNil. 
 
 	self className: (isHierarchySelected 
-				ifTrue: [aJadeAutoSystemBrowserPresenter classHierarchyPresenter selection] 
-				ifFalse: [aJadeAutoSystemBrowserPresenter classListPresenter selection]).
+				ifTrue: [aJadeAutoSystemBrowserPresenter classHierarchyPresenter selectionOrNil ] 
+				ifFalse: [aJadeAutoSystemBrowserPresenter classListPresenter selectionOrNil ]).
 
 	self categoriesOrVariables: (isCategoriesSelected 
 						ifTrue: [aJadeAutoSystemBrowserPresenter categoryListPresenter selectionOrNil ifNotNil: [:value | value allButFirst]] 
 						ifFalse: [aJadeAutoSystemBrowserPresenter variableListPresenter selectionOrNil]).
 
-	self methodName: aJadeAutoSystemBrowserPresenter methodListPresenter selection.
+	self methodName: aJadeAutoSystemBrowserPresenter methodListPresenter selectionOrNil.
 ! !
 !JadeSystemBrowserHistoryEntry categoriesFor: #=!public! !
 !JadeSystemBrowserHistoryEntry categoriesFor: #categoriesOrVariables!accessing!private! !

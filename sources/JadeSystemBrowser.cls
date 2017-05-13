@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeShell subclass: #JadeSystemBrowser
-	instanceVariableNames: 'cardsPresenter roundTripCount historyEntriesDictionary historyCurrentIndexDictionary'
+	instanceVariableNames: 'cardsPresenter roundTripCount historyEntriesDictionary'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -51,7 +51,8 @@ buildHistoryBackMenu
 
 	systemBrowser := self currentCard.
 	entryCollection := historyEntriesDictionary at: systemBrowser ifAbsent: [^Menu new].
-	((historyCurrentIndexDictionary at: systemBrowser ifAbsent: [0]) <= 1) ifTrue: [^Menu new].
+"	((historyCurrentIndexDictionary at: systemBrowser ifAbsent: [0]) <= 1) ifTrue: [^Menu new]."
+	(self getCurrentEntryIndex <= 1) ifTrue: [^Menu new].
 
 	^(self buildHistoryMenuWith: (entryCollection copyFrom: 1 to: self getCurrentEntryIndex - 1) command: #historyBack:)
 		text: 'Backward';
@@ -63,7 +64,8 @@ buildHistoryForwardMenu
 
 	systemBrowser := self currentCard.
 	entryCollection := historyEntriesDictionary at: systemBrowser ifAbsent: [^Menu new].
-	((historyCurrentIndexDictionary at: systemBrowser ifAbsent: [0]) >= entryCollection size) ifTrue: [^Menu new].
+	"((historyCurrentIndexDictionary at: systemBrowser ifAbsent: [0]) >= entryCollection size) ifTrue: [^Menu new]."
+	(self getCurrentEntryIndex >= entryCollection size) ifTrue: [^Menu new].
 
 	^(self buildHistoryMenuWith: (entryCollection copyFrom: self getCurrentEntryIndex to: entryCollection size) command: #historyForward:)
 		text: 'Forward';
@@ -92,7 +94,6 @@ closeCard
 	| cardToClose |
 
 	cardToClose := self currentCard.
-	historyCurrentIndexDictionary removeKey: cardToClose ifAbsent: [].
 	historyEntriesDictionary removeKey: cardToClose ifAbsent: [].
 
 	cardsPresenter view removeSubView: cardToClose view.!
@@ -174,9 +175,13 @@ handleInvalidSession
 
 hasCommandHistoryBack
 
+	(self getCurrentEntryIndex = 0) ifTrue: [^false].
+
 	^self getCurrentEntryIndex > 1!
 
 hasCommandHistoryForward
+
+	(self getCurrentEntryIndex = 0) ifTrue: [^false].
 
 	^self getCurrentEntryIndex < self getCurrentEntryCollection size!
 
@@ -190,12 +195,6 @@ historyBack
 historyBack: aJadeHistoryEntry
 
 	self currentCard restoreFrom: aJadeHistoryEntry!
-
-historyCurrentIndexDictionary
-	^historyCurrentIndexDictionary!
-
-historyCurrentIndexDictionary: anObject
-	historyCurrentIndexDictionary := anObject!
 
 historyEntriesDictionary
 	^historyEntriesDictionary!
@@ -218,7 +217,6 @@ initialize
 
 	super initialize.
 	roundTripCount := 0.
-	historyCurrentIndexDictionary := Dictionary new.
 	historyEntriesDictionary := Dictionary new.
 !
 
@@ -298,10 +296,11 @@ queryCommand: aCommandQuery
 		^true.
 	].
 
-	(aCommandQuery command = #historyBack) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryBack. ^true].
-	(aCommandQuery command = #historyForward) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryForward. ^true].
+	(aCommandQuery command == #historyBack) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryBack. ^true].
+	(aCommandQuery command == #historyForward) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryForward. ^true].
 
 	^super queryCommand: aCommandQuery.
+
 !
 
 renameSelection
@@ -392,15 +391,12 @@ updateHistoryFor: aJadeAutoSystemBrowserPresenter
 
 	(historyEntriesDictionary includesKey: aJadeAutoSystemBrowserPresenter) ifFalse: [
 		historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter put: OrderedCollection new.
-		historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter put: 1.
 	].	"check if system browser already exist "
 
 	entry := JadeSystemBrowserHistoryEntry newFrom: aJadeAutoSystemBrowserPresenter.
 
 	((historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) includes: entry)
 		ifFalse: [(historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) add: entry].
-
-	"historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter put: ((historyCurrentIndexDictionary at: aJadeAutoSystemBrowserPresenter) + 1)"
 ! !
 !JadeSystemBrowser categoriesFor: #abortTransaction!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowser!public! !
@@ -423,8 +419,6 @@ updateHistoryFor: aJadeAutoSystemBrowserPresenter
 !JadeSystemBrowser categoriesFor: #hasCommandHistoryForward!history!public! !
 !JadeSystemBrowser categoriesFor: #historyBack!history!public! !
 !JadeSystemBrowser categoriesFor: #historyBack:!history!public! !
-!JadeSystemBrowser categoriesFor: #historyCurrentIndexDictionary!accessing!history!private! !
-!JadeSystemBrowser categoriesFor: #historyCurrentIndexDictionary:!accessing!history!private! !
 !JadeSystemBrowser categoriesFor: #historyEntriesDictionary!accessing!history!private! !
 !JadeSystemBrowser categoriesFor: #historyEntriesDictionary:!accessing!history!private! !
 !JadeSystemBrowser categoriesFor: #historyForward!history!public! !
