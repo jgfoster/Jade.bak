@@ -165,9 +165,9 @@ restoreFrom: aJadeHistoryEntry
 
 	aJadeHistoryEntry isPackageSelected 
 	ifTrue: [self isPackageListTabSelected ifFalse: [packageDictionaryTabs previousCard].
-			packageListPresenter selection: aJadeHistoryEntry packageOrDictionary ifAbsent: []] 
+			packageListPresenter selections: aJadeHistoryEntry packageOrDictionary ifAbsent: []] 
 	ifFalse: [self isPackageListTabSelected ifTrue: [packageDictionaryTabs nextCard].
-			dictionaryListPresenter selection: aJadeHistoryEntry packageOrDictionary ifAbsent: []].
+			dictionaryListPresenter selections: aJadeHistoryEntry packageOrDictionary ifAbsent: []].
 
 	classCategoryPresenter selection: aJadeHistoryEntry classCategory ifAbsent: [].
 
