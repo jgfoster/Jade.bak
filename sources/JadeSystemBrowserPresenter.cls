@@ -1015,6 +1015,14 @@ gciSession: aGciSession
 	sunitPresenter gciSession: aGciSession.
 !
 
+getSelectedMethod
+	| dataArray |
+
+	dataArray := self methodListPresenter selectionOrNil.
+	dataArray ifNil: [^nil].
+
+	^dataArray first!
+
 getViews
 
 	packageDictionaryTabs 	:= self view viewNamed: 'packageDictionaryTabs'.
@@ -3092,6 +3100,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #findClassList!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #gciSession:!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #getSelectedMethod!public! !
 !JadeSystemBrowserPresenter categoriesFor: #getViews!public! !
 !JadeSystemBrowserPresenter categoriesFor: #globalsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #handleInvalidSession!public! !

@@ -165,9 +165,9 @@ restoreFrom: aJadeHistoryEntry
 
 	aJadeHistoryEntry isPackageSelected 
 	ifTrue: [self isPackageListTabSelected ifFalse: [packageDictionaryTabs previousCard].
-			packageListPresenter selection: aJadeHistoryEntry packageOrDictionary ifAbsent: []] 
+			packageListPresenter selections: aJadeHistoryEntry packageOrDictionary ifAbsent: []] 
 	ifFalse: [self isPackageListTabSelected ifTrue: [packageDictionaryTabs nextCard].
-			dictionaryListPresenter selection: aJadeHistoryEntry packageOrDictionary ifAbsent: []].
+			dictionaryListPresenter selections: aJadeHistoryEntry packageOrDictionary ifAbsent: []].
 
 	classCategoryPresenter selection: aJadeHistoryEntry classCategory ifAbsent: [].
 
@@ -191,10 +191,11 @@ restoreFrom: aJadeHistoryEntry
 updateAndSelect: aView
 
 	super updateAndSelect: aView.
-	[
-		self registerClassData.
-		self topShell updateHistoryFor: self.
-	] forkAt: 3!
+
+	inUpdate ifTrue: [^self]. "when the browser is updating we avoid to register any data we must wait until the browser has finish"
+
+	self registerClassData.
+	self topShell updateHistoryFor: self.!
 
 updateMethodList
 	"The receiver must keep update with any add/remove of a method in order to be acurate in the autocompletation"

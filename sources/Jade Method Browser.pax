@@ -9,7 +9,6 @@ package basicPackageVersion: '0.087'.
 package classNames
 	add: #GsMethod2;
 	add: #JadeAbstractHistoryEntry;
-	add: #JadeHistoryEntry;
 	add: #JadeMethodExplorerHistoryEntry;
 	add: #JadeMethodHistoryBrowser;
 	add: #JadeMethodListBrowser;
@@ -89,11 +88,6 @@ package!
 
 Object subclass: #JadeAbstractHistoryEntry
 	instanceVariableNames: 'methodName className classCategory'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-Object subclass: #JadeHistoryEntry
-	instanceVariableNames: 'isPackageSelected isHierarchySelected isClassSideSelected isCategoriesSelected packageOrDictionary classCategory className categoriesOrVariables methodName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

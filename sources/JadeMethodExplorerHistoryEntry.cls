@@ -46,12 +46,3 @@ treeSelection: anObject
 !JadeMethodExplorerHistoryEntry categoriesFor: #treeSelection!accessing!private! !
 !JadeMethodExplorerHistoryEntry categoriesFor: #treeSelection:!accessing!private! !
 
-!JadeMethodExplorerHistoryEntry class methodsFor!
-
-newFrom: aJadeTreeMethodListPresenter
-
-	^super new initialize
-		populateFrom: aJadeTreeMethodListPresenter;
-		yourself! !
-!JadeMethodExplorerHistoryEntry class categoriesFor: #newFrom:!public! !
-
