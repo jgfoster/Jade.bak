@@ -3,7 +3,7 @@ package := Package name: 'Jade Method Browser'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.084'.
+package basicPackageVersion: '0.085'.
 
 
 package classNames

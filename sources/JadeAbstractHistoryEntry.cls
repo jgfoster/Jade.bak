@@ -45,6 +45,20 @@ getMethodName
 
 	^methodName first!
 
+hasAllValues
+
+	^self hasMethodName and: [self hasClassName] !
+
+hasClassName
+	"<className> is anArray with all hierarchy names"
+
+	^self getClassName notEmpty!
+
+hasMethodName
+
+	^self getMethodName notEmpty
+	!
+
 methodName
 	^methodName
 !
@@ -54,16 +68,27 @@ methodName: anObject
 
 printOn: target
 
-	super printOn: target.
 
-	target nextPutAll: (' #', self getMethodName)! !
+	target nextPutAll: ('aHistoryEntry ', self getClassName, '>>', self getMethodName)! !
 !JadeAbstractHistoryEntry categoriesFor: #classCategory!accessing!private! !
 !JadeAbstractHistoryEntry categoriesFor: #classCategory:!accessing!private! !
 !JadeAbstractHistoryEntry categoriesFor: #className!accessing!private! !
 !JadeAbstractHistoryEntry categoriesFor: #className:!accessing!private! !
 !JadeAbstractHistoryEntry categoriesFor: #getClassName!public! !
 !JadeAbstractHistoryEntry categoriesFor: #getMethodName!public! !
+!JadeAbstractHistoryEntry categoriesFor: #hasAllValues!public! !
+!JadeAbstractHistoryEntry categoriesFor: #hasClassName!public! !
+!JadeAbstractHistoryEntry categoriesFor: #hasMethodName!public! !
 !JadeAbstractHistoryEntry categoriesFor: #methodName!accessing!private! !
 !JadeAbstractHistoryEntry categoriesFor: #methodName:!accessing!private! !
 !JadeAbstractHistoryEntry categoriesFor: #printOn:!public! !
+
+!JadeAbstractHistoryEntry class methodsFor!
+
+newFrom: aJadeAutoSystemBrowserPresenter
+
+	^super new initialize
+		populateFrom: aJadeAutoSystemBrowserPresenter;
+		yourself! !
+!JadeAbstractHistoryEntry class categoriesFor: #newFrom:!public! !
 

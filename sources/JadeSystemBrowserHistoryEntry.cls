@@ -105,12 +105,3 @@ populateFrom: aJadeAutoSystemBrowserPresenter
 !JadeSystemBrowserHistoryEntry categoriesFor: #packageOrDictionary:!accessing!private! !
 !JadeSystemBrowserHistoryEntry categoriesFor: #populateFrom:!public! !
 
-!JadeSystemBrowserHistoryEntry class methodsFor!
-
-newFrom: aJadeAutoSystemBrowserPresenter
-
-	^super new initialize
-		populateFrom: aJadeAutoSystemBrowserPresenter;
-		yourself! !
-!JadeSystemBrowserHistoryEntry class categoriesFor: #newFrom:!public! !
-

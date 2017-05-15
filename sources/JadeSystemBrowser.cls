@@ -395,8 +395,8 @@ updateHistoryFor: aJadeAutoSystemBrowserPresenter
 
 	entry := JadeSystemBrowserHistoryEntry newFrom: aJadeAutoSystemBrowserPresenter.
 
-	((historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) includes: entry)
-		ifFalse: [(historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) add: entry].
+	(((historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) includes: entry) not and: [entry hasAllValues])
+		ifTrue: [(historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) add: entry].
 ! !
 !JadeSystemBrowser categoriesFor: #abortTransaction!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowser!public! !
