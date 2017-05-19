@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeShell subclass: #JadeSystemBrowser
-	instanceVariableNames: 'cardsPresenter roundTripCount historyEntriesDictionary'
+	instanceVariableNames: 'cardsPresenter roundTripCount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -46,57 +46,9 @@ addWorkspace
 	JadeWorkspace showOnSession: gciSession.
 !
 
-buildHistoryBackMenu
-	| systemBrowser entryCollection |
-
-	systemBrowser := self currentCard.
-	entryCollection := historyEntriesDictionary at: systemBrowser ifAbsent: [^Menu new].
-"	((historyCurrentIndexDictionary at: systemBrowser ifAbsent: [0]) <= 1) ifTrue: [^Menu new]."
-	(self getCurrentEntryIndex <= 1) ifTrue: [^Menu new].
-
-	^(self buildHistoryMenuWith: (entryCollection copyFrom: 1 to: self getCurrentEntryIndex - 1) command: #historyBack:)
-		text: 'Backward';
-		yourself	
-!
-
-buildHistoryForwardMenu
-	| systemBrowser entryCollection |
-
-	systemBrowser := self currentCard.
-	entryCollection := historyEntriesDictionary at: systemBrowser ifAbsent: [^Menu new].
-	"((historyCurrentIndexDictionary at: systemBrowser ifAbsent: [0]) >= entryCollection size) ifTrue: [^Menu new]."
-	(self getCurrentEntryIndex >= entryCollection size) ifTrue: [^Menu new].
-
-	^(self buildHistoryMenuWith: (entryCollection copyFrom: self getCurrentEntryIndex to: entryCollection size) command: #historyForward:)
-		text: 'Forward';
-		yourself!
-
-buildHistoryMenuWith: entryCollection command: command
-	| popup subMenu classesNames currentSelectedMethod |
-
-	classesNames := Set new.
-	popup := Menu new.
-	
-	currentSelectedMethod := self currentCard getSelectedMethod.
-
-	(entryCollection reject: [:historyEntry | historyEntry getMethodName = currentSelectedMethod ]) do: [:historyEntry |  "the #reject: remove the current method from the list"
-		(classesNames includes: historyEntry getClassName) 
-		ifFalse: [subMenu := popup addSubmenu: historyEntry getClassName.
-				classesNames add: historyEntry getClassName].
-		subMenu addCommand: (Message selector: command argument: historyEntry) description: historyEntry getMethodName.
-		subMenu setDefault: 1
-	].
-
-	popup setDefault: 1.
-	^popup!
-
 closeCard
-	| cardToClose |
 
-	cardToClose := self currentCard.
-	historyEntriesDictionary removeKey: cardToClose ifAbsent: [].
-
-	cardsPresenter view removeSubView: cardToClose view.!
+	cardsPresenter view removeSubView: self currentCard view.!
 
 closeRequested: anAssociation
 
@@ -127,34 +79,18 @@ createComponents
 
 createSchematicWiring
 
+	| toolbar |
 	super createSchematicWiring.
-	cardsPresenter view 	when: #'currentCardChanged' 	send: #'update' 					to: self.
-	self  							when: #'closeRequested:'			send: #'closeRequested:'	to: self.
-	self  view 					when: #'viewActivated'				send: #'update'					to: self.
-!
+	toolbar := self view viewNamed: 'leftToolbar'.
+	cardsPresenter view 	when: #'currentCardChanged' 	send: #'update' 			to: self.
+	self  				when: #'closeRequested:'		send: #'closeRequested:'	to: self.
+	self  view 			when: #'viewActivated'		send: #'update'			to: self.
+	toolbar			when: #dropDown: 			send: #onDropDown: 		to: self.!
 
 currentCard
 
 	^cardsPresenter view currentCard ifNotNil: [:cardView | cardView presenter].
 !
-
-getCurrentEntryCollection
-	| systemBrowser |
-
-	systemBrowser := self currentCard.
-
-	^historyEntriesDictionary at: systemBrowser ifAbsent: [^#()].
-	!
-
-getCurrentEntryIndex
-	| entryCollection |
-
-	entryCollection := self getCurrentEntryCollection.
-	entryCollection isEmpty ifTrue: [^0].
-
-	entryCollection keysAndValuesDo: [:eachKey :eachValue | (eachValue getMethodName = self currentCard getSelectedMethod) ifTrue: [^eachKey]].
-
-	^0!
 
 handleInvalidSession
 
@@ -173,52 +109,10 @@ handleInvalidSession
 	gciSession forceLogout.
 !
 
-hasCommandHistoryBack
-
-	(self getCurrentEntryIndex = 0) ifTrue: [^false].
-
-	^self getCurrentEntryIndex > 1!
-
-hasCommandHistoryForward
-
-	(self getCurrentEntryIndex = 0) ifTrue: [^false].
-
-	^self getCurrentEntryIndex < self getCurrentEntryCollection size!
-
-historyBack
-	| currentIndex |
-
-	currentIndex := self getCurrentEntryIndex - 1.
-
-	self currentCard restoreFrom: (self getCurrentEntryCollection at: currentIndex).!
-
-historyBack: aJadeHistoryEntry
-
-	self currentCard restoreFrom: aJadeHistoryEntry!
-
-historyEntriesDictionary
-	^historyEntriesDictionary!
-
-historyEntriesDictionary: anObject
-	historyEntriesDictionary := anObject!
-
-historyForward
-	| currentIndex |
-
-	currentIndex := self getCurrentEntryIndex + 1.
-
-	self currentCard restoreFrom: (self getCurrentEntryCollection at: currentIndex).!
-
-historyForward: aJadeHistoryEntry
-
-	self currentCard restoreFrom: aJadeHistoryEntry!
-
 initialize
 
 	super initialize.
-	roundTripCount := 0.
-	historyEntriesDictionary := Dictionary new.
-!
+	roundTripCount := 0.!
 
 isOkayToChange
 
@@ -269,25 +163,19 @@ onDropDown: aToolbarButton
 	has been pressed. Generate and pop-up the appropriate menu."
 	| popup |
 
-	aToolbarButton command == #historyBack ifTrue: [popup :=  self buildHistoryBackMenu].
-	aToolbarButton command == #historyForward ifTrue: [popup := self buildHistoryForwardMenu].
+	aToolbarButton command == #historyBack ifTrue: [popup :=  self currentCard historyBackMenu].
+	aToolbarButton command == #historyForward ifTrue: [popup := self currentCard historyForwardMenu].
 	popup queryAllFromView: self view.
 	popup showIn: self position: aToolbarButton screenRectangle bottomLeft.
 
 	^0!
 
 onViewOpened
-	| toolbar |
 
 	super onViewOpened.
 	cardsPresenter model: gciSession.
 	self restoreLayoutAndContents.
-
-	toolbar := self view viewNamed: 'leftToolbar'.
-	toolbar presenterConnectionPoint 
-		when: #dropDown:
-		send: #onDropDown:
-		to: self.!
+!
 
 queryCommand: aCommandQuery
 
@@ -295,10 +183,10 @@ queryCommand: aCommandQuery
 		aCommandQuery isEnabled: 1 < cardsPresenter view cards size. 
 		^true.
 	].
-
+"
 	(aCommandQuery command == #historyBack) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryBack. ^true].
 	(aCommandQuery command == #historyForward) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryForward. ^true].
-
+"
 	^super queryCommand: aCommandQuery.
 
 !
@@ -381,48 +269,19 @@ statusBarText: aString
 update
 
 	self currentCard ifNotNil: [:currentCard | currentCard onSetFocus].
-!
-
-updateHistoryFor: aJadeAutoSystemBrowserPresenter
-	"only one method must be selected"
-	| entry |
-
-	(aJadeAutoSystemBrowserPresenter methodListPresenter hasSelection and: [aJadeAutoSystemBrowserPresenter methodListPresenter selections size = 1]) ifFalse: [^self].
-
-	(historyEntriesDictionary includesKey: aJadeAutoSystemBrowserPresenter) ifFalse: [
-		historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter put: OrderedCollection new.
-	].	"check if system browser already exist "
-
-	entry := JadeSystemBrowserHistoryEntry newFrom: aJadeAutoSystemBrowserPresenter.
-
-	(((historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) includes: entry) not and: [entry hasAllValues])
-		ifTrue: [(historyEntriesDictionary at: aJadeAutoSystemBrowserPresenter) add: entry].
 ! !
 !JadeSystemBrowser categoriesFor: #abortTransaction!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowser!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowserForClass:!public! !
 !JadeSystemBrowser categoriesFor: #addSystemBrowserWithLayoutInfo:!public! !
 !JadeSystemBrowser categoriesFor: #addWorkspace!public! !
-!JadeSystemBrowser categoriesFor: #buildHistoryBackMenu!history!public! !
-!JadeSystemBrowser categoriesFor: #buildHistoryForwardMenu!history!public! !
-!JadeSystemBrowser categoriesFor: #buildHistoryMenuWith:command:!history!public! !
 !JadeSystemBrowser categoriesFor: #closeCard!public! !
 !JadeSystemBrowser categoriesFor: #closeRequested:!public! !
 !JadeSystemBrowser categoriesFor: #commitTransaction!public! !
 !JadeSystemBrowser categoriesFor: #createComponents!public! !
-!JadeSystemBrowser categoriesFor: #createSchematicWiring!public! !
+!JadeSystemBrowser categoriesFor: #createSchematicWiring!history!public! !
 !JadeSystemBrowser categoriesFor: #currentCard!public! !
-!JadeSystemBrowser categoriesFor: #getCurrentEntryCollection!history!public! !
-!JadeSystemBrowser categoriesFor: #getCurrentEntryIndex!history!public! !
 !JadeSystemBrowser categoriesFor: #handleInvalidSession!public! !
-!JadeSystemBrowser categoriesFor: #hasCommandHistoryBack!history!public! !
-!JadeSystemBrowser categoriesFor: #hasCommandHistoryForward!history!public! !
-!JadeSystemBrowser categoriesFor: #historyBack!history!public! !
-!JadeSystemBrowser categoriesFor: #historyBack:!history!public! !
-!JadeSystemBrowser categoriesFor: #historyEntriesDictionary!accessing!history!private! !
-!JadeSystemBrowser categoriesFor: #historyEntriesDictionary:!accessing!history!private! !
-!JadeSystemBrowser categoriesFor: #historyForward!history!public! !
-!JadeSystemBrowser categoriesFor: #historyForward:!history!public! !
 !JadeSystemBrowser categoriesFor: #initialize!public! !
 !JadeSystemBrowser categoriesFor: #isOkayToChange!public! !
 !JadeSystemBrowser categoriesFor: #jadeBrowseTests!public! !
@@ -442,7 +301,6 @@ updateHistoryFor: aJadeAutoSystemBrowserPresenter
 !JadeSystemBrowser categoriesFor: #statusBarServerRequestText:!public! !
 !JadeSystemBrowser categoriesFor: #statusBarText:!public! !
 !JadeSystemBrowser categoriesFor: #update!public! !
-!JadeSystemBrowser categoriesFor: #updateHistoryFor:!history!public! !
 
 !JadeSystemBrowser class methodsFor!
 

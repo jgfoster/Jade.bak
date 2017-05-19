@@ -13,7 +13,6 @@ package classNames
 	add: #JadeMethodHistoryBrowser;
 	add: #JadeMethodListBrowser;
 	add: #JadeMethodListPresenter;
-	add: #JadeSystemBrowserHistoryEntry;
 	add: #JadeTreeMethodListPresenter;
 	add: #MethodListPresenter;
 	add: #MethodSourcePresenter;
@@ -98,11 +97,6 @@ GsObject subclass: #GsMethod2
 	classInstanceVariableNames: ''!
 JadeAbstractHistoryEntry subclass: #JadeMethodExplorerHistoryEntry
 	instanceVariableNames: 'treeSelection methodCategory gsMethod'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-JadeAbstractHistoryEntry subclass: #JadeSystemBrowserHistoryEntry
-	instanceVariableNames: 'isPackageSelected isHierarchySelected isClassSideSelected isCategoriesSelected packageOrDictionary categoriesOrVariables'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

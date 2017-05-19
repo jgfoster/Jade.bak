@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
-	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints sunitPresenter superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
+	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel historyList historyIndex ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints sunitPresenter superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -82,9 +82,9 @@ addMethodInfoTo: aStream
 	string := superclassListPresenter selectionIfNone: [''].
 	aStream 
 		nextPutAll: instanceClassTabs currentCard name; lf;			"instanceTab or classTab"
-		nextPutAll: string; lf;															"selected superclass"
+		nextPutAll: string; lf;									"selected superclass"
 		nextPutAll: categoryVariableTabs currentCard name; tab;		"categoryList or variableList"
-		print: environment; lf;															"environment"
+		print: environment; lf;								"environment"
 		yourself.
 	self methodFilterListPresenter selections do: [:each | aStream nextPutAll: each trimBlanks; tab].
 	aStream lf.
@@ -328,6 +328,28 @@ browseSendersOf: aString
 	self browseMethodsAndSelect: aString type: #references.
 !
 
+buildHistoryMenuNamed: aString from: startIndex to: endIndex by: increment
+
+	| currentClassName popup subMenu |
+	popup := Menu new.
+	currentClassName := nil.	"avoid warning and make explicit that we expect comparison to fail the first time so we get a new submenu"
+	startIndex to: endIndex by: increment do: [:i | 
+		| className historyEntry methodName |
+		historyEntry := historyList at: i.
+		className := historyEntry at: 1.
+		methodName := historyEntry at: 2.
+		className ~= currentClassName ifTrue: [
+			currentClassName := className.
+			subMenu := popup addSubmenu: currentClassName.
+		].
+		subMenu
+			addCommand: (Message selector: #'jumpToHistoryIndex:' argument: i)
+			description: methodName.
+		subMenu setDefault: 1.
+	].
+	popup setDefault: 1.
+	^popup!
+
 categoriesMenuStrings
 
 	false ifTrue: [
@@ -569,11 +591,11 @@ createSchematicWiringForMethodCategoryList
 createSchematicWiringForMethodList
 
 	methodListPresenter			
-		when: #'drag:'				send: #'onDragMethod:'	to: self;
-		when: #'dragCut:'			send: #'onDragCutMethod:'	to: self;
-		when: #'keyTyped:'			send: #'delayUpdate'		to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'	to: self;
-		when: #'selectionChanged'		send: #'updateAndSelect:'	to: self	with: methodSourcePresenter;
+		when: #'drag:'				send: #'onDragMethod:'			to: self;
+		when: #'dragCut:'			send: #'onDragCutMethod:'			to: self;
+		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
+		when: #'selectionChanged'		send: #'selectedMethodChanged'		to: self;
 		yourself.
 !
 
@@ -1072,6 +1094,41 @@ handleInvalidSession
 	^hadDialog.
 !
 
+hasCommandHistoryBack
+
+	^1 < historyIndex!
+
+hasCommandHistoryForward
+
+	^historyIndex < historyList size!
+
+historyBack
+
+	self jumpToHistoryIndex: historyIndex - 1.
+	!
+
+historyBackMenu
+
+	^self 
+		buildHistoryMenuNamed: 'Backward'
+		from: historyIndex - 1
+		to: 1 
+		by: -1!
+
+historyForward
+
+	self jumpToHistoryIndex: historyIndex + 1.
+	!
+
+historyForwardMenu
+
+	^self 
+		buildHistoryMenuNamed: 'Forward'
+		from: historyIndex + 1
+		to: historyList size 
+		by: 1
+!
+
 horizontalSplitter
 
 	^view 
@@ -1083,6 +1140,8 @@ initialize
 
 	super initialize.
 	environment := 0.
+	historyIndex := 0.
+	historyList := OrderedCollection new.
 	ignoreNextSetFocusEvent := false.
 	inUpdate := false.
 	selectedClassName := ''.
@@ -1262,6 +1321,18 @@ jadeMenuStrings
 		'E&xit/Shift+F4/exit'
 	).
 !
+
+jumpToHistoryIndex: anInteger
+
+	| commandString historyEntry |
+	historyIndex := anInteger.
+	historyEntry := historyList at: anInteger.
+	commandString := historyEntry at: 3.
+	self 
+		updateCommand: commandString;
+		updateMenuBar;
+		yourself.
+	methodSourcePresenter ensureVisible.!
 
 labelOfClass: oldName changedTo: newName
 
@@ -1753,7 +1824,7 @@ onDropOnPackageList: aSession
 onSetFocus
 
 	| activeView stack |
-	ignoreNextSetFocusEvent ifTrue: [
+	ignoreNextSetFocusEvent ifTrue: [	"We have just returned from a Find Class dialog and don't need to update just yet"
 		ignoreNextSetFocusEvent := false.
 		^self.
 	].
@@ -1935,6 +2006,10 @@ queryCommand: aCommandQuery
 	].
 	(#(#'runClassTests') includes: command) ifTrue: [aCommandQuery isEnabled: selectedClassesAreTestCases. ^true].
 	(#(#'browseSelectedClass') includes: command) ifTrue: [aCommandQuery isEnabled: self isClassSelectedInEditor. ^true].
+
+	(aCommandQuery command == #historyBack) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryBack. ^true].
+	(aCommandQuery command == #historyForward) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryForward. ^true].
+
 	^super queryCommand: aCommandQuery.
 !
 
@@ -2228,6 +2303,20 @@ selectedClassNameWithoutVersion
 	^(selectedClassName includes: Character space)
 		ifTrue: [selectedClassName subStrings first]
 		ifFalse: [selectedClassName].
+!
+
+selectedMethodChanged
+
+	| historyEntry |
+	self updateAndSelect: methodSourcePresenter.
+	methodListPresenter selections size == 1 ifFalse: [^self].
+	historyList := historyList copyFrom: 1 to: historyIndex.	"trim any forward options on an explicit manual selection"
+	historyEntry := Array
+		with: selectedClassName , (self isClassSideSelected ifTrue: [' class'] ifFalse: [''])
+		with: (methodListPresenter selection at: 1)
+		with: self requestStringForUpdate.
+	historyList add: historyEntry.
+	historyIndex := historyList size.
 !
 
 setColorForCompileErrors
@@ -3043,6 +3132,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseSenders!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #buildHistoryMenuNamed:from:to:by:!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #classCategoryPresenter!accessing!public! !
@@ -3104,8 +3194,14 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #getViews!public! !
 !JadeSystemBrowserPresenter categoriesFor: #globalsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #handleInvalidSession!public! !
+!JadeSystemBrowserPresenter categoriesFor: #hasCommandHistoryBack!history!public! !
+!JadeSystemBrowserPresenter categoriesFor: #hasCommandHistoryForward!history!public! !
+!JadeSystemBrowserPresenter categoriesFor: #historyBack!history!public! !
+!JadeSystemBrowserPresenter categoriesFor: #historyBackMenu!history!public! !
+!JadeSystemBrowserPresenter categoriesFor: #historyForward!history!public! !
+!JadeSystemBrowserPresenter categoriesFor: #historyForwardMenu!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #horizontalSplitter!public! !
-!JadeSystemBrowserPresenter categoriesFor: #initialize!public! !
+!JadeSystemBrowserPresenter categoriesFor: #initialize!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #insertDictionary!public! !
 !JadeSystemBrowserPresenter categoriesFor: #inspectGlobal!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isCategoriesTabSelected!event handlers!public! !
@@ -3123,6 +3219,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #jadeExecuteAndDisplay:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeInspect!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
+!JadeSystemBrowserPresenter categoriesFor: #jumpToHistoryIndex:!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #labelOfClass:changedTo:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #labelOfClass:editedTo:accept:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #layoutInfo!public! !
@@ -3198,6 +3295,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #selectedClasses!public! !
 !JadeSystemBrowserPresenter categoriesFor: #selectedClassName:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #selectedClassNameWithoutVersion!public! !
+!JadeSystemBrowserPresenter categoriesFor: #selectedMethodChanged!event handlers!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setColorForCompileErrors!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setColorForNoEdits!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setColorForUnsavedEdits!menu handlers!public! !

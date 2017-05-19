@@ -194,8 +194,7 @@ updateAndSelect: aView
 
 	inUpdate ifTrue: [^self]. "when the browser is updating we avoid to register any data we must wait until the browser has finish"
 
-	self registerClassData.
-	self topShell updateHistoryFor: self.!
+	self registerClassData.!
 
 updateMethodList
 	"The receiver must keep update with any add/remove of a method in order to be acurate in the autocompletation"
