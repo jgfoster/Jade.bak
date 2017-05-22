@@ -25,7 +25,9 @@ OopType64 comment: '#define OOP_TAG_RAM_OOP     0x0 /* 2r000  memory pointer Obj
 
 = anOopType64
 
-	^self class == anOopType64 class and: [self value == anOopType64 value]!
+	^self class == anOopType64 class and: [
+		self value = anOopType64 value]	"Don't use == since OopType might not be a SmallInteger"
+!
 
 asFraction
 	"SmallFractions are special objects that can represent Fractions
