@@ -61,9 +61,12 @@ package classNames
 	add: #LibGciRpc64_3_2_13;
 	add: #LibGciRpc64_3_2_14;
 	add: #LibGciRpc64_3_2_15;
+	add: #LibGciRpc64_3_2_16;
 	add: #LibGciRpc64_3_3;
 	add: #LibGciRpc64_3_3_01;
 	add: #LibGciRpc64_3_3_03;
+	add: #LibGciRpc64_3_3_04;
+	add: #LibGciRpc64_3_3_05;
 	add: #LibGciRpc64_3_4;
 	add: #LibGciRpc64_310x;
 	add: #LibGciTs_3_3;
@@ -339,12 +342,27 @@ LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_15
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+LibGciRpc64_3_2 subclass: #LibGciRpc64_3_2_16
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 LibGciRpc64_3_3 subclass: #LibGciRpc64_3_3_01
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 LibGciRpc64_3_3 subclass: #LibGciRpc64_3_3_03
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_3 subclass: #LibGciRpc64_3_3_04
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+LibGciRpc64_3_3 subclass: #LibGciRpc64_3_3_05
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
