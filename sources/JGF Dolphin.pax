@@ -7,10 +7,6 @@ package basicPackageVersion: '0.010'.
 
 
 package methodNames
-	add: #KernelLibrary -> #getTickCount;
-	add: #KernelLibrary -> #hoursSinceSystemStartup;
-	add: #KernelLibrary -> #minutesSinceSystemStartup;
-	add: #KernelLibrary -> #secondsSinceSystemStartup;
 	add: #String -> #asBoolean;
 	add: #String -> #replaceCrLfWithLf;
 	add: #String -> #replaceLfWithCrLf;
@@ -18,9 +14,6 @@ package methodNames
 	add: #UserLibrary -> #exitWindowsEx:_:;
 	add: #UserLibrary -> #forceSystemLogoff;
 	add: #UserLibrary -> #forceSystemReboot;
-	add: #UserLibrary -> #getIdleSeconds;
-	add: #UserLibrary -> #getLastInputInfo;
-	add: #UserLibrary -> #getLastInputInfo:;
 	add: #WriteStream -> #lf;
 	yourself.
 
@@ -48,33 +41,6 @@ package!
 
 
 "Loose Methods"!
-
-!KernelLibrary methodsFor!
-
-getTickCount
-
-	<stdcall: dword GetTickCount>
-	^self invalidCall
-!
-
-hoursSinceSystemStartup
-
-	^self minutesSinceSystemStartup // 60.
-!
-
-minutesSinceSystemStartup
-
-	^self secondsSinceSystemStartup // 60.
-!
-
-secondsSinceSystemStartup
-
-	^self getTickCount // 1000
-! !
-!KernelLibrary categoriesFor: #getTickCount!JGF!public!win32 functions-date and time! !
-!KernelLibrary categoriesFor: #hoursSinceSystemStartup!JGF!public!win32 functions-date and time! !
-!KernelLibrary categoriesFor: #minutesSinceSystemStartup!JGF!public!win32 functions-date and time! !
-!KernelLibrary categoriesFor: #secondsSinceSystemStartup!JGF!public!win32 functions-date and time! !
 
 !String methodsFor!
 
@@ -128,48 +94,11 @@ forceSystemLogoff
 forceSystemReboot
 
 	^self exitWindowsEx: 2 + 4. "EWX_REBOOT + EWX_FORCE"
-!
-
-getIdleSeconds
-"
-(Delay forSeconds: 5) wait. UserLibrary default getIdleSeconds.
-"
-	| lastEvent current wrap |
-	lastEvent := self getLastInputInfo.
-	current := Time millisecondClockValue.
-	lastEvent <= current ifTrue: [^current - lastEvent // 1000].
-	wrap := 2 raisedTo: 32.
-	^current + wrap - lastEvent // 1000 \\ wrap.
-!
-
-getLastInputInfo
-
-	| buffer flag |
-	buffer := ByteArray new: 8.
-	buffer
-		dwordAtOffset: 0 
-		put: buffer size.
-	flag := self getLastInputInfo: buffer.
-	flag ifFalse: [self error: 'Unable to get last input time'].
-	^buffer dwordAtOffset: 4.
- !
-
-getLastInputInfo: anExternalBuffer
-"
-	BOOL GetLastInputInfo(	
-		PLASTINPUTINFO plii <>   // last input event
-	);
-"
-	<stdcall: bool GetLastInputInfo lpvoid>
-	^self invalidCall
 ! !
 !UserLibrary categoriesFor: #exitWindowsEx:!JGF!public!win32 functions-system information! !
 !UserLibrary categoriesFor: #exitWindowsEx:_:!JGF!public!win32 functions-system information! !
 !UserLibrary categoriesFor: #forceSystemLogoff!JGF!public!win32 functions-system information! !
 !UserLibrary categoriesFor: #forceSystemReboot!JGF!public!win32 functions-system information! !
-!UserLibrary categoriesFor: #getIdleSeconds!JGF!public!win32 functions-keyboard input! !
-!UserLibrary categoriesFor: #getLastInputInfo!JGF!public!win32 functions-keyboard input! !
-!UserLibrary categoriesFor: #getLastInputInfo:!JGF!public!win32 functions-keyboard input! !
 
 !WriteStream methodsFor!
 
