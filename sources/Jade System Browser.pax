@@ -127,6 +127,7 @@ package methodNames
 	add: #JadeServer64bit -> #systemBrowser:;
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:;
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:forUser:;
+	add: #JadeServer64bit34 -> #sbUpdateMethodsByCategories;
 	add: #JadeServer64bit3x -> #addMethodCategoryNamesToMethodFilters;
 	add: #JadeServer64bit3x -> #categoryOfMethod:;
 	add: #JadeServer64bit3x -> #class:includesSelector:;
@@ -2016,6 +2017,25 @@ dictionaryAndSymbolOf: aClass forUser: aUserProfile
 ! !
 !JadeServer64bit32 categoriesFor: #dictionaryAndSymbolOf:!public! !
 !JadeServer64bit32 categoriesFor: #dictionaryAndSymbolOf:forUser:!public! !
+
+!JadeServer64bit34 methodsFor!
+
+sbUpdateMethodsByCategories
+
+	| selectors |
+	selectors := IdentitySet new.
+	classList do: [:eachClass |
+		(eachClass selectorsForEnvironment: environment) do: [:eachSelector |
+			| category |
+			category := eachClass categoryOfSelector: eachSelector environmentId: environment.
+			((category isNil and: [methodFilters includes: #'other']) or: [methodFilters includes: category]) ifTrue: [
+				selectors add: eachSelector.
+			].
+		].
+	].
+	^selectors.
+! !
+!JadeServer64bit34 categoriesFor: #sbUpdateMethodsByCategories!public!System Browser! !
 
 !JadeServer64bit3x methodsFor!
 

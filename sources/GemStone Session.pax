@@ -288,7 +288,7 @@ jadeServerClass
 
 jadeServerClass
 
-	^JadeServer64bit33
+	^JadeServer64bit34
 ! !
 !LibGciRpc64_3_4 categoriesFor: #jadeServerClass!public! !
 
