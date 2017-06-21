@@ -122,9 +122,9 @@ getPackagesNamesWithTestClasses
 	"Answer a collection with all package names that contain at least one Test class (subclass of TestCase)"
 
 	| comma packageOrganizer packageOrganizerClass packagesNames stream testCaseClass |
-	testCaseClass := self objectNamed: #'TestCase'.
+	testCaseClass := self objectInBaseNamed: #'TestCase'.
 	testCaseClass isNil ifTrue: [^''].
-	packageOrganizerClass := self objectNamed: #'PackageOrganizer'.
+	packageOrganizerClass := self objectInBaseNamed: #'PackageOrganizer'.
 	packageOrganizerClass isNil ifTrue: [^'<All>'].
 	packageOrganizer := packageOrganizerClass default.
 	packagesNames := Set new.
@@ -149,10 +149,10 @@ getTestCaseClassesNamesOf: packageName
 
 	| classes comma stream |
 	packageName isEmpty ifTrue: [^''].
-	classes := (self objectNamed: #'TestCase') allSubclasses.
+	classes := (self objectInBaseNamed: #'TestCase') allSubclasses.
 	packageName = '<All>' ifFalse: [
 		| packageInfo packageOrganizer |
-		packageOrganizer := (self objectNamed: #'PackageOrganizer') default.
+		packageOrganizer := (self objectInBaseNamed: #'PackageOrganizer') default.
 		packageInfo := packageOrganizer packageNamed: packageName ifAbsent: [^''].
 		packageInfo classes isEmpty ifTrue: [^''].
 		classes := packageInfo classes select: [:each | classes includes: each].

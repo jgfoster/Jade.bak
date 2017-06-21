@@ -291,7 +291,7 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 				using: aSymbolList
 				environmentId: 0.
 			nil.
-		] on: (self objectNamed: #'UndefinedSymbolNotification') do: [:ex | 
+		] on: (self objectInBaseNamed: #'UndefinedSymbolNotification') do: [:ex | 
 			ex resume: false.
 		].
 	] ifFalse: [(aBehavior class canUnderstand: #'compileMethod:category:using:') ifTrue: [
@@ -301,7 +301,7 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 				category: categorySymbol
 				using: aSymbolList.
 			nil.
-		] on: (self objectNamed: #'UndefinedSymbolNotification') do: [:ex | 
+		] on: (self objectInBaseNamed: #'UndefinedSymbolNotification') do: [:ex | 
 			ex resume: false.
 		].
 	] ifFalse: [

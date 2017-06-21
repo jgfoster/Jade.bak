@@ -512,7 +512,7 @@ gsPackagePolicy
 
 gsPackagePolicyClass
 
-	^self objectNamed: #'GsPackagePolicy'.
+	^self objectInBaseNamed: #'GsPackagePolicy'.
 !
 
 mcAddHttpRepository: aString
@@ -618,7 +618,7 @@ mcCreationTemplateFor: anMCRepository
 
 mcHttpRepository
 
-	^self objectNamed: #'MCHttpRepository'.
+	^self objectInBaseNamed: #'MCHttpRepository'.
 !
 
 mcHttpRepository: aRepository user: userString password: passwordString
@@ -631,7 +631,7 @@ mcHttpRepository: aRepository user: userString password: passwordString
 
 mcHttpRepositoryClass
 
-	^self objectNamed: #'MCHttpRepository'.
+	^self objectInBaseNamed: #'MCHttpRepository'.
 !
 
 mcInitials: aString
@@ -644,9 +644,9 @@ mcInitials: aString
 	] whileFalse: [	"Keep shortening it till it fits!!"
 		string := string copyFrom: 1 to: string size - 1.
 	].
-	mcPlatformSupport := self objectNamed: #'MCPlatformSupport'.
+	mcPlatformSupport := self objectInBaseNamed: #'MCPlatformSupport'.
 	mcPlatformSupport notNil ifTrue: [mcPlatformSupport setAuthorInitials: aString].
-	packagePolicyEnabledFlag := (x := self objectNamed: #'GsPackagePolicy') isNil ifTrue: ['0'] ifFalse: [x current enabled ifTrue: ['1'] ifFalse: ['0']].
+	packagePolicyEnabledFlag := (x := self objectInBaseNamed: #'GsPackagePolicy') isNil ifTrue: ['0'] ifFalse: [x current enabled ifTrue: ['1'] ifFalse: ['0']].
 	^System session printString , Character space asString , 
 		(GsSession serialOfSession: System session) printString , Character space asString , 
 		packagePolicyEnabledFlag
@@ -683,8 +683,8 @@ mcLoadedVersionNames
 mcNewDirectoryRepository: aString
 
 	| mcRepositoryClass fileDirectoryClass repository |
-	(mcRepositoryClass := self objectNamed: #'MCDirectoryRepository') isNil ifTrue: [self error: 'Monticello not available!!'].
-	(fileDirectoryClass := self objectNamed: #'FileDirectory') isNil ifTrue: [self error: 'Monticello not available!!'].
+	(mcRepositoryClass := self objectInBaseNamed: #'MCDirectoryRepository') isNil ifTrue: [self error: 'Monticello not available!!'].
+	(fileDirectoryClass := self objectInBaseNamed: #'FileDirectory') isNil ifTrue: [self error: 'Monticello not available!!'].
 	repository := mcRepositoryClass new directory: (fileDirectoryClass on: aString).
 	self mcRepositoryGroup addRepository: repository.
 	^repository!
@@ -692,8 +692,8 @@ mcNewDirectoryRepository: aString
 mcNewFileTreeRepository: aString
 
 	| mcRepositoryClass fileDirectoryClass repository |
-	(mcRepositoryClass := self objectNamed: #'MCFileTreeRepository') isNil ifTrue: [self error: 'Monticello not available!!'].
-	(fileDirectoryClass := self objectNamed: #'ServerFileDirectory') isNil ifTrue: [self error: 'Monticello not available!!'].
+	(mcRepositoryClass := self objectInBaseNamed: #'MCFileTreeRepository') isNil ifTrue: [self error: 'Monticello not available!!'].
+	(fileDirectoryClass := self objectInBaseNamed: #'ServerFileDirectory') isNil ifTrue: [self error: 'Monticello not available!!'].
 	repository := mcRepositoryClass new directory: (fileDirectoryClass on: aString).
 	self mcRepositoryGroup addRepository: repository.
 	^repository!
@@ -701,7 +701,7 @@ mcNewFileTreeRepository: aString
 mcNewGitHubRepository: aString
 
 	| mcRepositoryClass repository |
-	(mcRepositoryClass := self objectNamed: #'MCGitHubRepository') isNil ifTrue: [self error: 'Monticello not available!!'].
+	(mcRepositoryClass := self objectInBaseNamed: #'MCGitHubRepository') isNil ifTrue: [self error: 'Monticello not available!!'].
 	repository := mcRepositoryClass location: aString.
 	self mcRepositoryGroup addRepository: repository.
 	^mcRepositoryClass!
@@ -709,15 +709,15 @@ mcNewGitHubRepository: aString
 mcNewServerDirectoryRepository: aString
 
 	| mcDirectoryRepositoryClass fileDirectoryClass repository |
-	(mcDirectoryRepositoryClass := self objectNamed: #'MCServerDirectoryRepository') isNil ifTrue: [self error: 'Monticello not available!!'].
-	(fileDirectoryClass := self objectNamed: #'ServerFileDirectory') isNil ifTrue: [self error: 'Monticello not available!!'].
+	(mcDirectoryRepositoryClass := self objectInBaseNamed: #'MCServerDirectoryRepository') isNil ifTrue: [self error: 'Monticello not available!!'].
+	(fileDirectoryClass := self objectInBaseNamed: #'ServerFileDirectory') isNil ifTrue: [self error: 'Monticello not available!!'].
 	repository := mcDirectoryRepositoryClass new directory: (fileDirectoryClass on: aString).
 	self mcRepositoryGroup addRepository: repository.
 	^repository!
 
 mcPackageClass
 
-	^self objectNamed: #'MCPackage'.
+	^self objectInBaseNamed: #'MCPackage'.
 !
 
 mcPatchFrom: aString1 to: aString2 inDictionaryRepository: aDictionaryRepository
@@ -761,9 +761,9 @@ mcPatchFrom: aString1 to: aString2 inFileBasedRepository: aFileRepository
 mcputDefinition: aDefinition on: aStream
 
 	| mcOrganizationDefinitionClass mcClassDefinitionClass mcMethodDefinitionClass |
-	(mcOrganizationDefinitionClass := self objectNamed: 'MCOrganizationDefinition') isNil ifTrue: [^nil].
-	(mcClassDefinitionClass := self objectNamed: 'MCClassDefinitionClass') isNil ifTrue: [^nil].
-	(mcMethodDefinitionClass := self objectNamed: 'MCMethodDefinition') isNil ifTrue: [^nil].
+	(mcOrganizationDefinitionClass := self objectInBaseNamed: 'MCOrganizationDefinition') isNil ifTrue: [^nil].
+	(mcClassDefinitionClass := self objectInBaseNamed: 'MCClassDefinitionClass') isNil ifTrue: [^nil].
+	(mcMethodDefinitionClass := self objectInBaseNamed: 'MCMethodDefinition') isNil ifTrue: [^nil].
 
 	self _addToPureExportSet: aDefinition.
 		aStream nextPutAll: (self oopOf: aDefinition) printString; tab;
@@ -825,7 +825,7 @@ mcRepositoryFrom: aRepository
 mcRepositoryGroup
 
 	| groupClass |
-	(groupClass := self objectNamed: 'MCRepositoryGroup') isNil ifTrue: [^nil].
+	(groupClass := self objectInBaseNamed: 'MCRepositoryGroup') isNil ifTrue: [^nil].
 	^groupClass default.
 !
 
@@ -845,7 +845,7 @@ mcStore: aMCWorkingCopy name: nameString message: messageString repository: aRep
 
 	| version |
 	version := (aMCWorkingCopy needsSaving not and: [aMCWorkingCopy currentVersionInfo name = nameString]) ifTrue: [
-		(self objectNamed: #'MCVersion')
+		(self objectInBaseNamed: #'MCVersion')
 			package: aMCWorkingCopy package
 			info: aMCWorkingCopy currentVersionInfo.
 	] ifFalse: [
@@ -854,7 +854,7 @@ mcStore: aMCWorkingCopy name: nameString message: messageString repository: aRep
 			message: messageString.
 	].
 	aRepository storeVersion: version.
-	(self objectNamed: #'MCCacheRepository') default storeVersion: version.
+	(self objectInBaseNamed: #'MCCacheRepository') default storeVersion: version.
 !
 
 mcTopazFrom: aString inDictionaryRepository: aDictionaryRepository
@@ -938,7 +938,7 @@ mcVersionInfoFromFileNamed: aString in: anMCFileBasedRepository
 mcVersionLoad: aString fromDictionary: anMCDictionaryRepository autoMigrate: aBoolean
 
 	| version package workingCopy mcPlatformSupport autoMigrate |
-	mcPlatformSupport := self objectNamed: #'MCPlatformSupport'.
+	mcPlatformSupport := self objectInBaseNamed: #'MCPlatformSupport'.
 	autoMigrate := mcPlatformSupport autoMigrate.
 	mcPlatformSupport autoMigrate: aBoolean.
 	version := anMCDictionaryRepository versionFromVersionNamed: aString.
@@ -952,7 +952,7 @@ mcVersionLoad: aString fromDictionary: anMCDictionaryRepository autoMigrate: aBo
 mcVersionLoad: aString fromFile: anMCFileBasedRepository autoMigrate: aBoolean
 
 	| version package workingCopy mcPlatformSupport autoMigrate |
-	mcPlatformSupport := self objectNamed: #'MCPlatformSupport'.
+	mcPlatformSupport := self objectInBaseNamed: #'MCPlatformSupport'.
 	autoMigrate := mcPlatformSupport autoMigrate.
 	mcPlatformSupport autoMigrate: aBoolean.
 	version := anMCFileBasedRepository loadVersionFromFileNamed: aString.
@@ -966,7 +966,7 @@ mcVersionLoad: aString fromFile: anMCFileBasedRepository autoMigrate: aBoolean
 mcVersionMerge: aString from: anMCFileBasedRepository autoMigrate: aBoolean
 
 	| version mcPlatformSupport autoMigrate workingCopy |
-	mcPlatformSupport := self objectNamed: #'MCPlatformSupport'.
+	mcPlatformSupport := self objectInBaseNamed: #'MCPlatformSupport'.
 	autoMigrate := mcPlatformSupport autoMigrate.
 	mcPlatformSupport autoMigrate: aBoolean.
 	version := anMCFileBasedRepository loadVersionFromFileNamed: aString.
@@ -974,10 +974,10 @@ mcVersionMerge: aString from: anMCFileBasedRepository autoMigrate: aBoolean
 	[
 		[
 			workingCopy merge: version.
-		] on: (self objectNamed: #'MCNoChangesException') do: [:ex | 
+		] on: (self objectInBaseNamed: #'MCNoChangesException') do: [:ex | 
 			ex return.
 		].
-	] on: (self objectNamed: #'MCMergeResolutionRequest') do: [:ex | 
+	] on: (self objectInBaseNamed: #'MCMergeResolutionRequest') do: [:ex | 
 self halt.
 		ex merger conflicts do: [:each | each chooseRemote].
 		ex merger load.
@@ -1013,7 +1013,7 @@ mcwcbWorkingCopies
 
 mcWorkingCopyClass
 
-	^self objectNamed: #'MCWorkingCopy'.
+	^self objectInBaseNamed: #'MCWorkingCopy'.
 !
 
 mcWorkingCopyNamed: aString
