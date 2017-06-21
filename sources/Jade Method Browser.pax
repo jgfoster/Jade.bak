@@ -5,6 +5,7 @@ package paxVersion: 1;
 
 package basicPackageVersion: '0.087'.
 
+package basicScriptAt: #postinstall put: 'JadeMethodListPresenter setListView.'.
 
 package classNames
 	add: #GsMethod2;

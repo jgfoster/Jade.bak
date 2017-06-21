@@ -85,8 +85,6 @@ fileSave
 		"Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"
 
 	| user theClass newSelector category string stream list warnings errors index a b c methodExists |
-Transcript cr; show: 'MethodSourcePresenter>>#fileSave'.
-
 	(theClass := gsMethod behavior) isNil ifTrue: [^true].
 	newSelector := self newSelector.
 	currentSelector = newSelector ifFalse: [
@@ -246,8 +244,8 @@ newSelector
 		2 < index ifTrue: [string := string copyFrom: 1 to: index - 1].
 	].
 	list := string subStrings.
-	string first isPunctuation ifTrue: [^list first].
-	list first last = $: ifFalse: [^list first].
+	string first isPunctuation ifTrue: [^list first asSymbol].
+	list first last = $: ifFalse: [^list first asSymbol].
 	stream := WriteStream on: String new.
 	index := 1.
 	[
@@ -256,7 +254,7 @@ newSelector
 		stream nextPutAll: (list at: index).
 		index := index + 2.
 	].
-	^stream contents.
+	^stream contents asSymbol.
 
 
 !
