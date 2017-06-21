@@ -51,7 +51,7 @@ browseMethodsContaining
 
 browseSenders
 
-	super browseImplementorsOf: methodListPresenter selection.
+	super browseSendersOf: methodListPresenter selection.
 
 	"parentPresenter browseImplementorsOf: methodListPresenter selection"
 !
