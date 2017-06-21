@@ -498,7 +498,7 @@ sbBrowseImplementors: anOrderedCollection
 sbBrowseMethodHistory: anOrderedCollection
 
 	| behavior selector historyClass historyList |
-	historyClass := self objectNamed: #'MethodVersionHistory'.
+	historyClass := self objectInBaseNamed: #'MethodVersionHistory'.
 	historyClass isNil ifTrue: [^self].
 	behavior := self sbClassFrom: anOrderedCollection.
 	selector := anOrderedCollection removeFirst asSymbol.
@@ -636,7 +636,7 @@ sbClassCategory: aList
 	category := aList removeFirst.
 	category := category copyFrom: 1 to: category size - 1.
 	classes := aList removeFirst subStrings reject: [:each | each isEmpty].
-	classes := classes collect: [:each | System myUserProfile symbolList objectNamed: each asSymbol].
+	classes := classes collect: [:each | self objectNamed: each asSymbol].
 	classes := classes collect: [:each | each thisClass].
 	classes do: [:each | each category: category].
 	self systemBrowserUpdate.
@@ -646,8 +646,8 @@ sbClassComment: anOrderedCollection
 
 	| class doc txt |
 	class := (self sbClassFrom: anOrderedCollection) thisClass.
-	doc := (self objectNamed: #'GsClassDocumentation') newForClass: self.
-	txt := (self objectNamed: #'GsDocText') new details: self sbNextParagraph trimSeparators.
+	doc := (self objectInBaseNamed: #'GsClassDocumentation') newForClass: self.
+	txt := (self objectInBaseNamed: #'GsDocText') new details: self sbNextParagraph trimSeparators.
 	doc documentClassWith: txt.
 	class description: doc.
 	self systemBrowserUpdate.
@@ -817,7 +817,7 @@ sbFindClassPackageMap
 
 	| systemOrganizerClass mcWorkingCopyClass dictionary packageInfoList |
 	dictionary := Dictionary new.
-	(systemOrganizerClass := self objectNamed: #'SystemOrganizer') isNil ifTrue: [^dictionary].
+	(systemOrganizerClass := self objectInBaseNamed: #'SystemOrganizer') isNil ifTrue: [^dictionary].
 	(mcWorkingCopyClass := self mcWorkingCopyClass) isNil ifTrue: [^dictionary].
 	packageInfoList := mcWorkingCopyClass allManagers collect: [:each | each packageInfo].
 	systemOrganizerClass new categoryDict keysAndValuesDo: [:catName :classes |
@@ -924,13 +924,13 @@ sbMethodClass: anOrderedCollection
 sbMigrateAll: aClass
 
 	| mcPlatformSupport classes instances |
-	((mcPlatformSupport := self objectNamed: #'MCPlatformSupport') notNil and: [mcPlatformSupport autoMigrate]) ifTrue: [^self].
+	((mcPlatformSupport := self objectInBaseNamed: #'MCPlatformSupport') notNil and: [mcPlatformSupport autoMigrate]) ifTrue: [^self].
 	System commitTransaction ifFalse: [self error: 'commit failed!!'].
 	classes := (ClassOrganizer new allSubclassesOf: aClass) 
 		inject: (IdentitySet withAll: (self historyOf: aClass))
 		into: [:set :each | set addAll: (self historyOf: each); yourself].
 	classes := classes asArray.
-	instances := (self objectNamed: #'SystemRepository') listInstances: classes.
+	instances := (self objectInBaseNamed: #'SystemRepository') listInstances: classes.
 	1 to: classes size do: [:i | 
 		| class |
 		class := classes at: i.
@@ -1335,7 +1335,7 @@ sbUpdateClassHierarchy
 		currentClass := currentClass superclass.
 	].
 	writeStream lf;
-		nextPutAll: (selectedClass notNil and: [(testCaseClass := self objectNamed: #'TestCase') notNil and: [selectedClass inheritsFrom: testCaseClass]]) printString; tab;
+		nextPutAll: (selectedClass notNil and: [(testCaseClass := self objectInBaseNamed: #'TestCase') notNil and: [selectedClass inheritsFrom: testCaseClass]]) printString; tab;
 		lf.
 !
 
@@ -1386,7 +1386,7 @@ sbUpdateClassList
 	mySelections := classList select: [:eachClass | mySelections includes: eachClass name].
 	mySelections do: [:each | self sbAddNameOf: each].
 	writeStream lf.
-	(testCaseClass := self objectNamed: #'TestCase') isNil ifTrue: [
+	(testCaseClass := self objectInBaseNamed: #'TestCase') isNil ifTrue: [
 		false printOn: writeStream.
 	] ifFalse: [
 		(mySelections allSatisfy: [:each | each  inheritsFrom: testCaseClass]) printOn: writeStream.

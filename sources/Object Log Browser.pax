@@ -63,8 +63,8 @@ JadeShell subclass: #ObjectLogEntryViewer
 sbObjectLog: anOrderedCollection
 
 	| command priorities class log debuggerLogEntryClass | 
-	(class := self objectNamed: #'ObjectLogEntry') isNil ifTrue: [^self].
-	debuggerLogEntryClass := self objectNamed: #'DebuggerLogEntry'.
+	(class := self objectInBaseNamed: #'ObjectLogEntry') isNil ifTrue: [^self].
+	debuggerLogEntryClass := self objectInBaseNamed: #'DebuggerLogEntry'.
 	(command := anOrderedCollection removeFirst) = 'delete' ifTrue: [
 		anOrderedCollection do: [:each | 			| oop entry |
 			oop := each asNumber.			entry := class objectLog detect: [:each2 | (self oopOf: each2) = oop] ifNone: [nil].			entry notNil ifTrue: [class objectLog remove: entry].

@@ -2,7 +2,7 @@
 
 Object subclass: #JadeServer
 	instanceVariableNames: 'classList classOrganizer readStream writeStream selectedClass methodFilterType methodFilters selections'
-	classVariableNames: 'AllGroups AllUsers ClassOrganizer ClientForwarder GemStoneError Globals GsMethodDictionary ProcessorScheduler SymbolDictionary System UserGlobals UserProfile'
+	classVariableNames: 'AllGroups AllUsers ClassOrganizer ClientForwarder GemStoneError Globals GsMethodDictionary ProcessorScheduler SymbolDictionary SymbolList System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
 JadeServer guid: (GUID fromString: '{fc038152-9707-4c5f-8977-a1f8d02eb005}')!
@@ -177,7 +177,7 @@ initialize
 installTranscript
 
 	| transcript |
-	transcript := self objectNamed: #'Transcript'.
+	transcript := self objectInBaseNamed: #'Transcript'.
 
 	"If no Transcript object, then install me!!"
 	(transcript == nil or: [transcript class name == self class name]) ifTrue: [
@@ -250,6 +250,11 @@ objectForOop: anInteger
 
 	self subclassResponsibility.!
 
+objectInBaseNamed: aString
+
+	^(SymbolList withAll: self class sharedPools) objectNamed: aString asSymbol.
+!
+
 objectNamed: aString
 
 	^System myUserProfile objectNamed: aString asSymbol.
@@ -281,7 +286,7 @@ refreshSymbolList
 registerOBNotifications
 
 	| platform clientForwarder |
-	(platform := self objectNamed: #'OBGemStonePlatform') isNil ifTrue: [^self].
+	(platform := self objectInBaseNamed: #'OBGemStonePlatform') isNil ifTrue: [^self].
 	clientForwarder := ClientForwarder new.
 	clientForwarder	clientObject: 1.
 	self
@@ -364,6 +369,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #obConfirmationRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #obInformRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #objectForOop:!private! !
+!JadeServer categoriesFor: #objectInBaseNamed:!private! !
 !JadeServer categoriesFor: #objectNamed:!private! !
 !JadeServer categoriesFor: #obTextRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #oopOf:!private! !
@@ -422,8 +428,10 @@ gsString
 	| stream |
 	SessionManager current isRuntime ifTrue: [^gsString].
 	(stream := WriteStream on: String new)
-		nextPutAll: '| class symbolList source server result mcPlatformSupport |'; lf;
+		nextPutAll: '[| class symbolList source server result mcPlatformSupport |'; lf;
 		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
+		nextPutAll: 'symbolList := (AllUsers userWithId: ''DataCurator'') symbolList.'; lf;
+		nextPutAll: 'symbolList := SymbolList new add: (symbolList detect: [:each | each name == #UserGlobals]); add: (symbolList detect: [:each | each name == #Globals]); yourself.'; lf;
 		nextPutAll: 'class := Object.'; lf;
 		yourself.
 	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | self addGsStringForClass: eachClass to: stream].
@@ -432,7 +440,7 @@ gsString
 		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
 		nextPutAll: 'server := class new initialize; yourself.'; lf;
 		nextPutAll: self sessionStateCode; lf;
-		nextPutAll: 'server';
+		nextPutAll: 'server] on: Error do: [:ex | ex return: (GsProcess stackReportToLevel: 100)]';
 		yourself.
 	gsString := stream contents.
 	^gsString.
