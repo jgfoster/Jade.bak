@@ -61,6 +61,9 @@ clearBreakAtStepPoint: anInteger
 	method clearBreakAtStepPoint: anInteger.
 !
 
+clearSelection
+	^self editDelete!
+
 codeFont: aFont
 
 	documentPresenter view font: aFont.
@@ -294,6 +297,9 @@ removeQuotesFromSelection
 	documentPresenter view replaceSelection: string.
 !
 
+selectAll
+	^self editSelectAll!
+
 selectionChanging: aSelectionChangingEvent 
 
 	(documentPresenter view isKindOf: DeafObject) ifTrue: [^self].
@@ -428,6 +434,7 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #browseSelectedClass!public! !
 !CodeSourcePresenter categoriesFor: #browseSenders!public! !
 !CodeSourcePresenter categoriesFor: #clearBreakAtStepPoint:!Breakpoints!public! !
+!CodeSourcePresenter categoriesFor: #clearSelection!public! !
 !CodeSourcePresenter categoriesFor: #codeFont:!public! !
 !CodeSourcePresenter categoriesFor: #codePresenterIsMethod!public! !
 !CodeSourcePresenter categoriesFor: #copySelection!edit!private! !
@@ -457,6 +464,7 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #queryCommand:!public! !
 !CodeSourcePresenter categoriesFor: #removeMenu!menus!public! !
 !CodeSourcePresenter categoriesFor: #removeQuotesFromSelection!edit!private! !
+!CodeSourcePresenter categoriesFor: #selectAll!public! !
 !CodeSourcePresenter categoriesFor: #selectionChanging:!public! !
 !CodeSourcePresenter categoriesFor: #selectLfIfEndingOnCr!edit!private! !
 !CodeSourcePresenter categoriesFor: #setBreakAtStepPoint:!Breakpoints!public! !
