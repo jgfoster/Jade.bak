@@ -105,8 +105,10 @@ package methodNames
 	add: #JadeServer -> #sbUpdateMethodFilter;
 	add: #JadeServer -> #sbUpdateMethodFilterSelections;
 	add: #JadeServer -> #sbUpdateMethodInheritedImplementationsOf:;
+	add: #JadeServer -> #sbUpdateMethodPragmas;
 	add: #JadeServer -> #sbUpdateMethods;
 	add: #JadeServer -> #sbUpdateMethodsByCategories;
+	add: #JadeServer -> #sbUpdateMethodsByPragmas;
 	add: #JadeServer -> #sbUpdateMethodsByVariables;
 	add: #JadeServer -> #sbUpdateMethodSelectionsIn:;
 	add: #JadeServer -> #sbUpdateMethodStepPointsFor:;
@@ -190,7 +192,7 @@ package!
 "Class Definitions"!
 
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
-	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel historyList historyIndex ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodListPresenter methodSource methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints sunitPresenter superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
+	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel historyList historyIndex ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodFilterTabs methodListPresenter methodSource methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter pragmaListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints sunitPresenter superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1482,6 +1484,7 @@ sbUpdateMethodFilter
 	selectedClass isNil ifTrue: [^self].
 	methodFilterType = 'categoryList' ifTrue: [^self sbUpdateMethodCategories].
 	methodFilterType = 'variableList' ifTrue: [^self sbUpdateMethodVariables].
+	methodFilterType = 'pragmaList' ifTrue: [^self sbUpdateMethodPragmas].
 	self error: 'Unexpected token!!'.
 !
 
@@ -1509,6 +1512,19 @@ sbUpdateMethodInheritedImplementationsOf: aSymbol
 	^classes reverse.
 !
 
+sbUpdateMethodPragmas
+
+	| currentClass |
+	currentClass := ((self objectInBaseNamed: #'Pragma') notNil and: [selectedClass notNil]) ifTrue: [selectedClass] ifFalse: [nil].
+	methodFilters := Set new.
+	currentClass notNil ifTrue: [
+		currentClass methodDictionary do: [:each | methodFilters addAll: each pragmas].
+	].
+	methodFilters := methodFilters asSortedCollection: [:a :b | a > b].
+	self writeList: methodFilters.
+	self sbUpdateMethodFilterSelections.
+!
+
 sbUpdateMethods
 
 	| selectors isTestClass gsPackagePolicy anySatisfy |
@@ -1520,7 +1536,9 @@ sbUpdateMethods
 	isTestClass := anySatisfy ifTrue: [$T] ifFalse: [$F].
 	gsPackagePolicy := self gsPackagePolicy.
 	methodFilterType = 'categoryList' ifTrue: [selectors := self sbUpdateMethodsByCategories] ifFalse: [
-	methodFilterType = 'variableList' ifTrue: [selectors := self sbUpdateMethodsByVariables] ifFalse: [self error: 'Unrecognized methodFilterType: ' , methodFilterType printString]].
+	methodFilterType = 'variableList' ifTrue: [selectors := self sbUpdateMethodsByVariables] ifFalse: [
+	methodFilterType = 'pragmaList' ifTrue: [selectors := self sbUpdateMethodsByPragmas] ifFalse: [
+		self error: 'Unrecognized methodFilterType: ' , methodFilterType printString]]].
 	selectors := selectors asSortedCollection.
 	selectors do: [:each | 	"JadeSystemBrowserPresenter>>#'updateMethodList' "
 		writeStream 
@@ -1543,6 +1561,19 @@ sbUpdateMethodsByCategories
 		eachClass selectors do: [:eachSelector |
 			(methodFilters includes: (eachClass categoryOfSelector: eachSelector)) ifTrue: [selectors add: eachSelector].
 		].
+	].
+	^selectors.
+!
+
+sbUpdateMethodsByPragmas
+
+	| selectors |
+	selectors := IdentitySet new.
+	methodFilters isEmpty ifTrue: [^#()].
+	selectedClass selectors do: [:eachSelector | 
+		| gsMethod |
+		gsMethod := selectedClass compiledMethodAt: eachSelector.
+		(gsMethod pragmas * methodFilters) notEmpty ifTrue: [selectors add: eachSelector].
 	].
 	^selectors.
 !
@@ -1936,8 +1967,10 @@ writeList: aList
 !JadeServer categoriesFor: #sbUpdateMethodFilter!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodFilterSelections!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodInheritedImplementationsOf:!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodPragmas!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethods!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodsByCategories!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodsByPragmas!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodsByVariables!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodSelectionsIn:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodStepPointsFor:!public!System Browser! !

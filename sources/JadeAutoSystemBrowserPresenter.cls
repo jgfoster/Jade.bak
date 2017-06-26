@@ -178,9 +178,9 @@ restoreFrom: aJadeHistoryEntry
 			classListPresenter selection: aJadeHistoryEntry className ifAbsent: []].
 
 	aJadeHistoryEntry isCategoriesSelected 
-	ifTrue: [self isCategoriesTabSelected ifFalse: [categoryVariableTabs previousCard].
+	ifTrue: [self isCategoriesTabSelected ifFalse: [methodFilterTabs previousCard].
 			categoryListPresenter selection: aJadeHistoryEntry categoriesOrVariables ifAbsent: [].] 
-	ifFalse: [self isCategoriesTabSelected ifTrue: [categoryVariableTabs nextCard].
+	ifFalse: [self isCategoriesTabSelected ifTrue: [methodFilterTabs nextCard].
 			variableListPresenter selection: aJadeHistoryEntry categoriesOrVariables ifAbsent: [].].
 
 	methodListPresenter selection: aJadeHistoryEntry methodName ifAbsent: [].

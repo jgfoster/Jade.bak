@@ -54,7 +54,7 @@ closeRequested: anAssociation
 
 	anAssociation value ifTrue: [
 		self isOkayToChange ifTrue: [
-			self saveLayoutAndContents.
+			[self saveLayoutAndContents] on: Error do: [:ex | ex return].
 		] ifFalse: [
 			anAssociation value: false.
 		].
