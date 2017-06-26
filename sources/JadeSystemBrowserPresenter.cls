@@ -472,6 +472,7 @@ createComponents
 	originalSourcePresenter	:= self add: self newMethodPresenter 	name: 'originalSource'.
 	overrideListPresenter	:= self add: ListPresenter		new 		name: 'overrideList'.
 	packageListPresenter 	:= self add: ListPresenter		new 		name: 'packageList'.
+	pragmaListPresenter		:= self add: ListPresenter		new		name: 'pragmaList'.
 	repositoryListPresenter	:= self add: ListPresenter		new 		name: 'repositoryList'.
 	sunitPresenter 			:= self add: JadeSUnitInClassPresenter new name: 'sunit'.
 	superclassListPresenter	:= self add: ListPresenter		new 		name: 'superclassList'.
@@ -490,6 +491,7 @@ createSchematicWiring
 		createSchematicWiringForDictionaryList;
 		createSchematicWiringForPackageList;
 		createSchematicWiringForPackageDictionaryTabs;
+		createSchematicWiringForPragmaList;
 		createSchematicWiringForMethodSource;
 		createSchematicWiringForClassDefinition;
 		createSchematicWiringForMethodCategoryList;
@@ -639,6 +641,16 @@ createSchematicWiringForPackageList
 		when: #'selectionChanged' 		send: #'ensureVisible'				to: packageInfoTab;
 		when: #'selectionChanged' 		send: #'list:' 					to: globalsPresenter 	with: #();
 		when: #'selectionChanged'		send: #'updateAndSelect:'			to: self			with: packageInfoTab;
+		yourself.
+!
+
+createSchematicWiringForPragmaList
+
+	pragmaListPresenter
+		when: #'keyTyped:'			send: #'delayUpdate'		to: self;
+		when: #'selectionChanging:'	send: #'aboutToChange:'	to: self;
+		when: #'selectionChanged'		send: #'updateAndSelect:'	to: self	with: methodSourcePresenter;
+		when: #'selectionChanged'		send: #'updateTabLabel'	to: self;
 		yourself.
 !
 
@@ -1426,7 +1438,7 @@ methodFilterListPresenter
 	name := methodFilterTabs currentCard name.
 	name = 'categoryList' ifTrue: [^categoryListPresenter].
 	name = 'variableList' ifTrue: [^variableListPresenter].
-	name = 'pragmaList' ifTrue: [^variableListPresenter].
+	name = 'pragmaList' ifTrue: [^pragmaListPresenter].
 	self error: 'Unrecognized method filter name'.
 !
 
@@ -2369,19 +2381,20 @@ setHomeDictionary
 
 setSearchPolicy
 
-	packageListPresenter 	view model searchPolicy: SearchPolicy equality.
-	dictionaryListPresenter 	view model searchPolicy: SearchPolicy equality.
-	classCategoryPresenter	view model searchPolicy: SearchPolicy equality.
-	classListPresenter		view model searchPolicy: SearchPolicy equality.
-	classHierarchyPresenter	view model searchPolicy: SearchPolicy equality.
+	ancestorListPresenter 	view model searchPolicy: SearchPolicy equality.
 	categoryListPresenter 	view model searchPolicy: SearchPolicy equality.
-	variableListPresenter	 	view model searchPolicy: SearchPolicy equality.
-	superclassListPresenter	view model searchPolicy: SearchPolicy equality.
+	classCategoryPresenter	view model searchPolicy: SearchPolicy equality.
+	classHierarchyPresenter	view model searchPolicy: SearchPolicy equality.
+	classListPresenter		view model searchPolicy: SearchPolicy equality.
+	dictionaryListPresenter 	view model searchPolicy: SearchPolicy equality.
+	globalsPresenter		view model searchPolicy: SearchPolicy equality.
 	methodListPresenter		view model searchPolicy: SearchPolicy equality.
 	overrideListPresenter	view model searchPolicy: SearchPolicy equality.
-	ancestorListPresenter 	view model searchPolicy: SearchPolicy equality.
+	packageListPresenter 	view model searchPolicy: SearchPolicy equality.
+	pragmaListPresenter		view model searchPolicy: SearchPolicy equality.
 	repositoryListPresenter	view model searchPolicy: SearchPolicy equality.
-	globalsPresenter		view model searchPolicy: SearchPolicy equality.
+	superclassListPresenter	view model searchPolicy: SearchPolicy equality.
+	variableListPresenter	 	view model searchPolicy: SearchPolicy equality.
 !
 
 showPackageChanges
@@ -3166,6 +3179,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForOverrideList!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForPackageDictionaryTabs!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForPackageList!create schemantic wiring!public! !
+!JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForPragmaList!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForSuperClassList!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForVariableList!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #currentMethodSource!menu handlers!public! !

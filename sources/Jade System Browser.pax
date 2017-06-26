@@ -1516,10 +1516,11 @@ sbUpdateMethodPragmas
 
 	| currentClass |
 	currentClass := ((self objectInBaseNamed: #'Pragma') notNil and: [selectedClass notNil]) ifTrue: [selectedClass] ifFalse: [nil].
-	methodFilters := Set new.
+	methodFilters := IdentitySet new.
 	currentClass notNil ifTrue: [
 		currentClass methodDictionary do: [:each | methodFilters addAll: each pragmas].
 	].
+	methodFilters := methodFilters collect: [:each | each keyword].
 	methodFilters := methodFilters asSortedCollection: [:a :b | a > b].
 	self writeList: methodFilters.
 	self sbUpdateMethodFilterSelections.
@@ -1573,7 +1574,9 @@ sbUpdateMethodsByPragmas
 	selectedClass selectors do: [:eachSelector | 
 		| gsMethod |
 		gsMethod := selectedClass compiledMethodAt: eachSelector.
-		(gsMethod pragmas * methodFilters) notEmpty ifTrue: [selectors add: eachSelector].
+		gsMethod pragmas do: [:eachPragma | 
+			(methodFilters includes: eachPragma keyword) ifTrue: [selectors add: eachSelector].
+		].
 	].
 	^selectors.
 !
