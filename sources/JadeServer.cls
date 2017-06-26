@@ -252,7 +252,7 @@ objectForOop: anInteger
 
 objectInBaseNamed: aString
 
-	^(SymbolList withAll: self class sharedPools) objectNamed: aString asSymbol.
+	^[(SymbolList withAll: self class sharedPools) objectNamed: aString asSymbol] on: Error do: [:ex | ex return: nil].
 !
 
 objectNamed: aString
@@ -431,16 +431,16 @@ gsString
 		nextPutAll: '[| class symbolList source server result mcPlatformSupport |'; lf;
 		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
 		nextPutAll: 'symbolList := (AllUsers userWithId: ''DataCurator'') symbolList.'; lf;
-		nextPutAll: 'symbolList := SymbolList new add: (symbolList detect: [:each | each name == #UserGlobals]); add: (symbolList detect: [:each | each name == #Globals]); yourself.'; lf;
-		nextPutAll: 'class := Object.'; lf;
+		nextPutAll: 'symbolList := symbolList class new add: (symbolList detect: [:each | each name == #UserGlobals]); add: (symbolList detect: [:each | each name == #Globals]); yourself.'; lf;
+		nextPutAll: 'class := symbolList objectNamed: #Object.'; lf;
 		yourself.
 	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | self addGsStringForClass: eachClass to: stream].
 	stream 
-		nextPutAll: '(mcPlatformSupport := System myUserProfile objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
+		nextPutAll: '(mcPlatformSupport := symbolList objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
 		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
 		nextPutAll: 'server := class new initialize; yourself.'; lf;
 		nextPutAll: self sessionStateCode; lf;
-		nextPutAll: 'server] on: Error do: [:ex | ex return: (GsProcess stackReportToLevel: 100)]';
+		nextPutAll: 'server] on: ((AllUsers userWithId: ''SystemUser'') objectNamed: #Error) do: [:ex | ex return: ''ERROR: '' , (GsProcess stackReportToLevel: 100)]';
 		yourself.
 	gsString := stream contents.
 	^gsString.

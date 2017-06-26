@@ -17,7 +17,7 @@ gsClassDefinitionStringFor: aClass
 		instVarNames: ' , aClass instVarNames printString , '
 		classVars: #(' , aClass classVarsForGemStone , ')
 		classInstVars: #()
-		poolDictionaries: (Array withAll: symbolList)
+		poolDictionaries: #()
 		inDictionary: SymbolDictionary new.'
 !
 

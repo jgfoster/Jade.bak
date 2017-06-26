@@ -34,6 +34,12 @@ gciErr: errorReport
 	^self invalidCall
 !
 
+gciExecuteStr: string _: symbolList
+
+	<cdecl: OopType64 GciExecuteStr lpstr OopType64>
+	^self invalidCall
+!
+
 gciFetchBytes: anOopType _: startIndex _: cString _: maxSize
 
 	<cdecl: sdword GciFetchBytes_ OopType64 sqword lpvoid qword>
@@ -337,6 +343,7 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #gciClearStack:!private! !
 !LibGciRpc64 categoriesFor: #gciDbgEstablishToFile:!private! !
 !LibGciRpc64 categoriesFor: #gciErr:!private! !
+!LibGciRpc64 categoriesFor: #gciExecuteStr:_:!private! !
 !LibGciRpc64 categoriesFor: #gciFetchBytes:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciFetchChars:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciFetchClass:!private! !
