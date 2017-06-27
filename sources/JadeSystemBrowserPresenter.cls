@@ -273,6 +273,18 @@ browseMethodHistory
 		yourself.
 !
 
+browseMethodPragmas
+
+	| commandString keyword keywords responseString |
+	responseString:= self updateCommand: 'listMethodPragmas'.
+	keywords := responseString subStrings: Character tab.
+	(keyword := ChoicePrompter choices: keywords) ifNil: [^self].
+	commandString := 'browseMethodsWithPragma' , Character tab asString , keyword , Character lf asString.
+	responseString := self updateCommand: commandString.
+	responseString = 'browseMethodsWithPragma' ifFalse: [self error: 'unexpected response'].
+	self browseMethodsAndSelect: keyword.
+!
+
 browseMethodsAndSelect: aString
 
 	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
@@ -1525,7 +1537,7 @@ methodsIdentifier
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
-		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; removeMethods; runMethodTests; setEnvironment.
+		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment.
 	].
 	^#(
 		'&Methods'
@@ -1535,6 +1547,7 @@ methodsMenuStrings
 		'Browse Senders of ...//browseSendersOf'
 		'Browse Methods &Containing ...//browseMethodsContaining'
 		'Browse &History//browseMethodHistory'
+		'BrowseMethod &Pragmas ...//browseMethodPragmas'
 		'-'
 		'&Delete Method(s)//removeMethods'
 		'Set Compiler &Environment ...//setEnvironment'
@@ -3146,6 +3159,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseMethodPragmas!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !

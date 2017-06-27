@@ -51,6 +51,7 @@ package methodNames
 	add: #JadeServer -> #sbBrowseImplementors:;
 	add: #JadeServer -> #sbBrowseMethodHistory:;
 	add: #JadeServer -> #sbBrowseMethodsContaining:;
+	add: #JadeServer -> #sbBrowseMethodsWithPragma:;
 	add: #JadeServer -> #sbBrowseSenders:;
 	add: #JadeServer -> #sbChangeClassName:;
 	add: #JadeServer -> #sbChangesInPackage:;
@@ -69,6 +70,7 @@ package methodNames
 	add: #JadeServer -> #sbFindClassPackageMap;
 	add: #JadeServer -> #sbFindSelectors:;
 	add: #JadeServer -> #sbInstVarsOldParent:newParent:oldChild:;
+	add: #JadeServer -> #sbListMethodPragmas;
 	add: #JadeServer -> #sbLoadLatestVersionOfConfiguration:;
 	add: #JadeServer -> #sbMethodCategory:;
 	add: #JadeServer -> #sbMethodClass:;
@@ -528,6 +530,28 @@ sbBrowseMethodsContaining: anOrderedCollection
 		yourself.
 !
 
+sbBrowseMethodsWithPragma: anOrderedCollection
+
+	| methods symbol |
+	symbol := anOrderedCollection first asSymbol.
+	methods := IdentitySet new.
+	self symbolList do: [:eachDict | 
+		eachDict do: [:eachGlobal | 
+			eachGlobal isBehavior ifTrue: [
+				(Array with: eachGlobal class with: eachGlobal) do: [:eachBehavior | 
+					eachBehavior methodDictionary do: [:eachMethod | 
+						(eachMethod pragmas anySatisfy: [:eachPragma | symbol == eachPragma keyword]) ifTrue: [methods add: eachMethod].
+					].
+				].
+			].
+		].
+	].
+	writeStream 
+		nextPutAll: 'browseMethodsWithPragma'; lf;
+		nextPutAll: (self streamOfMethods: methods);
+		yourself.
+!
+
 sbBrowseSenders: anOrderedCollection
 
 	writeStream 
@@ -868,6 +892,24 @@ sbInstVarsOldParent: oldParent newParent: newParent oldChild: oldChild
 	newList := newList , missing.
 	newList := newList reject: [:each | added includes: each].
 	^newList.
+!
+
+sbListMethodPragmas
+
+	| pragmas |
+	pragmas := IdentitySet new.
+	self symbolList do: [:eachDict | 
+		eachDict do: [:eachGlobal | 
+			eachGlobal isBehavior ifTrue: [
+				(Array with: eachGlobal with: eachGlobal class) do: [:eachBehavior | 
+					eachBehavior methodDictionary do: [:eachMethod | 
+						pragmas addAll: (eachMethod pragmas collect: [:eachPragma | eachPragma keyword]).
+					].
+				].
+			].
+		].
+	].
+	pragmas asSortedCollection do: [:each | writeStream nextPutAll: each; tab].
 !
 
 sbLoadLatestVersionOfConfiguration: anOrderedCollection
@@ -1817,6 +1859,7 @@ systemBrowserCommand
 	command = 'browseImplementors'		ifTrue: [^self sbBrowseImplementors: list].
 	command = 'browseMethodHistory'		ifTrue: [^self sbBrowseMethodHistory: list].
 	command = 'browseMethodsContaining'	ifTrue: [^self sbBrowseMethodsContaining: list].
+	command = 'browseMethodsWithPragma'	ifTrue: [^self sbBrowseMethodsWithPragma: list].
 	command = 'browseSenders'			ifTrue: [^self sbBrowseSenders: list].
 
 	command = 'changeClassName'			ifTrue: [^self sbChangeClassName: list].
@@ -1833,6 +1876,8 @@ systemBrowserCommand
 	command = 'findClass' 				ifTrue: [^self sbFindClass].
 	command = 'findSelectors'				ifTrue: [^self sbFindSelectors: list].
 
+
+	command = 'listMethodPragmas'			ifTrue: [^self sbListMethodPragmas].
 	command = 'loadLatestVersion'			ifTrue: [^self sbLoadLatestVersionOfConfiguration: list].
 
 	command = 'method' 					ifTrue: [^self sbSaveMethod: list].
@@ -1916,6 +1961,7 @@ writeList: aList
 !JadeServer categoriesFor: #sbBrowseImplementors:!public!System Browser! !
 !JadeServer categoriesFor: #sbBrowseMethodHistory:!public!System Browser! !
 !JadeServer categoriesFor: #sbBrowseMethodsContaining:!public!System Browser! !
+!JadeServer categoriesFor: #sbBrowseMethodsWithPragma:!public!System Browser! !
 !JadeServer categoriesFor: #sbBrowseSenders:!public!System Browser! !
 !JadeServer categoriesFor: #sbChangeClassName:!public!System Browser! !
 !JadeServer categoriesFor: #sbChangesInPackage:!public!System Browser! !
@@ -1934,6 +1980,7 @@ writeList: aList
 !JadeServer categoriesFor: #sbFindClassPackageMap!public!System Browser! !
 !JadeServer categoriesFor: #sbFindSelectors:!public!System Browser! !
 !JadeServer categoriesFor: #sbInstVarsOldParent:newParent:oldChild:!public!System Browser! !
+!JadeServer categoriesFor: #sbListMethodPragmas!public!System Browser! !
 !JadeServer categoriesFor: #sbLoadLatestVersionOfConfiguration:!public!System Browser! !
 !JadeServer categoriesFor: #sbMethodCategory:!public!System Browser! !
 !JadeServer categoriesFor: #sbMethodClass:!public!System Browser! !
