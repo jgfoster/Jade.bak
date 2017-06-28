@@ -673,7 +673,7 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 			compileMethod: methodString
 			dictionaries: aSymbolList
 			category: categorySymbol
-			environmentId: 0.
+			environmentId: environment.
 	] on: CompileError do: [:ex |
 		^nil -> (ex gsArguments at: 1)
 	]] on: CompileWarning do: [:ex |

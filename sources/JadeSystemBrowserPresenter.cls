@@ -2013,6 +2013,7 @@ queryCommand: aCommandQuery
 	command := aCommandQuery command.
 	focusView := View focus.
 	isTextEdit := focusView isKindOf: TextEdit.
+	(#(#'browseMethodPragmas') includes: command) ifTrue: [aCommandQuery isEnabled: gciSession gsHasPragmas. ^true].
 	(#(#'editSave') includes: command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView isModified]). ^true].
 	(#(#'editUndo') includes: aCommandQuery command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView canUndo]). ^true].
 	(#(#'editRedo') includes: aCommandQuery command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView canRedo]). ^true].
@@ -2707,12 +2708,12 @@ updateClassInfo
 		].
 	].
 	classDefinition := newClassDefinition.
-	0 < (classDefinition indexOfSubCollection: 'MyNewClass') ifTrue: [
-		index := classDefinition indexOfSubCollection: 'Globals'.
-		(classDefinition copyFrom: index - 4 to: index - 1) ~= 'User' ifTrue: [
-			classDefinition := (classDefinition copyFrom: 1 to: index - 1) , 
+	0 < (classDefinition indexOfSubCollection: 'MyNewClass') ifTrue: [	"Template is based on Stream class, but we don't want to use 'Globals' in template"
+		index := classDefinition indexOfSubCollection: ': Globals'.		
+		(0 < index and: [(classDefinition copyFrom: index - 2 to: index + 1) ~= 'User']) ifTrue: [
+			classDefinition := (classDefinition copyFrom: 1 to: index + 1) , 
 				(dictionaryListPresenter selectionIfNone: ['UserGlobals' -> false]) key , 
-				(classDefinition copyFrom: index + 7 to: classDefinition size).
+				(classDefinition copyFrom: index + 9 to: classDefinition size).
 			index := classDefinition indexOfSubCollection: 'User Classes'.
 			0 < index ifTrue: [
 				classDefinition := (classDefinition copyFrom: 1 to: index - 1) , 

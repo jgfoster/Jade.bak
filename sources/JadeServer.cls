@@ -20,6 +20,15 @@ _addToPureExportSet: anObject
 		toGciSet: 39.  "PureExportSet"
 !
 
+_allSelectors
+
+	| allSelectors |
+	allSelectors := IdentitySet new.
+	self classOrganizer classes do: [:each | 
+		allSelectors addAll: each selectors; addAll: each class selectors.
+	].
+	^allSelectors!
+
 _describeMethod: aMethod
 	"Provide info needed to create a GsMethod in Jade client"
 	"Nice to add packageName and mcTimestamp"
@@ -41,10 +50,7 @@ _describeMethod: aMethod
 
 	"unimplemented selectors"
 	((aMethod class includesSelector: #'_selectorPool') and: [aMethod class includesSelector: #'_sourceOffsetOfFirstSendOf:']) ifTrue: [
-		allSelectors := IdentitySet new.
-		self classOrganizer classes do: [:each | 
-			allSelectors addAll: each selectors; addAll: each class selectors.
-		].
+		allSelectors := self _allSelectors.
 		(aMethod _selectorPool reject: [:each | allSelectors includes: each]) do: [:each | 
 			(aMethod _sourceOffsetOfFirstSendOf: each) printOn: writeStream.
 			writeStream space; nextPutAll: each; tab.
@@ -346,6 +352,7 @@ terminate: aGsProcess
 	(Delay forMilliseconds: 10) wait.	"allow forked processes to finish"
 ! !
 !JadeServer categoriesFor: #_addToPureExportSet:!private! !
+!JadeServer categoriesFor: #_allSelectors!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #_describeMethod:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #abort!public! !
 !JadeServer categoriesFor: #asString:!public!Transcript! !

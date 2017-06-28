@@ -21,6 +21,10 @@ gciErr: errorReport
 	^self invalidCall
 !
 
+gsHasPragmas
+
+	^true!
+
 specialFromOop: anOop
 
 	anOop isSmallFraction ifTrue: [
@@ -30,6 +34,7 @@ specialFromOop: anOop
 ! !
 !LibGciRpc64_3_4 categoriesFor: #errorStructureClass!private! !
 !LibGciRpc64_3_4 categoriesFor: #gciErr:!private! !
+!LibGciRpc64_3_4 categoriesFor: #gsHasPragmas!public! !
 !LibGciRpc64_3_4 categoriesFor: #specialFromOop:!public! !
 
 !LibGciRpc64_3_4 class methodsFor!

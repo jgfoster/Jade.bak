@@ -30,6 +30,10 @@ errorStructureClass
 	self subclassResponsibility.
 !
 
+gsHasPragmas
+
+	^false!
+
 hardBreakSession: anInteger
 
 	self subclassResponsibility.
@@ -261,6 +265,7 @@ version
 !GciLibrary categoriesFor: #beginSession:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #commitSession:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #errorStructureClass!private!subclassResponsibility! !
+!GciLibrary categoriesFor: #gsHasPragmas!public! !
 !GciLibrary categoriesFor: #hardBreakSession:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #loginHostUser:hostPassword:gsUser:gsPassword:gemNRS:stoneNRS:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #logoutSession:!public!subclassResponsibility! !

@@ -140,11 +140,15 @@ package methodNames
 	add: #JadeServer64bit3x -> #methodSignatureForSelector:;
 	add: #JadeServer64bit3x -> #objectSecurityPolicyFor:;
 	add: #JadeServer64bit3x -> #packagePolicy:includesSelector:forClass:;
+	add: #JadeServer64bit3x -> #sbBrowseMethodsWithPragma:;
 	add: #JadeServer64bit3x -> #sbClassComment:;
+	add: #JadeServer64bit3x -> #sbListMethodPragmas;
 	add: #JadeServer64bit3x -> #sbMethod:;
 	add: #JadeServer64bit3x -> #sbReadMethodFilter;
 	add: #JadeServer64bit3x -> #sbUpdateMethodBreakPointsFor:;
+	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByCategories;
+	add: #JadeServer64bit3x -> #sbUpdateMethodsByPragmas;
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByVariables;
 	add: #JadeServer64bit3x -> #sbUpdateMethodStepPointsFor:;
 	add: #JadeServer64bit3x -> #selectedClassOverridesSelector:;
@@ -532,23 +536,8 @@ sbBrowseMethodsContaining: anOrderedCollection
 
 sbBrowseMethodsWithPragma: anOrderedCollection
 
-	| methods symbol |
-	symbol := anOrderedCollection first asSymbol.
-	methods := IdentitySet new.
-	self symbolList do: [:eachDict | 
-		eachDict do: [:eachGlobal | 
-			eachGlobal isBehavior ifTrue: [
-				(Array with: eachGlobal class with: eachGlobal) do: [:eachBehavior | 
-					eachBehavior methodDictionary do: [:eachMethod | 
-						(eachMethod pragmas anySatisfy: [:eachPragma | symbol == eachPragma keyword]) ifTrue: [methods add: eachMethod].
-					].
-				].
-			].
-		].
-	].
 	writeStream 
 		nextPutAll: 'browseMethodsWithPragma'; lf;
-		nextPutAll: (self streamOfMethods: methods);
 		yourself.
 !
 
@@ -895,21 +884,7 @@ sbInstVarsOldParent: oldParent newParent: newParent oldChild: oldChild
 !
 
 sbListMethodPragmas
-
-	| pragmas |
-	pragmas := IdentitySet new.
-	self symbolList do: [:eachDict | 
-		eachDict do: [:eachGlobal | 
-			eachGlobal isBehavior ifTrue: [
-				(Array with: eachGlobal with: eachGlobal class) do: [:eachBehavior | 
-					eachBehavior methodDictionary do: [:eachMethod | 
-						pragmas addAll: (eachMethod pragmas collect: [:eachPragma | eachPragma keyword]).
-					].
-				].
-			].
-		].
-	].
-	pragmas asSortedCollection do: [:each | writeStream nextPutAll: each; tab].
+	"none before 3x"
 !
 
 sbLoadLatestVersionOfConfiguration: anOrderedCollection
@@ -1556,15 +1531,6 @@ sbUpdateMethodInheritedImplementationsOf: aSymbol
 
 sbUpdateMethodPragmas
 
-	| currentClass |
-	currentClass := ((self objectInBaseNamed: #'Pragma') notNil and: [selectedClass notNil]) ifTrue: [selectedClass] ifFalse: [nil].
-	methodFilters := IdentitySet new.
-	currentClass notNil ifTrue: [
-		currentClass methodDictionary do: [:each | methodFilters addAll: each pragmas].
-	].
-	methodFilters := methodFilters collect: [:each | each keyword].
-	methodFilters := methodFilters asSortedCollection: [:a :b | a > b].
-	self writeList: methodFilters.
 	self sbUpdateMethodFilterSelections.
 !
 
@@ -1609,19 +1575,9 @@ sbUpdateMethodsByCategories
 !
 
 sbUpdateMethodsByPragmas
+	"none before 3.x"
 
-	| selectors |
-	selectors := IdentitySet new.
-	methodFilters isEmpty ifTrue: [^#()].
-	selectedClass selectors do: [:eachSelector | 
-		| gsMethod |
-		gsMethod := selectedClass compiledMethodAt: eachSelector.
-		gsMethod pragmas do: [:eachPragma | 
-			(methodFilters includes: eachPragma keyword) ifTrue: [selectors add: eachSelector].
-		].
-	].
-	^selectors.
-!
+	^#()!
 
 sbUpdateMethodsByVariables
 
@@ -2159,8 +2115,9 @@ initialize
 !
 
 methodSignatureForSelector: aSymbol
+	"Ruby bridge methods can have some strange selectors!!"
 
-	| class method source |
+	| class comma i j method source |
 	environment == 0 ifTrue: [^aSymbol].
 	class := selectedClass whichClassIncludesSelector: aSymbol environmentId: environment.
 	method := class compiledMethodAt: aSymbol environmentId: environment.
@@ -2168,36 +2125,33 @@ methodSignatureForSelector: aSymbol
 	(4 < source size and: [(source copyFrom: 1 to: 4) = 'def ']) ifTrue: [
 		source := source copyFrom: 5 to: source size.
 		(source includes: $#) ifTrue: [source := (source copyFrom: 1 to: (source indexOf: $#) - 1) trimBlanks].
-	] ifFalse: [
-		| i |
-		i := aSymbol indexOf: $#.
-		source := aSymbol copyFrom: 1 to: i - 1.
-		(aSymbol copyFrom: i to: aSymbol size) = '#0__' ifFalse: [
-			| j comma |
-			comma := ''.
-			source add: $(.
-			j := (aSymbol at: i + 1) asString asNumber.
-			1 to: j do: [:k | 
-				source 
-					add: comma;
-					add: 'arg'.
-				1 < j ifTrue: [source add: k printString].
-				comma := $,.
-			].
-			(aSymbol at: i + 2) == $* ifTrue: [
-				source 
-					add: comma;
-					add: (0 == j ifTrue: ['args'] ifFalse: ['rest']).
-				comma := $,.
-			].
-			aSymbol last == $& ifTrue: [
-				source
-					add: comma;
-					add: '&block'.
-			].
-			source add: $).
-		].
+		^source.
 	].
+	(i := aSymbol indexOf: $#) == 0 ifTrue: [^source].
+	source := aSymbol copyFrom: 1 to: i - 1.
+	(aSymbol copyFrom: i to: aSymbol size) = '#0__' ifTrue: [^source].
+	comma := ''.
+	source add: $(.
+	j := (aSymbol at: i + 1) asString asNumber.
+	1 to: j do: [:k | 
+		source 
+			add: comma;
+			add: 'arg'.
+		1 < j ifTrue: [source add: k printString].
+		comma := $,.
+	].
+	(aSymbol at: i + 2) == $* ifTrue: [
+		source 
+			add: comma;
+			add: (0 == j ifTrue: ['args'] ifFalse: ['rest']).
+		comma := $,.
+	].
+	aSymbol last == $& ifTrue: [
+		source
+			add: comma;
+			add: '&block'.
+	].
+	source add: $).
 	^source.
 !
 
@@ -2216,10 +2170,50 @@ packagePolicy: aPackagePolicy includesSelector: aSymbol forClass: aClass
 	].
 !
 
+sbBrowseMethodsWithPragma: anOrderedCollection
+
+	| methods symbol |
+	symbol := anOrderedCollection first asSymbol.
+	methods := IdentitySet new.
+	self symbolList do: [:eachDict | 
+		eachDict do: [:eachGlobal | 
+			eachGlobal isBehavior ifTrue: [
+				(Array with: eachGlobal class with: eachGlobal) do: [:eachBehavior | 
+					(eachBehavior methodDictForEnv: environment) do: [:eachMethod | 
+						(eachMethod pragmas anySatisfy: [:eachPragma | symbol == eachPragma keyword]) ifTrue: [methods add: eachMethod].
+					].
+				].
+			].
+		].
+	].
+	writeStream 
+		nextPutAll: 'browseMethodsWithPragma'; lf;
+		nextPutAll: (self streamOfMethods: methods);
+		yourself.
+!
+
 sbClassComment: anOrderedCollection
 
 	(self sbClassFrom: anOrderedCollection) thisClass comment: self sbNextParagraph trimSeparators.
 	self systemBrowserUpdate.
+!
+
+sbListMethodPragmas
+
+	| pragmas |
+	pragmas := IdentitySet new.
+	self symbolList do: [:eachDict | 
+		eachDict do: [:eachGlobal | 
+			eachGlobal isBehavior ifTrue: [
+				(Array with: eachGlobal with: eachGlobal class) do: [:eachBehavior | 
+					(eachBehavior methodDictForEnv: environment) do: [:eachMethod | 
+						pragmas addAll: (eachMethod pragmas collect: [:eachPragma | eachPragma keyword]).
+					].
+				].
+			].
+		].
+	].
+	pragmas asSortedCollection do: [:each | writeStream nextPutAll: each; tab].
 !
 
 sbMethod: anOrderedCollection
@@ -2232,7 +2226,7 @@ sbMethod: anOrderedCollection
 		compileMethod: string 
 		dictionaries: self symbolList 
 		category: category asSymbol 
-		environmentId: 0.
+		environmentId: environment.
 	selections 
 		at: #'methodCategory' 	put: (gsMethod inClass categoryOfSelector: gsMethod selector) asString;
 		at: #'method'					put: gsMethod selector asString;
@@ -2266,6 +2260,20 @@ sbUpdateMethodBreakPointsFor: aMethod
 	^list.
 !
 
+sbUpdateMethodPragmas
+
+	| currentClass |
+	currentClass := ((self objectInBaseNamed: #'Pragma') notNil and: [selectedClass notNil]) ifTrue: [selectedClass] ifFalse: [nil].
+	methodFilters := IdentitySet new.
+	currentClass notNil ifTrue: [
+		(currentClass methodDictForEnv: environment) do: [:each | methodFilters addAll: each pragmas].
+	].
+	methodFilters := methodFilters collect: [:each | each keyword].
+	methodFilters := methodFilters asSortedCollection: [:a :b | a > b].
+	self writeList: methodFilters.
+	self sbUpdateMethodFilterSelections.
+!
+
 sbUpdateMethodsByCategories
 
 	| selectors |
@@ -2281,6 +2289,21 @@ sbUpdateMethodsByCategories
 					selectors add: eachSelector.
 				].
 			].
+		].
+	].
+	^selectors.
+!
+
+sbUpdateMethodsByPragmas
+
+	| selectors |
+	selectors := IdentitySet new.
+	methodFilters isEmpty ifTrue: [^#()].
+	(selectedClass selectorsForEnvironment: environment) do: [:eachSelector | 
+		| gsMethod |
+		gsMethod := selectedClass compiledMethodAt: eachSelector environment: environment.
+		gsMethod pragmas do: [:eachPragma | 
+			(methodFilters includes: eachPragma keyword) ifTrue: [selectors add: eachSelector].
 		].
 	].
 	^selectors.
@@ -2328,11 +2351,15 @@ selectedClassOverridesSelector: aSymbol
 !JadeServer64bit3x categoriesFor: #methodSignatureForSelector:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #objectSecurityPolicyFor:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #packagePolicy:includesSelector:forClass:!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbBrowseMethodsWithPragma:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbClassComment:!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbListMethodPragmas!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbMethod:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbReadMethodFilter!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodBreakPointsFor:!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbUpdateMethodPragmas!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodsByCategories!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbUpdateMethodsByPragmas!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodsByVariables!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodStepPointsFor:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #selectedClassOverridesSelector:!public!System Browser! !

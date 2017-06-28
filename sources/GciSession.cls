@@ -205,6 +205,10 @@ gciVersion
 gemHost
 	^gemHost!
 
+gsHasPragmas
+
+	^library gsHasPragmas!
+
 handlingClientForwarderSendDo: aBlock
 
 	| block result continueWith |
@@ -948,6 +952,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #gciSessionId:!private! !
 !GciSession categoriesFor: #gciVersion!public! !
 !GciSession categoriesFor: #gemHost!accessing!public! !
+!GciSession categoriesFor: #gsHasPragmas!public! !
 !GciSession categoriesFor: #handlingClientForwarderSendDo:!long running!private! !
 !GciSession categoriesFor: #hardBreak!Jade!public! !
 !GciSession categoriesFor: #hasServer!public! !

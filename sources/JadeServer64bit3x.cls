@@ -11,6 +11,15 @@ GciSession allInstances do: [:each | each initializeServer].'!
 !JadeServer64bit3x categoriesForClass!Unclassified! !
 !JadeServer64bit3x methodsFor!
 
+_allSelectors
+
+	| allSelectors |
+	allSelectors := IdentitySet new.
+	self classOrganizer classes do: [:each | 
+		allSelectors addAll: (each selectorsForEnvironment: environment); addAll: (each class selectorsForEnvironment: environment).
+	].
+	^allSelectors!
+
 asString: anObject
 
 	(anObject isKindOf: String) ifTrue: [^anObject].
@@ -49,6 +58,7 @@ nextPutAll: anObject
 		selector:#'nextPutAll:'
 		args: (Array with: (self asString: anObject)).
 	exception defaultAction.  "return error direct to GCI"! !
+!JadeServer64bit3x categoriesFor: #_allSelectors!Debugger!GsObject!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #asString:!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #executeString:fromContext:!public! !
 !JadeServer64bit3x categoriesFor: #installTranscript!public!Transcript! !
