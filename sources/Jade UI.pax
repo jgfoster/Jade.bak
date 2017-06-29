@@ -289,7 +289,7 @@ compile: aString frame: anInteger process: aGsProcess
 	aBehavior := oldMethod inClass.
 	selector := oldMethod selector.
 	selector isNil ifTrue: [^result].
-	category := aBehavior categoryOfSelector: selector.
+	category := self _behavior: aBehavior categoryOfSelector: selector.
 	result := self
 		compileMethod: aString 
 		behavior: aBehavior 

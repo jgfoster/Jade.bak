@@ -276,10 +276,10 @@ browseMethodHistory
 browseMethodPragmas
 
 	| commandString keyword keywords responseString |
-	responseString:= self updateCommand: 'listMethodPragmas'.
+	responseString:= self updateCommand: 'listMethodPragmas' , Character tab asString , environment printString.
 	keywords := responseString subStrings: Character tab.
 	(keyword := ChoicePrompter choices: keywords) ifNil: [^self].
-	commandString := 'browseMethodsWithPragma' , Character tab asString , keyword , Character lf asString.
+	commandString := 'browseMethodsWithPragma' , Character tab asString , keyword , Character tab asString , environment printString , Character lf asString.
 	responseString := self updateCommand: commandString.
 	responseString = 'browseMethodsWithPragma' ifFalse: [self error: 'unexpected response'].
 	self browseMethodsAndSelect: keyword.

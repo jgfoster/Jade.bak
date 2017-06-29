@@ -132,6 +132,8 @@ package methodNames
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:;
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:forUser:;
 	add: #JadeServer64bit34 -> #sbUpdateMethodsByCategories;
+	add: #JadeServer64bit3x -> #_environment;
+	add: #JadeServer64bit3x -> #_environment:;
 	add: #JadeServer64bit3x -> #addMethodCategoryNamesToMethodFilters;
 	add: #JadeServer64bit3x -> #categoryOfMethod:;
 	add: #JadeServer64bit3x -> #class:includesSelector:;
@@ -142,7 +144,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #packagePolicy:includesSelector:forClass:;
 	add: #JadeServer64bit3x -> #sbBrowseMethodsWithPragma:;
 	add: #JadeServer64bit3x -> #sbClassComment:;
-	add: #JadeServer64bit3x -> #sbListMethodPragmas;
+	add: #JadeServer64bit3x -> #sbListMethodPragmas:;
 	add: #JadeServer64bit3x -> #sbMethod:;
 	add: #JadeServer64bit3x -> #sbReadMethodFilter;
 	add: #JadeServer64bit3x -> #sbUpdateMethodBreakPointsFor:;
@@ -257,7 +259,7 @@ categoryOfMethod: aMethod
 
 	| selector |
 	(selector := aMethod selector) isNil ifTrue: [^''].
-	^aMethod inClass categoryOfSelector: selector.
+	^self _behavior: aMethod inClass categoryOfSelector: selector.
 !
 
 class: aClass includesSelector: aSelector
@@ -760,7 +762,7 @@ sbCopyMethodsFor: newClass
 	oldClass selectors do: [:each | 
 		| source category errors |
 		source := (oldClass compiledMethodAt: each) sourceString.
-		category := oldClass categoryOfSelector: each.
+		category := self _behavior: oldClass categoryOfSelector: each.
 		errors := newClass 
 			compileMethod: source
 			dictionaries: symbolList
@@ -932,7 +934,7 @@ sbMethodClass: anOrderedCollection
 				compileMethod: gsMethod sourceString
 				behavior: target
 				symbolList: self symbolList 
-				inCategory: (sourceBehavior categoryOfSelector: gsMethod selector).
+				inCategory: (self _behavior: sourceBehavior categoryOfSelector: gsMethod selector).
 		(result key notNil and: [action = 'move']) ifTrue: [
 			sourceBehavior removeSelector: gsMethod selector.
 		].
@@ -1568,7 +1570,7 @@ sbUpdateMethodsByCategories
 	selectors := IdentitySet new.
 	classList do: [:eachClass |
 		eachClass selectors do: [:eachSelector |
-			(methodFilters includes: (eachClass categoryOfSelector: eachSelector)) ifTrue: [selectors add: eachSelector].
+			(methodFilters includes: (self _behavior: eachClass categoryOfSelector: eachSelector)) ifTrue: [selectors add: eachSelector].
 		].
 	].
 	^selectors.
@@ -1833,7 +1835,7 @@ systemBrowserCommand
 	command = 'findSelectors'				ifTrue: [^self sbFindSelectors: list].
 
 
-	command = 'listMethodPragmas'			ifTrue: [^self sbListMethodPragmas].
+	command = 'listMethodPragmas'			ifTrue: [^self sbListMethodPragmas: list].
 	command = 'loadLatestVersion'			ifTrue: [^self sbLoadLatestVersionOfConfiguration: list].
 
 	command = 'method' 					ifTrue: [^self sbSaveMethod: list].
@@ -2078,6 +2080,15 @@ sbUpdateMethodsByCategories
 
 !JadeServer64bit3x methodsFor!
 
+_environment
+
+	^environment!
+
+_environment: anInteger
+
+	environment := anInteger.
+!
+
 addMethodCategoryNamesToMethodFilters
 
 	classList do: [:each | 
@@ -2091,7 +2102,7 @@ categoryOfMethod: aMethod
 
 	| category selector |
 	(selector := aMethod selector) isNil ifTrue: [^''].
-	category := aMethod inClass categoryOfSelector: aMethod selector.
+	category := self _behavior: aMethod inClass categoryOfSelector: aMethod selector.
 	category ifNil: [category := #'other'].
 	^category.
 !
@@ -2173,7 +2184,8 @@ packagePolicy: aPackagePolicy includesSelector: aSymbol forClass: aClass
 sbBrowseMethodsWithPragma: anOrderedCollection
 
 	| methods symbol |
-	symbol := anOrderedCollection first asSymbol.
+	symbol := anOrderedCollection removeFirst asSymbol.
+	environment := anOrderedCollection removeFirst asNumber.
 	methods := IdentitySet new.
 	self symbolList do: [:eachDict | 
 		eachDict do: [:eachGlobal | 
@@ -2198,9 +2210,10 @@ sbClassComment: anOrderedCollection
 	self systemBrowserUpdate.
 !
 
-sbListMethodPragmas
+sbListMethodPragmas: aList
 
 	| pragmas |
+	environment := aList first asNumber.
 	pragmas := IdentitySet new.
 	self symbolList do: [:eachDict | 
 		eachDict do: [:eachGlobal | 
@@ -2214,7 +2227,7 @@ sbListMethodPragmas
 		].
 	].
 	pragmas asSortedCollection do: [:each | writeStream nextPutAll: each; tab].
-!
+	^pragmas!
 
 sbMethod: anOrderedCollection
 
@@ -2228,8 +2241,8 @@ sbMethod: anOrderedCollection
 		category: category asSymbol 
 		environmentId: environment.
 	selections 
-		at: #'methodCategory' 	put: (gsMethod inClass categoryOfSelector: gsMethod selector) asString;
-		at: #'method'					put: gsMethod selector asString;
+		at: #'methodCategory' 	put: (self _behavior: gsMethod inClass categoryOfSelector: gsMethod selector) asString;
+		at: #'method'			put: gsMethod selector asString;
 		yourself.
 	self systemBrowserUpdate.
 !
@@ -2343,6 +2356,8 @@ selectedClassOverridesSelector: aSymbol
 
 	^selectedClass superclass notNil and: [(selectedClass superclass whichClassIncludesSelector: aSymbol environmentId: environment) ~~ nil].
 ! !
+!JadeServer64bit3x categoriesFor: #_environment!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #_environment:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #addMethodCategoryNamesToMethodFilters!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #categoryOfMethod:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #class:includesSelector:!public!System Browser! !
@@ -2353,7 +2368,7 @@ selectedClassOverridesSelector: aSymbol
 !JadeServer64bit3x categoriesFor: #packagePolicy:includesSelector:forClass:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbBrowseMethodsWithPragma:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbClassComment:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbListMethodPragmas!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbListMethodPragmas:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbMethod:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbReadMethodFilter!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodBreakPointsFor:!public!System Browser! !

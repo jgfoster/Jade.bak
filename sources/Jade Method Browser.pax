@@ -26,6 +26,7 @@ package methodNames
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeServer -> #_addMethod:toStream:;
+	add: #JadeServer -> #_behavior:categoryOfSelector:;
 	add: #JadeServer -> #_methodsFor:categories:;
 	add: #JadeServer -> #_methodsFor:filter:isVariables:;
 	add: #JadeServer -> #_methodsFor:variables:;
@@ -50,6 +51,7 @@ package methodNames
 	add: #JadeServer -> #stepPointsFor:in:;
 	add: #JadeServer -> #streamOfMethods:;
 	add: #JadeServer -> #stringOfLineNumbersWithBreaksIn:;
+	add: #JadeServer64bit3x -> #_behavior:categoryOfSelector:;
 	add: #JadeServer64bit3x -> #_methodsFor:categories:;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	yourself.
@@ -205,7 +207,7 @@ _addMethod: aGsMethod toStream: aStream
 	(self oopOf: aGsMethod) printOn: aStream.
 	aStream 
 		tab; nextPutAll: aGsMethod selector; 
-		tab; nextPutAll: (inClass categoryOfSelector: aGsMethod selector);
+		tab; nextPutAll: (self _behavior: inClass categoryOfSelector: aGsMethod selector);
 		tab.
 	(self oopOf: inClass) printOn: aStream.
 	aStream tab; nextPutAll: inClass name; tab.
@@ -217,6 +219,10 @@ _addMethod: aGsMethod toStream: aStream
 	((testCaseClass  notNil and: [inClass isSubclassOf: testCaseClass]) and: [inClass testSelectors includes: aGsMethod selector]) printOn: aStream.
 	aStream lf.
 !
+
+_behavior: aBehavior categoryOfSelector: aSymbol
+
+	^aBehavior categoryOfSelector: aSymbol!
 
 _methodsFor: aClass categories: aList
 
@@ -502,7 +508,7 @@ sbSaveMethod: anOrderedCollection
 			signalDictionary: GemStoneError.
 	].
 	selections 
-		at: #'methodCategory' 	put: (gsMethod inClass categoryOfSelector: gsMethod selector) asString;
+		at: #'methodCategory' 	put: (self _behavior: gsMethod inClass categoryOfSelector: gsMethod selector) asString;
 		at: #'method'					put: gsMethod selector asString;
 		at: #'methodWarnings'	put: association value;
 		yourself.
@@ -545,7 +551,7 @@ sourceFor: anObject in: aClass
 	behavior := self
 		behaviorFor: selector 
 		in: aClass.
-	category := behavior categoryOfSelector: selector.
+	category := self _behavior: behavior categoryOfSelector: selector.
 	packageName := category first = $*
 		ifTrue: [self _packageNameFor: category]
 		ifFalse: [behavior thisClass _classCategory].
@@ -622,6 +628,7 @@ stringOfLineNumbersWithBreaksIn: aGsMethod
 	^stream contents.
 ! !
 !JadeServer categoriesFor: #_addMethod:toStream:!Methods!public! !
+!JadeServer categoriesFor: #_behavior:categoryOfSelector:!Methods!public! !
 !JadeServer categoriesFor: #_methodsFor:categories:!Methods!public! !
 !JadeServer categoriesFor: #_methodsFor:filter:isVariables:!Methods!public! !
 !JadeServer categoriesFor: #_methodsFor:variables:!Methods!public! !
@@ -648,6 +655,10 @@ stringOfLineNumbersWithBreaksIn: aGsMethod
 !JadeServer categoriesFor: #stringOfLineNumbersWithBreaksIn:!Methods!public! !
 
 !JadeServer64bit3x methodsFor!
+
+_behavior: aBehavior categoryOfSelector: aSymbol
+
+	^aBehavior categoryOfSelector: aSymbol environmentId: environment!
 
 _methodsFor: aClass categories: aList
 
@@ -693,6 +704,7 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 		ex return: method -> warnings.
 	].
 ! !
+!JadeServer64bit3x categoriesFor: #_behavior:categoryOfSelector:!Methods!public! !
 !JadeServer64bit3x categoriesFor: #_methodsFor:categories:!Methods!public! !
 !JadeServer64bit3x categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
 
