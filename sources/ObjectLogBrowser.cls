@@ -146,7 +146,7 @@ updateA: aString
 	time1 := Time millisecondsToRun: [
 		string := gciSession 
 			serverPerform: #'systemBrowser:' 
-			with: aString.
+			with: '0 ' , aString.
 	].
 	time2 := Time millisecondsToRun: [
 		| x |

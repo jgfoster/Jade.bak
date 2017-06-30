@@ -27,6 +27,8 @@ package methodNames
 	add: #JadeServer -> #currentUserMayEditMethod:;
 	add: #JadeServer -> #dictionaryAndSymbolOf:;
 	add: #JadeServer -> #dictionaryAndSymbolOf:forUser:;
+	add: #JadeServer -> #environment;
+	add: #JadeServer -> #environment:;
 	add: #JadeServer -> #historyOf:;
 	add: #JadeServer -> #isPackagePolicyEnabled;
 	add: #JadeServer -> #methodSignatureForSelector:;
@@ -132,12 +134,12 @@ package methodNames
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:;
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:forUser:;
 	add: #JadeServer64bit34 -> #sbUpdateMethodsByCategories;
-	add: #JadeServer64bit3x -> #_environment;
-	add: #JadeServer64bit3x -> #_environment:;
 	add: #JadeServer64bit3x -> #addMethodCategoryNamesToMethodFilters;
 	add: #JadeServer64bit3x -> #categoryOfMethod:;
 	add: #JadeServer64bit3x -> #class:includesSelector:;
 	add: #JadeServer64bit3x -> #compiledMethodAt:inClass:;
+	add: #JadeServer64bit3x -> #environment;
+	add: #JadeServer64bit3x -> #environment:;
 	add: #JadeServer64bit3x -> #initialize;
 	add: #JadeServer64bit3x -> #methodSignatureForSelector:;
 	add: #JadeServer64bit3x -> #objectSecurityPolicyFor:;
@@ -146,7 +148,6 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbClassComment:;
 	add: #JadeServer64bit3x -> #sbListMethodPragmas:;
 	add: #JadeServer64bit3x -> #sbMethod:;
-	add: #JadeServer64bit3x -> #sbReadMethodFilter;
 	add: #JadeServer64bit3x -> #sbUpdateMethodBreakPointsFor:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByCategories;
@@ -314,6 +315,14 @@ dictionaryAndSymbolOf: aClass forUser: aUserProfile
 
 	^aUserProfile symbolList dictionaryAndSymbolOf: aClass.
 !
+
+environment
+	"Ignored prior to 3.x"
+
+	^0!
+
+environment: anInteger
+	"Ignored prior to 3.x"!
 
 historyOf: aClass
 
@@ -997,7 +1006,8 @@ sbReadMethodFilter
 	methodFilterType := pieces at: 1.
 	writeStream 
 		nextPutAll: methodFilterType; tab;
-		nextPut: $0; lf.		"Environment not supported"
+		nextPutAll: self environment printString; 
+		lf.
 !
 
 sbRecompileSubclassesOf: newClass andCopyMethods: aBoolean
@@ -1795,6 +1805,7 @@ systemBrowserA: aString
 		readStream := ReadStream on: aString.
 		writeStream := WriteStream on: String new.
 		writeStream lf.
+		self environment: (readStream upTo: Character space) asNumber.
 		self systemBrowserCommand.
 	].
 	^time printString , writeStream contents.
@@ -1895,6 +1906,8 @@ writeList: aList
 !JadeServer categoriesFor: #currentUserMayEditMethod:!public!System Browser! !
 !JadeServer categoriesFor: #dictionaryAndSymbolOf:!public!System Browser! !
 !JadeServer categoriesFor: #dictionaryAndSymbolOf:forUser:!public!System Browser! !
+!JadeServer categoriesFor: #environment!public!System Browser! !
+!JadeServer categoriesFor: #environment:!public!System Browser! !
 !JadeServer categoriesFor: #historyOf:!private! !
 !JadeServer categoriesFor: #isPackagePolicyEnabled!public!System Browser! !
 !JadeServer categoriesFor: #methodSignatureForSelector:!public!System Browser! !
@@ -2080,15 +2093,6 @@ sbUpdateMethodsByCategories
 
 !JadeServer64bit3x methodsFor!
 
-_environment
-
-	^environment!
-
-_environment: anInteger
-
-	environment := anInteger.
-!
-
 addMethodCategoryNamesToMethodFilters
 
 	classList do: [:each | 
@@ -2119,6 +2123,15 @@ compiledMethodAt: aSymbol inClass: aClass
 	method ifNil: [self error: 'Lookup failed for selector ' , aSymbol , ' inClass ' , aClass name , ' in environment ' , environment printString].
 	^method.!
 
+environment
+
+	^environment!
+
+environment: anInteger
+
+	environment := anInteger.
+!
+
 initialize
 
 	super initialize.
@@ -2129,7 +2142,7 @@ methodSignatureForSelector: aSymbol
 	"Ruby bridge methods can have some strange selectors!!"
 
 	| class comma i j method source |
-	environment == 0 ifTrue: [^aSymbol].
+	environment ~~ 1 ifTrue: [^aSymbol].
 	class := selectedClass whichClassIncludesSelector: aSymbol environmentId: environment.
 	method := class compiledMethodAt: aSymbol environmentId: environment.
 	source := (method sourceString subStrings: Character lf) first trimBlanks.
@@ -2138,7 +2151,7 @@ methodSignatureForSelector: aSymbol
 		(source includes: $#) ifTrue: [source := (source copyFrom: 1 to: (source indexOf: $#) - 1) trimBlanks].
 		^source.
 	].
-	(i := aSymbol indexOf: $#) == 0 ifTrue: [^source].
+	(i := aSymbol indexOf: $#) == 0 ifTrue: [^aSymbol].
 	source := aSymbol copyFrom: 1 to: i - 1.
 	(aSymbol copyFrom: i to: aSymbol size) = '#0__' ifTrue: [^source].
 	comma := ''.
@@ -2185,7 +2198,6 @@ sbBrowseMethodsWithPragma: anOrderedCollection
 
 	| methods symbol |
 	symbol := anOrderedCollection removeFirst asSymbol.
-	environment := anOrderedCollection removeFirst asNumber.
 	methods := IdentitySet new.
 	self symbolList do: [:eachDict | 
 		eachDict do: [:eachGlobal | 
@@ -2213,7 +2225,6 @@ sbClassComment: anOrderedCollection
 sbListMethodPragmas: aList
 
 	| pragmas |
-	environment := aList first asNumber.
 	pragmas := IdentitySet new.
 	self symbolList do: [:eachDict | 
 		eachDict do: [:eachGlobal | 
@@ -2245,18 +2256,6 @@ sbMethod: anOrderedCollection
 		at: #'method'			put: gsMethod selector asString;
 		yourself.
 	self systemBrowserUpdate.
-!
-
-sbReadMethodFilter
-
-	| pieces |
-	pieces := self nextLine subStrings: Character tab.
-	methodFilterType := pieces at: 1.
-	environment := 1 < pieces size ifFalse: [0] ifTrue: [(pieces at: 2) asNumber].
-	writeStream 
-		nextPutAll: methodFilterType; tab;
-		nextPutAll: environment printString; lf.
-
 !
 
 sbUpdateMethodBreakPointsFor: aMethod
@@ -2356,12 +2355,12 @@ selectedClassOverridesSelector: aSymbol
 
 	^selectedClass superclass notNil and: [(selectedClass superclass whichClassIncludesSelector: aSymbol environmentId: environment) ~~ nil].
 ! !
-!JadeServer64bit3x categoriesFor: #_environment!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #_environment:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #addMethodCategoryNamesToMethodFilters!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #categoryOfMethod:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #class:includesSelector:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #compiledMethodAt:inClass:!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #environment!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #environment:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #initialize!public! !
 !JadeServer64bit3x categoriesFor: #methodSignatureForSelector:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #objectSecurityPolicyFor:!public!System Browser! !
@@ -2370,7 +2369,6 @@ selectedClassOverridesSelector: aSymbol
 !JadeServer64bit3x categoriesFor: #sbClassComment:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbListMethodPragmas:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbMethod:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbReadMethodFilter!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodBreakPointsFor:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodPragmas!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodsByCategories!public!System Browser! !

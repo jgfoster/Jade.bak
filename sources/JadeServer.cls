@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #JadeServer
-	instanceVariableNames: 'classList classOrganizer readStream writeStream selectedClass methodFilterType methodFilters selections'
+	instanceVariableNames: 'classList classOrganizers readStream writeStream selectedClass methodFilterType methodFilters selections'
 	classVariableNames: 'AllGroups AllUsers ClassOrganizer ClientForwarder GemStoneError Globals GsMethodDictionary ProcessorScheduler SymbolDictionary SymbolList System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
@@ -90,7 +90,7 @@ _describeMethod: aMethod
 
 abort
 
-	classOrganizer := nil.
+	classOrganizers := Array new: 4.
 	System abortTransaction.
 	self refreshSymbolList.
 !
@@ -109,7 +109,7 @@ asString: anObject
 
 beginTransaction
 
-	classOrganizer := nil.
+	classOrganizers := Array new: 4.
 	System beginTransaction.
 !
 
@@ -120,7 +120,7 @@ clearBreakAtStepPoint: anInteger inMethod: aGsMethod
 
 commit
 
-	classOrganizer := nil.
+	classOrganizers := Array new: 4.
 	^System commitTransaction.
 !
 
@@ -175,6 +175,7 @@ homeMethodFor: aGsMethod
 
 initialize
 
+	classOrganizers := Array new: 4.
 	self 
 		installTranscript;
 		registerOBNotifications;

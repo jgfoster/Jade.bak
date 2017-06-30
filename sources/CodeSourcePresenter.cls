@@ -181,7 +181,7 @@ findClassList
 	| string list |
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
-		with: 'findClass'.
+		with: '0 findClass'.
 	list := (string subStrings: Character lf) collect: [:each | each subStrings: Character tab].
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].

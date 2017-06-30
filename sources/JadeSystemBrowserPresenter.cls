@@ -73,7 +73,6 @@ addMethodInfoTo: aStream
 			nextPutAll: instanceClassTabs currentCard name; lf;
 			lf;	"superclassList selection"
 			nextPutAll: 'categoryList'; tab;
-			print: environment; lf;
 			lf;	"method filter selections"
 			lf; "overrideList selection"
 			yourself.
@@ -84,8 +83,7 @@ addMethodInfoTo: aStream
 		nextPutAll: instanceClassTabs currentCard name; lf;		"instanceTab or classTab"
 		nextPutAll: string; lf;								"selected superclass"
 		nextPutAll: methodFilterTabs currentCard name; tab;		"categoryList or variableList or pragmaList"
-		print: environment; lf;							"environment"
-		yourself.
+		lf.
 	self methodFilterListPresenter selections do: [:each | aStream nextPutAll: each trimBlanks; tab].
 	aStream lf.
 	methodListPresenter selections do: [:each | aStream nextPutAll: each first; tab].
@@ -238,7 +236,8 @@ browseImplementorsOf
 	list size - 1 to: 1 do: [:i | list add: '*' afterIndex: i].
 	selector last = $* ifTrue: [list addLast: '*'].
 	stream := (WriteStream on: String new)
-		nextPutAll: 'findSelectors';
+		print: environment;
+		nextPutAll: ' findSelectors';
 		yourself.
 	list do: [:each | stream tab; nextPutAll: each].
 
@@ -276,10 +275,10 @@ browseMethodHistory
 browseMethodPragmas
 
 	| commandString keyword keywords responseString |
-	responseString:= self updateCommand: 'listMethodPragmas' , Character tab asString , environment printString.
+	responseString:= self updateCommand: 'listMethodPragmas'.
 	keywords := responseString subStrings: Character tab.
 	(keyword := ChoicePrompter choices: keywords) ifNil: [^self].
-	commandString := 'browseMethodsWithPragma' , Character tab asString , keyword , Character tab asString , environment printString , Character lf asString.
+	commandString := 'browseMethodsWithPragma' , Character tab asString , keyword , Character lf asString.
 	responseString := self updateCommand: commandString.
 	responseString = 'browseMethodsWithPragma' ifFalse: [self error: 'unexpected response'].
 	self browseMethodsAndSelect: keyword.
@@ -980,7 +979,7 @@ fileOutClassOnPath: aString
 	| header file newSource index |
 	newSource := self gciSession 
 		serverPerform: #'systemBrowser:' 
-		with: 'fileOutClass' , Character tab asString , self behaviorIdentifier.
+		with: environment printString , ' fileOutClass' , Character tab asString , self behaviorIdentifier.
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
 	header := self stuffToKeepFromPath: aString andAddTo: newSource.
@@ -1004,7 +1003,7 @@ fileOutDictionary
 		overwritePrompt;
 		showModal.
 	path isNil ifTrue: [^self].
-	string := 'fileOutDictionary' , Character tab asString , dictionaryName.
+	string := environment printString , ' fileOutDictionary' , Character tab asString , dictionaryName.
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
 		with: string.
@@ -1047,7 +1046,7 @@ findClassList
 	| string list |
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
-		with: 'findClass'.
+		with: environment printString , ' findClass'.
 	list := (string subStrings: Character lf) collect: [:each | each subStrings: Character tab].
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
@@ -2294,7 +2293,7 @@ selectClass: aString selector: methodString
 	| string list className isMeta array |
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
-		with: 'findClass'.
+		with: environment printString , ' findClass'.
 	list := (string subStrings: Character lf) collect: [:each | each subStrings: Character tab].
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
@@ -2781,7 +2780,7 @@ updateCommand: aString onSuccessDo: aBlock
 		time1 := Time millisecondsToRun: [
 			string := self gciSession 
 				serverPerform: #'systemBrowser:' 
-				with: aString.
+				with: environment printString , ' ' , aString.
 			eventCount := self gciSession eventCount.
 		].
 		time2 := Time millisecondsToRun: [

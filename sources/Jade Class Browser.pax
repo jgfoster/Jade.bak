@@ -117,8 +117,10 @@ addMissingAccessorsFor: aClass
 
 classOrganizer
 
-	classOrganizer isNil ifTrue: [classOrganizer := ClassOrganizer new].
-	^classOrganizer.
+	| org |
+	^(org := classOrganizers at: 1) notNil
+		ifTrue: [org]
+		ifFalse: [classOrganizers at: 1 put: ClassOrganizer new]
 !
 
 defectiveTestsIn: aClass
