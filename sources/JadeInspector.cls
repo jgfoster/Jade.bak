@@ -30,7 +30,7 @@ createSchematicWiring
 
 displayObject
 
-	| result stream className oop size instVarNames |
+	| result stream className oop size instVarNames |	(model isKindOf: ExternalInteger) ifFalse: [^self].
 	result := gciSession 
 		serverPerform: #'inspect:' 
 		with: model.
