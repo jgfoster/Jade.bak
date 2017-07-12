@@ -25,7 +25,7 @@ browseClass
 	| selection browserClass |
 	selection := methodListPresenter selection.
 	browserClass := Smalltalk at: #JadeSystemBrowser.		"Avoid circular dependencies on load order"
-	(browserClass showOn: self gciSession)
+	(browserClass showOnSession: self gciSession)
 		selectClass: selection gsClass name
 		selector: selection name.
 !
