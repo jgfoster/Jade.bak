@@ -31,14 +31,6 @@ asString: anObject
 	].
 !
 
-classOrganizer
-
-	| org |
-	^(org := classOrganizers at: environment + 1) notNil
-		ifTrue: [org]
-		ifFalse: [classOrganizers at: environment + 1 put: (ClassOrganizer newForEnvironment: environment)]
-!
-
 executeString: aString fromContext: anObject
 
 	[
@@ -68,7 +60,6 @@ nextPutAll: anObject
 	exception defaultAction.  "return error direct to GCI"! !
 !JadeServer64bit3x categoriesFor: #_allSelectors!Debugger!GsObject!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #asString:!public!Transcript! !
-!JadeServer64bit3x categoriesFor: #classOrganizer!public! !
 !JadeServer64bit3x categoriesFor: #executeString:fromContext:!public! !
 !JadeServer64bit3x categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !
