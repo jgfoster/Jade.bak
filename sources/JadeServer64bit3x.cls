@@ -20,6 +20,11 @@ _allSelectors
 	].
 	^allSelectors!
 
+_describeMethod: aMethod
+
+	(aMethod class name == #'GsNMethod') ifFalse: [self error: 'Expected a GsNMethod but got ' , aMethod class name].
+	^super _describeMethod: aMethod!
+
 asString: anObject
 
 	(anObject isKindOf: String) ifTrue: [^anObject].
@@ -31,6 +36,12 @@ asString: anObject
 	].
 !
 
+describeMethod: aMethod
+	"Provide info needed to create a GsMethod in Jade client"
+
+	(aMethod class name == #'GsNMethod') ifFalse: [self error: 'Expected a GsNMethod but got ' , aMethod class name].
+	^super describeMethod: aMethod!
+
 executeString: aString fromContext: anObject
 
 	[
@@ -39,6 +50,13 @@ executeString: aString fromContext: anObject
 		ex resume.
 	].
 !
+
+homeMethodFor: aGsMethod
+
+	| result |
+	result := super homeMethodFor: aGsMethod.
+	(result class name == #'GsNMethod') ifFalse: [self error: 'Expected a GsNMethod but got ' , result class name].
+	^result!
 
 installTranscript
 
@@ -59,8 +77,11 @@ nextPutAll: anObject
 		args: (Array with: (self asString: anObject)).
 	exception defaultAction.  "return error direct to GCI"! !
 !JadeServer64bit3x categoriesFor: #_allSelectors!Debugger!GsObject!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #_describeMethod:!public! !
 !JadeServer64bit3x categoriesFor: #asString:!public!Transcript! !
+!JadeServer64bit3x categoriesFor: #describeMethod:!public! !
 !JadeServer64bit3x categoriesFor: #executeString:fromContext:!public! !
+!JadeServer64bit3x categoriesFor: #homeMethodFor:!public! !
 !JadeServer64bit3x categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !
 
