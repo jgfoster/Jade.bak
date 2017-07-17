@@ -144,6 +144,7 @@ gciSession: aGciSession
 getOopToNewMethod
 	"The receiver answer <aOopType64> to the new method"
 
+	self halt.
 	^gciSession executeString: (self getSelectedClassName, ' perform: #compiledMethodAt: with: #',  self getSelectedMethodName)
 !
 

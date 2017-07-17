@@ -476,7 +476,7 @@ sbBreak: anOrderedCollection
 
 	| myClass gsMethod stepPoint |
 	myClass := self sbClassFrom: anOrderedCollection.
-	gsMethod := myClass compiledMethodAt: anOrderedCollection removeFirst asSymbol.
+	gsMethod := self compiledMethodAt: anOrderedCollection removeFirst asSymbol inClass: myClass.
 	stepPoint := anOrderedCollection removeFirst asNumber.
 	anOrderedCollection removeFirst = 'set' ifTrue: [
 		gsMethod setBreakAtStepPoint: stepPoint.
@@ -770,7 +770,7 @@ sbCopyMethodsFor: newClass
 	symbolList := self symbolList.
 	oldClass selectors do: [:each | 
 		| source category errors |
-		source := (oldClass compiledMethodAt: each) sourceString.
+		source := (self compiledMethodAt: each inClass: oldClass) sourceString.
 		category := self _behavior: oldClass categoryOfSelector: each.
 		errors := newClass 
 			compileMethod: source
@@ -938,7 +938,7 @@ sbMethodClass: anOrderedCollection
 	sourceBehavior isMeta ifTrue: [target := target class].
 	anOrderedCollection do: [:each | 
 		| gsMethod result |
-		gsMethod := sourceBehavior compiledMethodAt: each asSymbol.
+		gsMethod := self compiledMethodAt: each asSymbol inClass: sourceBehavior.
 		result := self		"key: GsNMethod value: (Array withAll: errors and warnings)"
 				compileMethod: gsMethod sourceString
 				behavior: target
@@ -1598,7 +1598,7 @@ sbUpdateMethodsByVariables
 	filters := IdentitySet withAll: (methodFilters select: [:each | each isSymbol]).
 	selectedClass selectors do: [:eachSelector | 
 		| gsMethod |
-		gsMethod := selectedClass compiledMethodAt: eachSelector.
+		gsMethod := self compiledMethodAt: eachSelector inClass: selectedClass.
 		(gsMethod instVarsAccessed * filters) notEmpty ifTrue: [selectors add: eachSelector].
 	].
 	^selectors.

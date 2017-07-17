@@ -54,7 +54,7 @@ package!
 "Class Definitions"!
 
 GsObject subclass: #GsClass
-	instanceVariableNames: 'category parent children isVisible classHistory isTestCase'
+	instanceVariableNames: 'category dictionary parent children isVisible classHistory isTestCase'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -81,27 +81,27 @@ _addClass: each toStream: stream
 !
 
 _addClass: aClass toStream: aStream isVisible: aBoolean fromDictionary: aDictionary
-	"1. OOP; 2. key; 3. category; 4. superclass OOP; 5. children; 6. Visible/Inherited; 7. Class History; 8. isTestCase"
+	"1. OOP; 2. key; 3. category; 4. dictionary name; 5. superclass OOP; 6. children; 7. Visible/Inherited; 8. Class History; 9. isTestCase"
 
 	| testCaseClass history |
-	(self oopOf: aClass) printOn: aStream.
-	aStream tab; nextPutAll: (aDictionary  isNil ifTrue: [aClass name] ifFalse: [aDictionary keyAtValue: aClass ifAbsent: [aClass name]]); tab.
-	aClass category notNil ifTrue: [aStream nextPutAll: aClass category].
-	aStream tab. (self oopOf: aClass superclass) printOn: aStream.
+"1"	(self oopOf: aClass) printOn: aStream.
+"2"	aStream tab; nextPutAll: (aDictionary  isNil ifTrue: [aClass name] ifFalse: [aDictionary keyAtValue: aClass ifAbsent: [aClass name]]); tab.
+"3"	aClass category notNil ifTrue: [aStream nextPutAll: aClass category].
+"4"	aStream tab; nextPutAll: (aDictionary isNil ifTrue: ['?'] ifFalse: [aDictionary name]).
+"5"	aStream tab. (self oopOf: aClass superclass) printOn: aStream.
 	aStream 
-		tab; "let client build children list"
-		tab; 
-		nextPut: (aBoolean ifTrue: [$V] ifFalse: [$I]);
+"6"		tab; "let client build children list"
+"7"		tab; nextPut: (aBoolean ifTrue: [$V] ifFalse: [$I]);
 		tab.
 	(history := self historyOf: aClass) isNil ifTrue: [history := Array with: aClass].
-	(history indexOf: aClass) printOn: aStream.
+"8"	(history indexOf: aClass) printOn: aStream.
 	aStream nextPut: $/.
 	history size printOn: aStream.
 	aStream tab.
 	testCaseClass := Globals
 		at: #'TestCase'
 		ifAbsent: [nil].
-	(testCaseClass notNil and: [aClass isSubclassOf: testCaseClass]) printOn: aStream.
+"9"	(testCaseClass notNil and: [aClass isSubclassOf: testCaseClass]) printOn: aStream.
 	aStream lf.
 !
 

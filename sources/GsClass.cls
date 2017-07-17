@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 GsObject subclass: #GsClass
-	instanceVariableNames: 'category parent children isVisible classHistory isTestCase'
+	instanceVariableNames: 'category dictionary parent children isVisible classHistory isTestCase'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -40,6 +40,11 @@ children
 classHistory
 	^classHistory!
 
+dictionary
+
+	^dictionary
+!
+
 implementorsOf: aGsMethod
 
 	| string |
@@ -54,19 +59,20 @@ implementorsOf: aGsMethod
 
 initialize: aList
 	"See JadeServer>>#_addClass: aClass toStream: aStream isVisible: aBoolean fromDictionary: aDictionary
-	1. OOP; 2. key; 3. category; 4. superclass OOP; 5. children; 6. Visible/Inherited; 7. Class History; 8. isTestCase"
+	1. OOP; 2. key; 3. category; 4. dictionary name; 5. superclass OOP; 6. children; 7. Visible/Inherited; 8. Class History; 9. isTestCase"
 
 	super initialize: aList.
 	category := aList at: 3.
-	aList size < 4 ifTrue: [^self].	"When we get a Class as the holder of a GsMethod, then we don't get all the details"
-	parent := gciSession oopTypeWithOop: (aList at: 4) asNumber.
+	dictionary := 4 <= aList size ifTrue: [aList at: 4] ifFalse: [''].
+	aList size < 5 ifTrue: [^self].	"When we get a Class as the holder of a GsMethod, then we don't get all the details"
+	parent := gciSession oopTypeWithOop: (aList at: 5) asNumber.
 	children := SortedCollection sortBlock: [:a :b | a name <= b name].
-	isVisible := (aList at: 6) = 'V'.
-	classHistory := aList at: 7.
+	isVisible := (aList at: 7) = 'V'.
+	classHistory := aList at: 8.
 	classHistory := classHistory = '1/1' 
 	  ifTrue: ['']
 	  ifFalse: [' [' , classHistory , ']'].
-	isTestCase := (aList at: 8) = 'true'.
+	isTestCase := (aList at: 9) = 'true'.
 !
 
 isTestCase
@@ -120,6 +126,7 @@ updateParentInDictionary: aDictionary
 !GsClass categoriesFor: #category!public! !
 !GsClass categoriesFor: #children!accessing!public! !
 !GsClass categoriesFor: #classHistory!accessing!public! !
+!GsClass categoriesFor: #dictionary!accessing!public! !
 !GsClass categoriesFor: #implementorsOf:!public! !
 !GsClass categoriesFor: #initialize:!public! !
 !GsClass categoriesFor: #isTestCase!public! !

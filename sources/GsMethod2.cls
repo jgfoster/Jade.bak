@@ -28,6 +28,7 @@ asUpdatedVersion: stringOop
 						gsClass oopType lowPart printString, Character tab asString, 
 						gsClass name, Character tab asString, 
 						gsClass category, Character tab asString, 
+						'?' "Dictionary name" , Character tab asString,
 						isTestCase printString.
 
 	^GsMethod2 fromString: stringToGetNewMethod session: gciSession.
@@ -53,14 +54,15 @@ gsClass
 	^gsClass!
 
 initialize: aList 
+	"See JadeServer>>_addMethod:toStream:"
 
 	| string |
 	category := aList at: 3.
-	string := (aList at: 4) , Character tab asString , (aList at: 5) , Character tab asString , (aList at: 6).
+	string := (aList at: 4) , Character tab asString , (aList at: 5) , Character tab asString , (aList at: 6) , Character tab asString , (aList at: 7).
 	gsClass := GsClass 
 		fromString: string 
 		session: gciSession.
-	isTestCase := (aList at: 7) = 'true'.
+	isTestCase := (aList at: 8) = 'true'.
 !
 
 isTestCase

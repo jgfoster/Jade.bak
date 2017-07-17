@@ -1856,7 +1856,7 @@ onDropOnPackageList: aSession
 onSetFocus
 
 	| activeView stack |
-	ignoreNextSetFocusEvent ifTrue: [	"We have just returned from a Find Class dialog and don't need to update just yet"
+	ignoreNextSetFocusEvent ifTrue: [	"We have just returned from a Find Class dialog or error and don't need to update just yet"
 		ignoreNextSetFocusEvent := false.
 		^self.
 	].
@@ -1880,6 +1880,7 @@ onSetFocus: aView stack: aString
 			self updateAndSelect: nil.
 		] on: Error do: [:ex | 
 			SessionManager current logError: ex.
+			ignoreNextSetFocusEvent := true.
 			MessageBox 
 				errorMsg: ex description
 				caption: 'Jade Error'.

@@ -39,6 +39,7 @@ package methodNames
 	add: #JadeServer -> #methodsContaining:;
 	add: #JadeServer -> #methodsFor:upTo:filter:isVariables:;
 	add: #JadeServer -> #moveMethod:toCategory:;
+	add: #JadeServer -> #nameOfFirstDictionaryReferencing:;
 	add: #JadeServer -> #referencesToObject:;
 	add: #JadeServer -> #removeCategory:fromBehavior:;
 	add: #JadeServer -> #removeMethod:;
@@ -54,6 +55,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #_behavior:categoryOfSelector:;
 	add: #JadeServer64bit3x -> #_methodsFor:categories:;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
+	add: #JadeServer64bit3x -> #nameOfFirstDictionaryReferencing:;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -201,22 +203,27 @@ browseSendersOf: aGsMethodOrString
 !JadeServer methodsFor!
 
 _addMethod: aGsMethod toStream: aStream
+	"See GsMethod2>>initialize:"
 
 	| inClass testCaseClass |
 	inClass := aGsMethod inClass.
-	(self oopOf: aGsMethod) printOn: aStream.
+"1"	(self oopOf: aGsMethod) printOn: aStream.
 	aStream 
-		tab; nextPutAll: aGsMethod selector; 
-		tab; nextPutAll: (self _behavior: inClass categoryOfSelector: aGsMethod selector);
+"2"		tab; nextPutAll: aGsMethod selector; 
+"3"		tab; nextPutAll: (self _behavior: inClass categoryOfSelector: aGsMethod selector);
 		tab.
-	(self oopOf: inClass) printOn: aStream.
-	aStream tab; nextPutAll: inClass name; tab.
-	inClass category notNil ifTrue: [aStream nextPutAll: inClass category].
-	aStream tab.
+
+	"Class"
+"4"	(self oopOf: inClass) printOn: aStream.
+"5"	aStream tab; nextPutAll: inClass name; tab.
+"6"	inClass category notNil ifTrue: [aStream nextPutAll: inClass category].
+"7"	aStream tab; nextPutAll: (self nameOfFirstDictionaryReferencing: inClass thisClass); tab.
+
+	"SUnit Test Method"
 	testCaseClass := Globals
 		at: #'TestCase'
 		ifAbsent: [nil].
-	((testCaseClass  notNil and: [inClass isSubclassOf: testCaseClass]) and: [inClass testSelectors includes: aGsMethod selector]) printOn: aStream.
+"8"	((testCaseClass  notNil and: [inClass isSubclassOf: testCaseClass]) and: [inClass testSelectors includes: aGsMethod selector]) printOn: aStream.
 	aStream lf.
 !
 
@@ -231,7 +238,7 @@ _methodsFor: aClass categories: aList
 	aList do: [:eachCategory | 
 		(aClass _includesCategory: eachCategory) ifTrue: [
 			(aClass selectorsIn: eachCategory) do: [:eachSelector |
-				methods add: (aClass compiledMethodAt: eachSelector).
+				methods add: (self compiledMethodAt: eachSelector inClass: aClass).
 			].
 		].
 	].
@@ -249,11 +256,11 @@ _methodsFor: aClass filter: aList isVariables: aBoolean
 _methodsFor: aClass variables: aList
 
 	| methods |
-	aList isEmpty ifTrue: [^aClass selectors collect: [:each | aClass compiledMethodAt: each]].
+	aList isEmpty ifTrue: [^aClass selectors collect: [:each | self compiledMethodAt: each inClass: aClass]].
 	methods := IdentitySet new.
 	aClass selectors do: [:each | 
 		| method intersect |
-		method := aClass compiledMethodAt: each.
+		method := self compiledMethodAt: each inClass: aClass.
 		intersect := method instVarsAccessed * aList.
 		intersect notEmpty ifTrue: [methods add: method].
 	].
@@ -461,6 +468,13 @@ moveMethod: aGsMethod toCategory: aString
 		toCategory: aString.
 !
 
+nameOfFirstDictionaryReferencing: aGlobal
+
+	| list |
+	list := self symbolList dictionaryAndSymbolOf: aGlobal.
+	list isNil ifTrue: [^''].
+	^list first name!
+
 referencesToObject: anObject
 
 	^self streamOfMethods: (self classOrganizer referencesToObject: anObject).
@@ -582,7 +596,7 @@ stepPointsFor: aGsMethod in: aClass
 		behaviorFor: aGsMethod selector
 		in: aClass.
 	source := behavior sourceCodeAt: aGsMethod selector.
-	method := behavior compiledMethodAt: aGsMethod selector.
+	method := self compiledMethodAt: aGsMethod selector inClass: behavior.
 	stream := WriteStream on: String new.
 	breakStepPoints := (aGsMethod class canUnderstand: #'_breakpointIpOffsets')
 		ifTrue: [aGsMethod _stepPointsFromBreakIpOffsets: aGsMethod _breakpointIpOffsets]
@@ -641,6 +655,7 @@ stringOfLineNumbersWithBreaksIn: aGsMethod
 !JadeServer categoriesFor: #methodsContaining:!Methods!public! !
 !JadeServer categoriesFor: #methodsFor:upTo:filter:isVariables:!Methods!public! !
 !JadeServer categoriesFor: #moveMethod:toCategory:!Methods!public! !
+!JadeServer categoriesFor: #nameOfFirstDictionaryReferencing:!Methods!public! !
 !JadeServer categoriesFor: #referencesToObject:!Methods!public! !
 !JadeServer categoriesFor: #removeCategory:fromBehavior:!Methods!public! !
 !JadeServer categoriesFor: #removeMethod:!Methods!public! !
@@ -667,7 +682,7 @@ _methodsFor: aClass categories: aList
 	aList do: [:eachCategory | 
 		(aClass includesCategory: eachCategory) ifTrue: [
 			(aClass selectorsIn: eachCategory) do: [:eachSelector |
-				methods add: (aClass compiledMethodAt: eachSelector).
+				methods add: (self compiledMethodAt: eachSelector inClass: aClass).
 			].
 		].
 	].
@@ -699,14 +714,22 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 			category: categorySymbol 
 			using: aSymbolList 
 			environmentId: 0.
-		(aBehavior compiledMethodAt: method key selector) -> warnings.
+		(self compiledMethodAt: method key selector inClass: aBehavior) -> warnings.
 	] on: Error do: [:ex | 
 		ex return: method -> warnings.
 	].
-! !
+!
+
+nameOfFirstDictionaryReferencing: aGlobal
+
+	| list |
+	list := self symbolList dictionariesAndSymbolsOf: aGlobal.
+	list isEmpty ifTrue: [^''].
+	^list first first name! !
 !JadeServer64bit3x categoriesFor: #_behavior:categoryOfSelector:!Methods!public! !
 !JadeServer64bit3x categoriesFor: #_methodsFor:categories:!Methods!public! !
 !JadeServer64bit3x categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #nameOfFirstDictionaryReferencing:!Methods!public! !
 
 "End of package definition"!
 
