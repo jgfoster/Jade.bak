@@ -28,6 +28,7 @@ list := #(
 	'Jade in Dolphin'
 	'Jade Tests'
 ).
+(Delay forMilliseconds: 200) wait.
 ProgressDialog showModalWhile: [:progress |
 	1 to: list size do: [:i |
 		| name percent |
@@ -41,9 +42,8 @@ ProgressDialog showModalWhile: [:progress |
 	].
 ].
 SessionManager current splashShowAtStartup: false.
-SmalltalkSystemShell allInstances first 
-	position: 20@50;
-	yourself.
+SmalltalkSystemShell allInstances first position: 20@50.
+(TranscriptShell allInstances , #(nil)) first ifNotNil: [:shell | shell view position: 20@600].
 IdeaSpaceShell allInstances isEmpty ifTrue: [
 	IdeaSpaceShell show
 		absorbCard: SmalltalkWorkspaceDocument show;
@@ -58,9 +58,9 @@ JadeLoginShell show
 	position: 80@20;
 	yourself.
 Transcript clear.
-(Delay forMilliseconds: 200) wait.
 Cursor wait showWhile: [
 	SourceManager default compressSources.
+	(Delay forMilliseconds: 200) wait.
 	SessionManager current saveImage.
 ].
 !

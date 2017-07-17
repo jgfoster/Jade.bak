@@ -34,9 +34,9 @@ ProgressDialog showModalWhile: [:progress |
 	].
 ].
 Transcript clear.
-(Delay forMilliseconds: 200) wait.
 Cursor wait showWhile: [
 	SourceManager default compressSources.
+	(Delay forMilliseconds: 200) wait.
 	SessionManager current saveImage.
 ].
 !
