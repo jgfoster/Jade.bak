@@ -15,6 +15,7 @@ TestRunner show
 	position: 900@40;
 	yourself.
 TranscriptShell show.
+TranscriptShell allInstances first view position: 20@600.
 Debugger defaultExtent: 1000@600.
 SourceManager default fileIn: 'RegressionTestsLoad.st'.
 list := #(

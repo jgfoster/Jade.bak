@@ -52,6 +52,8 @@ IdeaSpaceShell allInstances isEmpty ifTrue: [
 		position: 50@80; extent: 1200@700;
 		yourself.
 ].
+ClassBrowserAbstract allSubclasses do: [:each | 
+	(each plugins includes: DebugInfoPlugin) ifFalse: [each plugins add: DebugInfoPlugin]].
 Debugger defaultExtent: 1000@600.
 !
 JadeLoginShell show
