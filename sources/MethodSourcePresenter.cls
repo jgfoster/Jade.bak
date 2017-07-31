@@ -139,7 +139,7 @@ fileSave
 	^false.
 !
 
-gsMethod: aGsMethod
+gsMethod: aGsMethod	"Not a GsMethod2"
 
 	gsMethod := aGsMethod.
 	self update.!

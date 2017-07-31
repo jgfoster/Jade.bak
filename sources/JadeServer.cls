@@ -34,6 +34,7 @@ _describeMethod: aMethod
 	"Nice to add packageName and mcTimestamp"
 
 	| allSelectors class list oldGsMethod string x |
+	self environment: (self environmentForMethod: aMethod).
 	writeStream 	"Line 1 for GsMethod (line 3 for JadeSystemBrowserPresenter)"
 "1"		nextPutAll: (class := aMethod inClass) asOop printString; tab;
 "2"		nextPutAll: class printString; tab;
@@ -436,11 +437,11 @@ gsString
 	| stream |
 	SessionManager current isRuntime ifTrue: [^gsString].
 	(stream := WriteStream on: String new)
-		nextPutAll: '[| class symbolList source server result mcPlatformSupport |'; lf;
+		nextPutAll: '| class symbolList source server result mcPlatformSupport |'; lf;
 		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
 		nextPutAll: 'symbolList := (AllUsers userWithId: ''DataCurator'') symbolList.'; lf;
 		nextPutAll: 'symbolList := symbolList class new add: (symbolList detect: [:each | each name == #UserGlobals]); add: (symbolList detect: [:each | each name == #Globals]); yourself.'; lf;
-		nextPutAll: 'class := symbolList objectNamed: #Object.'; lf;
+		nextPutAll: '[class := symbolList objectNamed: #Object.'; lf;
 		yourself.
 	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | self addGsStringForClass: eachClass to: stream].
 	stream 
@@ -448,7 +449,7 @@ gsString
 		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
 		nextPutAll: 'server := class new initialize; yourself.'; lf;
 		nextPutAll: self sessionStateCode; lf;
-		nextPutAll: 'server] on: ((AllUsers userWithId: ''SystemUser'') objectNamed: #Error) do: [:ex | ex return: ''ERROR: '' , (GsProcess stackReportToLevel: 100)]';
+		nextPutAll: 'server] on: (symbolList objectNamed: #Error) do: [:ex | ex return: ''ERROR: '' , (GsProcess stackReportToLevel: 100)]';
 		yourself.
 	gsString := stream contents.
 	^gsString.

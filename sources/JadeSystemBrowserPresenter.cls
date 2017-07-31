@@ -1399,11 +1399,13 @@ layoutInfo
 	^OrderedCollection new
 		add: self requestStringForUpdate;
 		add: self horizontalSplitter position;
+		add: environment;
 		asArray.
 !
 
 layoutInfo: anArray
 
+	environment := (anArray size < 3) ifTrue: [0] ifFalse: [anArray at: 3].
 	view ensureVisible.
 	anArray isNil ifTrue: [
 		self updateAndSelect: nil.
