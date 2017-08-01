@@ -46,14 +46,6 @@ browse: performSelector method: aGsMethodOrString
 	].
 	self selecting: string.!
 
-browse: performSelector methodSelector: aString
-
-	| string |
-	string := self gciSession 
-		serverPerform: performSelector
-		with: aString.
-	self browseMethodsFromString: string.!
-
 browseImplementorsOf: aGsMethod
  	| methodName |
 
@@ -346,7 +338,6 @@ treeMethodsPresenter: anObject
 !JadeTreeMethodListPresenter categoriesFor: #addList!public! !
 !JadeTreeMethodListPresenter categoriesFor: #addTreeListRoot:type:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browse:method:!public! !
-!JadeTreeMethodListPresenter categoriesFor: #browse:methodSelector:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browseImplementorsOf:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !

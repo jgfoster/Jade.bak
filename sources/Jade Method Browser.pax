@@ -108,7 +108,7 @@ JadeAbstractHistoryEntry subclass: #JadeMethodExplorerHistoryEntry
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #MethodListPresenter
-	instanceVariableNames: 'classListPresenter methodListPresenter inheritanceListPresenter'
+	instanceVariableNames: 'methodListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
