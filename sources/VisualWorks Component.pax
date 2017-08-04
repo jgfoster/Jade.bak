@@ -22,8 +22,8 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
-	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\..\..\Core\Contributions\ITC Gorisek\Yaxo\YAXO DOM';
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Contributions\ITC Gorisek\Yaxo\YAXO DOM';
 	yourself).
 
 package!

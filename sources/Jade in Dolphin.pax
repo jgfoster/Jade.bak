@@ -39,12 +39,12 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
-	add: '..\..\..\Core\Object Arts\Dolphin\IDE\Base\Development System';
-	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\IDE\Base\Development System';
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: 'Jade Deployment';
 	add: 'Jade Login';
-	add: '..\..\..\Core\Contributions\Refactory\Refactoring Browser\Formatters\RBFormatters';
+	add: '..\Core\Contributions\Refactory\Refactoring Browser\Formatters\RBFormatters';
 	yourself).
 
 package!

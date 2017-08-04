@@ -36,19 +36,19 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
-	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Deprecated\Dolphin MVP (Deprecated)';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Deprecated\Dolphin MVP (Deprecated)';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'GemStone Session';
 	add: 'Jade UI Base';
-	add: '..\..\..\Core\Contributions\Odellsoft\SUnitBrowser\SUnitBrowser';
+	add: '..\Core\Contributions\Odellsoft\SUnitBrowser\SUnitBrowser';
 	yourself).
 
 package!

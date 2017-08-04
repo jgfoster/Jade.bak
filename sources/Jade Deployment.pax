@@ -36,16 +36,16 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
-	add: '..\..\..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\..\..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
-	add: '..\..\..\Core\Contributions\Burning River\ExternalProcess\ExternalProcess';
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
+	add: '..\Core\Contributions\Burning River\ExternalProcess\ExternalProcess';
 	add: 'GemStone C Interface';
 	add: 'GemStone Services';
 	add: 'GemStone Session';
 	add: 'Jade Login';
-	add: '..\..\..\Core\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper';
-	add: '..\..\..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
+	add: '..\Core\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper';
+	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	yourself).
 
 package!
