@@ -61,6 +61,7 @@ createSchematicWiring
 	super createSchematicWiring.
 	methodListPresenter	
 		when: #actionPerformed	 		send: #browseClass				to: self;
+		when: #selectionChanged			send: #methodSelectionChanged	to: self;
 		when: #selectionChanging: 		send: #selectionChanging:			to: self;
 		when: #labelOf:editedTo:accept: 	send: #labelOf:editedTo:accept: 	to: self;
 		yourself.
