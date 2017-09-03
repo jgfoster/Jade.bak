@@ -28,7 +28,7 @@ asUpdatedVersion: stringOop
 						gsClass oopType lowPart printString, Character tab asString, 
 						gsClass name, Character tab asString, 
 						gsClass category, Character tab asString, 
-						'?' "Dictionary name" , Character tab asString,
+						gsClass dictionary , Character tab asString,
 						isTestCase printString.
 
 	^GsMethod2 fromString: stringToGetNewMethod session: gciSession.

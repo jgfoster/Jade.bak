@@ -311,7 +311,7 @@ updateCaption
 	self caption: (gciSession titleBarFor: 'Debugger').
 !
 
-updateSaveMethod
+updateSaveMethodOop: anInteger
 	"do nothing"
 ! !
 !JadeDebugger categoriesFor: #answer!public! !
@@ -343,7 +343,7 @@ updateSaveMethod
 !JadeDebugger categoriesFor: #terminateProcess!public! !
 !JadeDebugger categoriesFor: #update!public! !
 !JadeDebugger categoriesFor: #updateCaption!public! !
-!JadeDebugger categoriesFor: #updateSaveMethod!public! !
+!JadeDebugger categoriesFor: #updateSaveMethodOop:!public! !
 
 !JadeDebugger class methodsFor!
 

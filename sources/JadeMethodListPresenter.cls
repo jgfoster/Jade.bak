@@ -233,15 +233,17 @@ updateMenuBar: aMenuBar
 	methodListPresenter updateMenuBar: aMenuBar.
 !
 
-updateSaveMethod
+updateSaveMethodOop: anInteger
+
 	| newGsMethod |
+ 	methodListPresenter selectedMethod isNil ifTrue: [^self].
 
-	methodListPresenter selectedMethod isNil ifTrue: [^self].
-
-	newGsMethod := methodListPresenter selectedMethod asUpdatedVersion: self getOopToNewMethod lowPart printString.
+	newGsMethod := methodListPresenter selectedMethod copy
+		oopType: (gciSession oopTypeWithOop: anInteger);
+		yourself.
 	methodListPresenter primaryPresenter model add: newGsMethod.
 
-	methodListPresenter primaryPresenter model remove: methodListPresenter selectedMethod ifAbsent: [].
+ 	methodListPresenter primaryPresenter model remove: methodListPresenter selectedMethod ifAbsent: [].
 
 	methodListPresenter primaryPresenter selection: newGsMethod.
 !
@@ -289,7 +291,7 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #selectFirstMethod!public! !
 !JadeMethodListPresenter categoriesFor: #selecting:!public! !
 !JadeMethodListPresenter categoriesFor: #updateMenuBar:!public! !
-!JadeMethodListPresenter categoriesFor: #updateSaveMethod!public! !
+!JadeMethodListPresenter categoriesFor: #updateSaveMethodOop:!public! !
 !JadeMethodListPresenter categoriesFor: #updateSource!public! !
 
 !JadeMethodListPresenter class methodsFor!

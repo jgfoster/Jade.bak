@@ -84,7 +84,7 @@ editMenuStrings
 fileSave
 		"Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"
 
-	| user theClass newSelector category string stream list warnings errors index a b c methodExists |
+	| user theClass newSelector category string stream list warnings errors index a b c methodExists line newOop |
 	(theClass := gsMethod behavior) isNil ifTrue: [^true].
 	newSelector := self newSelector.
 	currentSelector = newSelector ifFalse: [
@@ -106,14 +106,18 @@ fileSave
 		with: category.
 
 	stream := ReadStream on: string.
-	(newSelector := stream nextLine) notEmpty ifTrue: [
+	(line := stream nextLine) notEmpty ifTrue: [
+		| pieces |
+		pieces := line subStrings: Character tab.
+		newOop := (pieces at: 1) asNumber. 
+		newSelector := pieces at: 2.
 		documentPresenter isModified: false.
 		self 
 			trigger: #'savedMethod:inClass:' 
 			with: newSelector
 			with: theClass.
 	].
-	parentPresenter updateSaveMethod.
+	parentPresenter updateSaveMethodOop: newOop.
 	(list := stream upToEnd subStrings: Character lf) isEmpty ifTrue: [^true].
 	warnings := list select: [:each | each beginsWith: 'WARNING:'].
 	warnings := warnings collect: [:each | each copyFrom: 10 to: each size].

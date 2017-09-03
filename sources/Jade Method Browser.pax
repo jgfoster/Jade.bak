@@ -365,6 +365,10 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 !
 
 compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCategory: categoryString
+	"answers a String:
+		OOP of new method <TAB> selector of new method (or empty if compile failed)
+		ERROR: [details] (repeat line for each error)
+		[warnings] (if no errors)"
 
 	| userProfile result gsMethod stream errDict errorList warnings |
 	userProfile := aUserProfileOrNil isNil
@@ -384,7 +388,11 @@ compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCatego
 	].
 	stream := WriteStream on: String new.
 	gsMethod notNil ifTrue: [
-		stream nextPutAll: gsMethod selector.
+		stream 
+			nextPutAll: gsMethod asOop printString;
+			tab;
+			nextPutAll: gsMethod selector;
+			yourself.
 	].
 	errDict := GemStoneError at: System myUserProfile nativeLanguage.
 	errorList do: [:each |
