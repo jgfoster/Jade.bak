@@ -150,6 +150,7 @@ saveMethod
 		with: gsProcess.
 	(result isKindOf: Boolean) ifTrue: [
 		result ifTrue: [
+			documentPresenter isModified: false.
 			gsProcess trimStackToLevel: frameListPresenter selectionByIndex + frameListOffset.
 			^self update.
 		] ifFalse: [
