@@ -145,7 +145,7 @@ saveMethod
 	| result |
 	result := gciSession
 		serverPerform: #'compile:frame:process:' 
-		with: self getDocumentData
+		with: (self getDocumentData reject: [:each | each == Character cr])
 		with: frameListPresenter selectionByIndex + frameListOffset
 		with: gsProcess.
 	(result isKindOf: Boolean) ifTrue: [
@@ -383,6 +383,9 @@ reportError: gsError
 		debugger update.
 		Processor activeProcess terminate.
 		self error: 'We should never get here!!'.
+	].
+	(#(2709 6005) includes: gsError errorReport number) ifTrue: [
+		^self openDebuggerOnException: gsError.
 	].
 	answer := (JadeErrorShell showModalOn: gsError) ifNil: [#'terminate'].	"Window was closed without pressing any button!!"
 	answer = #'terminate' ifTrue: [

@@ -187,10 +187,6 @@ queryCommand: aCommandQuery
 		aCommandQuery isEnabled: 1 < cardsPresenter view cards size. 
 		^true.
 	].
-"
-	(aCommandQuery command == #historyBack) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryBack. ^true].
-	(aCommandQuery command == #historyForward) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryForward. ^true].
-"
 	^super queryCommand: aCommandQuery.
 
 !
