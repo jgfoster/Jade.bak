@@ -29,6 +29,7 @@ package methodNames
 	add: #JadeServer -> #dictionaryAndSymbolOf:forUser:;
 	add: #JadeServer -> #environment;
 	add: #JadeServer -> #environment:;
+	add: #JadeServer -> #environmentSuperClassFor:;
 	add: #JadeServer -> #historyOf:;
 	add: #JadeServer -> #isPackagePolicyEnabled;
 	add: #JadeServer -> #methodSignatureForSelector:;
@@ -140,6 +141,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #compiledMethodAt:inClass:;
 	add: #JadeServer64bit3x -> #environment;
 	add: #JadeServer64bit3x -> #environment:;
+	add: #JadeServer64bit3x -> #environmentSuperClassFor:;
 	add: #JadeServer64bit3x -> #initialize;
 	add: #JadeServer64bit3x -> #methodSignatureForSelector:;
 	add: #JadeServer64bit3x -> #objectSecurityPolicyFor:;
@@ -323,6 +325,10 @@ environment
 
 environment: anInteger
 	"Ignored prior to 3.x"!
+
+environmentSuperClassFor: aBehavior
+
+	^aBehavior superclass!
 
 historyOf: aClass
 
@@ -1767,7 +1773,7 @@ sbUpdateSuperclass
 	] whileTrue: [
 		classList add: class.
 		self sbAddNameOf: class.
-		class := class superclass.
+		class := self environmentSuperClassFor: class.
 	].
 	classList := classList reverse.
 	selected := self nextLine.
@@ -1908,6 +1914,7 @@ writeList: aList
 !JadeServer categoriesFor: #dictionaryAndSymbolOf:forUser:!public!System Browser! !
 !JadeServer categoriesFor: #environment!public!System Browser! !
 !JadeServer categoriesFor: #environment:!public!System Browser! !
+!JadeServer categoriesFor: #environmentSuperClassFor:!public!System Browser! !
 !JadeServer categoriesFor: #historyOf:!private! !
 !JadeServer categoriesFor: #isPackagePolicyEnabled!public!System Browser! !
 !JadeServer categoriesFor: #methodSignatureForSelector:!public!System Browser! !
@@ -2132,6 +2139,10 @@ environment: anInteger
 	environment := anInteger.
 !
 
+environmentSuperClassFor: aBehavior
+
+	^aBehavior superclassForEnv: environment!
+
 initialize
 
 	super initialize.
@@ -2340,7 +2351,7 @@ sbUpdateMethodStepPointsFor: aMethod
 	|  selectors list |
 	(selectors := aMethod _allDebugInfo: 10) ifNil: [^#()].
 	list := (self homeMethodFor: aMethod)  _sourceOffsets.
-	list :=list collect: [:each | 		"exists as far back as 32-bit 6.3.0"
+	list := list collect: [:each | 		"exists as far back as 32-bit 6.3.0"
 		| index selector |
 		selector := ''.
 		index := selectors indexOf: each.
@@ -2361,6 +2372,7 @@ selectedClassOverridesSelector: aSymbol
 !JadeServer64bit3x categoriesFor: #compiledMethodAt:inClass:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #environment!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #environment:!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #environmentSuperClassFor:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #initialize!public! !
 !JadeServer64bit3x categoriesFor: #methodSignatureForSelector:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #objectSecurityPolicyFor:!public!System Browser! !
