@@ -134,7 +134,7 @@ gciNbExecuteStrFromContext: string _: context _: symbolList
 
 gciNbExecuteStrFromContext_: string _: context _: symbolList _: anInteger
 
-	<cdecl: OopType64 GciNbExecuteStrFromContext lpstr OopType64 OopType64 word>
+	<cdecl: OopType64 GciNbExecuteStrFromContext_ lpstr OopType64 OopType64 word>
 	^self invalidCall
 !
 

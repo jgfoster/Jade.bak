@@ -1538,7 +1538,7 @@ methodsIdentifier
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
-		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment.
+		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2.
 	].
 	^#(
 		'&Methods'
@@ -1551,7 +1551,7 @@ methodsMenuStrings
 		'BrowseMethod &Pragmas ...//browseMethodPragmas'
 		'-'
 		'&Delete Method(s)//removeMethods'
-		'Set Compiler &Environment ...//setEnvironment'
+		#('&Method Environment' '&0//setEnvironment0' '&1//setEnvironment1' '&2//setEnvironment2')
 		'Run &Tests//runMethodTests'
 	).
 !
@@ -2043,8 +2043,12 @@ queryCommand: aCommandQuery
 	(#(#'runClassTests') includes: command) ifTrue: [aCommandQuery isEnabled: selectedClassesAreTestCases. ^true].
 	(#(#'browseSelectedClass') includes: command) ifTrue: [aCommandQuery isEnabled: self isClassSelectedInEditor. ^true].
 
-	(aCommandQuery command == #historyBack) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryBack. ^true].
-	(aCommandQuery command == #historyForward) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryForward. ^true].
+	(command == #historyBack) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryBack. ^true].
+	(command == #historyForward) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryForward. ^true].
+
+	(command == #'setEnvironment0' and: [environment == 0]) ifTrue: [aCommandQuery isChecked: true. ^true].
+	(command == #'setEnvironment1' and: [environment == 1]) ifTrue: [aCommandQuery isChecked: true. ^true].
+	(command == #'setEnvironment2' and: [environment == 2]) ifTrue: [aCommandQuery isChecked: true. ^true].
 
 	^super queryCommand: aCommandQuery.
 !
@@ -2376,16 +2380,25 @@ setColorForUnsavedEdits
 	JadeTextStyles default colorForUnsavedEdits: newColor.
 	!
 
-setEnvironment
+setEnvironment: anInteger
 
-	| answer |
-	answer := Prompter 
-		on: environment printString
-		prompt: 'Set method compiler environment to: '
-		caption: 'Jade'.
-	answer ifNil: [^self].
-	environment := answer asNumber.
+	environment := anInteger.
 	self updateCommand: self requestStringForUpdate.
+!
+
+setEnvironment0
+
+	self setEnvironment: 0
+!
+
+setEnvironment1
+
+	self setEnvironment: 1
+!
+
+setEnvironment2
+
+	self setEnvironment: 2
 !
 
 setHomeDictionary
@@ -3339,7 +3352,10 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #setColorForCompileErrors!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setColorForNoEdits!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setColorForUnsavedEdits!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #setEnvironment!public! !
+!JadeSystemBrowserPresenter categoriesFor: #setEnvironment:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #setEnvironment0!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #setEnvironment1!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #setEnvironment2!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setHomeDictionary!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setSearchPolicy!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !
