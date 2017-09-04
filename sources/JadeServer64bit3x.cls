@@ -36,6 +36,15 @@ asString: anObject
 	].
 !
 
+debugString: aString fromContext: anObject environment: anInteger
+
+	[
+		^super debugString: aString fromContext: anObject environment: anInteger.
+	] on: CompileWarning do: [:ex | 
+		ex resume.
+	].
+!
+
 describeMethod: aMethod
 	"Provide info needed to create a GsMethod in Jade client"
 
@@ -79,6 +88,7 @@ nextPutAll: anObject
 !JadeServer64bit3x categoriesFor: #_allSelectors!Debugger!GsObject!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #_describeMethod:!public! !
 !JadeServer64bit3x categoriesFor: #asString:!public!Transcript! !
+!JadeServer64bit3x categoriesFor: #debugString:fromContext:environment:!public! !
 !JadeServer64bit3x categoriesFor: #describeMethod:!public! !
 !JadeServer64bit3x categoriesFor: #executeString:fromContext:environment:!public! !
 !JadeServer64bit3x categoriesFor: #homeMethodFor:!public! !

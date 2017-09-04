@@ -136,6 +136,13 @@ cr
 	self nextPut: Character cr.
 !
 
+debugString: aString fromContext: anObject environment: anInteger
+
+	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
+	^'nil halt. ' , aString
+		evaluateInContext: anObject 
+		symbolList: GsSession currentSession symbolList. !
+
 delay
 
 	(Delay forMilliseconds: 10) wait.
@@ -364,6 +371,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #commit!public! !
 !JadeServer categoriesFor: #contents!public! !
 !JadeServer categoriesFor: #cr!public!Transcript! !
+!JadeServer categoriesFor: #debugString:fromContext:environment:!public! !
 !JadeServer categoriesFor: #delay!public! !
 !JadeServer categoriesFor: #describeMethod:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #errorListFor:!public! !

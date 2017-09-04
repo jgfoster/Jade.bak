@@ -143,6 +143,12 @@ commit
 	^self serverPerform: #'commit'.
 !
 
+debugString: aString fromContext: anObject environment: anInteger
+
+	^self
+		serverPerform: #'debugString:fromContext:environment:' with: aString with: anObject with: anInteger.
+!
+
 debugToFilePath: aString
 
 	^library gciDbgEstablishToFile: aString
@@ -945,6 +951,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #clientForwardError:!public! !
 !GciSession categoriesFor: #clientForwarders!public! !
 !GciSession categoriesFor: #commit!Jade convenience!public! !
+!GciSession categoriesFor: #debugString:fromContext:environment:!long running!public! !
 !GciSession categoriesFor: #debugToFilePath:!Jade convenience!public! !
 !GciSession categoriesFor: #eventCount!public! !
 !GciSession categoriesFor: #executeString:!Jade convenience!public! !

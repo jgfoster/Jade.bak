@@ -294,6 +294,9 @@ initialize
 	environment := 0.
 !
 
+jadeDebug
+	"Intercepted by CodeSourcePresenter"!
+
 jadeDisplay
 
 	self jadeExecuteAndDisplay: true.
@@ -564,6 +567,7 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #getDocumentData!accessing!private! !
 !JadeTextDocument categoriesFor: #help!private! !
 !JadeTextDocument categoriesFor: #initialize!overrides!public! !
+!JadeTextDocument categoriesFor: #jadeDebug!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeDisplay!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeExecute!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeExecuteAndDisplay:!Jade!private! !
