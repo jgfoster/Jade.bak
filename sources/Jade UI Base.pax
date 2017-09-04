@@ -71,7 +71,7 @@ JadePresenter subclass: #JadeToolsToolBarPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #CodeSourcePresenter
-	instanceVariableNames: 'documentPresenter menuTitle'
+	instanceVariableNames: 'documentPresenter menuTitle environment'
 	classVariableNames: 'CodeFont'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -91,7 +91,7 @@ ValueDialog subclass: #JadeValueDialog
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 TextDocument subclass: #JadeTextDocument
-	instanceVariableNames: 'gciSession codePane'
+	instanceVariableNames: 'gciSession codePane environment'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

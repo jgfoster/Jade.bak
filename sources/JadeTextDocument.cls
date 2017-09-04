@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 TextDocument subclass: #JadeTextDocument
-	instanceVariableNames: 'gciSession codePane'
+	instanceVariableNames: 'gciSession codePane environment'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -211,6 +211,11 @@ editSelectAll
 	self activeTextEdit selectAll.
 !
 
+environment: anInteger
+
+	environment := anInteger.
+!
+
 executeSelectionOrLine
 	"Returns anAssociation
 		key:	true if compiled and returned a result
@@ -220,7 +225,8 @@ executeSelectionOrLine
 	[
 		^true -> (gciSession 
 			executeString: self currentSelectionOrLine 
-			fromContext: self contextObject).
+			fromContext: self contextObject
+			 environment: environment).
 	] on: GsCompileError do: [:ex | 
 		ex list notEmpty ifTrue: [^false -> ex list].
 		^nil -> ex description.
@@ -280,6 +286,12 @@ getDocumentData
 help
 
 	self aboutJade.
+!
+
+initialize
+
+	super initialize.
+	environment := 0.
 !
 
 jadeDisplay
@@ -540,6 +552,7 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #editPaste!edit!private! !
 !JadeTextDocument categoriesFor: #editReplace!edit!private! !
 !JadeTextDocument categoriesFor: #editSelectAll!edit!private! !
+!JadeTextDocument categoriesFor: #environment:!accessing!public! !
 !JadeTextDocument categoriesFor: #executeSelectionOrLine!Jade!private! !
 !JadeTextDocument categoriesFor: #fileIn:!private! !
 !JadeTextDocument categoriesFor: #fileInEnd:!private! !
@@ -550,6 +563,7 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #gciSession:!private! !
 !JadeTextDocument categoriesFor: #getDocumentData!accessing!private! !
 !JadeTextDocument categoriesFor: #help!private! !
+!JadeTextDocument categoriesFor: #initialize!overrides!public! !
 !JadeTextDocument categoriesFor: #jadeDisplay!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeExecute!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeExecuteAndDisplay:!Jade!private! !

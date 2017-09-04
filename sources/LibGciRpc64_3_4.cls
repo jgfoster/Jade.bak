@@ -25,6 +25,19 @@ gsHasPragmas
 
 	^true!
 
+session: session execute: stringOrOop context: contextOop environment: anInteger
+
+	self critical: [
+		self gciSetSessionId: session.
+		self
+			gciNbExecuteStrFromContext_: stringOrOop
+			_: contextOop
+			_: self oopNil
+			_: anInteger.
+		^self nbResult.
+	].
+!
+
 specialFromOop: anOop
 
 	anOop isSmallFraction ifTrue: [
@@ -35,6 +48,7 @@ specialFromOop: anOop
 !LibGciRpc64_3_4 categoriesFor: #errorStructureClass!private! !
 !LibGciRpc64_3_4 categoriesFor: #gciErr:!private! !
 !LibGciRpc64_3_4 categoriesFor: #gsHasPragmas!public! !
+!LibGciRpc64_3_4 categoriesFor: #session:execute:context:environment:!public!required! !
 !LibGciRpc64_3_4 categoriesFor: #specialFromOop:!public! !
 
 !LibGciRpc64_3_4 class methodsFor!

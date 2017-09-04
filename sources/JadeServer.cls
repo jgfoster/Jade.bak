@@ -164,8 +164,9 @@ errorListFor: aCollection
 	^stream contents.
 !
 
-executeString: aString fromContext: anObject
+executeString: aString fromContext: anObject environment: anInteger
 
+	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
 	^aString
 		evaluateInContext: anObject 
 		symbolList: GsSession currentSession symbolList. !
@@ -366,7 +367,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #delay!public! !
 !JadeServer categoriesFor: #describeMethod:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #errorListFor:!public! !
-!JadeServer categoriesFor: #executeString:fromContext:!public! !
+!JadeServer categoriesFor: #executeString:fromContext:environment:!public! !
 !JadeServer categoriesFor: #homeMethodFor:!public! !
 !JadeServer categoriesFor: #initialize!public! !
 !JadeServer categoriesFor: #installTranscript!public!Transcript! !

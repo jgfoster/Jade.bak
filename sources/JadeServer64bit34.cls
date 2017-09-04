@@ -16,6 +16,23 @@ classOrganizer
 	^(org := classOrganizers at: environment + 1) notNil
 		ifTrue: [org]
 		ifFalse: [classOrganizers at: environment + 1 put: (ClassOrganizer newForEnvironment: environment)]
+!
+
+executeString: aString fromContext: anObject environment: anInteger
+	"See String>>evaluateInContext:symbolList:"
+
+	[
+		^ (self
+			_compileInContext: anObject 
+			symbolList: GsSession currentSession symbolList 
+			oldLitVars: nil 
+			environmentId: anInteger 
+			flags: 0)
+			_executeInContext: anObject
+	] on: CompileWarning do: [:ex | 
+		ex resume.
+	].
 ! !
 !JadeServer64bit34 categoriesFor: #classOrganizer!public! !
+!JadeServer64bit34 categoriesFor: #executeString:fromContext:environment:!public! !
 

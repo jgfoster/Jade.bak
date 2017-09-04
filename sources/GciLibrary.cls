@@ -227,6 +227,11 @@ session: session execute: stringOrOop context: contextOop
 	self subclassResponsibility.
 !
 
+session: session execute: stringOrOop context: contextOop environment: anInteger
+
+	self subclassResponsibility.
+!
+
 session: session fetchBytes: anOop
 
 	self subclassResponsibility.
@@ -304,6 +309,7 @@ version
 !GciLibrary categoriesFor: #session:continue:!public! !
 !GciLibrary categoriesFor: #session:continue:withObject:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #session:execute:context:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #session:execute:context:environment:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #session:fetchBytes:!public!Reserved OOPs!subclassResponsibility! !
 !GciLibrary categoriesFor: #session:oopForInteger:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #session:oopForString:!public!subclassResponsibility! !

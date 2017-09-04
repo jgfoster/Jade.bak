@@ -42,10 +42,10 @@ describeMethod: aMethod
 	(aMethod class name == #'GsNMethod') ifFalse: [self error: 'Expected a GsNMethod but got ' , aMethod class name].
 	^super describeMethod: aMethod!
 
-executeString: aString fromContext: anObject
+executeString: aString fromContext: anObject environment: anInteger
 
 	[
-		^super executeString: aString fromContext: anObject.
+		^super executeString: aString fromContext: anObject environment: anInteger.
 	] on: CompileWarning do: [:ex | 
 		ex resume.
 	].
@@ -80,7 +80,7 @@ nextPutAll: anObject
 !JadeServer64bit3x categoriesFor: #_describeMethod:!public! !
 !JadeServer64bit3x categoriesFor: #asString:!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #describeMethod:!public! !
-!JadeServer64bit3x categoriesFor: #executeString:fromContext:!public! !
+!JadeServer64bit3x categoriesFor: #executeString:fromContext:environment:!public! !
 !JadeServer64bit3x categoriesFor: #homeMethodFor:!public! !
 !JadeServer64bit3x categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !

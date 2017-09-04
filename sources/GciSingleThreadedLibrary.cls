@@ -298,6 +298,10 @@ gciNbExecuteStrFromContext: string _: context _: symbolList
 
 	self subclassResponsibility!
 
+gciNbExecuteStrFromContext_: string _: context _: symbolList _: anInteger
+
+	self subclassResponsibility!
+
 gciNbPerform: receiver _: selector _: args _: numArgs
 
 	self subclassResponsibility!
@@ -485,12 +489,13 @@ session: session continue: gsProcessOop withObject: anOop
 	].
 !
 
-session: session execute: aString context: contextOop
+session: session execute: stringOrOop context: contextOop environment: anInteger
 
+	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
 	self critical: [
 		self gciSetSessionId: session.
 		self
-			gciNbExecuteStrFromContext: aString
+			gciNbExecuteStrFromContext: stringOrOop
 			_: contextOop
 			_: self oopNil.
 		^self nbResult.
@@ -654,6 +659,7 @@ version
 !GciSingleThreadedLibrary categoriesFor: #gciNbContinueWith:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciNbEnd:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciNbExecuteStrFromContext:_:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciNbExecuteStrFromContext_:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciNbPerform:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciNbPerformNoDebug:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciNewString:!private! !
@@ -677,7 +683,7 @@ version
 !GciSingleThreadedLibrary categoriesFor: #sendInterpreted:to:with:session:!public! !
 !GciSingleThreadedLibrary categoriesFor: #session:clearStack:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:continue:withObject:!public! !
-!GciSingleThreadedLibrary categoriesFor: #session:execute:context:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:execute:context:environment:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:fetchBytes:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:fetchObjects:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:oopForInteger:!public!required! !

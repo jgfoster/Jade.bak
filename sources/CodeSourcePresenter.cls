@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadePresenterA subclass: #CodeSourcePresenter
-	instanceVariableNames: 'documentPresenter menuTitle'
+	instanceVariableNames: 'documentPresenter menuTitle environment'
 	classVariableNames: 'CodeFont'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -158,10 +158,15 @@ editSelectAll
 	documentPresenter view selectAll.
 !
 
+environment: anInteger
+
+	environment := anInteger.
+!
+
 executeSelectionOrLine
 
 	[
-		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: model).
+		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: model environment: environment).
 	] on: GsCompileError do: [:ex | 
 		^false -> ex list.
 	].
@@ -199,6 +204,12 @@ handleInvalidSession
 		documentPresenter view selectAll; copySelection.
 	].
 	^true
+!
+
+initialize
+
+	super initialize.
+	environment := 0.
 !
 
 isClassSelectedInEditor
@@ -449,10 +460,12 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #editPaste!edit!private! !
 !CodeSourcePresenter categoriesFor: #editReplace!edit!private! !
 !CodeSourcePresenter categoriesFor: #editSelectAll!edit!private! !
+!CodeSourcePresenter categoriesFor: #environment:!public! !
 !CodeSourcePresenter categoriesFor: #executeSelectionOrLine!Jade!private! !
 !CodeSourcePresenter categoriesFor: #fileSave!private! !
 !CodeSourcePresenter categoriesFor: #findClassList!public! !
 !CodeSourcePresenter categoriesFor: #handleInvalidSession!public! !
+!CodeSourcePresenter categoriesFor: #initialize!public! !
 !CodeSourcePresenter categoriesFor: #isClassSelectedInEditor!public! !
 !CodeSourcePresenter categoriesFor: #isModified!public! !
 !CodeSourcePresenter categoriesFor: #jadeDisplay!Jade!private! !

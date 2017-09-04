@@ -951,7 +951,7 @@ editUndo
 executeSelectionOrLine
 
 	[
-		^true -> (self gciSession executeString: self currentSelectionOrLine fromContext: self contextObject).
+		^true -> (self gciSession executeString: self currentSelectionOrLine fromContext: self contextObject environment: environment).
 	] on: GsCompileError do: [:ex | 
 		^false -> ex list.
 	].

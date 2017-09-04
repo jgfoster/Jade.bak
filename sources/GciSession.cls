@@ -19,11 +19,12 @@ GciSoftBreak'!
 !GciSession categoriesForClass!Unclassified! !
 !GciSession methodsFor!
 
-_executeString: aString fromContextOop: anOopType
+_executeString: aString fromContextOop: anOopType environment: anInteger
 	^library 
 		session: gciSessionId
 		execute: (aString copyWithout: Character cr)
 		context: anOopType
+		environment: anInteger
 !
 
 _library
@@ -156,17 +157,19 @@ executeString: aString
 
 	^self
 		executeString: aString 
-		fromContext: nil.
+		fromContext: nil
+		environment: 0.
 !
 
-executeString: aString fromContext: anObject
+executeString: aString fromContext: anObject environment: anInteger
 
 	^self
 		withExplanation: aString 
 		do: [
 			self
 				_executeString: aString
-				fromContextOop: (self oopTypeFor: anObject).
+				fromContextOop: (self oopTypeFor: anObject)
+				environment: anInteger.
 		].
 !
 
@@ -930,7 +933,7 @@ withExplanation: aString doA: aBlock
 	SessionManager inputState pumpMessages.
 	^result.
 ! !
-!GciSession categoriesFor: #_executeString:fromContextOop:!private! !
+!GciSession categoriesFor: #_executeString:fromContextOop:environment:!private! !
 !GciSession categoriesFor: #_library!accessing!private! !
 !GciSession categoriesFor: #_send:to:withAll:!private! !
 !GciSession categoriesFor: #_server!private! !
@@ -945,7 +948,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #debugToFilePath:!Jade convenience!public! !
 !GciSession categoriesFor: #eventCount!public! !
 !GciSession categoriesFor: #executeString:!Jade convenience!public! !
-!GciSession categoriesFor: #executeString:fromContext:!long running!public! !
+!GciSession categoriesFor: #executeString:fromContext:environment:!long running!public! !
 !GciSession categoriesFor: #fetchBytes:!private! !
 !GciSession categoriesFor: #forceLogout!Jade!public! !
 !GciSession categoriesFor: #gciSessionId!public! !

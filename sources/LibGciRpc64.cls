@@ -40,6 +40,38 @@ gciExecuteStr: string _: symbolList
 	^self invalidCall
 !
 
+gciExecuteStr_: string _: symbolList _: environmentId
+"/* =============================================================================
+ * GciExecuteStrFromContext, GciExecuteStrFromContext_ functions
+ *   Execute a Smalltalk expression contained in a C string as if it were a
+ *   message sent to an object.
+ *
+ * Input Arguments:
+ *   source	A null-terminated string containing a sequence of one or more
+ *              statements to be executed.
+ *   contextObject
+ *		The OOP of any GemStone object.  The code to be executed is
+ *              compiled as if it were an instance method in the class of
+ *              contextObject.
+ *              A value of OOP_NO_CONTEXT means no context.
+ *   symbolList	The OOP of a GemStone symbol list (that is, an Array of
+ *              instances of SymbolDictionary).  The compiler uses the
+ *              symbolList to resolve symbolic references in the code in source.
+ *              A value of OOP_NIL means to use the default symbol list for the
+ *              current GemStone session (that is, System myUserProfile
+ *              symbolList).
+ *
+ *   environmentId specifies a compilation environment for the execution
+ *
+ * Return Value:
+ *   Returns the OOP of the execution result.  In case of error, this function
+ *   returns OOP_NIL.
+ *==============================================================================
+"
+	<cdecl: OopType64 GciExecuteStr_ lpstr OopType64 word>
+	^self invalidCall
+!
+
 gciFetchBytes: anOopType _: startIndex _: cString _: maxSize
 
 	<cdecl: sdword GciFetchBytes_ OopType64 sqword lpvoid qword>
@@ -97,6 +129,12 @@ gciNbContinueWith: process _: replaceTopOfStack _: flags _: error
 gciNbExecuteStrFromContext: string _: context _: symbolList
 
 	<cdecl: OopType64 GciNbExecuteStrFromContext lpstr OopType64 OopType64>
+	^self invalidCall
+!
+
+gciNbExecuteStrFromContext_: string _: context _: symbolList _: anInteger
+
+	<cdecl: OopType64 GciNbExecuteStrFromContext lpstr OopType64 OopType64 word>
 	^self invalidCall
 !
 
@@ -344,6 +382,7 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #gciDbgEstablishToFile:!private! !
 !LibGciRpc64 categoriesFor: #gciErr:!private! !
 !LibGciRpc64 categoriesFor: #gciExecuteStr:_:!private! !
+!LibGciRpc64 categoriesFor: #gciExecuteStr_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciFetchBytes:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciFetchChars:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciFetchClass:!private! !
@@ -354,6 +393,7 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #gciI64ToOop:!private! !
 !LibGciRpc64 categoriesFor: #gciNbContinueWith:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciNbExecuteStrFromContext:_:_:!private! !
+!LibGciRpc64 categoriesFor: #gciNbExecuteStrFromContext_:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciNbPerform:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciNbPerformNoDebug:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciNbPerformNoDebug:_:_:_:_:!private! !

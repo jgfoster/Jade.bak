@@ -18,13 +18,6 @@ _continueProcess: aContextOop
 		withAll: (Array with: aContextOop with: #'resume').
 !
 
-_executeString: aString fromContextOop: anOopType
-	^self
-		_usingSocketSend: #'executeString:fromContext:' 
-		to: server 
-		withAll: (Array with: aString with: anOopType).
-!
-
 _send: aSymbol to: anObject withAll: anArray
 
 	^self
@@ -118,7 +111,6 @@ terminate: anOopType
 	TerminateProcess signal.
 ! !
 !GciSessionWithSocket categoriesFor: #_continueProcess:!long running!private! !
-!GciSessionWithSocket categoriesFor: #_executeString:fromContextOop:!private! !
 !GciSessionWithSocket categoriesFor: #_send:to:withAll:!private! !
 !GciSessionWithSocket categoriesFor: #_usingSocketSend:to:withAll:!private! !
 !GciSessionWithSocket categoriesFor: #initializeFrom:withSocket:!public! !
