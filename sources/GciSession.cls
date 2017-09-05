@@ -828,7 +828,7 @@ stopHeartbeat
 terminate: anOopType
 
 	self serverPerform: #'terminate:' with: anOopType.
-!
+	TerminateProcess signal.!
 
 titleBarFor: aString
 "'Jade ' , gciSession gciSessionID printString , ' (' , gciSession userID , ') - "
