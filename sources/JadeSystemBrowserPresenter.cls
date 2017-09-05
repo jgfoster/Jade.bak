@@ -1236,12 +1236,16 @@ isOkayToChange
 
 	methodSourcePresenter view isModified ifTrue: [
 		methodSourcePresenter ensureVisible.
-		(MessageBox confirm: 'Stay on unsaved method?' caption: 'Method has unsaved changes!!') ifTrue: [^false].
+		gciSession isValidSession
+			ifTrue: [(MessageBox confirm: 'Stay on unsaved method?' caption: 'Method has unsaved changes!!') ifTrue: [^false]]
+			ifFalse: [(MessageBox confirm: 'Copy changes to Clipboard?' caption: 'Method has unsaved changes!!') ifTrue: [methodSourcePresenter selectAll; copySelection]].
 		methodSourcePresenter view isModified: false.
 	].
 	classDefinitionPresenter view isModified ifTrue: [
 		classDefinitionPresenter ensureVisible.
-		(MessageBox confirm: 'Stay on unsaved class definition?' caption: 'Class has unsaved changes!!') ifTrue: [^false].
+		gciSession isValidSession
+			ifTrue: [(MessageBox confirm: 'Stay on unsaved class definition?' caption: 'Class has unsaved changes!!') ifTrue: [^false]]
+			ifFalse: [(MessageBox confirm: 'Copy changes to Clipboard?' caption: 'Class has unsaved changes!!') ifTrue: [classDefinitionPresenter selectAll; copySelection]].
 		classDefinitionPresenter view isModified: false.
 	].
 	^true.

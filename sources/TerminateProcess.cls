@@ -12,6 +12,7 @@ TerminateProcess comment: ''!
 
 defaultAction
 
+	Processor forkMainIfMain.
 	Processor terminateActive.
 ! !
 !TerminateProcess categoriesFor: #defaultAction!public! !

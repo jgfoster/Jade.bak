@@ -15,7 +15,8 @@ defaultAction
 	MessageBox 
 		errorMsg: gciErrSType message
 		caption: 'Fatal GemStone Error'.
-	Processor activeProcess terminate.
+	self gciSession beInvalidSession.
+	TerminateProcess signal.
 ! !
 !GsFatalError categoriesFor: #defaultAction!public! !
 

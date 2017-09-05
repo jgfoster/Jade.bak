@@ -13,11 +13,15 @@ GsInvalidSessionError comment: ''!
 defaultAction
 
 	MessageBox errorMsg: 'Invalid Session!!'.
-	self gciSession forceLogout.
-	Processor forkMainIfMain.
-	Processor activeProcess terminate.
-! !
+	TerminateProcess signal.
+!
+
+signal
+
+	self gciSession beInvalidSession.
+	super signal.! !
 !GsInvalidSessionError categoriesFor: #defaultAction!public! !
+!GsInvalidSessionError categoriesFor: #signal!public! !
 
 !GsInvalidSessionError class methodsFor!
 

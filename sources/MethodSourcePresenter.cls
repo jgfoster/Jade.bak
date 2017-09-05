@@ -168,7 +168,9 @@ isOkayToChange
 
 	documentPresenter isModified ifTrue: [
 		documentPresenter ensureVisible.
-		(MessageBox confirm: 'Stay on unsaved method?' caption: 'Method has unsaved changes!!') ifTrue: [^false].
+		gciSession isValidSession
+			ifTrue: [(MessageBox confirm: 'Stay on unsaved method?' caption: 'Method has unsaved changes!!') ifTrue: [^false]]
+			ifFalse: [(MessageBox confirm: 'Copy changes to Clipboard?' caption: 'Method has unsaved changes!!') ifTrue: [documentPresenter selectAll; copySelection]].
 		documentPresenter isModified: false.
 	].
 	^true!

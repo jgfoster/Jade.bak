@@ -79,6 +79,16 @@ begin
 	self serverPerform: #'beginTransaction'.
 !
 
+beInvalidSession
+
+	gciSessionId := nil.
+	library := nil.
+	self 
+		trigger: #'logoutPending';
+		trigger: #'logout';
+		yourself.
+!
+
 briefDescription
 
 	briefDescription ifNil: [
@@ -818,7 +828,6 @@ stopHeartbeat
 terminate: anOopType
 
 	self serverPerform: #'terminate:' with: anOopType.
-	TerminateProcess signal.
 !
 
 titleBarFor: aString
@@ -946,6 +955,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #abort!Jade convenience!public! !
 !GciSession categoriesFor: #attemptSocket!private! !
 !GciSession categoriesFor: #begin!Jade convenience!public! !
+!GciSession categoriesFor: #beInvalidSession!public! !
 !GciSession categoriesFor: #briefDescription!public! !
 !GciSession categoriesFor: #clearStack:!Jade!public! !
 !GciSession categoriesFor: #clientForwardError:!public! !

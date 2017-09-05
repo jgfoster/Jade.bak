@@ -105,7 +105,7 @@ inspectVariable
 onViewClosed
 
 	gsProcess := processList first.
-	self class debuggers removeKey: gsProcess oopType asInteger.
+	self class debuggers removeKey: gsProcess oopType asInteger ifAbsent: [].
 	(terminateOnClose and: [answer isNil]) ifTrue: [
 		gsProcess terminate.
 		self error: 'We should never get here!!'.
