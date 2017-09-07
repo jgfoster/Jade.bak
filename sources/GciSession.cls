@@ -83,10 +83,6 @@ beInvalidSession
 
 	gciSessionId := nil.
 	library := nil.
-	self 
-		trigger: #'logoutPending';
-		trigger: #'logout';
-		yourself.
 !
 
 briefDescription

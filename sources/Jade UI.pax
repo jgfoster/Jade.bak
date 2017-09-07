@@ -460,7 +460,7 @@ _stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
 	localMethod == homeMethod ifTrue: [^localStepPoint].
 	array := localMethod _sourceOffsetsOfSends.
 	index := array indexOf: (localMethod _sourceOffsetsAt: localStepPoint).
-	sourceOffset := array at: (index min: array size).	"https://github.com/jgfoster/Jade/issues/110"
+	sourceOffset := array at: ((index min: array size) max: 1).		"https://github.com/jgfoster/Jade/issues/110"
 	^homeMethod _sourceOffsets indexOf: sourceOffset.
 	!
 

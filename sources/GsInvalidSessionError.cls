@@ -13,6 +13,7 @@ GsInvalidSessionError comment: ''!
 defaultAction
 
 	MessageBox errorMsg: 'Invalid Session!!'.
+	self gciSession logout.
 	TerminateProcess signal.
 !
 
