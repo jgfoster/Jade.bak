@@ -488,8 +488,7 @@ createComponents
 	sunitPresenter 			:= self add: JadeSUnitInClassPresenter new name: 'sunit'.
 	superclassListPresenter	:= self add: ListPresenter		new 		name: 'superclassList'.
 	variableListPresenter		:= self add: ListPresenter		new 		name: 'variableList'.
-
-	false ifTrue: [StNumberStylingToken new numberClass: nil]. "to prevent method from being stripped!!"!
+!
 
 createSchematicWiring
 
