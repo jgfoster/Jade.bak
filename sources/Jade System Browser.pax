@@ -815,7 +815,7 @@ names := userProfile symbolList names.
 	symbolDictionary := SymbolDictionary new name: aSymbol; yourself.
 	userProfile insertDictionary: symbolDictionary at: names size + 1.
 ].
-%
+' , '%
 '.
 	self classOrganizer
 		fileOutClassesAndMethodsInDictionary: dictionary
