@@ -407,21 +407,35 @@ addGsStringForClass: aClass to: aStream
 
 	aStream
 		nextPutAll: 'class := ', (self gsClassDefinitionStringFor: aClass); lf;
+		nextPutAll: 'readStream := ReadStream on: ''';
 		yourself.
 	aClass selectors do: [:each | 
-		aStream nextPutAll: 'source := '.
-		((aClass sourceCodeAt: each) reject: [:char | char == Character cr]) printOn: aStream.
-		aStream
-			nextPutAll: '.'; lf;
-			nextPutAll: 'result := class'; lf;
-			tab; nextPutAll: 'compileMethod: source'; lf;
-			tab; nextPutAll: 'dictionaries: symbolList'; lf;
-			tab; nextPutAll: 'category: ''category''.'; lf;
-			nextPutAll: 'result ~~ nil ifTrue: [^';
-			nextPutAll: self gsMethodClassName;
-			nextPutAll: ' _sourceWithErrors: result fromString: source].'; lf;
-			yourself.
+		| string |
+		string := aClass sourceCodeAt: each.
+		string := string reject: [:char | char == Character cr].
+		string := string printString.
+		aStream 
+			nextPutAll: (string copyFrom: 2 to: string size - 1);
+			lf; nextPut: $%; lf.
 	].
+	aStream nextPutAll: '''.
+[readStream atEnd not] whileTrue: [
+	| line |
+	writeStream := WriteStream on: String new.
+	[
+		line := readStream nextLine.
+		line ~= ''%''
+	] whileTrue: [
+		writeStream nextPutAll: line; lf.
+	].
+	source := writeStream contents.
+	result := class
+		compileMethod: source
+		dictionaries: symbolList
+		category: ''category''.
+	result ~~ nil ifTrue: [^methodClass _sourceWithErrors: result fromString: source].
+].
+'.
 !
 
 classVarsForGemStone
@@ -446,7 +460,10 @@ gsString
 	| stream |
 	SessionManager current isRuntime ifTrue: [^gsString].
 	(stream := WriteStream on: String new)
-		nextPutAll: '| class symbolList source server result mcPlatformSupport |'; lf;
+		nextPutAll: '| class mcPlatformSupport methodClass readStream result server source symbolList writeStream |'; lf;
+		nextPutAll: 'methodClass := ';
+		nextPutAll: self gsMethodClassName;
+		nextPut: $.; lf;
 		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
 		nextPutAll: 'symbolList := (AllUsers userWithId: ''DataCurator'') symbolList.'; lf;
 		nextPutAll: 'symbolList := symbolList class new add: (symbolList detect: [:each | each name == #UserGlobals]); add: (symbolList detect: [:each | each name == #Globals]); yourself.'; lf;
