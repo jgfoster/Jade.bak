@@ -10,7 +10,7 @@ To install Jade runtime, download a 35 MB zip file with the executable and suppo
 
 Older versions are available using the instructions [here](https://github.com/jgfoster/Jade/issues/56).
 
-Jade runs pretty well under [Wine](https://www.winehq.org/) and a pre-built Mac app is available [here](http://seaside.gemtalksystems.com/jade/Jade.app.zip). It may be out-of-date, so you can use “Show Package Contents” and then update "drive_c/Program Files/runtime” with items obtained from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.zip).
+Jade runs pretty well under [Wine](https://www.winehq.org/) and a pre-built Mac app is available [here](http://seaside.gemtalksystems.com/jade/Jade.app.zip). It may be out-of-date, so you can use “Show Package Contents” and then update "drive_c/Program Files/Jade” with items obtained from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.zip).
 
 ### Development Installation
 

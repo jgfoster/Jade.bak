@@ -19,6 +19,7 @@ package methodNames
 	add: #JadeServer -> #allSessions;
 	add: #JadeServer -> #descriptionOfConfigOption:;
 	add: #JadeServer -> #descriptionOfErrorNumber:;
+	add: #JadeServer -> #gemLogPath;
 	add: #JadeServer -> #mySessionInfo;
 	add: #JadeServer -> #sendSigAbortToSession:;
 	add: #JadeServer -> #sendSigUsr1ToSession:;
@@ -33,6 +34,8 @@ package methodNames
 	add: #JadeServer64bit -> #metacelloConfigurations;
 	add: #JadeServer64bit -> #streamType;
 	add: #JadeServer64bit -> #stringType;
+	add: #JadeServer64bit33 -> #gemLogPath;
+	add: #JadeServer64bit34 -> #gemLogPath;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -204,11 +207,16 @@ descriptionOfErrorNumber: anInteger
 	^stream contents.
 !
 
+gemLogPath
+
+	^''
+!
+
 mySessionInfo
 
 	| dict stream |
 	stream := WriteStream on: String new.
-	stream nextPutAll: System gemLogPath; cr.
+	stream nextPutAll: self gemLogPath; cr.
 	dict := System gemVersionReport.
 	dict keys asSortedCollection do: [:each | 
 		stream nextPutAll: each; tab; nextPutAll: (dict at: each) asString; cr.
@@ -315,6 +323,7 @@ systemConfigAsDictionary
 !JadeServer categoriesFor: #allSessions!public!Sessions! !
 !JadeServer categoriesFor: #descriptionOfConfigOption:!public!Transcript! !
 !JadeServer categoriesFor: #descriptionOfErrorNumber:!public!Sessions! !
+!JadeServer categoriesFor: #gemLogPath!public!Transcript! !
 !JadeServer categoriesFor: #mySessionInfo!public!Transcript! !
 !JadeServer categoriesFor: #sendSigAbortToSession:!public!Sessions! !
 !JadeServer categoriesFor: #sendSigUsr1ToSession:!public!Sessions! !
@@ -384,6 +393,22 @@ stringType
 !JadeServer64bit categoriesFor: #metacelloConfigurations!public!Transcript! !
 !JadeServer64bit categoriesFor: #streamType!public!Transcript! !
 !JadeServer64bit categoriesFor: #stringType!public!Transcript! !
+
+!JadeServer64bit33 methodsFor!
+
+gemLogPath
+
+	^System gemLogPath
+! !
+!JadeServer64bit33 categoriesFor: #gemLogPath!public!Transcript! !
+
+!JadeServer64bit34 methodsFor!
+
+gemLogPath
+
+	^System gemLogPath
+! !
+!JadeServer64bit34 categoriesFor: #gemLogPath!public!Transcript! !
 
 "End of package definition"!
 
