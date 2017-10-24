@@ -214,6 +214,7 @@ gciSessionId: aGciSessionId
 
 gciVersion
 
+	library ifNil: [^nil].
 	^library version.
 !
 
@@ -414,11 +415,17 @@ isValidSession
 
 libraryVersion
 
-	^library class displayName.
+	^library 
+		ifNil: [nil]
+		ifNotNil: [library class displayName].
 !
 
 loadLibrary: aClass debugPath: debugPath
 
+	| others |
+	others := self class allInstances collect: [:each | each libraryVersion].
+	others := others asSet reject: [:each | each = aClass displayName].
+	others isEmpty ifFalse: [self error: 'Unable to login to another version!!'].
 	library := aClass open: aClass fileName.
 	debugPath notEmpty ifTrue: [
 		(self debugToFilePath: debugPath) ifFalse: [self error: 'Unable to open ' , debugPath printString , ' for GCI debugging'].
@@ -430,8 +437,11 @@ logout
 	self stopHeartbeat.
 	self trigger: #'logoutPending'.
 	library ifNotNil: [
-		library logoutSession: gciSessionId.
+		| myLibrary |
+		myLibrary := library.
 		library := nil.
+		myLibrary logoutSession: gciSessionId.
+		(self class allInstances allSatisfy: [:each | each libraryVersion isNil]) ifTrue: [myLibrary gciShutdown; close].
 	].
 	self trigger: #'logout'.
 	gciSessionId := nil.

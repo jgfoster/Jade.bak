@@ -54,41 +54,41 @@ Please consider downloading the latest product package!!'
 createComponents
 
 	super createComponents.
-	versionListPresenter		:= self add: ListPresenter						new name: 'versionList'.
-	stoneHostPresenter 		:= self add: TextPresenter 					new name: 'stoneHost'.
-	stoneNamePresenter 	:= self add: TextPresenter 					new name: 'stoneName'.
+	versionListPresenter		:= self add: ListPresenter			new name: 'versionList'.
+	stoneHostPresenter 		:= self add: TextPresenter 		new name: 'stoneHost'.
+	stoneNamePresenter 		:= self add: TextPresenter 		new name: 'stoneName'.
 	gemTypePresenter 		:= self add: RadioButtonSetPresenter 	new name: 'gemType'.
-	gemHostPresenter 		:= self add: TextPresenter 					new name: 'gemHost'.
-	gemServicePresenter 	:= self add: TextPresenter 					new name: 'gemService'.
-	gemTaskPresenter 		:= self add: TextPresenter 					new name: 'gemTask'.
-	userIDPresenter 			:= self add: TextPresenter 					new name: 'userID'.
-	passwordPresenter 		:= self add: TextPresenter 					new name: 'password'.
+	gemHostPresenter 		:= self add: TextPresenter 		new name: 'gemHost'.
+	gemServicePresenter 	:= self add: TextPresenter 		new name: 'gemService'.
+	gemTaskPresenter 		:= self add: TextPresenter 		new name: 'gemTask'.
+	userIDPresenter 		:= self add: TextPresenter 		new name: 'userID'.
+	passwordPresenter 		:= self add: TextPresenter 		new name: 'password'.
 	loginTypePresenter 		:= self add: RadioButtonSetPresenter 	new name: 'loginType'.
-	hostUserIDPresenter	:= self add: TextPresenter						new name: 'hostUserID'.
-	hostPasswordPresenter	:= self add: TextPresenter						new name: 'hostPassword'.
-	initialsPresenter				:= self add: TextPresenter						new name: 'initials'.
-	useSocketPresenter		:= self add: BooleanPresenter				new name: 'useSocket'.
-	debugPathPresenter		:= self add: TextPresenter						new name: 'debugPath'.
+	hostUserIDPresenter		:= self add: TextPresenter			new name: 'hostUserID'.
+	hostPasswordPresenter	:= self add: TextPresenter			new name: 'hostPassword'.
+	initialsPresenter		:= self add: TextPresenter			new name: 'initials'.
+	useSocketPresenter		:= self add: BooleanPresenter		new name: 'useSocket'.
+	debugPathPresenter		:= self add: TextPresenter			new name: 'debugPath'.
 !
 
 createSchematicWiring
 
 	super createSchematicWiring.
-	versionListPresenter		when: #selectionChanged 	send: #isModified: 			to: self with: true.
-	stoneHostPresenter 		when: #valueChanged 		send: #isModified: 			to: self with: true.
-	stoneNamePresenter 	when: #valueChanged 		send: #isModified: 			to: self with: true.
-	gemTypePresenter		when: #valueChanged 		send: #isModified: 			to: self with: true.
-	gemHostPresenter 		when: #valueChanged 		send: #isModified: 			to: self with: true.
-	gemServicePresenter 	when: #valueChanged 		send: #isModified: 			to: self with: true.
-	gemTaskPresenter 		when: #valueChanged 		send: #isModified: 			to: self with: true.
-	userIDPresenter 			when: #valueChanged 		send: #isModified: 			to: self with: true.
-	passwordPresenter 		when: #valueChanged 		send: #isModified: 			to: self with: true.
-	loginTypePresenter		when: #valueChanged 		send: #isModified: 			to: self with: true.
-	hostUserIDPresenter	when: #valueChanged 		send: #isModified: 			to: self with: true.
-	hostPasswordPresenter	when: #valueChanged 		send: #isModified: 			to: self with: true.
-	initialsPresenter				when: #valueChanged		send: #isModified:				to: self with: true.
-	useSocketPresenter		when: #valueChanged		send: #isModified:				to: self with: true.
-	debugPathPresenter		when: #valueChanged		send: #isModified:				to: self with: true.!
+	versionListPresenter		when: #selectionChanged 	send: #isModified: 	to: self with: true.
+	stoneHostPresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
+	stoneNamePresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
+	gemTypePresenter		when: #valueChanged 	send: #isModified: 	to: self with: true.
+	gemHostPresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
+	gemServicePresenter 	when: #valueChanged 	send: #isModified: 	to: self with: true.
+	gemTaskPresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
+	userIDPresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
+	passwordPresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
+	loginTypePresenter		when: #valueChanged 	send: #isModified: 	to: self with: true.
+	hostUserIDPresenter		when: #valueChanged 	send: #isModified: 	to: self with: true.
+	hostPasswordPresenter	when: #valueChanged 	send: #isModified: 	to: self with: true.
+	initialsPresenter		when: #valueChanged	send: #isModified:	to: self with: true.
+	useSocketPresenter		when: #valueChanged	send: #isModified:	to: self with: true.
+	debugPathPresenter		when: #valueChanged	send: #isModified:	to: self with: true.!
 
 debugGCI
 
@@ -291,6 +291,7 @@ openHomePage
 
 postLogin: aGciSession
 
+	versionListPresenter view disable.
 	self setWorkingDirectory.
 	JadeTranscript showOnSession: aGciSession.
 !
