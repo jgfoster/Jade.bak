@@ -64,6 +64,7 @@ createSchematicWiring
 		when: #selectionChanged			send: #methodSelectionChanged	to: self;
 		when: #selectionChanging: 		send: #selectionChanging:			to: self;
 		when: #labelOf:editedTo:accept: 	send: #labelOf:editedTo:accept: 	to: self;
+		when: #'leftButtonPressed:'		send: #'onLeftButtonPressed:'	to: self;
 		yourself.
 	self createDragDropSchematicWiringFor: methodListPresenter.
 !
@@ -91,6 +92,11 @@ onDrag: aSession
 		supportedOperations: #(#move #copy);
 		defaultOperation: #copy;
 		yourself.
+!
+
+onLeftButtonPressed: aMouseEvent
+
+	self trigger: #'leftButtonPressed:' with: aMouseEvent.
 !
 
 primaryPresenter
@@ -202,6 +208,7 @@ withSelectorDo: aBlock
 !MethodListPresenter categoriesFor: #list:!public! !
 !MethodListPresenter categoriesFor: #methodSelectionChanged!drag & drop!public! !
 !MethodListPresenter categoriesFor: #onDrag:!drag & drop!public! !
+!MethodListPresenter categoriesFor: #onLeftButtonPressed:!drag & drop!public! !
 !MethodListPresenter categoriesFor: #primaryPresenter!drag & drop!label edit!public! !
 !MethodListPresenter categoriesFor: #queryCommand:!public! !
 !MethodListPresenter categoriesFor: #removeFromList!menus!public! !

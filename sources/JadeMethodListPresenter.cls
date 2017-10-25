@@ -122,6 +122,7 @@ createSchematicWiring
 	methodListPresenter
 		when: #'methodSelectionChanged'	send: #'updateSource'		to: self;
 		when: #'selectionChanging:'		send: #'selectionChanging:'	to: self;
+		when: #'leftButtonPressed:'		send: #'onLeftButtonPressed:'	to: self;
 		yourself.
 	methodSourcePresenter
 		when: #'needUser'				send: #'userSelection'			to: self;
@@ -173,6 +174,11 @@ jadeMenuStrings
 methodListPresenter
 
 	^methodListPresenter!
+
+onLeftButtonPressed: aMouseEvent
+
+	[self doSearch] forkAt: Processor userBackgroundPriority.
+!
 
 onViewOpened
 
@@ -284,6 +290,7 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #getSelectedMethodName!public! !
 !JadeMethodListPresenter categoriesFor: #jadeMenuStrings!public! !
 !JadeMethodListPresenter categoriesFor: #methodListPresenter!public! !
+!JadeMethodListPresenter categoriesFor: #onLeftButtonPressed:!public! !
 !JadeMethodListPresenter categoriesFor: #onViewOpened!public! !
 !JadeMethodListPresenter categoriesFor: #searchFor:!public! !
 !JadeMethodListPresenter categoriesFor: #selectedCategory!public! !
