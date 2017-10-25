@@ -36,7 +36,6 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone C Interface';
 	add: 'GemStone Session';
 	add: 'Jade Transcript';
-	add: 'Jade UI Base';
 	add: '..\Core\Object Arts\Dolphin\ActiveX\Shell\Windows Shell';
 	add: '..\Core\Object Arts\Dolphin\ActiveX\Components\XML DOM\XML DOM';
 	yourself).

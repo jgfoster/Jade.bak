@@ -11,6 +11,8 @@ package classNames
 	add: #JadeDebugger;
 	add: #JadeErrorShell;
 	add: #JadeFileIn;
+	add: #JadePreferencesPresenter;
+	add: #JadePreferencesShell;
 	yourself.
 
 package methodNames
@@ -46,6 +48,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #_stepPointsForBreaksInMethod:;
 	add: #JadeTextDocument -> #fileIn;
 	add: #JadeTextDocument -> #jadeInspect;
+	add: #JadeToolsToolBarPresenter -> #jadePreferences;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -56,8 +59,11 @@ package globalAliases: (Set new
 
 package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
+	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Font\Dolphin Font Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
@@ -82,6 +88,11 @@ Object subclass: #JadeFileIn
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadePresenterA subclass: #JadePreferencesPresenter
+	instanceVariableNames: 'autoCommitPresenter autoMigratePresenter codeFontPresenter defaultFontPresenter nativeCodePresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeValueDialog subclass: #JadeErrorShell
 	instanceVariableNames: 'messagePresenter stackPresenter textEditPresenter isResumable'
 	classVariableNames: ''
@@ -92,6 +103,11 @@ JadeTextDocument subclass: #JadeDebugger
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'debuggers'!
+JadeShell subclass: #JadePreferencesShell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 
 "Global Aliases"!
 
@@ -511,6 +527,14 @@ jadeInspect
 ! !
 !JadeTextDocument categoriesFor: #fileIn!private! !
 !JadeTextDocument categoriesFor: #jadeInspect!Jade!private! !
+
+!JadeToolsToolBarPresenter methodsFor!
+
+jadePreferences
+
+	JadePreferencesShell showOnSession: gciSession.
+! !
+!JadeToolsToolBarPresenter categoriesFor: #jadePreferences!public! !
 
 "End of package definition"!
 
