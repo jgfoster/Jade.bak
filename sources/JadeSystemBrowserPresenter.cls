@@ -798,10 +798,11 @@ editMenuStrings
 		'Find &Next/F3/editFindNext'
 		'&Replace/Ctrl+H/editReplace'
 		'-'
+		'Debug/Ctrl+B/jadeDebug'
 		'Display/Ctrl+D/jadeDisplay'
 		'Execute/Ctrl+E/jadeExecute'
 		'Inspect/Ctrl+Q/jadeInspect'
-		'Browse Class/Ctrl+B/browseSelectedClass'
+		'Browse Class//browseSelectedClass'
 	).
 !
 
@@ -1271,6 +1272,15 @@ isTreeModel: treeModelA equivalentTo: treeModelB
 isVariablesTabSelected
 
 	^methodFilterTabs currentCard name = 'variableList'.
+!
+
+jadeDebug
+
+	[
+		gciSession debugString: self currentSelectionOrLine fromContext: nil environment: environment.
+	] on: GsCompileError do: [:ex | 
+		self jadeExecute.
+	].
 !
 
 jadeDisplay
@@ -3270,6 +3280,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #isPragmasTabSelected!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isTreeModel:equivalentTo:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isVariablesTabSelected!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #jadeDebug!menu handlers!private! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeDisplay!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeExecute!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeExecuteAndDisplay:!menu handlers!public! !
