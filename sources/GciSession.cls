@@ -437,11 +437,8 @@ logout
 	self stopHeartbeat.
 	self trigger: #'logoutPending'.
 	library ifNotNil: [
-		| myLibrary |
-		myLibrary := library.
+		library logoutSession: gciSessionId.
 		library := nil.
-		myLibrary logoutSession: gciSessionId.
-		(self class allInstances allSatisfy: [:each | each libraryVersion isNil]) ifTrue: [myLibrary gciShutdown; close].
 	].
 	self trigger: #'logout'.
 	gciSessionId := nil.
