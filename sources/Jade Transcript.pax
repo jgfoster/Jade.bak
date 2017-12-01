@@ -180,9 +180,9 @@ descriptionOfConfigOption: aString
 	| dict key string |
 	dict := self systemConfigAsDictionary.
 	(string := dict at: aString ifAbsent: [nil]) notNil ifTrue: [^string].	string := aString asUppercase.
-	dict keys do: [:each | 
-		key := (each reject: [:each | each = $_]) asUppercase.
-		key = string ifTrue: [^dict at: each].
+	dict keys do: [:each1 | 
+		key := (each1 reject: [:each2 | each2 = $_]) asUppercase.
+		key = string ifTrue: [^dict at: each1].
 	].
 	^''!
 
