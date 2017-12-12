@@ -10,6 +10,10 @@ MCFileTreeRepository comment: ''!
 !MCFileTreeRepository categoriesForClass!Unclassified! !
 !MCFileTreeRepository methodsFor!
 
+fullNameOfPackage: packageName versionName: versionName 
+
+	^packageName , '.package'.!
+
 packageList
  
 	| list |
@@ -25,5 +29,6 @@ packageList
 	].
 	^list.
 ! !
+!MCFileTreeRepository categoriesFor: #fullNameOfPackage:versionName:!public! !
 !MCFileTreeRepository categoriesFor: #packageList!public! !
 

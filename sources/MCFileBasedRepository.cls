@@ -20,9 +20,10 @@ allVersionInfoNames
 	^list.
 !
 
-fullNameOfPackage: packageName versionName: versionName 
+fullNameOfPackage: packageNameString versionName: versionNameString 
 
-	^packageName , '.package'.!
+	^packageNameString , '-' , versionNameString.
+!
 
 loadPackageNamed: packageName versionName: versionName
 
