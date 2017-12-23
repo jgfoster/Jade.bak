@@ -51,14 +51,15 @@ onViewOpened
 
 queryCommand: aCommandQuery
 
-Transcript cr; show: aCommandQuery printString.
-	aCommandQuery command == #'setDefaultFont' ifTrue: [self halt].
+	(#(#'setCodeFont' #'setDefaultFont') includes: aCommandQuery command) ifTrue: [aCommandQuery beEnabled; receiver: self. ^true].
 	^super queryCommand: aCommandQuery!
 
 setCodeFont
 
 	| font |
-	font := FontDialog showModalOn: CodeSourcePresenter codeFont.
+	font := CodeSourcePresenter codeFont 
+		ifNil: [FontDialog showModal]
+		ifNotNil: [:value | FontDialog showModalOn: value].
 	font notNil ifTrue: [
 		CodeSourcePresenter codeFont: font.
 		codeFontPresenter	value: font.

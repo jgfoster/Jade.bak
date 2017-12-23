@@ -17,8 +17,7 @@ presenterClass
 
 queryCommand: aCommandQuery
 
-Transcript cr; show: aCommandQuery printString.
-	^super queryCommand: aCommandQuery!
+	^(myPresenter queryCommand: aCommandQuery) or: [super queryCommand: aCommandQuery]!
 
 shellName
 
