@@ -138,13 +138,18 @@ logoutRequested: aValueHolder
 !
 
 maximizeCode
-	| codePresenter |
 
 	(self currentCard class == JadeAutoSystemBrowserPresenter) ifFalse: [^self].
 
-	codePresenter := self currentCard methodSourcePresenter .
+	self currentCard bottomArrangement 
+	ifNil: [
+		self currentCard bottomArrangement: (self currentCard view viewNamed: 'textAreaTabs') arrangement.
+		(self currentCard view viewNamed: 'textAreaTabs') arrangement: 100]
+	ifNotNil: [:value | 
+		(self currentCard view viewNamed: 'textAreaTabs') arrangement: self currentCard bottomArrangement.
+		self currentCard bottomArrangement: nil].
 
-	^(JadeMaximizedCodeShell showOn: codePresenter  model) parentMethodPresenter: codePresenter !
+	self currentCard view invalidate.!
 
 moveCardLeft
 
