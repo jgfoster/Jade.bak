@@ -2,7 +2,7 @@
 
 JadeTextPresenter subclass: #JadeAutoTextPresenter3
 	instanceVariableNames: 'currentGsShape currentText previousText currentStyleName previousStyleName lastTimeKey wordRightSideIsEmpty lastParsedResult'
-	classVariableNames: ''
+	classVariableNames: 'ReplacementDictionary'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeAutoTextPresenter3 guid: (GUID fromString: '{40c6fc5c-2470-4eb8-8841-fd5ce72a4c7a}')!
@@ -50,7 +50,7 @@ createSchematicWiring
 	super createSchematicWiring.
 
 	self when: #autoComplete:startingAt:accept: send: #onAutoComplete:startingAt:accept: to: self;
-		when: #leftButtonPressed: send: #onLeftButtonPressed: to: self!
+		when: #leftButtonPressed: send: #onLeftButtonPressed: to: self.!
 
 currentGsShape
 	^currentGsShape!
@@ -323,6 +323,12 @@ isAtEndOfWord
 
 	^(Array with: Character space with: Character tab with: Character cr) includes: (view characterAt: view caretPosition)!
 
+isKeyboardShorcut
+
+	self getCurrentWord.
+
+	^self class replacementDictionaryKeys includes: currentText!
+
 lastCharacterIsSpace
 
 	^(view characterAt: view caretPosition - 1) = Character space!
@@ -342,6 +348,10 @@ onAutoComplete: aString startingAt: anInteger accept: aValueHolder
 	
 	[self insertText: aString at: anInteger.] forkAt: 4!
 
+onIdleEntered
+
+	self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut].!
+
 onKeyPressed: aKeyEvent
 	"This is the main method for autocompletation, each key stroke is registered and analyzed here"
 
@@ -353,6 +363,8 @@ onKeyPressed: aKeyEvent
 	(Keyboard default isCtrlDown) ifTrue: [^self]. "the user is pressing ctrl--> not interested in autocompletion"
 
 	(#(37 38 39 40) includes: aKeyEvent wParam) ifTrue: [^[self getCurrentWord] forkAt: 4]. "user using cursor keys left = 37, up = 38, right = 39, down = 40"
+
+	[self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut]] forkAt: 4.
 
 	self autocompletationConfiguration isEnabled ifFalse: [^self]. "autocompletation is disable"
 
@@ -410,6 +422,31 @@ processKeyPressed: aKeyEvent
 registry
 
 	^JadeAutocompletationRegistry default!
+
+replaceKeyboardShortcut
+	| replacementDictionary replacementText caretPositionShift bracketsOccurrences |
+
+	replacementDictionary := self class replacementDictionary.
+
+	currentText do: [:each | view backspace].
+
+	replacementText := replacementDictionary at: currentText.
+	view insertText: replacementText at: view caretPosition.
+
+	bracketsOccurrences := replacementText occurrencesOf: $].
+
+	(bracketsOccurrences = 0) ifTrue: [caretPositionShift := replacementText size].
+	"for ifTrue: [], ifFalse: [] the caret must be inside the brackets --> (-1 to the regular shift)"
+	(bracketsOccurrences = 1) ifTrue: [caretPositionShift := replacementText size -1].
+	"ifTrue: [] ifFalse: [] inserted --> caretPosition in first bracket"
+	(bracketsOccurrences = 2) ifTrue: [caretPositionShift := (replacementText indexOfSubCollection: ']' startingAt: 1) - 1].
+
+	view caretPosition: view caretPosition + caretPositionShift.
+
+"	view backspace.
+	1 to: (replacementText occurrencesOf: $:) do: [:each | view backspace].
+	1 to: (replacementText occurrencesOf: Character  space) do: [:each | view backspace]. "
+!
 
 showAutoCompletionList: anOrdedCollection prefixLength: anInteger
 
@@ -471,9 +508,11 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #insertSimpleText:at:!autocompletation cycle!autocompletion!public! !
 !JadeAutoTextPresenter3 categoriesFor: #insertText:at:!autocompletation cycle!autocompletion!public! !
 !JadeAutoTextPresenter3 categoriesFor: #isAtEndOfWord!public! !
+!JadeAutoTextPresenter3 categoriesFor: #isKeyboardShorcut!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #lastCharacterIsSpace!public! !
 !JadeAutoTextPresenter3 categoriesFor: #lastGsShape:!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onAutoComplete:startingAt:accept:!autocompletation cycle!autocompletion!public! !
+!JadeAutoTextPresenter3 categoriesFor: #onIdleEntered!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onKeyPressed:!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onLeftButtonPressed:!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #previousStyleName!accessing!private! !
@@ -482,8 +521,38 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #previousText:!accessing!private! !
 !JadeAutoTextPresenter3 categoriesFor: #processKeyPressed:!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #registry!autocompletion!public! !
+!JadeAutoTextPresenter3 categoriesFor: #replaceKeyboardShortcut!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #showAutoCompletionList:prefixLength:!public! !
 !JadeAutoTextPresenter3 categoriesFor: #updateLastParsedResult!autocompletion list!public! !
 !JadeAutoTextPresenter3 categoriesFor: #wordRightSideIsEmpty!accessing!private! !
 !JadeAutoTextPresenter3 categoriesFor: #wordRightSideIsEmpty:!accessing!private! !
+
+!JadeAutoTextPresenter3 class methodsFor!
+
+initializeReplacementDictionary
+
+	^ReplacementDictionary := Dictionary new
+							at: '-g' put: ':= ';
+							at: '-t' put: 'ifTrue: []';
+							at: '-f' put: 'ifFalse: []';
+							at: '-b' put: 'ifTrue: [] ifFalse: []';
+							at: '-v' put: 'ifFalse: [] ifTrue: []';
+							yourself
+	
+	!
+
+replacementDictionary
+
+	ReplacementDictionary ifNil: [self initializeReplacementDictionary].
+
+	^ReplacementDictionary!
+
+replacementDictionaryKeys
+
+	ReplacementDictionary ifNil: [self initializeReplacementDictionary].
+
+	^ReplacementDictionary keys! !
+!JadeAutoTextPresenter3 class categoriesFor: #initializeReplacementDictionary!public! !
+!JadeAutoTextPresenter3 class categoriesFor: #replacementDictionary!public! !
+!JadeAutoTextPresenter3 class categoriesFor: #replacementDictionaryKeys!public! !
 
