@@ -3,7 +3,7 @@ package := Package name: 'Jade Autocompletation'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.058'.
+package basicPackageVersion: '0.059'.
 
 
 package classNames

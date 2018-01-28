@@ -348,10 +348,6 @@ onAutoComplete: aString startingAt: anInteger accept: aValueHolder
 	
 	[self insertText: aString at: anInteger.] forkAt: 4!
 
-onIdleEntered
-
-	self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut].!
-
 onKeyPressed: aKeyEvent
 	"This is the main method for autocompletation, each key stroke is registered and analyzed here"
 
@@ -512,7 +508,6 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #lastCharacterIsSpace!public! !
 !JadeAutoTextPresenter3 categoriesFor: #lastGsShape:!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onAutoComplete:startingAt:accept:!autocompletation cycle!autocompletion!public! !
-!JadeAutoTextPresenter3 categoriesFor: #onIdleEntered!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onKeyPressed:!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onLeftButtonPressed:!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #previousStyleName!accessing!private! !
