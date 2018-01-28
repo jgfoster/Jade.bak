@@ -3,7 +3,7 @@ package := Package name: 'Jade Autocompletation'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.051'.
+package basicPackageVersion: '0.059'.
 
 
 package classNames
@@ -124,7 +124,7 @@ JadeTextPresenter subclass: #JadeAutoTextPresenter
 	classInstanceVariableNames: ''!
 JadeTextPresenter subclass: #JadeAutoTextPresenter3
 	instanceVariableNames: 'currentGsShape currentText previousText currentStyleName previousStyleName lastTimeKey wordRightSideIsEmpty lastParsedResult'
-	classVariableNames: ''
+	classVariableNames: 'ReplacementDictionary'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 
