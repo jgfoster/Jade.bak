@@ -69,6 +69,7 @@ package methodNames
 	add: #JadeServer -> #sbCopyMethodsFor:;
 	add: #JadeServer -> #sbFileOutClass:;
 	add: #JadeServer -> #sbFileOutDictionary:;
+	add: #JadeServer -> #sbFileOutMethod:;
 	add: #JadeServer -> #sbFindClass;
 	add: #JadeServer -> #sbFindClassPackageMap;
 	add: #JadeServer -> #sbFindSelectors:;
@@ -148,6 +149,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #packagePolicy:includesSelector:forClass:;
 	add: #JadeServer64bit3x -> #sbBrowseMethodsWithPragma:;
 	add: #JadeServer64bit3x -> #sbClassComment:;
+	add: #JadeServer64bit3x -> #sbFileOutMethod:;
 	add: #JadeServer64bit3x -> #sbListMethodPragmas:;
 	add: #JadeServer64bit3x -> #sbMethod:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodBreakPointsFor:;
@@ -820,6 +822,13 @@ names := userProfile symbolList names.
 	self classOrganizer
 		fileOutClassesAndMethodsInDictionary: dictionary
 		on: writeStream.
+!
+
+sbFileOutMethod: anOrderedCollection
+
+	| aClass |
+	aClass := (self sbClassFrom: anOrderedCollection) thisClass.
+	writeStream nextPutAll: aClass fileOutMethod: anOrderedCollection removeFirst.
 !
 
 sbFindClass
@@ -1848,6 +1857,7 @@ systemBrowserCommand
 
 	command = 'fileOutClass'				ifTrue: [^self sbFileOutClass: list].
 	command = 'fileOutDictionary'			ifTrue: [^self sbFileOutDictionary: list].
+	command = 'fileOutMethod'			ifTrue: [^self sbFileOutMethod: list].
 	command = 'findClass' 				ifTrue: [^self sbFindClass].
 	command = 'findSelectors'				ifTrue: [^self sbFindSelectors: list].
 
@@ -1954,6 +1964,7 @@ writeList: aList
 !JadeServer categoriesFor: #sbCopyMethodsFor:!public!System Browser! !
 !JadeServer categoriesFor: #sbFileOutClass:!public!System Browser! !
 !JadeServer categoriesFor: #sbFileOutDictionary:!public!System Browser! !
+!JadeServer categoriesFor: #sbFileOutMethod:!public!System Browser! !
 !JadeServer categoriesFor: #sbFindClass!public!System Browser! !
 !JadeServer categoriesFor: #sbFindClassPackageMap!public!System Browser! !
 !JadeServer categoriesFor: #sbFindSelectors:!public!System Browser! !
@@ -2234,6 +2245,14 @@ sbClassComment: anOrderedCollection
 	self systemBrowserUpdate.
 !
 
+sbFileOutMethod: anOrderedCollection
+
+	| aClass |
+	aClass := self sbClassFrom: anOrderedCollection.
+	writeStream nextPutAll: (aClass fileOutMethod: anOrderedCollection removeFirst asSymbol environmentId: environment).
+
+!
+
 sbListMethodPragmas: aList
 
 	| pragmas |
@@ -2379,6 +2398,7 @@ selectedClassOverridesSelector: aSymbol
 !JadeServer64bit3x categoriesFor: #packagePolicy:includesSelector:forClass:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbBrowseMethodsWithPragma:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbClassComment:!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbFileOutMethod:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbListMethodPragmas:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbMethod:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodBreakPointsFor:!public!System Browser! !
