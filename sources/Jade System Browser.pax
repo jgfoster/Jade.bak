@@ -208,7 +208,7 @@ JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeSystemBrowserPresenter subclass: #JadeAutoSystemBrowserPresenter
-	instanceVariableNames: 'lastGsShape'
+	instanceVariableNames: 'lastGsShape bottomArrangement'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
