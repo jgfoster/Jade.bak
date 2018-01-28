@@ -741,6 +741,7 @@ dictsMenuStrings
 		'&Dictionaries'
 		'&Browse References//browseDictionaryReferences'
 		'&File Out Dictionary//fileOutDictionary'
+		'File In Code//fileInCode'
 		'&Find Class/Ctrl+Shift+F/findClass'
 		'&Insert Dictionary//insertDictionary'
 		'&Remove Dictionary//removeDictionary'
@@ -956,6 +957,20 @@ executeSelectionOrLine
 		^false -> ex list.
 	].
 	^false -> #(nil).
+!
+
+fileInCode
+
+	| path |
+	path := FileOpenDialog new
+		caption: 'File In Code';
+		fileTypes: self fileTypes;
+		defaultExtension: self defaultFileExtension;
+		showModal.
+	path isNil ifTrue: [^self].
+	JadeFileIn new
+		fileInPath: path 
+		session: gciSession.
 !
 
 fileOutClass
@@ -3248,6 +3263,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #editSelectAll!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editUndo!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #executeSelectionOrLine!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #fileInCode!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutClassOnPath:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutDictionary!menu handlers!public! !
