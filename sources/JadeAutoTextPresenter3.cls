@@ -413,6 +413,7 @@ onleftButtonDoubleClicked: aMouseEvent
 
 	view secondarySelectionBackcolor: RGB yellow. "this should be configurable in future implementations"
 
+	selections isEmpty ifTrue: [^self].
 	[view selectionRanges: selections asArray reverse.] forkAt: 4 "tell Scintilla to do the hightlight"
 
 
