@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeTextPresenter subclass: #JadeAutoTextPresenter3
-	instanceVariableNames: 'currentGsShape currentText previousText currentStyleName previousStyleName lastTimeKey wordRightSideIsEmpty lastParsedResult'
+	instanceVariableNames: 'currentGsShape currentText previousText currentStyleName previousStyleName lastTimeKey wordRightSideIsEmpty lastParsedResult lastTextSelection'
 	classVariableNames: 'ReplacementDictionary'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -9,6 +9,21 @@ JadeAutoTextPresenter3 guid: (GUID fromString: '{40c6fc5c-2470-4eb8-8841-fd5ce72
 JadeAutoTextPresenter3 comment: ''!
 !JadeAutoTextPresenter3 categoriesForClass!Unclassified! !
 !JadeAutoTextPresenter3 methodsFor!
+
+addParenthesisOrBracketsToSelection
+	| openParenthesisOrBrackets closeParenthesisOrBrackets|
+
+	openParenthesisOrBrackets := (view characterAt: view caretPosition - 1) asString.
+
+	closeParenthesisOrBrackets := (openParenthesisOrBrackets = '(') ifTrue: [')'] ifFalse: [']'].
+
+	view undo.
+	view undo.
+	view invalidate.
+[	view caretPosition: (model value indexOfSubCollection: lastTextSelection).
+	view insertText: openParenthesisOrBrackets at: view caretPosition.
+	view caretPosition: (view caretPosition + lastTextSelection size).
+	view insertText: closeParenthesisOrBrackets at: view caretPosition + 1.] forkAt: 4.!
 
 autocompletationConfiguration
 	^JadeAutocompletationConfiguration default!
@@ -50,7 +65,10 @@ createSchematicWiring
 	super createSchematicWiring.
 
 	self when: #autoComplete:startingAt:accept: send: #onAutoComplete:startingAt:accept: to: self;
-		when: #leftButtonPressed: send: #onLeftButtonPressed: to: self.!
+		when: #leftButtonPressed: send: #onLeftButtonPressed: to: self";
+		when: #painted send: #onPainted to: self".
+
+!
 
 currentGsShape
 	^currentGsShape!
@@ -319,13 +337,22 @@ insertText: aString at: anInteger
 
 	!
 
+isAddingParenthesisOrBrackets
+
+	self getCurrentWord.
+
+	^(currentText = '-') and: [((view characterAt: view caretPosition - 1) = $() or: [(view characterAt: view caretPosition - 1) = $[] ]!
+
 isAtEndOfWord
 
 	^(Array with: Character space with: Character tab with: Character cr) includes: (view characterAt: view caretPosition)!
 
 isKeyboardShorcut
 
-	self getCurrentWord.
+	"self getCurrentWord.
+
+	Transcript show: 'previous text [', previousText printString, '] - current text [', currentText printString,']'.
+	Transcript cr."
 
 	^self class replacementDictionaryKeys includes: currentText!
 
@@ -360,17 +387,19 @@ onKeyPressed: aKeyEvent
 
 	(#(37 38 39 40) includes: aKeyEvent wParam) ifTrue: [^[self getCurrentWord] forkAt: 4]. "user using cursor keys left = 37, up = 38, right = 39, down = 40"
 
-	[self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut]] forkAt: 4.
-
 	self autocompletationConfiguration isEnabled ifFalse: [^self]. "autocompletation is disable"
 
-	[self processKeyPressed: aKeyEvent] forkAt: 4. 
-!
+	[self processKeyPressed: aKeyEvent. 
+	self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut]] forkAt: 4.!
 
 onLeftButtonPressed: aKeyEvent
 	"This is the main method for autocompletation, each key stroke is registered and analyzed here"
 
 	self getCurrentWord!
+
+onPainted
+
+	view selection notEmpty ifTrue: [lastTextSelection := view selection].!
 
 previousStyleName
 	^previousStyleName!
@@ -426,7 +455,7 @@ replaceKeyboardShortcut
 
 	currentText do: [:each | view backspace].
 
-	replacementText := replacementDictionary at: currentText.
+	replacementText := replacementDictionary at: currentText ifAbsent: [^self].
 	view insertText: replacementText at: view caretPosition.
 
 	bracketsOccurrences := replacementText occurrencesOf: $].
@@ -438,10 +467,6 @@ replaceKeyboardShortcut
 	(bracketsOccurrences = 2) ifTrue: [caretPositionShift := (replacementText indexOfSubCollection: ']' startingAt: 1) - 1].
 
 	view caretPosition: view caretPosition + caretPositionShift.
-
-"	view backspace.
-	1 to: (replacementText occurrencesOf: $:) do: [:each | view backspace].
-	1 to: (replacementText occurrencesOf: Character  space) do: [:each | view backspace]. "
 !
 
 showAutoCompletionList: anOrdedCollection prefixLength: anInteger
@@ -472,6 +497,7 @@ wordRightSideIsEmpty
 
 wordRightSideIsEmpty: anObject
 	wordRightSideIsEmpty := anObject! !
+!JadeAutoTextPresenter3 categoriesFor: #addParenthesisOrBracketsToSelection!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #autocompletationConfiguration!public! !
 !JadeAutoTextPresenter3 categoriesFor: #autocompleteForIdentifier!autocompletation cycle!public! !
 !JadeAutoTextPresenter3 categoriesFor: #autocompleteForNormal!autocompletation cycle!public! !
@@ -503,6 +529,7 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #insertKeywordText2:at:!autocompletation cycle!autocompletion!public! !
 !JadeAutoTextPresenter3 categoriesFor: #insertSimpleText:at:!autocompletation cycle!autocompletion!public! !
 !JadeAutoTextPresenter3 categoriesFor: #insertText:at:!autocompletation cycle!autocompletion!public! !
+!JadeAutoTextPresenter3 categoriesFor: #isAddingParenthesisOrBrackets!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #isAtEndOfWord!public! !
 !JadeAutoTextPresenter3 categoriesFor: #isKeyboardShorcut!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #lastCharacterIsSpace!public! !
@@ -510,6 +537,7 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #onAutoComplete:startingAt:accept:!autocompletation cycle!autocompletion!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onKeyPressed:!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onLeftButtonPressed:!key event!public! !
+!JadeAutoTextPresenter3 categoriesFor: #onPainted!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #previousStyleName!accessing!private! !
 !JadeAutoTextPresenter3 categoriesFor: #previousStyleName:!accessing!private! !
 !JadeAutoTextPresenter3 categoriesFor: #previousText!accessing!private! !
