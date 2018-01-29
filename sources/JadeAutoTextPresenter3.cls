@@ -390,8 +390,7 @@ onKeyPressed: aKeyEvent
 	self autocompletationConfiguration isEnabled ifFalse: [^self]. "autocompletation is disable"
 
 	[self processKeyPressed: aKeyEvent. 
-	self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut].
-	self isAddingParenthesisOrBrackets ifTrue: [self addParenthesisOrBracketsToSelection]] forkAt: 4.!
+	self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut]] forkAt: 4.!
 
 onLeftButtonPressed: aKeyEvent
 	"This is the main method for autocompletation, each key stroke is registered and analyzed here"
