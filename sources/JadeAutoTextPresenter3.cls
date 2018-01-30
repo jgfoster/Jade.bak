@@ -60,6 +60,17 @@ configuration
 
 	^JadeAutocompletationConfiguration default!
 
+copySelection
+	"The multiple selections are done and the user press Ctrl + C then all selections are copied to the Clipboard"
+
+	(view selections size > 1) ifTrue: [^Clipboard current setText: view selections last format: #String].
+
+	View focus copySelection.
+
+
+	
+!
+
 createSchematicWiring
 
 	super createSchematicWiring.
@@ -395,7 +406,7 @@ onKeyPressed: aKeyEvent
 
 onleftButtonDoubleClicked: aMouseEvent
 	"The receiver highlight all text matching with <view selection>"
-	| startIndex selections selectionText selectionSize |
+	| startIndex selections selectionText selectionSize selectedInterval |
 
 	(view selection isNil or: [view selection isEmpty]) ifTrue: [^self].
 	startIndex := 1.
@@ -414,6 +425,10 @@ onleftButtonDoubleClicked: aMouseEvent
 	view secondarySelectionBackcolor: RGB yellow. "this should be configurable in future implementations"
 
 	selections isEmpty ifTrue: [^self].
+
+	selectedInterval := selections detect: [:eachInterval | eachInterval includes: (view charNearestPosition: aMouseEvent position)] ifNone: [nil].
+	selectedInterval ifNotNil: [selections remove: selectedInterval; addFirst: selectedInterval].
+
 	[view selectionRanges: selections asArray reverse.] forkAt: 4 "tell Scintilla to do the hightlight"
 
 
@@ -533,6 +548,7 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #autocompleteForUpperIdentifier!autocompletation cycle!public! !
 !JadeAutoTextPresenter3 categoriesFor: #codePresenterIsMethod!public! !
 !JadeAutoTextPresenter3 categoriesFor: #configuration!public! !
+!JadeAutoTextPresenter3 categoriesFor: #copySelection!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #createSchematicWiring!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #currentGsShape!accessing!private! !
 !JadeAutoTextPresenter3 categoriesFor: #currentGsShape:!accessing!private! !

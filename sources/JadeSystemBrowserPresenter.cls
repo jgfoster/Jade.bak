@@ -750,6 +750,8 @@ dictsMenuStrings
 
 editCopy
 
+	(View focus name = 'methodSource') ifTrue: [^View focus presenter copySelection].
+
 	View focus copySelection.
 !
 
