@@ -61,9 +61,11 @@ configuration
 	^JadeAutocompletationConfiguration default!
 
 copySelection
-	"The multiple selections are done and the user press Ctrl + C then all selections are copied to the Clipboard"
+	"If  multiple selections are done by mouse double click then the user press Ctrl + C and Ctrl + V it paste all strings in <view selections> (annoying behavior).
+	This method avoid the above if <view selections> size > 1 then enforce the Clipboard with the last value.
+	Note: all string in <view selections> are equal. <view selections last> is used because the first is an empty string"
 
-	(view selections size > 1) ifTrue: [^Clipboard current setText: view selections last format: #String].
+	(view selections size > 1) ifTrue: [^Clipboard current setText: view selections last format: #String]. 
 
 	View focus copySelection.
 
