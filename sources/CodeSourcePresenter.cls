@@ -75,6 +75,8 @@ codePresenterIsMethod
 
 copySelection
 
+	(documentPresenter view selections size > 1) ifTrue: [^Clipboard current setText: documentPresenter view selections last format: #String].
+
 	documentPresenter view
 		copySelection;
 		updateModel;
