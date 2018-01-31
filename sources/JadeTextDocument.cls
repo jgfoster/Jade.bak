@@ -152,6 +152,10 @@ doIt: aString
 
 editCopy
 
+	(self activeTextEdit selections size > 1) 
+	ifTrue: [Clipboard current setText: self activeTextEdit selections last format: #String.
+			^self activeTextEdit updateModel].
+
 	self activeTextEdit 
 		copySelection;
 		updateModel;
