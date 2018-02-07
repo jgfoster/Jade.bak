@@ -1,3 +1,5 @@
+This a fork of Jade Smalltalk developed by James Foster. 
+
 Jade
 ====
 
