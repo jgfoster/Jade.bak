@@ -110,12 +110,16 @@ documentPresenter
 	^documentPresenter!
 
 editCut
+	| selectedText |
+
+	(View focus presenter view selections size > 1) ifTrue: [selectedText := View focus presenter view selections last].
 
 	documentPresenter view
 		cutSelection;
 		updateModel;
 		yourself.
-!
+
+	selectedText ifNotNil: [:value | Clipboard current setText: value format: #String].!
 
 editDelete
 
