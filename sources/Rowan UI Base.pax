@@ -4,6 +4,11 @@ package paxVersion: 1;
 	basicComment: ''.
 
 
+package classNames
+	add: #RowanPackageShell;
+	add: #RowanShell;
+	yourself.
+
 package binaryGlobalNames: (Set new
 	yourself).
 
@@ -11,12 +16,31 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'Jade UI Base';
+	add: '..\Core\Contributions\Solutions Software\SSW EditableListView';
 	yourself).
 
 package!
 
 "Class Definitions"!
 
+JadeShell subclass: #RowanShell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanShell subclass: #RowanPackageShell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 
 "Global Aliases"!
 
