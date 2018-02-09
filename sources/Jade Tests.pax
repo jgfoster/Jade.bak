@@ -6,7 +6,6 @@ package paxVersion: 1;
 
 package classNames
 	add: #JadeLoginTest;
-	add: #JGFormatterTest;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -17,10 +16,8 @@ package globalAliases: (Set new
 
 package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: 'Jade in Dolphin';
 	add: 'Jade Login';
 	add: 'Jade Transcript';
-	add: '..\Core\Contributions\Refactory\Refactoring Browser\Parser\RBParser';
 	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
 	yourself).
 
@@ -29,11 +26,6 @@ package!
 "Class Definitions"!
 
 TestCase subclass: #JadeLoginTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-TestCase subclass: #JGFormatterTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
