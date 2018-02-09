@@ -1,11 +1,17 @@
 | package |
 package := Package name: 'Rowan UI Base'.
 package paxVersion: 1;
-	basicComment: ''.
+	basicComment: 'Rowan GUI tools built on Jade Smalltalk for Dolphin. '.
 
 
 package classNames
+	add: #RowanClassDefinitionService;
+	add: #RowanDefinitionService;
+	add: #RowanMethodDefinitionService;
+	add: #RowanPackageDefinitionService;
+	add: #RowanPackagePresenter;
 	add: #RowanPackageShell;
+	add: #RowanPresenter;
 	add: #RowanShell;
 	yourself.
 
@@ -31,12 +37,42 @@ package!
 
 "Class Definitions"!
 
+Object subclass: #RowanDefinitionService
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePresenterA subclass: #RowanPresenter
+	instanceVariableNames: 'projectToolsOop'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanPresenter subclass: #RowanPackagePresenter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeShell subclass: #RowanShell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanShell subclass: #RowanPackageShell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanDefinitionService subclass: #RowanClassDefinitionService
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanDefinitionService subclass: #RowanMethodDefinitionService
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanDefinitionService subclass: #RowanPackageDefinitionService
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''

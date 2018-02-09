@@ -16,7 +16,7 @@ defaultProjectName
 !
 
 defaultProjectSpecOop
-
+	"one brute force round trip to create a default project spec"
 	^gciSession executeString: ' | projectTools projectName projectSpec defaultSymbolDictionary |
 	projectTools := self first.
 	projectName := self at: 2.
@@ -28,7 +28,7 @@ defaultProjectSpecOop
 	RwGsImage newOrExistingSymbolDictionaryNamed: defaultSymbolDictionary.
 	^projectSpec
 	'
-	fromContext: (Array with: self projectToolsOop with: self defaultProjectName with: 'Rowan_GUI_Data')
+	fromContext: (Array with: self projectToolsOop with: self defaultProjectName with: 'Rowan_GUI_Data' with: self defaultSymbolDictionaryName)
 	environment: 0.
 
 

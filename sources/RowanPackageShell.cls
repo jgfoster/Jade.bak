@@ -8,6 +8,19 @@ RowanShell subclass: #RowanPackageShell
 RowanPackageShell guid: (GUID fromString: '{727b8db0-2f6d-48f0-a07a-3acd8b850689}')!
 RowanPackageShell comment: ''!
 !RowanPackageShell categoriesForClass!Unclassified! !
+!RowanPackageShell methodsFor!
+
+presenterClass
+
+	^RowanPackagePresenter!
+
+shellName
+
+	^'Rowan Package Browser'.
+! !
+!RowanPackageShell categoriesFor: #presenterClass!overrides!public! !
+!RowanPackageShell categoriesFor: #shellName!overrides!public! !
+
 !RowanPackageShell class methodsFor!
 
 resource_Default_view
