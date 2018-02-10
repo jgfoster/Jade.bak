@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanDefinitionService subclass: #RowanMethodDefinitionService
-	instanceVariableNames: ''
+	instanceVariableNames: 'source selector'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

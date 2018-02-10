@@ -7,6 +7,7 @@ package paxVersion: 1;
 package classNames
 	add: #RowanClassDefinitionService;
 	add: #RowanDefinitionService;
+	add: #RowanDefinitionServiceTest;
 	add: #RowanMethodDefinitionService;
 	add: #RowanPackageDefinitionService;
 	add: #RowanPackagePresenter;
@@ -29,8 +30,10 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'GemStone Session';
 	add: 'Jade UI Base';
 	add: '..\Core\Contributions\Solutions Software\SSW EditableListView';
+	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
 	yourself).
 
 package!
@@ -38,7 +41,7 @@ package!
 "Class Definitions"!
 
 Object subclass: #RowanDefinitionService
-	instanceVariableNames: ''
+	instanceVariableNames: 'remoteServiceOop gciSession'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -68,11 +71,16 @@ RowanDefinitionService subclass: #RowanClassDefinitionService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanMethodDefinitionService
-	instanceVariableNames: ''
+	instanceVariableNames: 'source selector'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanPackageDefinitionService
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TestCase subclass: #RowanDefinitionServiceTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''

@@ -11,13 +11,13 @@ RowanPresenter comment: ''!
 !RowanPresenter methodsFor!
 
 defaultProjectName
-
-	^'RowanProject'.
-!
+	^'RowanProject'!
 
 defaultProjectSpecOop
 	"one brute force round trip to create a default project spec"
-	^gciSession executeString: ' | projectTools projectName projectSpec defaultSymbolDictionary |
+
+	^gciSession
+		executeString: ' | projectTools projectName projectSpec defaultSymbolDictionary |
 	projectTools := self first.
 	projectName := self at: 2.
 	defaultSymbolDictionary := self last. 
@@ -28,11 +28,12 @@ defaultProjectSpecOop
 	RwGsImage newOrExistingSymbolDictionaryNamed: defaultSymbolDictionary.
 	^projectSpec
 	'
-	fromContext: (Array with: self projectToolsOop with: self defaultProjectName with: 'Rowan_GUI_Data' with: self defaultSymbolDictionaryName)
-	environment: 0.
-
-
-	!
+		fromContext: (Array
+				with: self projectToolsOop
+				with: self defaultProjectName
+				with: 'Rowan_GUI_Data'
+				with: self defaultSymbolDictionaryName)
+		environment: 0!
 
 defaultSymbolDictionaryName
 
