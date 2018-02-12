@@ -220,7 +220,7 @@ browseGlobalReferences
 
 browseImplementors
 
-	self browseImplementorsOf: methodListPresenter selections first first.
+	self browseImplementorsOf: self selectedMethodName.
 !
 
 browseImplementorsOf
@@ -321,7 +321,7 @@ browseSelectedClass
 
 browseSenders
 
-	self browseSendersOf: methodListPresenter selections first first.
+	self browseSendersOf: self selectedMethodName.
 !
 
 browseSendersOf
@@ -735,12 +735,13 @@ dictionaryListPresenter
 dictsMenuStrings
 
 	false ifTrue: [
-		self browseDictionaryReferences; fileOutDictionary; findClass; insertDictionary; removeDictionary; setHomeDictionary.
+		self browseDictionaryReferences; fileOutDictionary; findClass; insertDictionary; removeDictionary; setHomeDictionary; fileInCode.
 	].
 	^#(
 		'&Dictionaries'
 		'&Browse References//browseDictionaryReferences'
 		'&File Out Dictionary//fileOutDictionary'
+		'File In Code//fileInCode'
 		'&Find Class/Ctrl+Shift+F/findClass'
 		'&Insert Dictionary//insertDictionary'
 		'&Remove Dictionary//removeDictionary'
@@ -965,6 +966,20 @@ executeSelectionOrLine
 	^false -> #(nil).
 !
 
+fileInCode
+
+	| path |
+	path := FileOpenDialog new
+		caption: 'File In Code';
+		fileTypes: self fileTypes;
+		defaultExtension: self defaultFileExtension;
+		showModal.
+	path isNil ifTrue: [^self].
+	JadeFileIn new
+		fileInPath: path 
+		session: gciSession.
+!
+
 fileOutClass
 
 	| path string |
@@ -1018,6 +1033,56 @@ fileOutDictionary
 	file := FileStream write: path.
 	[
 		file nextPutAll: (string copyFrom: index + 1 to: string size).
+	] ensure: [
+		file close.
+	].
+!
+
+fileOutMethod
+
+	| name path myReadStream writeStream |
+	name := self selectedClassNameWithoutVersion.
+	self isClassSideSelected ifTrue: [name := name , '-class'].
+	name := name , '-' , self selectedMethodName.
+	name := name copyReplaceAll: ':' with: '_'.
+	myReadStream := ReadStream on: name.
+	writeStream := WriteStream on: String new.
+	[myReadStream atEnd not] whileTrue: [
+		| each |
+		each := myReadStream next.
+		(each isAlphaNumeric or: [each == $_ or: [each == $-]]) ifTrue: [
+			writeStream nextPut: each.
+		] ifFalse: [
+			writeStream
+				nextPut: $-;
+				print: each codePoint;
+				nextPut: $-;
+				yourself.
+		].
+	].
+	name := writeStream contents.
+	path := FileSaveDialog new
+		caption: 'File Out Method';
+		fileTypes: self fileTypes;
+		defaultExtension: self defaultFileExtension;
+		value: name;
+		overwritePrompt;
+		showModal.
+	path ifNotNil: [:value | self fileOutMethodOnPath: value].
+!
+
+fileOutMethodOnPath: aString
+
+	| header file newSource index |
+	newSource := self gciSession 
+		serverPerform: #'systemBrowser:' 
+		with: environment printString , ' fileOutMethod' , Character tab asString , self behaviorIdentifier , Character tab asString , self selectedMethodName.
+	index := newSource indexOf: Character lf.
+	newSource := newSource copyFrom: index + 1 to: newSource size.
+	header := self stuffToKeepFromPath: aString andAddTo: newSource.
+	file := FileStream write: aString.
+	[
+		file nextPutAll: header; nextPutAll: newSource.
 	] ensure: [
 		file close.
 	].
@@ -1558,7 +1623,7 @@ methodsIdentifier
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
-		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2.
+		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2; fileOutMethod.
 	].
 	^#(
 		'&Methods'
@@ -1569,6 +1634,7 @@ methodsMenuStrings
 		'Browse Methods &Containing ...//browseMethodsContaining'
 		'Browse &History//browseMethodHistory'
 		'BrowseMethod &Pragmas ...//browseMethodPragmas'
+		'&File out method ...//fileOutMethod'
 		'-'
 		'&Delete Method(s)//removeMethods'
 		#('&Method Environment' '&0//setEnvironment0' '&1//setEnvironment1' '&2//setEnvironment2')
@@ -2049,7 +2115,8 @@ queryCommand: aCommandQuery
 		aCommandQuery isEnabled: (repositoryListPresenter hasSelection and: [packageListPresenter selections size = 1]). ^true].
 	(#(#'compareAncestor') includes: command) ifTrue: [
 		aCommandQuery isEnabled: (packageListPresenter selections size = 1 and: [ancestorListPresenter hasSelection]). ^true].
-	(#(#'browseMethodHistory' #'browseImplementors' #'browseSenders') includes: command) ifTrue: [aCommandQuery isEnabled: methodListPresenter selections size = 1. ^true].
+	(#(#'browseMethodHistory' #'browseImplementors' #'browseSenders' #'fileOutMethod') includes: command) ifTrue: [
+		aCommandQuery isEnabled: methodListPresenter selections size = 1. ^true].
 	(#(#'inspectGlobal' #'browseGlobalReferences') includes: command) ifTrue: [aCommandQuery isEnabled: globalsPresenter selections size = 1. ^true].
 	(#(#'removeGlobals') includes: command) ifTrue: [aCommandQuery isEnabled: globalsPresenter selections notEmpty. ^true].
 	(#(#'fileOutDictionary' ) includes: command) ifTrue: [aCommandQuery isEnabled: dictionaryListPresenter selections size = 1. ^true].
@@ -2377,6 +2444,11 @@ selectedMethodChanged
 		with: self requestStringForUpdate.
 	historyList add: historyEntry.
 	historyIndex := historyList size.
+!
+
+selectedMethodName
+
+	^methodListPresenter selections first first.
 !
 
 setColorForCompileErrors
@@ -3255,9 +3327,12 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #editSelectAll!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editUndo!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #executeSelectionOrLine!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #fileInCode!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutClassOnPath:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutDictionary!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #fileOutMethod!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #fileOutMethodOnPath:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileTypes!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #findClassList!menu handlers!public! !
@@ -3370,6 +3445,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #selectedClassName:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #selectedClassNameWithoutVersion!public! !
 !JadeSystemBrowserPresenter categoriesFor: #selectedMethodChanged!event handlers!history!public! !
+!JadeSystemBrowserPresenter categoriesFor: #selectedMethodName!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setColorForCompileErrors!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setColorForNoEdits!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setColorForUnsavedEdits!menu handlers!public! !

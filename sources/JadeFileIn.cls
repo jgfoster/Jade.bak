@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #JadeFileIn
-	instanceVariableNames: 'stream line words text category browser packageName'
+	instanceVariableNames: 'gciSession stream line words text category packageName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -12,72 +12,101 @@ JadeFileIn comment: ''!
 
 defineClass
 
-	browser
-		defineClass: text trimBlanks
-		inPackageNamed: packageName.
+	[
+		gciSession 
+			serverPerform: #'fileInClass:' 
+			with: text trimBlanks.
+	] on: GsCompileError do: [:ex | 
+		(JadeWorkspace showOnSession: gciSession)
+			caption: 'Jade Workspace - Compile Error';
+			showError: ex list on: text trimBlanks.
+	].
 !
 
 defineClassMethod
 
 	| className |
 	className := ((line subStrings: $:) at: 2) subStrings first.
-	browser
-		defineClassMethod: self readUpToPercent
-		inClassNamed: className
+	self
+		defineMethod: self readUpToPercent
+		inClassNamed: className , ' class'
 		inPackageNamed: packageName
 		inCategory: category.
 !
 
 defineInstanceMethod
 
-	browser
+	self
 		defineMethod: self readUpToPercent
 		inClassNamed: ((line subStrings: $:) at: 2) trimBlanks
 		inPackageNamed: packageName
 		inCategory: category.
 !
 
-doIt
-
-	browser doIt: text.
+defineMethod: methodString inClassNamed: className inPackageNamed: aPackageName inCategory: categoryName 
+ 
+	| string result |
+	string := className , 
+		' compileMethod: ' , methodString printString , '
+		dictionaries: System myUserProfile symbolList
+		category: ' , categoryName printString.
+	[
+		(result := gciSession executeString: string) isNil ifTrue: [^self].
+	] on: GsCompileError do: [:ex | 
+		(JadeWorkspace showOnSession: gciSession)
+			caption: 'Jade Workspace - Compile Error';
+			showError: ex list on: string.
+		^self.
+	].
+	result := GsCompileError
+		errorListFor: result
+		inSession: gciSession.
+	(JadeWorkspace showOnSession: gciSession)
+		caption: 'Jade Workspace - Compile Error on ' , className;
+		showError: result on: methodString.
 !
 
-fileInPath: aString forBrowser: aBrowser
+doIt
+
+	self doIt: text.
+!
+
+doIt: aString
+
+	[
+		gciSession executeString: aString.
+	] on: GsCompileError do: [:ex | 
+		(JadeWorkspace showOnSession: gciSession)
+			caption: 'Jade Workspace - Compile Error';
+			showError: ex list on: aString.
+	].
+!
+
+fileInPath: aString session: aGciSession
 
 	packageName := (aString subStrings: $\) last.
 	stream := FileStream read: aString.
 	[
 		self
 			fileInStream: stream 
-			forBrowser: aBrowser.
+			session: aGciSession.
 	] ensure: [
 		stream close.
 	].
 !
 
-fileInStream: aStream forBrowser: aBrowser
+fileInStream: aStream session: aGciSession
 
-	browser := aBrowser.
-	browser fileInStart: packageName.
-	[
-		stream := aStream.
-		self read.
-	] ensure: [
-		browser fileInEnd: packageName.
-	].
+	gciSession := aGciSession.
+	stream := aStream.
+	self read.
 !
 
-fileInString: aString forBrowser: aBrowser
+fileInString: aString session: aGciSession
 
-	(aString beginsWith: '<?xml version="1.0"?>') ifTrue: [
-		self fileInXML: aString forBrowser: aBrowser.
-		^self.
-	].
 	self
 		fileInStream: (ReadStream on: aString) 
-		forBrowser: aBrowser.
-
-!
+		session: aGciSession!
 
 fileInXML: aString forBrowser: aBrowser
 
@@ -127,18 +156,19 @@ processLine
 	(line isEmpty or: [line first = $!!]) ifTrue: [^self].
 	ucLine := line asUppercase.
 	(ucLine beginsWith: 'CATEGORY:'		) ifTrue: [^self setCategory		].
-	(ucLine beginsWith: 'CLASSMETHOD:'	) ifTrue: [^self defineClassMethod	].
-	(ucLine beginsWith: 'DOIT'			) ifTrue: [^self readDoIt			].
+	(ucLine beginsWith: 'CLASSMETHOD:'		) ifTrue: [^self defineClassMethod	].
+	(ucLine beginsWith: 'DOIT'				) ifTrue: [^self readDoIt			].
 	(ucLine beginsWith: 'INPUT'			) ifTrue: [^self readInput			].
-	(ucLine beginsWith: 'METHOD:'		) ifTrue: [^self defineInstanceMethod	].
-	(ucLine beginsWith: 'RUN'			) ifTrue: [^self readDoIt			].
-	(ucLine beginsWith: 'EXPECTVALUE'	) ifTrue: [^self readExpectValue		].
+	(ucLine beginsWith: 'METHOD:'			) ifTrue: [^self defineInstanceMethod	].
+	(ucLine beginsWith: 'RUN'				) ifTrue: [^self readDoIt			].
+	(ucLine beginsWith: 'EXPECTVALUE'		) ifTrue: [^self readExpectValue		].
 	(ucLine beginsWith: 'REMOVEALLMETHODS'	) ifTrue: [^self readRemoveAllMethods	].
 	(ucLine beginsWith: 'REMOVEALLCLASSMETHODS'	) ifTrue: [^self readRemoveAllClassMethods	].
-	(ucLine beginsWith: 'ERRORCOUNT'	) ifTrue: [^self readErrorCount	].
-	(ucLine beginsWith: 'COMMIT'	) ifTrue: [^self readCommit	].
-	(ucLine beginsWith: 'SEND') ifTrue: [^self readSend ].
-	(ucLine beginsWith: 'SET COMPILE_ENV:') ifTrue: [^self readSetCompileEnv].
+	(ucLine beginsWith: 'ERRORCOUNT'		) ifTrue: [^self readErrorCount	].
+	(ucLine beginsWith: 'COMMIT'			) ifTrue: [^self readCommit	].
+	(ucLine beginsWith: 'SEND'				) ifTrue: [^self readSend ].
+	(ucLine beginsWith: 'SET COMPILE_ENV:'	) ifTrue: [^self readSetCompileEnv].
+	(ucLine beginsWith: 'ENV'				) ifTrue: [^self readSetCompileEnv].
 
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , ucLine printString , ' during file-in!!'.
 	SessionManager current pause.
@@ -154,7 +184,7 @@ read
 
 readCommit
 
-	browser doIt: 'System commitTransaction'.
+	self doIt: 'System commitTransaction'.
 !
 
 readDoIt
@@ -176,27 +206,24 @@ readInput
 
 	| path |
 	path := line copyFrom: 7 to: line size.
-	path := path 
-		copyReplaceAll: '$l2tests'
-		with: '\\samba\denile2\users\jfoster\checkouts\gss64bit11\tests'.
 	path := path
 		copyReplaceAll: '/'
 		with: '\'.
-	browser fileInPath: path.
+	self fileInPath: path.
 !
 
 readRemoveAllClassMethods
 
 	| string |
 	string := line copyFrom: 22 to: line size.
-	browser doIt: string , ' class removeAllMethods'.
+	self doIt: string , ' class removeAllMethods'.
 !
 
 readRemoveAllMethods
 
 	| string |
 	string := line copyFrom: 18 to: line size.
-	browser doIt: string , ' removeAllMethods'.
+	self doIt: string , ' removeAllMethods'.
 !
 
 readSend
@@ -207,6 +234,7 @@ readSend
 
 readSetCompileEnv
 
+	line asUppercase = 'ENV 0' ifTrue: [^self].
 	line asUppercase = 'SET COMPILE_ENV: 0' ifTrue: [^self].
 	self error: 'Non-zero compile environment not supported!!'.
 !
@@ -236,7 +264,7 @@ readWithProgress: progress
 		SessionManager current logError: ex.
 		myStream := WriteStream on: String new.
 		ex printTraceOn: myStream.
-		(JadeWorkspace showOnSession: browser gciSession) showText: myStream contents.
+		(JadeWorkspace showOnSession: gciSession) showText: myStream contents.
 		MessageBox notify: ex description.
 		SessionManager current pause.
 	].
@@ -300,10 +328,12 @@ stream: aStream
 !JadeFileIn categoriesFor: #defineClass!public! !
 !JadeFileIn categoriesFor: #defineClassMethod!public! !
 !JadeFileIn categoriesFor: #defineInstanceMethod!public! !
+!JadeFileIn categoriesFor: #defineMethod:inClassNamed:inPackageNamed:inCategory:!public! !
 !JadeFileIn categoriesFor: #doIt!public! !
-!JadeFileIn categoriesFor: #fileInPath:forBrowser:!public! !
-!JadeFileIn categoriesFor: #fileInStream:forBrowser:!public! !
-!JadeFileIn categoriesFor: #fileInString:forBrowser:!public! !
+!JadeFileIn categoriesFor: #doIt:!public! !
+!JadeFileIn categoriesFor: #fileInPath:session:!public! !
+!JadeFileIn categoriesFor: #fileInStream:session:!public! !
+!JadeFileIn categoriesFor: #fileInString:session:!public! !
 !JadeFileIn categoriesFor: #fileInXML:forBrowser:!public! !
 !JadeFileIn categoriesFor: #isDefineClass!public! !
 !JadeFileIn categoriesFor: #isPostloadScript!public! !
