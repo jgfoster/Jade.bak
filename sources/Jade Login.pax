@@ -27,6 +27,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Radio\Dolphin Radio Buttons';
 	add: '..\Core\Object Arts\Dolphin\Registry\Dolphin Registry Access';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';

@@ -150,9 +150,13 @@ commit
 !
 
 debugString: aString fromContext: anObject environment: anInteger
+	"https://github.com/jgfoster/Jade/issues/122"
 
 	^self
-		serverPerform: #'debugString:fromContext:environment:' with: aString with: anObject with: anInteger.
+		serverPerformInterpreted: #'debugString:fromContext:environment:' 
+		with: aString 
+		with: anObject 
+		with: anInteger.
 !
 
 debugToFilePath: aString
@@ -481,6 +485,7 @@ oopTypeFor: anObject
 	(anObject isKindOf: Boolean) 		ifTrue: [^anObject ifTrue: [library oopTrue] ifFalse: [library oopFalse]].
 	(anObject isKindOf: SmallInteger) 	ifTrue: [^library session: gciSessionId oopForInteger: anObject].
 	(anObject isKindOf: GsObject) 		ifTrue: [^anObject oopType].
+	(anObject isKindOf: String)		ifTrue: [^self oopForString: anObject].
 	MessageBox notify: 'Sorry, we are not yet prepared to convert ' , anObject printString , ' to an OOP!!'.
 	SessionManager current pause.
 !
@@ -663,6 +668,16 @@ serverPerformInterpreted: aSymbol with: arg1 with: arg2
 		withArguments: (Array
 			with: arg1
 			with: arg2).
+!
+
+serverPerformInterpreted: aSymbol with: arg1 with: arg2 with: arg3
+
+	^self
+		serverPerformInterpreted: aSymbol 
+		withArguments: (Array
+			with: arg1
+			with: arg2
+			with: arg3).
 !
 
 serverPerformInterpreted: aSymbol withArguments: anArray
@@ -1016,6 +1031,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #serverPerform:with:with:with:with:!Jade convenience!public! !
 !GciSession categoriesFor: #serverPerform:withArguments:!Jade convenience!public! !
 !GciSession categoriesFor: #serverPerformInterpreted:with:with:!Jade convenience!public! !
+!GciSession categoriesFor: #serverPerformInterpreted:with:with:with:!Jade convenience!public! !
 !GciSession categoriesFor: #serverPerformInterpreted:withArguments:!Jade convenience!public! !
 !GciSession categoriesFor: #setInitials:!private! !
 !GciSession categoriesFor: #signalConfirmationRequestUsing:!OmniBrowser!public! !
