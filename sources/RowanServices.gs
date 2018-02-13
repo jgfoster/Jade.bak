@@ -14,7 +14,7 @@ names := userProfile symbolList names.
 expectvalue /Class
 doit
 Object subclass: 'RowanDefinitionService'
-	instVarNames: #( definitionOop)
+	instVarNames: #( definition)
 	classVars: #()
 	classInstVars: #()
 	poolDictionaries: #()
@@ -50,7 +50,7 @@ RowanClassDefinitionService category: 'Kernel'
 expectvalue /Class
 doit
 RowanDefinitionService subclass: 'RowanMethodDefinitionService'
-	instVarNames: #( source selector methodDefinition)
+	instVarNames: #( source selector)
 	classVars: #()
 	classInstVars: #()
 	poolDictionaries: #()
@@ -96,6 +96,19 @@ sampleService
 	^self new sampleService
 %
 ! ------------------- Instance methods for RowanDefinitionService
+set compile_env: 0
+category: 'rowan'
+method: RowanDefinitionService
+definitionClass
+
+	^self subclassResponsibility
+%
+category: 'rowan'
+method: RowanDefinitionService
+definitionClassName
+
+	^self definitionClass name
+%
 
 ! ------------------- Remove existing behavior from RowanClassDefinitionService
 expectvalue /Metaclass3       
@@ -150,10 +163,17 @@ category: 'examples'
 method: RowanMethodDefinitionService
 sampleService
 
-	methodDefinition := RwMethodDefinition newForSelector: 'sampleMethod' protocol: 'sampleProtocol' source: self sampleMethodSource.
-	definitionOop := methodDefinition asOop.
-	source := methodDefinition source.
-	selector := methodDefinition selector.
+	definition := self definitionClass newForSelector: 'sampleMethod' protocol: 'sampleProtocol' source: self sampleMethodSource.
+	source := definition source.
+	selector := definition selector.
+	^definition
+%
+set compile_env: 0
+category: 'rowan'
+method: RowanMethodDefinitionService
+definitionClass
+
+	^RwMethodDefinition
 %
 
 ! ------------------- Remove existing behavior from RowanPackageDefinitionService

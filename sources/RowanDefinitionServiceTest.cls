@@ -11,7 +11,7 @@ RowanDefinitionServiceTest comment: ''!
 !RowanDefinitionServiceTest methodsFor!
 
 test_sampleMethodDefinition
-	"test values hard coded on server"
+	"test values hard coded on remote GemStone server"
 
 	| service |
 	service := RowanMethodDefinitionService sampleService.
