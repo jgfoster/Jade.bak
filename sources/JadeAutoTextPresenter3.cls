@@ -19,11 +19,11 @@ addParenthesisOrBracketsToSelection
 
 	view undo.
 	view undo.
-	view invalidate.
-[	view caretPosition: (model value indexOfSubCollection: lastTextSelection).
+
+	view caretPosition: (view plainText indexOfSubCollection: lastTextSelection).
 	view insertText: openParenthesisOrBrackets at: view caretPosition.
 	view caretPosition: (view caretPosition + lastTextSelection size).
-	view insertText: closeParenthesisOrBrackets at: view caretPosition + 1.] forkAt: 4.!
+	view insertText: closeParenthesisOrBrackets at: view caretPosition + 1.!
 
 autocompletationConfiguration
 	^JadeAutocompletationConfiguration default!
@@ -60,13 +60,27 @@ configuration
 
 	^JadeAutocompletationConfiguration default!
 
+copySelection
+	"If  multiple selections are done by mouse double click then the user press Ctrl + C and Ctrl + V it paste all strings in <view selections> (annoying behavior).
+	This method avoid the above if <view selections> size > 1 then enforce the Clipboard with the last value.
+	Note: all string in <view selections> are equal. <view selections last> is used because the first is an empty string"
+
+	(view selections size > 1) ifTrue: [^Clipboard current setText: view selections last format: #String]. 
+
+	View focus copySelection.
+
+
+	
+!
+
 createSchematicWiring
 
 	super createSchematicWiring.
 
 	self when: #autoComplete:startingAt:accept: send: #onAutoComplete:startingAt:accept: to: self;
-		when: #leftButtonPressed: send: #onLeftButtonPressed: to: self";
-		when: #painted send: #onPainted to: self".
+		when: #leftButtonPressed: send: #onLeftButtonPressed: to: self;
+		when: #leftButtonDoubleClicked: send: #onleftButtonDoubleClicked: to: self;
+		when: #painted send: #onPainted to: self.
 
 !
 
@@ -339,8 +353,6 @@ insertText: aString at: anInteger
 
 isAddingParenthesisOrBrackets
 
-	self getCurrentWord.
-
 	^(currentText = '-') and: [((view characterAt: view caretPosition - 1) = $() or: [(view characterAt: view caretPosition - 1) = $[] ]!
 
 isAtEndOfWord
@@ -349,11 +361,6 @@ isAtEndOfWord
 
 isKeyboardShorcut
 
-	"self getCurrentWord.
-
-	Transcript show: 'previous text [', previousText printString, '] - current text [', currentText printString,']'.
-	Transcript cr."
-
 	^self class replacementDictionaryKeys includes: currentText!
 
 lastCharacterIsSpace
@@ -361,6 +368,12 @@ lastCharacterIsSpace
 	^(view characterAt: view caretPosition - 1) = Character space!
 
 lastGsShape: gsShape!
+
+lastTextSelection
+	^lastTextSelection!
+
+lastTextSelection: anObject
+	lastTextSelection := anObject!
 
 onAutoComplete: aString startingAt: anInteger accept: aValueHolder 
 	"This method is executed when an autocompletation has been entered. The user has selected an option in the autocompletation menu"
@@ -390,7 +403,39 @@ onKeyPressed: aKeyEvent
 	self autocompletationConfiguration isEnabled ifFalse: [^self]. "autocompletation is disable"
 
 	[self processKeyPressed: aKeyEvent. 
-	self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut]] forkAt: 4.!
+	self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut].
+	"self isAddingParenthesisOrBrackets ifTrue: [self addParenthesisOrBracketsToSelection]"] forkAt: 4.!
+
+onleftButtonDoubleClicked: aMouseEvent
+	"The receiver highlight all text matching with <view selection>"
+	| startIndex selections selectionText selectionSize selectedInterval |
+
+	(view selection isNil or: [view selection isEmpty]) ifTrue: [^self].
+	startIndex := 1.
+
+	selectionText := view selection trimBlanks.
+	selectionSize := selectionText size.
+	selections := OrderedCollection new.
+	"here all intervals of text equal to <view selection> are collected"
+	[(view plainText indexOfSubCollection: selectionText startingAt: startIndex) ~= 0] whileTrue: [
+		startIndex := view plainText indexOfSubCollection: selectionText startingAt: startIndex.
+		(((view characterAt: startIndex - 1) isLetter or:[(view characterAt: startIndex - 1) isDigit]) or: [(view characterAt: startIndex + selectionSize) isLetter or:[(view characterAt: startIndex + selectionSize) isDigit]])
+		ifFalse: [selections add: (startIndex to: startIndex + selectionSize - 1)].
+		startIndex := startIndex + selectionSize + 1.
+	].
+
+	view secondarySelectionBackcolor: RGB yellow. "this should be configurable in future implementations"
+
+	selections isEmpty ifTrue: [^self].
+
+	selectedInterval := selections detect: [:eachInterval | eachInterval includes: (view charNearestPosition: aMouseEvent position)] ifNone: [nil].
+	selectedInterval ifNotNil: [selections remove: selectedInterval; addFirst: selectedInterval].
+
+	[view selectionRanges: selections asArray reverse.] forkAt: 4 "tell Scintilla to do the hightlight"
+
+
+
+!
 
 onLeftButtonPressed: aKeyEvent
 	"This is the main method for autocompletation, each key stroke is registered and analyzed here"
@@ -505,6 +550,7 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #autocompleteForUpperIdentifier!autocompletation cycle!public! !
 !JadeAutoTextPresenter3 categoriesFor: #codePresenterIsMethod!public! !
 !JadeAutoTextPresenter3 categoriesFor: #configuration!public! !
+!JadeAutoTextPresenter3 categoriesFor: #copySelection!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #createSchematicWiring!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #currentGsShape!accessing!private! !
 !JadeAutoTextPresenter3 categoriesFor: #currentGsShape:!accessing!private! !
@@ -534,8 +580,11 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #isKeyboardShorcut!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #lastCharacterIsSpace!public! !
 !JadeAutoTextPresenter3 categoriesFor: #lastGsShape:!public! !
+!JadeAutoTextPresenter3 categoriesFor: #lastTextSelection!accessing!private! !
+!JadeAutoTextPresenter3 categoriesFor: #lastTextSelection:!accessing!private! !
 !JadeAutoTextPresenter3 categoriesFor: #onAutoComplete:startingAt:accept:!autocompletation cycle!autocompletion!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onKeyPressed:!key event!public! !
+!JadeAutoTextPresenter3 categoriesFor: #onleftButtonDoubleClicked:!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onLeftButtonPressed:!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onPainted!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #previousStyleName!accessing!private! !

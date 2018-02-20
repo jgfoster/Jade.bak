@@ -75,6 +75,8 @@ codePresenterIsMethod
 
 copySelection
 
+	(documentPresenter view selections size > 1) ifTrue: [^Clipboard current setText: documentPresenter view selections last format: #String].
+
 	documentPresenter view
 		copySelection;
 		updateModel;
@@ -108,12 +110,16 @@ documentPresenter
 	^documentPresenter!
 
 editCut
+	| selectedText |
+
+	(View focus presenter view selections size > 1) ifTrue: [selectedText := View focus presenter view selections last].
 
 	documentPresenter view
 		cutSelection;
 		updateModel;
 		yourself.
-!
+
+	selectedText ifNotNil: [:value | Clipboard current setText: value format: #String].!
 
 editDelete
 

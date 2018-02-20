@@ -751,12 +751,19 @@ dictsMenuStrings
 
 editCopy
 
+	(View focus name = 'methodSource') ifTrue: [^View focus presenter copySelection].
+
 	View focus copySelection.
 !
 
 editCut
+	| selectedText |
+
+	(View focus presenter view selections size > 1) ifTrue: [selectedText := View focus presenter view selections last].
 
 	View focus cutSelection.
+
+	selectedText ifNotNil: [:value | Clipboard current setText: value format: #String].
 !
 
 editDelete
