@@ -9,7 +9,10 @@ package classNames
 	add: #RowanDefinitionService;
 	add: #RowanDefinitionServiceTest;
 	add: #RowanMethodDefinitionService;
+	add: #RowanMethodListPresenter;
 	add: #RowanMethodListShell;
+	add: #RowanMethodSelectionPresenter;
+	add: #RowanMethodSourcePresenter;
 	add: #RowanPackageDefinitionService;
 	add: #RowanPackagePresenter;
 	add: #RowanPackageShell;
@@ -33,7 +36,9 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Deprecated\Dolphin MVP (Deprecated)';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Rich Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
@@ -54,6 +59,21 @@ Object subclass: #RowanDefinitionService
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #RowanPresenter
 	instanceVariableNames: 'projectToolsOop'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanPresenter subclass: #RowanMethodListPresenter
+	instanceVariableNames: 'methodList'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanPresenter subclass: #RowanMethodSelectionPresenter
+	instanceVariableNames: 'methodListPresenter methodSourcePresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanPresenter subclass: #RowanMethodSourcePresenter
+	instanceVariableNames: 'methodSource'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
