@@ -15,7 +15,6 @@ onViewOpened
 	super onViewOpened.
 	(view isKindOf: ScintillaView) ifFalse: [^self].
 	view textStyles: JadeTextStyles default textStyles.
-	self view hasBlinkingSecondaryCarets: false.
 !
 
 selection
