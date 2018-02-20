@@ -93,6 +93,19 @@ currentSelectionOrLine
 	^self activeTextEdit selection replaceCrLfWithLf.
 !
 
+defineClass: aString inPackageNamed: anUndefinedObject 
+
+	[
+		gciSession 
+			serverPerform: #'fileInClass:' 
+			with: aString.
+	] on: GsCompileError do: [:ex | 
+		(JadeWorkspace showOnSession: gciSession)
+			caption: 'Jade Workspace - Compile Error';
+			showError: ex list on: aString.
+	].
+!
+
 editCopy
 
 	(self activeTextEdit selections size > 1) 
@@ -189,6 +202,12 @@ fileIn: aString
 		fileIn;
 		isModified: false;
 		yourself.
+!
+
+fileInEnd: aPackage
+!
+
+fileInStart: aPackage
 !
 
 fileNew
@@ -484,6 +503,7 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #continueTransaction!Jade!private! !
 !JadeTextDocument categoriesFor: #createComponents!private! !
 !JadeTextDocument categoriesFor: #currentSelectionOrLine!Jade!private! !
+!JadeTextDocument categoriesFor: #defineClass:inPackageNamed:!private! !
 !JadeTextDocument categoriesFor: #editCopy!edit!private! !
 !JadeTextDocument categoriesFor: #editCut!edit!private! !
 !JadeTextDocument categoriesFor: #editDelete!edit!private! !
@@ -495,6 +515,8 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #environment:!accessing!public! !
 !JadeTextDocument categoriesFor: #executeSelectionOrLine!Jade!private! !
 !JadeTextDocument categoriesFor: #fileIn:!private! !
+!JadeTextDocument categoriesFor: #fileInEnd:!private! !
+!JadeTextDocument categoriesFor: #fileInStart:!private! !
 !JadeTextDocument categoriesFor: #fileNew!private! !
 !JadeTextDocument categoriesFor: #fileOpen!private! !
 !JadeTextDocument categoriesFor: #gciSession!private! !
@@ -513,7 +535,7 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #onViewClosed!private! !
 !JadeTextDocument categoriesFor: #onViewOpened!private! !
 !JadeTextDocument categoriesFor: #print!private! !
-!JadeTextDocument categoriesFor: #queryCommand:!overrides!private! !
+!JadeTextDocument categoriesFor: #queryCommand:!commands!private! !
 !JadeTextDocument categoriesFor: #removeQuotesFromSelection!edit!private! !
 !JadeTextDocument categoriesFor: #saveDocument!private! !
 !JadeTextDocument categoriesFor: #selectLfIfEndingOnCr!edit!private! !
