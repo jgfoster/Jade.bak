@@ -93,19 +93,6 @@ currentSelectionOrLine
 	^self activeTextEdit selection replaceCrLfWithLf.
 !
 
-defineClass: aString inPackageNamed: anUndefinedObject 
-
-	[
-		gciSession 
-			serverPerform: #'fileInClass:' 
-			with: aString.
-	] on: GsCompileError do: [:ex | 
-		(JadeWorkspace showOnSession: gciSession)
-			caption: 'Jade Workspace - Compile Error';
-			showError: ex list on: aString.
-	].
-!
-
 editCopy
 
 	(self activeTextEdit selections size > 1) 
@@ -503,7 +490,6 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #continueTransaction!Jade!private! !
 !JadeTextDocument categoriesFor: #createComponents!private! !
 !JadeTextDocument categoriesFor: #currentSelectionOrLine!Jade!private! !
-!JadeTextDocument categoriesFor: #defineClass:inPackageNamed:!private! !
 !JadeTextDocument categoriesFor: #editCopy!edit!private! !
 !JadeTextDocument categoriesFor: #editCut!edit!private! !
 !JadeTextDocument categoriesFor: #editDelete!edit!private! !
