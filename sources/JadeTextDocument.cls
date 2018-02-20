@@ -93,6 +93,63 @@ currentSelectionOrLine
 	^self activeTextEdit selection replaceCrLfWithLf.
 !
 
+defineClass: aString inPackageNamed: anUndefinedObject 
+
+	[
+		gciSession 
+			serverPerform: #'fileInClass:' 
+			with: aString.
+	] on: GsCompileError do: [:ex | 
+		(JadeWorkspace showOnSession: gciSession)
+			caption: 'Jade Workspace - Compile Error';
+			showError: ex list on: aString.
+	].
+!
+
+defineClassMethod: methodString inClassNamed: className inPackageNamed: packageName inCategory: categoryName 
+
+	self
+		defineMethod: methodString 
+		inClassNamed: className , ' class'
+		inPackageNamed: packageName 
+		inCategory: categoryName.
+
+!
+
+defineMethod: methodString inClassNamed: className inPackageNamed: packageName inCategory: categoryName 
+ 
+	| string result |
+	string := className , 
+		' compileMethod: ' , methodString printString , '
+		dictionaries: System myUserProfile symbolList
+		category: ' , categoryName printString.
+	[
+		(result := gciSession executeString: string) isNil ifTrue: [^self].
+	] on: GsCompileError do: [:ex | 
+		(JadeWorkspace showOnSession: gciSession)
+			caption: 'Jade Workspace - Compile Error';
+			showError: ex list on: string.
+		^self.
+	].
+	result := GsCompileError
+		errorListFor: result
+		inSession: gciSession.
+	(JadeWorkspace showOnSession: gciSession)
+		caption: 'Jade Workspace - Compile Error on ' , className;
+		showError: result on: methodString.
+!
+
+doIt: aString
+
+	[
+		gciSession executeString: aString.
+	] on: GsCompileError do: [:ex | 
+		(JadeWorkspace showOnSession: gciSession)
+			caption: 'Jade Workspace - Compile Error';
+			showError: ex list on: aString.
+	].
+!
+
 editCopy
 
 	(self activeTextEdit selections size > 1) 
@@ -189,6 +246,12 @@ fileIn: aString
 		fileIn;
 		isModified: false;
 		yourself.
+!
+
+fileInEnd: aPackage
+!
+
+fileInStart: aPackage
 !
 
 fileNew
@@ -484,6 +547,10 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #continueTransaction!Jade!private! !
 !JadeTextDocument categoriesFor: #createComponents!private! !
 !JadeTextDocument categoriesFor: #currentSelectionOrLine!Jade!private! !
+!JadeTextDocument categoriesFor: #defineClass:inPackageNamed:!private! !
+!JadeTextDocument categoriesFor: #defineClassMethod:inClassNamed:inPackageNamed:inCategory:!private! !
+!JadeTextDocument categoriesFor: #defineMethod:inClassNamed:inPackageNamed:inCategory:!private! !
+!JadeTextDocument categoriesFor: #doIt:!private! !
 !JadeTextDocument categoriesFor: #editCopy!edit!private! !
 !JadeTextDocument categoriesFor: #editCut!edit!private! !
 !JadeTextDocument categoriesFor: #editDelete!edit!private! !
@@ -495,6 +562,8 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #environment:!accessing!public! !
 !JadeTextDocument categoriesFor: #executeSelectionOrLine!Jade!private! !
 !JadeTextDocument categoriesFor: #fileIn:!private! !
+!JadeTextDocument categoriesFor: #fileInEnd:!private! !
+!JadeTextDocument categoriesFor: #fileInStart:!private! !
 !JadeTextDocument categoriesFor: #fileNew!private! !
 !JadeTextDocument categoriesFor: #fileOpen!private! !
 !JadeTextDocument categoriesFor: #gciSession!private! !
@@ -513,7 +582,7 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #onViewClosed!private! !
 !JadeTextDocument categoriesFor: #onViewOpened!private! !
 !JadeTextDocument categoriesFor: #print!private! !
-!JadeTextDocument categoriesFor: #queryCommand:!overrides!private! !
+!JadeTextDocument categoriesFor: #queryCommand:!commands!private! !
 !JadeTextDocument categoriesFor: #removeQuotesFromSelection!edit!private! !
 !JadeTextDocument categoriesFor: #saveDocument!private! !
 !JadeTextDocument categoriesFor: #selectLfIfEndingOnCr!edit!private! !
