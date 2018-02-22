@@ -6,8 +6,10 @@ package paxVersion: 1;
 
 package classNames
 	add: #RowanClassDefinitionService;
+	add: #RowanDefinition;
 	add: #RowanDefinitionService;
 	add: #RowanDefinitionServiceTest;
+	add: #RowanMethodDefinition;
 	add: #RowanMethodDefinitionService;
 	add: #RowanMethodListPresenter;
 	add: #RowanMethodListShell;
@@ -18,11 +20,6 @@ package classNames
 	add: #RowanPackageShell;
 	add: #RowanPresenter;
 	add: #RowanShell;
-	yourself.
-
-package methodNames
-	add: #GciSession -> #rowanMethodSelectorFor:;
-	add: #GciSession -> #rowanMethodSourceFor:;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -52,6 +49,11 @@ package!
 
 "Class Definitions"!
 
+Object subclass: #RowanDefinition
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 Object subclass: #RowanDefinitionService
 	instanceVariableNames: 'definitionOop transport'
 	classVariableNames: ''
@@ -63,7 +65,7 @@ JadePresenterA subclass: #RowanPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanPresenter subclass: #RowanMethodListPresenter
-	instanceVariableNames: 'methodList'
+	instanceVariableNames: 'methodList service'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -97,13 +99,18 @@ RowanShell subclass: #RowanPackageShell
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+RowanDefinition subclass: #RowanMethodDefinition
+	instanceVariableNames: 'selector source classDefinition'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanClassDefinitionService
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanMethodDefinitionService
-	instanceVariableNames: 'source selector'
+	instanceVariableNames: 'methodDefinitions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -122,16 +129,6 @@ TestCase subclass: #RowanDefinitionServiceTest
 
 
 "Loose Methods"!
-
-!GciSession methodsFor!
-
-rowanMethodSelectorFor: anOop
-	^self send: #selector to: anOop!
-
-rowanMethodSourceFor: anOop
-	^self send: #source to: anOop! !
-!GciSession categoriesFor: #rowanMethodSelectorFor:!public!rowan! !
-!GciSession categoriesFor: #rowanMethodSourceFor:!public!rowan! !
 
 "End of package definition"!
 

@@ -10,12 +10,13 @@ RowanDefinitionServiceTest comment: ''!
 !RowanDefinitionServiceTest categoriesForClass!SUnit! !
 !RowanDefinitionServiceTest methodsFor!
 
-test_sampleMethodDefinition
+test_sampleMethodDefinitions
 	"test values hard coded on remote GemStone server"
 
-	| service |
-	service := RowanMethodDefinitionService sampleService.
-	self assert: service source = 'sampleMethod ^''some text'''.
-	self assert: service selector = #sampleMethod! !
-!RowanDefinitionServiceTest categoriesFor: #test_sampleMethodDefinition!public! !
+	| services |
+	services := RowanMethodDefinitionService sampleDefinitions.
+	self assert: services first source = 'sampleMethod ^''some text'''.
+	self assert: services first selector = 'sampleMethod'.
+	self assert: services size = 1! !
+!RowanDefinitionServiceTest categoriesFor: #test_sampleMethodDefinitions!public! !
 

@@ -1,13 +1,21 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanPresenter subclass: #RowanMethodListPresenter
-	instanceVariableNames: 'methodList'
+	instanceVariableNames: 'methodList service'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanMethodListPresenter guid: (GUID fromString: '{eae7647f-1178-4328-8c70-76e118a2c731}')!
 RowanMethodListPresenter comment: ''!
 !RowanMethodListPresenter categoriesForClass!Unclassified! !
+!RowanMethodListPresenter methodsFor!
+
+browseImplementorsOf: aString
+
+	| definitions |
+	definitions := service implementorsOf: aString! !
+!RowanMethodListPresenter categoriesFor: #browseImplementorsOf:!browsing!public! !
+
 !RowanMethodListPresenter class methodsFor!
 
 resource_Default_view

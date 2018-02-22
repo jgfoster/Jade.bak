@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanDefinitionService subclass: #RowanMethodDefinitionService
-	instanceVariableNames: 'source selector'
+	instanceVariableNames: 'methodDefinitions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -10,26 +10,25 @@ RowanMethodDefinitionService comment: ''!
 !RowanMethodDefinitionService categoriesForClass!Kernel-Objects! !
 !RowanMethodDefinitionService methodsFor!
 
-initializeFromOop: anOop
+clientDefinitionClass
 
-	definitionOop := anOop. 
-	source := transport rowanMethodSourceFor: anOop. 
-	selector := (transport rowanMethodSelectorFor: anOop) asSymbol.!
+	^RowanMethodDefinition!
 
-selector
-	^selector!
+implementorsOf: aString
 
-selector: anObject
-	selector := anObject!
+	^methodDefinitions!
 
-source
-	^source!
+methodDefinitions
+	^methodDefinitions!
 
-source: anObject
-	source := anObject! !
-!RowanMethodDefinitionService categoriesFor: #initializeFromOop:!initialization!public! !
-!RowanMethodDefinitionService categoriesFor: #selector!accessing!private! !
-!RowanMethodDefinitionService categoriesFor: #selector:!accessing!private! !
-!RowanMethodDefinitionService categoriesFor: #source!accessing!private! !
-!RowanMethodDefinitionService categoriesFor: #source:!accessing!private! !
+methodDefinitions: anObject
+	methodDefinitions := anObject!
+
+remoteAccessors
+	^#(#source #selector)! !
+!RowanMethodDefinitionService categoriesFor: #clientDefinitionClass!private! !
+!RowanMethodDefinitionService categoriesFor: #implementorsOf:!method accessing!public! !
+!RowanMethodDefinitionService categoriesFor: #methodDefinitions!accessing!private! !
+!RowanMethodDefinitionService categoriesFor: #methodDefinitions:!accessing!private! !
+!RowanMethodDefinitionService categoriesFor: #remoteAccessors!private! !
 

@@ -50,7 +50,7 @@ RowanClassDefinitionService category: 'Kernel'
 expectvalue /Class
 doit
 RowanDefinitionService subclass: 'RowanMethodDefinitionService'
-	instVarNames: #( source selector)
+	instVarNames: #( source selector methodDefinitions)
 	classVars: #()
 	classInstVars: #()
 	poolDictionaries: #()
@@ -155,18 +155,25 @@ source: aString
 set compile_env: 0
 category: 'examples'
 method: RowanMethodDefinitionService
-sampleMethodSource
-
-	^'sampleMethod ^''some text'''.
-%
-category: 'examples'
-method: RowanMethodDefinitionService
-sampleService
+sampleDefinition
 
 	definition := self definitionClass newForSelector: 'sampleMethod' protocol: 'sampleProtocol' source: self sampleMethodSource.
 	source := definition source.
 	selector := definition selector.
 	^definition
+%
+category: 'examples'
+method: RowanMethodDefinitionService
+sampleDefinitions
+
+	methodDefinitions := Array with: self sampleDefinition.
+	^methodDefinitions
+%
+category: 'examples'
+method: RowanMethodDefinitionService
+sampleMethodSource
+
+	^'sampleMethod ^''some text'''.
 %
 set compile_env: 0
 category: 'rowan'

@@ -17,6 +17,23 @@ presenterClass
 
 !RowanMethodListShell class methodsFor!
 
+browseMethodDefinitions: aCollection
+
+	!
+
+displaySampleMethod
+	"display a sample method definition"
+
+	| session |
+	session := GciSession allInstances first.
+	(RowanMethodListShell showOnSession: session) primaryPresenter
+		browseImplementorsOf: 'size';
+		yourself!
+
+presenterClass
+
+	^RowanMethodListPresenter!
+
 resource_RowanMethodListShell
 	"Answer the literal data from which the 'RowanMethodListShell' resource can be reconstituted.
 	DO NOT EDIT OR RECATEGORIZE THIS METHOD.
@@ -29,5 +46,8 @@ resource_RowanMethodListShell
 \viewkind4\uc1\pard\f0\fs22 
 \par }
 ' 1840 610 #resetCharFormat 528 1840 770 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 44 1 0 0 132 3 0 0 88 2 0 0] 8 #() 1824 nil 27 1824 nil 27 1824 nil 27 )! !
+!RowanMethodListShell class categoriesFor: #browseMethodDefinitions:!instance creation!public! !
+!RowanMethodListShell class categoriesFor: #displaySampleMethod!public! !
+!RowanMethodListShell class categoriesFor: #presenterClass!private! !
 !RowanMethodListShell class categoriesFor: #resource_RowanMethodListShell!public!resources-views! !
 

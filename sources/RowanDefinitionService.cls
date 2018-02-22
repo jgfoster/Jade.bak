@@ -10,48 +10,86 @@ RowanDefinitionService comment: ''!
 !RowanDefinitionService categoriesForClass!Kernel-Objects! !
 !RowanDefinitionService methodsFor!
 
-definitionOop
-	^definitionOop!
-
-definitionOop: anObject
-	definitionOop := anObject!
-
-initializeFromOop: anOop
+clientDefinitionClass
 
 	^self subclassResponsibility!
 
+createClientDefinitionFrom: anArrayOop
+	"ignores round trips but is straight forward"
+
+	| definitions remoteSize |
+	remoteSize := transport send: #size to: anArrayOop.
+	definitions := Array new: remoteSize.
+	1 to: remoteSize
+		do: 
+			[:idx |
+			| elementOop |
+			elementOop := transport
+						send: #at:
+						to: anArrayOop
+						withAll: (Array with: idx).
+			definitions at: idx put: (self createClientDefinitionFromRemoteDefinition: elementOop)].
+	^definitions!
+
+createClientDefinitionFromRemoteDefinition: anOop
+	"expect simple objects to be replicated in each
+	slot of our local definition object"
+
+	| clientDefinition |
+	clientDefinition := self clientDefinitionClass new.
+	self remoteAccessors do: 
+			[:symbol |
+			| value |
+			value := transport send: symbol to: anOop.
+			clientDefinition perform: (symbol , ':') asSymbol with: value].
+	^clientDefinition!
+
+initialize
+	super initialize.
+	self initializeTransport!
+
 initializeTransport
-	"Need to initialize this better."
+	"Need to initialize this better eventually"
 
-	^transport := GciSession allInstances first!
+	^transport := GciSession allInstances last. !
 
-remoteDefinitionClassName
-	^transport rowanRemoteDefinitionNameFor: definitionOop!
+remoteAccessors
 
-sampleServiceOop
-	^transport executeString: self class name asString , ' sampleService'!
+	^self subclassResponsibility!
+
+remoteServiceName
+	"The remote service name is the same as this class"
+
+	^self class name!
+
+sampleDefinitions
+	| anArrayOop |
+	anArrayOop := transport executeString: self remoteServiceName asString , ' new sampleDefinitions'.
+	^self createClientDefinitionFrom: anArrayOop!
 
 transport
 	^transport!
 
 transport: anObject
 	^transport := anObject! !
-!RowanDefinitionService categoriesFor: #definitionOop!accessing!private! !
-!RowanDefinitionService categoriesFor: #definitionOop:!accessing!private! !
-!RowanDefinitionService categoriesFor: #initializeFromOop:!initialization!public! !
+!RowanDefinitionService categoriesFor: #clientDefinitionClass!private! !
+!RowanDefinitionService categoriesFor: #createClientDefinitionFrom:!private! !
+!RowanDefinitionService categoriesFor: #createClientDefinitionFromRemoteDefinition:!private! !
+!RowanDefinitionService categoriesFor: #initialize!private! !
 !RowanDefinitionService categoriesFor: #initializeTransport!private! !
-!RowanDefinitionService categoriesFor: #remoteDefinitionClassName!accessing!public! !
-!RowanDefinitionService categoriesFor: #sampleServiceOop!examples!public! !
+!RowanDefinitionService categoriesFor: #remoteAccessors!private! !
+!RowanDefinitionService categoriesFor: #remoteServiceName!examples!private! !
+!RowanDefinitionService categoriesFor: #sampleDefinitions!examples!public! !
 !RowanDefinitionService categoriesFor: #transport!accessing!private! !
 !RowanDefinitionService categoriesFor: #transport:!accessing!private! !
 
 !RowanDefinitionService class methodsFor!
 
-sampleService
-	| service |
-	service := self new.
-	service transport: service initializeTransport.
-	service initializeFromOop: service sampleServiceOop.
-	^service! !
-!RowanDefinitionService class categoriesFor: #sampleService!examples!public! !
+new
+	^super new initialize!
+
+sampleDefinitions
+	^self new sampleDefinitions! !
+!RowanDefinitionService class categoriesFor: #new!initialization!public! !
+!RowanDefinitionService class categoriesFor: #sampleDefinitions!examples!public! !
 
