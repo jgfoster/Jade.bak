@@ -9,7 +9,6 @@ package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.
 
 package classNames
 	add: #GciSession;
-	add: #GciSessionWithSocket;
 	add: #GsAnsiError;
 	add: #GsApplicationError;
 	add: #GsClientForwarderSend;
@@ -68,7 +67,6 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone C Interface';
 	add: 'GemStone Objects';
 	add: 'JGF Fading Dialog';
-	add: '..\Core\Object Arts\Dolphin\Sockets\Sockets Connection';
 	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
 	yourself).
 
@@ -168,11 +166,6 @@ GsApplicationError subclass: #GsHaltError
 	classInstanceVariableNames: ''!
 Notification subclass: #TerminateProcess
 	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GciSession subclass: #GciSessionWithSocket
-	instanceVariableNames: 'socket'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

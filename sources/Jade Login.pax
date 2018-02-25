@@ -19,7 +19,6 @@ package globalAliases: (Set new
 
 package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Cards\Dolphin Card Containers';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
 	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs';
@@ -46,12 +45,12 @@ package!
 "Class Definitions"!
 
 Model subclass: #JadeLogin
-	instanceVariableNames: 'debugPath gemHost gemNRS gemService gemTask gemType gemVersion gsPassword gsUserID hostPassword hostUserID initials loginType stoneHost stoneName stoneNRS useSocket'
+	instanceVariableNames: 'debugPath gemHost gemNRS gemService gemTask gemType gemVersion gsPassword gsUserID hostPassword hostUserID initials loginType stoneHost stoneName stoneNRS'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 DocumentShell subclass: #JadeLoginShell
-	instanceVariableNames: 'debugPathPresenter gemHostPresenter gemServicePresenter gemTaskPresenter gemTypePresenter hostPasswordPresenter hostUserIDPresenter initialsPresenter isModified loginTypePresenter passwordPresenter stoneHostPresenter stoneNamePresenter userIDPresenter useSocketPresenter versionListPresenter'
+	instanceVariableNames: 'debugPathPresenter gemHostPresenter gemServicePresenter gemTaskPresenter gemTypePresenter hostPasswordPresenter hostUserIDPresenter initialsPresenter isModified loginTypePresenter passwordPresenter stoneHostPresenter stoneNamePresenter userIDPresenter versionListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

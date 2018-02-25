@@ -60,20 +60,6 @@ abort
 	self serverPerform: #'abort'.
 !
 
-attemptSocket
-
-	| host port tempSocket time |
-	host := ((gemNRS subStrings: $#) first subStrings: $@) at: 2.
-	(port := self serverPerform: #'makeListener') ifNil: [^self].
-	tempSocket := Socket port: port host: host.
-	tempSocket connectNoWait.
-	time := self serverPerform: #'acceptConnection'.
-	time ifNil: [
-		tempSocket close.
-		^self.
-	].
-	^self become: (GciSessionWithSocket from: self withSocket: tempSocket).!
-
 begin
 
 	self serverPerform: #'beginTransaction'.
@@ -326,7 +312,6 @@ password: gsPassword
 hostUserID: hostUserID 
 password: hostPassword 
 initials: initials
-useSocket: useSocket
 debugPath: debugPath
 
 	| list |
@@ -355,7 +340,7 @@ debugPath: debugPath
 			gsPassword: gsPassword 
 			gemNRS: gemNRS 
 			stoneNRS: stoneNRS) ;
-		postLoginAs: initials useSocket: useSocket;
+		postLoginAs: initials;
 		yourself.
 !
 
@@ -495,10 +480,9 @@ oopTypeWithOop: anInteger
 	^library oopTypeWithOop: anInteger.
 !
 
-postLoginAs: aString useSocket: aBoolean
+postLoginAs: aString 
 
 	self initializeServer.
-	aBoolean ifTrue: [self attemptSocket].
 	self setInitials: aString.		"This gets back the session and serial number"
 !
 
@@ -971,7 +955,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #_send:to:withAll:!private! !
 !GciSession categoriesFor: #_server!private! !
 !GciSession categoriesFor: #abort!Jade convenience!public! !
-!GciSession categoriesFor: #attemptSocket!private! !
 !GciSession categoriesFor: #begin!Jade convenience!public! !
 !GciSession categoriesFor: #beInvalidSession!public! !
 !GciSession categoriesFor: #briefDescription!public! !
@@ -997,7 +980,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #heartbeat:arguments:!heartbeat!private! !
 !GciSession categoriesFor: #incrementEventCount!long running!private! !
 !GciSession categoriesFor: #indexOfClientForwarder:!public! !
-!GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:useSocket:debugPath:!private! !
+!GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:debugPath:!private! !
 !GciSession categoriesFor: #initializeServer!private! !
 !GciSession categoriesFor: #isLinkedGem!public! !
 !GciSession categoriesFor: #isOopType:!public! !
@@ -1015,7 +998,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #oopIllegal!public! !
 !GciSession categoriesFor: #oopTypeFor:!public! !
 !GciSession categoriesFor: #oopTypeWithOop:!public! !
-!GciSession categoriesFor: #postLoginAs:useSocket:!private! !
+!GciSession categoriesFor: #postLoginAs:!private! !
 !GciSession categoriesFor: #printString:!Jade convenience!public! !
 !GciSession categoriesFor: #releaseOop:!Jade convenience!public! !
 !GciSession categoriesFor: #releaseOops:!Jade!public! !
@@ -1074,7 +1057,6 @@ password: gsPassword
 hostUserID: hostUserID 
 password: hostPassword 
 initials: initials
-useSocket: useSocket
 debugPath: debugPath
 
 	^super new
@@ -1086,7 +1068,6 @@ debugPath: debugPath
 		hostUserID: hostUserID 
 		password: hostPassword
 		initials: initials
-		useSocket: useSocket
 		debugPath: debugPath
 
 !
@@ -1108,7 +1089,7 @@ publishedEventsOfInstances
     
 ! !
 !GciSession class categoriesFor: #cursor!public! !
-!GciSession class categoriesFor: #libraryClass:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:useSocket:debugPath:!public! !
+!GciSession class categoriesFor: #libraryClass:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:debugPath:!public! !
 !GciSession class categoriesFor: #new!public! !
 !GciSession class categoriesFor: #publishedEventsOfInstances!public! !
 

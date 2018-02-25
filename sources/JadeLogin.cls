@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #JadeLogin
-	instanceVariableNames: 'debugPath gemHost gemNRS gemService gemTask gemType gemVersion gsPassword gsUserID hostPassword hostUserID initials loginType stoneHost stoneName stoneNRS useSocket'
+	instanceVariableNames: 'debugPath gemHost gemNRS gemService gemTask gemType gemVersion gsPassword gsUserID hostPassword hostUserID initials loginType stoneHost stoneName stoneNRS'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -28,7 +28,6 @@ asXML
 		setAttribute: 'gsUserID' 		value: gsUserID;
 		setAttribute: 'gsPassword' 		value: gsPassword;
 		setAttribute: 'initials'			value: initials;
-		setAttribute: 'useSocket'		value: useSocket printString;
 		yourself.
 	doc setDocumentElement: root.
 	^doc xml.
@@ -205,7 +204,6 @@ initializeFromXML: aString
 	gsUserID		:= (element getAttribute: 'gsUserID'		) ifNil: [''].
 	gsPassword	:= (element getAttribute: 'gsPassword'	) ifNil: [''].
 	initials		:= (element getAttribute: 'initials'		) ifNil: [''].
-	useSocket		:= (element getAttribute: 'useSocket') 	= 'true'.
 !
 
 initials
@@ -232,7 +230,6 @@ login
 		hostUserID: self hostUserID
 		password: self hostPassword
 		initials: self initials
-		useSocket: self useSocket
 		debugPath: self debugPath!
 
 loginType
@@ -320,19 +317,7 @@ updateFrom: aJadeLogin
 	gsUserID 		:= aJadeLogin gsUserID.
 	gsPassword 	:= aJadeLogin gsPassword.
 	initials		:= aJadeLogin initials.
-	useSocket		:= aJadeLogin useSocket.
 	debugPath		:= aJadeLogin debugPath.
-	self trigger: #changed.
-!
-
-useSocket
-	^useSocket == true.
-!
-
-useSocket: aBoolean
-
-	self useSocket = aBoolean ifTrue: [^self].
-	useSocket := aBoolean.
 	self trigger: #changed.
 ! !
 !JadeLogin categoriesFor: #asXML!public! !
@@ -374,8 +359,6 @@ useSocket: aBoolean
 !JadeLogin categoriesFor: #stoneNRS!accessing!public! !
 !JadeLogin categoriesFor: #stoneNRS:!accessing!public! !
 !JadeLogin categoriesFor: #updateFrom:!public! !
-!JadeLogin categoriesFor: #useSocket!accessing!public! !
-!JadeLogin categoriesFor: #useSocket:!accessing!public! !
 
 !JadeLogin class methodsFor!
 
