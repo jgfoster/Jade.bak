@@ -190,21 +190,21 @@ initializeFromXML: aString
 	| element |
 	element := (IXMLDOMDocument new loadText: aString) documentElement.
 	element baseName = 'JadeLogin' ifFalse: [self error: 'Invalid document!!'].
-	gemVersion	:= ((element getAttribute: 'gemVersion'	) ifNil: ['']) asAnsiString.
-	stoneHost		:= ((element getAttribute: 'stoneHost'		) ifNil: ['']) asAnsiString.
-	stoneName	:= ((element getAttribute: 'stoneName'	) ifNil: ['']) asAnsiString.
-	stoneNRS		:= ((element getAttribute: 'stoneNRS'		) ifNil: ['']) asAnsiString.
-	gemType		:= (element getAttribute: 'gemType'		) asAnsiString asSymbol.
-	gemHost		:= ((element getAttribute: 'gemHost'		) ifNil: ['']) asAnsiString.
-	gemService	:= ((element getAttribute: 'gemService'	) ifNil: ['']) asAnsiString.
-	gemNRS		:= ((element getAttribute: 'gemNRS'		) ifNil: ['']) asAnsiString.
-	loginType		:= ((element getAttribute: 'loginType'		) ifNil: ['']) asAnsiString.
+	gemVersion	:= (element getAttribute: 'gemVersion'	) ifNil: [''].
+	stoneHost		:= (element getAttribute: 'stoneHost'		) ifNil: [''].
+	stoneName	:= (element getAttribute: 'stoneName'	) ifNil: [''].
+	stoneNRS		:= (element getAttribute: 'stoneNRS'		) ifNil: [''].
+	gemType		:= (element getAttribute: 'gemType'		) asSymbol.
+	gemHost		:= (element getAttribute: 'gemHost'		) ifNil: [''].
+	gemService	:= (element getAttribute: 'gemService'	) ifNil: [''].
+	gemNRS		:= (element getAttribute: 'gemNRS'		) ifNil: [''].
+	loginType		:= (element getAttribute: 'loginType'		) ifNil: [''].
 	loginType 		:= loginType isNil ifTrue: [#'guest'] ifFalse: [loginType asSymbol].
-	hostUserID	:= ((element getAttribute: 'hostUserID'	) ifNil: ['']) asAnsiString.
-	hostPassword	:= ((element getAttribute: 'hostPassword'	) ifNil: ['']) asAnsiString.
-	gsUserID		:= ((element getAttribute: 'gsUserID'		) ifNil: ['']) asAnsiString.
-	gsPassword	:= ((element getAttribute: 'gsPassword'	) ifNil: ['']) asAnsiString.
-	initials		:= ((element getAttribute: 'initials'		) ifNil: ['']) asAnsiString.
+	hostUserID	:= (element getAttribute: 'hostUserID'	) ifNil: [''].
+	hostPassword	:= (element getAttribute: 'hostPassword'	) ifNil: [''].
+	gsUserID		:= (element getAttribute: 'gsUserID'		) ifNil: [''].
+	gsPassword	:= (element getAttribute: 'gsPassword'	) ifNil: [''].
+	initials		:= (element getAttribute: 'initials'		) ifNil: [''].
 	useSocket		:= (element getAttribute: 'useSocket') 	= 'true'.
 !
 

@@ -861,15 +861,15 @@ titleBarFor: aString
 		nextPutAll: 'Jade ';
 		print: gciSessionId;
 		nextPutAll: ' (';
-		nextPutAll: userID;
+		nextPutAll: userID asAnsiString;
 		nextPutAll: ') - ';
-		nextPutAll: aString;
+		nextPutAll: aString asAnsiString;
 		nextPutAll: ' on ';
-		nextPutAll: stoneName;
+		nextPutAll: stoneName asAnsiString;
 		nextPutAll: ' session ';
 		print: stoneSessionID;
 		nextPutAll: ' on ';
-		nextPutAll: stoneHost;
+		nextPutAll: stoneHost asAnsiString;
 		yourself.
 	self isRemoteGem ifTrue: [
 		list := gemNRS subStrings: $#.
@@ -878,7 +878,7 @@ titleBarFor: aString
 		gemHost := ((list at: 1) subStrings: $@) at: 2.
 		stream
 			nextPutAll: ' with remote gem on ';
-			nextPutAll: gemHost;
+			nextPutAll: gemHost asAnsiString;
 			yourself.
 	] ifFalse: [
 		stream nextPutAll: ' with linked gem'. 
