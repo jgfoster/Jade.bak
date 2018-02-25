@@ -443,36 +443,7 @@ replaceKeyboardShortcut
 selectionChanged
 	"The receiver highlights all text matching <view selection>"
 
-	| index indicators selection selectionStart styles text |
-	styles := view indicatorStyles.
-	indicators := view indicators asOrderedCollection.
-	indicators copy do: [:each | 
-		each styleName = 11 ifTrue: [
-			indicators remove: each.
-		].
-	].
-	((selection := view selection) isNil or: [selection isEmpty]) ifTrue: [
-		view indicators: indicators.
-		^self
-	].
-	index := 0.
-	text := view plainText.
-	selectionStart := view selectionRange start.
-	[
-		index := text indexOfSubCollection: selection startingAt: index + 1.
-		0 < index.
-	] whileTrue: [
-		| end |
-		end := index + selection size - 1.
-		index ~~ selectionStart ifTrue: [
-			indicators add: (ScintillaIndicator
-				styleName: 11
-				range: (index to: end) 
-				tag: 'secondary selection').
-		].
-	].
-	view indicators: indicators.
-!
+	view identifyTextMatchingSelectionWithStyleName: #secondarySelection.!
 
 showAutoCompletionList: anOrdedCollection prefixLength: anInteger
 
@@ -499,8 +470,7 @@ updateLastParsedResult
 
 updateUI: anSCNotification
 
-	anSCNotification updated == 16r2 "SC_UPDATE_SELECTION" 
-		ifTrue: [self selectionChanged].
+	anSCNotification isSelectionUpdate ifTrue: [self selectionChanged].
 !
 
 wordRightSideIsEmpty
