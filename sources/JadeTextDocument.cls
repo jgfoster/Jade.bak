@@ -191,6 +191,12 @@ fileIn: aString
 		yourself.
 !
 
+fileInEnd: aPackage
+!
+
+fileInStart: aPackage
+!
+
 fileNew
 
 	JadeWorkspace showOnSession: gciSession.
@@ -495,6 +501,8 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #environment:!accessing!public! !
 !JadeTextDocument categoriesFor: #executeSelectionOrLine!Jade!private! !
 !JadeTextDocument categoriesFor: #fileIn:!private! !
+!JadeTextDocument categoriesFor: #fileInEnd:!private! !
+!JadeTextDocument categoriesFor: #fileInStart:!private! !
 !JadeTextDocument categoriesFor: #fileNew!private! !
 !JadeTextDocument categoriesFor: #fileOpen!private! !
 !JadeTextDocument categoriesFor: #gciSession!private! !
@@ -513,7 +521,7 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #onViewClosed!private! !
 !JadeTextDocument categoriesFor: #onViewOpened!private! !
 !JadeTextDocument categoriesFor: #print!private! !
-!JadeTextDocument categoriesFor: #queryCommand:!overrides!private! !
+!JadeTextDocument categoriesFor: #queryCommand:!commands!private! !
 !JadeTextDocument categoriesFor: #removeQuotesFromSelection!edit!private! !
 !JadeTextDocument categoriesFor: #saveDocument!private! !
 !JadeTextDocument categoriesFor: #selectLfIfEndingOnCr!edit!private! !
