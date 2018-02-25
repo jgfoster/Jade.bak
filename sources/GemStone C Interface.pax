@@ -26,9 +26,6 @@ package classNames
 	add: #Gcilw66;
 	add: #Gcilw67;
 	add: #Gcilw6x;
-	add: #GciMtLibraryTestCase;
-	add: #GciMtLibraryTestResource;
-	add: #GciMultiThreadedLibrary;
 	add: #Gcirw62;
 	add: #GciSessionId;
 	add: #GciSingleThreadedLibrary;
@@ -36,7 +33,6 @@ package classNames
 	add: #GciTsLibraryTestCase;
 	add: #GciTsLibraryTestResource;
 	add: #GciTsObjInfo;
-	add: #LibGciMt_3_3;
 	add: #LibGciRpc64;
 	add: #LibGciRpc64_20;
 	add: #LibGciRpc64_21;
@@ -155,11 +151,6 @@ ExternalLibrary subclass: #GciLibrary
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciLibrary subclass: #GciMultiThreadedLibrary
-	instanceVariableNames: ''
-	classVariableNames: 'OOP_ILLEGAL OOP_NIL'
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 GciLibrary subclass: #GciSingleThreadedLibrary
 	instanceVariableNames: 'semaphore'
 	classVariableNames: ''
@@ -168,11 +159,6 @@ GciLibrary subclass: #GciSingleThreadedLibrary
 GciLibrary subclass: #GciThreadSafeLibrary
 	instanceVariableNames: ''
 	classVariableNames: 'OOP_ILLEGAL OOP_NIL'
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GciMultiThreadedLibrary subclass: #LibGciMt_3_3
-	instanceVariableNames: ''
-	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciSingleThreadedLibrary subclass: #Gcilw6x
@@ -450,11 +436,6 @@ TestCase subclass: #GciLibraryTestCase
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GciLibraryTestCase subclass: #GciMtLibraryTestCase
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 GciLibraryTestCase subclass: #GciTsLibraryTestCase
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -462,11 +443,6 @@ GciLibraryTestCase subclass: #GciTsLibraryTestCase
 	classInstanceVariableNames: ''!
 TestResource subclass: #GciLibraryTestResource
 	instanceVariableNames: 'library session'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GciLibraryTestResource subclass: #GciMtLibraryTestResource
-	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
