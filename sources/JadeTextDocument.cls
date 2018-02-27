@@ -509,7 +509,7 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #onViewClosed!private! !
 !JadeTextDocument categoriesFor: #onViewOpened!private! !
 !JadeTextDocument categoriesFor: #print!private! !
-!JadeTextDocument categoriesFor: #queryCommand:!overrides!private! !
+!JadeTextDocument categoriesFor: #queryCommand:!commands!private! !
 !JadeTextDocument categoriesFor: #removeQuotesFromSelection!edit!private! !
 !JadeTextDocument categoriesFor: #saveDocument!private! !
 !JadeTextDocument categoriesFor: #selectLfIfEndingOnCr!edit!private! !

@@ -10,21 +10,6 @@ JadeAutoTextPresenter3 comment: ''!
 !JadeAutoTextPresenter3 categoriesForClass!Unclassified! !
 !JadeAutoTextPresenter3 methodsFor!
 
-addParenthesisOrBracketsToSelection
-	| openParenthesisOrBrackets closeParenthesisOrBrackets|
-
-	openParenthesisOrBrackets := (view characterAt: view caretPosition - 1) asString.
-
-	closeParenthesisOrBrackets := (openParenthesisOrBrackets = '(') ifTrue: [')'] ifFalse: [']'].
-
-	view undo.
-	view undo.
-	view invalidate.
-[	view caretPosition: (model value indexOfSubCollection: lastTextSelection).
-	view insertText: openParenthesisOrBrackets at: view caretPosition.
-	view caretPosition: (view caretPosition + lastTextSelection size).
-	view insertText: closeParenthesisOrBrackets at: view caretPosition + 1.] forkAt: 4.!
-
 autocompletationConfiguration
 	^JadeAutocompletationConfiguration default!
 
@@ -63,11 +48,11 @@ configuration
 createSchematicWiring
 
 	super createSchematicWiring.
-
-	self when: #autoComplete:startingAt:accept: send: #onAutoComplete:startingAt:accept: to: self;
-		when: #leftButtonPressed: send: #onLeftButtonPressed: to: self";
-		when: #painted send: #onPainted to: self".
-
+	self 
+		when: #autoComplete:startingAt:accept: send: #onAutoComplete:startingAt:accept: to: self;
+		when: #leftButtonPressed: send: #onLeftButtonPressed: to: self;
+		when: #updateUI: send: #updateUI: to: self;
+		yourself.
 !
 
 currentGsShape
@@ -337,22 +322,11 @@ insertText: aString at: anInteger
 
 	!
 
-isAddingParenthesisOrBrackets
-
-	self getCurrentWord.
-
-	^(currentText = '-') and: [((view characterAt: view caretPosition - 1) = $() or: [(view characterAt: view caretPosition - 1) = $[] ]!
-
 isAtEndOfWord
 
 	^(Array with: Character space with: Character tab with: Character cr) includes: (view characterAt: view caretPosition)!
 
 isKeyboardShorcut
-
-	"self getCurrentWord.
-
-	Transcript show: 'previous text [', previousText printString, '] - current text [', currentText printString,']'.
-	Transcript cr."
 
 	^self class replacementDictionaryKeys includes: currentText!
 
@@ -390,16 +364,13 @@ onKeyPressed: aKeyEvent
 	self autocompletationConfiguration isEnabled ifFalse: [^self]. "autocompletation is disable"
 
 	[self processKeyPressed: aKeyEvent. 
-	self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut]] forkAt: 4.!
+	self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut].
+	"self isAddingParenthesisOrBrackets ifTrue: [self addParenthesisOrBracketsToSelection]"] forkAt: 4.!
 
 onLeftButtonPressed: aKeyEvent
 	"This is the main method for autocompletation, each key stroke is registered and analyzed here"
 
 	self getCurrentWord!
-
-onPainted
-
-	view selection notEmpty ifTrue: [lastTextSelection := view selection].!
 
 previousStyleName
 	^previousStyleName!
@@ -469,6 +440,11 @@ replaceKeyboardShortcut
 	view caretPosition: view caretPosition + caretPositionShift.
 !
 
+selectionChanged
+	"The receiver highlights all text matching <view selection>"
+
+	view identifyTextMatchingSelectionWithStyleName: #secondarySelection.!
+
 showAutoCompletionList: anOrdedCollection prefixLength: anInteger
 
 	((anOrdedCollection size = 1) and: [anOrdedCollection last = currentText]) ifTrue: [^self] .
@@ -492,12 +468,16 @@ updateLastParsedResult
 
 !
 
+updateUI: anSCNotification
+
+	anSCNotification isSelectionUpdate ifTrue: [self selectionChanged].
+!
+
 wordRightSideIsEmpty
 	^wordRightSideIsEmpty!
 
 wordRightSideIsEmpty: anObject
 	wordRightSideIsEmpty := anObject! !
-!JadeAutoTextPresenter3 categoriesFor: #addParenthesisOrBracketsToSelection!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #autocompletationConfiguration!public! !
 !JadeAutoTextPresenter3 categoriesFor: #autocompleteForIdentifier!autocompletation cycle!public! !
 !JadeAutoTextPresenter3 categoriesFor: #autocompleteForNormal!autocompletation cycle!public! !
@@ -529,7 +509,6 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #insertKeywordText2:at:!autocompletation cycle!autocompletion!public! !
 !JadeAutoTextPresenter3 categoriesFor: #insertSimpleText:at:!autocompletation cycle!autocompletion!public! !
 !JadeAutoTextPresenter3 categoriesFor: #insertText:at:!autocompletation cycle!autocompletion!public! !
-!JadeAutoTextPresenter3 categoriesFor: #isAddingParenthesisOrBrackets!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #isAtEndOfWord!public! !
 !JadeAutoTextPresenter3 categoriesFor: #isKeyboardShorcut!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #lastCharacterIsSpace!public! !
@@ -537,7 +516,6 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #onAutoComplete:startingAt:accept:!autocompletation cycle!autocompletion!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onKeyPressed:!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #onLeftButtonPressed:!key event!public! !
-!JadeAutoTextPresenter3 categoriesFor: #onPainted!keyboard shortcut!public! !
 !JadeAutoTextPresenter3 categoriesFor: #previousStyleName!accessing!private! !
 !JadeAutoTextPresenter3 categoriesFor: #previousStyleName:!accessing!private! !
 !JadeAutoTextPresenter3 categoriesFor: #previousText!accessing!private! !
@@ -545,8 +523,10 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #processKeyPressed:!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #registry!autocompletion!public! !
 !JadeAutoTextPresenter3 categoriesFor: #replaceKeyboardShortcut!keyboard shortcut!public! !
+!JadeAutoTextPresenter3 categoriesFor: #selectionChanged!public! !
 !JadeAutoTextPresenter3 categoriesFor: #showAutoCompletionList:prefixLength:!public! !
 !JadeAutoTextPresenter3 categoriesFor: #updateLastParsedResult!autocompletion list!public! !
+!JadeAutoTextPresenter3 categoriesFor: #updateUI:!public! !
 !JadeAutoTextPresenter3 categoriesFor: #wordRightSideIsEmpty!accessing!private! !
 !JadeAutoTextPresenter3 categoriesFor: #wordRightSideIsEmpty:!accessing!private! !
 
