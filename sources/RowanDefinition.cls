@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-Object subclass: #RowanDefinition
+Model subclass: #RowanDefinition
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''

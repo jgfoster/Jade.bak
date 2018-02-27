@@ -10,6 +10,15 @@ RowanDefinitionServiceTest comment: ''!
 !RowanDefinitionServiceTest categoriesForClass!SUnit! !
 !RowanDefinitionServiceTest methodsFor!
 
+test_openMethodBrowser
+	| shell gciSession |
+	gciSession := RowanDefinitionService new transport.
+	shell := RowanMethodListShell showOnSession: gciSession.
+	
+	[self assert: (shell isKindOf: RowanMethodListShell).
+	self assert: (shell primaryPresenter isKindOf: RowanMethodListPresenter)]
+			ensure: [shell exit]!
+
 test_sampleMethodDefinitions
 	"test values hard coded on remote GemStone server"
 
@@ -18,5 +27,6 @@ test_sampleMethodDefinitions
 	self assert: services first source = 'sampleMethod ^''some text'''.
 	self assert: services first selector = 'sampleMethod'.
 	self assert: services size = 1! !
+!RowanDefinitionServiceTest categoriesFor: #test_openMethodBrowser!public! !
 !RowanDefinitionServiceTest categoriesFor: #test_sampleMethodDefinitions!public! !
 

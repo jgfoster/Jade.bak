@@ -5,6 +5,7 @@ package paxVersion: 1;
 
 
 package classNames
+	add: #PackageMethodListPresenter;
 	add: #RowanClassDefinitionService;
 	add: #RowanDefinition;
 	add: #RowanDefinitionService;
@@ -36,10 +37,10 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Deprecated\Dolphin MVP (Deprecated)';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Rich Text Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'GemStone Session';
+	add: 'Jade Method Browser';
 	add: 'Jade UI Base';
 	add: '..\Core\Contributions\Solutions Software\SSW EditableListView';
 	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
@@ -49,13 +50,18 @@ package!
 
 "Class Definitions"!
 
-Object subclass: #RowanDefinition
+Object subclass: #RowanDefinitionService
+	instanceVariableNames: 'transport'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Model subclass: #RowanDefinition
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-Object subclass: #RowanDefinitionService
-	instanceVariableNames: 'definitionOop transport'
+RowanDefinition subclass: #RowanMethodDefinition
+	instanceVariableNames: 'selector source classDefinition'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -64,8 +70,13 @@ JadePresenterA subclass: #RowanPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+MethodListPresenter subclass: #PackageMethodListPresenter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 RowanPresenter subclass: #RowanMethodListPresenter
-	instanceVariableNames: 'methodList service'
+	instanceVariableNames: 'methodList service methodListPresenter methodSourcePresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -96,11 +107,6 @@ RowanShell subclass: #RowanMethodListShell
 	classInstanceVariableNames: ''!
 RowanShell subclass: #RowanPackageShell
 	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanDefinition subclass: #RowanMethodDefinition
-	instanceVariableNames: 'selector source classDefinition'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

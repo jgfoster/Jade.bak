@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #RowanDefinitionService
-	instanceVariableNames: 'definitionOop transport'
+	instanceVariableNames: 'transport'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
