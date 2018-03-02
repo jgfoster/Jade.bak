@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-Object subclass: #RowanDefinitionService
+Model subclass: #RowanDefinitionService
 	instanceVariableNames: 'transport'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -71,7 +71,7 @@ transport
 	^transport!
 
 transport: anObject
-	^transport := anObject! !
+	transport := anObject! !
 !RowanDefinitionService categoriesFor: #clientDefinitionClass!private! !
 !RowanDefinitionService categoriesFor: #createClientDefinitionFrom:!private! !
 !RowanDefinitionService categoriesFor: #createClientDefinitionFromRemoteDefinition:!private! !
@@ -88,8 +88,13 @@ transport: anObject
 new
 	^super new initialize!
 
+on: aSession
+
+	^self new transport: aSession!
+
 sampleDefinitions
 	^self new sampleDefinitions! !
 !RowanDefinitionService class categoriesFor: #new!initialization!public! !
+!RowanDefinitionService class categoriesFor: #on:!initialization!public! !
 !RowanDefinitionService class categoriesFor: #sampleDefinitions!examples!public! !
 

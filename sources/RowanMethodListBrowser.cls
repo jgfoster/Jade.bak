@@ -1,14 +1,14 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-JadeMethodListBrowser subclass: #RowanMethodListShell
+JadeMethodListBrowser subclass: #RowanMethodListBrowser
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanMethodListShell guid: (GUID fromString: '{68b0fe86-7704-4d47-bfa2-976beaad877a}')!
-RowanMethodListShell comment: ''!
-!RowanMethodListShell categoriesForClass!Unclassified! !
-!RowanMethodListShell methodsFor!
+RowanMethodListBrowser guid: (GUID fromString: '{68b0fe86-7704-4d47-bfa2-976beaad877a}')!
+RowanMethodListBrowser comment: ''!
+!RowanMethodListBrowser categoriesForClass!Unclassified! !
+!RowanMethodListBrowser methodsFor!
 
 presenterClass
 
@@ -18,10 +18,10 @@ shellName
 
 	^'Rowan Method List Browser'.
 ! !
-!RowanMethodListShell categoriesFor: #presenterClass!private! !
-!RowanMethodListShell categoriesFor: #shellName!private! !
+!RowanMethodListBrowser categoriesFor: #presenterClass!private! !
+!RowanMethodListBrowser categoriesFor: #shellName!private! !
 
-!RowanMethodListShell class methodsFor!
+!RowanMethodListBrowser class methodsFor!
 
 resource_Default_view
 	"Answer the literal data from which the 'Default view' resource can be reconstituted.
@@ -45,6 +45,6 @@ showOnSession: aGciSession
 		createView: self defaultView;
 		showShell;
 		yourself.! !
-!RowanMethodListShell class categoriesFor: #resource_Default_view!public!resources-views! !
-!RowanMethodListShell class categoriesFor: #showOnSession:!public! !
+!RowanMethodListBrowser class categoriesFor: #resource_Default_view!public!resources-views! !
+!RowanMethodListBrowser class categoriesFor: #showOnSession:!public! !
 

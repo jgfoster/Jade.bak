@@ -13,9 +13,9 @@ RowanDefinitionServiceTest comment: ''!
 test_openMethodBrowser
 	| shell gciSession |
 	gciSession := RowanDefinitionService new transport.
-	shell := RowanMethodListShell showOnSession: gciSession.
+	shell := RowanMethodListBrowser showOnSession: gciSession.
 	
-	[self assert: (shell isKindOf: RowanMethodListShell).
+	[self assert: (shell isKindOf: RowanMethodListBrowser).
 	self assert: (shell primaryPresenter isKindOf: RowanMethodListPresenter)]
 			ensure: [shell exit]!
 

@@ -22,7 +22,8 @@ methodDefinitions
 	^methodDefinitions!
 
 methodDefinitions: anObject
-	methodDefinitions := anObject!
+	methodDefinitions := anObject.
+	self trigger: #changed!
 
 remoteAccessors
 	^#(#source #selector)! !
