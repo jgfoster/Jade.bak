@@ -3,7 +3,7 @@ package := Package name: 'Jade Inspector'.
 package paxVersion: 1;
 	basicComment: ''.
 
-package basicPackageVersion: '0.026'.
+package basicPackageVersion: '0.017'.
 
 package basicScriptAt: #postinstall put: 'JadeInspector setNavigationInspector'.
 
@@ -28,6 +28,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #inspect:;
 	add: #JadeServer64bit3x -> #inspectNamedInstanceVariablesOf:on:;
 	add: #JadeServer64bit3x -> #keysForDictionary:;
+	add: #Presenter -> #isJadeInspector;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -324,6 +325,14 @@ keysForDictionary: aDictionary
 !JadeServer64bit3x categoriesFor: #inspect:!Inspector!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #inspectNamedInstanceVariablesOf:on:!Inspector!public!Transcript! !
 !JadeServer64bit3x categoriesFor: #keysForDictionary:!Inspector!public! !
+
+!Presenter methodsFor!
+
+isJadeInspector
+	"To avod cyclic dependencies with Jade UI Base"
+
+	^true! !
+!Presenter categoriesFor: #isJadeInspector!private! !
 
 "End of package definition"!
 

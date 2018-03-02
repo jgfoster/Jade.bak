@@ -164,9 +164,11 @@ environment: anInteger
 !
 
 executeSelectionOrLine
+	| contextObject |
 
+	contextObject := self topShell isJadeInspector ifTrue: [self topShell contextObject] ifFalse: [model].
 	[
-		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: model environment: environment).
+		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: contextObject environment: environment).
 	] on: GsCompileError do: [:ex | 
 		^false -> ex list.
 	].
