@@ -464,7 +464,9 @@ compareAncestor
 
 contextObject
 
-	^nil.
+	(self selectedClasses size = 1) ifFalse: [^nil].
+
+	^gciSession executeString: self selectedClasses last
 !
 
 createComponents
