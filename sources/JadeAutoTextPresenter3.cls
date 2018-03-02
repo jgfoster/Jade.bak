@@ -177,7 +177,7 @@ getNamesForIdentifier
 		self getArgumentsNames, 
 		self getTemporaries, 
 		self getClassInstancesVariables,
-		(self getSelectedGsShape ifNil: [#()] ifNotNil: [:value | value getAllInstVarNames])) asSortedCollection 
+		(self getSelectedGsShape ifNil: [#()] ifNotNil: [:value | value getAllInstVarNames])) asSet asSortedCollection 
 			select: [:each | (currentText, '*') match: each]!
 
 getNamesForUnaryMessage
