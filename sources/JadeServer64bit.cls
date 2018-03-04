@@ -54,6 +54,12 @@ gsClassDefinitionStringFor: aClass
 		inDictionary: SymbolDictionary new
 		instancesInvariant: false
 		isModifiable: false.'
+!
+
+is64Bit
+
+	^true
 ! !
 !JadeServer64bit class categoriesFor: #gsClassDefinitionStringFor:!public! !
+!JadeServer64bit class categoriesFor: #is64Bit!public! !
 

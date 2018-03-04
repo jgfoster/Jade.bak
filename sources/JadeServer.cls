@@ -214,7 +214,12 @@ installTranscript
 
 is32Bit
 
-	^false.
+	^self class is32Bit
+!
+
+is64Bit
+
+	^self class is64Bit
 !
 
 isClientForwarder: anObject
@@ -380,6 +385,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #initialize!public! !
 !JadeServer categoriesFor: #installTranscript!public!Transcript! !
 !JadeServer categoriesFor: #is32Bit!public! !
+!JadeServer categoriesFor: #is64Bit!public! !
 !JadeServer categoriesFor: #isClientForwarder:!Debugger!public! !
 !JadeServer categoriesFor: #makeListener!private! !
 !JadeServer categoriesFor: #nextPut:!public!Transcript! !
@@ -482,6 +488,16 @@ gsString
 	^gsString.
 !
 
+is32Bit
+
+	^false
+!
+
+is64Bit
+
+	^false
+!
+
 sessionStateCode
 
 	^'System _sessionStateAt: 3 put: server.'! !
@@ -490,5 +506,7 @@ sessionStateCode
 !JadeServer class categoriesFor: #gsClassDefinitionStringFor:!public! !
 !JadeServer class categoriesFor: #gsMethodClassName!public! !
 !JadeServer class categoriesFor: #gsString!public! !
+!JadeServer class categoriesFor: #is32Bit!public! !
+!JadeServer class categoriesFor: #is64Bit!public! !
 !JadeServer class categoriesFor: #sessionStateCode!public! !
 
