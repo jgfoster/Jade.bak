@@ -1190,9 +1190,16 @@ hasCommandHistoryForward
 
 	^historyIndex < historyList size!
 
+hasHistoryEntry: historyArray
+	"The receiver answer whether or not history entry <historyArray> is present.
+	index 1 - class name.
+	index 2 - method name"
+
+	^historyList anySatisfy: [:eachArray | ((eachArray at: 1) = (historyArray at: 1)) and: [(eachArray at: 2) = (historyArray at: 2)] ]!
+
 historyBack
 
-	self jumpToHistoryIndex: historyIndex - 1.
+	self jumpToHistoryIndex: (self moveHistoryIndexTo: historyIndex - 1).
 	!
 
 historyBackMenu
@@ -1205,7 +1212,7 @@ historyBackMenu
 
 historyForward
 
-	self jumpToHistoryIndex: historyIndex + 1.
+	self jumpToHistoryIndex:  (self moveHistoryIndexTo: historyIndex + 1).
 	!
 
 historyForwardMenu
@@ -1431,6 +1438,7 @@ jadeMenuStrings
 jumpToHistoryIndex: anInteger
 
 	| commandString historyEntry |
+
 	historyIndex := anInteger.
 	historyEntry := historyList at: anInteger.
 	commandString := historyEntry at: 3.
@@ -1657,6 +1665,14 @@ methodValueChanged
 			yourself.
 	].
 !
+
+moveHistoryIndexTo: anInteger
+
+	(anInteger <= 0) ifTrue: [^historyIndex := historyList  size].
+
+	(anInteger > historyList size) ifTrue: [^historyIndex := 1].
+
+	^historyIndex := anInteger!
 
 onDragClassesOverDictionary: aSession 
 
@@ -2430,13 +2446,13 @@ selectedMethodChanged
 	| historyEntry |
 	self updateAndSelect: methodSourcePresenter.
 	methodListPresenter selections size == 1 ifFalse: [^self].
-	historyList := historyList copyFrom: 1 to: historyIndex.	"trim any forward options on an explicit manual selection"
+	"historyList := historyList copyFrom: 1 to: historyIndex."	"trim any forward options on an explicit manual selection"
 	historyEntry := Array
 		with: selectedClassName , (self isClassSideSelected ifTrue: [' class'] ifFalse: [''])
 		with: (methodListPresenter selection at: 1)
 		with: self requestStringForUpdate.
-	historyList add: historyEntry.
-	historyIndex := historyList size.
+	(self hasHistoryEntry: historyEntry) ifFalse: [historyList add: historyEntry].
+	"historyIndex := historyList size. "
 !
 
 selectedMethodName
@@ -3336,6 +3352,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #handleInvalidSession!public! !
 !JadeSystemBrowserPresenter categoriesFor: #hasCommandHistoryBack!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #hasCommandHistoryForward!history!public! !
+!JadeSystemBrowserPresenter categoriesFor: #hasHistoryEntry:!event handlers!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #historyBack!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #historyBackMenu!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #historyForward!history!public! !
@@ -3378,6 +3395,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourcePresenter!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #methodValueChanged!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #moveHistoryIndexTo:!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onDragClassesOverDictionary:!drag & drop!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onDragClassesOverPackageList:!drag & drop!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onDragClassHierarchy:!drag & drop!public! !
