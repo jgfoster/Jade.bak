@@ -50,6 +50,12 @@ gsClassDefinitionStringFor: aClass
 		constraints: #()
 		instancesInvariant: false
 		isModifiable: false.'
+!
+
+is32Bit
+
+	^true
 ! !
 !JadeServer32bit class categoriesFor: #gsClassDefinitionStringFor:!public! !
+!JadeServer32bit class categoriesFor: #is32Bit!public! !
 

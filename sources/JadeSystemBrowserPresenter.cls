@@ -463,11 +463,25 @@ compareAncestor
 !
 
 contextObject
+	| oopReadStream count oopTypeClass oop | 
 
 	(self selectedClasses size = 1) ifFalse: [^nil].
 
-	^gciSession executeString: self selectedClasses last
-!
+	oopReadStream := ReadStream on: readStream contents.
+
+	oopReadStream skipToAll: (Array with: $(). "position the Stream immediately after the OOP  value"
+	count := 0.
+	[count = 2] whileFalse: [ "go back 2 lines to the OOP number position"
+		oopReadStream position: oopReadStream position -1.
+		(oopReadStream peek = $\n) ifTrue: [count := count + 1].
+	].
+	
+	oopTypeClass := self gciSession _library jadeServerClass is32Bit ifTrue: [OopType32] ifFalse: [OopType64].
+
+	oopReadStream next.
+	[oop := oopTypeClass fromInteger: (Integer fromString: (oopReadStream nextLine))] on: Error do: [:ex | ^nil].
+
+	^oop!
 
 createComponents
 
@@ -2918,6 +2932,7 @@ updateCommand: aString onSuccessDo: aBlock
 	] ensure: [
 		selectedClassChanged := false.
 	].
+
 	^nil.
 !
 
