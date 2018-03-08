@@ -134,8 +134,7 @@ labelOf: oldString editedTo: newString accept: aValueHolder
 !
 
 model: anObject
-
-	anObject class == GciSession ifTrue: [self error: 'should call gciSession: method'].
+	anObject class == GciSession ifTrue: [self error: 'should call gciSession: method']. 
 	super model: anObject.
 !
 

@@ -155,6 +155,17 @@ source: aString
 set compile_env: 0
 category: 'examples'
 method: RowanMethodDefinitionService
+addSampleMethod
+
+	self browserTool
+		addOrUpdateMethod: self sampleMethodSource
+		inProtocol: 'examples'
+		forClassNamed: self class name
+		isMeta: false
+		inPackageNamed: self samplePackageName
+%
+category: 'examples'
+method: RowanMethodDefinitionService
 sampleDefinition
 
 	definition := self definitionClass newForSelector: 'sampleMethod' protocol: 'sampleProtocol' source: self sampleMethodSource.
@@ -175,7 +186,19 @@ sampleMethodSource
 
 	^'sampleMethod ^''some text'''.
 %
+category: 'examples'
+method: RowanMethodDefinitionService
+samplePackageName
+	
+	^'SamplePackageName'
+%
 set compile_env: 0
+category: 'rowan'
+method: RowanMethodDefinitionService
+browserTool
+
+	^Rowan projectTools browser.
+%
 category: 'rowan'
 method: RowanMethodDefinitionService
 definitionClass

@@ -284,20 +284,6 @@ browseMethodPragmas
 	self browseMethodsAndSelect: keyword.
 !
 
-browseMethodsAndSelect: aString
-
-	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		browseMethodsFromString: readStream upToEnd methodName: aString;
-		selecting: aString.
-!
-
-browseMethodsAndSelect: aString type: browseType
-
-	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		browseMethodsFromString: readStream upToEnd methodName: aString type: browseType;
-		selecting: aString.
-!
-
 browseMethodsContaining
 
 	| searchString commandString |
@@ -3261,8 +3247,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodPragmas!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSelectedClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSenders!menu handlers!public! !

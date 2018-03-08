@@ -146,7 +146,7 @@ RowanShell subclass: #RowanPackageShell
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 TestCase subclass: #RowanDefinitionServiceTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'shell methodService'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

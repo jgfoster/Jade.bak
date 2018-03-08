@@ -34,13 +34,6 @@ browseImplementorsOf
 	self withSelectorDo: [:aSelector | self browseImplementorsOf: aSelector].
 !
 
-browseMethodsContaining
-
-	| string |
-	(string := Prompter prompt: 'Enter substring:') isNil ifTrue: [^self].
-	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter browseMethodsContaining: string.
-!
-
 browseSenders
 
 	self browseSendersOf: methodListPresenter selection.!
@@ -70,7 +63,6 @@ createSchematicWiring
 !
 
 list: aList
-
 	methodListPresenter list: aList.
 !
 
@@ -200,7 +192,6 @@ withSelectorDo: aBlock
 !MethodListPresenter categoriesFor: #browseClass!public! !
 !MethodListPresenter categoriesFor: #browseImplementors!public! !
 !MethodListPresenter categoriesFor: #browseImplementorsOf!public! !
-!MethodListPresenter categoriesFor: #browseMethodsContaining!public! !
 !MethodListPresenter categoriesFor: #browseSenders!public! !
 !MethodListPresenter categoriesFor: #browseSendersOf!public! !
 !MethodListPresenter categoriesFor: #createComponents!public! !

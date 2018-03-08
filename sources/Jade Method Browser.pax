@@ -23,8 +23,6 @@ package methodNames
 	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
 	add: #GsClass -> #sourceFor:;
 	add: #GsClass -> #stepPointsFor:;
-	add: #JadePresenterA -> #browseImplementorsOf:;
-	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeServer -> #_addMethod:toStream:;
 	add: #JadeServer -> #_behavior:categoryOfSelector:;
 	add: #JadeServer -> #_methodsFor:categories:;
@@ -179,28 +177,6 @@ stepPointsFor: aGsMethod
 !GsClass categoriesFor: #methodsUpTo:filterList:isVariables:!Methods!public! !
 !GsClass categoriesFor: #sourceFor:!Methods!public! !
 !GsClass categoriesFor: #stepPointsFor:!Methods!public! !
-
-!JadePresenterA methodsFor!
-
-browseImplementorsOf: aGsMethodOrString
-
-	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
-
-	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		browseImplementorsOf: aGsMethodOrString;
-		yourself.
-!
-
-browseSendersOf: aGsMethodOrString
-
-	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseSendersOf: aGsMethodOrString].
-
-	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		browseSendersOf: aGsMethodOrString;
-		yourself.
-! !
-!JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
-!JadePresenterA categoriesFor: #browseSendersOf:!public! !
 
 !JadeServer methodsFor!
 

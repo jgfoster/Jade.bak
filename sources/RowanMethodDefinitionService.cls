@@ -10,6 +10,18 @@ RowanMethodDefinitionService comment: ''!
 !RowanMethodDefinitionService categoriesForClass!Kernel-Objects! !
 !RowanMethodDefinitionService methodsFor!
 
+addDefaultMethod
+
+	| anArrayOop |
+	anArrayOop := transport executeString: self remoteServiceName asString , ' new addSampleMethod'.
+	^self createClientDefinitionFrom: anArrayOop!
+
+addSampleMethod
+
+	| anArrayOop |
+	anArrayOop := transport executeString: self remoteServiceName asString , ' new addSampleMethod'.
+	^self createClientDefinitionFrom: anArrayOop!
+
 clientDefinitionClass
 
 	^RowanMethodDefinition!
@@ -27,6 +39,8 @@ methodDefinitions: anObject
 
 remoteAccessors
 	^#(#source #selector)! !
+!RowanMethodDefinitionService categoriesFor: #addDefaultMethod!examples!public! !
+!RowanMethodDefinitionService categoriesFor: #addSampleMethod!examples!public! !
 !RowanMethodDefinitionService categoriesFor: #clientDefinitionClass!private! !
 !RowanMethodDefinitionService categoriesFor: #implementorsOf:!method accessing!public! !
 !RowanMethodDefinitionService categoriesFor: #methodDefinitions!accessing!private! !
