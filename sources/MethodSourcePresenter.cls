@@ -329,7 +329,7 @@ stepPointAt: aPoint
 
 update
 
-	| newSource string |
+	| newSource string | 
 	documentPresenter view cancelCallTip.
 	newSource := gsMethod source.
 	documentPresenter view isModified ifTrue: [

@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #RowanDefinitionService
-	instanceVariableNames: 'transport'
+	instanceVariableNames: 'transport remoteService'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -46,12 +46,18 @@ createClientDefinitionFromRemoteDefinition: anOop
 
 initialize
 	super initialize.
-	self initializeTransport!
+	self initializeTransport. 
+	remoteService := transport send: #new to: (transport executeString: self remoteServiceName)!
 
 initializeTransport
-	"Need to initialize this better eventually"
+	"keep sessions properly invalidated and this
+	will work. Need to initialize this better eventually.
+	do this. 
+	GciSession allInstances do:[:each | each beInvalidSession].
+	JadeLoginShell show. (if the Jade Login is not open)
+	Press login"
 
-	^transport := GciSession allInstances last. !
+	transport := GciSession allInstances detect: [:session | session isValidSession] ifNone:[self halt].!
 
 remoteAccessors
 
@@ -64,7 +70,7 @@ remoteServiceName
 
 sampleDefinitions
 	| anArrayOop |
-	anArrayOop := transport executeString: self remoteServiceName asString , ' new sampleDefinitions'.
+	anArrayOop := transport send: #sampleDefinitions to: remoteService.
 	^self createClientDefinitionFrom: anArrayOop!
 
 transport

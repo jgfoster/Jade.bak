@@ -386,7 +386,7 @@ removeQuotesFromSelection
 
 saveDocument
 
-	| result |
+	| result | 
 	result := super saveDocument.
 	result ifTrue: [self isModified: false].
 	^result.

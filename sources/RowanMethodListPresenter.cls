@@ -18,9 +18,21 @@ createComponents
 
 list: aCollection
 	methodListPresenter list: aCollection
-! !
+!
+
+methodSourcePresenter
+
+	^methodSourcePresenter!
+
+updateSaveMethodOop: anInteger
+
+	| newGsMethod |  self halt. 
+	super updateSaveMethodOop: anInteger.
+	methodListPresenter primaryPresenter selection! !
 !RowanMethodListPresenter categoriesFor: #createComponents!public! !
 !RowanMethodListPresenter categoriesFor: #list:!public! !
+!RowanMethodListPresenter categoriesFor: #methodSourcePresenter!public! !
+!RowanMethodListPresenter categoriesFor: #updateSaveMethodOop:!public! !
 
 !RowanMethodListPresenter class methodsFor!
 

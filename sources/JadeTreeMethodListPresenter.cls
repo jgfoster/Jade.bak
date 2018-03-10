@@ -51,7 +51,7 @@ browseImplementorsOf: aGsMethod
 
 	methodName := (aGsMethod class = String) ifTrue: [aGsMethod] ifFalse: [aGsMethod name].
 
-	self browseMethodsFromString: (self gsBrowse: #implementorsOf: methodSelector: aGsMethod) methodName: methodName type: #definitions.!
+	^self browseMethodsFromString: (self gsBrowse: #implementorsOf: methodSelector: aGsMethod) methodName: methodName type: #definitions.!
 
 browseMethodsFromString: aString
 	| list |

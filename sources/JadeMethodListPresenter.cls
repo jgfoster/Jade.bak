@@ -43,7 +43,7 @@ browse: performSelector methodSelector: aString
 
 browseImplementorsOf: aGsMethod
 
-	self
+	^self
 		browse: #'implementorsOf:' 
 		method: aGsMethod.
 !
@@ -241,7 +241,7 @@ updateMenuBar: aMenuBar
 
 updateSaveMethodOop: anInteger
 
-	| newGsMethod |
+	| newGsMethod |  
  	methodListPresenter selectedMethod isNil ifTrue: [^self].
 
 	newGsMethod := methodListPresenter selectedMethod copy

@@ -76,7 +76,7 @@ Model subclass: #RowanDefinition
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #RowanDefinitionService
-	instanceVariableNames: 'transport'
+	instanceVariableNames: 'transport remoteService'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -162,7 +162,7 @@ browseImplementorsOf: aGsMethodOrString
 
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
 
-	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	^(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseImplementorsOf: aGsMethodOrString;
 		yourself.
 !
@@ -198,11 +198,12 @@ browseMethodsAndSelect: aString type: browseType
 
 !JadeTranscript methodsFor!
 
-browseRowanMethods
-	| service shell |
+browseRowanMethods
+	
+	"| service shell |
 	service := RowanMethodDefinitionService on: gciSession.
 	shell := RowanMethodListBrowser showOnSession: gciSession.
-	shell primaryPresenter list: service sampleDefinitions!
+	shell primaryPresenter list: service sampleDefinitions"!
 
 methodsChanged24
 

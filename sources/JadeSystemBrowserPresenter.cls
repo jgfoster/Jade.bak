@@ -255,7 +255,7 @@ browseImplementorsOf: aString
 	| string |
 	string := 'browseImplementors' , Character tab asString , aString , Character lf asString.
 	(self updateCommand: string) = 'browseImplementors' ifFalse: [self error: 'unexpected response'].
-	self browseMethodsAndSelect: aString type: #definitions.
+	^self browseMethodsAndSelect: aString type: #definitions.
 !
 
 browseMethodHistory
