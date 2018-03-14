@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-RowanDefinition subclass: #RowanMethodDefinition
-	instanceVariableNames: 'selector source protocol className packageName'
+GsMethod2 subclass: #RowanMethodDefinition
+	instanceVariableNames: 'selector source className packageName projectName methodDefinitionService'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -10,16 +10,19 @@ RowanMethodDefinition comment: ''!
 !RowanMethodDefinition categoriesForClass!Unclassified! !
 !RowanMethodDefinition methodsFor!
 
-category
-	"Jade tools send #category"
-
-	^protocol!
-
 className
 	^className!
 
 className: anObject
 	className := anObject!
+
+getPackageAndProjectFromServer
+	"Rowan methods should always have a project and package.
+	Get this during initialization."
+
+	packageName  := gciSession send: #rowanPackageName to: oopType.
+	projectName  := gciSession send: #rowanProjectName to: oopType.
+!
 
 initialize
 	"can eliminate initialization eventually.
@@ -27,7 +30,6 @@ initialize
 	super initialize.
 	source := String new.
 	selector := String new.
-	protocol := String new.
 	className := String new.
 	packageName := String new.
 
@@ -41,17 +43,23 @@ isTestCase
 	self rowanFixMe.
 	^false!
 
+methodDefinitionService
+
+	^methodDefinitionService ifNil: [methodDefinitionService := RowanMethodDefinitionService on: gciSession]
+
+	!
+
 packageName
 	^packageName!
 
 packageName: anObject
 	packageName := anObject!
 
-protocol
-	^protocol!
+projectName
+	^projectName!
 
-protocol: anObject
-	protocol := anObject!
+projectName: anObject
+	projectName := anObject!
 
 selector
 	^selector!
@@ -64,18 +72,28 @@ source
 
 source: anObject
 	source := anObject! !
-!RowanMethodDefinition categoriesFor: #category!accessing!public! !
 !RowanMethodDefinition categoriesFor: #className!accessing!private! !
 !RowanMethodDefinition categoriesFor: #className:!accessing!private! !
-!RowanMethodDefinition categoriesFor: #initialize!public! !
+!RowanMethodDefinition categoriesFor: #getPackageAndProjectFromServer!initialization!private! !
+!RowanMethodDefinition categoriesFor: #initialize!initialization!public! !
 !RowanMethodDefinition categoriesFor: #isReadOnly!public!testing! !
 !RowanMethodDefinition categoriesFor: #isTestCase!public!testing! !
+!RowanMethodDefinition categoriesFor: #methodDefinitionService!public!services! !
 !RowanMethodDefinition categoriesFor: #packageName!accessing!private! !
 !RowanMethodDefinition categoriesFor: #packageName:!accessing!private! !
-!RowanMethodDefinition categoriesFor: #protocol!accessing!private! !
-!RowanMethodDefinition categoriesFor: #protocol:!accessing!private! !
+!RowanMethodDefinition categoriesFor: #projectName!accessing!private! !
+!RowanMethodDefinition categoriesFor: #projectName:!accessing!private! !
 !RowanMethodDefinition categoriesFor: #selector!accessing!private! !
 !RowanMethodDefinition categoriesFor: #selector:!accessing!private! !
 !RowanMethodDefinition categoriesFor: #source!accessing!private! !
 !RowanMethodDefinition categoriesFor: #source:!accessing!private! !
+
+!RowanMethodDefinition class methodsFor!
+
+listFromString: aString session: aGciSession
+	| list |
+	list := super listFromString: aString session: aGciSession.
+	list do: [:methDef | methDef getPackageAndProjectFromServer].
+	^list! !
+!RowanMethodDefinition class categoriesFor: #listFromString:session:!public! !
 

@@ -53,57 +53,6 @@ browseImplementorsOf: aGsMethod
 
 	^self browseMethodsFromString: (self gsBrowse: #implementorsOf: methodSelector: aGsMethod) methodName: methodName type: #definitions.!
 
-browseMethodsFromString: aString
-	| list |
-
-	"self hasTreeListSelection ifFalse: [self addTreeListRoot]."
-
-	list := GsMethod2
-		listFromString: aString
-		session: self gciSession.
-	methodListPresenter list: list asSortedCollection.
-	list notEmpty ifTrue: [
-		"methodListPresenter selectFirstMethod."
-	].!
-
-browseMethodsFromString: aString methodName: methodName
-	| list node |
-
-	self hasTreeListSelection ifFalse: [node := self addTreeListRoot: methodName type: #references].
-
-	list := GsMethod2
-		listFromString: aString
-		session: self gciSession.
-	methodListPresenter list: list asSortedCollection.
-	list notEmpty ifTrue: [
-		methodListPresenter selectFirstMethod.
-	].
-	node isNil ifTrue: [^self].
-
-	treeMethodsMap at: node put: list asSortedCollection.
-
-	treeMethodsPresenter selection: node
-!
-
-browseMethodsFromString: aString methodName: methodName type: browseType
-	| list  node |
-
-	node := self hasTreeListSelection 
-			ifFalse: [self addTreeListRoot: methodName type: browseType] 
-			ifTrue: [treeMethodsPresenter model add: (self getLabelForMethod: methodName type: browseType) asChildOf: treeMethodsPresenter selection.].
-
-	list := GsMethod2
-		listFromString: aString
-		session: self gciSession.
-	methodListPresenter list: list asSortedCollection.
-	list notEmpty ifTrue: [
-		"methodListPresenter selectFirstMethod."
-	].
-
-	treeMethodsMap at: node put: list asSortedCollection.
-
-	treeMethodsPresenter selection: node!
-
 browseSendersOf: aGsMethod
 	| methodName |
 
@@ -246,15 +195,6 @@ onDragOverMethodsTree: aDragDropSession
 		operation: #'move';
 		yourself.!
 
-onDropMethodsTree: aDragDropSession
-
-	(aDragDropSession operation = #move) ifFalse: [^self].
-
-	(aDragDropSession suggestedSource class = GsMethod2) ifTrue: [^self dropGsMethod: aDragDropSession].
-
-	^self dropNode: aDragDropSession
-!
-
 onHistoryDropDown: aToolbarButton 
 	"Private - The receiver's toolbar has sent a notification that a button's drop-down arrow
 	has been pressed. Generate and pop-up the appropriate menu."
@@ -339,9 +279,6 @@ treeMethodsPresenter: anObject
 !JadeTreeMethodListPresenter categoriesFor: #addTreeListRoot:type:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browse:method:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browseImplementorsOf:!public! !
-!JadeTreeMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
-!JadeTreeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !
-!JadeTreeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browseSendersOf:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #buildHistoryBackMenu!public! !
 !JadeTreeMethodListPresenter categoriesFor: #buildHistoryForwardMenu!public! !
@@ -365,7 +302,6 @@ treeMethodsPresenter: anObject
 !JadeTreeMethodListPresenter categoriesFor: #initialize!public! !
 !JadeTreeMethodListPresenter categoriesFor: #onDragMethodsTree:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #onDragOverMethodsTree:!public! !
-!JadeTreeMethodListPresenter categoriesFor: #onDropMethodsTree:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #onHistoryDropDown:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #onMethodSelectionChanged!public! !
 !JadeTreeMethodListPresenter categoriesFor: #onTreeListChanged!public! !

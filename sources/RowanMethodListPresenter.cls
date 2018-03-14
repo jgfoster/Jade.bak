@@ -26,13 +26,30 @@ methodSourcePresenter
 
 updateSaveMethodOop: anInteger
 
-	| newGsMethod |  self halt. 
 	super updateSaveMethodOop: anInteger.
-	methodListPresenter primaryPresenter selection! !
+	methodListPresenter primaryPresenter selection!
+
+updateSource
+	| gsClass rowanMethodDef gsMethod | 
+	(gsClass := self selectedClass)
+		ifNotNil: 
+			[(rowanMethodDef := methodListPresenter selectedMethod)
+				ifNotNil: 
+					[rowanMethodDef gsClass ~= gsClass ifTrue: [self error: 'Method not from selected class!!'].
+					gsMethod := GsMethod fromOopType: rowanMethodDef oopType session: rowanMethodDef gciSession]].
+	gsMethod
+		ifNotNil: 
+			[methodSourcePresenter gsMethod: gsMethod.
+			rowanMethodDef source: gsMethod source.
+			self doSearch].
+	methodListPresenter selectedMethod ifNil: [^self].
+	methodSourcePresenter documentPresenter
+		lastGsShape: (self registry getClass: methodListPresenter selectedMethod gsClass name)! !
 !RowanMethodListPresenter categoriesFor: #createComponents!public! !
 !RowanMethodListPresenter categoriesFor: #list:!public! !
 !RowanMethodListPresenter categoriesFor: #methodSourcePresenter!public! !
-!RowanMethodListPresenter categoriesFor: #updateSaveMethodOop:!public! !
+!RowanMethodListPresenter categoriesFor: #updateSaveMethodOop:!public!updating! !
+!RowanMethodListPresenter categoriesFor: #updateSource!public!updating! !
 
 !RowanMethodListPresenter class methodsFor!
 

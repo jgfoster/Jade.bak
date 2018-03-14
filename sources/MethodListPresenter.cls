@@ -26,11 +26,11 @@ browseClass
 !
 
 browseImplementors
-
+	
 	self browseImplementorsOf: methodListPresenter selection.!
 
 browseImplementorsOf
-
+	
 	self withSelectorDo: [:aSelector | self browseImplementorsOf: aSelector].
 !
 

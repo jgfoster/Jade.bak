@@ -20,7 +20,6 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
 	add: #GsClass -> #sourceFor:;
 	add: #GsClass -> #stepPointsFor:;
 	add: #JadeServer -> #_addMethod:toStream:;
@@ -143,22 +142,6 @@ JadeShell subclass: #JadeMethodListBrowser
 
 !GsClass methodsFor!
 
-methodsUpTo: aClass filterList: aList isVariables: aBoolean
-
-	|  stream string |
-	stream := WriteStream on: String new.
-	aList do: [:each | stream nextPutAll: each; tab].
-	string := gciSession
-		serverPerform: #'methodsFor:upTo:filter:isVariables:' 
-		with: self
-		with: aClass
-		with: stream contents 
-		with: aBoolean.
-	^GsMethod2
-		listFromString: string 
-		session: gciSession.
-!
-
 sourceFor: anObject
 
 	^gciSession
@@ -174,7 +157,6 @@ stepPointsFor: aGsMethod
 		with: aGsMethod
 		with: self.
 ! !
-!GsClass categoriesFor: #methodsUpTo:filterList:isVariables:!Methods!public! !
 !GsClass categoriesFor: #sourceFor:!Methods!public! !
 !GsClass categoriesFor: #stepPointsFor:!Methods!public! !
 

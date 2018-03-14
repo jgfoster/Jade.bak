@@ -45,6 +45,7 @@ createClientDefinitionFromRemoteDefinition: anOop
 	^clientDefinition!
 
 initialize
+	
 	super initialize.
 	self initializeTransport. 
 	remoteService := transport send: #new to: (transport executeString: self remoteServiceName)!
@@ -69,7 +70,7 @@ remoteServiceName
 	^self class name!
 
 sampleDefinitions
-	| anArrayOop |
+	| anArrayOop | 
 	anArrayOop := transport send: #sampleDefinitions to: remoteService.
 	^self createClientDefinitionFrom: anArrayOop!
 

@@ -41,13 +41,6 @@ browse: performSelector methodSelector: aString
 	self browseMethodsFromString: string.
 !
 
-browseImplementorsOf: aGsMethod
-
-	^self
-		browse: #'implementorsOf:' 
-		method: aGsMethod.
-!
-
 browseMethods: aGsMethodColl
 
 	| string |
@@ -63,40 +56,6 @@ browseMethodsContaining: aString
 		browse: #'methodsContaining:' 
 		method: aString.
 !
-
-browseMethodsFromString: aString
-
-	| list |
-	list := GsMethod2
-		listFromString: aString
-		session: self gciSession.
-	methodListPresenter list: list asSortedCollection.
-	list notEmpty ifTrue: [
-		methodListPresenter selectFirstMethod.
-	].
-!
-
-browseMethodsFromString: aString methodName: methodName
-	| list |
-
-	list := GsMethod2
-		listFromString: aString
-		session: self gciSession.
-	methodListPresenter list: list asSortedCollection.
-	list notEmpty ifTrue: [
-		methodListPresenter selectFirstMethod.
-	].!
-
-browseMethodsFromString: aString methodName: methodName type: browseType
-	| list |
-
-	list := GsMethod2
-		listFromString: aString
-		session: self gciSession.
-	methodListPresenter list: list asSortedCollection.
-	list notEmpty ifTrue: [
-		methodListPresenter selectFirstMethod.
-	].!
 
 browseSendersOf: aGsMethodOrString
 
@@ -252,33 +211,12 @@ updateSaveMethodOop: anInteger
  	methodListPresenter primaryPresenter model remove: methodListPresenter selectedMethod ifAbsent: [].
 
 	methodListPresenter primaryPresenter selection: newGsMethod.
-!
-
-updateSource
-
-	| gsClass gsMethod2 gsMethod |
-	(gsClass := self selectedClass) ifNotNil: [
-		(gsMethod2 := methodListPresenter selectedMethod) ifNotNil: [
-			gsMethod2 gsClass ~= gsClass ifTrue: [self error: 'Method not from selected class!!'].
-			gsMethod := GsMethod
-				fromOopType: gsMethod2 oopType
-				session: gsMethod2 gciSession.
-		].
-	].
-	gsMethod ifNotNil: [methodSourcePresenter gsMethod: gsMethod.
-					self doSearch].
-
-	methodListPresenter selectedMethod ifNil: [^self].
-	methodSourcePresenter documentPresenter lastGsShape: (self registry getClass: methodListPresenter selectedMethod gsClass name).! !
+! !
 !JadeMethodListPresenter categoriesFor: #browse:gsMethod:!public! !
 !JadeMethodListPresenter categoriesFor: #browse:method:!public! !
 !JadeMethodListPresenter categoriesFor: #browse:methodSelector:!public! !
-!JadeMethodListPresenter categoriesFor: #browseImplementorsOf:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethods:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsContaining:!public! !
-!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
-!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !
-!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
 !JadeMethodListPresenter categoriesFor: #browseSendersOf:!public! !
 !JadeMethodListPresenter categoriesFor: #codePresenterIsMethod!public! !
 !JadeMethodListPresenter categoriesFor: #createComponents!public! !
@@ -299,7 +237,6 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #selecting:!public! !
 !JadeMethodListPresenter categoriesFor: #updateMenuBar:!public! !
 !JadeMethodListPresenter categoriesFor: #updateSaveMethodOop:!public! !
-!JadeMethodListPresenter categoriesFor: #updateSource!public! !
 
 !JadeMethodListPresenter class methodsFor!
 

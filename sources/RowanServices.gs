@@ -51,7 +51,8 @@ expectvalue /Class
 doit
 RowanDefinitionService subclass: 'RowanMethodDefinitionService'
 	instVarNames: #( source selector methodDefinitions
-	                  classService)
+	                  classService category packageName className
+	                  meta)
 	classVars: #()
 	classInstVars: #()
 	poolDictionaries: #()
@@ -68,7 +69,7 @@ RowanMethodDefinitionService category: 'Kernel'
 expectvalue /Class
 doit
 RowanDefinitionService subclass: 'RowanPackageDefinitionService'
-	instVarNames: #( projectDefinition)
+	instVarNames: #( projectDefinition packageName)
 	classVars: #()
 	classInstVars: #()
 	poolDictionaries: #()
@@ -220,6 +221,57 @@ RowanClassDefinitionService class removeAllMethods.
 ! ------------------- Class methods for RowanClassDefinitionService
 ! ------------------- Instance methods for RowanClassDefinitionService
 set compile_env: 0
+category: 'Accessing'
+method: RowanClassDefinitionService
+classInstVarNames
+	^classInstVarNames
+%
+category: 'Accessing'
+method: RowanClassDefinitionService
+classType
+	^classType
+%
+category: 'Accessing'
+method: RowanClassDefinitionService
+classVarNames
+	^classVarNames
+%
+category: 'Accessing'
+method: RowanClassDefinitionService
+comment
+	^comment
+%
+category: 'Accessing'
+method: RowanClassDefinitionService
+instVarNames
+	^instVarNames
+%
+category: 'Accessing'
+method: RowanClassDefinitionService
+name
+	^name
+%
+category: 'Accessing'
+method: RowanClassDefinitionService
+packageService
+	^packageService
+%
+category: 'Accessing'
+method: RowanClassDefinitionService
+poolDictionaryNames
+	^poolDictionaryNames
+%
+category: 'Accessing'
+method: RowanClassDefinitionService
+subclassType
+	^subclassType
+%
+category: 'Accessing'
+method: RowanClassDefinitionService
+superclassName
+	^superclassName
+%
+set compile_env: 0
 category: 'examples'
 method: RowanClassDefinitionService
 createSampleClass
@@ -237,11 +289,18 @@ createSampleClass
 		comment: 'Sample Rowan Class'
 		pools: #()
 		type: 'normal'.
+	name := classDefinition name.
 	self projectTools edit addClass: classDefinition
 		inPackageNamed: packageService samplePackageName
 		inProject: packageService projectDefinition.
 	self projectTools load loadProjectDefinition: packageService projectDefinition.
 	^classDefinition
+%
+category: 'examples'
+method: RowanClassDefinitionService
+packageName
+	
+	^packageService packageName
 %
 category: 'examples'
 method: RowanClassDefinitionService
@@ -255,6 +314,57 @@ samplePackageName
 	
 	^packageService samplePackageName
 %
+set compile_env: 0
+category: 'Updating'
+method: RowanClassDefinitionService
+classInstVarNames: newValue
+	classInstVarNames := newValue
+%
+category: 'Updating'
+method: RowanClassDefinitionService
+classType: newValue
+	classType := newValue
+%
+category: 'Updating'
+method: RowanClassDefinitionService
+classVarNames: newValue
+	classVarNames := newValue
+%
+category: 'Updating'
+method: RowanClassDefinitionService
+comment: newValue
+	comment := newValue
+%
+category: 'Updating'
+method: RowanClassDefinitionService
+instVarNames: newValue
+	instVarNames := newValue
+%
+category: 'Updating'
+method: RowanClassDefinitionService
+name: newValue
+	name := newValue
+%
+category: 'Updating'
+method: RowanClassDefinitionService
+packageService: newValue
+	packageService := newValue
+%
+category: 'Updating'
+method: RowanClassDefinitionService
+poolDictionaryNames: newValue
+	poolDictionaryNames := newValue
+%
+category: 'Updating'
+method: RowanClassDefinitionService
+subclassType: newValue
+	subclassType := newValue
+%
+category: 'Updating'
+method: RowanClassDefinitionService
+superclassName: newValue
+	superclassName := newValue
+%
 
 ! ------------------- Remove existing behavior from RowanMethodDefinitionService
 expectvalue /Metaclass3       
@@ -263,27 +373,73 @@ RowanMethodDefinitionService removeAllMethods.
 RowanMethodDefinitionService class removeAllMethods.
 %
 ! ------------------- Class methods for RowanMethodDefinitionService
+set compile_env: 0
+category: 'instance creation'
+classmethod: RowanMethodDefinitionService
+source: source selector: selector category: category className: className packageName: packageName meta: boolString
+
+	| service |
+	service := self new. 
+	service 
+		source: source;
+		selector: selector;
+		category: category;
+		className: className;
+		packageName: packageName;
+		meta: boolString == true.
+	^service
+%
 ! ------------------- Instance methods for RowanMethodDefinitionService
 set compile_env: 0
-category: 'accessors'
+category: 'Accessing'
+method: RowanMethodDefinitionService
+category
+	^category
+%
+category: 'Accessing'
+method: RowanMethodDefinitionService
+className
+	^className
+%
+category: 'Accessing'
+method: RowanMethodDefinitionService
+classService
+	^classService
+%
+category: 'Accessing'
+method: RowanMethodDefinitionService
+meta
+	^meta printString
+%
+category: 'Accessing'
+method: RowanMethodDefinitionService
+methodDefinitions
+	^methodDefinitions
+%
+category: 'Accessing'
+method: RowanMethodDefinitionService
+packageName
+	^packageName
+%
+category: 'Accessing'
 method: RowanMethodDefinitionService
 selector
 
 	^selector
 %
-category: 'accessors'
+category: 'Accessing'
 method: RowanMethodDefinitionService
 selector: aSymbol
 
 	selector := aSymbol
 %
-category: 'accessors'
+category: 'Accessing'
 method: RowanMethodDefinitionService
 source
 
 	^source
 %
-category: 'accessors'
+category: 'Accessing'
 method: RowanMethodDefinitionService
 source: aString
 
@@ -294,16 +450,14 @@ category: 'examples'
 method: RowanMethodDefinitionService
 createSampleMethod
            
-           |   classDefinition |
-
-           classService := RowanClassDefinitionService new.
-           classDefinition := classService createSampleClass. 
-           ^self browserTool
-                   addOrUpdateMethod: self sampleMethodSource
-                   inProtocol: 'sample'
-                   forClassNamed: classService sampleClassName
-                   isMeta: false
-                   inPackageNamed: classService samplePackageName
+           |   classDefinition | 
+		
+			classService := RowanClassDefinitionService new.
+			classDefinition := classService createSampleClass. 
+			source := self sampleMethodSource.
+			category := 'sample'.
+			meta := false. 
+			^self addOrUpdateMethod
 %
 category: 'examples'
 method: RowanMethodDefinitionService
@@ -317,7 +471,7 @@ sampleDefinition
 category: 'examples'
 method: RowanMethodDefinitionService
 sampleDefinitions
-
+	
 	methodDefinitions := Array with: self sampleDefinition.
 	^methodDefinitions
 %
@@ -336,6 +490,17 @@ sampleMethodSource
 set compile_env: 0
 category: 'rowan'
 method: RowanMethodDefinitionService
+addOrUpdateMethod
+				
+		self browserTool
+                   addOrUpdateMethod: source
+                   inProtocol: category
+                   forClassNamed: classService name
+                   isMeta: meta
+                   inPackageNamed: classService packageName
+%
+category: 'rowan'
+method: RowanMethodDefinitionService
 browserTool
 
 	^Rowan projectTools browser.
@@ -345,6 +510,37 @@ method: RowanMethodDefinitionService
 definitionClass
 
 	^RwMethodDefinition
+%
+set compile_env: 0
+category: 'Updating'
+method: RowanMethodDefinitionService
+category: newValue
+	category := newValue
+%
+category: 'Updating'
+method: RowanMethodDefinitionService
+className: newValue
+	className := newValue
+%
+category: 'Updating'
+method: RowanMethodDefinitionService
+classService: newValue
+	classService := newValue
+%
+category: 'Updating'
+method: RowanMethodDefinitionService
+meta: newValue
+	meta := newValue
+%
+category: 'Updating'
+method: RowanMethodDefinitionService
+methodDefinitions: newValue
+	methodDefinitions := newValue
+%
+category: 'Updating'
+method: RowanMethodDefinitionService
+packageName: newValue
+	packageName := newValue
 %
 
 ! ------------------- Remove existing behavior from RowanPackageDefinitionService
@@ -356,6 +552,11 @@ RowanPackageDefinitionService class removeAllMethods.
 ! ------------------- Class methods for RowanPackageDefinitionService
 ! ------------------- Instance methods for RowanPackageDefinitionService
 set compile_env: 0
+category: 'Accessing'
+method: RowanPackageDefinitionService
+packageName
+	^packageName
+%
 category: 'Accessing'
 method: RowanPackageDefinitionService
 projectDefinition
@@ -373,6 +574,7 @@ createSamplePackage
 	projectService := RowanProjectDefinitionService new.
 	projectDefinition := projectService createSampleProject.  
 	projectDefinition addPackageNamed: self samplePackageName.
+	packageName := self samplePackageName.
 	self projectTools load loadProjectDefinition: projectDefinition.
 %
 category: 'examples'
@@ -388,6 +590,11 @@ sampleProjectName
 	^projectDefinition name
 %
 set compile_env: 0
+category: 'Updating'
+method: RowanPackageDefinitionService
+packageName: newValue
+	packageName := newValue
+%
 category: 'Updating'
 method: RowanPackageDefinitionService
 projectDefinition: newValue

@@ -11,7 +11,7 @@ RowanDefinitionServiceTest comment: ''!
 !RowanDefinitionServiceTest methodsFor!
 
 browseImplementorsOf: aString
-	| gciSession |
+	| gciSession | 
 	gciSession := RowanDefinitionService new transport.
 	shell := RowanMethodListBrowser showOnSession: gciSession. 
 	shell primaryPresenter
@@ -28,13 +28,15 @@ setUp
 tearDown
 	super tearDown.
 	shell ifNotNil: [:shell | shell exit].
-	RowanPackageDefinitionService new removeSampleSymbolDictionary.!
+	RowanPackageDefinitionService new removeSampleSymbolDictionary.
+	methodService transport abort.
+	!
 
 test_addNewMethod
 	methodService createSampleMethod.
 	self browseImplementorsOf: 'sampleMethod'.	"first list element should be selected"
 	self updateMethodSource: 'sampleMethod2
-		^123'.
+		^123'. self halt. 
 	!
 
 test_createSampleMethod
@@ -43,14 +45,15 @@ test_createSampleMethod
 	It should also compile the method behind the scenes such
 	that an old style implementors call will discover it. "
 
-	| listElement |
-	methodService createSampleMethod.
+	| listElement | 
+	methodService createSampleMethod. 
 	self browseImplementorsOf: 'sampleMethod'.
 	self assert: (shell isKindOf: RowanMethodListBrowser).
 	listElement := self firstListElement.
 	self assert: listElement gsClass name = 'SampleClassName'.
 	self assert: listElement name = 'sampleMethod'.
-	self assert: listElement category = 'sample'!
+	self assert: listElement category = 'sample'. 
+	self assert: listElement packageName = 'SamplePackageName'!
 
 test_openMethodBrowser
 	| gciSession |
@@ -72,7 +75,7 @@ updateMethodSource: aString
 	| documentPresenter |
 	documentPresenter := shell primaryPresenter methodSourcePresenter documentPresenter.
 	documentPresenter model value: aString.
-	documentPresenter isModified: true.
+	documentPresenter isModified: true. self halt. 
 	shell primaryPresenter methodSourcePresenter fileSave. ! !
 !RowanDefinitionServiceTest categoriesFor: #browseImplementorsOf:!browsing!private! !
 !RowanDefinitionServiceTest categoriesFor: #firstListElement!private!support! !
