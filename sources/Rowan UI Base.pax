@@ -7,9 +7,7 @@ package paxVersion: 1;
 package classNames
 	add: #PackageMethodListPresenter;
 	add: #RowanClassDefinitionService;
-	add: #RowanDefinition;
 	add: #RowanDefinitionService;
-	add: #RowanDefinitionServiceTest;
 	add: #RowanMethodDefinition;
 	add: #RowanMethodDefinitionService;
 	add: #RowanMethodListBrowser;
@@ -20,21 +18,27 @@ package classNames
 	add: #RowanPackagePresenter;
 	add: #RowanPackageShell;
 	add: #RowanPresenter;
+	add: #RowanProjectDefinitionService;
+	add: #RowanServiceTest;
 	add: #RowanShell;
+	add: #RowanSystemBrowser;
+	add: #RowanSystemBrowserPresenter;
 	yourself.
 
 package methodNames
 	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
+	add: #GsMethod -> #methodDefinitionService;
 	add: #GsMethod2 -> #asUpdatedVersion:;
 	add: #JadeMethodListPresenter -> #browseImplementorsOf:;
 	add: #JadeMethodListPresenter -> #browseMethodsFromString:;
 	add: #JadeMethodListPresenter -> #browseMethodsFromString:methodName:;
 	add: #JadeMethodListPresenter -> #browseMethodsFromString:methodName:type:;
-	add: #JadeMethodListPresenter -> #updateSource;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeTextDocument -> #jadeBrowseClasses;
+	add: #JadeToolsToolBarPresenter -> #browseClasses;
 	add: #JadeTranscript -> #methodsChanged24;
 	add: #JadeTranscript -> #methodsChangedDays;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:;
@@ -52,7 +56,9 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\IDE\Base\Development System';
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Cards\Dolphin Card Containers';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
@@ -62,6 +68,9 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Rich Text Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Sliding Tray\Dolphin Slidey-Inney-Outey Thing';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\Tree\Dolphin Tree Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'GemStone Objects';
@@ -69,6 +78,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade Class Browser';
 	add: 'Jade Method Browser';
 	add: 'Jade System Browser';
+	add: 'Jade Test Browser';
 	add: 'Jade Transcript';
 	add: 'Jade UI Base';
 	add: '..\Core\Contributions\Solutions Software\SSW EditableListView';
@@ -84,27 +94,27 @@ GsMethod2 subclass: #RowanMethodDefinition
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-Model subclass: #RowanDefinition
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 Model subclass: #RowanDefinitionService
 	instanceVariableNames: 'transport remoteService'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanClassDefinitionService
-	instanceVariableNames: ''
+	instanceVariableNames: 'name'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanMethodDefinitionService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta'
+	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanPackageDefinitionService
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanDefinitionService subclass: #RowanProjectDefinitionService
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -120,6 +130,11 @@ MethodSourcePresenter subclass: #RowanMethodSourcePresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeMethodListPresenter subclass: #RowanMethodListPresenter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeSystemBrowserPresenter subclass: #RowanSystemBrowserPresenter
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -149,13 +164,18 @@ JadeMethodListBrowser subclass: #RowanMethodListBrowser
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadeSystemBrowser subclass: #RowanSystemBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 RowanShell subclass: #RowanPackageShell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-TestCase subclass: #RowanDefinitionServiceTest
-	instanceVariableNames: 'shell methodService'
+TestCase subclass: #RowanServiceTest
+	instanceVariableNames: 'shell methodService gciSession classService'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -178,11 +198,18 @@ methodsUpTo: aClass filterList: aList isVariables: aBoolean
 		with: aClass
 		with: stream contents 
 		with: aBoolean.
-	^RowanMethodDefinition
+	^GsMethod2
 		listFromString: string 
 		session: gciSession.
 ! !
 !GsClass categoriesFor: #methodsUpTo:filterList:isVariables:!Methods!public! !
+
+!GsMethod methodsFor!
+
+methodDefinitionService
+
+	^RowanMethodDefinitionService on: gciSession! !
+!GsMethod categoriesFor: #methodDefinitionService!public!rowan! !
 
 !GsMethod2 methodsFor!
 
@@ -199,7 +226,7 @@ asUpdatedVersion: stringOop
 						gsClass dictionary , Character tab asString,
 						isTestCase printString.
 
-	^RowanMethodDefinition fromString: stringToGetNewMethod session: gciSession.
+	^GsMethod2 fromString: stringToGetNewMethod session: gciSession.
 ! !
 !GsMethod2 categoriesFor: #asUpdatedVersion:!public! !
 
@@ -215,7 +242,7 @@ browseImplementorsOf: aGsMethod
 browseMethodsFromString: aString
 
 	| list |
-	list := RowanMethodDefinition
+	list := GsMethod2
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
@@ -227,7 +254,7 @@ browseMethodsFromString: aString
 browseMethodsFromString: aString methodName: methodName
 	| list |
 
-	list := RowanMethodDefinition
+	list := GsMethod2
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
@@ -237,34 +264,17 @@ browseMethodsFromString: aString methodName: methodName
 
 browseMethodsFromString: aString methodName: methodName type: browseType
 	| list |
-	list := RowanMethodDefinition
+	list := GsMethod2
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
 	list notEmpty ifTrue: [
 		methodListPresenter selectFirstMethod.
-	].!
-
-updateSource
-	| gsClass gsMethod2 gsMethod |
-	(gsClass := self selectedClass)
-		ifNotNil: 
-			[(gsMethod2 := methodListPresenter selectedMethod)
-				ifNotNil: 
-					[gsMethod2 gsClass ~= gsClass ifTrue: [self error: 'Method not from selected class!!'].
-					gsMethod := GsMethod fromOopType: gsMethod2 oopType session: gsMethod2 gciSession]].
-	gsMethod
-		ifNotNil: 
-			[methodSourcePresenter gsMethod: gsMethod.
-			self doSearch].
-	methodListPresenter selectedMethod ifNil: [^self].
-	methodSourcePresenter documentPresenter
-		lastGsShape: (self registry getClass: methodListPresenter selectedMethod gsClass name)! !
+	].! !
 !JadeMethodListPresenter categoriesFor: #browseImplementorsOf:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
-!JadeMethodListPresenter categoriesFor: #updateSource!public! !
 
 !JadePresenterA methodsFor!
 
@@ -272,7 +282,7 @@ browseImplementorsOf: aGsMethodOrString
 	
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
 
-	^(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	^(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseImplementorsOf: aGsMethodOrString;
 		yourself.
 !
@@ -281,7 +291,7 @@ browseSendersOf: aGsMethodOrString
 
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseSendersOf: aGsMethodOrString].
 
-	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseSendersOf: aGsMethodOrString;
 		yourself.
 ! !
@@ -292,19 +302,40 @@ browseSendersOf: aGsMethodOrString
 
 browseMethodsAndSelect: aString
 
-	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseMethodsFromString: readStream upToEnd methodName: aString;
 		selecting: aString.
 !
 
 browseMethodsAndSelect: aString type: browseType
 
-	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseMethodsFromString: readStream upToEnd methodName: aString type: browseType;
 		selecting: aString.
 ! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+
+!JadeTextDocument methodsFor!
+
+jadeBrowseClasses
+
+	gciSession hasServer ifTrue: [
+		^RowanSystemBrowser showOnSession: gciSession.
+	].
+	MessageBox
+		warning: 'Server initialization failed at login.'
+		caption: 'Unable to Open Browser'.
+! !
+!JadeTextDocument categoriesFor: #jadeBrowseClasses!Jade!private! !
+
+!JadeToolsToolBarPresenter methodsFor!
+
+browseClasses
+
+	RowanSystemBrowser showOnSession: gciSession.
+! !
+!JadeToolsToolBarPresenter categoriesFor: #browseClasses!public! !
 
 !JadeTranscript methodsFor!
 
@@ -317,7 +348,7 @@ methodsChanged24
 		methods := IdentitySet new.
 		result do: [:e | e asCompiledMethod ifNotNil: [:m | methods add: m]].
 		methods asArray'.
-(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseMethods: result;
 		yourself.
 	"JadeInspector showOn: result session: gciSession."
@@ -332,7 +363,7 @@ methodsChangedDays
 		methods := IdentitySet new.
 		result do: [:e | e asCompiledMethod ifNotNil: [:m | methods add: m]].
 		methods asArray'.
-	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseMethods: result;
 		yourself.
 
@@ -347,7 +378,7 @@ browseMethodsFromString: aString
 
 	"self hasTreeListSelection ifFalse: [self addTreeListRoot]."
 
-	list := RowanMethodDefinition
+	list := GsMethod2
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
@@ -360,7 +391,7 @@ browseMethodsFromString: aString methodName: methodName
 
 	self hasTreeListSelection ifFalse: [node := self addTreeListRoot: methodName type: #references].
 
-	list := RowanMethodDefinition
+	list := GsMethod2
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
@@ -381,7 +412,7 @@ browseMethodsFromString: aString methodName: methodName type: browseType
 			ifFalse: [self addTreeListRoot: methodName type: browseType] 
 			ifTrue: [treeMethodsPresenter model add: (self getLabelForMethod: methodName type: browseType) asChildOf: treeMethodsPresenter selection.].
 
-	list := RowanMethodDefinition
+	list := GsMethod2
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
@@ -397,7 +428,7 @@ onDropMethodsTree: aDragDropSession
 
 	(aDragDropSession operation = #move) ifFalse: [^self].
 
-	(aDragDropSession suggestedSource class = RowanMethodDefinition) ifTrue: [^self dropGsMethod: aDragDropSession].
+	(aDragDropSession suggestedSource class = GsMethod2) ifTrue: [^self dropGsMethod: aDragDropSession].
 
 	^self dropNode: aDragDropSession
 ! !
@@ -412,7 +443,7 @@ browseMethodsContaining
 
 	| string |
 	(string := Prompter prompt: 'Enter substring:') isNil ifTrue: [^self].
-	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter browseMethodsContaining: string.
+	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter browseMethodsContaining: string.
 ! !
 !MethodListPresenter categoriesFor: #browseMethodsContaining!public! !
 

@@ -2361,7 +2361,7 @@ savePackage
 
 selectClass: aString selector: methodString
 "
-	Array with: className with: dictionaryName with: catetory with: packageName.
+	Array with: className with: dictionaryName with: category with: packageName.
 "
 	| string list className isMeta array |
 	string := self gciSession 

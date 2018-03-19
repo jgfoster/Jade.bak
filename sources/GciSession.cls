@@ -40,7 +40,7 @@ _send: aSymbol to: anObject withAll: anArray
 		(each isKindOf: Integer) ifTrue: [library session: gciSessionId oopForInteger: each] ifFalse: [
 		(each isKindOf: String) ifTrue: [oops add: (self oopForString: each)] ifFalse: [
 		each]].
-	]. 
+	].  
 	result := library 
 		session: gciSessionId
 		send: aSymbol 

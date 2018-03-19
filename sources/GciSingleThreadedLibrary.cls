@@ -559,7 +559,7 @@ session: anInteger releaseOops: anArray
 !
 
 session: anInteger send: aString to: anOopType with: anArray 
-
+	
 	self critical: [
 		self gciSetSessionId: anInteger.
 		self

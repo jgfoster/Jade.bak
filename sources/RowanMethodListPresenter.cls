@@ -24,6 +24,10 @@ methodSourcePresenter
 
 	^methodSourcePresenter!
 
+selectedPackage
+
+	^methodListPresenter selectedMethod packageName!
+
 updateSaveMethodOop: anInteger
 
 	super updateSaveMethodOop: anInteger.
@@ -48,6 +52,7 @@ updateSource
 !RowanMethodListPresenter categoriesFor: #createComponents!public! !
 !RowanMethodListPresenter categoriesFor: #list:!public! !
 !RowanMethodListPresenter categoriesFor: #methodSourcePresenter!public! !
+!RowanMethodListPresenter categoriesFor: #selectedPackage!public! !
 !RowanMethodListPresenter categoriesFor: #updateSaveMethodOop:!public!updating! !
 !RowanMethodListPresenter categoriesFor: #updateSource!public!updating! !
 

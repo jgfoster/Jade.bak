@@ -329,6 +329,7 @@ compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCatego
 		[warnings] (if no errors)"
 
 	| userProfile result gsMethod stream errDict errorList warnings |
+
 	userProfile := aUserProfileOrNil isNil
 		ifTrue: [System myUserProfile]
 		ifFalse: [aUserProfileOrNil].
@@ -666,13 +667,15 @@ _methodsFor: aClass categories: aList
 compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCategory: categorySymbol
 	"returns (nil -> anArrayOfErrors) or (aGsNMethod -> compilerWarnings) or (aGsNMethod -> nil)"
 
-	| method warnings |
+	| method warnings | 
+
 	[[
-		method := aBehavior
+		method := aBehavior rwCompileMethod: methodString category: categorySymbol.
+		"method := aBehavior
 			compileMethod: methodString
 			dictionaries: aSymbolList
 			category: categorySymbol
-			environmentId: environment.
+			environmentId: environment."
 	] on: CompileError do: [:ex |
 		^nil -> (ex gsArguments at: 1)
 	]] on: CompileWarning do: [:ex |

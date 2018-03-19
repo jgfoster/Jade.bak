@@ -10,6 +10,10 @@ RowanDefinitionService comment: ''!
 !RowanDefinitionService categoriesForClass!Kernel-Objects! !
 !RowanDefinitionService methodsFor!
 
+classNameFrom: aClassOop
+
+	^transport send: #name to: aClassOop!
+
 clientDefinitionClass
 
 	^self subclassResponsibility!
@@ -53,10 +57,12 @@ initialize
 initializeTransport
 	"keep sessions properly invalidated and this
 	will work. Need to initialize this better eventually.
-	do this. 
-	GciSession allInstances do:[:each | each beInvalidSession].
-	JadeLoginShell show. (if the Jade Login is not open)
-	Press login"
+
+	Do This: 
+	1. From the Jade Transcript -> Exit Jade.
+	2. Evaluate -> GciSession allInstances do:[:each | each beInvalidSession].
+	3. If the Jade Login is not open -> JadeLoginShell show. 
+	4. From the Jade Shell -> Login"
 
 	transport := GciSession allInstances detect: [:session | session isValidSession] ifNone:[self halt].!
 
@@ -69,6 +75,10 @@ remoteServiceName
 
 	^self class name!
 
+removeSampleSymbolDictionary
+
+	transport send: #removeSampleSymbolDictionary to: self remoteService!
+
 sampleDefinitions
 	| anArrayOop | 
 	anArrayOop := transport send: #sampleDefinitions to: remoteService.
@@ -79,13 +89,15 @@ transport
 
 transport: anObject
 	transport := anObject! !
+!RowanDefinitionService categoriesFor: #classNameFrom:!public! !
 !RowanDefinitionService categoriesFor: #clientDefinitionClass!private! !
 !RowanDefinitionService categoriesFor: #createClientDefinitionFrom:!private! !
 !RowanDefinitionService categoriesFor: #createClientDefinitionFromRemoteDefinition:!private! !
-!RowanDefinitionService categoriesFor: #initialize!private! !
-!RowanDefinitionService categoriesFor: #initializeTransport!private! !
+!RowanDefinitionService categoriesFor: #initialize!initialization!private! !
+!RowanDefinitionService categoriesFor: #initializeTransport!initialization!private! !
 !RowanDefinitionService categoriesFor: #remoteAccessors!private! !
 !RowanDefinitionService categoriesFor: #remoteServiceName!examples!private! !
+!RowanDefinitionService categoriesFor: #removeSampleSymbolDictionary!public! !
 !RowanDefinitionService categoriesFor: #sampleDefinitions!examples!public! !
 !RowanDefinitionService categoriesFor: #transport!accessing!private! !
 !RowanDefinitionService categoriesFor: #transport:!accessing!private! !

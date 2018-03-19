@@ -134,6 +134,7 @@ fromXML: xmlElement session: gciSession
 listFromString: aString session: aGciSession
 
 	| list |  
+
 	list := aString subStrings: Character lf.
 	list := list collect: [:each | self fromString: each session:  aGciSession].
 	^list.

@@ -219,6 +219,17 @@ RowanClassDefinitionService removeAllMethods.
 RowanClassDefinitionService class removeAllMethods.
 %
 ! ------------------- Class methods for RowanClassDefinitionService
+set compile_env: 0
+category: 'instance creation'
+classmethod: RowanClassDefinitionService
+forClassNamed: className package: packageName
+
+	| inst |
+	inst := RowanClassDefinitionService new. 
+	inst name: className;
+		packageName: packageName.
+	^inst
+%
 ! ------------------- Instance methods for RowanClassDefinitionService
 set compile_env: 0
 category: 'Accessing'
@@ -301,6 +312,26 @@ method: RowanClassDefinitionService
 packageName
 	
 	^packageService packageName
+%
+category: 'examples'
+method: RowanClassDefinitionService
+packageName: packageName
+	
+	packageService ifNil:[packageService := RowanPackageDefinitionService new packageName: packageName].
+	^packageService packageName
+%
+category: 'examples'
+method: RowanClassDefinitionService
+sampleClass
+	"return the actual resolved class"
+	
+	^(GsSession currentSession resolveSymbol: self sampleClassName) value
+%
+category: 'examples'
+method: RowanClassDefinitionService
+sampleClassInstance
+
+	^self sampleClass new
 %
 category: 'examples'
 method: RowanClassDefinitionService
@@ -404,7 +435,8 @@ className
 category: 'Accessing'
 method: RowanMethodDefinitionService
 classService
-	^classService
+
+	^classService ifNil:[classService := RowanClassDefinitionService forClassNamed: className package: packageName]
 %
 category: 'Accessing'
 method: RowanMethodDefinitionService
@@ -442,7 +474,7 @@ source
 category: 'Accessing'
 method: RowanMethodDefinitionService
 source: aString
-
+	
 	source := aString
 %
 set compile_env: 0
@@ -458,6 +490,12 @@ createSampleMethod
 			category := 'sample'.
 			meta := false. 
 			^self addOrUpdateMethod
+%
+category: 'examples'
+method: RowanMethodDefinitionService
+sampleClassInstance
+
+	^classService sampleClassInstance
 %
 category: 'examples'
 method: RowanMethodDefinitionService
@@ -488,16 +526,17 @@ sampleMethodSource
 	^'sampleMethod ^''some text'''.
 %
 set compile_env: 0
+set compile_env: 0
 category: 'rowan'
 method: RowanMethodDefinitionService
 addOrUpdateMethod
-				
+
 		self browserTool
                    addOrUpdateMethod: source
                    inProtocol: category
                    forClassNamed: classService name
                    isMeta: meta
-                   inPackageNamed: classService packageName
+                   inPackageNamed: self classService packageName
 %
 category: 'rowan'
 method: RowanMethodDefinitionService
@@ -530,7 +569,7 @@ classService: newValue
 category: 'Updating'
 method: RowanMethodDefinitionService
 meta: newValue
-	meta := newValue
+	meta := newValue == 'true'
 %
 category: 'Updating'
 method: RowanMethodDefinitionService
@@ -642,8 +681,8 @@ category: 'examples'
 method: RowanProjectDefinitionService
 createSampleProject
 
-	self createSampleSymbolDictionary.
 	self removeProjectNamed: self sampleProjectName.
+	self createSampleSymbolDictionary.
 	^self createProjectNamed: self sampleProjectName in: self sampleSymbolDictionaryName
 %
 category: 'examples'

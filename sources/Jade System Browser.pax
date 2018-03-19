@@ -159,8 +159,6 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByVariables;
 	add: #JadeServer64bit3x -> #sbUpdateMethodStepPointsFor:;
 	add: #JadeServer64bit3x -> #selectedClassOverridesSelector:;
-	add: #JadeTextDocument -> #jadeBrowseClasses;
-	add: #JadeToolsToolBarPresenter -> #browseClasses;
 	add: #JadeTranscript -> #browseRowanMethods;
 	add: 'JadeTranscript class' -> #resource_Default_view;
 	yourself.
@@ -2144,7 +2142,7 @@ class: aClass includesSelector: aSelector
 
 compiledMethodAt: aSymbol inClass: aClass
 
-	| method |
+	| method | 
 	method := aClass compiledMethodAt: aSymbol environmentId: environment.
 	method ifNil: [self error: 'Lookup failed for selector ' , aSymbol , ' inClass ' , aClass name , ' in environment ' , environment printString].
 	^method.!
@@ -2411,27 +2409,6 @@ selectedClassOverridesSelector: aSymbol
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodsByVariables!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodStepPointsFor:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #selectedClassOverridesSelector:!public!System Browser! !
-
-!JadeTextDocument methodsFor!
-
-jadeBrowseClasses
-
-	gciSession hasServer ifTrue: [
-		^JadeSystemBrowser showOnSession: gciSession.
-	].
-	MessageBox
-		warning: 'Server initialization failed at login.'
-		caption: 'Unable to Open Browser'.
-! !
-!JadeTextDocument categoriesFor: #jadeBrowseClasses!Jade!private! !
-
-!JadeToolsToolBarPresenter methodsFor!
-
-browseClasses
-
-	JadeSystemBrowser showOnSession: gciSession.
-! !
-!JadeToolsToolBarPresenter categoriesFor: #browseClasses!public! !
 
 !JadeTranscript methodsFor!
 

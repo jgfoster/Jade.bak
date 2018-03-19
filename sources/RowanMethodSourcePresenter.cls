@@ -26,14 +26,13 @@ fileSave
 				ifTrue: [(MessageBox confirm: 'Replace method?' caption: 'Method already exists!!') ifFalse: [^self]]].
 	user := self trigger: #needUser.
 	(category := gsMethod category) isNil ifTrue: [self error: 'We need a method category!!?'].
-	self halt. 
 	service := gsMethod methodDefinitionService. 
 	service source: documentPresenter value replaceCrLfWithLf; 
-	className: theClass name;
+	className: (service classNameFrom: theClass);
 	user: user; 
-	category: category. 
-	service packageName: 'foo'.
-	string := service compileMethod: theClass user: user.
+	category: category.  
+	service packageName: parentPresenter selectedPackage.
+	string := service compileMethod: theClass user: user. self halt. 
 	stream := ReadStream on: string.
 	(line := stream nextLine) notEmpty
 		ifTrue: 

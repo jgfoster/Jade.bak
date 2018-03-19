@@ -211,7 +211,23 @@ updateSaveMethodOop: anInteger
  	methodListPresenter primaryPresenter model remove: methodListPresenter selectedMethod ifAbsent: [].
 
 	methodListPresenter primaryPresenter selection: newGsMethod.
-! !
+!
+
+updateSource
+	| gsClass gsMethod2 gsMethod |
+	(gsClass := self selectedClass)
+		ifNotNil: 
+			[(gsMethod2 := methodListPresenter selectedMethod)
+				ifNotNil: 
+					[gsMethod2 gsClass ~= gsClass ifTrue: [self error: 'Method not from selected class!!'].
+					gsMethod := GsMethod fromOopType: gsMethod2 oopType session: gsMethod2 gciSession]].
+	gsMethod
+		ifNotNil: 
+			[methodSourcePresenter gsMethod: gsMethod.
+			self doSearch].
+	methodListPresenter selectedMethod ifNil: [^self].
+	methodSourcePresenter documentPresenter
+		lastGsShape: (self registry getClass: methodListPresenter selectedMethod gsClass name)! !
 !JadeMethodListPresenter categoriesFor: #browse:gsMethod:!public! !
 !JadeMethodListPresenter categoriesFor: #browse:method:!public! !
 !JadeMethodListPresenter categoriesFor: #browse:methodSelector:!public! !
@@ -237,6 +253,7 @@ updateSaveMethodOop: anInteger
 !JadeMethodListPresenter categoriesFor: #selecting:!public! !
 !JadeMethodListPresenter categoriesFor: #updateMenuBar:!public! !
 !JadeMethodListPresenter categoriesFor: #updateSaveMethodOop:!public! !
+!JadeMethodListPresenter categoriesFor: #updateSource!public! !
 
 !JadeMethodListPresenter class methodsFor!
 

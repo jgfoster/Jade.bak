@@ -98,6 +98,7 @@ fileSave
 	].
 	user := self trigger: #'needUser'.
 	(category := gsMethod category) isNil ifTrue: [self error: 'We need a method category!!?'].
+
 	string := gciSession
 		serverPerform: #'compileMethod:behavior:user:inCategory:'
 		with: documentPresenter value replaceCrLfWithLf
