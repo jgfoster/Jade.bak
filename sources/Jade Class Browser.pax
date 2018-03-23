@@ -140,9 +140,7 @@ defectiveTestsIn: aClass
 !
 
 definitionOfClass: aClass
-
-	^aClass definition.
-!
+	^aClass definition.!
 
 definitionOfClass: aClass forUser: aUserProfile
 

@@ -32,7 +32,7 @@ createClientDefinitionFrom: anArrayOop
 						send: #at:
 						to: anArrayOop
 						withAll: (Array with: idx).
-			definitions at: idx put: (self createClientDefinitionFromRemoteDefinition: elementOop)].
+			definitions at: idx put: (self createClientDefinitionFromRemoteDefinition: elementOop)]. 
 	^definitions!
 
 createClientDefinitionFromRemoteDefinition: anOop

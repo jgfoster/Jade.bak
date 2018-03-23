@@ -19,13 +19,13 @@ Object subclass: 'RowanDefinitionService'
 	classInstVars: #()
 	poolDictionaries: #()
 	inDictionary: 'RowanServices'
-	category: 'Kernel'
+	category: 'Rowan-Services'
 	options: #()
 
 %
 expectvalue /Class
 doit
-RowanDefinitionService category: 'Kernel'
+RowanDefinitionService category: 'Rowan-Services'
 %
 ! ------------------- Class definition for RowanClassDefinitionService
 expectvalue /Class
@@ -38,13 +38,13 @@ RowanDefinitionService subclass: 'RowanClassDefinitionService'
 	classInstVars: #()
 	poolDictionaries: #()
 	inDictionary: 'RowanServices'
-	category: 'Kernel'
+	category: 'Rowan-Services'
 	options: #()
 
 %
 expectvalue /Class
 doit
-RowanClassDefinitionService category: 'Kernel'
+RowanClassDefinitionService category: 'Rowan-Services'
 %
 ! ------------------- Class definition for RowanMethodDefinitionService
 expectvalue /Class
@@ -57,13 +57,13 @@ RowanDefinitionService subclass: 'RowanMethodDefinitionService'
 	classInstVars: #()
 	poolDictionaries: #()
 	inDictionary: 'RowanServices'
-	category: 'Kernel'
+	category: 'Rowan-Services'
 	options: #()
 
 %
 expectvalue /Class
 doit
-RowanMethodDefinitionService category: 'Kernel'
+RowanMethodDefinitionService category: 'Rowan-Services'
 %
 ! ------------------- Class definition for RowanPackageDefinitionService
 expectvalue /Class
@@ -74,13 +74,13 @@ RowanDefinitionService subclass: 'RowanPackageDefinitionService'
 	classInstVars: #()
 	poolDictionaries: #()
 	inDictionary: 'RowanServices'
-	category: 'Kernel'
+	category: 'Rowan-Services'
 	options: #()
 
 %
 expectvalue /Class
 doit
-RowanPackageDefinitionService category: 'Kernel'
+RowanPackageDefinitionService category: 'Rowan-Services'
 %
 ! ------------------- Class definition for RowanProjectDefinitionService
 expectvalue /Class
@@ -91,13 +91,13 @@ RowanDefinitionService subclass: 'RowanProjectDefinitionService'
 	classInstVars: #()
 	poolDictionaries: #()
 	inDictionary: 'RowanServices'
-	category: 'Kernel'
+	category: 'Rowan-Services'
 	options: #()
 
 %
 expectvalue /Class
 doit
-RowanProjectDefinitionService category: 'Kernel'
+RowanProjectDefinitionService category: 'Rowan-Services'
 %
 
 ! ------------------- Remove existing behavior from RowanDefinitionService
@@ -526,10 +526,20 @@ sampleMethodSource
 	^'sampleMethod ^''some text'''.
 %
 set compile_env: 0
-set compile_env: 0
 category: 'rowan'
 method: RowanMethodDefinitionService
 addOrUpdateMethod
+
+		self browserTool
+                   addOrUpdateMethod: source
+                   inProtocol: category
+                   forClassNamed: classService name
+                   isMeta: meta
+                   inPackageNamed: self classService packageName
+%
+category: 'rowan'
+method: RowanMethodDefinitionService
+addOrUpdateMethod2
 
 		self browserTool
                    addOrUpdateMethod: source
@@ -604,6 +614,17 @@ projectDefinition
 set compile_env: 0
 category: 'examples'
 method: RowanPackageDefinitionService
+createPackageNamed: thePackageName inProject: projectName
+
+	| projectService |
+	packageName := thePackageName. 
+	projectService := RowanProjectDefinitionService new.
+	projectDefinition := projectService createProjectNamed: projectName .
+	projectDefinition addPackageNamed: packageName.
+	self projectTools load loadProjectDefinition: projectDefinition.
+%
+category: 'examples'
+method: RowanPackageDefinitionService
 createSamplePackage
 
 	"assume that the sample project & symbol dictionary 
@@ -629,6 +650,7 @@ sampleProjectName
 	^projectDefinition name
 %
 set compile_env: 0
+set compile_env: 0
 category: 'Updating'
 method: RowanPackageDefinitionService
 packageName: newValue
@@ -651,6 +673,21 @@ RowanProjectDefinitionService class removeAllMethods.
 set compile_env: 0
 category: 'examples'
 method: RowanProjectDefinitionService
+createSampleProject
+
+	self removeProjectNamed: self sampleProjectName.
+	self createSampleSymbolDictionary.
+	^self createProjectNamed: self sampleProjectName in: self sampleSymbolDictionaryName
+%
+category: 'examples'
+method: RowanProjectDefinitionService
+sampleProjectName
+	
+	^'SampleProjectName'
+%
+set compile_env: 0
+category: 'rowan'
+method: RowanProjectDefinitionService
 createProjectNamed: projectName 
 
 	| projectDefinition |
@@ -663,7 +700,7 @@ createProjectNamed: projectName
 	self projectTools load loadProjectDefinition: projectDefinition.
 	^projectDefinition
 %
-category: 'examples'
+category: 'rowan'
 method: RowanProjectDefinitionService
 createProjectNamed: projectName in: symbolDictionaryName
 
@@ -677,23 +714,9 @@ createProjectNamed: projectName in: symbolDictionaryName
 	self projectTools load loadProjectDefinition: projectDefinition.
 	^projectDefinition
 %
-category: 'examples'
-method: RowanProjectDefinitionService
-createSampleProject
-
-	self removeProjectNamed: self sampleProjectName.
-	self createSampleSymbolDictionary.
-	^self createProjectNamed: self sampleProjectName in: self sampleSymbolDictionaryName
-%
-category: 'examples'
+category: 'rowan'
 method: RowanProjectDefinitionService
 removeProjectNamed: projectName 
 	(Rowan loadedProjectNamed: projectName ifAbsent: [  ])
 		ifNotNil: [ :project | RwGsImage _removeLoadedProject: project ].
-%
-category: 'examples'
-method: RowanProjectDefinitionService
-sampleProjectName
-	
-	^'SampleProjectName'
 %

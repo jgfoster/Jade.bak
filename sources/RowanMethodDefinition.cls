@@ -59,6 +59,7 @@ projectName
 	^projectName!
 
 projectName: anObject
+	
 	projectName := anObject!
 
 selector

@@ -10,8 +10,13 @@ RowanPackageDefinitionService comment: ''!
 !RowanPackageDefinitionService categoriesForClass!Kernel-Objects! !
 !RowanPackageDefinitionService methodsFor!
 
+createPackageNamed: packageName inProject: projectName
+
+	transport send: #createPackageNamed:inProject: to: remoteService withAll: (Array with: packageName with: projectName)!
+
 removeSampleSymbolDictionary
 
 	transport send: #removeSampleSymbolDictionary to: remoteService! !
+!RowanPackageDefinitionService categoriesFor: #createPackageNamed:inProject:!public! !
 !RowanPackageDefinitionService categoriesFor: #removeSampleSymbolDictionary!public! !
 

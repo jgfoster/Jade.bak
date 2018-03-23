@@ -85,6 +85,7 @@ fileSave
 		"Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"
 
 	| user theClass newSelector category string stream list warnings errors index a b c methodExists line newOop |
+
 	(theClass := gsMethod behavior) isNil ifTrue: [^true].
 	newSelector := self newSelector.
 	currentSelector = newSelector ifFalse: [

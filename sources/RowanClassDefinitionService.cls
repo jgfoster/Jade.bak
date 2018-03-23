@@ -10,12 +10,12 @@ RowanClassDefinitionService comment: ''!
 !RowanClassDefinitionService categoriesForClass!Kernel-Objects! !
 !RowanClassDefinitionService methodsFor!
 
+classCreationTemplate
+
+	^transport send: #classCreationTemplate to: self remoteService!
+
 createSampleClass
 	transport send: #createSampleClass to: remoteService.  !
-
-newSubclassCreationTemplate
-
-	^transport send: #newSubclassCreationTemplate to: self remoteService!
 
 remoteService
 	| stream |
@@ -25,8 +25,8 @@ remoteService
 
 sampleClassName
 	^transport send: #sampleClassName to: remoteService.  ! !
+!RowanClassDefinitionService categoriesFor: #classCreationTemplate!public! !
 !RowanClassDefinitionService categoriesFor: #createSampleClass!public! !
-!RowanClassDefinitionService categoriesFor: #newSubclassCreationTemplate!public! !
 !RowanClassDefinitionService categoriesFor: #remoteService!private! !
 !RowanClassDefinitionService categoriesFor: #sampleClassName!public! !
 

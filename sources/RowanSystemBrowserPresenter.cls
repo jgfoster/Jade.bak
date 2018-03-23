@@ -13,7 +13,7 @@ RowanSystemBrowserPresenter comment: ''!
 addSubclass
 	classDefinitionPresenter
 		ensureVisible;
-		value: self classService newSubclassCreationTemplate;
+		value: self classService classCreationTemplate;
 		yourself!
 
 classService

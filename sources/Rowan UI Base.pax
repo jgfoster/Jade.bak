@@ -35,10 +35,13 @@ package methodNames
 	add: #JadeMethodListPresenter -> #browseMethodsFromString:methodName:type:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
+	add: #JadeServer -> #sbUpdateClassInfo;
+	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
 	add: #JadeTextDocument -> #jadeBrowseClasses;
 	add: #JadeToolsToolBarPresenter -> #browseClasses;
+	add: #JadeTranscript -> #createRowanPackage;
 	add: #JadeTranscript -> #methodsChanged24;
 	add: #JadeTranscript -> #methodsChangedDays;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:;
@@ -47,6 +50,7 @@ package methodNames
 	add: #JadeTreeMethodListPresenter -> #onDropMethodsTree:;
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #Object -> #rowanFixMe;
+	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -62,6 +66,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Key-Value Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Deprecated\Dolphin MVP (Deprecated)';
@@ -198,7 +203,7 @@ methodsUpTo: aClass filterList: aList isVariables: aBoolean
 		with: aClass
 		with: stream contents 
 		with: aBoolean.
-	^GsMethod2
+	^RowanMethodDefinition
 		listFromString: string 
 		session: gciSession.
 ! !
@@ -242,7 +247,7 @@ browseImplementorsOf: aGsMethod
 browseMethodsFromString: aString
 
 	| list |
-	list := GsMethod2
+	list := RowanMethodDefinition
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
@@ -254,7 +259,7 @@ browseMethodsFromString: aString
 browseMethodsFromString: aString methodName: methodName
 	| list |
 
-	list := GsMethod2
+	list := RowanMethodDefinition
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
@@ -264,7 +269,7 @@ browseMethodsFromString: aString methodName: methodName
 
 browseMethodsFromString: aString methodName: methodName type: browseType
 	| list |
-	list := GsMethod2
+	list := RowanMethodDefinition
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
@@ -282,7 +287,7 @@ browseImplementorsOf: aGsMethodOrString
 	
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
 
-	^(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	^(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseImplementorsOf: aGsMethodOrString;
 		yourself.
 !
@@ -298,18 +303,106 @@ browseSendersOf: aGsMethodOrString
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
 
+!JadeServer methodsFor!
+
+sbUpdateClassInfo
+
+	| definition classComment |
+	selectedClass isNil ifTrue: [^self sbClassTemplate].
+	writeStream 
+		nextPutAll: (self oopOf: selectedClass) printString; lf;
+		nextPut: $(; lf;
+		nextPutAll: (definition := 	(RowanClassDefinitionService forClassNamed: selectedClass name) classCreationTemplate);
+		nextPutAll: ')';
+		nextPutAll: ((definition includesString: 'category: ''')
+			ifTrue: ['']
+			ifFalse: [' category: ' , selectedClass category printString]); lf;
+		nextPut: $%; lf;
+		yourself.
+	(selectedClass class canUnderstand: #'comment') ifTrue: [
+		classComment := selectedClass comment.
+	] ifFalse: [
+	(selectedClass class canUnderstand: #'classComment') ifTrue: [
+		classComment := selectedClass classComment.
+	] ifFalse: [
+		(selectedClass class canUnderstand: #'description') ifTrue: [
+			| description |
+			description := selectedClass description.
+			description class name = #'GsClassDocumentation' ifTrue: [
+				classComment := description detailsAboutClass.
+			].
+		].
+	]].
+	classComment isNil ifTrue: [classComment := ''].
+	writeStream 
+		nextPutAll: classComment; lf;
+		nextPut: $%; lf;
+		yourself.
+! !
+!JadeServer categoriesFor: #sbUpdateClassInfo!public!System Browser! !
+
+!JadeServer64bit32 class methodsFor!
+
+gsClassDefinitionStringFor: aClass
+	"Some class variables exist only in Dolphin and map to globals in GemStone; others exist only in GemStone and map to globals in Dolphin!!"
+
+	^'class subclass: ''' , aClass name , '''
+		instVarNames: ' , aClass instVarNames printString , '
+		classVars: #(' , aClass classVarsForGemStone , ')
+		classInstVars: #()
+		poolDictionaries: (#() class withAll: symbolList)
+		inDictionary: UserGlobals.'
+! !
+!JadeServer64bit32 class categoriesFor: #gsClassDefinitionStringFor:!public! !
+
+!JadeServer64bit3x methodsFor!
+
+compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCategory: categorySymbol
+	"returns (nil -> anArrayOfErrors) or (aGsNMethod -> compilerWarnings) or (aGsNMethod -> nil)"
+
+	| method warnings | 
+
+	[[(UserGlobals at: #rowanCompile ifAbsent:[false]) ifTrue:[
+			method := aBehavior rwCompileMethod: methodString category: categorySymbol]
+		ifFalse:[
+			method := aBehavior
+			compileMethod: methodString
+			dictionaries: aSymbolList
+			category: categorySymbol
+			environmentId: environment].
+	] on: CompileError do: [:ex |
+		^nil -> (ex gsArguments at: 1)
+	]] on: CompileWarning do: [:ex |
+		warnings := ex gsArguments at: 1.
+		ex resume.
+	].
+	^[	"Above method does not notify package of changes. 
+		Repeat compile if possible using method that broadcasts changes (but does not signal warnings).
+		See https://github.com/jgfoster/Jade/issues/3."
+		aBehavior
+			compileMethod: methodString 
+			category: categorySymbol 
+			using: aSymbolList 
+			environmentId: 0.
+		(self compiledMethodAt: method key selector inClass: aBehavior) -> warnings.
+	] on: Error do: [:ex | 
+		ex return: method -> warnings.
+	].
+! !
+!JadeServer64bit3x categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
+
 !JadeSystemBrowserPresenter methodsFor!
 
 browseMethodsAndSelect: aString
 
-	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseMethodsFromString: readStream upToEnd methodName: aString;
 		selecting: aString.
 !
 
 browseMethodsAndSelect: aString type: browseType
 
-	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseMethodsFromString: readStream upToEnd methodName: aString type: browseType;
 		selecting: aString.
 ! !
@@ -338,6 +431,19 @@ browseClasses
 !JadeToolsToolBarPresenter categoriesFor: #browseClasses!public! !
 
 !JadeTranscript methodsFor!
+
+createRowanPackage
+	"temporary method to create packages in projects"
+
+	| packageService pair |
+	pair := Association new.
+	(KeyValuePrompter
+		createOn: pair
+		prompt: 'Enter a Rowan package/project...'
+		caption: 'Rowan Package') showModal
+		isNil ifTrue: [^self].
+	packageService := RowanPackageDefinitionService new.
+	packageService createPackageNamed: pair key inProject: pair value!
 
 methodsChanged24
 
@@ -368,6 +474,7 @@ methodsChangedDays
 		yourself.
 
 ! !
+!JadeTranscript categoriesFor: #createRowanPackage!public!rowan! !
 !JadeTranscript categoriesFor: #methodsChanged24!event handling!public! !
 !JadeTranscript categoriesFor: #methodsChangedDays!event handling!public! !
 
@@ -391,7 +498,7 @@ browseMethodsFromString: aString methodName: methodName
 
 	self hasTreeListSelection ifFalse: [node := self addTreeListRoot: methodName type: #references].
 
-	list := GsMethod2
+	list := RowanMethodDefinition
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
@@ -412,7 +519,7 @@ browseMethodsFromString: aString methodName: methodName type: browseType
 			ifFalse: [self addTreeListRoot: methodName type: browseType] 
 			ifTrue: [treeMethodsPresenter model add: (self getLabelForMethod: methodName type: browseType) asChildOf: treeMethodsPresenter selection.].
 
-	list := GsMethod2
+	list := RowanMethodDefinition
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.

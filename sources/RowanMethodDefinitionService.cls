@@ -24,7 +24,7 @@ className: anObject
 
 clientDefinitionClass
 
-	^GsMethod2!
+	^RowanMethodDefinition!
 
 compileMethod: aBehavior user: user
 
