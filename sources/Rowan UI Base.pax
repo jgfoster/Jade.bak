@@ -6,6 +6,7 @@ package paxVersion: 1;
 
 package classNames
 	add: #PackageMethodListPresenter;
+	add: #Rowan;
 	add: #RowanClassDefinitionService;
 	add: #RowanDefinitionService;
 	add: #RowanMethodDefinition;
@@ -35,7 +36,11 @@ package methodNames
 	add: #JadeMethodListPresenter -> #browseMethodsFromString:methodName:type:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
+	add: #JadeServer -> #rowanLoadedPackageNames;
+	add: #JadeServer -> #sbClassTemplate;
+	add: #JadeServer -> #sbUnloadPackage:;
 	add: #JadeServer -> #sbUpdateClassInfo;
+	add: #JadeServer -> #sbUpdatePackages;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
@@ -94,6 +99,11 @@ package!
 
 "Class Definitions"!
 
+Object subclass: #Rowan
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 GsMethod2 subclass: #RowanMethodDefinition
 	instanceVariableNames: 'selector source className packageName projectName methodDefinitionService'
 	classVariableNames: ''
@@ -115,7 +125,7 @@ RowanDefinitionService subclass: #RowanMethodDefinitionService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanPackageDefinitionService
-	instanceVariableNames: ''
+	instanceVariableNames: 'name'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -139,7 +149,7 @@ JadeMethodListPresenter subclass: #RowanMethodListPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeSystemBrowserPresenter subclass: #RowanSystemBrowserPresenter
+JadeAutoSystemBrowserPresenter subclass: #RowanSystemBrowserPresenter
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -305,6 +315,46 @@ browseSendersOf: aGsMethodOrString
 
 !JadeServer methodsFor!
 
+rowanLoadedPackageNames
+	| stream loadedProjects |
+	RowanDefinitionService rowanFixMe.	"handle modified packages"
+	stream := WriteStream on: String new.
+	loadedProjects := Rowan image loadedProjects.
+	loadedProjects do: 
+			[:project |
+			project loadedPackages do: 
+					[:package |
+					stream
+						nextPutAll: package name;
+						tab;
+						nextPut: $N;
+						tab;
+						nextPutAll: package name;
+						lf]].
+	^stream contents!
+
+sbClassTemplate
+
+	| def | 
+	def :=  Rowan projectTools browser classCreationTemplateForClass: 'Object' hybridBrowser: true.
+	writeStream nextPutAll: def; 		
+		nextPut: $%; lf;
+		nextPut: $%; lf;
+		yourself.
+	
+
+!
+
+sbUnloadPackage: anOrderedCollection
+
+	| packageName package project |
+	packageName := anOrderedCollection removeFirst.
+	package := Rowan image loadedPackageNamed: packageName.
+	project := Rowan image loadedProjectNamed: package projectName.
+	project removeLoadedPackage: package.
+	self systemBrowserUpdate.
+!
+
 sbUpdateClassInfo
 
 	| definition classComment |
@@ -338,8 +388,40 @@ sbUpdateClassInfo
 		nextPutAll: classComment; lf;
 		nextPut: $%; lf;
 		yourself.
+!
+
+sbUpdatePackages
+
+	| override modifiedList oldSelections newSelections fullList |
+	oldSelections := self nextLineAsList.
+	(override := selections at: #'package' ifAbsent: [nil]) notNil ifTrue: [oldSelections := Array with: override].
+	fullList := self rowanLoadedPackageNames subStrings: Character lf.
+	fullList := fullList reject: [:each | each isEmpty].
+	fullList := fullList asSortedCollection asArray.
+	fullList := fullList collect: [:each | each subStrings: Character tab].
+	fullList := fullList reject: [:each | each isEmpty].
+	modifiedList := (fullList select: [:each | (each at: 2) = 'Y']) collect: [:each | each at: 3].
+	fullList := fullList collect: [:each | each at: 3].
+	self 
+		writeList: fullList;
+		writeList: modifiedList;
+		yourself.
+	newSelections := oldSelections select: [:each | fullList includes: each].
+	(newSelections isEmpty and: [oldSelections size = 1]) ifTrue: [
+			newSelections := fullList select: [:each | (oldSelections first copyFrom: 1 to: (oldSelections first size min: each size)) = each].
+	].
+	newSelections do: [:each | 
+		writeStream nextPutAll: each; tab.
+		classList addAll: (self mcPackageClass named: each) packageInfo classes.
+	].
+	writeStream lf.
+	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first].
 ! !
+!JadeServer categoriesFor: #rowanLoadedPackageNames!Monticello!public! !
+!JadeServer categoriesFor: #sbClassTemplate!public!System Browser! !
+!JadeServer categoriesFor: #sbUnloadPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClassInfo!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !
 
 !JadeServer64bit32 class methodsFor!
 

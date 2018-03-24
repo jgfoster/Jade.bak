@@ -23,6 +23,12 @@ RowanDefinitionService class removeAllMethods.
 %
 set compile_env: 0
 ! ------------------- Class methods for RowanDefinitionService
+category: 'other'
+classmethod: RowanDefinitionService
+rowanFixMe
+
+	"send this message to see everywhere that GS_Jade should be fixed"
+%
 category: 'examples'
 classmethod: RowanDefinitionService
 sampleService

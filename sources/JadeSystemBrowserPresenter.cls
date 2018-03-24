@@ -149,7 +149,7 @@ addRepository
 
 addSubclass
 
-	| i j superclass string |
+	| i j superclass string | 
 	self isOkayToChange ifFalse: [^self].
 	i := classDefinition indexOfSubCollection: '''' startingAt: 1.
 	j := classDefinition indexOfSubCollection: '''' startingAt: i + 1.
@@ -2782,7 +2782,7 @@ updateClassHierarchy
 
 updateClassInfo
 
-	| index newClassDefinition | 
+	| index newClassDefinition |
 	selectedClassOop := readStream nextLine asNumber.
 	newClassDefinition := readStream nextParagraph.
 	classCommentPresenter value: readStream nextParagraph.
@@ -3110,6 +3110,7 @@ updatePackageInfo
 updatePackageList
 
 	| dictionary fullList selections old new |
+
 	packageListPresenter ensureVisible.
 	dictionary := Dictionary new.
 	readStream nextLineAsList do: [:each | dictionary at: each put: false].

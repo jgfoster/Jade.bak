@@ -8,6 +8,18 @@ JadeSystemBrowser subclass: #RowanSystemBrowser
 RowanSystemBrowser guid: (GUID fromString: '{dbac925c-5c0f-4800-b343-1784dfb07a6e}')!
 RowanSystemBrowser comment: ''!
 !RowanSystemBrowser categoriesForClass!Unclassified! !
+!RowanSystemBrowser methodsFor!
+
+shellName
+
+	^'Rowan System Browser'.
+!
+
+systemBrowserPresenter
+	^RowanSystemBrowserPresenter! !
+!RowanSystemBrowser categoriesFor: #shellName!overrides!private! !
+!RowanSystemBrowser categoriesFor: #systemBrowserPresenter!public! !
+
 !RowanSystemBrowser class methodsFor!
 
 resource_Default_view

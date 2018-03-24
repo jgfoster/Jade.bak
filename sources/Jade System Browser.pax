@@ -64,7 +64,6 @@ package methodNames
 	add: #JadeServer -> #sbClassComment:;
 	add: #JadeServer -> #sbClassesToDictionary:;
 	add: #JadeServer -> #sbClassFrom:;
-	add: #JadeServer -> #sbClassTemplate;
 	add: #JadeServer -> #sbComparePackages:;
 	add: #JadeServer -> #sbCopyMethodsFor:;
 	add: #JadeServer -> #sbFileOutClass:;
@@ -98,7 +97,6 @@ package methodNames
 	add: #JadeServer -> #sbSavePackage:;
 	add: #JadeServer -> #sbSetHomeDictionary:;
 	add: #JadeServer -> #sbUniqueVersionName:;
-	add: #JadeServer -> #sbUnloadPackage:;
 	add: #JadeServer -> #sbUpdateClassCategories;
 	add: #JadeServer -> #sbUpdateClasses;
 	add: #JadeServer -> #sbUpdateClassHierarchy;
@@ -119,7 +117,6 @@ package methodNames
 	add: #JadeServer -> #sbUpdateMethodStepPointsFor:;
 	add: #JadeServer -> #sbUpdateMethodVariables;
 	add: #JadeServer -> #sbUpdatePackage:;
-	add: #JadeServer -> #sbUpdatePackages;
 	add: #JadeServer -> #sbUpdatePackagesOrDictionaries;
 	add: #JadeServer -> #sbUpdateSuperclass;
 	add: #JadeServer -> #selectedClassOverridesSelector:;
@@ -727,26 +724,6 @@ sbClassFrom: anOrderedCollection
 	^myClass.
 !
 
-sbClassTemplate
-
-	| string index |
-	string := Stream definition.
-	index := string findPattern: #('Stream') startingAt: 1.
-	writeStream 
-		nextPutAll: '0'; lf;	"selectedClassOop"
-		nextPut: $(; lf;
-		nextPutAll: (string copyFrom: 1 to: index - 1);
-		nextPutAll: 'MyNewClass';
-		nextPutAll: (string copyFrom: index + 6 to: string size);
-		nextPutAll: ')';
-		nextPutAll: ((string includesString: 'category: ''')
-			ifTrue: ['']
-			ifFalse: [' category: ' , Boolean category printString]); lf;
-		nextPut: $%; lf;
-		nextPut: $%; lf;
-		yourself.
-!
-
 sbComparePackages: anOrderedCollection
 
 	| current ancestor repository patch string |
@@ -1294,14 +1271,6 @@ sbUniqueVersionName: aList
 
 !
 
-sbUnloadPackage: anOrderedCollection
-
-	| string |
-	string := anOrderedCollection removeFirst.
-	(self mcWorkingCopyClass forPackage: (self mcPackageClass named: string)) unload.
-	self systemBrowserUpdate.
-!
-
 sbUpdateClassCategories
 
 	| categories selection override |
@@ -1684,34 +1653,6 @@ sbUpdatePackage: aString
 	].
 	writeStream nextPut: $%; lf.!
 
-sbUpdatePackages
-
-	| override modifiedList oldSelections newSelections fullList |
-	oldSelections := self nextLineAsList.
-	(override := selections at: #'package' ifAbsent: [nil]) notNil ifTrue: [oldSelections := Array with: override].
-	fullList := self mcLoadedVersionNames subStrings: Character lf.
-	fullList := fullList reject: [:each | each isEmpty].
-	fullList := fullList asSortedCollection asArray.
-	fullList := fullList collect: [:each | each subStrings: Character tab].
-	fullList := fullList reject: [:each | each isEmpty].
-	modifiedList := (fullList select: [:each | (each at: 2) = 'Y']) collect: [:each | each at: 3].
-	fullList := fullList collect: [:each | each at: 3].
-	self 
-		writeList: fullList;
-		writeList: modifiedList;
-		yourself.
-	newSelections := oldSelections select: [:each | fullList includes: each].
-	(newSelections isEmpty and: [oldSelections size = 1]) ifTrue: [
-			newSelections := fullList select: [:each | (oldSelections first copyFrom: 1 to: (oldSelections first size min: each size)) = each].
-	].
-	newSelections do: [:each | 
-		writeStream nextPutAll: each; tab.
-		classList addAll: (self mcPackageClass named: each) packageInfo classes.
-	].
-	writeStream lf.
-	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first].
-!
-
 sbUpdatePackagesOrDictionaries
 
 	| selectedTab |
@@ -1923,7 +1864,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbClassComment:!public!System Browser! !
 !JadeServer categoriesFor: #sbClassesToDictionary:!public!System Browser! !
 !JadeServer categoriesFor: #sbClassFrom:!public!System Browser! !
-!JadeServer categoriesFor: #sbClassTemplate!public!System Browser! !
 !JadeServer categoriesFor: #sbComparePackages:!public!System Browser! !
 !JadeServer categoriesFor: #sbCopyMethodsFor:!public!System Browser! !
 !JadeServer categoriesFor: #sbFileOutClass:!public!System Browser! !
@@ -1957,7 +1897,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbSavePackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbSetHomeDictionary:!public!System Browser! !
 !JadeServer categoriesFor: #sbUniqueVersionName:!public!System Browser! !
-!JadeServer categoriesFor: #sbUnloadPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClassCategories!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClasses!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClassHierarchy!public!System Browser! !
@@ -1978,7 +1917,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbUpdateMethodStepPointsFor:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodVariables!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateSuperclass!public!System Browser! !
 !JadeServer categoriesFor: #selectedClassOverridesSelector:!public!System Browser! !

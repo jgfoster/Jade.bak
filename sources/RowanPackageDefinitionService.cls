@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanDefinitionService subclass: #RowanPackageDefinitionService
-	instanceVariableNames: ''
+	instanceVariableNames: 'name'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -10,13 +10,33 @@ RowanPackageDefinitionService comment: ''!
 !RowanPackageDefinitionService categoriesForClass!Kernel-Objects! !
 !RowanPackageDefinitionService methodsFor!
 
+classCreationTemplate
+
+	^transport send: #genericClassCreationTemplate to: self remoteService!
+
 createPackageNamed: packageName inProject: projectName
 
 	transport send: #createPackageNamed:inProject: to: remoteService withAll: (Array with: packageName with: projectName)!
 
+genericClassCreationTemplate
+
+	^transport send: #genericClassCreationTemplate to: remoteService 
+!
+
+name
+	^name!
+
+name: packageName
+	name := packageName.
+	transport send: #name: to: remoteService withAll: (Array with: packageName).!
+
 removeSampleSymbolDictionary
 
 	transport send: #removeSampleSymbolDictionary to: remoteService! !
+!RowanPackageDefinitionService categoriesFor: #classCreationTemplate!public! !
 !RowanPackageDefinitionService categoriesFor: #createPackageNamed:inProject:!public! !
+!RowanPackageDefinitionService categoriesFor: #genericClassCreationTemplate!public! !
+!RowanPackageDefinitionService categoriesFor: #name!accessing!public! !
+!RowanPackageDefinitionService categoriesFor: #name:!accessing!public! !
 !RowanPackageDefinitionService categoriesFor: #removeSampleSymbolDictionary!public! !
 

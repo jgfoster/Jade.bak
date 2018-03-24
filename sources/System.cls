@@ -6,7 +6,7 @@ Object subclass: #System
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 System guid: (GUID fromString: '{be3a2d98-7395-4e3b-9cc9-4d18f69e26de}')!
-System comment: ''!
+System comment: 'For server compilations that reference the Rowan global'!
 !System categoriesForClass!Unclassified! !
 !System class methodsFor!
 

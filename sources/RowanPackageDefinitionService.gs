@@ -2,7 +2,7 @@
 expectvalue /Class
 doit
 RowanDefinitionService subclass: 'RowanPackageDefinitionService'
-	instVarNames: #( projectDefinition packageName)
+	instVarNames: #( projectDefinition packageName name)
 	classVars: #()
 	classInstVars: #()
 	poolDictionaries: #()
@@ -26,8 +26,8 @@ set compile_env: 0
 ! ------------------- Instance methods for RowanPackageDefinitionService
 category: 'rowan'
 method: RowanPackageDefinitionService
-createPackageNamed: aString inProject: projectName
-	| projectService | self halt. 
+ createPackageNamed: aString inProject: projectName
+	| projectService | 
 	packageName := aString.
 	projectService := RowanProjectDefinitionService new.
 	projectDefinition := projectService createProjectNamed: projectName.  
@@ -36,7 +36,7 @@ createPackageNamed: aString inProject: projectName
 %
 category: 'examples'
 method: RowanPackageDefinitionService
-createSamplePackage
+ createSamplePackage
 
 	"assume that the sample project & symbol dictionary 
 	were already removed"
@@ -47,6 +47,22 @@ createSamplePackage
 	projectDefinition addPackageNamed: self samplePackageName.
 	packageName := self samplePackageName.
 	self projectTools load loadProjectDefinition: projectDefinition.
+%
+category: 'rowan'
+method: RowanPackageDefinitionService
+genericClassCreationTemplate
+
+	^self browserTool classCreationTemplateForSubclassOf: 'Object' category: name packageName: name
+%
+category: 'Accessing'
+method: RowanPackageDefinitionService
+name
+	^name
+%
+category: 'Updating'
+method: RowanPackageDefinitionService
+name: newValue
+	name := newValue
 %
 category: 'Accessing'
 method: RowanPackageDefinitionService
@@ -70,7 +86,7 @@ projectDefinition: newValue
 %
 category: 'examples'
 method: RowanPackageDefinitionService
-samplePackageName
+ samplePackageName
 	
 	^'SamplePackageName'
 %

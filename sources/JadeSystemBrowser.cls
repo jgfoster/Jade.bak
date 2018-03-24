@@ -25,7 +25,7 @@ addSystemBrowser
 
 addSystemBrowserForClass: anArray
 
-	(JadeAutoSystemBrowserPresenter
+	(self systemBrowserPresenter 
 		createIn: cardsPresenter 
 		gciSession: gciSession)
 		updateAfterFindClass: anArray
@@ -34,12 +34,7 @@ addSystemBrowserForClass: anArray
 !
 
 addSystemBrowserWithLayoutInfo: each
-
-	(JadeAutoSystemBrowserPresenter
-		createIn: cardsPresenter 
-		gciSession: gciSession)
-		layoutInfo: each.
-!
+	(self systemBrowserPresenter createIn: cardsPresenter gciSession: gciSession) layoutInfo: each!
 
 addWorkspace
 
@@ -139,7 +134,7 @@ logoutRequested: aValueHolder
 
 maximizeCode
 
-	(self currentCard class == JadeAutoSystemBrowserPresenter) ifFalse: [^self].
+	(self currentCard class == self systemBrowserPresenter ) ifFalse: [^self].
 
 	self currentCard bottomArrangement 
 	ifNil: [
@@ -270,6 +265,9 @@ statusBarText: aString
 	(self view viewNamed: 'statusBarField') model: (ValueHolder with: aString).
 !
 
+systemBrowserPresenter
+	^JadeAutoSystemBrowserPresenter!
+
 update
 
 	self currentCard ifNotNil: [:currentCard | currentCard onSetFocus].
@@ -305,6 +303,7 @@ update
 !JadeSystemBrowser categoriesFor: #shellName!overrides!private! !
 !JadeSystemBrowser categoriesFor: #statusBarServerRequestText:!public! !
 !JadeSystemBrowser categoriesFor: #statusBarText:!public! !
+!JadeSystemBrowser categoriesFor: #systemBrowserPresenter!public! !
 !JadeSystemBrowser categoriesFor: #update!public! !
 
 !JadeSystemBrowser class methodsFor!
