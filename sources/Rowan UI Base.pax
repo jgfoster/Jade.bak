@@ -30,13 +30,9 @@ package methodNames
 	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
 	add: #GsMethod -> #methodDefinitionService;
 	add: #GsMethod2 -> #asUpdatedVersion:;
-	add: #JadeMethodListPresenter -> #browseImplementorsOf:;
-	add: #JadeMethodListPresenter -> #browseMethodsFromString:;
-	add: #JadeMethodListPresenter -> #browseMethodsFromString:methodName:;
-	add: #JadeMethodListPresenter -> #browseMethodsFromString:methodName:type:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
-	add: #JadeServer -> #rowanLoadedPackageNames;
+	add: #JadeServer -> #sbAddPackage:;
 	add: #JadeServer -> #sbClassTemplate;
 	add: #JadeServer -> #sbUnloadPackage:;
 	add: #JadeServer -> #sbUpdateClassInfo;
@@ -245,52 +241,6 @@ asUpdatedVersion: stringOop
 ! !
 !GsMethod2 categoriesFor: #asUpdatedVersion:!public! !
 
-!JadeMethodListPresenter methodsFor!
-
-browseImplementorsOf: aGsMethod
-	
-	^self
-		browse: #'implementorsOf:' 
-		method: aGsMethod.
-!
-
-browseMethodsFromString: aString
-
-	| list |
-	list := RowanMethodDefinition
-		listFromString: aString
-		session: self gciSession.
-	methodListPresenter list: list asSortedCollection.
-	list notEmpty ifTrue: [
-		methodListPresenter selectFirstMethod.
-	].
-!
-
-browseMethodsFromString: aString methodName: methodName
-	| list |
-
-	list := RowanMethodDefinition
-		listFromString: aString
-		session: self gciSession.
-	methodListPresenter list: list asSortedCollection.
-	list notEmpty ifTrue: [
-		methodListPresenter selectFirstMethod.
-	].!
-
-browseMethodsFromString: aString methodName: methodName type: browseType
-	| list |
-	list := RowanMethodDefinition
-		listFromString: aString
-		session: self gciSession.
-	methodListPresenter list: list asSortedCollection.
-	list notEmpty ifTrue: [
-		methodListPresenter selectFirstMethod.
-	].! !
-!JadeMethodListPresenter categoriesFor: #browseImplementorsOf:!public! !
-!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
-!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !
-!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
-
 !JadePresenterA methodsFor!
 
 browseImplementorsOf: aGsMethodOrString
@@ -315,43 +265,35 @@ browseSendersOf: aGsMethodOrString
 
 !JadeServer methodsFor!
 
-rowanLoadedPackageNames
-	| stream loadedProjects |
-	RowanDefinitionService rowanFixMe.	"handle modified packages"
-	stream := WriteStream on: String new.
-	loadedProjects := Rowan image loadedProjects.
-	loadedProjects do: 
-			[:project |
-			project loadedPackages do: 
-					[:package |
-					stream
-						nextPutAll: package name;
-						tab;
-						nextPut: $N;
-						tab;
-						nextPutAll: package name;
-						lf]].
-	^stream contents!
+sbAddPackage: anOrderedCollection
+
+	| string service|
+	string := anOrderedCollection removeFirst.
+	selections at: #'package' put: string.
+	service := RowanPackageDefinitionService forPackageNamed: string.
+	service createPackage. 
+	self systemBrowserUpdate.
+
+!
 
 sbClassTemplate
 
-	| def | 
-	def :=  Rowan projectTools browser classCreationTemplateForClass: 'Object' hybridBrowser: true.
-	writeStream nextPutAll: def; 		
+	| def service | 
+	service := RowanClassDefinitionService forClassNamed: 'Object'.
+	def :=  service classCreationTemplate.
+	writeStream 
+		nextPutAll: '0'; lf;
+		nextPutAll: def; 		
 		nextPut: $%; lf;
 		nextPut: $%; lf;
 		yourself.
-	
-
 !
 
 sbUnloadPackage: anOrderedCollection
 
-	| packageName package project |
-	packageName := anOrderedCollection removeFirst.
-	package := Rowan image loadedPackageNamed: packageName.
-	project := Rowan image loadedProjectNamed: package projectName.
-	project removeLoadedPackage: package.
+	| service|
+	service := RowanPackageDefinitionService  forPackageNamed: anOrderedCollection removeFirst.
+	service unloadPackage.
 	self systemBrowserUpdate.
 !
 
@@ -411,13 +353,15 @@ sbUpdatePackages
 			newSelections := fullList select: [:each | (oldSelections first copyFrom: 1 to: (oldSelections first size min: each size)) = each].
 	].
 	newSelections do: [:each | 
+		| service |
 		writeStream nextPutAll: each; tab.
-		classList addAll: (self mcPackageClass named: each) packageInfo classes.
+		service := RowanPackageDefinitionService forPackageNamed: each.
+		classList addAll: service loadedClassHandles.
 	].
 	writeStream lf.
 	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first].
 ! !
-!JadeServer categoriesFor: #rowanLoadedPackageNames!Monticello!public! !
+!JadeServer categoriesFor: #sbAddPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbClassTemplate!public!System Browser! !
 !JadeServer categoriesFor: #sbUnloadPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClassInfo!public!System Browser! !
@@ -567,7 +511,7 @@ browseMethodsFromString: aString
 
 	"self hasTreeListSelection ifFalse: [self addTreeListRoot]."
 
-	list := GsMethod2
+	list := RowanMethodDefinition
 		listFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.

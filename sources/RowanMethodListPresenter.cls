@@ -10,6 +10,39 @@ RowanMethodListPresenter comment: ''!
 !RowanMethodListPresenter categoriesForClass!Unclassified! !
 !RowanMethodListPresenter methodsFor!
 
+browseMethodsFromString: aString
+
+	| list |
+	list := RowanMethodDefinition
+		listFromString: aString
+		session: self gciSession.
+	methodListPresenter list: list asSortedCollection.
+	list notEmpty ifTrue: [
+		methodListPresenter selectFirstMethod.
+	].
+!
+
+browseMethodsFromString: aString methodName: methodName
+	| list |
+
+	list := RowanMethodDefinition
+		listFromString: aString
+		session: self gciSession.
+	methodListPresenter list: list asSortedCollection.
+	list notEmpty ifTrue: [
+		methodListPresenter selectFirstMethod.
+	].!
+
+browseMethodsFromString: aString methodName: methodName type: browseType
+	| list |
+	list := RowanMethodDefinition
+		listFromString: aString
+		session: self gciSession.
+	methodListPresenter list: list asSortedCollection.
+	list notEmpty ifTrue: [
+		methodListPresenter selectFirstMethod.
+	].!
+
 createComponents
 	methodListPresenter := self add: PackageMethodListPresenter new name: 'methodList'.
 	methodSourcePresenter := (self add: RowanMethodSourcePresenter new name: 'methodSource')
@@ -49,6 +82,9 @@ updateSource
 	methodListPresenter selectedMethod ifNil: [^self].
 	methodSourcePresenter documentPresenter
 		lastGsShape: (self registry getClass: methodListPresenter selectedMethod gsClass name)! !
+!RowanMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
+!RowanMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !
+!RowanMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
 !RowanMethodListPresenter categoriesFor: #createComponents!public! !
 !RowanMethodListPresenter categoriesFor: #list:!public! !
 !RowanMethodListPresenter categoriesFor: #methodSourcePresenter!public! !

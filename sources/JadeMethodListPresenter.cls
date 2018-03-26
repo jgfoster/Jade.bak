@@ -41,6 +41,13 @@ browse: performSelector methodSelector: aString
 	self browseMethodsFromString: string.
 !
 
+browseImplementorsOf: aGsMethod
+	
+	^self
+		browse: #'implementorsOf:' 
+		method: aGsMethod.
+!
+
 browseMethods: aGsMethodColl
 
 	| string |
@@ -56,6 +63,39 @@ browseMethodsContaining: aString
 		browse: #'methodsContaining:' 
 		method: aString.
 !
+
+browseMethodsFromString: aString
+
+	| list |
+	list := GsMethod2
+		listFromString: aString
+		session: self gciSession.
+	methodListPresenter list: list asSortedCollection.
+	list notEmpty ifTrue: [
+		methodListPresenter selectFirstMethod.
+	].
+!
+
+browseMethodsFromString: aString methodName: methodName
+	| list |
+
+	list := GsMethod2
+		listFromString: aString
+		session: self gciSession.
+	methodListPresenter list: list asSortedCollection.
+	list notEmpty ifTrue: [
+		methodListPresenter selectFirstMethod.
+	].!
+
+browseMethodsFromString: aString methodName: methodName type: browseType
+	| list |
+	list := GsMethod2
+		listFromString: aString
+		session: self gciSession.
+	methodListPresenter list: list asSortedCollection.
+	list notEmpty ifTrue: [
+		methodListPresenter selectFirstMethod.
+	].!
 
 browseSendersOf: aGsMethodOrString
 
@@ -231,8 +271,12 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #browse:gsMethod:!public! !
 !JadeMethodListPresenter categoriesFor: #browse:method:!public! !
 !JadeMethodListPresenter categoriesFor: #browse:methodSelector:!public! !
+!JadeMethodListPresenter categoriesFor: #browseImplementorsOf:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethods:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsContaining:!public! !
+!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
+!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !
+!JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
 !JadeMethodListPresenter categoriesFor: #browseSendersOf:!public! !
 !JadeMethodListPresenter categoriesFor: #codePresenterIsMethod!public! !
 !JadeMethodListPresenter categoriesFor: #createComponents!public! !

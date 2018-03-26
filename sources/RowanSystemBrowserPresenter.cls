@@ -21,12 +21,14 @@ classService
 	^RowanClassDefinitionService on: self selectedClassNameWithoutVersion!
 
 possiblyShowGenericPackageClassTemplate: newDef
-	| packageService newClassDef |
+	"We got a template back from the server. However, it might not be
+	in the rowan style. Get a new one under some conditions." 
+	| packageService newClassDef selections|
 	newClassDef := newDef.
 	classListPresenter selections isEmpty
 		ifTrue: 
-			[packageService := (self isPackageListTabSelected and: [packageListPresenter selections notEmpty])
-						ifTrue: [RowanPackageDefinitionService new name: packageListPresenter selections first key]
+			[packageService := (self isPackageListTabSelected and: [(selections := packageListPresenter selections) notEmpty])
+						ifTrue: [RowanPackageDefinitionService new name: selections first key]
 						ifFalse: [RowanPackageDefinitionService new ].
 			newClassDef := packageService genericClassCreationTemplate].
 	^newClassDef!

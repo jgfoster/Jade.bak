@@ -33,9 +33,9 @@ name: packageName
 removeSampleSymbolDictionary
 
 	transport send: #removeSampleSymbolDictionary to: remoteService! !
-!RowanPackageDefinitionService categoriesFor: #classCreationTemplate!public! !
-!RowanPackageDefinitionService categoriesFor: #createPackageNamed:inProject:!public! !
-!RowanPackageDefinitionService categoriesFor: #genericClassCreationTemplate!public! !
+!RowanPackageDefinitionService categoriesFor: #classCreationTemplate!public!rowan! !
+!RowanPackageDefinitionService categoriesFor: #createPackageNamed:inProject:!public!rowan! !
+!RowanPackageDefinitionService categoriesFor: #genericClassCreationTemplate!public!rowan! !
 !RowanPackageDefinitionService categoriesFor: #name!accessing!public! !
 !RowanPackageDefinitionService categoriesFor: #name:!accessing!public! !
 !RowanPackageDefinitionService categoriesFor: #removeSampleSymbolDictionary!public! !

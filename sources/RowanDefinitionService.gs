@@ -111,6 +111,33 @@ removeSymbolDictionaryNamed: aName
 	index ~= 0 ifTrue:[
 		System myUserProfile removeDictionaryAt: index]
 %
+category: 'other'
+method: RowanDefinitionService
+rowanFixMe
+		
+	"marker for all things broken in Rowan"
+%
+category: 'rowan'
+method: RowanDefinitionService
+rowanLoadedPackageNames
+
+	| stream loadedProjects |
+	self rowanFixMe.	"handle modified package display"
+	stream := WriteStream on: String new.
+	loadedProjects := Rowan image loadedProjects.
+	loadedProjects do: 
+			[:project |
+			project loadedPackages do: 
+					[:package |
+					stream
+						nextPutAll: package name;
+						tab;
+						nextPut: $N;
+						tab;
+						nextPutAll: package name;
+						lf]].
+	^stream contents
+%
 category: 'samples'
 method: RowanDefinitionService
 sampleSymbolDictionaryName

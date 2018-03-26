@@ -23,7 +23,28 @@ RowanPackageDefinitionService class removeAllMethods.
 %
 set compile_env: 0
 ! ------------------- Class methods for RowanPackageDefinitionService
+category: 'instance creation'
+classmethod: RowanPackageDefinitionService
+forPackageNamed: packageName
+
+	| inst |
+	inst := self new. 
+	inst packageName: packageName.
+	^inst
+%
 ! ------------------- Instance methods for RowanPackageDefinitionService
+category: 'rowan'
+method: RowanPackageDefinitionService
+ createPackage
+	| projectService existingPackage |
+	self rowanFixMe. "should not use the sample project eventually"
+	projectService := RowanProjectDefinitionService new.
+	projectDefinition := projectService createProjectNamed: self sampleProjectName.  
+	existingPackage := Rowan image loadedPackageNamed: packageName ifAbsent:[
+		projectDefinition addPackageNamed: packageName.
+		^self projectTools load loadProjectDefinition: projectDefinition.].
+	(Rowan image loadedProjectNamed: projectDefinition name) addLoadedPackage: existingPackage
+%
 category: 'rowan'
 method: RowanPackageDefinitionService
  createPackageNamed: aString inProject: projectName
@@ -53,6 +74,32 @@ method: RowanPackageDefinitionService
 genericClassCreationTemplate
 
 	^self browserTool classCreationTemplateForSubclassOf: 'Object' category: name packageName: name
+%
+category: 'rowan'
+method: RowanPackageDefinitionService
+loadedClassDefinitions
+
+	^self loadedClasses collect:[:loadedClass | loadedClass asDefinition]
+%
+category: 'rowan'
+method: RowanPackageDefinitionService
+loadedClasses
+
+	| loadedPackage |
+	loadedPackage := Rowan image loadedPackageNamed: packageName ifAbsent:[^Array new].
+	^loadedPackage loadedClasses
+%
+category: 'rowan'
+method: RowanPackageDefinitionService
+loadedClassHandles
+
+	^self loadedClasses collect:[:loadedClass | loadedClass handle]
+%
+category: 'rowan'
+method: RowanPackageDefinitionService
+loadedClassNames
+
+	^self loadedClasses collect:[:loadedClass | loadedClass name]
 %
 category: 'Accessing'
 method: RowanPackageDefinitionService
@@ -95,4 +142,13 @@ method: RowanPackageDefinitionService
 sampleProjectName
 
 	^projectDefinition name
+%
+category: 'rowan'
+method: RowanPackageDefinitionService
+unloadPackage
+
+	| package project |
+	package := Rowan image loadedPackageNamed: packageName.
+	project := Rowan image loadedProjectNamed: package projectName.
+	project removeLoadedPackage: package.
 %

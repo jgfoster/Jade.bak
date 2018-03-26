@@ -30,7 +30,7 @@ classmethod: RowanClassDefinitionService
 forClassNamed: className 
 
 	| inst |
-	inst := RowanClassDefinitionService new. 
+	inst := self new. 
 	inst name: className.
 	^inst
 %

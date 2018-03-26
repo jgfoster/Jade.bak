@@ -28,28 +28,18 @@ category: 'examples'
 method: RowanProjectDefinitionService
 createProjectNamed: projectName 
 
-	| projectDefinition |
-
-	projectDefinition := RwProjectDefinition 
-		newForGitPackageProjectNamed: projectName.
-	projectDefinition 
-		comment: 'Sample Rowan Project';
-		defaultSymbolDictName: self sampleSymbolDictionaryName.
-	self projectTools load loadProjectDefinition: projectDefinition.
-	^projectDefinition
+	^self createProjectNamed: projectName in: self sampleSymbolDictionaryName.
 %
 category: 'examples'
 method: RowanProjectDefinitionService
 createProjectNamed: projectName in: symbolDictionaryName
 
 	| projectDefinition |
-
-	projectDefinition := RwProjectDefinition 
-		newForGitPackageProjectNamed: projectName.
+	projectDefinition := (Rowan loadedProjectNamed: projectName ifAbsent:[
+		self projectTools load loadProjectDefinition: (RwProjectDefinition newForGitPackageProjectNamed: projectName)]) asDefinition.
 	projectDefinition 
 		comment: 'Sample Rowan Project';
 		defaultSymbolDictName: symbolDictionaryName.
-	self projectTools load loadProjectDefinition: projectDefinition.
 	^projectDefinition
 %
 category: 'examples'

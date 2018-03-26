@@ -46,7 +46,6 @@ package methodNames
 	add: #JadeServer -> #sbAddMethodCategory:;
 	add: #JadeServer -> #sbAddMissingAccessors:;
 	add: #JadeServer -> #sbAddNameOf:;
-	add: #JadeServer -> #sbAddPackage:;
 	add: #JadeServer -> #sbAddRepository:;
 	add: #JadeServer -> #sbBreak:;
 	add: #JadeServer -> #sbBrowseClassReferences:;
@@ -456,15 +455,6 @@ sbAddNameOf: aClass
 		writeStream nextPut: $).
 	].
 	writeStream tab.
-!
-
-sbAddPackage: anOrderedCollection
-
-	| string |
-	string := anOrderedCollection removeFirst.
-	selections at: #'package' put: string.
-	self mcWorkingCopyClass forPackage: (self mcPackageClass named: string).
-	self systemBrowserUpdate.
 !
 
 sbAddRepository: list
@@ -1846,7 +1836,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbAddMethodCategory:!public!System Browser! !
 !JadeServer categoriesFor: #sbAddMissingAccessors:!public!System Browser! !
 !JadeServer categoriesFor: #sbAddNameOf:!public!System Browser! !
-!JadeServer categoriesFor: #sbAddPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbAddRepository:!public!System Browser! !
 !JadeServer categoriesFor: #sbBreak:!public!System Browser! !
 !JadeServer categoriesFor: #sbBrowseClassReferences:!public!System Browser! !
