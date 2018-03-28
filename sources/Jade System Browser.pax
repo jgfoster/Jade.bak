@@ -81,13 +81,11 @@ package methodNames
 	add: #JadeServer -> #sbPostSaveClass:;
 	add: #JadeServer -> #sbReadMethodFilter;
 	add: #JadeServer -> #sbRecompileSubclassesOf:andCopyMethods:;
-	add: #JadeServer -> #sbRemoveClasses;
 	add: #JadeServer -> #sbRemoveDictionaries:;
 	add: #JadeServer -> #sbRemoveGlobals;
 	add: #JadeServer -> #sbRemoveHistory:;
 	add: #JadeServer -> #sbRemoveKey:fromDictionary:;
 	add: #JadeServer -> #sbRemoveMethodCategories:;
-	add: #JadeServer -> #sbRemoveMethods:;
 	add: #JadeServer -> #sbRemovePriorVersions;
 	add: #JadeServer -> #sbRemoveRepository:;
 	add: #JadeServer -> #sbRevertClass;
@@ -1025,48 +1023,6 @@ sbRecompileSubclassesOf: newClass andCopyMethods: aBoolean
 	].
 !
 
-sbRemoveClasses
-
-	| isPackages containers classNames |
-	isPackages := self nextLine = 'packageList'.
-	containers := self nextLineAsList.
-	classNames := (self nextLineAsList reject: [:each | each isEmpty]) collect: [:each | (each subStrings: Character space) first asSymbol].
-	self symbolList do: [:eachDictionary | 
-		| dictionaryName |
-		dictionaryName := eachDictionary name asString.
-		classNames do: [:eachName |
-			| class flag |
-			(class := eachDictionary at: eachName ifAbsent: [nil]) notNil ifTrue: [
-				selections removeAllKeys: selections keys.
-				isPackages ifTrue: [
-					flag := false. 
-					containers do: [:each |
-						flag := flag or: [(class category copyFrom: 1 to: (class category size min: each size)) = each].
-						flag ifTrue: [
-							selections at: #'package' put: each.
-						].
-					].
-				] ifFalse: [
-					flag := containers includes: dictionaryName.
-					flag ifTrue: [
-						selections at: #'dictionary' put: dictionaryName.
-					].
-				].
-				flag ifTrue: [
-					selectedClass := (eachDictionary at: eachName) superclass.
-					selections 
-						at: #'category' 		put: selectedClass category;
-						at: #'className'	put: selectedClass name;
-						at: #'class'				put: selectedClass;
-						yourself.
-					self sbRemoveKey: eachName fromDictionary: eachDictionary.
-				].
-			].
-		].
-	].
-	self systemBrowserUpdate.
-!
-
 sbRemoveDictionaries: anOrderedCollection
 
 	anOrderedCollection do: [:each | 
@@ -1112,14 +1068,6 @@ sbRemoveMethodCategories: anOrderedCollection
 	| behavior |
 	behavior := self sbClassFrom: anOrderedCollection.
 	anOrderedCollection do: [:each | behavior removeCategory: each].
-	self systemBrowserUpdate.
-!
-
-sbRemoveMethods: anOrderedCollection
-
-	| behavior |
-	behavior := self sbClassFrom: anOrderedCollection.
-	anOrderedCollection do: [:each | behavior removeSelector: each asSymbol].
 	self systemBrowserUpdate.
 !
 
@@ -1871,13 +1819,11 @@ writeList: aList
 !JadeServer categoriesFor: #sbPostSaveClass:!public!System Browser! !
 !JadeServer categoriesFor: #sbReadMethodFilter!public!System Browser! !
 !JadeServer categoriesFor: #sbRecompileSubclassesOf:andCopyMethods:!public!System Browser! !
-!JadeServer categoriesFor: #sbRemoveClasses!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveDictionaries:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveGlobals!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveHistory:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveKey:fromDictionary:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveMethodCategories:!public!System Browser! !
-!JadeServer categoriesFor: #sbRemoveMethods:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemovePriorVersions!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveRepository:!public!System Browser! !
 !JadeServer categoriesFor: #sbRevertClass!public!System Browser! !

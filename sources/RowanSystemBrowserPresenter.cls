@@ -20,6 +20,33 @@ classService
 
 	^RowanClassDefinitionService on: self selectedClassNameWithoutVersion!
 
+deletePackage
+	| packageName |
+	packageName := packageListPresenter selections first key.
+	(MessageBox confirm: 'Do you want to delete Rowan package ''' , packageName , '''?' caption: 'Confirm Delete')
+		ifFalse: [^self].
+	self updateCommand: 'unloadPackage' , Character tab asString , packageName , Character lf asString
+				, self requestString!
+
+pkgsMenuStrings
+
+	0 == 1 ifTrue: [
+		self findClass; addPackage; loadLatestVersion; addRepository; removeRepository; savePackage; showPackageChanges; deletePackage.
+	].
+	^#(
+		'&Packages'
+		'&Find Class.../Ctrl+Shift+F/findClass'
+		'&Add Package...//addPackage'
+		'-'
+		'&Load Latest Version//loadLatestVersion'
+		'Add &Repository...//addRepository'
+		'Remo&ve Repository...//removeRepository'
+		'&Save Package..//savePackage'
+		'Show &Changes//showPackageChanges'
+		'&Delete Package...//deletePackage'
+	).
+!
+
 possiblyShowGenericPackageClassTemplate: newDef
 	"We got a template back from the server. However, it might not be
 	in the rowan style. Get a new one under some conditions." 
@@ -67,6 +94,8 @@ updateClassInfo
 		yourself! !
 !RowanSystemBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #classService!private!rowan! !
+!RowanSystemBrowserPresenter categoriesFor: #deletePackage!menu handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #possiblyShowGenericPackageClassTemplate:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassInfo!public!updating! !
 

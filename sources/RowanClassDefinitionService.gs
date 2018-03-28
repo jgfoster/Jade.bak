@@ -4,7 +4,7 @@ doit
 RowanDefinitionService subclass: 'RowanClassDefinitionService'
 	instVarNames: #( name comment instVarNames
 	                  classVarNames classInstVarNames superclassName subclassType
-	                  poolDictionaryNames classType packageService)
+	                  poolDictionaryNames classType packageService meta)
 	classVars: #()
 	classInstVars: #()
 	poolDictionaries: #()
@@ -32,6 +32,16 @@ forClassNamed: className
 	| inst |
 	inst := self new. 
 	inst name: className.
+	^inst
+%
+category: 'instance creation'
+classmethod: RowanClassDefinitionService
+forClassNamed: className meta: aBoolean
+
+	| inst |
+	inst := self new. 
+	inst name: className;
+		meta: aBoolean.
 	^inst
 %
 category: 'instance creation'
@@ -130,6 +140,18 @@ method: RowanClassDefinitionService
 instVarNames: newValue
 	instVarNames := newValue
 %
+category: 'other'
+method: RowanClassDefinitionService
+meta
+
+	^meta
+%
+category: 'other'
+method: RowanClassDefinitionService
+meta: anObject
+
+	meta := anObject
+%
 category: 'Accessing'
 method: RowanClassDefinitionService
 name
@@ -172,6 +194,12 @@ category: 'Updating'
 method: RowanClassDefinitionService
 poolDictionaryNames: newValue
 	poolDictionaryNames := newValue
+%
+category: 'rowan'
+method: RowanClassDefinitionService
+removeSelector: selector
+
+	self browserTool removeMethod: selector forClassNamed: name isMeta: meta
 %
 category: 'examples'
 method: RowanClassDefinitionService

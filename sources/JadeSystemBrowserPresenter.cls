@@ -714,6 +714,15 @@ delayUpdate
 	keystrokeTime := Time millisecondClockValue + 500.
 !
 
+deletePackage
+	"renamed from unloadPackage for semantical differences with Monticello"
+	| packageName |
+	packageName := packageListPresenter selections first key.
+	(MessageBox confirm: 'Do you want to unload ''' , packageName , '''?' caption: 'Confirm Unload')
+		ifFalse: [^self].
+	self updateCommand: 'unloadPackage' , Character tab asString , packageName , Character lf asString
+				, self requestString!
+
 dictionaryListPresenter
 
 	^dictionaryListPresenter!
@@ -2026,23 +2035,18 @@ pkgDictChanged
 !
 
 pkgsMenuStrings
-
-	0 == 1 ifTrue: [
-		self findClass; addPackage; loadLatestVersion; addRepository; removeRepository; savePackage; showPackageChanges; unloadPackage.
-	].
-	^#(
-		'&Packages'
-		'&Find Class.../Ctrl+Shift+F/findClass'
-		'&Add Package...//addPackage'
-		'-'
-		'&Load Latest Version//loadLatestVersion'
-		'Add &Repository...//addRepository'
-		'Remo&ve Repository...//removeRepository'
-		'&Save Package..//savePackage'
-		'Show &Changes//showPackageChanges'
-		'&Unload Package...//unloadPackage'
-	).
-!
+	0 == 1
+		ifTrue: 
+			[self
+				findClass;
+				addPackage;
+				loadLatestVersion;
+				addRepository;
+				removeRepository;
+				savePackage;
+				showPackageChanges;
+				deletePackage].
+	^#('&Packages' '&Find Class.../Ctrl+Shift+F/findClass' '&Add Package...//addPackage' '-' '&Load Latest Version//loadLatestVersion' 'Add &Repository...//addRepository' 'Remo&ve Repository...//removeRepository' '&Save Package..//savePackage' 'Show &Changes//showPackageChanges' '&Unload Package...//unloadPackage')!
 
 preferencesMenuStrings
 
@@ -2592,14 +2596,6 @@ textTabChanged
 	(textAreaTabs currentCard name = 'globals' 	and: [self isPackageListTabSelected	]) ifTrue: [packageInfoTab 	ensureVisible].
 	(textAreaTabs currentCard name = 'packageInfo' and: [self isDictionariesTabSelected	]) ifTrue: [globalsPresenter 	ensureVisible].
 	self updateMenuBar.
-!
-
-unloadPackage
-
-	| packageName |
-	packageName := packageListPresenter selections first key.
-	(MessageBox confirm: 'Do you want to unload ''' , packageName , '''?' caption: 'Confirm Unload') ifFalse: [^self].
-	self updateCommand: 'unloadPackage' , Character tab asString , packageName , Character lf asString , self requestString.
 !
 
 updateAfterFindClass: anArray isMeta: aBoolean selector: aString
@@ -3286,6 +3282,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #currentSelectionOrLine!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #defaultFileExtension!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #delayUpdate!public!updating! !
+!JadeSystemBrowserPresenter categoriesFor: #deletePackage!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #dictionaryListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #dictsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editCopy!menu handlers!public! !
@@ -3440,7 +3437,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #stepPointAt:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #stuffToKeepFromPath:andAddTo:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #unloadPackage!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #updateAfterFindClass:isMeta:selector:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateAndSelect:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
