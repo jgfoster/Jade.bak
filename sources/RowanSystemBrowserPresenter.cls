@@ -16,12 +16,42 @@ addSubclass
 		value: self classService classCreationTemplate;
 		yourself!
 
+categoriesMenuStrings
+
+	false ifTrue: [
+		self addMethodCategory; removeMethodCategories.
+	].
+	^#(
+		'&Categories'
+		'&Add Method Category//addMethodCategory'
+		'&Remove Method Categories//removeMethodCategories'
+	).
+!
+
+classesMenuStrings
+
+	false ifTrue: [
+		self browseClassReferences; fileOutClass; addSubclass; removeClass;  runClassTests.
+	].
+	^#(
+		'&Classes'
+		'&Browse References//browseClassReferences'
+		'&File Out Class//fileOutClass'
+		'Add &Subclass//addSubclass'
+		'&Remove//removeClass'
+		'-'
+		'Set Compiler &Environment ...//setEnvironment'
+		'Run &Tests//runClassTests'
+	).
+!
+
 classService
 
 	^RowanClassDefinitionService on: self selectedClassNameWithoutVersion!
 
 deletePackage
 	| packageName |
+	packageListPresenter selections isEmpty ifTrue:[^MessageBox notify: 'No package selected'].
 	packageName := packageListPresenter selections first key.
 	(MessageBox confirm: 'Do you want to delete Rowan package ''' , packageName , '''?' caption: 'Confirm Delete')
 		ifFalse: [^self].
@@ -31,7 +61,7 @@ deletePackage
 pkgsMenuStrings
 
 	0 == 1 ifTrue: [
-		self findClass; addPackage; loadLatestVersion; addRepository; removeRepository; savePackage; showPackageChanges; deletePackage.
+		self findClass; addPackage; loadLatestVersion; savePackage; showPackageChanges; deletePackage.
 	].
 	^#(
 		'&Packages'
@@ -39,8 +69,6 @@ pkgsMenuStrings
 		'&Add Package...//addPackage'
 		'-'
 		'&Load Latest Version//loadLatestVersion'
-		'Add &Repository...//addRepository'
-		'Remo&ve Repository...//removeRepository'
 		'&Save Package..//savePackage'
 		'Show &Changes//showPackageChanges'
 		'&Delete Package...//deletePackage'
@@ -93,6 +121,8 @@ updateClassInfo
 		isModified: false;
 		yourself! !
 !RowanSystemBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
+!RowanSystemBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #classService!private!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #deletePackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !

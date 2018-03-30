@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #RowanDefinitionService
-	instanceVariableNames: 'transport remoteService'
+	instanceVariableNames: 'transport remoteService name'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -66,6 +66,12 @@ initializeTransport
 
 	transport := GciSession allInstances detect: [:session | session isValidSession] ifNone:[self halt].!
 
+name
+	^name!
+
+name: anObject
+	name := anObject!
+
 remoteAccessors
 
 	^self subclassResponsibility!
@@ -95,6 +101,8 @@ transport: anObject
 !RowanDefinitionService categoriesFor: #createClientDefinitionFromRemoteDefinition:!private! !
 !RowanDefinitionService categoriesFor: #initialize!initialization!private! !
 !RowanDefinitionService categoriesFor: #initializeTransport!initialization!private! !
+!RowanDefinitionService categoriesFor: #name!accessing!private! !
+!RowanDefinitionService categoriesFor: #name:!accessing!private! !
 !RowanDefinitionService categoriesFor: #remoteAccessors!private! !
 !RowanDefinitionService categoriesFor: #remoteServiceName!examples!private! !
 !RowanDefinitionService categoriesFor: #removeSampleSymbolDictionary!public! !

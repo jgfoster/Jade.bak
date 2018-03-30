@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanDefinitionService subclass: #RowanClassDefinitionService
-	instanceVariableNames: 'name'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -21,7 +21,9 @@ remoteService
 	| stream |
 	stream := WriteStream on: String new.
 	stream nextPutAll: 'RowanClassDefinitionService new '.
-	^transport executeString: stream contents!
+	remoteService := transport executeString: stream contents.
+	transport send: #name: to: remoteService withAll: (Array with: name).
+	^remoteService!
 
 sampleClassName
 	^transport send: #sampleClassName to: remoteService.  ! !

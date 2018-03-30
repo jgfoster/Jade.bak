@@ -2326,43 +2326,6 @@ runMethodTests
 	MessageBox notify: 'Ran ' , methodListPresenter selections size printString , ' test(s)'.
 !
 
-savePackage
-
-	| package string array dict stream |
-	package := packageListPresenter selections first.
-	string := self updateCommand: 'uniqueVersionName' , Character tab asString , package key.
-	string = 'uniqueVersionName' ifFalse: [self error: 'Unrecognized response'].
-	string := readStream nextLine.
-	array := ancestorListPresenter list.
-	array := array isEmpty 
-		ifTrue: [#('' '' '' '')]
-		ifFalse: [array first].
-	dict := Dictionary new
-		at: #'httpPassword'		put: '';
-		at: #'httpUser'			put: '';
-		at: #'name' 			put: package key;
-		at: #'isModified'			put: package value;
-		at: #'nextVersionName'	put: string;
-		at: #'priorVersionName'	put: (array at: 2);
-		at: #'versionMessage'		put: (array at: 4);
-		at: #'repositoryList'		put: repositoryListPresenter list;
-		at: #'repository'			put: (repositoryListPresenter selectionIfNone: [repositoryListPresenter model last]);
-		yourself.
-	(MCVersionDialog showModalOn: dict) isNil ifTrue: [^self].
-	stream := (WriteStream on: String new)
-		nextPutAll: 'savePackage'; tab;
-		nextPutAll: package key; tab;
-		nextPutAll: ((dict at: #'repository') at: 2); tab;
-		nextPutAll: (dict at: #'versionName'); tab;
-		nextPutAll: (dict at: #'httpUser'); tab;
-		nextPutAll: (dict at: #'httpPassword'); lf;
-		nextPutAll: ((dict at: #'versionMessage') reject: [:char | char = Character cr]); lf;
-		nextPut: $%; lf;
-		nextPutAll: self requestString;
-		yourself.
-	self updateCommand: stream contents.
-!
-
 selectClass: aString selector: methodString
 "
 	Array with: className with: dictionaryName with: category with: packageName.
@@ -3390,7 +3353,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #onDropOnPackageList:!drag & drop!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onSetFocus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onSetFocus:stack:!public! !
-!JadeSystemBrowserPresenter categoriesFor: #onViewOpened!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #openSourceStyler!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #packageListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #parseContext!public! !
@@ -3413,7 +3376,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #revertNewClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #runClassTests!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #runMethodTests!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #selectClass:selector:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #selectedClassChanged:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #selectedClasses!public! !

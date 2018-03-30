@@ -20,6 +20,9 @@ package classNames
 	add: #RowanPackageShell;
 	add: #RowanPresenter;
 	add: #RowanProjectDefinitionService;
+	add: #RowanProjectListPresenter;
+	add: #RowanProjectListShell;
+	add: #RowanSavePackageDialog;
 	add: #RowanServiceTest;
 	add: #RowanShell;
 	add: #RowanSystemBrowser;
@@ -43,11 +46,12 @@ package methodNames
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeSystemBrowserPresenter -> #savePackage;
 	add: #JadeTextDocument -> #jadeBrowseClasses;
 	add: #JadeToolsToolBarPresenter -> #browseClasses;
-	add: #JadeTranscript -> #createRowanPackage;
 	add: #JadeTranscript -> #methodsChanged24;
 	add: #JadeTranscript -> #methodsChangedDays;
+	add: #JadeTranscript -> #openRowanProjectList;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:type:;
@@ -70,7 +74,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Key-Value Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Deprecated\Dolphin MVP (Deprecated)';
@@ -79,6 +82,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Rich Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Sliding Tray\Dolphin Slidey-Inney-Outey Thing';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Tree\Dolphin Tree Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
@@ -90,6 +94,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade Test Browser';
 	add: 'Jade Transcript';
 	add: 'Jade UI Base';
+	add: 'Monticello';
 	add: '..\Core\Contributions\Solutions Software\SSW EditableListView';
 	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
 	yourself).
@@ -109,12 +114,12 @@ GsMethod2 subclass: #RowanMethodDefinition
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #RowanDefinitionService
-	instanceVariableNames: 'transport remoteService'
+	instanceVariableNames: 'transport remoteService name'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanClassDefinitionService
-	instanceVariableNames: 'name'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -124,12 +129,12 @@ RowanDefinitionService subclass: #RowanMethodDefinitionService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanPackageDefinitionService
-	instanceVariableNames: 'name'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanDefinitionService subclass: #RowanProjectDefinitionService
-	instanceVariableNames: ''
+	instanceVariableNames: 'sha branch'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -168,6 +173,16 @@ RowanPresenter subclass: #RowanPackagePresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+RowanPresenter subclass: #RowanProjectListPresenter
+	instanceVariableNames: 'projectListPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCVersionDialog subclass: #RowanSavePackageDialog
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeShell subclass: #RowanShell
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -184,6 +199,11 @@ JadeSystemBrowser subclass: #RowanSystemBrowser
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanShell subclass: #RowanPackageShell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanShell subclass: #RowanProjectListShell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -360,7 +380,7 @@ sbRemoveClasses
 sbRemoveMethods: anOrderedCollection
 	| behavior classEntity |
 	behavior := self sbClassFrom: anOrderedCollection. 
-	classEntity := (UserGlobals at: #rowanCompile)
+	classEntity := (UserGlobals at: #rowanCompile ifAbsent:[false])
 				ifTrue: [RowanClassDefinitionService forClassNamed: behavior name meta: behavior isMeta]
 				ifFalse: [behavior].
 	anOrderedCollection do: [:each | classEntity removeSelector: each asSymbol].
@@ -480,14 +500,7 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 		warnings := ex gsArguments at: 1.
 		ex resume.
 	].
-	^[	"Above method does not notify package of changes. 
-		Repeat compile if possible using method that broadcasts changes (but does not signal warnings).
-		See https://github.com/jgfoster/Jade/issues/3."
-		aBehavior
-			compileMethod: methodString 
-			category: categorySymbol 
-			using: aSymbolList 
-			environmentId: 0.
+	^[	
 		(self compiledMethodAt: method key selector inClass: aBehavior) -> warnings.
 	] on: Error do: [:ex | 
 		ex return: method -> warnings.
@@ -509,9 +522,47 @@ browseMethodsAndSelect: aString type: browseType
 	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseMethodsFromString: readStream upToEnd methodName: aString type: browseType;
 		selecting: aString.
+!
+
+savePackage
+
+	| package string array dict stream |
+	package := packageListPresenter selections first.
+	string := self updateCommand: 'uniqueVersionName' , Character tab asString , package key.
+	string = 'uniqueVersionName' ifFalse: [self error: 'Unrecognized response'].
+	string := readStream nextLine.
+	array := ancestorListPresenter list.
+	array := array isEmpty 
+		ifTrue: [#('' '' '' '')]
+		ifFalse: [array first].
+	dict := Dictionary new
+		at: #'httpPassword'		put: '';
+		at: #'httpUser'			put: '';
+		at: #'name' 			put: package key;
+		at: #'isModified'			put: package value;
+		at: #'nextVersionName'	put: string;
+		at: #'priorVersionName'	put: (array at: 2);
+		at: #'versionMessage'		put: (array at: 4);
+		at: #'repositoryList'		put: repositoryListPresenter list;
+		at: #'repository'			put: (repositoryListPresenter selectionIfNone: [repositoryListPresenter model last]);
+		yourself.
+	(RowanSavePackageDialog showModalOn: dict) isNil ifTrue: [^self].
+	stream := (WriteStream on: String new)
+		nextPutAll: 'savePackage'; tab;
+		nextPutAll: package key; tab;
+		nextPutAll: ((dict at: #'repository') at: 2); tab;
+		nextPutAll: (dict at: #'versionName'); tab;
+		nextPutAll: (dict at: #'httpUser'); tab;
+		nextPutAll: (dict at: #'httpPassword'); lf;
+		nextPutAll: ((dict at: #'versionMessage') reject: [:char | char = Character cr]); lf;
+		nextPut: $%; lf;
+		nextPutAll: self requestString;
+		yourself.
+	self updateCommand: stream contents.
 ! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 
 !JadeTextDocument methodsFor!
 
@@ -535,19 +586,6 @@ browseClasses
 !JadeToolsToolBarPresenter categoriesFor: #browseClasses!public! !
 
 !JadeTranscript methodsFor!
-
-createRowanPackage
-	"temporary method to create packages in projects"
-
-	| packageService pair |
-	pair := Association new.
-	(KeyValuePrompter
-		createOn: pair
-		prompt: 'Enter a Rowan package/project...'
-		caption: 'Rowan Package') showModal
-		isNil ifTrue: [^self].
-	packageService := RowanPackageDefinitionService new.
-	packageService createPackageNamed: pair key inProject: pair value!
 
 methodsChanged24
 
@@ -577,10 +615,15 @@ methodsChangedDays
 		browseMethods: result;
 		yourself.
 
-! !
-!JadeTranscript categoriesFor: #createRowanPackage!public!rowan! !
+!
+
+openRowanProjectList
+	^(RowanProjectListShell showOnSession: self gciSession) primaryPresenter
+		browseProjects;
+		yourself! !
 !JadeTranscript categoriesFor: #methodsChanged24!event handling!public! !
 !JadeTranscript categoriesFor: #methodsChangedDays!event handling!public! !
+!JadeTranscript categoriesFor: #openRowanProjectList!public!rowan! !
 
 !JadeTreeMethodListPresenter methodsFor!
 
