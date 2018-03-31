@@ -35,19 +35,17 @@ forPackageNamed: packageName
 ! ------------------- Instance methods for RowanPackageDefinitionService
 category: 'rowan'
 method: RowanPackageDefinitionService
- createPackage
-	| projectService existingPackage |
-	self rowanFixMe. "Eventually, should not use the sample project or loaded projects directly "
+createPackage
+	| projectService default |
+	default := RowanProjectDefinitionService defaultProjectName.
 	projectService := RowanProjectDefinitionService new.
-	projectDefinition := projectService createProjectNamed: self sampleProjectName.  
-	existingPackage := Rowan image loadedPackageNamed: packageName ifAbsent:[
-		projectDefinition addPackageNamed: packageName.
-		^self projectTools load loadProjectDefinition: projectDefinition.].
-	(Rowan image loadedProjectNamed: projectDefinition name) addLoadedPackage: existingPackage
+	projectService createProjectNamed: default.  
+	(Rowan packageNames includes: packageName) ifFalse:[
+		self browserTool addPackageNamed: packageName toProjectNamed: default].
 %
 category: 'rowan'
 method: RowanPackageDefinitionService
- createPackageNamed: aString inProject: projectName
+createPackageNamed: aString inProject: projectName
 	| projectService | 
 	packageName := aString.
 	projectService := RowanProjectDefinitionService new.
@@ -57,7 +55,7 @@ method: RowanPackageDefinitionService
 %
 category: 'examples'
 method: RowanPackageDefinitionService
- createSamplePackage
+createSamplePackage
 
 	"assume that the sample project & symbol dictionary 
 	were already removed"
@@ -145,7 +143,7 @@ removeClassNamed: className
 %
 category: 'examples'
 method: RowanPackageDefinitionService
- samplePackageName
+samplePackageName
 	
 	^'SamplePackageName'
 %
@@ -153,5 +151,5 @@ category: 'examples'
 method: RowanPackageDefinitionService
 sampleProjectName
 
-	^projectDefinition name
+	^'SampleProjectName'
 %

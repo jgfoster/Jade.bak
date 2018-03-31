@@ -2078,51 +2078,6 @@ promptForSelector
 	string := string reject: [:each | each = Character space].
 	^string.!
 
-queryCommand: aCommandQuery
-
-	| command focusView isTextEdit |
-	command := aCommandQuery command.
-	focusView := View focus.
-	isTextEdit := focusView isKindOf: TextEdit.
-	(#(#'browseMethodPragmas') includes: command) ifTrue: [aCommandQuery isEnabled: gciSession gsHasPragmas. ^true].
-	(#(#'editSave') includes: command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView isModified]). ^true].
-	(#(#'editUndo') includes: aCommandQuery command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView canUndo]). ^true].
-	(#(#'editRedo') includes: aCommandQuery command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView canRedo]). ^true].
-	(#(#'editCut' #'editCopy' "#'editDelete'" ) includes: aCommandQuery command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView hasSelection]). ^true].
-	(#(#'editPaste') includes: aCommandQuery command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [Clipboard current isTextAvailable]). ^true].
-	(#(#'addRepository') includes: command) ifTrue: [aCommandQuery isEnabled: packageListPresenter selections notEmpty. ^true].
-	(#(#'showPackageChanges') includes: command) ifTrue: [
-		aCommandQuery isEnabled: (packageListPresenter selections size = 1 and: [packageListPresenter selection value]). ^true].
-	(#(#'savePackage') includes: command) ifTrue: [aCommandQuery isEnabled: packageListPresenter selections size = 1. ^true].
-	(#(#'removeRepository') includes: command) ifTrue: [
-		aCommandQuery isEnabled: (repositoryListPresenter hasSelection and: [packageListPresenter selections size = 1]). ^true].
-	(#(#'compareAncestor') includes: command) ifTrue: [
-		aCommandQuery isEnabled: (packageListPresenter selections size = 1 and: [ancestorListPresenter hasSelection]). ^true].
-	(#(#'browseMethodHistory' #'browseImplementors' #'browseSenders' #'fileOutMethod') includes: command) ifTrue: [
-		aCommandQuery isEnabled: methodListPresenter selections size = 1. ^true].
-	(#(#'inspectGlobal' #'browseGlobalReferences') includes: command) ifTrue: [aCommandQuery isEnabled: globalsPresenter selections size = 1. ^true].
-	(#(#'removeGlobals') includes: command) ifTrue: [aCommandQuery isEnabled: globalsPresenter selections notEmpty. ^true].
-	(#(#'fileOutDictionary' ) includes: command) ifTrue: [aCommandQuery isEnabled: dictionaryListPresenter selections size = 1. ^true].
-	(#(#'setHomeDictionary') includes: command) ifTrue: [aCommandQuery isEnabled: (dictionaryListPresenter selections size = 1 and: [dictionaryListPresenter selection value not]). ^true].
-	(#(#'runMethodTests') includes: command) ifTrue: [aCommandQuery isEnabled: (methodListPresenter selections notEmpty and: [methodListPresenter selections first at: 3]). ^true].
-	(#(#'loadLatestVersion') includes: command) ifTrue: [
-		aCommandQuery isEnabled: (packageListPresenter selections notEmpty and: [packageListPresenter selections allSatisfy: [:each | each key beginsWith: 'ConfigurationOf']]). ^true].
-	(#(#'browseClassReferences' #'fileOutClass' #'addSubclass' #'addMissingAccessors' #'removeClass' #'removePriorVersions') includes: command) ifTrue: [
-		aCommandQuery isEnabled: self selectedClasses size == 1. ^true.
-	].
-	(#(#'runClassTests') includes: command) ifTrue: [aCommandQuery isEnabled: selectedClassesAreTestCases. ^true].
-	(#(#'browseSelectedClass') includes: command) ifTrue: [aCommandQuery isEnabled: self isClassSelectedInEditor. ^true].
-
-	(command == #historyBack) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryBack. ^true].
-	(command == #historyForward) ifTrue: [aCommandQuery isEnabled: self hasCommandHistoryForward. ^true].
-
-	(command == #'setEnvironment0' and: [environment == 0]) ifTrue: [aCommandQuery isChecked: true. ^true].
-	(command == #'setEnvironment1' and: [environment == 1]) ifTrue: [aCommandQuery isChecked: true. ^true].
-	(command == #'setEnvironment2' and: [environment == 2]) ifTrue: [aCommandQuery isChecked: true. ^true].
-
-	^super queryCommand: aCommandQuery.
-!
-
 removeClass
 
 	| list stream result |
@@ -2462,28 +2417,6 @@ setSearchPolicy
 	repositoryListPresenter	view model searchPolicy: SearchPolicy equality.
 	superclassListPresenter	view model searchPolicy: SearchPolicy equality.
 	variableListPresenter	 	view model searchPolicy: SearchPolicy equality.
-!
-
-showPackageChanges
-
-	| repository stream patch |
-	repository := repositoryListPresenter hasSelection 
-		ifTrue: [repositoryListPresenter selection]
-		ifFalse: [repositoryListPresenter list first].
-	stream := (WriteStream on: String new)
-		nextPutAll: 'changesInPackage'; tab;
-		nextPutAll: packageListPresenter selections first key; tab;	"package name"
-		nextPutAll: (repository at: 2); tab;		"repository name"
-		lf.
-	(self updateCommand: stream contents) = 'changesInPackage' ifFalse: [self error: 'Unexpected response!!'].
-	patch := MCPatch
-		fromString: readStream upToEnd
-		session: self gciSession.
-	patch operations isEmpty ifTrue: [
-		MessageBox notify: 'No changes!!'.
-		^self.
-	].
-	MCPatchBrowser showOn: patch.
 !
 
 splitterPosition: aPoint
@@ -3361,7 +3294,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #preferencesMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #promptForSelector!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removeClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removeDictionary!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removeGlobals!public! !
@@ -3392,7 +3324,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #setEnvironment2!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setHomeDictionary!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setSearchPolicy!overrides!public! !
-!JadeSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #splitterPosition:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #statusBarServerRequestText:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #statusBarText:!public!updating! !

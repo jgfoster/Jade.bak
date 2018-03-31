@@ -57,7 +57,7 @@ forClassNamed: className package: packageName
 category: 'rowan'
 method: RowanClassDefinitionService
 classCreationTemplate
-
+	
 	^self browserTool classCreationTemplateForClass: self classFromName hybridBrowser: true.
 %
 category: 'private'
@@ -199,7 +199,7 @@ category: 'rowan'
 method: RowanClassDefinitionService
 removeSelector: selector
 
-	self browserTool removeMethod: selector forClassNamed: name isMeta: meta
+	self browserTool removeMethod: selector forClassNamed: name asString isMeta: meta
 %
 category: 'examples'
 method: RowanClassDefinitionService

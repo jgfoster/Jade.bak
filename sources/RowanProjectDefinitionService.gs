@@ -2,8 +2,8 @@
 expectvalue /Class
 doit
 RowanDefinitionService subclass: 'RowanProjectDefinitionService'
-	instVarNames: #()
-	classVars: #()
+	instVarNames: #( name sha branch)
+	classVars: #( DefaultProjectName)
 	classInstVars: #()
 	poolDictionaries: #()
 	inDictionary: ''
@@ -23,7 +23,31 @@ RowanProjectDefinitionService class removeAllMethods.
 %
 set compile_env: 0
 ! ------------------- Class methods for RowanProjectDefinitionService
+category: 'accessing'
+classmethod: RowanProjectDefinitionService
+defaultProjectName
+
+	^DefaultProjectName
+%
+category: 'accessing'
+classmethod: RowanProjectDefinitionService
+defaultProjectName: aString
+
+	DefaultProjectName := aString
+%
 ! ------------------- Instance methods for RowanProjectDefinitionService
+category: 'other'
+method: RowanProjectDefinitionService
+branch
+
+	^branch
+%
+category: 'other'
+method: RowanProjectDefinitionService
+branch: anObject
+
+	branch := anObject
+%
 category: 'examples'
 method: RowanProjectDefinitionService
 createProjectNamed: projectName 
@@ -34,13 +58,10 @@ category: 'examples'
 method: RowanProjectDefinitionService
 createProjectNamed: projectName in: symbolDictionaryName
 
-	| projectDefinition |
-	projectDefinition := (Rowan loadedProjectNamed: projectName ifAbsent:[
-		self projectTools load loadProjectDefinition: (RwProjectDefinition newForGitPackageProjectNamed: projectName)]) asDefinition.
-	projectDefinition 
-		comment: 'Sample Rowan Project';
-		defaultSymbolDictName: symbolDictionaryName.
-	^projectDefinition
+	self rowanFixMe. "Dale doesn't like Rowan projectNames"
+	(Rowan projectNames includes: projectName) ifFalse:[
+		self browserTool createGitPackageProjectNamed: projectName updateDefinition: [:pd | 
+				pd defaultSymbolDictName: symbolDictionaryName; comment:  'Sample Rowan Project'] ].
 %
 category: 'examples'
 method: RowanProjectDefinitionService
@@ -49,6 +70,36 @@ createSampleProject
 	self removeProjectNamed: self sampleProjectName.
 	self createSampleSymbolDictionary.
 	^self createProjectNamed: self sampleProjectName in: self sampleSymbolDictionaryName
+%
+category: 'accessing'
+method: RowanProjectDefinitionService
+defaultProjectName
+
+	^self class defaultProjectName
+%
+category: 'accessing'
+method: RowanProjectDefinitionService
+defaultProjectName: aString
+
+	self class defaultProjectName: aString
+%
+category: 'other'
+method: RowanProjectDefinitionService
+name
+
+	^name
+%
+category: 'other'
+method: RowanProjectDefinitionService
+name: anObject
+
+	name := anObject
+%
+category: 'rowan'
+method: RowanProjectDefinitionService
+projectNames
+
+	^Rowan projectNames collect: [:string | self class new name: string]
 %
 category: 'examples'
 method: RowanProjectDefinitionService
@@ -61,4 +112,16 @@ method: RowanProjectDefinitionService
 sampleProjectName
 	
 	^'SampleProjectName'
+%
+category: 'other'
+method: RowanProjectDefinitionService
+sha
+
+	^sha
+%
+category: 'other'
+method: RowanProjectDefinitionService
+sha: anObject
+
+	sha := anObject
 %

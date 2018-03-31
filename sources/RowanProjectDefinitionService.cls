@@ -2,13 +2,19 @@
 
 RowanDefinitionService subclass: #RowanProjectDefinitionService
 	instanceVariableNames: 'sha branch'
-	classVariableNames: ''
+	classVariableNames: 'DefaultProjectName'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanProjectDefinitionService guid: (GUID fromString: '{d65732a3-f4fb-489b-ae7e-d104cddbf3d8}')!
 RowanProjectDefinitionService comment: ''!
 !RowanProjectDefinitionService categoriesForClass!Unclassified! !
 !RowanProjectDefinitionService methodsFor!
+
+addProjectNamed: projectName
+	transport
+		send: #createProjectNamed:in:
+		to: self remoteService
+		withAll: (Array with: projectName with: self class defaultProjectName).!
 
 branch
 	^branch!
@@ -19,6 +25,18 @@ branch: anObject
 clientDefinitionClass
 
 	^self class!
+
+defaultProjectName: aString
+	"The server is the gold copy"
+
+	transport
+		send: #defaultProjectName:
+		to: self remoteService
+		withAll: (Array with: aString).
+	self class defaultProjectName: aString!
+
+nameWithDefaultIndication
+	^name = self class defaultProjectName ifTrue: [name , '*'] ifFalse: [name]!
 
 projects
 	| names |
@@ -49,9 +67,12 @@ sha
 
 sha: anObject
 	sha := anObject! !
+!RowanProjectDefinitionService categoriesFor: #addProjectNamed:!public! !
 !RowanProjectDefinitionService categoriesFor: #branch!accessing!public! !
 !RowanProjectDefinitionService categoriesFor: #branch:!accessing!public! !
 !RowanProjectDefinitionService categoriesFor: #clientDefinitionClass!private! !
+!RowanProjectDefinitionService categoriesFor: #defaultProjectName:!accessing!public! !
+!RowanProjectDefinitionService categoriesFor: #nameWithDefaultIndication!accessing!public! !
 !RowanProjectDefinitionService categoriesFor: #projects!public!rowan! !
 !RowanProjectDefinitionService categoriesFor: #remoteAccessors!public! !
 !RowanProjectDefinitionService categoriesFor: #remoteService!private! !
@@ -76,11 +97,22 @@ defaultIconName
 
 	^File composeStem: 'Collection' extension: 'ico'.!
 
+defaultProjectName
+	"cached from the server class var"
+
+	^DefaultProjectName!
+
+defaultProjectName: aString
+
+	DefaultProjectName := aString!
+
 icon
 	"Answers an Icon that can be used to represent this class"
 
 	^##(self) defaultIcon! !
 !RowanProjectDefinitionService class categoriesFor: #defaultIcon!private! !
 !RowanProjectDefinitionService class categoriesFor: #defaultIconName!private! !
+!RowanProjectDefinitionService class categoriesFor: #defaultProjectName!public! !
+!RowanProjectDefinitionService class categoriesFor: #defaultProjectName:!public! !
 !RowanProjectDefinitionService class categoriesFor: #icon!private! !
 

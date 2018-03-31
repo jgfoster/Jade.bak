@@ -56,7 +56,6 @@ package methodNames
 	add: #JadeServer -> #sbBrowseMethodsWithPragma:;
 	add: #JadeServer -> #sbBrowseSenders:;
 	add: #JadeServer -> #sbChangeClassName:;
-	add: #JadeServer -> #sbChangesInPackage:;
 	add: #JadeServer -> #sbCheckUniqueClassName:;
 	add: #JadeServer -> #sbClass:;
 	add: #JadeServer -> #sbClassCategory:;
@@ -574,24 +573,6 @@ sbChangeClassName: aList
 		].
 	].
 	self systemBrowserUpdate.
-!
-
-sbChangesInPackage: anOrderedCollection
-
-	| current repository patch string |
-	current := self mcWorkingCopyClass forPackage: (self mcPackageClass named: anOrderedCollection removeFirst).
-	repository := anOrderedCollection removeFirst.
-	repository := current repositoryGroup repositories detect: [:each | each description = repository].
-	patch := current changesRelativeToRepository: repository.
-	patch operations isEmpty ifTrue: [current modified: false].
-	string := self 
-		_mcDescriptionOfPatch: patch
-		baseName: 'closest ancestor'
-		alternateName: nil.
-	writeStream 
-		nextPutAll: 'changesInPackage'; lf;
-		nextPutAll: string;
-		yourself.
 !
 
 sbCheckUniqueClassName: aList
@@ -1794,7 +1775,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbBrowseMethodsWithPragma:!public!System Browser! !
 !JadeServer categoriesFor: #sbBrowseSenders:!public!System Browser! !
 !JadeServer categoriesFor: #sbChangeClassName:!public!System Browser! !
-!JadeServer categoriesFor: #sbChangesInPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbCheckUniqueClassName:!public!System Browser! !
 !JadeServer categoriesFor: #sbClass:!public!System Browser! !
 !JadeServer categoriesFor: #sbClassCategory:!public!System Browser! !
