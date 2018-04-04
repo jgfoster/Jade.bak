@@ -21,10 +21,4 @@ Rowan projectTools push pushSpecUrl: 'Rowan'.
 
 Rowan image loadedPackageNames
 
-RowanDefinitionService subclass: 'RowanPackageDefinitionService'
-	instVarNames: #( projectDefinition packageName name)
-	classVars: #()
-	classInstVars: #()
-	poolDictionaries: #()
-	inDictionary: UserGlobals
-	options: #()
+(Rowan projectTools diff diffSpecUrl: 'Rowan') asString.

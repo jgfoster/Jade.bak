@@ -11,8 +11,7 @@ PackageMethodListPresenter comment: ''!
 !PackageMethodListPresenter class methodsFor!
 
 defaultModel
-
-	^RowanMethodDefinitionService new!
+	^RowanMethodService new!
 
 resource_Default_view
 	"Answer the literal data from which the 'Default view' resource can be reconstituted.

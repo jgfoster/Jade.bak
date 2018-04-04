@@ -44,10 +44,7 @@ isTestCase
 	^false!
 
 methodDefinitionService
-
-	^methodDefinitionService ifNil: [methodDefinitionService := RowanMethodDefinitionService on: gciSession]
-
-	!
+	^methodDefinitionService ifNil: [methodDefinitionService := RowanMethodService on: gciSession]!
 
 packageName
 	^packageName!

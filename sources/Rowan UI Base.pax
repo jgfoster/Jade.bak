@@ -7,21 +7,21 @@ package paxVersion: 1;
 package classNames
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
-	add: #RowanClassDefinitionService;
+	add: #RowanClassService;
 	add: #RowanDefinitionService;
 	add: #RowanMethodDefinition;
-	add: #RowanMethodDefinitionService;
 	add: #RowanMethodListBrowser;
 	add: #RowanMethodListPresenter;
 	add: #RowanMethodSelectionPresenter;
+	add: #RowanMethodService;
 	add: #RowanMethodSourcePresenter;
-	add: #RowanPackageDefinitionService;
 	add: #RowanPackagePresenter;
+	add: #RowanPackageService;
 	add: #RowanPackageShell;
 	add: #RowanPresenter;
-	add: #RowanProjectDefinitionService;
 	add: #RowanProjectListPresenter;
 	add: #RowanProjectListShell;
+	add: #RowanProjectService;
 	add: #RowanSavePackageDialog;
 	add: #RowanServiceTest;
 	add: #RowanShell;
@@ -121,22 +121,22 @@ Model subclass: #RowanDefinitionService
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanDefinitionService subclass: #RowanClassDefinitionService
+RowanDefinitionService subclass: #RowanClassService
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanDefinitionService subclass: #RowanMethodDefinitionService
+RowanDefinitionService subclass: #RowanMethodService
 	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanDefinitionService subclass: #RowanPackageDefinitionService
+RowanDefinitionService subclass: #RowanPackageService
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanDefinitionService subclass: #RowanProjectDefinitionService
+RowanDefinitionService subclass: #RowanProjectService
 	instanceVariableNames: 'sha branch'
 	classVariableNames: 'DefaultProjectName'
 	poolDictionaries: ''
@@ -262,8 +262,7 @@ methodsUpTo: aClass filterList: aList isVariables: aBoolean
 !GsMethod methodsFor!
 
 methodDefinitionService
-
-	^RowanMethodDefinitionService on: gciSession! !
+	^RowanMethodService on: gciSession! !
 !GsMethod categoriesFor: #methodDefinitionService!public!rowan! !
 
 !GsMethod2 methodsFor!
@@ -310,15 +309,12 @@ browseSendersOf: aGsMethodOrString
 !JadeServer methodsFor!
 
 sbAddPackage: anOrderedCollection
-
-	| string service|
+	| string service |
 	string := anOrderedCollection removeFirst.
-	selections at: #'package' put: string.
-	service := RowanPackageDefinitionService forPackageNamed: string.
-	service createPackage. 
-	self systemBrowserUpdate.
-
-!
+	selections at: #package put: string.
+	service := RowanPackageService forPackageNamed: string.
+	service createPackage.
+	self systemBrowserUpdate!
 
 sbChangesInPackage: anOrderedCollection
 	"where anOrderedCollection is {packageName, projectName}"
@@ -339,121 +335,121 @@ sbChangesInPackage: anOrderedCollection
 !
 
 sbClassTemplate
-
-	| def service | 
-	service := RowanClassDefinitionService forClassNamed: 'Object'.
-	def :=  service classCreationTemplate.
-	writeStream 
-		nextPutAll: '0'; lf;
-		nextPutAll: def; 		
-		nextPut: $%; lf;
-		nextPut: $%; lf;
-		yourself.
-!
+	| def service |
+	service := RowanClassService forClassNamed: 'Object'.
+	def := service classCreationTemplate.
+	writeStream
+		nextPutAll: '0';
+		lf;
+		nextPutAll: def;
+		nextPut: $%;
+		lf;
+		nextPut: $%;
+		lf;
+		yourself	"selectedClassOop"!
 
 sbRemoveClasses
-
 	| isPackages containers classNames |
 	isPackages := self nextLine = 'packageList'.
 	containers := self nextLineAsList.
-	classNames := (self nextLineAsList reject: [:each | each isEmpty]) collect: [:each | (each subStrings: Character space) first asSymbol].
-	isPackages ifTrue:[
-		containers do:[:packageName | 
-			classNames do:[:className | 
-				 (RowanPackageDefinitionService forPackageNamed: packageName) removeClassNamed: className]].
-		^self systemBrowserUpdate. ].
-	self symbolList do: [:eachDictionary | 
-		| dictionaryName |
-		dictionaryName := eachDictionary name asString.
-		classNames do: [:eachName |
-			| class flag |
-			(class := eachDictionary at: eachName ifAbsent: [nil]) notNil ifTrue: [
-				selections removeAllKeys: selections keys.
-				isPackages ifTrue: [
-					flag := false. 
-					containers do: [:each |
-						flag := flag or: [(class category copyFrom: 1 to: (class category size min: each size)) = each].
-						flag ifTrue: [
-							selections at: #'package' put: each.
-						].
-					].
-				] ifFalse: [
-					flag := containers includes: dictionaryName.
-					flag ifTrue: [
-						selections at: #'dictionary' put: dictionaryName.
-					].
-				].
-				flag ifTrue: [
-					selectedClass := (eachDictionary at: eachName) superclass.
-					selections 
-						at: #'category' 		put: selectedClass category;
-						at: #'className'	put: selectedClass name;
-						at: #'class'				put: selectedClass;
-						yourself.
-					self sbRemoveKey: eachName fromDictionary: eachDictionary.
-				].
-			].
-		].
-	].
-	self systemBrowserUpdate.
-!
+	classNames := (self nextLineAsList reject: [:each | each isEmpty])
+				collect: [:each | (each subStrings: Character space) first asSymbol].
+	isPackages
+		ifTrue: 
+			[containers do: 
+					[:packageName |
+					classNames
+						do: [:className | (RowanPackageService forPackageNamed: packageName) removeClassNamed: className]].
+			^self systemBrowserUpdate].
+	self symbolList do: 
+			[:eachDictionary |
+			| dictionaryName |
+			dictionaryName := eachDictionary name asString.
+			classNames do: 
+					[:eachName |
+					| class flag |
+					(class := eachDictionary at: eachName ifAbsent: [nil]) notNil
+						ifTrue: 
+							[selections removeAllKeys: selections keys.
+							isPackages
+								ifTrue: 
+									[flag := false.
+									containers do: 
+											[:each |
+											flag := flag or: [(class category copyFrom: 1 to: (class category size min: each size)) = each].
+											flag ifTrue: [selections at: #package put: each]]]
+								ifFalse: 
+									[flag := containers includes: dictionaryName.
+									flag ifTrue: [selections at: #dictionary put: dictionaryName]].
+							flag
+								ifTrue: 
+									[selectedClass := (eachDictionary at: eachName) superclass.
+									selections
+										at: #category put: selectedClass category;
+										at: #className put: selectedClass name;
+										at: #class put: selectedClass;
+										yourself.
+									self sbRemoveKey: eachName fromDictionary: eachDictionary]]]].
+	self systemBrowserUpdate!
 
 sbRemoveMethods: anOrderedCollection
 	| behavior classEntity |
-	behavior := self sbClassFrom: anOrderedCollection. 
-	classEntity := (UserGlobals at: #rowanCompile ifAbsent:[false])
-				ifTrue: [RowanClassDefinitionService forClassNamed: behavior name meta: behavior isMeta]
+	behavior := self sbClassFrom: anOrderedCollection.
+	classEntity := (UserGlobals at: #rowanCompile ifAbsent: [false])
+				ifTrue: [RowanClassService forClassNamed: behavior name meta: behavior isMeta]
 				ifFalse: [behavior].
 	anOrderedCollection do: [:each | classEntity removeSelector: each asSymbol].
-	self systemBrowserUpdate
-!
+	self systemBrowserUpdate!
 
 sbUnloadPackage: anOrderedCollection
 	| service |
-	service := RowanPackageDefinitionService forPackageNamed: anOrderedCollection removeFirst.
+	service := RowanPackageService forPackageNamed: anOrderedCollection removeFirst.
 	service deletePackage.
 	self systemBrowserUpdate!
 
 sbUpdateClassInfo
-
 	| definition classComment |
 	selectedClass isNil ifTrue: [^self sbClassTemplate].
-	writeStream 
-		nextPutAll: (self oopOf: selectedClass) printString; lf;
-		nextPut: $(; lf;
-		nextPutAll: (definition := 	(RowanClassDefinitionService forClassNamed: selectedClass name) classCreationTemplate);
+	writeStream
+		nextPutAll: (self oopOf: selectedClass) printString;
+		lf;
+		nextPut: $(;
+		lf;
+		nextPutAll: (definition := (RowanClassService forClassNamed: selectedClass name)
+							classCreationTemplate);
 		nextPutAll: ')';
 		nextPutAll: ((definition includesString: 'category: ''')
-			ifTrue: ['']
-			ifFalse: [' category: ' , selectedClass category printString]); lf;
-		nextPut: $%; lf;
+					ifTrue: ['']
+					ifFalse: [' category: ' , selectedClass category printString]);
+		lf;
+		nextPut: $%;
+		lf;
 		yourself.
-	(selectedClass class canUnderstand: #'comment') ifTrue: [
-		classComment := selectedClass comment.
-	] ifFalse: [
-	(selectedClass class canUnderstand: #'classComment') ifTrue: [
-		classComment := selectedClass classComment.
-	] ifFalse: [
-		(selectedClass class canUnderstand: #'description') ifTrue: [
-			| description |
-			description := selectedClass description.
-			description class name = #'GsClassDocumentation' ifTrue: [
-				classComment := description detailsAboutClass.
-			].
-		].
-	]].
+	(selectedClass class canUnderstand: #comment)
+		ifTrue: [classComment := selectedClass comment]
+		ifFalse: 
+			[(selectedClass class canUnderstand: #classComment)
+				ifTrue: [classComment := selectedClass classComment]
+				ifFalse: 
+					[(selectedClass class canUnderstand: #description)
+						ifTrue: 
+							[| description |
+							description := selectedClass description.
+							description class name = #GsClassDocumentation
+								ifTrue: [classComment := description detailsAboutClass]]]].
 	classComment isNil ifTrue: [classComment := ''].
-	writeStream 
-		nextPutAll: classComment; lf;
-		nextPut: $%; lf;
-		yourself.
-!
+	writeStream
+		nextPutAll: classComment;
+		lf;
+		nextPut: $%;
+		lf;
+		yourself!
 
 sbUpdatePackages
-
 	| override modifiedList oldSelections newSelections fullList |
 	oldSelections := self nextLineAsList.
-	(override := selections at: #'package' ifAbsent: [nil]) notNil ifTrue: [oldSelections := Array with: override].
+	(override := selections at: #package ifAbsent: [nil]) notNil
+		ifTrue: [oldSelections := Array with: override].
 	fullList := RowanDefinitionService new rowanLoadedPackageNames subStrings: Character lf.
 	fullList := fullList reject: [:each | each isEmpty].
 	fullList := fullList asSortedCollection asArray.
@@ -461,23 +457,25 @@ sbUpdatePackages
 	fullList := fullList reject: [:each | each isEmpty].
 	modifiedList := (fullList select: [:each | (each at: 2) = 'Y']) collect: [:each | each at: 3].
 	fullList := fullList collect: [:each | each at: 3].
-	self 
+	self
 		writeList: fullList;
 		writeList: modifiedList;
 		yourself.
 	newSelections := oldSelections select: [:each | fullList includes: each].
-	(newSelections isEmpty and: [oldSelections size = 1]) ifTrue: [
-			newSelections := fullList select: [:each | (oldSelections first copyFrom: 1 to: (oldSelections first size min: each size)) = each].
-	].
-	newSelections do: [:each | 
-		| service |
-		writeStream nextPutAll: each; tab.
-		service := RowanPackageDefinitionService forPackageNamed: each.
-		classList addAll: service loadedClassHandles.
-	].
+	(newSelections isEmpty and: [oldSelections size = 1])
+		ifTrue: 
+			[newSelections := fullList
+						select: [:each | (oldSelections first copyFrom: 1 to: (oldSelections first size min: each size)) = each]].
+	newSelections do: 
+			[:each |
+			| service |
+			writeStream
+				nextPutAll: each;
+				tab.
+			service := RowanPackageService forPackageNamed: each.
+			classList addAll: service loadedClassHandles].
 	writeStream lf.
-	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first].
-! !
+	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first]! !
 !JadeServer categoriesFor: #sbAddPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbChangesInPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbClassTemplate!public!System Browser! !
@@ -629,26 +627,26 @@ savePackage
 !
 
 showPackageChanges
-
 	| repository stream patch |
-	repository := repositoryListPresenter hasSelection 
-		ifTrue: [repositoryListPresenter selection]
-		ifFalse: [repositoryListPresenter list first].
+	repository := repositoryListPresenter hasSelection
+				ifTrue: [repositoryListPresenter selection]
+				ifFalse: [repositoryListPresenter list first].
 	stream := (WriteStream on: String new)
-		nextPutAll: 'changesInPackage'; tab;
-		nextPutAll: packageListPresenter selections first key; tab;	"package name"
-		nextPutAll: (RowanProjectDefinitionService new sampleProjectName); tab;		"project name"
-		lf.
-	(self updateCommand: stream contents) = 'changesInPackage' ifFalse: [self error: 'Unexpected response!!'].
-	patch := MCPatch
-		fromString: readStream upToEnd
-		session: self gciSession.
-	patch operations isEmpty ifTrue: [
-		MessageBox notify: 'No changes!!'.
-		^self.
-	].
-	MCPatchBrowser showOn: patch.
-! !
+				nextPutAll: 'changesInPackage';
+				tab;
+				nextPutAll: packageListPresenter selections first key;
+				tab;
+				nextPutAll: RowanProjectService new sampleProjectName;
+				tab;
+				lf.	"package name"	"project name"
+	(self updateCommand: stream contents) = 'changesInPackage'
+		ifFalse: [self error: 'Unexpected response!!'].
+	patch := MCPatch fromString: readStream upToEnd session: self gciSession.
+	patch operations isEmpty
+		ifTrue: 
+			[MessageBox notify: 'No changes!!'.
+			^self].
+	MCPatchBrowser showOn: patch! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !

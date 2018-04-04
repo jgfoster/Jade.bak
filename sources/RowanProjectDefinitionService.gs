@@ -48,6 +48,12 @@ branch: anObject
 
 	branch := anObject
 %
+category: 'rowan'
+method: RowanProjectDefinitionService
+changes
+	
+	^(Rowan projectTools diff diffSpecUrl: name) asString.
+%
 category: 'examples'
 method: RowanProjectDefinitionService
 createProjectNamed: projectName 

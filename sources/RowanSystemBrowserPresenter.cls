@@ -46,8 +46,7 @@ classesMenuStrings
 !
 
 classService
-
-	^RowanClassDefinitionService on: self selectedClassNameWithoutVersion!
+	^RowanClassService on: self selectedClassNameWithoutVersion!
 
 deletePackage
 	| packageName |
@@ -77,22 +76,29 @@ pkgsMenuStrings
 
 possiblyShowGenericPackageClassTemplate: newDef
 	"We got a template back from the server. However, it might not be
-	in the rowan style. Get a new one under some conditions." 
-	| packageService newClassDef selections|
+	in the rowan style. Get a new one under some conditions."
+
+	| packageService newClassDef selections |
 	newClassDef := newDef.
 	classListPresenter selections isEmpty
 		ifTrue: 
-			[packageService := (self isPackageListTabSelected and: [(selections := packageListPresenter selections) notEmpty])
-						ifTrue: [RowanPackageDefinitionService new name: selections first key]
-						ifFalse: [RowanPackageDefinitionService new ].
+			[packageService := (self isPackageListTabSelected
+						and: [(selections := packageListPresenter selections) notEmpty])
+							ifTrue: [RowanPackageService new name: selections first key]
+							ifFalse: [RowanPackageService new].
 			newClassDef := packageService genericClassCreationTemplate].
 	^newClassDef!
+
+resetClassDefinitionPresenter
+	classDefinitionPresenter view
+		backcolor: Color white;
+		isModified: false;
+		yourself!
 
 updateClassInfo
 	| index newClassDefinition |
 	selectedClassOop := readStream nextLine asNumber.
 	newClassDefinition := readStream nextParagraph. 
-	newClassDefinition := self possiblyShowGenericPackageClassTemplate: newClassDefinition.
 	classCommentPresenter value: readStream nextParagraph.
 	classDefinitionPresenter view isModified
 		ifTrue: 
@@ -119,7 +125,26 @@ updateClassInfo
 	classDefinitionPresenter view
 		backcolor: Color white;
 		isModified: false;
-		yourself! !
+		yourself!
+
+updatePresenters
+	
+	[inUpdate := true.
+	self
+		updatePackageDictionaryList;
+		updateClassCategoryTree;
+		updateClassListOrHierarchy;
+		updateClassInfo;
+		updateSuperclassList;
+		updateMethodFilter;
+		updateMethodList;
+		updateOverrideList;
+		updateMethod;
+		updateTabLabel;
+		yourself]
+			ensure: [inUpdate := false].
+	classDefinitionPresenter value: (self possiblyShowGenericPackageClassTemplate: classDefinition).
+	self resetClassDefinitionPresenter! !
 !RowanSystemBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
@@ -127,7 +152,9 @@ updateClassInfo
 !RowanSystemBrowserPresenter categoriesFor: #deletePackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #possiblyShowGenericPackageClassTemplate:!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #resetClassDefinitionPresenter!private!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassInfo!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #updatePresenters!public!updating! !
 
 !RowanSystemBrowserPresenter class methodsFor!
 

@@ -39,18 +39,18 @@ firstListElement
 
 removeSampleProject
 	"ensure the test project is removed from Rowan"
+
 	| service |
-	service := RowanProjectDefinitionService new.
+	service := RowanProjectService new.
 	service removeSampleProject.
 	service removeSampleSymbolDictionary!
 
 setUp
 	super setUp.
-	methodService := RowanMethodDefinitionService new.
-	classService := RowanClassDefinitionService new.
+	methodService := RowanMethodService new.
+	classService := RowanClassService new.
 	gciSession := methodService transport.
-	self removeSampleProject
-	!
+	self removeSampleProject!
 
 systemBrowserPresenter
 	^shell currentCard!
@@ -58,10 +58,9 @@ systemBrowserPresenter
 tearDown
 	super tearDown.
 	shell ifNotNil: [:shell | shell exit].
-	RowanPackageDefinitionService new removeSampleSymbolDictionary.
+	RowanPackageService new removeSampleSymbolDictionary.
 	methodService transport abort.
-	self removeSampleProject
-	!
+	self removeSampleProject!
 
 test_addNewMethod
 	| instanceOop |
@@ -105,7 +104,7 @@ test_sampleMethodDefinitions
 	"test values hard coded on remote GemStone server"
 
 	| services |
-	services := RowanMethodDefinitionService sampleDefinitions.
+	services := RowanMethodService sampleDefinitions.
 	self assert: services first source = 'sampleMethod ^''some text'''.
 	self assert: services first selector = 'sampleMethod'.
 	self assert: services size = 1! !
