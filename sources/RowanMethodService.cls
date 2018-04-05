@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-RowanDefinitionService subclass: #RowanMethodService
+RowanService subclass: #RowanMethodService
 	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -93,11 +93,6 @@ remoteService
 		withAll: (Array with: meta printString).
 	^serviceOop!
 
-remoteServiceName
-	"The remote service name is the same as this class"
-
-	^'RowanMethodDefinitionService'!
-
 sampleClassInstance
 
 	^transport send: #sampleClassInstance to: remoteService!
@@ -145,7 +140,6 @@ user: anObject
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
 !RowanMethodService categoriesFor: #remoteAccessors!private! !
 !RowanMethodService categoriesFor: #remoteService!private!remote! !
-!RowanMethodService categoriesFor: #remoteServiceName!examples!private! !
 !RowanMethodService categoriesFor: #sampleClassInstance!examples!public! !
 !RowanMethodService categoriesFor: #selector!accessing!private! !
 !RowanMethodService categoriesFor: #selector:!accessing!private! !

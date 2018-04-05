@@ -7,22 +7,27 @@ package paxVersion: 1;
 package classNames
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
+	add: #RowanClassDefinitionService;
 	add: #RowanClassService;
 	add: #RowanDefinitionService;
 	add: #RowanMethodDefinition;
+	add: #RowanMethodDefinitionService;
 	add: #RowanMethodListBrowser;
 	add: #RowanMethodListPresenter;
 	add: #RowanMethodSelectionPresenter;
 	add: #RowanMethodService;
 	add: #RowanMethodSourcePresenter;
+	add: #RowanPackageDefinitionService;
 	add: #RowanPackagePresenter;
 	add: #RowanPackageService;
 	add: #RowanPackageShell;
 	add: #RowanPresenter;
+	add: #RowanProjectDefinitionService;
 	add: #RowanProjectListPresenter;
 	add: #RowanProjectListShell;
 	add: #RowanProjectService;
 	add: #RowanSavePackageDialog;
+	add: #RowanService;
 	add: #RowanServiceTest;
 	add: #RowanShell;
 	add: #RowanSystemBrowser;
@@ -92,6 +97,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone Objects';
 	add: 'GemStone Session';
 	add: 'Jade Class Browser';
+	add: 'Jade Inspector';
 	add: 'Jade Method Browser';
 	add: 'Jade System Browser';
 	add: 'Jade Test Browser';
@@ -116,29 +122,54 @@ GsMethod2 subclass: #RowanMethodDefinition
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-Model subclass: #RowanDefinitionService
+Model subclass: #RowanService
 	instanceVariableNames: 'transport remoteService name'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanDefinitionService subclass: #RowanClassService
+RowanService subclass: #RowanClassService
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanDefinitionService subclass: #RowanMethodService
+RowanService subclass: #RowanDefinitionService
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanService subclass: #RowanMethodService
 	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanDefinitionService subclass: #RowanPackageService
+RowanService subclass: #RowanPackageService
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanDefinitionService subclass: #RowanProjectService
+RowanService subclass: #RowanProjectService
 	instanceVariableNames: 'sha branch'
 	classVariableNames: 'DefaultProjectName'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanClassService subclass: #RowanClassDefinitionService
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanMethodService subclass: #RowanMethodDefinitionService
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanPackageService subclass: #RowanPackageDefinitionService
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanProjectService subclass: #RowanProjectDefinitionService
+	instanceVariableNames: ''
+	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #RowanPresenter
@@ -416,7 +447,7 @@ sbUpdateClassInfo
 		nextPut: $(;
 		lf;
 		nextPutAll: (definition := (RowanClassService forClassNamed: selectedClass name)
-							classCreationTemplate);
+							classCreationTemplate); 
 		nextPutAll: ')';
 		nextPutAll: ((definition includesString: 'category: ''')
 					ifTrue: ['']
@@ -450,7 +481,7 @@ sbUpdatePackages
 	oldSelections := self nextLineAsList.
 	(override := selections at: #package ifAbsent: [nil]) notNil
 		ifTrue: [oldSelections := Array with: override].
-	fullList := RowanDefinitionService new rowanLoadedPackageNames subStrings: Character lf.
+	fullList := RowanService new rowanLoadedPackageNames subStrings: Character lf.
 	fullList := fullList reject: [:each | each isEmpty].
 	fullList := fullList asSortedCollection asArray.
 	fullList := fullList collect: [:each | each subStrings: Character tab].

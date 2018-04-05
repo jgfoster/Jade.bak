@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-RowanDefinitionService subclass: #RowanProjectService
+RowanService subclass: #RowanProjectService
 	instanceVariableNames: 'sha branch'
 	classVariableNames: 'DefaultProjectName'
 	poolDictionaries: ''
@@ -56,11 +56,6 @@ remoteService
 	stream nextPutAll: 'RowanProjectDefinitionService new '.
 	^transport executeString: stream contents!
 
-remoteServiceName
-	"The remote service name is the same as this class"
-
-	^'RowanProjectDefinitionService'!
-
 removeProjectNamed: projectName
 
 	transport send: #removeProjectNamed: to: self remoteService withAll: (Array with: projectName)!
@@ -70,10 +65,6 @@ removeSampleProject
 
 sampleProjectName
 	^transport send: #sampleProjectName to: self remoteService!
-
-setRemoteName
-
-	transport send: #name: to: remoteService withAll: (Array with: name)!
 
 sha
 	^sha!
@@ -90,11 +81,9 @@ sha: anObject
 !RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #remoteAccessors!public! !
 !RowanProjectService categoriesFor: #remoteService!private! !
-!RowanProjectService categoriesFor: #remoteServiceName!examples!private! !
 !RowanProjectService categoriesFor: #removeProjectNamed:!public! !
 !RowanProjectService categoriesFor: #removeSampleProject!public! !
 !RowanProjectService categoriesFor: #sampleProjectName!public! !
-!RowanProjectService categoriesFor: #setRemoteName!accessing!public! !
 !RowanProjectService categoriesFor: #sha!accessing!public! !
 !RowanProjectService categoriesFor: #sha:!accessing!public! !
 
@@ -125,17 +114,10 @@ defaultProjectName: aString
 icon
 	"Answers an Icon that can be used to represent this class"
 
-	^##(self) defaultIcon!
-
-named: projectName
-	| inst |
-	inst := self new name: projectName.
-	inst setRemoteName.
-	^inst! !
+	^##(self) defaultIcon! !
 !RowanProjectService class categoriesFor: #defaultIcon!private! !
 !RowanProjectService class categoriesFor: #defaultIconName!private! !
 !RowanProjectService class categoriesFor: #defaultProjectName!public! !
 !RowanProjectService class categoriesFor: #defaultProjectName:!public! !
 !RowanProjectService class categoriesFor: #icon!private! !
-!RowanProjectService class categoriesFor: #named:!instance creation!public! !
 

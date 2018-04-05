@@ -30,6 +30,12 @@ deleteProject
 
 	MessageBox notify: 'This feature not yet implemented'!
 
+inspectProject
+
+	| service |
+	service := RowanProjectService named: projectListPresenter selection name.
+	service inspectDefinition.!
+
 list: aList
 	projectListPresenter list: aList!
 
@@ -69,6 +75,7 @@ saveProject
 !RowanProjectListPresenter categoriesFor: #browseProjects!public! !
 !RowanProjectListPresenter categoriesFor: #createComponents!public! !
 !RowanProjectListPresenter categoriesFor: #deleteProject!menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #inspectProject!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #list:!public! !
 !RowanProjectListPresenter categoriesFor: #makeDefault!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #primaryPresenter!public! !

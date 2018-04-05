@@ -57,10 +57,16 @@ deletePackage
 	self updateCommand: 'unloadPackage' , Character tab asString , packageName , Character lf asString
 				, self requestString!
 
+inspectPackage
+
+	| service |
+	service := RowanPackageService named: packageListPresenter selection key.
+	service inspectDefinition!
+
 pkgsMenuStrings
 
 	0 == 1 ifTrue: [
-		self findClass; addPackage; loadLatestVersion; savePackage; showPackageChanges; deletePackage.
+		self findClass; addPackage; loadLatestVersion; savePackage; showPackageChanges; deletePackage; inspectDefinition.
 	].
 	^#(
 		'&Packages'
@@ -71,6 +77,8 @@ pkgsMenuStrings
 		'&Save Package..//savePackage'
 		'Show &Changes//showPackageChanges'
 		'&Delete Package...//deletePackage'
+		'-'
+		'&Inspect Package...//inspectPackage'
 	).
 !
 
@@ -150,6 +158,7 @@ updatePresenters
 !RowanSystemBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #classService!private!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #deletePackage!menu handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #inspectPackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #possiblyShowGenericPackageClassTemplate:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #resetClassDefinitionPresenter!private!updating! !

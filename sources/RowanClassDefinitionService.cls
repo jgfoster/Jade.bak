@@ -1,42 +1,10 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-RowanDefinitionService subclass: #RowanClassDefinitionService
+RowanClassService subclass: #RowanClassDefinitionService
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanClassDefinitionService guid: (GUID fromString: '{ab96bbd9-d725-4add-b635-94cec9f12a19}')!
-RowanClassDefinitionService comment: ''!
+RowanClassDefinitionService guid: (GUID fromString: '{df7fa357-59f4-4de7-a7e8-557636b229ce}')!
+RowanClassDefinitionService comment: 'Placeholder until the server service classes are renamed'!
 !RowanClassDefinitionService categoriesForClass!Kernel-Objects! !
-!RowanClassDefinitionService methodsFor!
-
-classCreationTemplate
-
-	^transport send: #classCreationTemplate to: self remoteService!
-
-createSampleClass
-	transport send: #createSampleClass to: remoteService.  !
-
-remoteService
-	| stream |
-	stream := WriteStream on: String new.
-	stream nextPutAll: 'RowanClassDefinitionService new '.
-	remoteService := transport executeString: stream contents.
-	transport send: #name: to: remoteService withAll: (Array with: name).
-	^remoteService!
-
-sampleClassName
-	^transport send: #sampleClassName to: remoteService.  ! !
-!RowanClassDefinitionService categoriesFor: #classCreationTemplate!public! !
-!RowanClassDefinitionService categoriesFor: #createSampleClass!public! !
-!RowanClassDefinitionService categoriesFor: #remoteService!private! !
-!RowanClassDefinitionService categoriesFor: #sampleClassName!public! !
-
-!RowanClassDefinitionService class methodsFor!
-
-on: className
-	^self new
-		name: className;
-		yourself! !
-!RowanClassDefinitionService class categoriesFor: #on:!instance creation!public! !
-

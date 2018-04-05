@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-RowanDefinitionService subclass: #RowanClassService
+RowanService subclass: #RowanClassService
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -25,17 +25,11 @@ remoteService
 	transport send: #name: to: remoteService withAll: (Array with: name).
 	^remoteService!
 
-remoteServiceName
-	"The remote service name is the same as this class"
-
-	^'RowanClassDefinitionService'!
-
 sampleClassName
 	^transport send: #sampleClassName to: remoteService.  ! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
 !RowanClassService categoriesFor: #remoteService!private! !
-!RowanClassService categoriesFor: #remoteServiceName!examples!private! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 
 !RowanClassService class methodsFor!

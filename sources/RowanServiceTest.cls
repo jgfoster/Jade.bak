@@ -20,9 +20,9 @@ browseClassNamed: className
 !
 
 browseImplementorsOf: aString
-	| gciSession | 
-	gciSession := RowanDefinitionService new transport.
-	shell := JadeMethodListBrowser showOnSession: gciSession. 
+	| gciSession |
+	gciSession := RowanService new transport.
+	shell := JadeMethodListBrowser showOnSession: gciSession.
 	shell primaryPresenter
 		browseImplementorsOf: aString;
 		yourself!
@@ -95,7 +95,7 @@ test_createSampleMethod
 
 test_openMethodBrowser
 	| gciSession |
-	gciSession := RowanDefinitionService new transport.
+	gciSession := RowanService new transport.
 	shell := JadeMethodListBrowser showOnSession: gciSession.
 	self assert: (shell isKindOf: RowanMethodListBrowser).
 	self assert: (shell primaryPresenter isKindOf: RowanMethodListPresenter)!
