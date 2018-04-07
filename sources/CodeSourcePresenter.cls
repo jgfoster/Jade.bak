@@ -167,7 +167,7 @@ executeSelectionOrLine
 
 	[
 		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: model environment: environment).
-	] on: GsCompileError do: [:ex | 
+	] on: GsCompileError do: [:ex | self halt.
 		^false -> ex list.
 	].
 	self error: 'How did we get here?'.

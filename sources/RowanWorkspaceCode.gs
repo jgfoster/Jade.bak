@@ -16,6 +16,8 @@ Rowan packageTools commit
 	packageNames: #('Rowan-Services')
 	message: 'checkpoint - was fixing package display bug. Added changes method for eventual project diff support'.
 
+"**** RUN TESTS  (eventually in Travis CI) ******
+
 "git push for Rowan project"
 Rowan projectTools push pushSpecUrl: 'Rowan'.
 

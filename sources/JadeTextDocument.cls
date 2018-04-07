@@ -246,7 +246,7 @@ jadeExecute
 !
 
 jadeExecuteAndDisplay: showResult 
-
+	
 	[
 		| result |
 		result := self executeSelectionOrLine.

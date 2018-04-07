@@ -39,8 +39,25 @@ defaultProjectName: aString
 		withAll: (Array with: aString).
 	self class defaultProjectName: aString!
 
+loadProjectNamed: aName
+	
+	transport
+		send: #loadProjectNamed:
+		to: remoteService
+		withAll: (Array with: aName)!
+
 nameWithDefaultIndication
 	^name = self class defaultProjectName ifTrue: [name , '*'] ifFalse: [name]!
+
+newGitProject: url root: rootPath useSsh: aBoolean
+	
+	transport
+		send: #newGitProject:root:useSsh:
+		to: remoteService
+		withAll: (Array
+				with: url
+				with: rootPath
+				with: aBoolean)!
 
 projects
 	| names |
@@ -77,7 +94,9 @@ sha: anObject
 !RowanProjectService categoriesFor: #changes!public!rowan! !
 !RowanProjectService categoriesFor: #clientDefinitionClass!private! !
 !RowanProjectService categoriesFor: #defaultProjectName:!accessing!public! !
+!RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
 !RowanProjectService categoriesFor: #nameWithDefaultIndication!accessing!public! !
+!RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
 !RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #remoteAccessors!public! !
 !RowanProjectService categoriesFor: #remoteService!private! !

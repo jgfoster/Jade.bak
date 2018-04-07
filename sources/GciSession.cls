@@ -228,9 +228,10 @@ gsHasPragmas
 handlingClientForwarderSendDo: aBlock
 
 	| block result continueWith |
+
 	block := aBlock.
 	[
-		result := self returningResultOrErrorDo: block.
+		result := self returningResultOrErrorDo: block. 
 		result isKindOf: GsClientForwarderSend.
 	] whileTrue: [
 		continueWith := result signal.
@@ -539,6 +540,7 @@ send: aSymbol to: anObject
 send: aSymbol to: anObject withAll: anArray
 
 	| stream |
+
 	stream := WriteStream on: String new.
 	stream 
 		nextPutAll: (anObject == server ifTrue: ['jadeServer'] ifFalse: [anObject printString]); cr;
