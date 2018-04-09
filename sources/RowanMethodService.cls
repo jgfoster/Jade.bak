@@ -62,37 +62,6 @@ packageName: anObject
 remoteAccessors
 	^#(#source #selector)!
 
-remoteService
-	"reduce round trips eventually"
-
-	| serviceOop |
-	serviceOop := transport executeString: 'RowanMethodDefinitionService new '.
-	transport
-		send: #source:
-		to: serviceOop
-		withAll: (Array with: source).
-	transport
-		send: #selector:
-		to: serviceOop
-		withAll: (Array with: selector).
-	transport
-		send: #category:
-		to: serviceOop
-		withAll: (Array with: category).
-	transport
-		send: #className:
-		to: serviceOop
-		withAll: (Array with: className).
-	transport
-		send: #packageName:
-		to: serviceOop
-		withAll: (Array with: packageName).
-	transport
-		send: #meta:
-		to: serviceOop
-		withAll: (Array with: meta printString).
-	^serviceOop!
-
 sampleClassInstance
 
 	^transport send: #sampleClassInstance to: remoteService!
@@ -139,7 +108,6 @@ user: anObject
 !RowanMethodService categoriesFor: #packageName!accessing!private! !
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
 !RowanMethodService categoriesFor: #remoteAccessors!private! !
-!RowanMethodService categoriesFor: #remoteService!private!remote! !
 !RowanMethodService categoriesFor: #sampleClassInstance!examples!public! !
 !RowanMethodService categoriesFor: #selector!accessing!private! !
 !RowanMethodService categoriesFor: #selector:!accessing!private! !

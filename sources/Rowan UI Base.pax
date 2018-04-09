@@ -7,22 +7,17 @@ package paxVersion: 1;
 package classNames
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
-	add: #RowanClassDefinitionService;
 	add: #RowanClassService;
-	add: #RowanDefinitionService;
 	add: #RowanMethodDefinition;
-	add: #RowanMethodDefinitionService;
 	add: #RowanMethodListBrowser;
 	add: #RowanMethodListPresenter;
 	add: #RowanMethodSelectionPresenter;
 	add: #RowanMethodService;
 	add: #RowanMethodSourcePresenter;
-	add: #RowanPackageDefinitionService;
 	add: #RowanPackagePresenter;
 	add: #RowanPackageService;
 	add: #RowanPackageShell;
 	add: #RowanPresenter;
-	add: #RowanProjectDefinitionService;
 	add: #RowanProjectListPresenter;
 	add: #RowanProjectListShell;
 	add: #RowanProjectService;
@@ -39,6 +34,9 @@ package methodNames
 	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
 	add: #GsMethod -> #methodDefinitionService;
 	add: #GsMethod2 -> #asUpdatedVersion:;
+	add: #JadeImageStripper -> #createVersionResource;
+	add: #JadeImageStripper -> #requiredClasses;
+	add: #JadeImageStripper -> #requiredPackageNames;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeServer -> #sbAddPackage:;
@@ -94,9 +92,12 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Tree\Dolphin Tree Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: 'GemStone C Interface';
 	add: 'GemStone Objects';
+	add: 'GemStone Services';
 	add: 'GemStone Session';
 	add: 'Jade Class Browser';
+	add: 'Jade Deployment';
 	add: 'Jade Inspector';
 	add: 'Jade Method Browser';
 	add: 'Jade System Browser';
@@ -104,6 +105,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade Transcript';
 	add: 'Jade UI Base';
 	add: 'Monticello';
+	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	add: '..\Core\Contributions\Solutions Software\SSW EditableListView';
 	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
 	yourself).
@@ -132,11 +134,6 @@ RowanService subclass: #RowanClassService
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanService subclass: #RowanDefinitionService
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
 	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user'
 	classVariableNames: ''
@@ -150,26 +147,6 @@ RowanService subclass: #RowanPackageService
 RowanService subclass: #RowanProjectService
 	instanceVariableNames: 'sha branch'
 	classVariableNames: 'DefaultProjectName'
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanClassService subclass: #RowanClassDefinitionService
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanMethodService subclass: #RowanMethodDefinitionService
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanPackageService subclass: #RowanPackageDefinitionService
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanProjectService subclass: #RowanProjectDefinitionService
-	instanceVariableNames: ''
-	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #RowanPresenter
@@ -314,6 +291,77 @@ asUpdatedVersion: stringOop
 	^GsMethod2 fromString: stringToGetNewMethod session: gciSession.
 ! !
 !GsMethod2 categoriesFor: #asUpdatedVersion:!public! !
+
+!JadeImageStripper methodsFor!
+
+createVersionResource
+"
+	JadeImageStripper new createVersionResource.
+"
+	| versionString version |
+	versionString := JadeSessionManager getVersion.
+	version := (versionString subStrings: $-) first.
+	self versionResource
+		fileVersion: version;
+		productVersion: version;
+		stringTables: (LookupTable new
+			at: '040904b0' 
+			put: (LookupTable new
+				at: 'CompanyName' 		put: 'GemTalk Systems LLC';
+				at: 'FileDescription' 		put: 'IDE for GemStoneS/64 with Rowan Source Code Control';
+				at: 'FileVersion' 			put: versionString;
+				at: 'InternalName' 		put: 'Rowan';
+				at: 'LegalCopyright' 		put: 'Copyright © Eric Winger 2018';
+				at: 'OriginalFilename' 	put: 'Rowan.exe';
+				at: 'ProductName' 		put: 'Rowan';
+				at: 'ProductVersion' 		put: versionString;
+				yourself);
+			yourself);
+		yourself.
+!
+
+requiredClasses
+	^(super requiredClasses)
+		addAll: JadeServer withAllSubclasses;
+		addAll: GciError withAllSubclasses;
+		addAll: GsError withAllSubclasses;
+		addAll: GciLibrary withAllSubclasses;
+		addAll: GsHostProcess withAllSubclasses;
+		addAll: GsShellCommand withAllSubclasses;
+		addAll: GsWin32Service withAllSubclasses;
+		add: NTLibrary;
+		add: StParseNodeVisitor;
+		addAll: StProgramNode withAllSubclasses;
+		addAll: StToken withAllSubclasses;
+		add: ScintillaIndicator;
+		add: WaitOnGemStoneDialog;
+		yourself!
+
+requiredPackageNames
+
+	^super requiredPackageNames
+		add: 'Development System'; 		"to get StKeywordToken>>#preComments"
+		add: 'GemStone C Interface';
+		add: 'GemStone Session';
+		add: 'GemStone Objects';
+		add: 'GemStone Services';
+		add: 'Jade Inspector';
+		add: 'Jade Login';
+		add: 'Jade System Browser';
+		add: 'Jade Transcript';
+		add: 'Jade User Browser';
+		add: 'JGF Dolphin';
+		add: 'JGF Dolphin MVP Base';
+		add: 'JGF Fading Dialog';
+		add: 'Jade UI';
+		add: 'Object Log Browser';
+		add: 'Jade from Dolphin';
+		add: 'Jade Process Browser';
+		add: 'Rowan UI Base';
+		yourself! !
+!JadeImageStripper categoriesFor: #createVersionResource!public! !
+!JadeImageStripper categoriesFor: #requiredClasses!public! !
+!JadeImageStripper categoriesFor: #requiredPackageNames!public! !
 
 !JadePresenterA methodsFor!
 

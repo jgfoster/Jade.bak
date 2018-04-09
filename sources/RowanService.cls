@@ -48,11 +48,10 @@ createClientDefinitionFromRemoteDefinition: anOop
 			clientDefinition perform: (symbol , ':') asSymbol with: value].
 	^clientDefinition!
 
-initialize
-	
+initialize 
 	super initialize.
-	self initializeTransport. 
-	remoteService := transport send: #new to: (transport executeString: self remoteServiceName)!
+	self initializeTransport.
+	remoteService := transport executeString: self remoteServiceName , ' new'!
 
 initializeTransport
 	"keep sessions properly invalidated and this
@@ -81,6 +80,9 @@ remoteAccessors
 
 	^self subclassResponsibility!
 
+remoteService
+	^remoteService!
+
 remoteServiceName
 	"The remote service name is the same as this class"
 
@@ -88,7 +90,7 @@ remoteServiceName
 
 removeSampleSymbolDictionary
 
-	transport send: #removeSampleSymbolDictionary to: self remoteService!
+	transport send: #removeSampleSymbolDictionary to: remoteService!
 
 sampleDefinitions
 	| anArrayOop | 
@@ -114,7 +116,8 @@ transport: anObject
 !RowanService categoriesFor: #name!accessing!private! !
 !RowanService categoriesFor: #name:!accessing!private! !
 !RowanService categoriesFor: #remoteAccessors!private! !
-!RowanService categoriesFor: #remoteServiceName!examples!private! !
+!RowanService categoriesFor: #remoteService!public! !
+!RowanService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanService categoriesFor: #removeSampleSymbolDictionary!public! !
 !RowanService categoriesFor: #sampleDefinitions!examples!public! !
 !RowanService categoriesFor: #setRemoteName!accessing!public! !

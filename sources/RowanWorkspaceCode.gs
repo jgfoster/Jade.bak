@@ -14,9 +14,9 @@ Rowan projectTools pull pullSpecUrl: 'Rowan'.
 Rowan packageTools commit
 	commitSpecUrl: 'Rowan'
 	packageNames: #('Rowan-Services')
-	message: 'checkpoint - was fixing package display bug. Added changes method for eventual project diff support'.
+	message: 'checkpoint - Added new project from git and load project to Rowan Project List. Kind of working.'.
 
-"**** RUN TESTS  (eventually in Travis CI) ******
+"**** RUN TESTS  (eventually in Travis CI) ******"
 
 "git push for Rowan project"
 Rowan projectTools push pushSpecUrl: 'Rowan'.

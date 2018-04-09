@@ -17,19 +17,10 @@ classCreationTemplate
 createSampleClass
 	transport send: #createSampleClass to: remoteService.  !
 
-remoteService
-	| stream |
-	stream := WriteStream on: String new.
-	stream nextPutAll: 'RowanClassDefinitionService new '.
-	remoteService := transport executeString: stream contents.
-	transport send: #name: to: remoteService withAll: (Array with: name).
-	^remoteService!
-
 sampleClassName
 	^transport send: #sampleClassName to: remoteService.  ! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
-!RowanClassService categoriesFor: #remoteService!private! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 
 !RowanClassService class methodsFor!

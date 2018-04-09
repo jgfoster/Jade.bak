@@ -13,7 +13,7 @@ RowanProjectService comment: ''!
 addProjectNamed: projectName
 	transport
 		send: #createProjectNamed:in:
-		to: self remoteService
+		to: remoteService
 		withAll: (Array with: projectName with: self class defaultProjectName).!
 
 branch
@@ -35,7 +35,7 @@ defaultProjectName: aString
 
 	transport
 		send: #defaultProjectName:
-		to: self remoteService
+		to: remoteService
 		withAll: (Array with: aString).
 	self class defaultProjectName: aString!
 
@@ -67,21 +67,15 @@ projects
 remoteAccessors
 	^#(#name #sha #branch)!
 
-remoteService
-	| stream |
-	stream := WriteStream on: String new.
-	stream nextPutAll: 'RowanProjectDefinitionService new '.
-	^transport executeString: stream contents!
-
 removeProjectNamed: projectName
 
-	transport send: #removeProjectNamed: to: self remoteService withAll: (Array with: projectName)!
+	transport send: #removeProjectNamed: to: remoteService withAll: (Array with: projectName)!
 
 removeSampleProject
 	self removeProjectNamed: self sampleProjectName!
 
 sampleProjectName
-	^transport send: #sampleProjectName to: self remoteService!
+	^transport send: #sampleProjectName to: remoteService!
 
 sha
 	^sha!
@@ -99,7 +93,6 @@ sha: anObject
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
 !RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #remoteAccessors!public! !
-!RowanProjectService categoriesFor: #remoteService!private! !
 !RowanProjectService categoriesFor: #removeProjectNamed:!public! !
 !RowanProjectService categoriesFor: #removeSampleProject!public! !
 !RowanProjectService categoriesFor: #sampleProjectName!public! !

@@ -39,32 +39,6 @@ copyRuntimeFiles
 	].
 !
 
-createVersionResource
-"
-	JadeImageStripper new createVersionResource.
-"
-	| versionString version |
-	versionString := JadeSessionManager getVersion.
-	version := (versionString subStrings: $-) first.
-	self versionResource
-		fileVersion: version;
-		productVersion: version;
-		stringTables: (LookupTable new
-			at: '040904b0' 
-			put: (LookupTable new
-				at: 'CompanyName' 		put: 'GemTalk Systems LLC';
-				at: 'FileDescription' 		put: 'IDE for GemStone/S';
-				at: 'FileVersion' 			put: versionString;
-				at: 'InternalName' 		put: 'Jade';
-				at: 'LegalCopyright' 		put: 'Copyright © James Foster 2001-2017';
-				at: 'OriginalFilename' 	put: 'Jade.exe';
-				at: 'ProductName' 		put: 'Jade';
-				at: 'ProductVersion' 		put: versionString;
-				yourself);
-			yourself);
-		yourself.
-!
-
 exeIconFile
 
 	^'icons\GS32.ico'.
@@ -102,56 +76,14 @@ prepareToStrip
 		createVersionResource;
 		yourself.
 	^super prepareToStrip.
-!
-
-requiredClasses
-	^(super requiredClasses)
-		addAll: JadeServer withAllSubclasses;
-		addAll: GciError withAllSubclasses;
-		addAll: GsError withAllSubclasses;
-		addAll: GciLibrary withAllSubclasses;
-		addAll: GsHostProcess withAllSubclasses;
-		addAll: GsShellCommand withAllSubclasses;
-		addAll: GsWin32Service withAllSubclasses;
-		add: NTLibrary;
-		add: StParseNodeVisitor;
-		addAll: StProgramNode withAllSubclasses;
-		addAll: StToken withAllSubclasses;
-		add: ScintillaIndicator;
-		add: WaitOnGemStoneDialog;
-		yourself!
-
-requiredPackageNames
-
-	^super requiredPackageNames
-		add: 'Development System'; 		"to get StKeywordToken>>#preComments"
-		add: 'GemStone C Interface';
-		add: 'GemStone Session';
-		add: 'GemStone Objects';
-		add: 'GemStone Services';
-		add: 'Jade Inspector';
-		add: 'Jade Login';
-		add: 'Jade System Browser';
-		add: 'Jade Transcript';
-		add: 'Jade User Browser';
-		add: 'JGF Dolphin';
-		add: 'JGF Dolphin MVP Base';
-		add: 'JGF Fading Dialog';
-		add: 'Jade UI';
-		add: 'Object Log Browser';
-		add: 'Jade from Dolphin';
-		add: 'Jade Process Browser';
-		yourself! !
+! !
 !JadeImageStripper categoriesFor: #closeLoginShells!public! !
 !JadeImageStripper categoriesFor: #copyRuntimeFiles!public! !
-!JadeImageStripper categoriesFor: #createVersionResource!public! !
 !JadeImageStripper categoriesFor: #exeIconFile!operations!public! !
 !JadeImageStripper categoriesFor: #finishedWith:!public! !
 !JadeImageStripper categoriesFor: #loadJadeServerSourceCache!public! !
 !JadeImageStripper categoriesFor: #logRemainingClasses!public! !
 !JadeImageStripper categoriesFor: #prepareToStrip!public! !
-!JadeImageStripper categoriesFor: #requiredClasses!public! !
-!JadeImageStripper categoriesFor: #requiredPackageNames!public! !
 
 !JadeImageStripper class methodsFor!
 
