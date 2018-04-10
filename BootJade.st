@@ -19,7 +19,6 @@ list := #(
 	'Jade UI'
 	'Jade Test Browser'
 	'Jade System Browser'
-	'Jade Transcript'
 	'Jade Process Browser'
 	'Object Log Browser'
 	'Jade Login'
@@ -27,6 +26,7 @@ list := #(
 	'Contacts Demo'
 	'Jade in Dolphin'
 	'Jade Tests'
+	'Rowan UI Base'
 ).
 (Delay forMilliseconds: 200) wait.
 ProgressDialog showModalWhile: [:progress |

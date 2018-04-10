@@ -30,7 +30,6 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #Cursor -> #showWhile:;
 	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
 	add: #GsMethod -> #methodDefinitionService;
 	add: #GsMethod2 -> #asUpdatedVersion:;
@@ -229,24 +228,6 @@ TestCase subclass: #RowanServiceTest
 
 
 "Loose Methods"!
-
-!Cursor methodsFor!
-
-showWhile: aBlock
-	"Maintain the wait cursor while aBlock is executed, answering the result of the block.
-	The actual cursor which was current is restored (rather than the one we think is Current)."
-
-	"Nested showWhile: calls can reset the cursor to a bad state, especially if a dialog
-	or debugger is opened during an operation that uses this block. Just set back to arrow for now"
-
-	| previous actual | 
-	previous := Current.  
-	Current := self.
-	actual := self setCursor.
-	^aBlock ensure: 
-			[Current := Cursor arrow.
-			UserLibrary default setCursor: actual]! !
-!Cursor categoriesFor: #showWhile:!operations!public! !
 
 !GsClass methodsFor!
 

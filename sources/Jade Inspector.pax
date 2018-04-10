@@ -73,7 +73,7 @@ JadeInspector subclass: #JadeNavigationInspector
 jadeInspect
 
 	| result |
-	self halt. 
+
 	result := self jadeExecuteAndDisplay: false.	result == self ifTrue: [^self].
 	JadeInspector showOn: result session: gciSession.
 ! !
