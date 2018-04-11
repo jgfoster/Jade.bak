@@ -58,14 +58,44 @@ newGitProject
 		root: '$GS_HOME/shared/repos/'
 		useSsh: true!
 
+openChangesShell: changesString
+	| shell editor rs |
+	editor := RichTextEdit new.
+	editor value: changesString.
+	shell := ShellView new
+				create;
+				yourself.
+	shell extent: 600 @ 600.
+	shell layoutManager: GridLayout new.
+	editor parentView: shell.
+	editor create show.
+	shell caption: projectListPresenter selection name, ' project changes'.
+	shell show.
+	rs := ReadStream on: changesString.
+	[rs atEnd] whileFalse: 
+			[| line startPosition checkChar |
+			startPosition := rs position.
+			line := rs nextLine.
+			checkChar := line isEmpty ifTrue: [nil] ifFalse: [line first].
+			checkChar = $+
+				ifTrue: 
+					[editor selectionRange: (startPosition to: rs position - 1).
+					editor selectionColor: Color darkGreen].
+			checkChar = $-
+				ifTrue: 
+					[editor selectionRange: (startPosition to: rs position - 1).
+					editor selectionColor: Color red]].
+	editor selectionRange: editor defaultSelectionRange.
+	editor invalidate!
+
 primaryPresenter
 	^projectListPresenter!
 
 projectChanges
-
-	| service |
+	| service changesString |
 	service := RowanProjectService named: projectListPresenter selection name.
-	service changes inspect!
+	changesString := service changes.
+	self openChangesShell: changesString!
 
 projectListPresenter
 	^projectListPresenter!
@@ -85,7 +115,15 @@ revertProject
 saveProject
 
 	MessageBox notify: 'Save Project is not implemented yet'.
-	! !
+	!
+
+writeProject
+
+	| projectName |
+	projectName := projectListPresenter selection name.
+	(MessageBox confirm: 'Write project ', projectName, ' to disk without committing?') ifFalse:[^self].
+	(RowanProjectService named: projectName) write.
+	MessageBox notify: 'Project ', projectName, ' written to disk'! !
 !RowanProjectListPresenter categoriesFor: #addProject!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #browseProjects!public! !
 !RowanProjectListPresenter categoriesFor: #createComponents!public! !
@@ -95,6 +133,7 @@ saveProject
 !RowanProjectListPresenter categoriesFor: #loadProject!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #makeDefault!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #newGitProject!menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #openChangesShell:!menu handlers!private! !
 !RowanProjectListPresenter categoriesFor: #primaryPresenter!public! !
 !RowanProjectListPresenter categoriesFor: #projectChanges!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #projectListPresenter!private! !
@@ -102,4 +141,5 @@ saveProject
 !RowanProjectListPresenter categoriesFor: #pushToGit!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #revertProject!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #saveProject!menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #writeProject!menu handlers!public! !
 
