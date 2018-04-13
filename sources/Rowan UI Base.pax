@@ -45,10 +45,14 @@ package methodNames
 	add: #JadeServer -> #sbRemoveMethods:;
 	add: #JadeServer -> #sbUnloadPackage:;
 	add: #JadeServer -> #sbUpdateClassInfo;
+	add: #JadeServer -> #sbUpdatePackage:;
 	add: #JadeServer -> #sbUpdatePackages;
+	add: #JadeServer -> #sbUpdatePackagesOrDictionaries;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeSystemBrowserPresenter -> #onViewOpened;
+	add: #JadeSystemBrowserPresenter -> #packageTabName;
 	add: #JadeSystemBrowserPresenter -> #queryCommand:;
 	add: #JadeSystemBrowserPresenter -> #savePackage;
 	add: #JadeSystemBrowserPresenter -> #showPackageChanges;
@@ -76,7 +80,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\IDE\Base\Development System';
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Cards\Dolphin Card Containers';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
@@ -105,6 +108,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade UI Base';
 	add: 'Monticello';
 	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
+	add: '..\Core\Contributions\ITC Gorisek\Source Tracking System';
 	add: '..\Core\Contributions\Solutions Software\SSW EditableListView';
 	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
 	yourself).
@@ -505,6 +509,74 @@ sbUpdateClassInfo
 		lf;
 		yourself!
 
+sbUpdatePackage: aString
+	| package workingCopy list index |
+	self mcPackageClass isNil
+		ifTrue: 
+			[writeStream
+				nextPut: $%;
+				lf.
+			writeStream
+				nextPut: $%;
+				lf.
+			^self ].
+	package := self mcPackageClass named: aString.
+	workingCopy := self mcWorkingCopyClass forPackage: package.
+	list := workingCopy ancestors collect: [:each | 0 -> each].
+	index := 1.
+	[list size < 4 and: [index <= list size]] whileTrue: 
+			[| assoc |
+			assoc := list at: index.
+			assoc value ancestors do: [:parent | list add: assoc key + 1 -> parent].
+			index := index + 1].
+	list do: 
+			[:each |
+			| date time |
+			date := each value date isNil
+						ifTrue: ['']
+						ifFalse: [each value date asStringUsingFormat: #(3 2 1 $- 1 1)].
+			time := each value time isNil
+						ifTrue: ['']
+						ifFalse: [each value time asStringUsingFormat: #($: true false)].
+			writeStream
+				nextPutAll: each key printString;
+				tab;
+				nextPutAll: each value name;
+				tab;
+				nextPutAll: date;
+				nextPut: $T;
+				nextPutAll: time;
+				tab;
+				nextPutAll: (each value message
+							collect: [:char | (char asciiValue < 32 or: [127 < char asciiValue]) ifTrue: [$.] ifFalse: [char]]);
+				lf].
+	writeStream
+		nextPut: $%;
+		lf.
+	workingCopy repositoryGroup repositories do: 
+			[:each |
+			writeStream
+				nextPutAll: each class name;
+				tab;
+				nextPutAll: each description;
+				tab;
+				yourself.
+			each class name = #MCHttpRepository
+				ifTrue: 
+					[writeStream
+						nextPutAll: each user;
+						tab;
+						nextPutAll: each password;
+						yourself]
+				ifFalse: 
+					[writeStream
+						tab;
+						tab].
+			writeStream lf].
+	writeStream
+		nextPut: $%;
+		lf!
+
 sbUpdatePackages
 	| override modifiedList oldSelections newSelections fullList |
 	oldSelections := self nextLineAsList.
@@ -535,7 +607,20 @@ sbUpdatePackages
 			service := RowanPackageService forPackageNamed: each.
 			classList addAll: service loadedClassHandles].
 	writeStream lf.
-	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first]! !
+	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first]!
+
+sbUpdatePackagesOrDictionaries
+
+	| selectedTab |
+	selectedTab := self nextLine.
+	"Removed for Rowan which may not have Monticello loaded, but have a package tab"
+	"(self mcWorkingCopyClass isNil or: [self gsPackagePolicy isNil]) ifTrue: [selectedTab := 'dictionaryList']." 
+	writeStream nextPutAll: selectedTab; lf.
+	classList := OrderedCollection new.
+	selectedTab = 'dictionaryList' ifTrue: [^self sbUpdateDictionaries].
+	selectedTab = 'packageList' ifTrue: [^self sbUpdatePackages].
+	self error: 'unexpected token'.
+! !
 !JadeServer categoriesFor: #sbAddPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbChangesInPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbClassTemplate!public!System Browser! !
@@ -543,7 +628,9 @@ sbUpdatePackages
 !JadeServer categoriesFor: #sbRemoveMethods:!public!System Browser! !
 !JadeServer categoriesFor: #sbUnloadPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClassInfo!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!public!System Browser! !
 
 !JadeServer64bit32 class methodsFor!
 
@@ -603,6 +690,35 @@ browseMethodsAndSelect: aString type: browseType
 		browseMethodsFromString: readStream upToEnd methodName: aString type: browseType;
 		selecting: aString.
 !
+
+onViewOpened 
+	super onViewOpened.
+	categoryListPresenter view contextMenu: (Menu fromStrings: self categoriesMenuStrings).
+	classCommentPresenter view isReadOnly: false.
+	classHierarchyPresenter view contextMenu: (Menu fromStrings: self classesMenuStrings).
+	classListPresenter view contextMenu: (Menu fromStrings: self classesMenuStrings).
+	dictionaryListPresenter view contextMenu: (Menu fromStrings: self dictsMenuStrings).
+	globalsPresenter view contextMenu: (Menu fromStrings: self globalsMenuStrings).
+	methodListPresenter view contextMenu: (Menu fromStrings: self methodsMenuStrings).
+	methodSourcePresenter view
+		contextMenu: (Menu fromStrings: self editMenuStrings);
+		isBackgroundDwellEnabled: true;
+		isBraceHighlightingEnabled: true;
+		yourself.
+	packageListPresenter view contextMenu: (Menu fromStrings: self pkgsMenuStrings).
+	variableListPresenter view contextMenu: (Menu fromStrings: self variablesMenuStrings).
+	self setSearchPolicy.
+	gciSession isPackagePolicyEnabled
+		ifFalse: 
+			[| aView aModel aLabel | 
+			aView := packageDictionaryTabs parentView subViews detect: [:each | each isKindOf: TabViewXP].
+			aModel := aView model.
+			aLabel := aModel detect: [:each | each text = self packageTabName].
+			aModel remove: aLabel]!
+
+packageTabName
+
+	^'Packages'!
 
 queryCommand: aCommandQuery
 
@@ -709,6 +825,8 @@ showPackageChanges
 	MCPatchBrowser showOn: patch! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !

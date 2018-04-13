@@ -112,8 +112,6 @@ package methodNames
 	add: #JadeServer -> #sbUpdateMethodSelectionsIn:;
 	add: #JadeServer -> #sbUpdateMethodStepPointsFor:;
 	add: #JadeServer -> #sbUpdateMethodVariables;
-	add: #JadeServer -> #sbUpdatePackage:;
-	add: #JadeServer -> #sbUpdatePackagesOrDictionaries;
 	add: #JadeServer -> #sbUpdateSuperclass;
 	add: #JadeServer -> #selectedClassOverridesSelector:;
 	add: #JadeServer -> #symbolList;
@@ -1522,68 +1520,6 @@ sbUpdateMethodVariables
 	self sbUpdateMethodFilterSelections.
 !
 
-sbUpdatePackage: aString
-
-	| package workingCopy list index |
-	package := self mcPackageClass named: aString.
-	workingCopy := self mcWorkingCopyClass forPackage: package.
-	list := workingCopy ancestors collect: [:each | 0 -> each].
-	index := 1.
-	[
-		list size < 4 and: [index <= list size].
-	] whileTrue: [
-		| assoc |
-		assoc := list at: index.
-		assoc value ancestors do: [:parent | list add: assoc key + 1 -> parent].
-		index := index + 1.
-	].
-	list do: [:each | 
-		| date time |
-		date := each value date isNil 
-			ifTrue: ['']
-			ifFalse: [each value date asStringUsingFormat: #(3 2 1 $- 1 1)].
-		time := each value time isNil
-			ifTrue: ['']
-			ifFalse: [each value time asStringUsingFormat: #($: true false)].
-		writeStream 
-			nextPutAll: each key printString; tab;
-			nextPutAll: each value name; tab;
-			nextPutAll: date; 
-			nextPut: $T;
-			nextPutAll: time; tab;
-			nextPutAll: (each value message collect: [:char |(char asciiValue < 32 or: [127 < char asciiValue]) ifTrue: [$.] ifFalse: [char]]);
-			lf.
-	].
-	writeStream nextPut: $%; lf.
-	workingCopy repositoryGroup repositories do: [:each | 
-		writeStream 
-			nextPutAll: each class name; tab;
-			nextPutAll: each description; tab;
-			yourself.
-		(each class name = #'MCHttpRepository') ifTrue: [
-			writeStream
-				nextPutAll: each user; tab;
-				nextPutAll: each password;
-				yourself.
-		] ifFalse: [
-			writeStream tab; tab.
-		].
-		writeStream lf.
-	].
-	writeStream nextPut: $%; lf.!
-
-sbUpdatePackagesOrDictionaries
-
-	| selectedTab |
-	selectedTab := self nextLine.
-	(self mcWorkingCopyClass isNil or: [self gsPackagePolicy isNil]) ifTrue: [selectedTab := 'dictionaryList'].
-	writeStream nextPutAll: selectedTab; lf.
-	classList := OrderedCollection new.
-	selectedTab = 'dictionaryList' ifTrue: [^self sbUpdateDictionaries].
-	selectedTab = 'packageList' ifTrue: [^self sbUpdatePackages].
-	self error: 'unexpected token'.
-!
-
 sbUpdateSuperclass
 
 	| class tabName selected index |
@@ -1831,8 +1767,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbUpdateMethodSelectionsIn:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodStepPointsFor:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodVariables!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateSuperclass!public!System Browser! !
 !JadeServer categoriesFor: #selectedClassOverridesSelector:!public!System Browser! !
 !JadeServer categoriesFor: #symbolList!public!System Browser! !

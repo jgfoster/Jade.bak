@@ -63,7 +63,7 @@ initializeTransport
 	3. If the Jade Login is not open -> JadeLoginShell show. 
 	4. From the Jade Shell -> Login"
 
-	transport := GciSession allInstances detect: [:session | session isValidSession] ifNone:[self halt].!
+	transport := GciSession allInstances detect: [:session | session isValidSession] ifNone:[nil].!
 
 inspectDefinition
 	| definition |

@@ -1972,32 +1972,6 @@ onSetFocus: aView stack: aString
 	].
 !
 
-onViewOpened
-
-	super onViewOpened.
-	categoryListPresenter	view contextMenu: (Menu fromStrings: self categoriesMenuStrings	).
-	classCommentPresenter	view isReadOnly: false.
-	classHierarchyPresenter	view contextMenu: (Menu fromStrings: self classesMenuStrings		).
-	classListPresenter		view contextMenu: (Menu fromStrings: self classesMenuStrings		).
-	dictionaryListPresenter 	view contextMenu: (Menu fromStrings: self dictsMenuStrings		).
-	globalsPresenter		view contextMenu: (Menu fromStrings: self globalsMenuStrings		).
-	methodListPresenter		view contextMenu: (Menu fromStrings: self methodsMenuStrings		).
-	methodSourcePresenter	view contextMenu: (Menu fromStrings: self editMenuStrings		);
-		isBackgroundDwellEnabled: true;
-		isBraceHighlightingEnabled: true;
-		yourself.
-	packageListPresenter 	view contextMenu: (Menu fromStrings: self pkgsMenuStrings		).
-	variableListPresenter		view contextMenu: (Menu fromStrings: self variablesMenuStrings	).
-	self setSearchPolicy.
-	gciSession isPackagePolicyEnabled ifFalse: [
-		| aView aModel aLabel |
-		aView := packageDictionaryTabs parentView subViews detect: [:each | each isKindOf: TabViewXP].
-		aModel := aView model.
-		aLabel := aModel detect: [:each | each text = 'Packages'].
-		aModel remove: aLabel.
-	].
-!
-
 openSourceStyler
 
 	| textStyles |
@@ -2017,7 +1991,7 @@ parseContext
 
 pkgDictChanged
 
-	| listModel |
+	| listModel | 
 	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
 	globalsLabel ifNil: [globalsLabel := listModel detect: [:each | each text = 'Globals']].
 	packageLabel ifNil: [packageLabel := listModel detect: [:each | each text = 'Package']].
@@ -3286,7 +3260,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #onDropOnPackageList:!drag & drop!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onSetFocus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onSetFocus:stack:!public! !
-!JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #openSourceStyler!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #packageListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #parseContext!public! !

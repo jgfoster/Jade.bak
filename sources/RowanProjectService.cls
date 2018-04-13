@@ -30,6 +30,10 @@ clientDefinitionClass
 
 	^self class!
 
+commitWithMessage: message
+
+	transport send: #commitWithMessage: to: remoteService withAll: (Array with: message)  !
+
 defaultProjectName: aString
 	"The server is the gold copy"
 
@@ -64,6 +68,14 @@ projects
 	names := transport send: #projectNames to: remoteService.
 	^self createClientDefinitionFrom: names!
 
+pullFromGit
+
+	^transport send: #pullFromGit to: remoteService  !
+
+pushToGit
+
+	^transport send: #pushToGit to: remoteService  !
+
 remoteAccessors
 	^#(#name #sha #branch)!
 
@@ -81,23 +93,31 @@ sha
 	^sha!
 
 sha: anObject
-	sha := anObject! !
+	sha := anObject!
+
+write
+
+	^transport send: #write to: remoteService  ! !
 !RowanProjectService categoriesFor: #addProjectNamed:!public! !
 !RowanProjectService categoriesFor: #branch!accessing!public! !
 !RowanProjectService categoriesFor: #branch:!accessing!public! !
 !RowanProjectService categoriesFor: #changes!public!rowan! !
 !RowanProjectService categoriesFor: #clientDefinitionClass!private! !
+!RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
 !RowanProjectService categoriesFor: #defaultProjectName:!accessing!public! !
 !RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
 !RowanProjectService categoriesFor: #nameWithDefaultIndication!accessing!public! !
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
 !RowanProjectService categoriesFor: #projects!public!rowan! !
+!RowanProjectService categoriesFor: #pullFromGit!public!rowan! !
+!RowanProjectService categoriesFor: #pushToGit!public!rowan! !
 !RowanProjectService categoriesFor: #remoteAccessors!public! !
 !RowanProjectService categoriesFor: #removeProjectNamed:!public! !
 !RowanProjectService categoriesFor: #removeSampleProject!public! !
 !RowanProjectService categoriesFor: #sampleProjectName!public! !
 !RowanProjectService categoriesFor: #sha!accessing!public! !
 !RowanProjectService categoriesFor: #sha:!accessing!public! !
+!RowanProjectService categoriesFor: #write!public!rowan! !
 
 !RowanProjectService class methodsFor!
 
