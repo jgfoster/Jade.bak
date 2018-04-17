@@ -51,13 +51,14 @@ makeDefault
 
 newGitProject
 	| filePath |
-	filePath := Prompter
-				on: 'file:/foos2/users/ewinger/GsDevKit_home/shared/repos/RowanSampler/specs/RowanSample1.ston'
+	filePath := RowanKeyValuePrompter
+				on: 'file:/export/korea2/users/ewinger/shared/repos/RowanSample1/specs/RowanSample1.ston' ->  '/export/korea2/users/ewinger/shared/repos/'
 				prompt: 'Please select location of the code repository to clone:'
 				caption: 'Clone Git Repository'.
+	filePath isNil ifTrue:[^self].
 	RowanProjectService new
-		newGitProject: filePath
-		root: '$GS_HOME/shared/repos/'
+		newGitProject: filePath key
+		root: filePath value
 		useSsh: true!
 
 newService

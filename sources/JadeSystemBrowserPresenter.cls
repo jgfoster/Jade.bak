@@ -863,18 +863,20 @@ editSaveClass
 
 editSaveClassA
 
+	"Removed the class migration dialog and just pass default answers.
+	Rowan will then ignore them." 
 	| dict stream answer |
 	(selectedClassName includes: Character space) ifFalse: [^self].		"This is a check to see if an earlier version exists"
-	(dict := JadeMigrateClassDialog showModal) isNil ifTrue: [^self revertNewClass].
-	(dict allSatisfy: [:each | each not]) ifTrue: [^self].
+	"(dict := JadeMigrateClassDialog showModal) isNil ifTrue: [^self revertNewClass].  Commented out for Jadeite
+	(dict allSatisfy: [:each | each not]) ifTrue: [^self]."
 	(stream := WriteStream on: String new)
 		nextPutAll: 'postSaveClass'; tab;
 		nextPutAll: self behaviorIdentifier; tab;
 		yourself.
-	(dict at: #copyMethods) printOn: stream. 					stream tab.
-	(dict at: #recompileSubclasses) printOn: stream. 			stream tab.
-	(dict at: #migrateInstances) printOn: stream. 				stream tab.
-	(dict at: #removeFromClassHistory) printOn: stream. 	stream lf.
+	true printOn: stream. 			stream tab.	"copyMethods"
+	true printOn: stream. 			stream tab.	"recompileSubclasses"
+	true printOn: stream. 			stream tab.	"migrateInstances"
+	true printOn: stream. 	stream lf.				"removeFromClassHistory"
 	(answer := self updateCommand: stream contents , self requestString) isNil ifTrue: [^self].
 	[
 		answer = 'compileError'.

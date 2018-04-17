@@ -181,7 +181,6 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone Services';
 	add: 'GemStone Session';
 	add: 'Jade Autocompletation';
-	add: 'Jade Class Browser';
 	add: 'Jade Inspector';
 	add: 'Jade Method Browser';
 	add: 'Jade Test Browser';

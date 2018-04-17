@@ -1,9 +1,16 @@
-RowanMethodService newMethod
+"Unload Rowan project"
+| sl |
+Rowan image _removeLoadedProject: (Rowan image loadedProjectNamed: 'RowanSample1').
+sl := System myUserProfile symbolList.   "SampleSymbolDict"
+sl remove: SampleSymbolDict.
+GsCurrentSession currentSession symbolList remove: SampleSymbolDict.
 
-UserGlobals at: #rowanCompile ifAbsent:[false]  
 
-UserGlobals at: #rowanCompile put: true true
-UserGlobals at: #rowanCompile put: false
+
+(System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile ifAbsent:[false]  
+
+(System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile put: true
+(System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile put: false
 
 (System myUserProfile resolveSymbol: #UserGlobals) value 
 
