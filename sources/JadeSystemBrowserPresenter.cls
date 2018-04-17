@@ -1293,7 +1293,7 @@ isGlobalsTabSelected
 !
 
 isOkayToChange
-
+	
 	methodSourcePresenter view isModified ifTrue: [
 		methodSourcePresenter ensureVisible.
 		gciSession isValidSession

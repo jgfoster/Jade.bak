@@ -167,7 +167,7 @@ executeSelectionOrLine
 
 	[
 		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: model environment: environment).
-	] on: GsCompileError do: [:ex | self halt.
+	] on: GsCompileError do: [:ex | 
 		^false -> ex list.
 	].
 	self error: 'How did we get here?'.
@@ -325,6 +325,7 @@ selectionChanging: aSelectionChangingEvent
 	(documentPresenter view isKindOf: DeafObject) ifTrue: [^self].
 	documentPresenter view isModified ifFalse: [^self].
 	documentPresenter view ensureVisible.
+	self halt. 
 	MessageBox 
 		confirm: 'Save changes?' 
 		onYes: 			[aSelectionChangingEvent value: self fileSave] 

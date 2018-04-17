@@ -29,7 +29,6 @@ package methodNames
 	add: #JadeServer -> #_stepPointsForBreaksInMethod:;
 	add: #JadeServer -> #_trimStackOf:toLevel:;
 	add: #JadeServer -> #asAsciiString:;
-	add: #JadeServer -> #compile:frame:process:;
 	add: #JadeServer -> #isResumableCategory:number:context:;
 	add: #JadeServer -> #step:inFrame:;
 	add: #JadeServer32bit -> #_oopAndStringFor:;
@@ -40,7 +39,6 @@ package methodNames
 	add: #JadeServer64bit -> #_oopAndStringFor:;
 	add: #JadeServer64bit -> #_stepPointFromProcess:frame:method:level:;
 	add: #JadeServer64bit -> #_trimStackOf:toLevel:;
-	add: #JadeServer64bit -> #recompile:withSource:;
 	add: #JadeServer64bit -> #sourceForProcess:frame:;
 	add: #JadeServer64bit33 -> #_stepPointFromProcess:frame:method:level:;
 	add: #JadeServer64bit33 -> #step:inFrame:;
@@ -293,26 +291,6 @@ asAsciiString: aString
 	]).
 !
 
-compile: aString frame: anInteger process: aGsProcess
-	"Compile method from within debugger"
-
-	| oldMethod aBehavior selector category result |
-	oldMethod := aGsProcess localMethodAt: anInteger.
-	result := self 
-		recompile: oldMethod
-		withSource: aString.
-	(result isKindOf: Boolean) ifTrue: [^result].
-	aBehavior := oldMethod inClass.
-	selector := oldMethod selector.
-	selector isNil ifTrue: [^result].
-	category := self _behavior: aBehavior categoryOfSelector: selector.
-	result := self
-		compileMethod: aString 
-		behavior: aBehavior 
-		user: nil 
-		inCategory: category.
-	^result.!
-
 isResumableCategory: category number: number context: context
 
 	| exceptionA receiver |
@@ -339,7 +317,6 @@ step: aGsProcess inFrame: anInteger
 !JadeServer categoriesFor: #_stepPointsForBreaksInMethod:!Debugger!public! !
 !JadeServer categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
 !JadeServer categoriesFor: #asAsciiString:!Debugger!public! !
-!JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
 !JadeServer categoriesFor: #isResumableCategory:number:context:!Debugger!public! !
 !JadeServer categoriesFor: #step:inFrame:!Debugger!public! !
 
@@ -434,18 +411,6 @@ _trimStackOf: aGsProcess toLevel: anInteger
 	].
 !
 
-recompile: aMethod withSource: aString
-
-	^[
-		| result |
-		result := aMethod _recompileWithSource: aString.
-		result isNil ifTrue: [^true].		"Bug 41195 returns nil if success so assume it is the same method"
-		result.
-	] on: Error do: [:ex | 
-		ex description.
-	].
-!
-
 sourceForProcess: gsProcess frame: level
 
 	^[
@@ -459,7 +424,6 @@ sourceForProcess: gsProcess frame: level
 !JadeServer64bit categoriesFor: #_oopAndStringFor:!Debugger!public! !
 !JadeServer64bit categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!public! !
 !JadeServer64bit categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
-!JadeServer64bit categoriesFor: #recompile:withSource:!Debugger!public! !
 !JadeServer64bit categoriesFor: #sourceForProcess:frame:!Debugger!public! !
 
 !JadeServer64bit33 methodsFor!

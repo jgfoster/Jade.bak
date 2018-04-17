@@ -1,8 +1,11 @@
+RowanMethodService newMethod
+
 UserGlobals at: #rowanCompile ifAbsent:[false]  
 
-UserGlobals at: #rowanCompile put: true
+UserGlobals at: #rowanCompile put: true true
 UserGlobals at: #rowanCompile put: false
 
+(System myUserProfile resolveSymbol: #UserGlobals) value 
 
 Rowan image loadedProjects
 

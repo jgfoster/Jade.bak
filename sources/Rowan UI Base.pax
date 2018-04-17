@@ -30,6 +30,7 @@ package classNames
 	yourself.
 
 package methodNames
+	add: #GciSession -> #initializeServer;
 	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
 	add: #GsMethod -> #methodDefinitionService;
 	add: #GsMethod2 -> #asUpdatedVersion:;
@@ -38,6 +39,7 @@ package methodNames
 	add: #JadeImageStripper -> #requiredPackageNames;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
+	add: #JadeServer -> #compile:frame:process:;
 	add: #JadeServer -> #sbAddPackage:;
 	add: #JadeServer -> #sbChangesInPackage:;
 	add: #JadeServer -> #sbClassTemplate;
@@ -48,6 +50,7 @@ package methodNames
 	add: #JadeServer -> #sbUpdatePackage:;
 	add: #JadeServer -> #sbUpdatePackages;
 	add: #JadeServer -> #sbUpdatePackagesOrDictionaries;
+	add: #JadeServer64bit -> #recompile:withSource:;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
@@ -233,6 +236,44 @@ TestCase subclass: #RowanServiceTest
 
 "Loose Methods"!
 
+!GciSession methodsFor!
+
+initializeServer
+"
+	GciSession allInstances first initializeServer.
+"
+	library ifNil: [^self].
+	[
+		server := self executeString: library jadeServerClass gsString.
+	] on: GsRuntimeError do: [:ex | 
+		| number notes |
+		number := ex errorReport number.
+		notes := ''.
+		number = 2151 ifTrue: [notes := ' (code modification?)'].
+		MessageBox warning: ex description , notes , '
+Server initialization failed. Most functionality will be broken!!'.
+		SessionManager current pause.
+		ex return: nil.
+	].
+
+	(server isKindOf: String) ifTrue: [
+		self logout.
+		GciLoginFailed
+			signal: 'JadeServer compile error:
+' , server
+			with: self.
+	].
+	self commit.
+
+	1 ~~ 1 ifTrue: [		"messasges that are sent by a ClientForwarderSend should not be stripped"
+		self 
+			signalConfirmationRequestUsing: nil;
+			signalTextRequestUsing: nil;
+			yourself.
+	].
+! !
+!GciSession categoriesFor: #initializeServer!private! !
+
 !GsClass methodsFor!
 
 methodsUpTo: aClass filterList: aList isVariables: aBoolean
@@ -372,6 +413,28 @@ browseSendersOf: aGsMethodOrString
 
 !JadeServer methodsFor!
 
+compile: aString frame: anInteger process: aGsProcess
+	"Compile method from within debugger"
+
+	| oldMethod aBehavior selector category result |
+	oldMethod := aGsProcess localMethodAt: anInteger.
+	result := self recompile: oldMethod withSource: aString.
+	(result isKindOf: Boolean) ifTrue: [^result].
+	aBehavior := oldMethod inClass.
+	selector := oldMethod selector.
+	selector isNil ifTrue: [^result].
+	category := self _behavior: aBehavior categoryOfSelector: selector.
+	result := ((System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile
+				ifAbsent: [false])
+					ifTrue: [aBehavior rwCompileMethod: aString category: category]
+					ifFalse: 
+						[self
+							compileMethod: aString
+							behavior: aBehavior
+							user: nil
+							inCategory: category].
+	^result!
+
 sbAddPackage: anOrderedCollection
 	| string service |
 	string := anOrderedCollection removeFirst.
@@ -459,7 +522,7 @@ sbRemoveClasses
 sbRemoveMethods: anOrderedCollection
 	| behavior classEntity |
 	behavior := self sbClassFrom: anOrderedCollection.
-	classEntity := (UserGlobals at: #rowanCompile ifAbsent: [false])
+	classEntity := ((System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile ifAbsent: [false])
 				ifTrue: [RowanClassService forClassNamed: behavior name meta: behavior isMeta]
 				ifFalse: [behavior].
 	anOrderedCollection do: [:each | classEntity removeSelector: each asSymbol].
@@ -621,6 +684,7 @@ sbUpdatePackagesOrDictionaries
 	selectedTab = 'packageList' ifTrue: [^self sbUpdatePackages].
 	self error: 'unexpected token'.
 ! !
+!JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
 !JadeServer categoriesFor: #sbAddPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbChangesInPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbClassTemplate!public!System Browser! !
@@ -631,6 +695,23 @@ sbUpdatePackagesOrDictionaries
 !JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!public!System Browser! !
+
+!JadeServer64bit methodsFor!
+
+recompile: aMethod withSource: aString
+	| result behavior |
+	behavior := aMethod inClass.
+	((System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile ifAbsent: [false])
+		ifTrue: 
+			[behavior rwCompileMethod: aString
+				category: (self _behavior: behavior categoryOfSelector: aMethod selector).
+			RowanService rowanFixMe.	"need to handle compile errors"
+			^true]
+		ifFalse: 
+			[result := aMethod _recompileWithSource: aString.
+			result isNil ifTrue: [^true].	"Bug 41195 returns nil if success so assume it is the same method"
+			^result]! !
+!JadeServer64bit categoriesFor: #recompile:withSource:!Debugger!public! !
 
 !JadeServer64bit32 class methodsFor!
 
@@ -653,7 +734,7 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 
 	| method warnings | 
 
-	[[(UserGlobals at: #rowanCompile ifAbsent:[false]) ifTrue:[
+	[[((System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile ifAbsent:[false]) ifTrue:[
 			method := aBehavior rwCompileMethod: methodString category: categorySymbol]
 		ifFalse:[
 			method := aBehavior

@@ -356,40 +356,6 @@ debugPath: debugPath
 		yourself.
 !
 
-initializeServer
-"
-	GciSession allInstances first initializeServer.
-"
-	library ifNil: [^self].
-	[
-		server := self executeString: library jadeServerClass gsString.
-	] on: GsRuntimeError do: [:ex | 
-		| number notes |
-		number := ex errorReport number.
-		notes := ''.
-		number = 2151 ifTrue: [notes := ' (code modification?)'].
-		MessageBox warning: ex description , notes , '
-Server initialization failed. Most functionality will be broken!!'.
-		SessionManager current pause.
-		ex return: nil.
-	].
-
-	(server isKindOf: String) ifTrue: [
-		self logout.
-		GciLoginFailed
-			signal: 'JadeServer compile error:
-' , server
-			with: self.
-	].
-
-	1 ~~ 1 ifTrue: [		"messasges that are sent by a ClientForwarderSend should not be stripped"
-		self 
-			signalConfirmationRequestUsing: nil;
-			signalTextRequestUsing: nil;
-			yourself.
-	].
-!
-
 isLinkedGem
 
 	^gemNRS isEmpty.
@@ -985,7 +951,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #incrementEventCount!long running!private! !
 !GciSession categoriesFor: #indexOfClientForwarder:!public! !
 !GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:useSocket:debugPath:!private! !
-!GciSession categoriesFor: #initializeServer!private! !
 !GciSession categoriesFor: #isLinkedGem!public! !
 !GciSession categoriesFor: #isOopType:!public! !
 !GciSession categoriesFor: #isPackagePolicyEnabled!public! !
