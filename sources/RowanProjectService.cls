@@ -146,10 +146,14 @@ defaultProjectName: aString
 icon
 	"Answers an Icon that can be used to represent this class"
 
-	^##(self) defaultIcon! !
+	^##(self) defaultIcon!
+
+initialize
+	DefaultProjectName := nil! !
 !RowanProjectService class categoriesFor: #defaultIcon!private! !
 !RowanProjectService class categoriesFor: #defaultIconName!private! !
 !RowanProjectService class categoriesFor: #defaultProjectName!public! !
 !RowanProjectService class categoriesFor: #defaultProjectName:!public! !
 !RowanProjectService class categoriesFor: #icon!private! !
+!RowanProjectService class categoriesFor: #initialize!public! !
 

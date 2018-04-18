@@ -10,6 +10,12 @@ RowanSystemBrowserPresenter comment: ''!
 !RowanSystemBrowserPresenter categoriesForClass!Unclassified! !
 !RowanSystemBrowserPresenter methodsFor!
 
+addPackage
+	RowanProjectService defaultProjectName isNil
+		ifTrue: 
+			[^MessageBox notify: 'No default project has been created. Please specify in the project list.'].
+	^super addPackage!
+
 addSubclass
 	classDefinitionPresenter
 		ensureVisible;
@@ -181,6 +187,7 @@ updateTabLabel
 	self view arrangement: cardNumber printString , ' ' , newLabel.
 	self parentPresenter view updateTabs.
 ! !
+!RowanSystemBrowserPresenter categoriesFor: #addPackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !

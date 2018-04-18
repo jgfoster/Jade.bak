@@ -891,10 +891,7 @@ savePackage
 !
 
 showPackageChanges
-	| repository stream patch |
-	repository := repositoryListPresenter hasSelection
-				ifTrue: [repositoryListPresenter selection]
-				ifFalse: [repositoryListPresenter list first].
+	|  stream patch |
 	stream := (WriteStream on: String new)
 				nextPutAll: 'changesInPackage';
 				tab;
