@@ -69,6 +69,7 @@ package methodNames
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:type:;
 	add: #JadeTreeMethodListPresenter -> #onDropMethodsTree:;
+	add: #MethodListPresenter -> #browseClass;
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #Object -> #rowanFixMe;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
@@ -153,7 +154,7 @@ RowanService subclass: #RowanPackageService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanProjectService
-	instanceVariableNames: 'sha branch'
+	instanceVariableNames: 'sha branch isSkew'
 	classVariableNames: 'DefaultProjectName'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1045,12 +1046,23 @@ onDropMethodsTree: aDragDropSession
 
 !MethodListPresenter methodsFor!
 
+browseClass
+
+	| selection browserClass |
+	selection := methodListPresenter selection.
+	browserClass := Smalltalk at: #RowanSystemBrowser.		"Avoid circular dependencies on load order"
+	(browserClass showOnSession: self gciSession)
+		selectClass: selection gsClass name
+		selector: selection name.
+!
+
 browseMethodsContaining
 
 	| string |
 	(string := Prompter prompt: 'Enter substring:') isNil ifTrue: [^self].
 	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter browseMethodsContaining: string.
 ! !
+!MethodListPresenter categoriesFor: #browseClass!public! !
 !MethodListPresenter categoriesFor: #browseMethodsContaining!public! !
 
 !Object methodsFor!

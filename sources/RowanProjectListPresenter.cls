@@ -42,8 +42,13 @@ list: aList
 	projectListPresenter list: aList!
 
 loadProject
-
-	RowanProjectService new loadProjectNamed: projectListPresenter selection name!
+	| name |
+	name := projectListPresenter selection
+				ifNil: [^MessageBox notify: 'No project selected']
+				ifNotNil: [:sel | sel name].
+	(MessageBox confirm: 'Really load project ' , name , '? This will destroy any changes you may have.')
+		ifFalse: [^self].
+	RowanProjectService new loadProjectNamed: name!
 
 makeDefault
 	RowanProjectService new defaultProjectName: projectListPresenter selection name.
@@ -130,9 +135,12 @@ pushToGit
 				[service := self newService. 
 				service pushToGit]!
 
-revertProject
-
-	MessageBox notify: 'This feature not yet implemented'!
+showPackages
+	| service |
+	projectListPresenter selection isNil ifTrue:[^MessageBox notify: 'No project selected'].
+	service := RowanProjectService named:  projectListPresenter selection name.
+	MessageBox notify: service packageNameString.
+!
 
 unloadProject
 	MessageBox notify: 'This feature not yet implemented'!
@@ -160,7 +168,7 @@ writeProject
 !RowanProjectListPresenter categoriesFor: #projectLog!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #pullFromGit!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #pushToGit!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #revertProject!menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #showPackages!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #unloadProject!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #writeProject!menu handlers!public! !
 

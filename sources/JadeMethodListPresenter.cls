@@ -22,6 +22,7 @@ browse: performSelector gsMethod: aGsMethod
 browse: performSelector method: aGsMethodOrString
 
 	| string |
+
 	(aGsMethodOrString isKindOf: String) ifTrue: [
 		self browse: performSelector methodSelector: aGsMethodOrString.
 		string := aGsMethodOrString.

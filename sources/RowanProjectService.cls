@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanProjectService
-	instanceVariableNames: 'sha branch'
+	instanceVariableNames: 'sha branch isSkew'
 	classVariableNames: 'DefaultProjectName'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -43,6 +43,12 @@ defaultProjectName: aString
 		withAll: (Array with: aString).
 	self class defaultProjectName: aString!
 
+isSkew
+	^isSkew!
+
+isSkew: anObject
+	isSkew := anObject!
+
 loadProjectNamed: aName
 	
 	transport
@@ -63,10 +69,15 @@ newGitProject: url root: rootPath useSsh: aBoolean
 				with: rootPath
 				with: aBoolean)!
 
+packageNameString
+
+	^transport send: #packageNameString to: remoteService  !
+
 projects
-	| names |
-	names := transport send: #projectNames to: remoteService.
-	^self createClientDefinitionFrom: names!
+	| oops services |
+	oops := transport send: #projectNames to: remoteService.
+	services := self createClientFrom: oops.
+	^services!
 
 pullFromGit
 
@@ -77,7 +88,7 @@ pushToGit
 	^transport send: #pushToGit to: remoteService  !
 
 remoteAccessors
-	^#(#name #sha #branch)!
+	^#(#name #sha #branch #isSkew)!
 
 removeProjectNamed: projectName
 
@@ -105,9 +116,12 @@ write
 !RowanProjectService categoriesFor: #clientDefinitionClass!private! !
 !RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
 !RowanProjectService categoriesFor: #defaultProjectName:!accessing!public! !
+!RowanProjectService categoriesFor: #isSkew!accessing!private! !
+!RowanProjectService categoriesFor: #isSkew:!accessing!private! !
 !RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
 !RowanProjectService categoriesFor: #nameWithDefaultIndication!accessing!public! !
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
+!RowanProjectService categoriesFor: #packageNameString!public!rowan! !
 !RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #pullFromGit!public!rowan! !
 !RowanProjectService categoriesFor: #pushToGit!public!rowan! !

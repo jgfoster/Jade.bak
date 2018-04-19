@@ -15,16 +15,6 @@ anyMethod
 	^methodListPresenter list anyOne.
 !
 
-browseClass
-
-	| selection browserClass |
-	selection := methodListPresenter selection.
-	browserClass := Smalltalk at: #JadeSystemBrowser.		"Avoid circular dependencies on load order"
-	(browserClass showOnSession: self gciSession)
-		selectClass: selection gsClass name
-		selector: selection name.
-!
-
 browseImplementors
 	
 	self browseImplementorsOf: methodListPresenter selection.!
@@ -189,7 +179,6 @@ withSelectorDo: aBlock
 	aBlock value: selector.
 ! !
 !MethodListPresenter categoriesFor: #anyMethod!public! !
-!MethodListPresenter categoriesFor: #browseClass!public! !
 !MethodListPresenter categoriesFor: #browseImplementors!public! !
 !MethodListPresenter categoriesFor: #browseImplementorsOf!public! !
 !MethodListPresenter categoriesFor: #browseSenders!public! !

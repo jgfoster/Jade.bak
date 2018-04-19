@@ -18,12 +18,12 @@ clientDefinitionClass
 
 	^self subclassResponsibility!
 
-createClientDefinitionFrom: anArrayOop
+createClientFrom: anArrayOop
 	"ignores round trips but is straight forward"
 
-	| definitions remoteSize |
+	| services remoteSize |
 	remoteSize := transport send: #size to: anArrayOop.
-	definitions := Array new: remoteSize.
+	services := Array new: remoteSize.
 	1 to: remoteSize
 		do: 
 			[:idx |
@@ -32,10 +32,10 @@ createClientDefinitionFrom: anArrayOop
 						send: #at:
 						to: anArrayOop
 						withAll: (Array with: idx).
-			definitions at: idx put: (self createClientDefinitionFromRemoteDefinition: elementOop)]. 
-	^definitions!
+			services at: idx put: (self createClientFromRemote: elementOop)].
+	^services!
 
-createClientDefinitionFromRemoteDefinition: anOop
+createClientFromRemote: oop
 	"expect simple objects to be replicated in each
 	slot of our local definition object"
 
@@ -44,7 +44,7 @@ createClientDefinitionFromRemoteDefinition: anOop
 	self remoteAccessors do: 
 			[:symbol |
 			| value |
-			value := transport send: symbol to: anOop.
+			value := transport send: symbol to: oop.
 			clientDefinition perform: (symbol , ':') asSymbol with: value].
 	^clientDefinition!
 
@@ -93,9 +93,9 @@ removeSampleSymbolDictionary
 	transport send: #removeSampleSymbolDictionary to: remoteService!
 
 sampleDefinitions
-	| anArrayOop | 
+	| anArrayOop |
 	anArrayOop := transport send: #sampleDefinitions to: remoteService.
-	^self createClientDefinitionFrom: anArrayOop!
+	^self createClientFrom: anArrayOop!
 
 setRemoteName
 
@@ -108,8 +108,8 @@ transport: anObject
 	transport := anObject! !
 !RowanService categoriesFor: #classNameFrom:!public! !
 !RowanService categoriesFor: #clientDefinitionClass!private! !
-!RowanService categoriesFor: #createClientDefinitionFrom:!private! !
-!RowanService categoriesFor: #createClientDefinitionFromRemoteDefinition:!private! !
+!RowanService categoriesFor: #createClientFrom:!private! !
+!RowanService categoriesFor: #createClientFromRemote:!private! !
 !RowanService categoriesFor: #initialize!initialization!private! !
 !RowanService categoriesFor: #initializeTransport!initialization!private! !
 !RowanService categoriesFor: #inspectDefinition!public!rowan! !

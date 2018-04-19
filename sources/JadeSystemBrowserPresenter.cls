@@ -865,7 +865,7 @@ editSaveClassA
 
 	"Removed the class migration dialog and just pass default answers.
 	Rowan will then ignore them." 
-	| dict stream answer |
+	| stream answer |
 	(selectedClassName includes: Character space) ifFalse: [^self].		"This is a check to see if an earlier version exists"
 	"(dict := JadeMigrateClassDialog showModal) isNil ifTrue: [^self revertNewClass].  Commented out for Jadeite
 	(dict allSatisfy: [:each | each not]) ifTrue: [^self]."
