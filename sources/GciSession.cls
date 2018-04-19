@@ -801,44 +801,6 @@ terminate: anOopType
 	self serverPerform: #'terminate:' with: anOopType.
 	TerminateProcess signal.!
 
-titleBarFor: aString
-"'Jade ' , gciSession gciSessionID printString , ' (' , gciSession userID , ') - "
-	| stream list |
-	list := stoneNRS subStrings: $!!.
-	stoneName := list at: 3.
-	list := (list at: 2) subStrings: $#.
-	list := (list at: 1) subStrings: $@.
-	stoneHost := list at: 2.
-	stream := WriteStream on: String new.
-	stream 
-		nextPutAll: 'Jade ';
-		print: gciSessionId;
-		nextPutAll: ' (';
-		nextPutAll: userID;
-		nextPutAll: ') - ';
-		nextPutAll: aString;
-		nextPutAll: ' on ';
-		nextPutAll: stoneName;
-		nextPutAll: ' session ';
-		print: stoneSessionID;
-		nextPutAll: ' on ';
-		nextPutAll: stoneHost;
-		yourself.
-	self isRemoteGem ifTrue: [
-		list := gemNRS subStrings: $#.
-		netPort := ((list at: 2) subStrings: $:) at: 2.
-		netTask := ((list at: 3) subStrings: $!!) at: 2.
-		gemHost := ((list at: 1) subStrings: $@) at: 2.
-		stream
-			nextPutAll: ' with remote gem on ';
-			nextPutAll: gemHost;
-			yourself.
-	] ifFalse: [
-		stream nextPutAll: ' with linked gem'. 
-	].
-	^stream contents.
-!
-
 userID
 
 	^userID.
@@ -1000,7 +962,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #stoneSessionID!public! !
 !GciSession categoriesFor: #stopHeartbeat!Jade!public! !
 !GciSession categoriesFor: #terminate:!public! !
-!GciSession categoriesFor: #titleBarFor:!public! !
 !GciSession categoriesFor: #userID!public! !
 !GciSession categoriesFor: #valueOfArrayOop:!Jade convenience!public! !
 !GciSession categoriesFor: #valueOfOop:!Jade convenience!public! !

@@ -49,11 +49,6 @@ getVersion
 	^(ReadStream on: string) nextLine
 !
 
-mainShellClass
-
-	^JadeLoginShell.
-!
-
 sessionStarted
 
 	ScintillaLibrary open: 'bin\SciLexer.dll'.
@@ -70,7 +65,6 @@ version
 		ifFalse: ['(Development)'].
 ! !
 !JadeSessionManager class categoriesFor: #getVersion!public! !
-!JadeSessionManager class categoriesFor: #mainShellClass!public! !
 !JadeSessionManager class categoriesFor: #sessionStarted!public! !
 !JadeSessionManager class categoriesFor: #setVersion!public! !
 !JadeSessionManager class categoriesFor: #version!public! !

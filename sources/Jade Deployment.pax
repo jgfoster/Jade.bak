@@ -42,7 +42,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Contributions\Burning River\ExternalProcess\ExternalProcess';
 	add: 'GemStone C Interface';
 	add: 'GemStone Session';
-	add: 'Jade Login';
 	add: '..\Core\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper';
 	yourself).
 

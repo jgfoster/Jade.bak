@@ -9,6 +9,7 @@ package classNames
 	add: #Rowan;
 	add: #RowanClassService;
 	add: #RowanKeyValuePrompter;
+	add: #RowanLoginShell;
 	add: #RowanMethodDefinition;
 	add: #RowanMethodListBrowser;
 	add: #RowanMethodListPresenter;
@@ -32,9 +33,11 @@ package classNames
 
 package methodNames
 	add: #GciSession -> #initializeServer;
+	add: #GciSession -> #titleBarFor:;
 	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
 	add: #GsMethod -> #methodDefinitionService;
 	add: #GsMethod2 -> #asUpdatedVersion:;
+	add: #JadeImageStripper -> #closeLoginShells;
 	add: #JadeImageStripper -> #createVersionResource;
 	add: #JadeImageStripper -> #requiredClasses;
 	add: #JadeImageStripper -> #requiredPackageNames;
@@ -73,6 +76,7 @@ package methodNames
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #Object -> #rowanFixMe;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
+	add: 'JadeSessionManager class' -> #mainShellClass;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -93,6 +97,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Deprecated\Dolphin MVP (Deprecated)';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Radio\Dolphin Radio Buttons';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Rich Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Sliding Tray\Dolphin Slidey-Inney-Outey Thing';
@@ -107,6 +112,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade Class Browser';
 	add: 'Jade Deployment';
 	add: 'Jade Inspector';
+	add: 'Jade Login';
 	add: 'Jade Method Browser';
 	add: 'Jade System Browser';
 	add: 'Jade Test Browser';
@@ -208,6 +214,11 @@ MCVersionDialog subclass: #RowanSavePackageDialog
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadeLoginShell subclass: #RowanLoginShell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeShell subclass: #RowanShell
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -279,8 +290,47 @@ Server initialization failed. Most functionality will be broken!!'.
 			signalTextRequestUsing: nil;
 			yourself.
 	].
+!
+
+titleBarFor: aString
+"'Jade ' , gciSession gciSessionID printString , ' (' , gciSession userID , ') - "
+	| stream list |
+	list := stoneNRS subStrings: $!!.
+	stoneName := list at: 3.
+	list := (list at: 2) subStrings: $#.
+	list := (list at: 1) subStrings: $@.
+	stoneHost := list at: 2.
+	stream := WriteStream on: String new.
+	stream 
+		nextPutAll: 'Jadeite ';
+		print: gciSessionId;
+		nextPutAll: ' (';
+		nextPutAll: userID;
+		nextPutAll: ') - ';
+		nextPutAll: aString;
+		nextPutAll: ' on ';
+		nextPutAll: stoneName;
+		nextPutAll: ' session ';
+		print: stoneSessionID;
+		nextPutAll: ' on ';
+		nextPutAll: stoneHost;
+		yourself.
+	self isRemoteGem ifTrue: [
+		list := gemNRS subStrings: $#.
+		netPort := ((list at: 2) subStrings: $:) at: 2.
+		netTask := ((list at: 3) subStrings: $!!) at: 2.
+		gemHost := ((list at: 1) subStrings: $@) at: 2.
+		stream
+			nextPutAll: ' with remote gem on ';
+			nextPutAll: gemHost;
+			yourself.
+	] ifFalse: [
+		stream nextPutAll: ' with linked gem'. 
+	].
+	^stream contents.
 ! !
 !GciSession categoriesFor: #initializeServer!private! !
+!GciSession categoriesFor: #titleBarFor:!public! !
 
 !GsClass methodsFor!
 
@@ -327,6 +377,13 @@ asUpdatedVersion: stringOop
 !GsMethod2 categoriesFor: #asUpdatedVersion:!public! !
 
 !JadeImageStripper methodsFor!
+
+closeLoginShells
+
+	JadeLoginShell allInstances do: [:each | each view close].
+	RowanLoginShell allInstances do: [:each | each view close].
+
+!
 
 createVersionResource
 "
@@ -393,6 +450,7 @@ requiredPackageNames
 		add: 'Jade Process Browser';
 		add: 'Rowan UI Base';
 		yourself! !
+!JadeImageStripper categoriesFor: #closeLoginShells!public! !
 !JadeImageStripper categoriesFor: #createVersionResource!public! !
 !JadeImageStripper categoriesFor: #requiredClasses!public! !
 !JadeImageStripper categoriesFor: #requiredPackageNames!public! !
@@ -763,6 +821,14 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 	].
 ! !
 !JadeServer64bit3x categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
+
+!JadeSessionManager class methodsFor!
+
+mainShellClass
+
+	^RowanLoginShell.
+! !
+!JadeSessionManager class categoriesFor: #mainShellClass!public! !
 
 !JadeSystemBrowserPresenter methodsFor!
 

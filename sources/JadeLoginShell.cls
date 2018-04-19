@@ -237,20 +237,18 @@ isVersion: a lessThanOrEqualTo: b
 !
 
 login
-
 	| session |
 	self updateModel.
-	[
-		session := self model login.
-	] on: Error do: [:ex | 
-		MessageBox 
-			errorMsg: ex description
-			caption: 'Jade Login Error'.
-		SessionManager current pause.
-		^self.
-	]. 
-	self postLogin: session.
-!
+	[session := self model login] on: Error
+		do: 
+			[:ex |
+			MessageBox errorMsg: ex description caption: self loginFailureCaption.
+			SessionManager current pause.
+			^self].
+	self postLogin: session!
+
+loginFailureCaption
+	^'Jade Login Error'!
 
 model: anObject
 
@@ -436,6 +434,7 @@ updateView
 !JadeLoginShell categoriesFor: #isText!public!testing! !
 !JadeLoginShell categoriesFor: #isVersion:lessThanOrEqualTo:!public! !
 !JadeLoginShell categoriesFor: #login!public! !
+!JadeLoginShell categoriesFor: #loginFailureCaption!private! !
 !JadeLoginShell categoriesFor: #model:!accessing!public! !
 !JadeLoginShell categoriesFor: #onCloseRequested:!public! !
 !JadeLoginShell categoriesFor: #onViewClosed!public! !

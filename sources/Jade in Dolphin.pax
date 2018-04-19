@@ -66,6 +66,7 @@ pause
 addToDevelopmentTools
 "
 	JadeLoginShell addToDevelopmentTools.
+	Smalltalk developmentSystem removeSystemFolderIconNamed: JadeLoginShell toolsFolderIcon description.
 "
 	Smalltalk developmentSystem addAdditionalToolsFolderIcon: self toolsFolderIcon.
 !

@@ -10,12 +10,6 @@ JadeImageStripper comment: ''!
 !JadeImageStripper categoriesForClass!Unclassified! !
 !JadeImageStripper methodsFor!
 
-closeLoginShells
-
-	JadeLoginShell allInstances do: [:each | each view close].
-
-!
-
 copyRuntimeFiles
 
 	| basePath |
@@ -77,7 +71,6 @@ prepareToStrip
 		yourself.
 	^super prepareToStrip.
 ! !
-!JadeImageStripper categoriesFor: #closeLoginShells!public! !
 !JadeImageStripper categoriesFor: #copyRuntimeFiles!public! !
 !JadeImageStripper categoriesFor: #exeIconFile!operations!public! !
 !JadeImageStripper categoriesFor: #finishedWith:!public! !
