@@ -54,6 +54,29 @@ classesMenuStrings
 classService
 	^RowanClassService on: self selectedClassNameWithoutVersion!
 
+compareAncestor
+
+	| repository stream patch |
+	repository := repositoryListPresenter hasSelection 
+		ifTrue: [repositoryListPresenter selection]
+		ifFalse: [repositoryListPresenter list first].
+	stream := (WriteStream on: String new)
+		nextPutAll: 'comparePackages'; tab;
+		nextPutAll: packageListPresenter selections first key; tab;
+		nextPutAll: (ancestorListPresenter selections first at: 2); tab;
+		nextPutAll: (repository at: 2); tab;
+		lf.
+	(self updateCommand: stream contents) = 'comparePackages' ifFalse: [self error: 'Unexpected response!!'].
+	patch := MCPatch
+		fromString: readStream upToEnd
+		session: self gciSession.
+	patch operations isEmpty ifTrue: [
+		MessageBox notify: 'No changes!!'.
+		^self.
+	].
+	RowanPatchBrowser showOn: patch.
+!
+
 deletePackage
 	| packageName |
 	packageListPresenter selections isEmpty ifTrue:[^MessageBox notify: 'No package selected'].
@@ -111,6 +134,25 @@ resetClassDefinitionPresenter
 		backcolor: Color white;
 		isModified: false;
 		yourself!
+
+showPackageChanges
+	|  stream patch |
+	stream := (WriteStream on: String new)
+				nextPutAll: 'changesInPackage';
+				tab;
+				nextPutAll: packageListPresenter selections first key;
+				tab;
+				nextPutAll: RowanProjectService new sampleProjectName;
+				tab;
+				lf.	"package name"	"project name"
+	(self updateCommand: stream contents) = 'changesInPackage'
+		ifFalse: [self error: 'Unexpected response!!'].
+	patch := MCPatch fromString: readStream upToEnd session: self gciSession.
+	patch operations isEmpty
+		ifTrue: 
+			[MessageBox notify: 'No changes!!'.
+			^self].
+	RowanPatchBrowser showOn: patch!
 
 updateClassInfo
 	| index newClassDefinition |
@@ -192,12 +234,14 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #classService!private!rowan! !
+!RowanSystemBrowserPresenter categoriesFor: #compareAncestor!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #deletePackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #inspectPackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!private! !
 !RowanSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #possiblyShowGenericPackageClassTemplate:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #resetClassDefinitionPresenter!private!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassInfo!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updatePresenters!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateTabLabel!public!updating! !

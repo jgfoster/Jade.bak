@@ -47,27 +47,6 @@ onViewOpened
 	self refresh.
 !
 
-operationSelected
-
-	| operation |
-	leftTextPresenter 		value: ''.
-	leftMemoPresenter	value: ''.
-	rightTextPresenter	value: ''.
-	rightMemoPresenter	value: ''.
-	operationListPresenter hasSelection ifFalse: [^self].
-	operation := operationListPresenter selection.
-	leftTextPresenter 		value: operation obsoletionText.
-	leftMemoPresenter	value: operation obsoletionMemo.
-	rightTextPresenter	value: operation modificationText.
-	rightMemoPresenter	value: operation modificationMemo.
-	operation obsoletionMemoMarkers do: [:each | 
-		leftMemoPresenter view addMarkerType: each key at: each value.
-	].
-	operation modificationMemoMarkers do: [:each |
-		rightMemoPresenter view addMarkerType: each key at: each value.
-	].
-!
-
 operationsList
 
 	| list |
@@ -94,7 +73,6 @@ shellName
 !MCPatchBrowser categoriesFor: #inspectLine!public! !
 !MCPatchBrowser categoriesFor: #model:!public! !
 !MCPatchBrowser categoriesFor: #onViewOpened!public! !
-!MCPatchBrowser categoriesFor: #operationSelected!public! !
 !MCPatchBrowser categoriesFor: #operationsList!public! !
 !MCPatchBrowser categoriesFor: #refresh!public! !
 !MCPatchBrowser categoriesFor: #shellName!public! !

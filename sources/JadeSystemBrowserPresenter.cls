@@ -2395,6 +2395,28 @@ setSearchPolicy
 	variableListPresenter	 	view model searchPolicy: SearchPolicy equality.
 !
 
+showPackageChanges
+
+	| repository stream patch |
+	repository := repositoryListPresenter hasSelection 
+		ifTrue: [repositoryListPresenter selection]
+		ifFalse: [repositoryListPresenter list first].
+	stream := (WriteStream on: String new)
+		nextPutAll: 'changesInPackage'; tab;
+		nextPutAll: packageListPresenter selections first key; tab;	"package name"
+		nextPutAll: (repository at: 2); tab;		"repository name"
+		lf.
+	(self updateCommand: stream contents) = 'changesInPackage' ifFalse: [self error: 'Unexpected response!!'].
+	patch := MCPatch
+		fromString: readStream upToEnd
+		session: self gciSession.
+	patch operations isEmpty ifTrue: [
+		MessageBox notify: 'No changes!!'.
+		^self.
+	].
+	MCPatchBrowser showOn: patch.
+!
+
 splitterPosition: aPoint
 
 	[
@@ -3299,6 +3321,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #setEnvironment2!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setHomeDictionary!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #setSearchPolicy!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #splitterPosition:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #statusBarServerRequestText:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #statusBarText:!public!updating! !

@@ -56,6 +56,10 @@ loadProjectNamed: aName
 		to: remoteService
 		withAll: (Array with: aName)!
 
+log
+
+	^transport send: #log to: remoteService  !
+
 nameWithDefaultIndication
 	^name = self class defaultProjectName ifTrue: [name , '*'] ifFalse: [name]!
 
@@ -119,6 +123,7 @@ write
 !RowanProjectService categoriesFor: #isSkew!accessing!private! !
 !RowanProjectService categoriesFor: #isSkew:!accessing!private! !
 !RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
+!RowanProjectService categoriesFor: #log!public!rowan! !
 !RowanProjectService categoriesFor: #nameWithDefaultIndication!accessing!public! !
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !

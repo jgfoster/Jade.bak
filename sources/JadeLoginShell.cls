@@ -287,13 +287,6 @@ openHomePage
 		directory: ''.
 !
 
-postLogin: aGciSession
-
-	versionListPresenter view disable.
-	self setWorkingDirectory.
-	JadeTranscript showOnSession: aGciSession.
-!
-
 queryCommand: query
 
 	(#(#editCopy #editCut #editDelete ) includes: query commandSymbol) ifTrue: [
@@ -440,7 +433,6 @@ updateView
 !JadeLoginShell categoriesFor: #onViewClosed!public! !
 !JadeLoginShell categoriesFor: #onViewOpened!public! !
 !JadeLoginShell categoriesFor: #openHomePage!public! !
-!JadeLoginShell categoriesFor: #postLogin:!public! !
 !JadeLoginShell categoriesFor: #queryCommand:!public! !
 !JadeLoginShell categoriesFor: #saveDocument!public! !
 !JadeLoginShell categoriesFor: #sendRequiredMessages!public! !

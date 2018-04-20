@@ -22,6 +22,11 @@ newGitProject
 	
 !
 
+performCommand: aCommand
+
+	super performCommand: aCommand.
+	self refresh!
+
 presenterClass
 	
 	^RowanProjectListPresenter!
@@ -41,6 +46,7 @@ unloadProject
 ! !
 !RowanProjectListShell categoriesFor: #makeDefault!menu handlers!public! !
 !RowanProjectListShell categoriesFor: #newGitProject!menu handlers!public! !
+!RowanProjectListShell categoriesFor: #performCommand:!public! !
 !RowanProjectListShell categoriesFor: #presenterClass!public! !
 !RowanProjectListShell categoriesFor: #refresh!menu handlers!public! !
 !RowanProjectListShell categoriesFor: #shellName!private! !

@@ -43,6 +43,7 @@ list: aList
 
 loadProject
 	| name |
+	self halt. 
 	name := projectListPresenter selection
 				ifNil: [^MessageBox notify: 'No project selected']
 				ifNotNil: [:sel | sel name].
@@ -114,7 +115,11 @@ projectListPresenter
 
 projectLog
 
-	MessageBox notify: 'This feature not yet implemented'!
+	| service |
+	projectListPresenter selection isNil ifTrue:[^MessageBox notify: 'No project selected'].
+	service := RowanProjectService named:  projectListPresenter selection name.
+	MessageBox notify: service log.
+!
 
 pullFromGit
 	| service |

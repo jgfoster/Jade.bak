@@ -35,7 +35,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'GemStone C Interface';
 	add: 'GemStone Session';
-	add: 'Jade Transcript';
 	add: '..\Core\Object Arts\Dolphin\ActiveX\Shell\Windows Shell';
 	add: '..\Core\Object Arts\Dolphin\ActiveX\Components\XML DOM\XML DOM';
 	yourself).

@@ -19,6 +19,7 @@ package classNames
 	add: #RowanPackagePresenter;
 	add: #RowanPackageService;
 	add: #RowanPackageShell;
+	add: #RowanPatchBrowser;
 	add: #RowanPresenter;
 	add: #RowanProjectListPresenter;
 	add: #RowanProjectListShell;
@@ -29,6 +30,7 @@ package classNames
 	add: #RowanShell;
 	add: #RowanSystemBrowser;
 	add: #RowanSystemBrowserPresenter;
+	add: #RowanTranscript;
 	yourself.
 
 package methodNames
@@ -41,6 +43,7 @@ package methodNames
 	add: #JadeImageStripper -> #createVersionResource;
 	add: #JadeImageStripper -> #requiredClasses;
 	add: #JadeImageStripper -> #requiredPackageNames;
+	add: #JadeLoginShell -> #postLogin:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeServer -> #compile:frame:process:;
@@ -62,7 +65,6 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #packageTabName;
 	add: #JadeSystemBrowserPresenter -> #queryCommand:;
 	add: #JadeSystemBrowserPresenter -> #savePackage;
-	add: #JadeSystemBrowserPresenter -> #showPackageChanges;
 	add: #JadeTextDocument -> #jadeBrowseClasses;
 	add: #JadeToolsToolBarPresenter -> #browseClasses;
 	add: #JadeTranscript -> #methodsChanged24;
@@ -72,6 +74,7 @@ package methodNames
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:type:;
 	add: #JadeTreeMethodListPresenter -> #onDropMethodsTree:;
+	add: #MCPatchBrowser -> #operationSelected;
 	add: #MethodListPresenter -> #browseClass;
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #Object -> #rowanFixMe;
@@ -219,6 +222,11 @@ JadeLoginShell subclass: #RowanLoginShell
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadeTranscript subclass: #RowanTranscript
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeShell subclass: #RowanShell
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -230,6 +238,11 @@ JadeMethodListBrowser subclass: #RowanMethodListBrowser
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeSystemBrowser subclass: #RowanSystemBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCPatchBrowser subclass: #RowanPatchBrowser
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -401,10 +414,10 @@ createVersionResource
 				at: 'CompanyName' 		put: 'GemTalk Systems LLC';
 				at: 'FileDescription' 		put: 'IDE for GemStoneS/64 with Rowan Source Code Control';
 				at: 'FileVersion' 			put: versionString;
-				at: 'InternalName' 		put: 'Rowan';
+				at: 'InternalName' 		put: 'Jadeite';
 				at: 'LegalCopyright' 		put: 'Copyright © Eric Winger 2018';
-				at: 'OriginalFilename' 	put: 'Rowan.exe';
-				at: 'ProductName' 		put: 'Rowan';
+				at: 'OriginalFilename' 	put: 'Jadeite.exe';
+				at: 'ProductName' 		put: 'Jadeite';
 				at: 'ProductVersion' 		put: versionString;
 				yourself);
 			yourself);
@@ -454,6 +467,16 @@ requiredPackageNames
 !JadeImageStripper categoriesFor: #createVersionResource!public! !
 !JadeImageStripper categoriesFor: #requiredClasses!public! !
 !JadeImageStripper categoriesFor: #requiredPackageNames!public! !
+
+!JadeLoginShell methodsFor!
+
+postLogin: aGciSession
+
+	versionListPresenter view disable.
+	self setWorkingDirectory.
+	RowanTranscript showOnSession: aGciSession.
+! !
+!JadeLoginShell categoriesFor: #postLogin:!public! !
 
 !JadePresenterA methodsFor!
 
@@ -955,33 +978,13 @@ savePackage
 		nextPutAll: self requestString;
 		yourself.
 	self updateCommand: stream contents.
-!
-
-showPackageChanges
-	|  stream patch |
-	stream := (WriteStream on: String new)
-				nextPutAll: 'changesInPackage';
-				tab;
-				nextPutAll: packageListPresenter selections first key;
-				tab;
-				nextPutAll: RowanProjectService new sampleProjectName;
-				tab;
-				lf.	"package name"	"project name"
-	(self updateCommand: stream contents) = 'changesInPackage'
-		ifFalse: [self error: 'Unexpected response!!'].
-	patch := MCPatch fromString: readStream upToEnd session: self gciSession.
-	patch operations isEmpty
-		ifTrue: 
-			[MessageBox notify: 'No changes!!'.
-			^self].
-	MCPatchBrowser showOn: patch! !
+! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !
 
 !JadeTextDocument methodsFor!
 
@@ -1109,6 +1112,30 @@ onDropMethodsTree: aDragDropSession
 !JadeTreeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #onDropMethodsTree:!public! !
+
+!MCPatchBrowser methodsFor!
+
+operationSelected
+
+	| operation |
+	leftTextPresenter 		value: ''.
+	leftMemoPresenter	value: ''.
+	rightTextPresenter	value: ''.
+	rightMemoPresenter	value: ''.
+	operationListPresenter hasSelection ifFalse: [^self].
+	operation := operationListPresenter selection.
+	leftTextPresenter 		value: operation obsoletionText.
+	leftMemoPresenter	value: operation obsoletionMemo.
+	rightTextPresenter	value: operation modificationText.
+	rightMemoPresenter	value: operation modificationMemo.
+	operation obsoletionMemoMarkers do: [:each | 
+		leftMemoPresenter view addMarkerType: each key at: each value.
+	].
+	operation modificationMemoMarkers do: [:each |
+		rightMemoPresenter view addMarkerType: each key at: each value.
+	].
+! !
+!MCPatchBrowser categoriesFor: #operationSelected!public! !
 
 !MethodListPresenter methodsFor!
 
