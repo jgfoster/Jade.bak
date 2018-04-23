@@ -43,7 +43,7 @@ list: aList
 
 loadProject
 	| name |
-	self halt. 
+
 	name := projectListPresenter selection
 				ifNil: [^MessageBox notify: 'No project selected']
 				ifNotNil: [:sel | sel name].

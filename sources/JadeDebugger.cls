@@ -271,7 +271,7 @@ statusBarText: aString
 	"called by MethodSourcePresenter"!
 
 stepInto
-
+	
 	gsProcess stepInto: frameListPresenter selectionByIndex + frameListOffset.
 	^self update!
 
