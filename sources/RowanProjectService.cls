@@ -23,8 +23,28 @@ branch: anObject
 	branch := anObject!
 
 changes
-
-	^transport send: #changes to: remoteService  !
+	| stream patch readStream string  |
+	self packageNames do: 
+			[:packageName |
+			stream := (WriteStream on: String new)
+						nextPutAll: 'changesInPackage';
+						tab;
+						nextPutAll: packageName;
+						tab;
+						nextPutAll: name;
+						tab;
+						lf.
+			string := transport
+				serverPerform: #'systemBrowser:' 
+				with: 0 printString , ' ' , stream contents. "0 = environment"
+			readStream := JadeServerReadStream on: string.
+			readStream nextLine. "ignore time and errors (at my own peril)"
+			readStream nextLine."ignore unexpected response check (also at my own peril)"
+			patch isNil ifTrue:[
+				patch := RowanPatch fromString: readStream upToEnd session: transport]
+			ifFalse:[ patch operations addAll: (RowanPatch fromString: readStream upToEnd session: transport) operations]
+			].
+	^patch!
 
 clientDefinitionClass
 
@@ -72,6 +92,16 @@ newGitProject: url root: rootPath useSsh: aBoolean
 				with: url
 				with: rootPath
 				with: aBoolean)!
+
+packageNames
+	| arrayOop names size |
+	self rowanFixMe.	"slow slow slow"
+	arrayOop := transport send: #packageNames to: remoteService.
+	names := OrderedCollection new.
+	size := transport send: #size to: arrayOop.
+	1 to: size do:[:idx |
+		names add:  (transport send: #at: to: arrayOop withAll: (Array with: idx) )].
+	^names!
 
 packageNameString
 
@@ -126,6 +156,7 @@ write
 !RowanProjectService categoriesFor: #log!public!rowan! !
 !RowanProjectService categoriesFor: #nameWithDefaultIndication!accessing!public! !
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
+!RowanProjectService categoriesFor: #packageNames!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !
 !RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #pullFromGit!public!rowan! !

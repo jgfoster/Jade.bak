@@ -2752,6 +2752,7 @@ updateCommand: aString
 
 updateCommand: aString onSuccessDo: aBlock
 
+	
 	[
 		| time1 time2 time3 string |
 		time1 := Time millisecondsToRun: [

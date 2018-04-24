@@ -144,7 +144,7 @@ showPackageChanges
 				tab;
 				nextPutAll: RowanProjectService new sampleProjectName;
 				tab;
-				lf.	"package name"	"project name"
+				lf.	 
 	(self updateCommand: stream contents) = 'changesInPackage'
 		ifFalse: [self error: 'Unexpected response!!'].
 	patch := MCPatch fromString: readStream upToEnd session: self gciSession.

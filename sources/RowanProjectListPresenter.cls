@@ -104,11 +104,14 @@ primaryPresenter
 	^projectListPresenter!
 
 projectChanges
-	| service changesString |
+	| service changesString patch |
 	projectListPresenter hasSelection ifFalse:[^MessageBox notify: 'No project selected.'].
+	
 	service := RowanProjectService named: projectListPresenter selection name.
-	changesString := service changes.
-	self openChangesShell: changesString!
+	patch := service changes.
+	RowanPatchBrowser showOn: patch. 
+	
+!
 
 projectListPresenter
 	^projectListPresenter!

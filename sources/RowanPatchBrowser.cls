@@ -29,8 +29,14 @@ operationSelected
 	operation modificationMemoMarkers do: [:each |
 		rightMemoPresenter view addMarkerType: each key at: each value.
 	].
+!
+
+shellName
+
+	^'Rowan Project Changes Shell'.
 ! !
 !RowanPatchBrowser categoriesFor: #operationSelected!public! !
+!RowanPatchBrowser categoriesFor: #shellName!overrides!private! !
 
 !RowanPatchBrowser class methodsFor!
 

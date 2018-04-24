@@ -16,29 +16,6 @@ abortTransaction
 	Sound informationBeep.
 !
 
-aboutJade
-
-	| stream version |
-	version := [
-		SessionManager current isRuntime 
-		ifTrue: [SessionManager current version] 
-		ifFalse: ['<Development>']
-	] on: Error do: [:ex | 
-		ex return: ex description printString.
-	].
-	stream := WriteStream on: String new.
-	stream
-		nextPutAll: 'Jade for GemStone/S ('; 
-		nextPutAll: version;
-		nextPutAll: ')';
-		cr;
-		nextPutAll: 'GCI Version: ' , gciSession gciVersion;
-		yourself.
-	MessageBox 
-		notify: stream contents
-		caption: 'About Jade'.
-!
-
 activeTextEdit 
 
 	^View focus.
@@ -221,9 +198,7 @@ getDocumentData
 !
 
 help
-
-	self aboutJade.
-!
+	self aboutJadeite!
 
 initialize
 
@@ -470,7 +445,6 @@ validateUserInterface
 		ex pass.
 	].! !
 !JadeTextDocument categoriesFor: #abortTransaction!Jade!private! !
-!JadeTextDocument categoriesFor: #aboutJade!private! !
 !JadeTextDocument categoriesFor: #activeTextEdit!private! !
 !JadeTextDocument categoriesFor: #addQuotesToSelection!edit!private! !
 !JadeTextDocument categoriesFor: #codePresenterIsMethod!private! !

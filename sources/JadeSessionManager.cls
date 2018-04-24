@@ -42,6 +42,13 @@ version
 
 !JadeSessionManager class methodsFor!
 
+getUrl
+
+	| string |
+	string := [SessionManager current class git: 'git config --get remote.origin.url'] on: ExternalProcessExecuteError do: [:ex | ^'???'].
+	^(ReadStream on: string) nextLine
+!
+
 getVersion
 
 	| string |
@@ -55,8 +62,7 @@ sessionStarted
 	GciLibrary sessionStarted.!
 
 setVersion
-
-	Version := self getVersion.!
+	Version := self getVersion , ' url: ' , self getUrl!
 
 version
 
@@ -64,6 +70,7 @@ version
 		ifTrue: [Version]
 		ifFalse: ['(Development)'].
 ! !
+!JadeSessionManager class categoriesFor: #getUrl!public! !
 !JadeSessionManager class categoriesFor: #getVersion!public! !
 !JadeSessionManager class categoriesFor: #sessionStarted!public! !
 !JadeSessionManager class categoriesFor: #setVersion!public! !

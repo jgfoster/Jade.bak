@@ -28,21 +28,9 @@ displayMemo
 displayText
 
 	^'displayText'.
-!
-
-initialize: aStream
-
-	| i j |
-	definition := (aStream upTo: Character lf) 
-		copyReplaceAll: Character cr asString 
-		with: Character cr asString , Character lf asString.
-	i := definition indexOf: $#.
-	j := definition indexOf: Character cr.
-	className := definition copyFrom: i + 1 to: j - 1.
 ! !
 !MCClassDefinition categoriesFor: #className!public! !
 !MCClassDefinition categoriesFor: #detailsString!public! !
 !MCClassDefinition categoriesFor: #displayMemo!public! !
 !MCClassDefinition categoriesFor: #displayText!public! !
-!MCClassDefinition categoriesFor: #initialize:!public! !
 
