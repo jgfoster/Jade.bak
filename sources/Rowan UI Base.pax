@@ -83,7 +83,9 @@ package methodNames
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #Object -> #rowanFixMe;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
+	add: 'JadeSessionManager class' -> #getUrl;
 	add: 'JadeSessionManager class' -> #mainShellClass;
+	add: 'JadeSessionManager class' -> #setVersion;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -112,6 +114,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Tree\Dolphin Tree Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: '..\Core\Contributions\Burning River\ExternalProcess\ExternalProcess';
 	add: 'GemStone C Interface';
 	add: 'GemStone Objects';
 	add: 'GemStone Services';
@@ -862,11 +865,24 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 
 !JadeSessionManager class methodsFor!
 
+getUrl
+
+	| string |
+	string := [SessionManager current class git: 'config --get remote.origin.url'] on: ExternalProcessExecuteError do: [:ex | ^'???'].
+	^(ReadStream on: string) nextLine
+!
+
 mainShellClass
 
 	^RowanLoginShell.
-! !
+!
+
+setVersion
+
+	Version := self getVersion , ' url: ' , self getUrl! !
+!JadeSessionManager class categoriesFor: #getUrl!public! !
 !JadeSessionManager class categoriesFor: #mainShellClass!public! !
+!JadeSessionManager class categoriesFor: #setVersion!public! !
 
 !JadeSystemBrowserPresenter methodsFor!
 
