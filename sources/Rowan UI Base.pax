@@ -428,7 +428,7 @@ createVersionResource
 				at: 'FileDescription' 		put: 'IDE for GemStoneS/64 with Rowan Source Code Control';
 				at: 'FileVersion' 			put: versionString;
 				at: 'InternalName' 		put: 'Jadeite';
-				at: 'LegalCopyright' 		put: 'Copyright © Eric Winger 2018';
+				at: 'LegalCopyright' 		put: 'Copyright © GemTalk Systems 2018';
 				at: 'OriginalFilename' 	put: 'Jadeite.exe';
 				at: 'ProductName' 		put: 'Jadeite';
 				at: 'ProductVersion' 		put: versionString;
