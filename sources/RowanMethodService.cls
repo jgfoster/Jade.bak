@@ -62,6 +62,15 @@ packageName: anObject
 remoteAccessors
 	^#(#source #selector)!
 
+removeSelector
+	^transport send: #removeSelector:class: to: remoteService withAll: (Array with: selector with: className)
+	!
+
+removeSelector: selector class: class
+
+	^transport send: #removeSelector:class: to: self remoteService withAll: (Array with: selector with: class)
+	!
+
 sampleClassInstance
 
 	^transport send: #sampleClassInstance to: remoteService!
@@ -108,6 +117,8 @@ user: anObject
 !RowanMethodService categoriesFor: #packageName!accessing!private! !
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
 !RowanMethodService categoriesFor: #remoteAccessors!private! !
+!RowanMethodService categoriesFor: #removeSelector!public!remote! !
+!RowanMethodService categoriesFor: #removeSelector:class:!public!remote! !
 !RowanMethodService categoriesFor: #sampleClassInstance!examples!public! !
 !RowanMethodService categoriesFor: #selector!accessing!private! !
 !RowanMethodService categoriesFor: #selector:!accessing!private! !

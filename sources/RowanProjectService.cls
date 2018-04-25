@@ -22,6 +22,13 @@ branch
 branch: anObject
 	branch := anObject!
 
+branches
+	| branchesString |
+	branchesString := transport send: #branches to: remoteService.
+	^branchesString subStrings asOrderedCollection
+		remove: '*';
+		yourself!
+
 changes
 	| stream patch readStream string  |
 	self packageNames do: 
@@ -46,6 +53,12 @@ changes
 			].
 	^patch!
 
+checkout: branchName
+	transport
+		send: #checkout:
+		to: remoteService
+		withAll: (Array with: branchName)!
+
 clientDefinitionClass
 
 	^self class!
@@ -62,6 +75,20 @@ defaultProjectName: aString
 		to: remoteService
 		withAll: (Array with: aString).
 	self class defaultProjectName: aString!
+
+displayStringFor: displayThing
+	self isLoaded
+		ifTrue: 
+			[displayThing font beItalic.
+			displayThing forecolor: Color black]
+		ifFalse: 
+			[self isSkew
+				ifTrue: [displayThing forecolor: Color red]
+				ifFalse: [displayThing forecolor: Color black]]!
+
+isLoaded
+
+	^sha isEmpty!
 
 isSkew
 	^isSkew!
@@ -146,10 +173,14 @@ write
 !RowanProjectService categoriesFor: #addProjectNamed:!public! !
 !RowanProjectService categoriesFor: #branch!accessing!public! !
 !RowanProjectService categoriesFor: #branch:!accessing!public! !
+!RowanProjectService categoriesFor: #branches!public!rowan! !
 !RowanProjectService categoriesFor: #changes!public!rowan! !
+!RowanProjectService categoriesFor: #checkout:!public!rowan! !
 !RowanProjectService categoriesFor: #clientDefinitionClass!private! !
 !RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
 !RowanProjectService categoriesFor: #defaultProjectName:!accessing!public! !
+!RowanProjectService categoriesFor: #displayStringFor:!displaying!public! !
+!RowanProjectService categoriesFor: #isLoaded!public!testing! !
 !RowanProjectService categoriesFor: #isSkew!accessing!private! !
 !RowanProjectService categoriesFor: #isSkew:!accessing!private! !
 !RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !

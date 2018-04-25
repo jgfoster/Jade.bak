@@ -98,6 +98,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\IDE\Base\Development System';
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Cards\Dolphin Card Containers';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Key-Value Prompter';
@@ -977,6 +978,8 @@ queryCommand: aCommandQuery
 savePackage
 
 	| package string array dict stream |
+	self rowanFixMe. "Eventually, this would be nice to have." 
+	true ifTrue:[^MessageBox notify: 'This functionality is not available. Commit your changes at the project level.'].
 	package := packageListPresenter selections first.
 	string := self updateCommand: 'uniqueVersionName' , Character tab asString , package key.
 	string = 'uniqueVersionName' ifFalse: [self error: 'Unrecognized response'].

@@ -13,20 +13,34 @@ RowanProjectListPresenter comment: ''!
 browseProjects
 	self list: RowanProjectService new projects!
 
+checkout
+	| service branchName |
+	projectListPresenter hasSelection
+		ifFalse: 
+			[MessageBox notify: 'No project selected'.
+			^false].
+	service := RowanProjectService named: projectListPresenter selection name.
+	branchName := ChoicePrompter choices: service branches caption: 'Select branch to checkout:'.
+	branchName isNil ifTrue: [^false] ifFalse: [service checkout: branchName]!
+
 commit
 	| projectName message service promptResult |
-	projectListPresenter hasSelection ifFalse:[^MessageBox notify: 'Project must be selected'].
+	projectListPresenter hasSelection
+		ifFalse: 
+			[MessageBox notify: 'No project selected'.
+			^false].
 	projectName := projectListPresenter selection name.
 	message := String new asValue.
 	promptResult := StsMultilinePrompter
-		on: message
-		prompt: 'Enter commit message. (This will do a GemStone commit after the git commit as well)'
-		caption: 'Committing Project ', projectName.
-	promptResult isNil ifTrue:[^self].
-	message value isEmpty ifTrue:[^MessageBox notify: 'Commit message must not be empty. Commit to local repository not done.'].
-	service := RowanProjectService named: projectName. 
+				on: message
+				prompt: 'Enter commit message. (This will do a GemStone commit after the git commit as well)'
+				caption: 'Committing Project ' , projectName.
+	promptResult isNil ifTrue: [^self].
+	message value isEmpty
+		ifTrue: [^MessageBox notify: 'Commit message must not be empty. Commit to local repository not done.'].
+	service := RowanProjectService named: projectName.
 	service commitWithMessage: message value asString.
-	MessageBox notify: 'Project ', projectName, ' committed to local repository!!'!
+	MessageBox notify: 'Project ' , projectName , ' committed to local repository!!'!
 
 createComponents
 	super createComponents.
@@ -43,17 +57,17 @@ list: aList
 
 loadProject
 	| name |
-
 	name := projectListPresenter selection
-				ifNil: [^MessageBox notify: 'No project selected']
+				ifNil: 
+					[MessageBox notify: 'No project selected'.
+					^false]
 				ifNotNil: [:sel | sel name].
 	(MessageBox confirm: 'Really load project ' , name , '? This will destroy any changes you may have.')
-		ifFalse: [^self].
+		ifFalse: [^false].
 	RowanProjectService new loadProjectNamed: name!
 
 makeDefault
-	RowanProjectService new defaultProjectName: projectListPresenter selection name.
-	projectListPresenter view refreshContents!
+	RowanProjectService new defaultProjectName: projectListPresenter selection name!
 
 newGitProject
 	| filePath |
@@ -61,7 +75,7 @@ newGitProject
 				on: 'file:/export/korea2/users/ewinger/shared/repos/RowanSample1/specs/RowanSample1.ston' ->  '/export/korea2/users/ewinger/shared/repos/'
 				prompt: 'Please select location of the code repository to clone:'
 				caption: 'Clone Git Repository'.
-	filePath isNil ifTrue:[^self].
+	filePath isNil ifTrue:[^false].
 	RowanProjectService new
 		newGitProject: filePath key
 		root: filePath value
@@ -105,62 +119,73 @@ primaryPresenter
 
 projectChanges
 	| service changesString patch |
-	projectListPresenter hasSelection ifFalse:[^MessageBox notify: 'No project selected.'].
-	
+	projectListPresenter hasSelection
+		ifFalse: 
+			[MessageBox notify: 'No project selected'.
+			^false].
 	service := RowanProjectService named: projectListPresenter selection name.
 	patch := service changes.
-	RowanPatchBrowser showOn: patch. 
-	
-!
+	RowanPatchBrowser showOn: patch!
 
 projectListPresenter
 	^projectListPresenter!
 
 projectLog
-
 	| service |
-	projectListPresenter selection isNil ifTrue:[^MessageBox notify: 'No project selected'].
-	service := RowanProjectService named:  projectListPresenter selection name.
-	MessageBox notify: service log.
-!
+	projectListPresenter selection isNil
+		ifTrue: 
+			[MessageBox notify: 'No project selected'.
+			^false].
+	service := RowanProjectService named: projectListPresenter selection name.
+	MessageBox notify: service log!
 
 pullFromGit
 	| service |
-	projectListPresenter hasSelection ifFalse: [^MessageBox notify: 'No project selected.'].
+	projectListPresenter hasSelection
+		ifFalse: 
+			[MessageBox notify: 'No project selected'.
+			^false].
 	(MessageBox
 		confirm: 'It is recommended that you commit changes before doing a pull from git. Proceed?')
 			ifTrue: 
-				[service := self newService. 
-				service pullFromGit]!
+				[service := self newService.
+				service pullFromGit]
+			ifFalse: [^false]!
 
 pushToGit
-
 	| service |
-	projectListPresenter hasSelection ifFalse: [^MessageBox notify: 'No project selected.'].
+	projectListPresenter hasSelection
+		ifFalse: 
+			[MessageBox notify: 'No project selected'.
+			^false].
 	(MessageBox
 		confirm: 'This will push committed changes from the local repository to the remote server. Proceed?')
 			ifTrue: 
-				[service := self newService. 
-				service pushToGit]!
+				[service := self newService.
+				service pushToGit]
+			ifFalse: [^false]!
 
 showPackages
 	| service |
-	projectListPresenter selection isNil ifTrue:[^MessageBox notify: 'No project selected'].
-	service := RowanProjectService named:  projectListPresenter selection name.
-	MessageBox notify: service packageNameString.
-!
+	projectListPresenter selection isNil
+		ifTrue: 
+			[MessageBox notify: 'No project selected'.
+			^false].
+	service := RowanProjectService named: projectListPresenter selection name.
+	MessageBox notify: service packageNameString!
 
 unloadProject
 	MessageBox notify: 'This feature not yet implemented'!
 
 writeProject
-
 	| projectName |
 	projectName := projectListPresenter selection name.
-	(MessageBox confirm: 'Write project ', projectName, ' to disk without committing?') ifFalse:[^self].
+	(MessageBox confirm: 'Write project ' , projectName , ' to disk without committing?')
+		ifFalse: [^false].
 	(RowanProjectService named: projectName) write.
-	MessageBox notify: 'Project ', projectName, ' written to disk'! !
+	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
 !RowanProjectListPresenter categoriesFor: #browseProjects!public! !
+!RowanProjectListPresenter categoriesFor: #checkout!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #commit!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #createComponents!public! !
 !RowanProjectListPresenter categoriesFor: #inspectProject!menu handlers!public! !

@@ -17,10 +17,15 @@ classCreationTemplate
 createSampleClass
 	transport send: #createSampleClass to: remoteService.  !
 
+removeSelector: selector
+
+	transport send: #removeSelector: to: remoteService withAll: (Array with: selector)!
+
 sampleClassName
 	^transport send: #sampleClassName to: remoteService.  ! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
+!RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 
 !RowanClassService class methodsFor!
