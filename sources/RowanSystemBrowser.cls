@@ -10,6 +10,12 @@ RowanSystemBrowser comment: ''!
 !RowanSystemBrowser categoriesForClass!Unclassified! !
 !RowanSystemBrowser methodsFor!
 
+restoreLayoutAndContentsFromFile
+	"corrupted stb files can give unnecessary walkbacks. Just return false 
+	and let the default browser open"
+
+	[^super restoreLayoutAndContentsFromFile] on: Error do: [:ex | ^false]!
+
 shellName
 
 	^'Rowan System Browser'.
@@ -17,6 +23,7 @@ shellName
 
 systemBrowserPresenter
 	^RowanSystemBrowserPresenter! !
+!RowanSystemBrowser categoriesFor: #restoreLayoutAndContentsFromFile!public! !
 !RowanSystemBrowser categoriesFor: #shellName!overrides!private! !
 !RowanSystemBrowser categoriesFor: #systemBrowserPresenter!public! !
 

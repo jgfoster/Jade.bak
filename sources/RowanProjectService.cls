@@ -138,6 +138,7 @@ projects
 	| oops services |
 	oops := transport send: #projectNames to: remoteService.
 	services := self createClientFrom: oops.
+	services := services asSortedCollection: [:a :b | a name < b name].
 	^services!
 
 pullFromGit

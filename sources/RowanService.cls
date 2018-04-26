@@ -73,8 +73,9 @@ inspectDefinition
 name
 	^name!
 
-name: anObject
-	name := anObject!
+name: aString
+	name := aString.
+	transport send: #name: to: remoteService withAll: (Array with: aString)!
 
 remoteAccessors
 

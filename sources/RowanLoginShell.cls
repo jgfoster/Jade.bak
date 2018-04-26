@@ -24,10 +24,22 @@ fillVersionList
 	versionListPresenter list: list!
 
 loginFailureCaption
-	^'Jadeite Login Error'! !
+	^'Jadeite Login Error'!
+
+postLogin: aGciSession
+	| result |
+	aGciSession verifyRowanLoaded ifFalse:[^aGciSession logout]. "Already notified the user"
+	result := super postLogin: aGciSession.
+	RowanTranscript showOnSession: aGciSession.
+	^result !
+
+updateCaption
+	^'Jadeite Login'! !
 !RowanLoginShell categoriesFor: #basicCaption!accessing!public! !
 !RowanLoginShell categoriesFor: #fillVersionList!public! !
 !RowanLoginShell categoriesFor: #loginFailureCaption!private! !
+!RowanLoginShell categoriesFor: #postLogin:!public! !
+!RowanLoginShell categoriesFor: #updateCaption!public! !
 
 !RowanLoginShell class methodsFor!
 

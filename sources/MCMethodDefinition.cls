@@ -23,8 +23,7 @@ className
 
 detailsString
 
-	^category , ' - ' , timeStamp.
-!
+	^category!
 
 displayMemo
 
@@ -33,7 +32,7 @@ displayMemo
 
 displayText
 
-	^category, ' - ' , timeStamp.
+	^category.
 !
 
 initialize: aStream

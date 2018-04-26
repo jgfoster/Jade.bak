@@ -36,7 +36,9 @@ package classNames
 
 package methodNames
 	add: #GciSession -> #initializeServer;
+	add: #GciSession -> #postLoginAs:useSocket:;
 	add: #GciSession -> #titleBarFor:;
+	add: #GciSession -> #verifyRowanLoaded;
 	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
 	add: #GsMethod -> #methodDefinitionService;
 	add: #GsMethod2 -> #asUpdatedVersion:;
@@ -45,7 +47,6 @@ package methodNames
 	add: #JadeImageStripper -> #requiredClasses;
 	add: #JadeImageStripper -> #requiredPackageNames;
 	add: #JadeLoginShell -> #aboutJadeite;
-	add: #JadeLoginShell -> #postLogin:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeServer -> #compile:frame:process:;
@@ -318,6 +319,12 @@ Server initialization failed. Most functionality will be broken!!'.
 	].
 !
 
+postLoginAs: aString useSocket: aBoolean
+	self verifyRowanLoaded ifFalse: [^MessageBox notify: 'Rowan not loaded or $ROWAN_HOME not set. Logging out.' "log out in RowinLoginShell>>postLogin:"].
+	self initializeServer.
+	aBoolean ifTrue: [self attemptSocket].
+	self setInitials: aString	"This gets back the session and serial number"!
+
 titleBarFor: aString
 "'Jade ' , gciSession gciSessionID printString , ' (' , gciSession userID , ') - "
 	| stream list |
@@ -328,7 +335,9 @@ titleBarFor: aString
 	stoneHost := list at: 2.
 	stream := WriteStream on: String new.
 	stream 
-		nextPutAll: 'Jadeite ';
+		nextPutAll: 'Jadeite version <';
+		nextPutAll: JadeSessionManager version;
+		nextPutAll: '> ' ;
 		print: gciSessionId;
 		nextPutAll: ' (';
 		nextPutAll: userID;
@@ -354,9 +363,18 @@ titleBarFor: aString
 		stream nextPutAll: ' with linked gem'. 
 	].
 	^stream contents.
-! !
+!
+
+verifyRowanLoaded
+	"The global Rowan indicates the Rowan packages are loaded. 
+	The ROWAN_HOME gem environment variable is also required"
+
+	^self
+		executeString: '(Globals at: #Rowan ifAbsent:[]) notNil and:[(System gemEnvironmentVariable: ''ROWAN_HOME'') notNil] '! !
 !GciSession categoriesFor: #initializeServer!private! !
+!GciSession categoriesFor: #postLoginAs:useSocket:!private! !
 !GciSession categoriesFor: #titleBarFor:!public! !
+!GciSession categoriesFor: #verifyRowanLoaded!private! !
 
 !GsClass methodsFor!
 
@@ -486,16 +504,8 @@ requiredPackageNames
 aboutJadeite
 	"See also JadeTextDocument>>#'aboutJadeite'"
 
-	self class aboutJadeite!
-
-postLogin: aGciSession
-
-	versionListPresenter view disable.
-	self setWorkingDirectory.
-	RowanTranscript showOnSession: aGciSession.
-! !
+	self class aboutJadeite! !
 !JadeLoginShell categoriesFor: #aboutJadeite!public! !
-!JadeLoginShell categoriesFor: #postLogin:!public! !
 
 !JadePresenterA methodsFor!
 

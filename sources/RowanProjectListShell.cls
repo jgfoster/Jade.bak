@@ -36,7 +36,7 @@ refresh
 	self primaryPresenter view invalidate!
 
 shellName
-	^'Rowan Project List Shell'!
+	^'Rowan Projects Browser'!
 
 unloadProject
 	

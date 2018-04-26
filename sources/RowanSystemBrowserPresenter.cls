@@ -19,7 +19,7 @@ addPackage
 addSubclass
 	classDefinitionPresenter
 		ensureVisible;
-		value: self classService classCreationTemplate;
+		value: (self classService subclassCreationTemplate: packageListPresenter selections first key);
 		yourself!
 
 categoriesMenuStrings
@@ -52,7 +52,9 @@ classesMenuStrings
 !
 
 classService
-	^RowanClassService on: self selectedClassNameWithoutVersion!
+	^(RowanClassService on: gciSession)
+		name: self selectedClassNameWithoutVersion;
+		yourself!
 
 compareAncestor
 
@@ -120,7 +122,7 @@ possiblyShowGenericPackageClassTemplate: newDef
 
 	| packageService newClassDef selections |
 	newClassDef := newDef.
-	classListPresenter selections isEmpty
+	(classListPresenter selections isEmpty and: [classHierarchyPresenter selections isEmpty])
 		ifTrue: 
 			[packageService := (self isPackageListTabSelected
 						and: [(selections := packageListPresenter selections) notEmpty])
@@ -147,7 +149,7 @@ showPackageChanges
 				lf.	 
 	(self updateCommand: stream contents) = 'changesInPackage'
 		ifFalse: [self error: 'Unexpected response!!'].
-	patch := MCPatch fromString: readStream upToEnd session: self gciSession.
+	patch := MCPatch fromString: readStream upToEnd session: self gciSession. 
 	patch operations isEmpty
 		ifTrue: 
 			[MessageBox notify: 'No changes!!'.

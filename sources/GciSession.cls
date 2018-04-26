@@ -457,13 +457,6 @@ oopTypeWithOop: anInteger
 	^library oopTypeWithOop: anInteger.
 !
 
-postLoginAs: aString useSocket: aBoolean
-
-	self initializeServer.
-	aBoolean ifTrue: [self attemptSocket].
-	self setInitials: aString.		"This gets back the session and serial number"
-!
-
 printString: anOopType
 
 	^self
@@ -929,7 +922,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #oopIllegal!public! !
 !GciSession categoriesFor: #oopTypeFor:!public! !
 !GciSession categoriesFor: #oopTypeWithOop:!public! !
-!GciSession categoriesFor: #postLoginAs:useSocket:!private! !
 !GciSession categoriesFor: #printString:!Jade convenience!public! !
 !GciSession categoriesFor: #releaseOop:!Jade convenience!public! !
 !GciSession categoriesFor: #releaseOops:!Jade!public! !

@@ -22,17 +22,20 @@ removeSelector: selector
 	transport send: #removeSelector: to: remoteService withAll: (Array with: selector)!
 
 sampleClassName
-	^transport send: #sampleClassName to: remoteService.  ! !
+	^transport send: #sampleClassName to: remoteService.  !
+
+subclassCreationTemplate
+	^transport send: #subclassCreationTemplate to: self remoteService!
+
+subclassCreationTemplate: packageName
+	^transport
+		send: #subclassCreationTemplate:
+		to: self remoteService
+		withAll: (Array with: packageName)! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
-
-!RowanClassService class methodsFor!
-
-on: className
-	^self new
-		name: className;
-		yourself! !
-!RowanClassService class categoriesFor: #on:!instance creation!public! !
+!RowanClassService categoriesFor: #subclassCreationTemplate!public! !
+!RowanClassService categoriesFor: #subclassCreationTemplate:!public! !
 
