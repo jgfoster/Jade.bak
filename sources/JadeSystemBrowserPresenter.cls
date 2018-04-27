@@ -2128,6 +2128,7 @@ removeMethodCategories
 removeMethods
 
 	| stream result string |
+
 	stream := WriteStream on: String new.
 	methodListPresenter selections do: [:each | stream nextPutAll: each first; cr].
 	result := MessageBox 

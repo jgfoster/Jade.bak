@@ -641,13 +641,16 @@ sbRemoveClasses
 	self systemBrowserUpdate!
 
 sbRemoveMethods: anOrderedCollection
-	| behavior classEntity |
+	| behavior classEntity  notRemoved|
 	behavior := self sbClassFrom: anOrderedCollection.
-	classEntity := ((System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile ifAbsent: [false])
-				ifTrue: [RowanClassService forClassNamed: behavior name meta: behavior isMeta]
-				ifFalse: [behavior].
-	anOrderedCollection do: [:each | classEntity removeSelector: each asSymbol].
-	self systemBrowserUpdate!
+	classEntity := ((System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile
+				ifAbsent: [false])
+					ifTrue: [RowanClassService forClassNamed: behavior name meta: behavior isMeta]
+					ifFalse: [behavior].
+	notRemoved := Array new. 
+	anOrderedCollection do: [:each | classEntity removeSelector: each asSymbol ifAbsent: [notRemoved add: each]].
+	self systemBrowserUpdate.
+	notRemoved isEmpty ifFalse:[self error: 'The following selectors were not removed. Possibly in a superclass? ', notRemoved printString].!
 
 sbUnloadPackage: anOrderedCollection
 	| service |
