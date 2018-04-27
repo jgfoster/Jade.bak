@@ -12,10 +12,7 @@ JadeServer64bit34 comment: ''!
 
 classOrganizer
 
-	| org |
-	^(org := classOrganizers at: environment + 1) notNil
-		ifTrue: [org]
-		ifFalse: [classOrganizers at: environment + 1 put: (ClassOrganizer newForEnvironment: environment)]
+	^ClassOrganizer newForEnvironment: environment
 !
 
 debugString: aString fromContext: anObject environment: anInteger

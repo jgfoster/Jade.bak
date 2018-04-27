@@ -79,7 +79,10 @@ package methodNames
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:type:;
 	add: #JadeTreeMethodListPresenter -> #onDropMethodsTree:;
 	add: #MCClassDefinition -> #initialize:;
+	add: #MCPatchBrowser -> #browseChangedThing;
 	add: #MCPatchBrowser -> #operationSelected;
+	add: #MCPatchOperation -> #isRemoval;
+	add: #MCRemoval -> #isRemoval;
 	add: #MethodListPresenter -> #browseClass;
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #Object -> #rowanFixMe;
@@ -257,7 +260,7 @@ JadeSystemBrowser subclass: #RowanSystemBrowser
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 MCPatchBrowser subclass: #RowanPatchBrowser
-	instanceVariableNames: ''
+	instanceVariableNames: 'name'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -335,9 +338,9 @@ titleBarFor: aString
 	stoneHost := list at: 2.
 	stream := WriteStream on: String new.
 	stream 
-		nextPutAll: 'Jadeite version <';
-		nextPutAll: JadeSessionManager version;
-		nextPutAll: '> ' ;
+		nextPutAll: 'Jadeite version [';
+		nextPutAll: JadeSessionManager shortVersion;
+		nextPutAll: '] ' ;
 		print: gciSessionId;
 		nextPutAll: ' (';
 		nextPutAll: userID;
@@ -877,11 +880,13 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 !JadeSessionManager class methodsFor!
 
 getUrl
+	"no longer sent, but might be handy to have"
 
 	| string |
-	string := [SessionManager current class git: 'config --get remote.origin.url'] on: ExternalProcessExecuteError do: [:ex | ^'???'].
-	^(ReadStream on: string) nextLine
-!
+	string := [SessionManager current class git: 'config --get remote.origin.url']
+				on: ExternalProcessExecuteError
+				do: [:ex | ^'???'].
+	^(ReadStream on: string) nextLine!
 
 mainShellClass
 
@@ -890,7 +895,7 @@ mainShellClass
 
 setVersion
 
-	Version := self getVersion , ' url: ' , self getUrl! !
+	Version := self getVersion.! !
 !JadeSessionManager class categoriesFor: #getUrl!public! !
 !JadeSessionManager class categoriesFor: #mainShellClass!public! !
 !JadeSessionManager class categoriesFor: #setVersion!public! !
@@ -1177,6 +1182,14 @@ initialize: aStream
 
 !MCPatchBrowser methodsFor!
 
+browseChangedThing
+	| selection  shell |
+	selection := operationListPresenter selectionOrNil.
+	selection isNil ifTrue: [^MessageBox notify: 'Nothing to browse'].
+	selection isRemoval ifTrue:[^MessageBox notify: 'Cannot browse a removed item'].
+	shell := RowanSystemBrowser showOnSession: self gciSession.
+	shell selectClass: selection className selector: selection selector asSymbol!
+
 operationSelected
 
 	| operation |
@@ -1197,7 +1210,22 @@ operationSelected
 		rightMemoPresenter view addMarkerType: each key at: each value.
 	].
 ! !
+!MCPatchBrowser categoriesFor: #browseChangedThing!public! !
 !MCPatchBrowser categoriesFor: #operationSelected!public! !
+
+!MCPatchOperation methodsFor!
+
+isRemoval
+
+	^false! !
+!MCPatchOperation categoriesFor: #isRemoval!public! !
+
+!MCRemoval methodsFor!
+
+isRemoval
+
+	^true! !
+!MCRemoval categoriesFor: #isRemoval!public! !
 
 !MethodListPresenter methodsFor!
 

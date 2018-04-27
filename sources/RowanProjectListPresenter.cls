@@ -125,7 +125,7 @@ projectChanges
 			^false].
 	service := RowanProjectService named: projectListPresenter selection name.
 	patch := service changes.
-	RowanPatchBrowser showOn: patch!
+	RowanPatchBrowser showOn: patch name: projectListPresenter selection name!
 
 projectListPresenter
 	^projectListPresenter!

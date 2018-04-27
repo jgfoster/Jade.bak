@@ -32,7 +32,7 @@ inspectLine
 
 	| line |
 	(line := operationListPresenter selectionOrNil) isNil ifTrue: [^self].
-	line halt.
+	line inspect.
 !
 
 model: anMCPatch

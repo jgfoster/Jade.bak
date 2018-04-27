@@ -54,6 +54,9 @@ sessionStarted
 	ScintillaLibrary open: 'bin\SciLexer.dll'.
 	GciLibrary sessionStarted.!
 
+shortVersion
+	^(ReadStream on: self version) upTo: $-!
+
 version
 
 	^Version notNil 
@@ -62,5 +65,6 @@ version
 ! !
 !JadeSessionManager class categoriesFor: #getVersion!public! !
 !JadeSessionManager class categoriesFor: #sessionStarted!public! !
+!JadeSessionManager class categoriesFor: #shortVersion!public! !
 !JadeSessionManager class categoriesFor: #version!public! !
 

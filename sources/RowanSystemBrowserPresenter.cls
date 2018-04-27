@@ -76,7 +76,7 @@ compareAncestor
 		MessageBox notify: 'No changes!!'.
 		^self.
 	].
-	RowanPatchBrowser showOn: patch.
+	RowanPatchBrowser showOn: patch name: packageListPresenter selections first key
 !
 
 deletePackage
@@ -154,7 +154,7 @@ showPackageChanges
 		ifTrue: 
 			[MessageBox notify: 'No changes!!'.
 			^self].
-	RowanPatchBrowser showOn: patch!
+	RowanPatchBrowser showOn: patch name: packageListPresenter selections first key!
 
 updateClassInfo
 	| index newClassDefinition |
