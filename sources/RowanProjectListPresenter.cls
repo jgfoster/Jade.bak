@@ -72,7 +72,7 @@ makeDefault
 newGitProject
 	| filePath |
 	filePath := RowanKeyValuePrompter
-				on: 'file:/export/korea2/users/ewinger/shared/repos/RowanSample1/specs/RowanSample1.ston' ->  '/export/korea2/users/ewinger/shared/repos/'
+				on: 'file:$ROWAN_PROJECTS_HOME/Rowan/test/specs/RowanSample2.ston' ->  '$ROWAN_PROJECTS_HOME'
 				prompt: 'Please select location of the code repository to clone:'
 				caption: 'Clone Git Repository'.
 	filePath isNil ifTrue:[^false].
