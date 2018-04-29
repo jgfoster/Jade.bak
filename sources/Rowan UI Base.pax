@@ -323,7 +323,7 @@ Server initialization failed. Most functionality will be broken!!'.
 !
 
 postLoginAs: aString useSocket: aBoolean
-	self verifyRowanLoaded ifFalse: [^MessageBox notify: 'Rowan not loaded or $ROWAN_HOME not set. Logging out.' "log out in RowinLoginShell>>postLogin:"].
+	self verifyRowanLoaded ifFalse: [^MessageBox notify: 'Rowan not loaded or $ROWAN_PROJECTS_HOME not set. Logging out.' "log out in RowinLoginShell>>postLogin:"].
 	self initializeServer.
 	aBoolean ifTrue: [self attemptSocket].
 	self setInitials: aString	"This gets back the session and serial number"!
@@ -370,10 +370,10 @@ titleBarFor: aString
 
 verifyRowanLoaded
 	"The global Rowan indicates the Rowan packages are loaded. 
-	The ROWAN_HOME gem environment variable is also required"
+	The ROWAN_PROJECTS_HOME gem environment variable is also required"
 
 	^self
-		executeString: '(Globals at: #Rowan ifAbsent:[]) notNil and:[(System gemEnvironmentVariable: ''ROWAN_HOME'') notNil] '! !
+		executeString: '(Globals at: #Rowan ifAbsent:[]) notNil and:[(System gemEnvironmentVariable: ''ROWAN_PROJECTS_HOME'') notNil] '! !
 !GciSession categoriesFor: #initializeServer!private! !
 !GciSession categoriesFor: #postLoginAs:useSocket:!private! !
 !GciSession categoriesFor: #titleBarFor:!public! !
@@ -598,47 +598,15 @@ sbClassTemplate
 
 sbRemoveClasses
 	| isPackages containers classNames |
-	isPackages := self nextLine = 'packageList'.
+	self nextLine = 'packageList'. "ignore this" 
 	containers := self nextLineAsList.
 	classNames := (self nextLineAsList reject: [:each | each isEmpty])
 				collect: [:each | (each subStrings: Character space) first asSymbol].
-	isPackages
-		ifTrue: 
-			[containers do: 
-					[:packageName |
-					classNames
-						do: [:className | (RowanPackageService forPackageNamed: packageName) removeClassNamed: className]].
-			^self systemBrowserUpdate].
-	self symbolList do: 
-			[:eachDictionary |
-			| dictionaryName |
-			dictionaryName := eachDictionary name asString.
-			classNames do: 
-					[:eachName |
-					| class flag |
-					(class := eachDictionary at: eachName ifAbsent: [nil]) notNil
-						ifTrue: 
-							[selections removeAllKeys: selections keys.
-							isPackages
-								ifTrue: 
-									[flag := false.
-									containers do: 
-											[:each |
-											flag := flag or: [(class category copyFrom: 1 to: (class category size min: each size)) = each].
-											flag ifTrue: [selections at: #package put: each]]]
-								ifFalse: 
-									[flag := containers includes: dictionaryName.
-									flag ifTrue: [selections at: #dictionary put: dictionaryName]].
-							flag
-								ifTrue: 
-									[selectedClass := (eachDictionary at: eachName) superclass.
-									selections
-										at: #category put: selectedClass category;
-										at: #className put: selectedClass name;
-										at: #class put: selectedClass;
-										yourself.
-									self sbRemoveKey: eachName fromDictionary: eachDictionary]]]].
-	self systemBrowserUpdate!
+	containers do: 
+			[:packageName |
+			classNames
+				do: [:className | (RowanPackageService forPackageNamed: packageName) removeClassNamed: className]].
+	^self systemBrowserUpdate!
 
 sbRemoveMethods: anOrderedCollection
 	| behavior classEntity  notRemoved|
