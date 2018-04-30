@@ -23,6 +23,19 @@ checkout
 	branchName := ChoicePrompter choices: service branches caption: 'Select branch to checkout:'.
 	branchName isNil ifTrue: [^false] ifFalse: [service checkout: branchName]!
 
+cloneProject
+	"Does a clone and 'attach'"
+	| filePath |
+	filePath := RowanKeyValuePrompter
+				on: 'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston' -> '$ROWAN_PROJECTS_HOME'
+				prompt: 'Please select location of the code repository to clone:'
+				caption: 'Clone Git Repository'.
+	filePath isNil ifTrue: [^false].
+	RowanProjectService new
+		newGitProject: filePath key
+		root: filePath value
+		useSsh: true!
+
 commit
 	| projectName message service promptResult |
 	projectListPresenter hasSelection
@@ -68,18 +81,6 @@ loadProject
 
 makeDefault
 	RowanProjectService new defaultProjectName: projectListPresenter selection name!
-
-newGitProject
-	| filePath |
-	filePath := RowanKeyValuePrompter
-				on: 'file:$ROWAN_PROJECTS_HOME/Rowan/test/specs/RowanSample2.ston' ->  '$ROWAN_PROJECTS_HOME'
-				prompt: 'Please select location of the code repository to clone:'
-				caption: 'Clone Git Repository'.
-	filePath isNil ifTrue:[^false].
-	RowanProjectService new
-		newGitProject: filePath key
-		root: filePath value
-		useSsh: true!
 
 newService
 	^RowanProjectService named: projectListPresenter selection name!
@@ -186,13 +187,13 @@ writeProject
 	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
 !RowanProjectListPresenter categoriesFor: #browseProjects!public! !
 !RowanProjectListPresenter categoriesFor: #checkout!menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #cloneProject!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #commit!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #createComponents!public! !
 !RowanProjectListPresenter categoriesFor: #inspectProject!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #list:!public! !
 !RowanProjectListPresenter categoriesFor: #loadProject!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #makeDefault!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #newGitProject!menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #newService!menu handlers!private! !
 !RowanProjectListPresenter categoriesFor: #openChangesShell:!menu handlers!private! !
 !RowanProjectListPresenter categoriesFor: #primaryPresenter!public! !
