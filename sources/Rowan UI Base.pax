@@ -53,6 +53,7 @@ package methodNames
 	add: #JadeServer -> #sbAddPackage:;
 	add: #JadeServer -> #sbChangesInPackage:;
 	add: #JadeServer -> #sbClassTemplate;
+	add: #JadeServer -> #sbPostSaveClass:;
 	add: #JadeServer -> #sbRemoveClasses;
 	add: #JadeServer -> #sbRemoveMethods:;
 	add: #JadeServer -> #sbUnloadPackage:;
@@ -62,6 +63,7 @@ package methodNames
 	add: #JadeServer -> #sbUpdatePackagesOrDictionaries;
 	add: #JadeServer64bit -> #recompile:withSource:;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
+	add: #JadeServer64bit3x -> #sbClassComment:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
@@ -596,6 +598,11 @@ sbClassTemplate
 		lf;
 		yourself	"selectedClassOop"!
 
+sbPostSaveClass: anOrderedCollection
+	"this has been Rowanized"
+
+	self systemBrowserUpdate !
+
 sbRemoveClasses
 	| isPackages containers classNames |
 	self nextLine = 'packageList'. "ignore this" 
@@ -780,6 +787,7 @@ sbUpdatePackagesOrDictionaries
 !JadeServer categoriesFor: #sbAddPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbChangesInPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbClassTemplate!public!System Browser! !
+!JadeServer categoriesFor: #sbPostSaveClass:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveClasses!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveMethods:!public!System Browser! !
 !JadeServer categoriesFor: #sbUnloadPackage:!public!System Browser! !
@@ -845,8 +853,15 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 	] on: Error do: [:ex | 
 		ex return: method -> warnings.
 	].
+!
+
+sbClassComment: anOrderedCollection
+
+	(self sbClassFrom: anOrderedCollection) thisClass rwComment: self sbNextParagraph trimSeparators.
+	self systemBrowserUpdate.
 ! !
 !JadeServer64bit3x categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbClassComment:!public!System Browser! !
 
 !JadeSessionManager class methodsFor!
 

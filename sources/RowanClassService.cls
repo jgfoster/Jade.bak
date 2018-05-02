@@ -25,17 +25,10 @@ sampleClassName
 	^transport send: #sampleClassName to: remoteService.  !
 
 subclassCreationTemplate
-	^transport send: #subclassCreationTemplate to: self remoteService!
-
-subclassCreationTemplate: packageName
-	^transport
-		send: #subclassCreationTemplate:
-		to: self remoteService
-		withAll: (Array with: packageName)! !
+	^transport send: #subclassCreationTemplate to: self remoteService! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
-!RowanClassService categoriesFor: #subclassCreationTemplate:!public! !
 
