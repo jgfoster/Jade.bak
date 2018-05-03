@@ -11,7 +11,9 @@ RowanSystemBrowserPresenter comment: ''!
 !RowanSystemBrowserPresenter methodsFor!
 
 addPackage
-	RowanProjectService defaultProjectName isNil
+	| service |
+	service := RowanProjectService new.
+	(service remoteDefaultProjectName isNil or: [service defaultProjectName isNil])
 		ifTrue: 
 			[^MessageBox notify: 'No default project has been created. Please specify in the project list.'].
 	^super addPackage!
@@ -19,7 +21,7 @@ addPackage
 addSubclass
 	classDefinitionPresenter
 		ensureVisible;
-		value: (self classService subclassCreationTemplate);
+		value: self classService subclassCreationTemplate;
 		yourself!
 
 browseClassReferencesOf: className
@@ -152,9 +154,10 @@ possiblyShowGenericPackageClassTemplate: newDef
 						and: [(selections := packageListPresenter selections) notEmpty])
 							ifTrue: [RowanPackageService new name: selections first key]
 							ifFalse: 
-								[classCategoryPresenter selections isEmpty
-									ifTrue: [RowanPackageService new]
-									ifFalse: [RowanPackageService named: classCategoryPresenter selections first value]].
+								[(classCategoryPresenter selections isEmpty
+									or: [classCategoryPresenter selections first value = '--Categories--'])
+										ifTrue: [RowanPackageService new]
+										ifFalse: [RowanPackageService named: classCategoryPresenter selections first value]].
 			newClassDef := packageService genericClassCreationTemplate].
 	^newClassDef!
 

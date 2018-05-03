@@ -67,6 +67,9 @@ commitWithMessage: message
 
 	transport send: #commitWithMessage: to: remoteService withAll: (Array with: message)  !
 
+defaultProjectName
+	^self class defaultProjectName!
+
 defaultProjectName: aString
 	"The server is the gold copy"
 
@@ -96,12 +99,13 @@ isSkew
 isSkew: anObject
 	isSkew := anObject!
 
-loadProjectNamed: aName
+loadProjectNamed: aString
 	
 	transport
 		send: #loadProjectNamed:
 		to: remoteService
-		withAll: (Array with: aName)!
+		withAll: (Array with: aString).
+	self class defaultProjectName: aString!
 
 log
 
@@ -152,6 +156,13 @@ pushToGit
 remoteAccessors
 	^#(#name #sha #branch #isSkew)!
 
+remoteDefaultProjectName
+
+	^transport
+		send: #defaultProjectName
+		to: remoteService
+!
+
 removeProjectNamed: projectName
 
 	transport send: #removeProjectNamed: to: remoteService withAll: (Array with: projectName)!
@@ -179,6 +190,7 @@ write
 !RowanProjectService categoriesFor: #checkout:!public!rowan! !
 !RowanProjectService categoriesFor: #clientDefinitionClass!private! !
 !RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
+!RowanProjectService categoriesFor: #defaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #defaultProjectName:!accessing!public! !
 !RowanProjectService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanProjectService categoriesFor: #isLoaded!public!testing! !
@@ -194,6 +206,7 @@ write
 !RowanProjectService categoriesFor: #pullFromGit!public!rowan! !
 !RowanProjectService categoriesFor: #pushToGit!public!rowan! !
 !RowanProjectService categoriesFor: #remoteAccessors!public! !
+!RowanProjectService categoriesFor: #remoteDefaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #removeProjectNamed:!public! !
 !RowanProjectService categoriesFor: #removeSampleProject!public! !
 !RowanProjectService categoriesFor: #sampleProjectName!public! !

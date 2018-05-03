@@ -833,6 +833,7 @@ editSave
 editSaveClass
 
 	| string stream flag |
+
 	string := classDefinitionPresenter value collect: [:each | each codePoint < 32 ifTrue: [Character space] ifFalse: [each]].
 	stream := (WriteStream on: String new)
 		nextPutAll: 'class'; tab;
@@ -847,7 +848,7 @@ editSaveClass
 				flag := true.
 			].
 	] on: GsCompileError do: [:ex | 
-		| offset explanation |
+		| offset explanation | 	
 		offset := ex list first at: 2.
 		explanation := ex list first at: 3.
 		string := classDefinitionPresenter value.
