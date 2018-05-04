@@ -16,7 +16,6 @@ className
 !
 
 detailsString
-
 	^'Class Definition'.
 !
 

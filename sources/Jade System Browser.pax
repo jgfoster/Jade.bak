@@ -73,7 +73,6 @@ package methodNames
 	add: #JadeServer -> #sbInstVarsOldParent:newParent:oldChild:;
 	add: #JadeServer -> #sbListMethodPragmas;
 	add: #JadeServer -> #sbLoadLatestVersionOfConfiguration:;
-	add: #JadeServer -> #sbMethodCategory:;
 	add: #JadeServer -> #sbMethodClass:;
 	add: #JadeServer -> #sbMigrateAll:;
 	add: #JadeServer -> #sbNextParagraph;
@@ -862,19 +861,6 @@ sbLoadLatestVersionOfConfiguration: anOrderedCollection
 	self systemBrowserUpdate.
 !
 
-sbMethodCategory: anOrderedCollection
-
-	| behavior category |
-	behavior := self sbClassFrom: anOrderedCollection.
-	category := anOrderedCollection removeFirst.
-	anOrderedCollection do: [:each | 
-		behavior 
-			moveMethod: each asSymbol
-			toCategory: category.
-	].
-	self systemBrowserUpdate.
-!
-
 sbMethodClass: anOrderedCollection
 	"Drag/drop method onto class"
 
@@ -1028,7 +1014,7 @@ sbRemoveMethodCategories: anOrderedCollection
 
 	| behavior |
 	behavior := self sbClassFrom: anOrderedCollection.
-	anOrderedCollection do: [:each | behavior removeCategory: each].
+	anOrderedCollection do: [:each | behavior rwRemoveCategory: each].
 	self systemBrowserUpdate.
 !
 
@@ -1710,7 +1696,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbInstVarsOldParent:newParent:oldChild:!public!System Browser! !
 !JadeServer categoriesFor: #sbListMethodPragmas!public!System Browser! !
 !JadeServer categoriesFor: #sbLoadLatestVersionOfConfiguration:!public!System Browser! !
-!JadeServer categoriesFor: #sbMethodCategory:!public!System Browser! !
 !JadeServer categoriesFor: #sbMethodClass:!public!System Browser! !
 !JadeServer categoriesFor: #sbMigrateAll:!public!System Browser! !
 !JadeServer categoriesFor: #sbNextParagraph!public!System Browser! !

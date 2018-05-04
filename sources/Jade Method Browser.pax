@@ -36,7 +36,6 @@ package methodNames
 	add: #JadeServer -> #implementorsOf:startingAt:;
 	add: #JadeServer -> #methodsContaining:;
 	add: #JadeServer -> #methodsFor:upTo:filter:isVariables:;
-	add: #JadeServer -> #moveMethod:toCategory:;
 	add: #JadeServer -> #nameOfFirstDictionaryReferencing:;
 	add: #JadeServer -> #referencesToObject:;
 	add: #JadeServer -> #removeCategory:fromBehavior:;
@@ -433,13 +432,6 @@ methodsFor: childClass upTo: parentClass filter: aString isVariables: aBoolean
 	answerList do: [:each | self _addMethod: each toStream: stream].
 	^stream contents!
 
-moveMethod: aGsMethod toCategory: aString
-
-	aGsMethod inClass
-		moveMethod: aGsMethod selector
-		toCategory: aString.
-!
-
 nameOfFirstDictionaryReferencing: aGlobal
 
 	| list |
@@ -454,7 +446,7 @@ referencesToObject: anObject
 
 removeCategory: aString fromBehavior: aBehavior
 
-	aBehavior removeCategory: aString.
+	aBehavior rwRemoveCategory: aString.
 !
 
 removeMethod: aGsMethod
@@ -627,7 +619,6 @@ stringOfLineNumbersWithBreaksIn: aGsMethod
 !JadeServer categoriesFor: #implementorsOf:startingAt:!public! !
 !JadeServer categoriesFor: #methodsContaining:!Methods!public! !
 !JadeServer categoriesFor: #methodsFor:upTo:filter:isVariables:!Methods!public! !
-!JadeServer categoriesFor: #moveMethod:toCategory:!Methods!public! !
 !JadeServer categoriesFor: #nameOfFirstDictionaryReferencing:!Methods!public! !
 !JadeServer categoriesFor: #referencesToObject:!Methods!public! !
 !JadeServer categoriesFor: #removeCategory:fromBehavior:!Methods!public! !

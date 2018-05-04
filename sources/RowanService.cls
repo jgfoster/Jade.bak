@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name'
+	instanceVariableNames: 'transport remoteService name isDirty'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -70,6 +70,12 @@ inspectDefinition
 	definition := transport send: #definition to: remoteService.
 	JadeInspector showOn: definition session: transport!
 
+isDirty
+	^isDirty!
+
+isDirty: anObject
+	isDirty := anObject!
+
 name
 	^name!
 
@@ -114,6 +120,8 @@ transport: anObject
 !RowanService categoriesFor: #initialize!initialization!private! !
 !RowanService categoriesFor: #initializeTransport!initialization!private! !
 !RowanService categoriesFor: #inspectDefinition!public!rowan! !
+!RowanService categoriesFor: #isDirty!accessing!private! !
+!RowanService categoriesFor: #isDirty:!accessing!private! !
 !RowanService categoriesFor: #name!accessing!private! !
 !RowanService categoriesFor: #name:!accessing!private! !
 !RowanService categoriesFor: #remoteAccessors!private! !

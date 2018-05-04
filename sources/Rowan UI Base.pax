@@ -50,9 +50,11 @@ package methodNames
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeServer -> #compile:frame:process:;
+	add: #JadeServer -> #moveMethod:toCategory:;
 	add: #JadeServer -> #sbAddPackage:;
 	add: #JadeServer -> #sbChangesInPackage:;
 	add: #JadeServer -> #sbClassTemplate;
+	add: #JadeServer -> #sbMethodCategory:;
 	add: #JadeServer -> #sbPostSaveClass:;
 	add: #JadeServer -> #sbRemoveClasses;
 	add: #JadeServer -> #sbRemoveMethods:;
@@ -162,7 +164,7 @@ MCPatch subclass: #RowanPatch
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name'
+	instanceVariableNames: 'transport remoteService name isDirty'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -558,6 +560,12 @@ compile: aString frame: anInteger process: aGsProcess
 							inCategory: category].
 	^result!
 
+moveMethod: aGsMethod toCategory: aString
+	aGsMethod inClass
+		rwMoveMethod: aGsMethod selector
+		toCategory: aString.
+!
+
 sbAddPackage: anOrderedCollection
 	| string service |
 	string := anOrderedCollection removeFirst.
@@ -597,6 +605,13 @@ sbClassTemplate
 		nextPut: $%;
 		lf;
 		yourself	"selectedClassOop"!
+
+sbMethodCategory: anOrderedCollection
+	| behavior category |
+	behavior := self sbClassFrom: anOrderedCollection.
+	category := anOrderedCollection removeFirst.
+	anOrderedCollection do: [:each | behavior rwMoveMethod: each asSymbol toCategory: category].
+	self systemBrowserUpdate!
 
 sbPostSaveClass: anOrderedCollection
 	"this has been Rowanized"
@@ -741,6 +756,7 @@ sbUpdatePackage: aString
 
 sbUpdatePackages
 	| override modifiedList oldSelections newSelections fullList |
+
 	oldSelections := self nextLineAsList.
 	(override := selections at: #package ifAbsent: [nil]) notNil
 		ifTrue: [oldSelections := Array with: override].
@@ -784,9 +800,11 @@ sbUpdatePackagesOrDictionaries
 	self error: 'unexpected token'.
 ! !
 !JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
+!JadeServer categoriesFor: #moveMethod:toCategory:!Methods!public! !
 !JadeServer categoriesFor: #sbAddPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbChangesInPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbClassTemplate!public!System Browser! !
+!JadeServer categoriesFor: #sbMethodCategory:!public!System Browser! !
 !JadeServer categoriesFor: #sbPostSaveClass:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveClasses!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveMethods:!public!System Browser! !

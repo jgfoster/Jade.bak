@@ -183,7 +183,7 @@ showPackageChanges
 	patch operations isEmpty
 		ifTrue: 
 			[MessageBox notify: 'No changes!!'.
-			^self].
+			^self]. 
 	RowanPatchBrowser showOn: patch name: packageListPresenter selections first key!
 
 updateClassInfo

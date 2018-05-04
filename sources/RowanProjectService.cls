@@ -79,12 +79,21 @@ defaultProjectName: aString
 		withAll: (Array with: aString).
 	self class defaultProjectName: aString!
 
+displayName
+	"display with dirty indication * and/or default indication (default)"
+
+	| displayName |
+	displayName := name.
+	name = self class defaultProjectName ifTrue: [displayName := displayName , '*'].
+	^displayName!
+
 displayStringFor: displayThing
-	self isLoaded
+	self isDirty
 		ifTrue: 
 			[displayThing font beItalic.
-			displayThing forecolor: Color black]
-		ifFalse: 
+			displayThing forecolor: Color black].
+	self isLoaded
+		ifTrue: 
 			[self isSkew
 				ifTrue: [displayThing forecolor: Color red]
 				ifFalse: [displayThing forecolor: Color black]]!
@@ -110,9 +119,6 @@ loadProjectNamed: aString
 log
 
 	^transport send: #log to: remoteService  !
-
-nameWithDefaultIndication
-	^name = self class defaultProjectName ifTrue: [name , '*'] ifFalse: [name]!
 
 newGitProject: url root: rootPath useSsh: aBoolean
 	
@@ -154,7 +160,7 @@ pushToGit
 	^transport send: #pushToGit to: remoteService  !
 
 remoteAccessors
-	^#(#name #sha #branch #isSkew)!
+	^#(#name #sha #branch #isSkew #isDirty)!
 
 remoteDefaultProjectName
 
@@ -192,13 +198,13 @@ write
 !RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
 !RowanProjectService categoriesFor: #defaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #defaultProjectName:!accessing!public! !
+!RowanProjectService categoriesFor: #displayName!accessing!public! !
 !RowanProjectService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanProjectService categoriesFor: #isLoaded!public!testing! !
 !RowanProjectService categoriesFor: #isSkew!accessing!private! !
 !RowanProjectService categoriesFor: #isSkew:!accessing!private! !
 !RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
 !RowanProjectService categoriesFor: #log!public!rowan! !
-!RowanProjectService categoriesFor: #nameWithDefaultIndication!accessing!public! !
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
 !RowanProjectService categoriesFor: #packageNames!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !
