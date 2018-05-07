@@ -96,11 +96,12 @@ displayStringFor: displayThing
 		ifTrue: 
 			[self isSkew
 				ifTrue: [displayThing forecolor: Color red]
-				ifFalse: [displayThing forecolor: Color black]]!
+				ifFalse: [displayThing forecolor: Color black]]
+		ifFalse:[displayThing forecolor: Color black].!
 
 isLoaded
 
-	^sha isEmpty!
+	^sha isEmpty not!
 
 isSkew
 	^isSkew!
