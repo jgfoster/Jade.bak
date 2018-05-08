@@ -377,7 +377,7 @@ verifyRowanLoaded
 	The ROWAN_PROJECTS_HOME gem environment variable is also required"
 
 	^self
-		executeString: '(Globals at: #Rowan ifAbsent:[]) notNil and:[(System gemEnvironmentVariable: ''ROWAN_PROJECTS_HOME'') notNil] '! !
+		executeString: '(System myUserProfile objectNamed: ''Rowan'') notNil and:[(System gemEnvironmentVariable: ''ROWAN_PROJECTS_HOME'') notNil] '! !
 !GciSession categoriesFor: #initializeServer!private! !
 !GciSession categoriesFor: #postLoginAs:useSocket:!private! !
 !GciSession categoriesFor: #titleBarFor:!public! !
