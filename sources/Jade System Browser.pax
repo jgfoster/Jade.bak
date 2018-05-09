@@ -292,10 +292,7 @@ compiledMethodAt: aSymbol inClass: aClass
 
 currentUserMayEditMethod: aMethod
 
-	| objectSecurityPolicy |
-	objectSecurityPolicy := self objectSecurityPolicyFor: aMethod inClass.
-	^self isPackagePolicyEnabled or: [objectSecurityPolicy isNil or: [objectSecurityPolicy currentUserCanWrite]].
-!
+	^true!
 
 dictionaryAndSymbolOf: aClass
 

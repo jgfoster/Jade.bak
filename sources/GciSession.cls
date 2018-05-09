@@ -368,7 +368,7 @@ isOopType: anObject
 
 isPackagePolicyEnabled
 
-	^isPackagePolicyEnabled!
+	^true!
 
 isRemoteGem
 
@@ -650,7 +650,7 @@ setInitials: initials
 	pieces := string subStrings collect: [:each | each asNumber].
 	stoneSessionID := pieces at: 1.
 	stoneSerial := pieces at: 2.
-	isPackagePolicyEnabled := (pieces at: 3) = 1.!
+!
 
 signalConfirmationRequestUsing: anOopType64 
 

@@ -81,70 +81,6 @@ editMenuStrings
 	).
 !
 
-fileSave
-		"Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"
-
-	| user theClass newSelector category string stream list warnings errors index a b c methodExists line newOop |
-
-	(theClass := gsMethod behavior) isNil ifTrue: [^true].
-	newSelector := self newSelector.
-	currentSelector = newSelector ifFalse: [
-		methodExists := gciSession
-			serverPerform: #'class:includesSelector:'
-			with: theClass
-			with: newSelector.
-		methodExists ifTrue: [
-			(MessageBox confirm: 'Replace method?' caption: 'Method already exists!!') ifFalse: [^self].
-		].
-	].
-	user := self trigger: #'needUser'.
-	(category := gsMethod category) isNil ifTrue: [self error: 'We need a method category!!?'].
-
-	string := gciSession
-		serverPerform: #'compileMethod:behavior:user:inCategory:'
-		with: documentPresenter value replaceCrLfWithLf
-		with: theClass 
-		with: user 
-		with: category.
-
-	stream := ReadStream on: string.
-	(line := stream nextLine) notEmpty ifTrue: [
-		| pieces |
-		pieces := line subStrings: Character tab.
-		newOop := (pieces at: 1) asNumber. 
-		newSelector := pieces at: 2.
-		documentPresenter isModified: false.
-		self 
-			trigger: #'savedMethod:inClass:' 
-			with: newSelector
-			with: theClass.
-	].
-	parentPresenter updateSaveMethodOop: newOop.
-	(list := stream upToEnd subStrings: Character lf) isEmpty ifTrue: [^true].
-	warnings := list select: [:each | each beginsWith: 'WARNING:'].
-	warnings := warnings collect: [:each | each copyFrom: 10 to: each size].
-	warnings notEmpty ifTrue: [
-		ChoicePrompter
-			choices: warnings
-			caption: 'Compile warnings'.
-	].
-	errors := list select: [:each | each beginsWith: 'ERROR:'].
-	errors isEmpty ifTrue: [^true].
-	list := errors first subStrings: Character tab.
-	string := documentPresenter value replaceCrLfWithLf.
-	index := (list at: 3) asNumber - 1.
-	a := (string copyFrom: 1 to: index) "replaceLfWithCrLf".
-	b := (list at: 4) "replaceLfWithCrLf".
-	c := (string copyFrom: index + 1 to: string size) "replaceLfWithCrLf".
-	index := a size + 1.
-	string := a , b , c.
-	documentPresenter value: string.
-	documentPresenter view
-		selectionStart: index 
-		length: b size.
-	^false.
-!
-
 gsMethod: aGsMethod
 
 	gsMethod := aGsMethod.
@@ -389,7 +325,6 @@ updateMethodStepPoints
 !MethodSourcePresenter categoriesFor: #createSchematicWiring!Jade!private! !
 !MethodSourcePresenter categoriesFor: #defaultMethod!public! !
 !MethodSourcePresenter categoriesFor: #editMenuStrings!Jade!private! !
-!MethodSourcePresenter categoriesFor: #fileSave!public! !
 !MethodSourcePresenter categoriesFor: #gsMethod:!public! !
 !MethodSourcePresenter categoriesFor: #hoverEnd:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #hoverStart:!Jade!private! !
