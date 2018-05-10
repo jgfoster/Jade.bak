@@ -992,7 +992,6 @@ queryCommand: aCommandQuery
 savePackage
 
 	| package string array dict stream |
-	self halt. 
 	self rowanFixMe. "Eventually, this would be nice to have." 
 	true ifTrue:[^MessageBox notify: 'This functionality is not available. Commit your changes at the project level.'].
 	package := packageListPresenter selections first.
