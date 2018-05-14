@@ -91,6 +91,7 @@ package methodNames
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #MethodSourcePresenter -> #fileSave;
 	add: #Object -> #rowanFixMe;
+	add: 'JadeServer class' -> #gsString;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
 	add: 'JadeSessionManager class' -> #getUrl;
 	add: 'JadeSessionManager class' -> #mainShellClass;
@@ -814,6 +815,41 @@ sbUpdatePackagesOrDictionaries
 !JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!public!System Browser! !
+
+!JadeServer class methodsFor!
+
+gsString
+"
+	JadeServer64bit3x gsString.
+"
+	| stream |
+	SessionManager current isRuntime ifTrue: [^gsString].
+	(stream := WriteStream on: String new)
+		nextPutAll: '| class mcPlatformSupport methodClass readStream result server source symbolList writeStream |'; lf;
+		nextPutAll: 'methodClass := ';
+		nextPutAll: self gsMethodClassName;
+		nextPut: $.; lf;
+		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
+		
+		" These lines force OtherPassword setting to be enabled to run Jadeite. (OtherPassword is required to change another symbol list.
+		nextPutAll: 'symbolList := (AllUsers userWithId: ''DataCurator'') symbolList.'; lf;
+		nextPutAll: 'symbolList := symbolList class new add: (symbolList detect: [:each | each name == #UserGlobals]); add: (symbolList detect: [:each | each name == #Globals]); yourself.'; lf;"
+
+		nextPutAll: '[class := symbolList objectNamed: #Object.'; lf;
+		yourself.
+	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | self addGsStringForClass: eachClass to: stream].
+	stream 
+		nextPutAll: '(mcPlatformSupport := symbolList objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
+		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
+		nextPutAll: 'class := ((symbolList objectNamed: #System) myUserProfile symbolList objectNamed: #UserGlobals) at: #' , self name , ' ifAbsent: [class].'; lf;
+		nextPutAll: 'server := class new initialize; yourself.'; lf;
+		nextPutAll: self sessionStateCode; lf;
+		nextPutAll: 'server] on: (symbolList objectNamed: #Error) do: [:ex | ex return: ''ERROR: '' , (GsProcess stackReportToLevel: 100)]';
+		yourself.
+	gsString := stream contents.
+	^gsString.
+! !
+!JadeServer class categoriesFor: #gsString!public! !
 
 !JadeServer64bit methodsFor!
 

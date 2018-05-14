@@ -453,35 +453,6 @@ gsMethodClassName
 	^'GsMethod'
 !
 
-gsString
-"
-	JadeServer64bit3x gsString.
-"
-	| stream |
-	SessionManager current isRuntime ifTrue: [^gsString].
-	(stream := WriteStream on: String new)
-		nextPutAll: '| class mcPlatformSupport methodClass readStream result server source symbolList writeStream |'; lf;
-		nextPutAll: 'methodClass := ';
-		nextPutAll: self gsMethodClassName;
-		nextPut: $.; lf;
-		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
-		nextPutAll: 'symbolList := (AllUsers userWithId: ''DataCurator'') symbolList.'; lf;
-		nextPutAll: 'symbolList := symbolList class new add: (symbolList detect: [:each | each name == #UserGlobals]); add: (symbolList detect: [:each | each name == #Globals]); yourself.'; lf;
-		nextPutAll: '[class := symbolList objectNamed: #Object.'; lf;
-		yourself.
-	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | self addGsStringForClass: eachClass to: stream].
-	stream 
-		nextPutAll: '(mcPlatformSupport := symbolList objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
-		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
-		nextPutAll: 'class := ((symbolList objectNamed: #System) myUserProfile symbolList objectNamed: #UserGlobals) at: #' , self name , ' ifAbsent: [class].'; lf;
-		nextPutAll: 'server := class new initialize; yourself.'; lf;
-		nextPutAll: self sessionStateCode; lf;
-		nextPutAll: 'server] on: (symbolList objectNamed: #Error) do: [:ex | ex return: ''ERROR: '' , (GsProcess stackReportToLevel: 100)]';
-		yourself.
-	gsString := stream contents.
-	^gsString.
-!
-
 sessionStateCode
 
 	^'System _sessionStateAt: 3 put: server.'! !
@@ -489,6 +460,5 @@ sessionStateCode
 !JadeServer class categoriesFor: #classVarsForGemStone!public! !
 !JadeServer class categoriesFor: #gsClassDefinitionStringFor:!public! !
 !JadeServer class categoriesFor: #gsMethodClassName!public! !
-!JadeServer class categoriesFor: #gsString!public! !
 !JadeServer class categoriesFor: #sessionStateCode!public! !
 
