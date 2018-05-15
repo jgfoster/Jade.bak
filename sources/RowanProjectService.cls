@@ -172,6 +172,9 @@ remoteDefaultProjectName
 		to: remoteService
 !
 
+remoteServiceName
+	^'Rowan projectServiceClass'!
+
 removeProjectNamed: projectName
 
 	transport send: #removeProjectNamed: to: remoteService withAll: (Array with: projectName)!
@@ -216,6 +219,7 @@ write
 !RowanProjectService categoriesFor: #pushToGit!public!rowan! !
 !RowanProjectService categoriesFor: #remoteAccessors!public! !
 !RowanProjectService categoriesFor: #remoteDefaultProjectName!accessing!public! !
+!RowanProjectService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanProjectService categoriesFor: #removeProjectNamed:!public! !
 !RowanProjectService categoriesFor: #removeSampleProject!public! !
 !RowanProjectService categoriesFor: #sampleProjectName!public! !

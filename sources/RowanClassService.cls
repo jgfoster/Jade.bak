@@ -17,6 +17,9 @@ classCreationTemplate
 createSampleClass
 	transport send: #createSampleClass to: remoteService.  !
 
+remoteServiceName
+	^'Rowan classServiceClass'!
+
 removeSelector: selector
 
 	transport send: #removeSelector: to: remoteService withAll: (Array with: selector)!
@@ -28,6 +31,7 @@ subclassCreationTemplate
 	^transport send: #subclassCreationTemplate to: self remoteService! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
+!RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !

@@ -572,7 +572,7 @@ sbAddPackage: anOrderedCollection
 	| string service |
 	string := anOrderedCollection removeFirst.
 	selections at: #package put: string.
-	service := RowanPackageService forPackageNamed: string.
+	service := Rowan packageServiceClass forPackageNamed: string.
 	service createPackage.
 	self systemBrowserUpdate!
 
@@ -596,7 +596,7 @@ sbChangesInPackage: anOrderedCollection
 
 sbClassTemplate
 	| def service |
-	service := RowanClassService forClassNamed: 'Object'.
+	service := Rowan classServiceClass forClassNamed: 'Object'.
 	def := service classCreationTemplate.
 	writeStream
 		nextPutAll: '0';
@@ -629,7 +629,7 @@ sbRemoveClasses
 	containers do: 
 			[:packageName |
 			classNames
-				do: [:className | (RowanPackageService forPackageNamed: packageName) removeClassNamed: className]].
+				do: [:className | (Rowan packageServiceClass forPackageNamed: packageName) removeClassNamed: className]].
 	^self systemBrowserUpdate!
 
 sbRemoveMethods: anOrderedCollection
@@ -637,7 +637,7 @@ sbRemoveMethods: anOrderedCollection
 	behavior := self sbClassFrom: anOrderedCollection.
 	classEntity := ((System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile
 				ifAbsent: [false])
-					ifTrue: [RowanClassService forClassNamed: behavior name meta: behavior isMeta]
+					ifTrue: [Rowan classServiceClass forClassNamed: behavior name meta: behavior isMeta]
 					ifFalse: [behavior].
 	notRemoved := Array new. 
 	anOrderedCollection do: [:each | classEntity removeSelector: each asSymbol ifAbsent: [notRemoved add: each]].
@@ -646,7 +646,7 @@ sbRemoveMethods: anOrderedCollection
 
 sbUnloadPackage: anOrderedCollection
 	| service |
-	service := RowanPackageService forPackageNamed: anOrderedCollection removeFirst.
+	service := Rowan packageServiceClass forPackageNamed: anOrderedCollection removeFirst.
 	service deletePackage.
 	self systemBrowserUpdate!
 
@@ -658,7 +658,7 @@ sbUpdateClassInfo
 		lf;
 		nextPut: $(;
 		lf;
-		nextPutAll: (definition := (RowanClassService forClassNamed: selectedClass name)
+		nextPutAll: (definition := (Rowan classServiceClass forClassNamed: selectedClass name)
 							classCreationTemplate); 
 		nextPutAll: ')';
 		nextPutAll: ((definition includesString: 'category: ''')
@@ -784,7 +784,7 @@ sbUpdatePackages
 			writeStream
 				nextPutAll: each;
 				tab.
-			service := RowanPackageService forPackageNamed: each.
+			service := Rowan packageServiceClass forPackageNamed: each.
 			classList addAll: service loadedClassHandles].
 	writeStream lf.
 	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first]!

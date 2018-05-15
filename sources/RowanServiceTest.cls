@@ -41,7 +41,7 @@ removeSampleProject
 	"ensure the test project is removed from Rowan"
 
 	| service |
-	service := RowanProjectService new.
+	service := (RowanProjectService on: gciSession).
 	service removeSampleProject.
 	service removeSampleSymbolDictionary!
 

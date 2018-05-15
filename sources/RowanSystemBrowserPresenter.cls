@@ -12,7 +12,7 @@ RowanSystemBrowserPresenter comment: ''!
 
 addPackage
 	| service |
-	service := RowanProjectService new.
+	service := RowanProjectService on: gciSession.
 	(service remoteDefaultProjectName isNil or: [service defaultProjectName isNil])
 		ifTrue: 
 			[^MessageBox notify: 'No default project has been created. Please specify in the project list.'].
@@ -100,7 +100,7 @@ deletePackage
 inspectPackage
 
 	| service |
-	service := RowanPackageService named: packageListPresenter selection key.
+	service := (RowanPackageService on: gciSession) name: packageListPresenter selection key.
 	service inspectDefinition!
 
 labelOfClass: oldName changedTo: newName
@@ -152,12 +152,12 @@ possiblyShowGenericPackageClassTemplate: newDef
 		ifTrue: 
 			[packageService := (self isPackageListTabSelected
 						and: [(selections := packageListPresenter selections) notEmpty])
-							ifTrue: [RowanPackageService new name: selections first key]
+							ifTrue: [(RowanPackageService on: gciSession) name: selections first key]
 							ifFalse: 
 								[(classCategoryPresenter selections isEmpty
 									or: [classCategoryPresenter selections first value = '--Categories--'])
-										ifTrue: [RowanPackageService new]
-										ifFalse: [RowanPackageService named: classCategoryPresenter selections first value]].
+										ifTrue: [RowanPackageService on: gciSession]
+										ifFalse: [(RowanPackageService on: gciSession) name: classCategoryPresenter selections first value]].
 			newClassDef := packageService genericClassCreationTemplate].
 	^newClassDef!
 
@@ -174,7 +174,7 @@ showPackageChanges
 				tab;
 				nextPutAll: packageListPresenter selections first key;
 				tab;
-				nextPutAll: RowanProjectService new sampleProjectName;
+				nextPutAll: (RowanProjectService on: gciSession) sampleProjectName;
 				tab;
 				lf.	 
 	(self updateCommand: stream contents) = 'changesInPackage'

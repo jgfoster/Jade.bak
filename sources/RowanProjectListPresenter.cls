@@ -11,7 +11,7 @@ RowanProjectListPresenter comment: ''!
 !RowanProjectListPresenter methodsFor!
 
 browseProjects
-	self list: RowanProjectService new projects!
+	self list: (RowanProjectService on: gciSession) projects!
 
 checkout
 	| service branchName |
@@ -19,7 +19,7 @@ checkout
 		ifFalse: 
 			[MessageBox notify: 'No project selected'.
 			^false].
-	service := RowanProjectService named: projectListPresenter selection name.
+	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
 	branchName := ChoicePrompter choices: service branches caption: 'Select branch to checkout:'.
 	branchName isNil ifTrue: [^false] ifFalse: [service checkout: branchName]!
 
@@ -31,7 +31,7 @@ cloneProject
 				prompt: 'Please select location of the code repository to clone:'
 				caption: 'Clone Git Repository'.
 	filePath isNil ifTrue: [^false].
-	RowanProjectService new
+	(RowanProjectService on: gciSession) 
 		newGitProject: filePath key
 		root: filePath value
 		useSsh: true!
@@ -51,7 +51,7 @@ commit
 	promptResult isNil ifTrue: [^self].
 	message value isEmpty
 		ifTrue: [^MessageBox notify: 'Commit message must not be empty. Commit to local repository not done.'].
-	service := RowanProjectService named: projectName.
+	service := (RowanProjectService on: gciSession) name: projectName.
 	service commitWithMessage: message value asString.
 	MessageBox notify: 'Project ' , projectName , ' committed to local repository!!'!
 
@@ -62,7 +62,7 @@ createComponents
 inspectProject
 
 	| service |
-	service := RowanProjectService named: projectListPresenter selection name.
+	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
 	service inspectDefinition.!
 
 list: aList
@@ -77,13 +77,13 @@ loadProject
 				ifNotNil: [:sel | sel name].
 	(MessageBox confirm: 'Really load project ' , name , '? This will destroy any changes you may have.')
 		ifFalse: [^false].
-	RowanProjectService new loadProjectNamed: name!
+	(RowanProjectService on: gciSession) loadProjectNamed: name!
 
 makeDefault
-	RowanProjectService new defaultProjectName: projectListPresenter selection name!
+	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
 
 newService
-	^RowanProjectService named: projectListPresenter selection name!
+	^(RowanProjectService on: gciSession) name: projectListPresenter selection name!
 
 openChangesShell: changesString
 	| shell editor rs |
@@ -124,7 +124,7 @@ projectChanges
 		ifFalse: 
 			[MessageBox notify: 'No project selected'.
 			^false].
-	service := RowanProjectService named: projectListPresenter selection name.
+	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
 	patch := service changes.
 	RowanPatchBrowser showOn: patch name: projectListPresenter selection name!
 
@@ -137,7 +137,7 @@ projectLog
 		ifTrue: 
 			[MessageBox notify: 'No project selected'.
 			^false].
-	service := RowanProjectService named: projectListPresenter selection name.
+	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
 	MessageBox notify: service log!
 
 pullFromGit
@@ -172,7 +172,7 @@ showPackages
 		ifTrue: 
 			[MessageBox notify: 'No project selected'.
 			^false].
-	service := RowanProjectService named: projectListPresenter selection name.
+	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
 	MessageBox notify: service packageNameString!
 
 unloadProject
@@ -183,7 +183,7 @@ writeProject
 	projectName := projectListPresenter selection name.
 	(MessageBox confirm: 'Write project ' , projectName , ' to disk without committing?')
 		ifFalse: [^false].
-	(RowanProjectService named: projectName) write.
+	((RowanProjectService on: gciSession) name: projectName) write.
 	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
 !RowanProjectListPresenter categoriesFor: #browseProjects!public! !
 !RowanProjectListPresenter categoriesFor: #checkout!menu handlers!public! !
