@@ -31,15 +31,10 @@ name: packageName
 		withAll: (Array with: packageName)!
 
 remoteServiceName
-	^'Rowan packageServiceClass'!
-
-removeSampleSymbolDictionary
-
-	transport send: #removeSampleSymbolDictionary to: remoteService! !
+	^'Rowan packageServiceClass'! !
 !RowanPackageService categoriesFor: #classCreationTemplate!public!rowan! !
 !RowanPackageService categoriesFor: #createPackageNamed:inProject:!public!rowan! !
 !RowanPackageService categoriesFor: #genericClassCreationTemplate!public!rowan! !
 !RowanPackageService categoriesFor: #name:!accessing!public! !
 !RowanPackageService categoriesFor: #remoteServiceName!must not strip!public! !
-!RowanPackageService categoriesFor: #removeSampleSymbolDictionary!public! !
 

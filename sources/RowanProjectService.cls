@@ -59,10 +59,6 @@ checkout: branchName
 		to: remoteService
 		withAll: (Array with: branchName)!
 
-clientDefinitionClass
-
-	^self class!
-
 commitWithMessage: message
 
 	transport send: #commitWithMessage: to: remoteService withAll: (Array with: message)  !
@@ -149,7 +145,7 @@ packageNameString
 
 projects
 	| oops services |
-	oops := transport send: #projectNames to: remoteService.
+	oops := transport send: #projects to: remoteService.
 	services := self createClientFrom: oops.
 	services := services asSortedCollection: [:a :b | a name < b name].
 	^services!
@@ -161,9 +157,6 @@ pullFromGit
 pushToGit
 
 	^transport send: #pushToGit to: remoteService  !
-
-remoteAccessors
-	^#(#name #sha #branch #isSkew #isDirty)!
 
 remoteDefaultProjectName
 
@@ -200,7 +193,6 @@ write
 !RowanProjectService categoriesFor: #branches!public!rowan! !
 !RowanProjectService categoriesFor: #changes!public!rowan! !
 !RowanProjectService categoriesFor: #checkout:!public!rowan! !
-!RowanProjectService categoriesFor: #clientDefinitionClass!private! !
 !RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
 !RowanProjectService categoriesFor: #defaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #defaultProjectName:!accessing!public! !
@@ -217,7 +209,6 @@ write
 !RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #pullFromGit!public!rowan! !
 !RowanProjectService categoriesFor: #pushToGit!public!rowan! !
-!RowanProjectService categoriesFor: #remoteAccessors!public! !
 !RowanProjectService categoriesFor: #remoteDefaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanProjectService categoriesFor: #removeProjectNamed:!public! !

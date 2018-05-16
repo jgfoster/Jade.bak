@@ -96,6 +96,21 @@ package methodNames
 	add: 'JadeSessionManager class' -> #getUrl;
 	add: 'JadeSessionManager class' -> #mainShellClass;
 	add: 'JadeSessionManager class' -> #setVersion;
+	add: 'STON class' -> #fromStream:;
+	add: 'STON class' -> #fromString:;
+	add: 'STON class' -> #jsonWriter;
+	add: 'STON class' -> #listClass;
+	add: 'STON class' -> #mapClass;
+	add: 'STON class' -> #put:asJsonOnStream:;
+	add: 'STON class' -> #put:asJsonOnStreamPretty:;
+	add: 'STON class' -> #put:onStream:;
+	add: 'STON class' -> #put:onStreamPretty:;
+	add: 'STON class' -> #reader;
+	add: 'STON class' -> #toJsonString:;
+	add: 'STON class' -> #toJsonStringPretty:;
+	add: 'STON class' -> #toString:;
+	add: 'STON class' -> #toStringPretty:;
+	add: 'STON class' -> #writer;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -140,6 +155,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade Transcript';
 	add: 'Jade UI Base';
 	add: 'Monticello';
+	add: 'Rowan STON';
 	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	add: '..\Core\Contributions\ITC Gorisek\Source Tracking System';
 	add: '..\Core\Contributions\Solutions Software\SSW EditableListView';
@@ -171,7 +187,7 @@ Model subclass: #RowanService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanClassService
-	instanceVariableNames: ''
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1358,6 +1374,76 @@ rowanFixMe
 	"do nothing. Used for marking to-do items 
 	during Rowan Development"! !
 !Object categoriesFor: #rowanFixMe!public!testing! !
+
+!STON class methodsFor!
+
+fromStream: readStream
+	^ (self reader on: readStream) next
+!
+
+fromString: string
+	^self fromStream: string readStream!
+
+jsonWriter
+	^STONWriter new
+		jsonMode: true;
+		yourself!
+
+listClass
+	^Array!
+
+mapClass
+	^Dictionary!
+
+put: object asJsonOnStream: stream
+	(self jsonWriter on: stream) nextPut: object!
+
+put: object asJsonOnStreamPretty: stream
+	(self jsonWriter on: stream)
+		prettyPrint: true;
+		nextPut: object!
+
+put: object onStream: stream
+	(self writer on: stream) nextPut: object
+!
+
+put: object onStreamPretty: stream
+	(self writer on: stream)
+		prettyPrint: true;
+		nextPut: object!
+
+reader
+	^STONReader new!
+
+toJsonString: object
+	^String streamContents: [:stream | self put: object asJsonOnStream: stream]!
+
+toJsonStringPretty: object
+	^String streamContents: [:stream | self put: object asJsonOnStreamPretty: stream]!
+
+toString: object
+	^String streamContents: [:stream | self put: object onStream: stream]!
+
+toStringPretty: object
+	^String streamContents: [:stream | self put: object onStreamPretty: stream]!
+
+writer
+	^STONWriter new! !
+!STON class categoriesFor: #fromStream:!public! !
+!STON class categoriesFor: #fromString:!public! !
+!STON class categoriesFor: #jsonWriter!public! !
+!STON class categoriesFor: #listClass!public! !
+!STON class categoriesFor: #mapClass!public! !
+!STON class categoriesFor: #put:asJsonOnStream:!public! !
+!STON class categoriesFor: #put:asJsonOnStreamPretty:!public! !
+!STON class categoriesFor: #put:onStream:!public! !
+!STON class categoriesFor: #put:onStreamPretty:!public! !
+!STON class categoriesFor: #reader!public! !
+!STON class categoriesFor: #toJsonString:!public! !
+!STON class categoriesFor: #toJsonStringPretty:!public! !
+!STON class categoriesFor: #toString:!public! !
+!STON class categoriesFor: #toStringPretty:!public! !
+!STON class categoriesFor: #writer!public! !
 
 "End of package definition"!
 
