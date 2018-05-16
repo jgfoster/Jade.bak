@@ -55,6 +55,11 @@ isClassStartChar: char
 isSimpleSymbolChar: char
 	^'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_./' includes: char!
 
+lookupClass: name
+	"seems there ought to be a more robust way to lookup a class"
+
+	^Smalltalk at: name ifAbsent: [self error: 'Class not found - ' , name]!
+
 match: string do: block
 	"Try to read and consume string and execute block if successful.
 	Else do nothing (but do not back up)"
@@ -330,6 +335,7 @@ stringStreamContents: block
 !STONReader categoriesFor: #isClassChar:!public! !
 !STONReader categoriesFor: #isClassStartChar:!public! !
 !STONReader categoriesFor: #isSimpleSymbolChar:!public! !
+!STONReader categoriesFor: #lookupClass:!public! !
 !STONReader categoriesFor: #match:do:!public! !
 !STONReader categoriesFor: #matchChar:!public! !
 !STONReader categoriesFor: #newReference!public! !

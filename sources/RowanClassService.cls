@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanClassService
-	instanceVariableNames: ''
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -35,4 +35,14 @@ subclassCreationTemplate
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
+
+!RowanClassService class methodsFor!
+
+replicateSampleService
+
+	| session string |
+	session := GciSession allInstances detect:[:ea | ea isValidSession].
+	string := session executeString: 'RowanClassService sampleServiceString'.
+	^STON fromString: string! !
+!RowanClassService class categoriesFor: #replicateSampleService!public! !
 

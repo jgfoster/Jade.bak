@@ -26,13 +26,6 @@ clientDefinitionClass
 
 	^RowanMethodDefinition!
 
-compileMethod: aBehavior user: user
-
-	self rowanFixMe. "Handle comple errors"
-	
-	^transport send: #addOrUpdateMethod to: self remoteService.
-	!
-
 createSampleMethod
 	transport send: #createSampleMethod to: remoteService.  !
 
@@ -59,9 +52,6 @@ packageName
 packageName: anObject
 	packageName := anObject!
 
-remoteAccessors
-	^#(#source #selector)!
-
 remoteServiceName
 	^'Rowan methodServiceClass'!
 
@@ -69,9 +59,9 @@ removeSelector
 	^transport send: #removeSelector:class: to: remoteService withAll: (Array with: selector with: className)
 	!
 
-removeSelector: selector class: class
+removeSelector: aSelector class: class
 
-	^transport send: #removeSelector:class: to: self remoteService withAll: (Array with: selector with: class)
+	^transport send: #removeSelector:class: to: self remoteService withAll: (Array with: aSelector with: class)
 	!
 
 sampleClassInstance
@@ -110,7 +100,6 @@ user: anObject
 !RowanMethodService categoriesFor: #className!accessing!private! !
 !RowanMethodService categoriesFor: #className:!accessing!private! !
 !RowanMethodService categoriesFor: #clientDefinitionClass!private! !
-!RowanMethodService categoriesFor: #compileMethod:user:!public!remote! !
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
 !RowanMethodService categoriesFor: #implementorsOf:!method accessing!public! !
 !RowanMethodService categoriesFor: #meta!accessing!private! !
@@ -119,7 +108,6 @@ user: anObject
 !RowanMethodService categoriesFor: #methodDefinitions:!accessing!private! !
 !RowanMethodService categoriesFor: #packageName!accessing!private! !
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
-!RowanMethodService categoriesFor: #remoteAccessors!private! !
 !RowanMethodService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanMethodService categoriesFor: #removeSelector!public!remote! !
 !RowanMethodService categoriesFor: #removeSelector:class:!public!remote! !
