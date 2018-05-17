@@ -518,6 +518,8 @@ requiredPackageNames
 		add: 'Jade from Dolphin';
 		add: 'Jade Process Browser';
 		add: 'Rowan UI Base';
+		add: 'Rowan STON';
+		add: 'Dolphin Announcements';
 		yourself! !
 !JadeImageStripper categoriesFor: #closeLoginShells!public! !
 !JadeImageStripper categoriesFor: #createVersionResource!public! !

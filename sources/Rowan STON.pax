@@ -166,9 +166,9 @@ stonOn: stonWriter
 	"Use a hex representation"
 
 	stonWriter writeObject: self listSingleton: self asHexString! !
-!ByteArray categoriesFor: #readHexFrom:!public!ston! !
-!ByteArray categoriesFor: #stonContainSubObjects!public!ston! !
-!ByteArray categoriesFor: #stonOn:!public!ston! !
+!ByteArray categoriesFor: #readHexFrom:!must not strip!public! !
+!ByteArray categoriesFor: #stonContainSubObjects!must not strip!public! !
+!ByteArray categoriesFor: #stonOn:!must not strip!public! !
 
 !ByteArray class methodsFor!
 
@@ -176,7 +176,7 @@ fromSton: stonReader
 	| singletonString |
 	singletonString := stonReader parseListSingleton.
 	^(self new: singletonString size // 2) readHexFrom: singletonString readStream! !
-!ByteArray class categoriesFor: #fromSton:!public!ston! !
+!ByteArray class categoriesFor: #fromSton:!must not strip!public! !
 
 !Character methodsFor!
 
@@ -190,7 +190,7 @@ stonOn: stonWriter
 fromSton: stonReader
 	^ stonReader parseListSingleton first
 ! !
-!Character class categoriesFor: #fromSton:!public!ston! !
+!Character class categoriesFor: #fromSton:!must not strip!public! !
 
 !Collection methodsFor!
 
@@ -198,7 +198,7 @@ stonOn: stonWriter
 	stonWriter writeObject: self do: [
 		stonWriter encodeList: self ]
 ! !
-!Collection categoriesFor: #stonOn:!public!ston! !
+!Collection categoriesFor: #stonOn:!must not strip!public! !
 
 !Collection class methodsFor!
 
@@ -209,7 +209,7 @@ fromSton: stonReader
 		collection add: each ].
 	^ collection
 ! !
-!Collection class categoriesFor: #fromSton:!public!ston! !
+!Collection class categoriesFor: #fromSton:!must not strip!public! !
 
 !Date methodsFor!
 
@@ -224,8 +224,8 @@ stonOn: stonWriter
     writeObject: self
     listSingleton: (self asStringUsingFormat: #(3 2 1 $- 1 1 $: false))
 ! !
-!Date categoriesFor: #stonContainSubObjects!public!ston! !
-!Date categoriesFor: #stonOn:!public!ston! !
+!Date categoriesFor: #stonContainSubObjects!must not strip!public! !
+!Date categoriesFor: #stonOn:!must not strip!public! !
 
 !Date class methodsFor!
 
@@ -233,7 +233,7 @@ fromSton: stonReader
 
 	^ self fromStream: stonReader parseListSingleton readStream usingFormat: #(3 2 1 $- 1 1)
 ! !
-!Date class categoriesFor: #fromSton:!public!ston! !
+!Date class categoriesFor: #fromSton:!must not strip!public! !
 
 !Dictionary methodsFor!
 
@@ -259,8 +259,8 @@ stonProcessSubObjects: block
 					val := block value: (self basicAt: each).
 					self basicAt: each put: val]]	"
 							super stonProcessSubObjects: block"! !
-!Dictionary categoriesFor: #stonOn:!public!ston! !
-!Dictionary categoriesFor: #stonProcessSubObjects:!public!ston! !
+!Dictionary categoriesFor: #stonOn:!must not strip!public! !
+!Dictionary categoriesFor: #stonProcessSubObjects:!must not strip!public! !
 
 !Dictionary class methodsFor!
 
@@ -272,7 +272,7 @@ fromSton: stonReader
 	dictionary := self new.
 	stonReader parseMapDo: [:key :value | dictionary at: key put: value].
 	^dictionary! !
-!Dictionary class categoriesFor: #fromSton:!public!ston! !
+!Dictionary class categoriesFor: #fromSton:!must not strip!public! !
 
 !Integer methodsFor!
 
@@ -297,12 +297,11 @@ fromSton: stonReader
 	Override to customize and add a matching #toSton: (see implementors)."
 
 	self class isVariable
-		ifTrue: [self subclassResponsibility]
 		ifFalse: 
-			[| instanceVariableNames |
-			instanceVariableNames := self class allInstVarNames.
+			[| ivNames |
+			ivNames := self class allInstVarNames collect: [:nm | nm asSymbol].
 			stonReader
-				parseMapDo: [:instVarName :value | self instVarAt: (instanceVariableNames indexOf: instVarName asString) put: value]]!
+				parseMapDo: [:ivName :value | self instVarAt: (ivNames indexOf: ivName asSymbol) put: value]]!
 
 isStonReference
 	^ false
@@ -342,12 +341,12 @@ stonShouldWriteNilInstVars
 	
 	^ false
 ! !
-!Object categoriesFor: #fromSton:!public!ston! !
-!Object categoriesFor: #isStonReference!public!ston! !
-!Object categoriesFor: #stonContainSubObjects!public!ston! !
-!Object categoriesFor: #stonOn:!public!ston! !
-!Object categoriesFor: #stonProcessSubObjects:!public!ston! !
-!Object categoriesFor: #stonShouldWriteNilInstVars!public!ston! !
+!Object categoriesFor: #fromSton:!must not strip!public! !
+!Object categoriesFor: #isStonReference!must not strip!public! !
+!Object categoriesFor: #stonContainSubObjects!must not strip!public! !
+!Object categoriesFor: #stonOn:!must not strip!public! !
+!Object categoriesFor: #stonProcessSubObjects:!must not strip!public! !
+!Object categoriesFor: #stonShouldWriteNilInstVars!must not strip!public! !
 
 !Object class methodsFor!
 
@@ -359,7 +358,7 @@ fromSton: stonReader
 		fromSton: stonReader;
 		yourself
 ! !
-!Object class categoriesFor: #fromSton:!public!ston! !
+!Object class categoriesFor: #fromSton:!must not strip!public! !
 
 !SequenceableCollection methodsFor!
 
@@ -368,7 +367,7 @@ stonOn: stonWriter
 		ifTrue: [ stonWriter writeList: self ]
 		ifFalse: [ super stonOn: stonWriter ]
 ! !
-!SequenceableCollection categoriesFor: #stonOn:!public!ston! !
+!SequenceableCollection categoriesFor: #stonOn:!must not strip!public! !
 
 !SequenceableCollection class methodsFor!
 
@@ -377,7 +376,7 @@ fromSton: stonReader
 		stonReader parseListDo: [ :each |
 			stream nextPut: each ] ]
 ! !
-!SequenceableCollection class categoriesFor: #fromSton:!public!ston! !
+!SequenceableCollection class categoriesFor: #fromSton:!must not strip!public! !
 
 !String methodsFor!
 
@@ -406,14 +405,14 @@ stonOn: stonWriter
 	"Use an ISO style HH:MM:SS representation"
 
 	stonWriter writeObject: self listSingleton: (self asStringUsingFormat: #($: true false))! !
-!Time categoriesFor: #stonContainSubObjects!public!ston! !
-!Time categoriesFor: #stonOn:!public!ston! !
+!Time categoriesFor: #stonContainSubObjects!must not strip!public! !
+!Time categoriesFor: #stonOn:!must not strip!public! !
 
 !Time class methodsFor!
 
 fromSton: stonReader
 	^self fromString: stonReader parseListSingleton usingFormat: #($: true false)! !
-!Time class categoriesFor: #fromSton:!public!ston! !
+!Time class categoriesFor: #fromSton:!must not strip!public! !
 
 !UndefinedObject methodsFor!
 
