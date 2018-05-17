@@ -780,7 +780,7 @@ sbUpdatePackages
 	oldSelections := self nextLineAsList.
 	(override := selections at: #package ifAbsent: [nil]) notNil
 		ifTrue: [oldSelections := Array with: override].
-	fullList := RowanService new rowanLoadedPackageNames subStrings: Character lf.
+	fullList := Rowan serviceClass new rowanLoadedPackageNames subStrings: Character lf.
 	fullList := fullList reject: [:each | each isEmpty].
 	fullList := fullList asSortedCollection asArray.
 	fullList := fullList collect: [:each | each subStrings: Character tab].
@@ -878,7 +878,7 @@ recompile: aMethod withSource: aString
 		ifTrue: 
 			[behavior rwCompileMethod: aString
 				category: (self _behavior: behavior categoryOfSelector: aMethod selector).
-			RowanService rowanFixMe.	"need to handle compile errors"
+			Rowan serviceClass rowanFixMe.	"need to handle compile errors"
 			^true]
 		ifFalse: 
 			[result := aMethod _recompileWithSource: aString.
