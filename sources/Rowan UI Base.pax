@@ -7,7 +7,12 @@ package paxVersion: 1;
 package classNames
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
+	add: #RowanClassCategoryUpdate;
+	add: #RowanClassesUpdate;
 	add: #RowanClassService;
+	add: #RowanCommandResult;
+	add: #RowanDictionaryUpdate;
+	add: #RowanGlobalsUpdate;
 	add: #RowanKeyValuePrompter;
 	add: #RowanLoginShell;
 	add: #RowanMethodDefinition;
@@ -19,6 +24,7 @@ package classNames
 	add: #RowanPackagePresenter;
 	add: #RowanPackageService;
 	add: #RowanPackageShell;
+	add: #RowanPackageUpdate;
 	add: #RowanPatch;
 	add: #RowanPatchBrowser;
 	add: #RowanPresenter;
@@ -59,7 +65,9 @@ package methodNames
 	add: #JadeServer -> #sbRemoveClasses;
 	add: #JadeServer -> #sbRemoveMethods:;
 	add: #JadeServer -> #sbUnloadPackage:;
+	add: #JadeServer -> #sbUpdateClassCategories;
 	add: #JadeServer -> #sbUpdateClassInfo;
+	add: #JadeServer -> #sbUpdateDictionaries;
 	add: #JadeServer -> #sbUpdatePackage:;
 	add: #JadeServer -> #sbUpdatePackages;
 	add: #JadeServer -> #sbUpdatePackagesOrDictionaries;
@@ -168,6 +176,11 @@ package!
 
 Object subclass: #Rowan
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Object subclass: #RowanCommandResult
+	instanceVariableNames: 'executionTime'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -293,6 +306,31 @@ RowanShell subclass: #RowanPackageShell
 	classInstanceVariableNames: ''!
 RowanShell subclass: #RowanProjectListShell
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanClassCategoryUpdate
+	instanceVariableNames: 'categories selection'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanClassesUpdate
+	instanceVariableNames: 'classes selections'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanDictionaryUpdate
+	instanceVariableNames: 'dictionaries selections'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanGlobalsUpdate
+	instanceVariableNames: 'globals'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanPackageUpdate
+	instanceVariableNames: 'packages modifiedPackages selections'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -668,6 +706,31 @@ sbUnloadPackage: anOrderedCollection
 	service deletePackage.
 	self systemBrowserUpdate!
 
+sbUpdateClassCategories
+
+	| categories selection override categoryUpdate |
+	categoryUpdate := RowanClassCategoryUpdate new.  
+	categories := Set new.
+	classList do: [:each | categories add: each category].
+	categoryUpdate categories addAll: categories asSortedCollection.
+	categoryUpdate writeCategoriesTo: writeStream.
+	selection := self nextLine.
+	categoryUpdate selection: selection. 
+	(override := selections at: #'category' ifAbsent: [nil]) notNil ifTrue: [selection := override , '-'].
+	selection := 1 < selection size 
+		ifTrue: [selection copyFrom: 1 to: selection size - 1]
+		ifFalse: [''].
+	selection notEmpty ifTrue: [
+		categories := categories select: [:each | (each copyFrom: 1 to: (each size min: selection size)) = selection].
+		categories isEmpty ifTrue: [selection := ''].
+		categories notEmpty ifTrue: [
+			classList := classList select: [:each | categories includes: each category].
+		].
+	].
+	categoryUpdate writeSelectionTo: writeStream.
+
+!
+
 sbUpdateClassInfo
 	| definition classComment |
 	selectedClass isNil ifTrue: [^self sbClassTemplate].
@@ -705,6 +768,62 @@ sbUpdateClassInfo
 		nextPut: $%;
 		lf;
 		yourself!
+
+sbUpdateDictionaries
+
+	| override packagePolicy home symbolList oldSelections newSelections fullList globals dictionaryUpdate globalsUpdate |
+	dictionaryUpdate := RowanDictionaryUpdate new. 
+	oldSelections := self nextLineAsList.
+	(override := selections at: #'dictionary' ifAbsent: [nil]) notNil ifTrue: [oldSelections := Array with: override].
+	symbolList := self symbolList.
+	(packagePolicy := self gsPackagePolicy) notNil  ifTrue: [
+		home := packagePolicy homeSymbolDict.
+	].
+	fullList := symbolList collect: [:each | 
+		| hvName | 
+		hvName := (each == home ifTrue: ['H'] ifFalse: ['V']) , each name.
+		dictionaryUpdate dictionaries add: hvName.
+		hvName.
+		].
+	dictionaryUpdate writeDictionariesTo: writeStream.
+	fullList := fullList collect: [:each | each copyFrom: 2 to: each size].
+	newSelections := oldSelections select: [:each | fullList includes: each].
+	globals := Dictionary new.
+	newSelections do: [:eachName | 
+		| symbolDictionary globalKeyPrefix |
+		globalKeyPrefix := 1 < newSelections size ifTrue: [eachName , '.'] ifFalse: [''].
+		dictionaryUpdate selections add: eachName.
+		symbolDictionary := symbolList at: (fullList indexOf: eachName).
+		symbolDictionary keys asSortedCollection do: [:eachKey |
+			| eachGlobal |
+			eachGlobal := symbolDictionary at: eachKey.
+			(eachGlobal isBehavior and: [eachGlobal name == eachKey])
+				ifTrue: [classList add: eachGlobal]
+				ifFalse: [globals at: globalKeyPrefix , eachKey put: (symbolDictionary associationAt: eachKey)].
+		].
+	].
+	dictionaryUpdate writeSelectionsTo: writeStream. 
+	globalsUpdate := RowanGlobalsUpdate new. 
+	globals keys asSortedCollection do: [:eachKey | 
+		| eachAssociation eachValue string globalsArray |
+		eachAssociation := globals at: eachKey.
+		eachValue := eachAssociation value.
+		string := self asString: eachValue.
+		100 < string size ifTrue: [string := string copyFrom: 1 to: 100].
+		string := string collect: [:char | (char asciiValue < 32 or: [127 < char asciiValue]) ifTrue: [$.] ifFalse: [char]].
+		string := String withAll: string asArray.
+		globalsArray := Array new. 
+		globalsArray add: eachKey;
+						add: eachValue _class name;
+						add: string;
+						add: (self oopOf: eachValue) printString;
+						add: (self oopOf: eachAssociation) printString.
+		globalsUpdate globals add: globalsArray. 
+	].
+	globalsUpdate writeGlobalsTo: writeStream.
+	
+
+!
 
 sbUpdatePackage: aString
 	| package workingCopy list index |
@@ -775,8 +894,9 @@ sbUpdatePackage: aString
 		lf!
 
 sbUpdatePackages
-	| override modifiedList oldSelections newSelections fullList |
-
+	| override modifiedList oldSelections newSelections fullList packagesUpdate |
+	
+	packagesUpdate := RowanPackageUpdate new. 
 	oldSelections := self nextLineAsList.
 	(override := selections at: #package ifAbsent: [nil]) notNil
 		ifTrue: [oldSelections := Array with: override].
@@ -787,10 +907,10 @@ sbUpdatePackages
 	fullList := fullList reject: [:each | each isEmpty].
 	modifiedList := (fullList select: [:each | (each at: 2) = 'Y']) collect: [:each | each at: 3].
 	fullList := fullList collect: [:each | each at: 3].
-	self
-		writeList: fullList;
-		writeList: modifiedList;
-		yourself.
+	packagesUpdate modifiedPackages addAll: modifiedList. 
+	packagesUpdate packages addAll: fullList. 
+	packagesUpdate writePackagesTo: writeStream. 
+	packagesUpdate writeModifiedPackagesTo: writeStream. 
 	newSelections := oldSelections select: [:each | fullList includes: each].
 	(newSelections isEmpty and: [oldSelections size = 1])
 		ifTrue: 
@@ -799,13 +919,12 @@ sbUpdatePackages
 	newSelections do: 
 			[:each |
 			| service |
-			writeStream
-				nextPutAll: each;
-				tab.
+			packagesUpdate selections add: each. 
 			service := Rowan packageServiceClass forPackageNamed: each.
 			classList addAll: service loadedClassHandles].
-	writeStream lf.
-	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first]!
+	packagesUpdate writeSelectionsTo: writeStream.
+	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first]
+!
 
 sbUpdatePackagesOrDictionaries
 
@@ -829,7 +948,9 @@ sbUpdatePackagesOrDictionaries
 !JadeServer categoriesFor: #sbRemoveClasses!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveMethods:!public!System Browser! !
 !JadeServer categoriesFor: #sbUnloadPackage:!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdateClassCategories!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClassInfo!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdateDictionaries!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!public!System Browser! !

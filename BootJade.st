@@ -56,9 +56,11 @@ ClassBrowserAbstract allSubclasses do: [:each |
 	(each plugins includes: DebugInfoPlugin) ifFalse: [each plugins add: DebugInfoPlugin]].
 Debugger defaultExtent: 1000@600.
 !
-JadeLoginShell show
+RowanLoginShell show
 	position: 80@20;
 	yourself.
+JadeLoginShell removeFromDevelopmentTools.
+RowanLoginShell addToDevelopmentTools.
 Transcript clear.
 Cursor wait showWhile: [
 	SourceManager default compressSources.

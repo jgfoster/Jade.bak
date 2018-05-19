@@ -2981,6 +2981,7 @@ updateOverrideList
 updatePackageDictionaryList
 
 	| next |
+
 	next := readStream nextLine.
 	next = 'dictionaryList' ifTrue: [^self updateDictionaryList].
 	next = 'packageList' ifTrue: [^self updatePackageList].
