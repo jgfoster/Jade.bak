@@ -104,7 +104,6 @@ package methodNames
 	add: #JadeServer -> #sbUpdateMethodsByVariables;
 	add: #JadeServer -> #sbUpdateMethodSelectionsIn:;
 	add: #JadeServer -> #sbUpdateMethodStepPointsFor:;
-	add: #JadeServer -> #sbUpdateMethodVariables;
 	add: #JadeServer -> #selectedClassOverridesSelector:;
 	add: #JadeServer -> #symbolList;
 	add: #JadeServer -> #systemBrowser:;
@@ -134,7 +133,6 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbListMethodPragmas:;
 	add: #JadeServer64bit3x -> #sbMethod:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodBreakPointsFor:;
-	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByCategories;
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByPragmas;
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByVariables;
@@ -1309,24 +1307,6 @@ sbUpdateMethodStepPointsFor: aMethod
 	^selectors.
 !
 
-sbUpdateMethodVariables
-
-	| currentClass |
-	currentClass := classList notEmpty ifTrue: [classList last] ifFalse: [nil].
-	methodFilters := OrderedCollection new.
-	[
-		currentClass notNil.
-	] whileTrue: [
-		methodFilters
-			addAll: currentClass instVarNames reverse;
-			add: ' ' , currentClass name;
-			yourself.
-		currentClass := currentClass superclass.
-	].
-	self writeList: methodFilters.
-	self sbUpdateMethodFilterSelections.
-!
-
 selectedClassOverridesSelector: aSymbol
 
 	^selectedClass superclass notNil and: [selectedClass superclass canUnderstand: aSymbol].
@@ -1528,7 +1508,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbUpdateMethodsByVariables!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodSelectionsIn:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodStepPointsFor:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodVariables!public!System Browser! !
 !JadeServer categoriesFor: #selectedClassOverridesSelector:!public!System Browser! !
 !JadeServer categoriesFor: #symbolList!public!System Browser! !
 !JadeServer categoriesFor: #systemBrowser:!public!System Browser! !
@@ -1808,20 +1787,6 @@ sbUpdateMethodBreakPointsFor: aMethod
 	^list.
 !
 
-sbUpdateMethodPragmas
-
-	| currentClass |
-	currentClass := ((self objectInBaseNamed: #'Pragma') notNil and: [selectedClass notNil]) ifTrue: [selectedClass] ifFalse: [nil].
-	methodFilters := IdentitySet new.
-	currentClass notNil ifTrue: [
-		(currentClass methodDictForEnv: environment) do: [:each | methodFilters addAll: each pragmas].
-	].
-	methodFilters := methodFilters collect: [:each | each keyword].
-	methodFilters := methodFilters asSortedCollection: [:a :b | a > b].
-	self writeList: methodFilters.
-	self sbUpdateMethodFilterSelections.
-!
-
 sbUpdateMethodsByCategories
 
 	| selectors |
@@ -1906,7 +1871,6 @@ selectedClassOverridesSelector: aSymbol
 !JadeServer64bit3x categoriesFor: #sbListMethodPragmas:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbMethod:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodBreakPointsFor:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbUpdateMethodPragmas!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodsByCategories!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodsByPragmas!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodsByVariables!public!System Browser! !
