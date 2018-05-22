@@ -9,6 +9,8 @@ package classNames
 	add: #Rowan;
 	add: #RowanClassCategoryUpdate;
 	add: #RowanClassesUpdate;
+	add: #RowanClassHierarchyUpdate;
+	add: #RowanClassInfoUpdate;
 	add: #RowanClassService;
 	add: #RowanCommandResult;
 	add: #RowanDictionaryUpdate;
@@ -66,7 +68,9 @@ package methodNames
 	add: #JadeServer -> #sbRemoveMethods:;
 	add: #JadeServer -> #sbUnloadPackage:;
 	add: #JadeServer -> #sbUpdateClassCategories;
+	add: #JadeServer -> #sbUpdateClassHierarchy;
 	add: #JadeServer -> #sbUpdateClassInfo;
+	add: #JadeServer -> #sbUpdateClassList;
 	add: #JadeServer -> #sbUpdateDictionaries;
 	add: #JadeServer -> #sbUpdatePackage:;
 	add: #JadeServer -> #sbUpdatePackages;
@@ -319,6 +323,11 @@ RowanCommandResult subclass: #RowanClassesUpdate
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanClassInfoUpdate
+	instanceVariableNames: 'oop template category comment'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 RowanCommandResult subclass: #RowanDictionaryUpdate
 	instanceVariableNames: 'dictionaries selections'
 	classVariableNames: ''
@@ -331,6 +340,11 @@ RowanCommandResult subclass: #RowanGlobalsUpdate
 	classInstanceVariableNames: ''!
 RowanCommandResult subclass: #RowanPackageUpdate
 	instanceVariableNames: 'packages modifiedPackages selections'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanClassesUpdate subclass: #RowanClassHierarchyUpdate
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -651,18 +665,15 @@ sbChangesInPackage: anOrderedCollection
 !
 
 sbClassTemplate
-	| def service |
+	| def service classInfoUpdate |
 	service := Rowan classServiceClass forClassNamed: 'Object'.
 	def := service classCreationTemplate.
-	writeStream
-		nextPutAll: '0';
-		lf;
-		nextPutAll: def;
-		nextPut: $%;
-		lf;
-		nextPut: $%;
-		lf;
-		yourself	"selectedClassOop"!
+	classInfoUpdate := RowanClassInfoUpdate new.
+	classInfoUpdate 
+		oop: 0;
+		template: def.
+	classInfoUpdate writeClassInfoOn: writeStream
+!
 
 sbMethodCategory: anOrderedCollection
 	| behavior category |
@@ -731,43 +742,84 @@ sbUpdateClassCategories
 
 !
 
+sbUpdateClassHierarchy
+
+	| currentSelection currentClass allClasses override classHierarchyUpdate |
+	
+	allClasses := IdentitySet new.
+	classHierarchyUpdate := RowanClassHierarchyUpdate new. 
+	classList do: [:each | 
+		classHierarchyUpdate addHierarchyFor: each
+	].
+	classHierarchyUpdate writeHierarchyTo: writeStream. 
+	"now figure out which class to select"
+	currentSelection := self nextLineAsList.
+	(override := selections at: #'className' ifAbsent: [nil]) notNil ifTrue: [currentSelection := Array with: override].
+	currentSelection isEmpty ifTrue: [
+		selectedClass := nil.
+	] ifFalse: [
+		(currentClass := selections at: #'class' ifAbsent: [nil]) isNil ifTrue: [
+			| className |
+			className := (currentSelection last subStrings: Character space) first asSymbol.
+			selectedClass := System myUserProfile symbolList objectNamed: className.
+		] ifFalse: [
+			selectedClass := nil.
+			[
+				selectedClass isNil and: [currentClass notNil].
+			] whileTrue: [
+				selectedClass := System myUserProfile symbolList objectNamed: currentClass name.
+				currentClass := currentClass superclass.
+			].
+		].
+	].
+	classHierarchyUpdate addSelectionHierarchyFor: selectedClass.
+	classHierarchyUpdate writeSelectionHierarchyTo: writeStream.
+	classHierarchyUpdate writeTestCaseInfoTo: writeStream.
+
+
+!
+
 sbUpdateClassInfo
-	| definition classComment |
+	| classComment classInfoUpdate |
 	selectedClass isNil ifTrue: [^self sbClassTemplate].
-	writeStream
-		nextPutAll: (self oopOf: selectedClass) printString;
-		lf;
-		nextPut: $(;
-		lf;
-		nextPutAll: (definition := (Rowan classServiceClass forClassNamed: selectedClass name)
-							classCreationTemplate); 
-		nextPutAll: ')';
-		nextPutAll: ((definition includesString: 'category: ''')
-					ifTrue: ['']
-					ifFalse: [' category: ' , selectedClass category printString]);
-		lf;
-		nextPut: $%;
-		lf;
-		yourself.
+	classInfoUpdate := RowanClassInfoUpdate new. 
+	classInfoUpdate oop: (self oopOf: selectedClass).
+	classInfoUpdate template: (Rowan classServiceClass forClassNamed: selectedClass name)
+							classCreationTemplate.
+	classInfoUpdate category: ((classInfoUpdate template includesString: 'category: ''')
+					ifFalse: [' category: ' , selectedClass category printString]).
 	(selectedClass class canUnderstand: #comment)
 		ifTrue: [classComment := selectedClass comment]
 		ifFalse: 
-			[(selectedClass class canUnderstand: #classComment)
-				ifTrue: [classComment := selectedClass classComment]
-				ifFalse: 
-					[(selectedClass class canUnderstand: #description)
-						ifTrue: 
-							[| description |
-							description := selectedClass description.
-							description class name = #GsClassDocumentation
-								ifTrue: [classComment := description detailsAboutClass]]]].
+			[(selectedClass class canUnderstand: #description)
+					ifTrue: 
+						[| description |
+						description := selectedClass description.
+						description class name = #GsClassDocumentation
+							ifTrue: [classComment := description detailsAboutClass]]].
 	classComment isNil ifTrue: [classComment := ''].
-	writeStream
-		nextPutAll: classComment;
-		lf;
-		nextPut: $%;
-		lf;
-		yourself!
+	classInfoUpdate comment: classComment. 
+	classInfoUpdate writeInfoOn: writeStream.
+!
+
+sbUpdateClassList
+
+	| mySelections override classesUpdate |
+	classesUpdate := RowanClassesUpdate new. 
+	(classList asSortedCollection: [:a :b | a name <= b name]) do: [:eachClass | 
+		classesUpdate classes add: eachClass.
+	].
+	classesUpdate writeClassesTo: writeStream. 
+	mySelections := self nextLineAsList collect: [:each | (each subStrings: Character space) first asSymbol].
+	(override := selections at: #'className' ifAbsent: [nil]) notNil ifTrue: [mySelections := Array with: override].
+	mySelections := classList select: [:eachClass | mySelections includes: eachClass name].
+	mySelections do: [:eachClass | classesUpdate selections add: eachClass].
+	classesUpdate writeSelectionsTo: writeStream. 
+	classesUpdate writeTestCaseInfoTo: writeStream. 
+	selectedClass := mySelections size = 1
+		ifTrue: [mySelections first]
+		ifFalse: [nil].
+!
 
 sbUpdateDictionaries
 
@@ -949,7 +1001,9 @@ sbUpdatePackagesOrDictionaries
 !JadeServer categoriesFor: #sbRemoveMethods:!public!System Browser! !
 !JadeServer categoriesFor: #sbUnloadPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClassCategories!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdateClassHierarchy!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClassInfo!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdateClassList!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateDictionaries!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !

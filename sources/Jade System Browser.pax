@@ -92,8 +92,6 @@ package methodNames
 	add: #JadeServer -> #sbSetHomeDictionary:;
 	add: #JadeServer -> #sbUniqueVersionName:;
 	add: #JadeServer -> #sbUpdateClasses;
-	add: #JadeServer -> #sbUpdateClassHierarchy;
-	add: #JadeServer -> #sbUpdateClassList;
 	add: #JadeServer -> #sbUpdateMethod:;
 	add: #JadeServer -> #sbUpdateMethodBreakPointsFor:;
 	add: #JadeServer -> #sbUpdateMethodCategories;
@@ -1161,78 +1159,6 @@ sbUpdateClasses
 	self error: 'Unexpected token!!'.
 !
 
-sbUpdateClassHierarchy
-
-	| currentSelection currentClass allClasses override testCaseClass |
-	allClasses := IdentitySet new.
-	"Add each class in dictionary/package to stream on a line with the superclass chain"
-	classList do: [:each | 
-		currentClass := each.
-		[
-			currentClass notNil.
-		] whileTrue: [
-			self sbAddNameOf: currentClass.
-			allClasses add: currentClass.
-			currentClass := currentClass superclass.
-		].
-		writeStream lf.
-	].
-	writeStream nextPut: $%; lf.
-	"now figure out which class to select"
-	currentSelection := self nextLineAsList.
-	(override := selections at: #'className' ifAbsent: [nil]) notNil ifTrue: [currentSelection := Array with: override].
-	currentSelection isEmpty ifTrue: [
-		selectedClass := nil.
-	] ifFalse: [
-		(currentClass := selections at: #'class' ifAbsent: [nil]) isNil ifTrue: [
-			| className |
-			className := (currentSelection last subStrings: Character space) first asSymbol.
-			selectedClass := allClasses detect: [:each | each name = className] ifNone: [nil].
-		] ifFalse: [
-			selectedClass := nil.
-			[
-				selectedClass isNil and: [currentClass notNil].
-			] whileTrue: [
-				selectedClass := allClasses detect: [:each | each == currentClass] ifNone: [nil].
-				currentClass := currentClass superclass.
-			].
-		].
-	].
-	currentClass := selectedClass.
-	[
-		currentClass notNil.
-	] whileTrue: [
-		self sbAddNameOf: currentClass.
-		currentClass := currentClass superclass.
-	].
-	writeStream lf;
-		nextPutAll: (selectedClass notNil and: [(testCaseClass := self objectInBaseNamed: #'TestCase') notNil and: [selectedClass inheritsFrom: testCaseClass]]) printString; tab;
-		lf.
-!
-
-sbUpdateClassList
-
-	| mySelections override testCaseClass |
-	(classList asSortedCollection: [:a :b | a name <= b name]) do: [:eachClass | 
-		self sbAddNameOf: eachClass.
-	].
-	writeStream lf.
-	mySelections := self nextLineAsList collect: [:each | (each subStrings: Character space) first asSymbol].
-	(override := selections at: #'className' ifAbsent: [nil]) notNil ifTrue: [mySelections := Array with: override].
-	mySelections := classList select: [:eachClass | mySelections includes: eachClass name].
-	mySelections do: [:each | self sbAddNameOf: each].
-	writeStream lf.
-	(testCaseClass := self objectInBaseNamed: #'TestCase') isNil ifTrue: [
-		false printOn: writeStream.
-	] ifFalse: [
-		(mySelections allSatisfy: [:each | each  inheritsFrom: testCaseClass]) printOn: writeStream.
-	].
-	writeStream lf.
-	selectedClass := mySelections size = 1
-		ifTrue: [mySelections first]
-		ifFalse: [nil].
-!
-
 sbUpdateMethod: aSymbol
 
 	| classes method names selection |
@@ -1640,8 +1566,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbSetHomeDictionary:!public!System Browser! !
 !JadeServer categoriesFor: #sbUniqueVersionName:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClasses!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateClassHierarchy!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateClassList!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethod:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodBreakPointsFor:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodCategories!public!System Browser! !
