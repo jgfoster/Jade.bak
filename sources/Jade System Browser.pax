@@ -94,7 +94,6 @@ package methodNames
 	add: #JadeServer -> #sbUpdateClasses;
 	add: #JadeServer -> #sbUpdateMethod:;
 	add: #JadeServer -> #sbUpdateMethodBreakPointsFor:;
-	add: #JadeServer -> #sbUpdateMethodCategories;
 	add: #JadeServer -> #sbUpdateMethodFilter;
 	add: #JadeServer -> #sbUpdateMethodFilterSelections;
 	add: #JadeServer -> #sbUpdateMethodInheritedImplementationsOf:;
@@ -106,7 +105,6 @@ package methodNames
 	add: #JadeServer -> #sbUpdateMethodSelectionsIn:;
 	add: #JadeServer -> #sbUpdateMethodStepPointsFor:;
 	add: #JadeServer -> #sbUpdateMethodVariables;
-	add: #JadeServer -> #sbUpdateSuperclass;
 	add: #JadeServer -> #selectedClassOverridesSelector:;
 	add: #JadeServer -> #symbolList;
 	add: #JadeServer -> #systemBrowser:;
@@ -1182,16 +1180,6 @@ sbUpdateMethodBreakPointsFor: aMethod
 	^aMethod _stepPointsFromBreakIpOffsets: aMethod _breakpointIpOffsets.		"at least as far back as 32-bit 6.3.0 and 64-bit 2.3.0, but not in 64-bit 3.0"
 !
 
-sbUpdateMethodCategories
-
-	methodFilters := IdentitySet new.
-	self addMethodCategoryNamesToMethodFilters.
-	methodFilters isEmpty ifTrue: [methodFilters := #(#'other')].
-	"Reverse order to be consistent with variables, where we add superclasses to the end"
-	self writeList: methodFilters asSortedCollection asArray reverse.
-	self sbUpdateMethodFilterSelections.
-!
-
 sbUpdateMethodFilter
 
 	self sbReadMethodFilter.
@@ -1337,44 +1325,6 @@ sbUpdateMethodVariables
 	].
 	self writeList: methodFilters.
 	self sbUpdateMethodFilterSelections.
-!
-
-sbUpdateSuperclass
-
-	| class tabName selected index |
-	tabName := self nextLine.
-	(#('default' 'instanceTab' 'classTab') includes: tabName) ifFalse: [self error: 'Unexpected token!!'].
-	tabName = 'default' ifTrue: [
-		tabName := (selectedClass notNil and: [selectedClass selectors isEmpty and: [selectedClass class selectors notEmpty]]) 
-			ifTrue: ['classTab']
-			ifFalse: ['instanceTab'].
-	].
-	writeStream nextPutAll: tabName; lf.
-	selectedClass notNil ifTrue: [
-		selectedClass := tabName = 'instanceTab'
-			ifTrue: [selectedClass]
-			ifFalse: [selectedClass class].
-	].
-	class := selectedClass.
-	classList := OrderedCollection new.
-	[
-		class notNil.
-	] whileTrue: [
-		classList add: class.
-		self sbAddNameOf: class.
-		class := self environmentSuperClassFor: class.
-	].
-	classList := classList reverse.
-	selected := self nextLine.
-	index := classList findFirst: [:each | each name asString = selected].
-	index = 0 ifTrue: [index := classList size].
-	0 < index ifTrue: [classList := classList copyFrom: index to: classList size].
-	writeStream lf.
-	classList notEmpty ifTrue: [
-		selectedClass := classList first.
-		self sbAddNameOf: selectedClass.
-	].
-	writeStream lf.
 !
 
 selectedClassOverridesSelector: aSymbol
@@ -1568,7 +1518,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbUpdateClasses!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethod:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodBreakPointsFor:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodCategories!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodFilter!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodFilterSelections!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodInheritedImplementationsOf:!public!System Browser! !
@@ -1580,7 +1529,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbUpdateMethodSelectionsIn:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodStepPointsFor:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodVariables!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateSuperclass!public!System Browser! !
 !JadeServer categoriesFor: #selectedClassOverridesSelector:!public!System Browser! !
 !JadeServer categoriesFor: #symbolList!public!System Browser! !
 !JadeServer categoriesFor: #systemBrowser:!public!System Browser! !

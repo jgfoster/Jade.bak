@@ -23,6 +23,7 @@ package classNames
 	add: #RowanMethodSelectionPresenter;
 	add: #RowanMethodService;
 	add: #RowanMethodSourcePresenter;
+	add: #RowanMethodsUpdate;
 	add: #RowanPackagePresenter;
 	add: #RowanPackageService;
 	add: #RowanPackageShell;
@@ -37,6 +38,7 @@ package classNames
 	add: #RowanService;
 	add: #RowanServiceTest;
 	add: #RowanShell;
+	add: #RowanSuperclassUpdate;
 	add: #RowanSystemBrowser;
 	add: #RowanSystemBrowserPresenter;
 	add: #RowanTranscript;
@@ -72,9 +74,11 @@ package methodNames
 	add: #JadeServer -> #sbUpdateClassInfo;
 	add: #JadeServer -> #sbUpdateClassList;
 	add: #JadeServer -> #sbUpdateDictionaries;
+	add: #JadeServer -> #sbUpdateMethodCategories;
 	add: #JadeServer -> #sbUpdatePackage:;
 	add: #JadeServer -> #sbUpdatePackages;
 	add: #JadeServer -> #sbUpdatePackagesOrDictionaries;
+	add: #JadeServer -> #sbUpdateSuperclass;
 	add: #JadeServer64bit -> #recompile:withSource:;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer64bit3x -> #sbClassComment:;
@@ -345,6 +349,16 @@ RowanCommandResult subclass: #RowanPackageUpdate
 	classInstanceVariableNames: ''!
 RowanClassesUpdate subclass: #RowanClassHierarchyUpdate
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanClassesUpdate subclass: #RowanMethodsUpdate
+	instanceVariableNames: 'methodFilters methods'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanClassesUpdate subclass: #RowanSuperclassUpdate
+	instanceVariableNames: 'tabName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -744,9 +758,8 @@ sbUpdateClassCategories
 
 sbUpdateClassHierarchy
 
-	| currentSelection currentClass allClasses override classHierarchyUpdate |
+	| currentSelection currentClass  override classHierarchyUpdate |
 	
-	allClasses := IdentitySet new.
 	classHierarchyUpdate := RowanClassHierarchyUpdate new. 
 	classList do: [:each | 
 		classHierarchyUpdate addHierarchyFor: each
@@ -761,13 +774,13 @@ sbUpdateClassHierarchy
 		(currentClass := selections at: #'class' ifAbsent: [nil]) isNil ifTrue: [
 			| className |
 			className := (currentSelection last subStrings: Character space) first asSymbol.
-			selectedClass := System myUserProfile symbolList objectNamed: className.
+			selectedClass := classHierarchyUpdate allClasses detect: [:each | each name = className] ifNone:[].
 		] ifFalse: [
 			selectedClass := nil.
 			[
 				selectedClass isNil and: [currentClass notNil].
 			] whileTrue: [
-				selectedClass := System myUserProfile symbolList objectNamed: currentClass name.
+				selectedClass := classHierarchyUpdate allClasses detect: [:each | each = currentClass] ifNone:[].
 				currentClass := currentClass superclass.
 			].
 		].
@@ -875,6 +888,19 @@ sbUpdateDictionaries
 	globalsUpdate writeGlobalsTo: writeStream.
 	
 
+!
+
+sbUpdateMethodCategories
+
+	| methodUpdate | 
+	methodUpdate := RowanMethodsUpdate new.  
+	methodUpdate classes: classList;
+		updateMethodCategories; 
+		writeMethodCategoriesTo: writeStream. 
+	methodUpdate updateMethodSelections: self nextLineAsList 
+			hasCategoryOverride: (selections at: #'methodCategory' ifAbsent: [nil]).
+	methodFilters := methodUpdate selections.
+	methodUpdate writeSelectionsTo: writeStream. 
 !
 
 sbUpdatePackage: aString
@@ -989,6 +1015,46 @@ sbUpdatePackagesOrDictionaries
 	selectedTab = 'dictionaryList' ifTrue: [^self sbUpdateDictionaries].
 	selectedTab = 'packageList' ifTrue: [^self sbUpdatePackages].
 	self error: 'unexpected token'.
+!
+
+sbUpdateSuperclass
+
+	| class tabName selected index superclassUpdate |
+	superclassUpdate := RowanSuperclassUpdate new.
+	tabName := self nextLine. 
+	(#('default' 'instanceTab' 'classTab') includes: tabName) ifFalse: [self error: 'Unexpected token!!'].
+	tabName = 'default' ifTrue: [
+		tabName := (selectedClass notNil and: [selectedClass selectors isEmpty and: [selectedClass class selectors notEmpty]]) 
+			ifTrue: ['classTab']
+			ifFalse: ['instanceTab'].
+	].
+	superclassUpdate tabName: tabName. 
+	superclassUpdate writeTabNameTo: writeStream.
+	selectedClass notNil ifTrue: [
+		selectedClass := tabName = 'instanceTab'
+			ifTrue: [selectedClass]
+			ifFalse: [selectedClass class].
+	].
+	class := selectedClass.
+	classList := OrderedCollection new.
+	[
+		class notNil.
+	] whileTrue: [
+		classList add: class.
+		superclassUpdate classes add: class. 
+		class := self environmentSuperClassFor: class.
+	].
+	superclassUpdate writeClassesTo: writeStream.
+	classList := classList reverse.
+	selected := self nextLine.
+	index := classList findFirst: [:each | each name asString = selected].
+	index = 0 ifTrue: [index := classList size].
+	0 < index ifTrue: [classList := classList copyFrom: index to: classList size].
+	classList notEmpty ifTrue: [
+		selectedClass := classList first.
+		superclassUpdate selections add: selectedClass.
+	].
+	superclassUpdate writeSelectionsTo: writeStream. 
 ! !
 !JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
 !JadeServer categoriesFor: #moveMethod:toCategory:!Methods!public! !
@@ -1005,9 +1071,11 @@ sbUpdatePackagesOrDictionaries
 !JadeServer categoriesFor: #sbUpdateClassInfo!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateClassList!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateDictionaries!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodCategories!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdateSuperclass!public!System Browser! !
 
 !JadeServer class methodsFor!
 
