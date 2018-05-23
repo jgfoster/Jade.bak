@@ -24,6 +24,7 @@ package classNames
 	add: #RowanMethodService;
 	add: #RowanMethodSourcePresenter;
 	add: #RowanMethodsUpdate;
+	add: #RowanMethodUpdate;
 	add: #RowanPackagePresenter;
 	add: #RowanPackageService;
 	add: #RowanPackageShell;
@@ -59,6 +60,7 @@ package methodNames
 	add: #JadeLoginShell -> #aboutJadeite;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
+	add: #JadeServer -> #_describeMethod:;
 	add: #JadeServer -> #compile:frame:process:;
 	add: #JadeServer -> #moveMethod:toCategory:;
 	add: #JadeServer -> #sbAddPackage:;
@@ -75,6 +77,7 @@ package methodNames
 	add: #JadeServer -> #sbUpdateClassList;
 	add: #JadeServer -> #sbUpdateDictionaries;
 	add: #JadeServer -> #sbUpdateMethodCategories;
+	add: #JadeServer -> #sbUpdateMethods;
 	add: #JadeServer -> #sbUpdateMethodVariables;
 	add: #JadeServer -> #sbUpdatePackage:;
 	add: #JadeServer -> #sbUpdatePackages;
@@ -344,6 +347,11 @@ RowanCommandResult subclass: #RowanGlobalsUpdate
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanMethodUpdate
+	instanceVariableNames: 'classOop className methodOop selector category editable source firstSendOffsets stepPoints breakPoints originalMethodSource compilationWarnings'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 RowanCommandResult subclass: #RowanPackageUpdate
 	instanceVariableNames: 'packages modifiedPackages selections'
 	classVariableNames: ''
@@ -355,7 +363,7 @@ RowanClassesUpdate subclass: #RowanClassHierarchyUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanClassesUpdate subclass: #RowanMethodsUpdate
-	instanceVariableNames: 'methodFilters methods'
+	instanceVariableNames: 'methods methodFilters selectors selectedClass selectedSelectors'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -625,6 +633,59 @@ browseSendersOf: aGsMethodOrString
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
 
 !JadeServer methodsFor!
+
+_describeMethod: aMethod
+	"Provide info needed to create a GsMethod in Jade client"
+	"Nice to add packageName and mcTimestamp"
+
+	| allSelectors class list oldGsMethod string methodUpdate |
+	methodUpdate := RowanMethodUpdate new method: aMethod. 
+	self environment: (self environmentForMethod: aMethod).
+		
+	methodUpdate 	"Line 1 for GsMethod (line 3 for JadeSystemBrowserPresenter)"
+"1"		classOop: (class := aMethod inClass) asOop printString;
+"2"		className: class printString;
+"3"		methodOop: aMethod asOop printString;
+"4"		selector: aMethod selector;
+"5"		category: (self categoryOfMethod: aMethod);
+"6"		editable: (self currentUserMayEditMethod: aMethod) asString;
+			source: aMethod sourceString.
+
+	"unimplemented selectors"			"https://github.com/jgfoster/Jade/issues/117"
+	((aMethod class includesSelector: #'_selectorPool') and: [aMethod class includesSelector: #'_sourceOffsetOfFirstSendOf:']) ifTrue: [
+		allSelectors := self _allSelectors.
+		(aMethod _selectorPool reject: [:each | allSelectors includes: each]) do: [:each | 
+			methodUpdate firstSendOffsets at: (aMethod _sourceOffsetOfFirstSendOf: each) put: each.
+		].
+	].
+
+	"Array of Associations (offset -> selector) indexed by step points"
+	list := self sbUpdateMethodStepPointsFor: aMethod.
+	list do:[:each | methodUpdate stepPoints at: each key printString put: each value].
+
+	"breaks"
+	methodUpdate breakPoints: (self sbUpdateMethodBreakPointsFor: aMethod).
+
+	"original method"
+	oldGsMethod := (aMethod inClass class canUnderstand: #'persistentMethodDictForEnv:')
+		ifTrue: [(aMethod inClass persistentMethodDictForEnv: 0) at: aMethod selector ifAbsent: [aMethod]]
+		ifFalse: [(aMethod inClass class canUnderstand: #'_rawMethodDict')
+			ifTrue: [aMethod inClass _rawMethodDict at: aMethod selector ifAbsent: [aMethod]]
+			ifFalse: [aMethod]].
+	aMethod ~~ oldGsMethod ifTrue: [
+		methodUpdate originalMethodSource: oldGsMethod sourceString.
+	].
+
+	"method compile warnings"
+	string := selections isNil 
+		ifTrue: ['']
+		ifFalse: [selections at: #'methodWarnings' ifAbsent: ['']].
+	string isNil ifTrue: [string := ''].
+	methodUpdate compilationWarnings: string.
+	methodUpdate writeMethodTo: writeStream.
+
+ 
+!
 
 compile: aString frame: anInteger process: aGsProcess
 	"Compile method from within debugger"
@@ -904,6 +965,19 @@ sbUpdateMethodCategories
 	methodFilters := methodUpdate selections.
 	methodUpdate writeSelectionsTo: writeStream. !
 
+sbUpdateMethods
+
+	| selectors methodUpdate |
+	selectedClass isNil ifTrue: [^self].
+	methodUpdate := RowanMethodsUpdate new selectedClass: selectedClass.
+	methodFilterType = 'categoryList' ifTrue: [selectors := self sbUpdateMethodsByCategories] ifFalse: [
+	methodFilterType = 'variableList' ifTrue: [selectors := self sbUpdateMethodsByVariables] ifFalse: [
+	methodFilterType = 'pragmaList' ifTrue: [selectors := self sbUpdateMethodsByPragmas] ifFalse: [
+		self error: 'Unrecognized methodFilterType: ' , methodFilterType printString]]].
+	methodUpdate selectors: selectors asSortedCollection.
+	methodUpdate writeSelectorsTo: writeStream. 
+	self sbUpdateMethodSelectionsIn: methodUpdate!
+
 sbUpdateMethodVariables
 
 	| methodUpdate |
@@ -1071,6 +1145,7 @@ sbUpdateSuperclass
 	].
 	superclassUpdate writeSelectionsTo: writeStream. 
 ! !
+!JadeServer categoriesFor: #_describeMethod:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
 !JadeServer categoriesFor: #moveMethod:toCategory:!Methods!public! !
 !JadeServer categoriesFor: #sbAddPackage:!public!System Browser! !
@@ -1087,6 +1162,7 @@ sbUpdateSuperclass
 !JadeServer categoriesFor: #sbUpdateClassList!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateDictionaries!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodCategories!public!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethods!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodVariables!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !

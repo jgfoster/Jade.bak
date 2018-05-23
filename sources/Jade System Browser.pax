@@ -98,7 +98,6 @@ package methodNames
 	add: #JadeServer -> #sbUpdateMethodFilterSelections;
 	add: #JadeServer -> #sbUpdateMethodInheritedImplementationsOf:;
 	add: #JadeServer -> #sbUpdateMethodPragmas;
-	add: #JadeServer -> #sbUpdateMethods;
 	add: #JadeServer -> #sbUpdateMethodsByCategories;
 	add: #JadeServer -> #sbUpdateMethodsByPragmas;
 	add: #JadeServer -> #sbUpdateMethodsByVariables;
@@ -1155,22 +1154,27 @@ sbUpdateClasses
 	self error: 'Unexpected token!!'.
 !
 
-sbUpdateMethod: aSymbol
+sbUpdateMethod: methodUpdate
 
-	| classes method names selection |
+	| classes method names selection aSymbol |
+
+	aSymbol := methodUpdate selectedSelectors first. 
 
 	"Inherited implimentors"
 	classes := self sbUpdateMethodInheritedImplementationsOf: aSymbol.
 	names := classes collect: [:each | each name asString].
-	self writeList: names.	"Line 1"
+	methodUpdate inheritedClasses: names. 
+	methodUpdate writeInheritedClassesTo: writeStream.  "Line 1"
 
 	"Which inherited implementation is selected?"
 	selection := self nextLine.
 	(names includes: selection) ifFalse: [selection := names last].
-	writeStream nextPutAll: selection; lf.	"Line 2"
+	methodUpdate inheritedClass: selection.
+	methodUpdate writeInheritedClassTo: writeStream.	"Line 2"
 
 	method := self compiledMethodAt: aSymbol inClass: (classes detect: [:each | each name asString = selection]).
-	self _describeMethod: method.!
+	self _describeMethod: method.
+!
 
 sbUpdateMethodBreakPointsFor: aMethod
 	"Answers an Array of step points"
@@ -1217,34 +1221,6 @@ sbUpdateMethodPragmas
 	self sbUpdateMethodFilterSelections.
 !
 
-sbUpdateMethods
-
-	| selectors isTestClass gsPackagePolicy anySatisfy |
-	selectedClass isNil ifTrue: [^self].
-	anySatisfy := false.
-	selectedClass _allSuperList do: [:each | 
-		anySatisfy := anySatisfy or: [each name = #'TestCase'].
-	].
-	isTestClass := anySatisfy ifTrue: [$T] ifFalse: [$F].
-	gsPackagePolicy := self gsPackagePolicy.
-	methodFilterType = 'categoryList' ifTrue: [selectors := self sbUpdateMethodsByCategories] ifFalse: [
-	methodFilterType = 'variableList' ifTrue: [selectors := self sbUpdateMethodsByVariables] ifFalse: [
-	methodFilterType = 'pragmaList' ifTrue: [selectors := self sbUpdateMethodsByPragmas] ifFalse: [
-		self error: 'Unrecognized methodFilterType: ' , methodFilterType printString]]].
-	selectors := selectors asSortedCollection.
-	selectors do: [:each | 	"JadeSystemBrowserPresenter>>#'updateMethodList' "
-		writeStream 
-"1"		nextPutAll: each; tab;
-"2"		nextPut: ((self selectedClassOverridesSelector: each) ifTrue: [$T] ifFalse: [$F]); tab;
-"3"		nextPut: isTestClass; tab;
-"4"		nextPut: ((self packagePolicy: gsPackagePolicy includesSelector: each forClass: selectedClass) ifTrue: [$T] ifFalse: [$F]); tab;
-"5"		nextPutAll: (self methodSignatureForSelector: each); tab;	"sometimes the method key is different from the selector and from the method signature (particularly in Ruby)"
-		lf.
-	].
-	writeStream nextPut: $%; lf.
-	self sbUpdateMethodSelectionsIn: selectors.
-!
-
 sbUpdateMethodsByCategories
 
 	| selectors |
@@ -1275,14 +1251,17 @@ sbUpdateMethodsByVariables
 	^selectors.
 !
 
-sbUpdateMethodSelectionsIn: aList
+sbUpdateMethodSelectionsIn: methodUpdate
 
-	| priorSelections override newSelections |
+	| priorSelections override newSelections aList |
+	aList := methodUpdate selectors asArray. 
 	priorSelections := self nextLineAsList.
 	(override := selections at: #'method' ifAbsent: [nil]) notNil ifTrue: [priorSelections := Array with: override].
 	newSelections := aList select: [:each | priorSelections includes: each asString].
-	self writeList: newSelections.
-	newSelections size = 1 ifTrue: [self sbUpdateMethod: newSelections first].
+	methodUpdate selectedSelectors: newSelections. 
+	methodUpdate writeSelectedSelectorsTo: writeStream.
+	newSelections size = 1 ifTrue: [self sbUpdateMethod: methodUpdate].
+
 !
 
 sbUpdateMethodStepPointsFor: aMethod
@@ -1502,7 +1481,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbUpdateMethodFilterSelections!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodInheritedImplementationsOf:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodPragmas!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethods!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodsByCategories!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodsByPragmas!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodsByVariables!public!System Browser! !
