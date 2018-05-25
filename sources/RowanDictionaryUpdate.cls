@@ -8,3 +8,12 @@ RowanCommandResult subclass: #RowanDictionaryUpdate
 RowanDictionaryUpdate guid: (GUID fromString: '{83fbbd49-2c42-4bef-8463-1e3264cbcc43}')!
 RowanDictionaryUpdate comment: ''!
 !RowanDictionaryUpdate categoriesForClass!Unclassified! !
+!RowanDictionaryUpdate methodsFor!
+
+update: aPresenter
+	super update: aPresenter.
+	aPresenter list: dictionaries.
+	aPresenter selections: selections.
+	aPresenter view ensureSelectionVisible! !
+!RowanDictionaryUpdate categoriesFor: #update:!public!updating! !
+

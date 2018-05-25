@@ -2752,36 +2752,6 @@ updateCommand: aString
 		onSuccessDo: [].
 !
 
-updateCommand: aString onSuccessDo: aBlock
-
-	
-	[
-		| time1 time2 time3 string |
-		time1 := Time millisecondsToRun: [
-			string := self gciSession 
-				serverPerform: #'systemBrowser:' 
-				with: environment printString , ' ' , aString.
-			eventCount := self gciSession eventCount.
-		].
-		time2 := Time millisecondsToRun: [
-			| responseType |
-			readStream := JadeServerReadStream on: string.
-			time3 := readStream nextLine asNumber.
-			aBlock value.
-			(responseType := readStream nextLine) = 'update' ifFalse: [^responseType].
-			self updatePresenters.
-		].
-		self statusBarServerRequestText:
-			'server took ' , time3 printString , 'ms; ' , 
-			'network took ' , (time1 - time3) printString , 'ms; ' , 
-			'client took ' , time2 printString , 'ms; ' , 
-			'total of ' , (time1 + time2) printString , 'ms'.
-	] ensure: [
-		selectedClassChanged := false.
-	].
-	^nil.
-!
-
 updateDictionaryList
 
 	| fullList selections lines |
@@ -3342,7 +3312,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #updateClassList!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateClassListOrHierarchy!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateCommand:!public!updating! !
-!JadeSystemBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateDictionaryList!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateMenuBar!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #updateMethod!public!updating! !
