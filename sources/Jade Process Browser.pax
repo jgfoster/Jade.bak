@@ -12,11 +12,13 @@ package classNames
 
 package methodNames
 	add: #JadeServer -> #addProcess:to:withStatus:scheduler:;
+	add: #JadeServer -> #addProcess2:to:withStatus:scheduler:;
 	add: #JadeServer -> #processes;
 	add: #JadeServer -> #waitingProcesses;
 	add: #JadeServer64bit33 -> #waitingProcesses;
 	add: #JadeServer64bit34 -> #waitingProcesses;
 	add: #JadeServer64bit3x -> #addProcess:to:withStatus:scheduler:;
+	add: #JadeServer64bit3x -> #addProcess2:to:withStatus:scheduler:;
 	add: #JadeTranscript -> #browseProcesses;
 	yourself.
 
@@ -61,18 +63,29 @@ addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
 
 	| x |
 	aStream lf
-"1"	nextPutAll: aString; tab;
-"2"	nextPutAll: aProcess asOop printString; tab;
-"3"	nextPutAll: aProcess priority printString; tab;
-"4"	nextPutAll: (aProcess createdByApplication ifTrue: ['Y'] ifFalse: ['']); tab; 
-"5"	nextPutAll: ((x := aProcess stackId) == -1 	ifTrue: [''] ifFalse: [x printString]); tab;
-"6"	nextPutAll: ((x := aProcess waitingOn) 	isNil ifTrue: [''] ifFalse: [x asOop printString]); tab;
-"7"	nextPutAll: ((x := aProcess _signalTime) 	isNil ifTrue: [''] ifFalse: [(x - aScheduler _now) printString]); tab;
-"8"	nextPutAll: (aProcess isPartialContinuation	ifTrue: ['partial'] ifFalse: [aProcess isContinuation ifTrue: ['full'] ifFalse: ['']]); tab;
-"9"	"type: forked or main"
-"10"	"live or terminated"
-	yourself.
-!
+"1"		nextPutAll: aString; tab;
+"2"		nextPutAll: aProcess asOop printString; tab;
+"3"		nextPutAll: aProcess priority printString; tab;
+"4"		nextPutAll: (aProcess createdByApplication ifTrue: ['Y'] ifFalse: ['']); tab; 
+"5"		"stackId"
+"6"		"waitingOn"
+"7"		"_signalTime"
+"8"		"continuation type"
+"9"		"type: forked or main"
+"10"		"live or terminated"
+		yourself.
+	self addProcess2: aProcess to: aStream withStatus: aString scheduler: aScheduler.!
+
+addProcess2: aProcess to: aStream withStatus: aString scheduler: aScheduler
+
+	aStream 
+"5"		tab;	"stackId"
+"6"		tab;	"waitingOn"
+"7"		tab;	"_signalTime"
+"8"		tab;	"continuation type"
+"9"		"type: forked or main"
+"10"		"live or terminated"
+		yourself.!
 
 processes
 
@@ -101,6 +114,7 @@ waitingProcesses
 	^ProcessorScheduler scheduler waitingProcesses
 ! !
 !JadeServer categoriesFor: #addProcess:to:withStatus:scheduler:!Processes!public! !
+!JadeServer categoriesFor: #addProcess2:to:withStatus:scheduler:!Processes!public! !
 !JadeServer categoriesFor: #processes!Processes!public! !
 !JadeServer categoriesFor: #waitingProcesses!Processes!public! !
 
@@ -140,8 +154,22 @@ addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
 "9"		nextPutAll: (0 < (modeInfo bitAnd: modeInfo_forked) ifTrue: ['forked'] ifFalse: ['main']); tab;
 "10"		nextPutAll: (0 < (modeInfo bitAnd: modeInfo_terminated) ifTrue: ['terminated'] ifFalse: ['']); tab;
 		yourself.
+!
+
+addProcess2: aProcess to: aStream withStatus: aString scheduler: aScheduler
+
+	| x |
+	aStream 
+"5"		nextPutAll: ((x := aProcess stackId) == -1 	ifTrue: [''] ifFalse: [x printString]); tab;
+"6"		nextPutAll: ((x := aProcess waitingOn) 	isNil ifTrue: [''] ifFalse: [x asOop printString]); tab;
+"7"		nextPutAll: ((x := aProcess _signalTime) 	isNil ifTrue: [''] ifFalse: [(x - aScheduler _now) printString]); tab;
+"8"		nextPutAll: (aProcess isPartialContinuation	ifTrue: ['partial'] ifFalse: [aProcess isContinuation ifTrue: ['full'] ifFalse: ['']]); tab;
+"9"		"type: forked or main"
+"10"		"live or terminated"
+		yourself.
 ! !
 !JadeServer64bit3x categoriesFor: #addProcess:to:withStatus:scheduler:!Processes!public! !
+!JadeServer64bit3x categoriesFor: #addProcess2:to:withStatus:scheduler:!Processes!public! !
 
 !JadeTranscript methodsFor!
 
