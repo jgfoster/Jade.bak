@@ -338,7 +338,7 @@ RowanCommandResult subclass: #RowanClassCategoryUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanCommandResult subclass: #RowanClassesUpdate
-	instanceVariableNames: 'type classes selections'
+	instanceVariableNames: 'type selections classNames'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -893,13 +893,15 @@ sbUpdateClassList
 	| mySelections override classesUpdate |
 	classesUpdate := RowanClassesUpdate new. 
 	(classList asSortedCollection: [:a :b | a name <= b name]) do: [:eachClass | 
-		classesUpdate classes add: eachClass.
+		classesUpdate classNames add: eachClass name. 
 	].
 	classesUpdate writeClassesTo: writeStream. 
 	mySelections := self nextLineAsList collect: [:each | (each subStrings: Character space) first asSymbol].
 	(override := selections at: #'className' ifAbsent: [nil]) notNil ifTrue: [mySelections := Array with: override].
 	mySelections := classList select: [:eachClass | mySelections includes: eachClass name].
-	mySelections do: [:eachClass | classesUpdate selections add: eachClass].
+	mySelections do: [:eachClass | 
+		
+		classesUpdate selections add: eachClass].
 	classesUpdate writeSelectionsTo: writeStream. 
 	classesUpdate writeTestCaseInfoTo: writeStream. 
 	selectedClass := mySelections size = 1
@@ -967,14 +969,13 @@ sbUpdateMethodCategories
 
 	| methodUpdate | 
 	methodUpdate := RowanMethodsUpdate new.  
-	methodUpdate classes: classList;
-		updateMethodCategories; 
+	methodUpdate classNamesFrom: classList. 
+	methodUpdate updateMethodCategories; 
 		writeMethodCategoriesTo: writeStream. 
 	methodUpdate updateMethodSelections: self nextLineAsList 
 			hasCategoryOverride: (selections at: #'methodCategory' ifAbsent: [nil]).
 	methodFilters := methodUpdate methodFilters.
-	methodUpdate writeSelectionsTo: writeStream. 
-!
+	methodUpdate writeSelectionsTo: writeStream. !
 
 sbUpdateMethods
 
@@ -986,7 +987,8 @@ sbUpdateMethods
 	methodFilterType = 'pragmaList' ifTrue: [selectors := self sbUpdateMethodsByPragmas] ifFalse: [
 		self error: 'Unrecognized methodFilterType: ' , methodFilterType printString]]].
 	methodUpdate selectors: selectors asSortedCollection.
-	methodUpdate writeSelectorsTo: writeStream. 
+	methodUpdate updateMethodsInfo.
+	methodUpdate writeMethodsTo: writeStream. 
 	self sbUpdateMethodSelectionsIn: methodUpdate
 !
 
@@ -994,7 +996,7 @@ sbUpdateMethodVariables
 
 	| methodUpdate |
 	methodUpdate := RowanMethodsUpdate new. 
-	methodUpdate classes: classList. 
+	methodUpdate classNamesFrom: classList. 
 	methodUpdate updateMethodVariables. 
 	methodUpdate writeMethodFiltersTo: writeStream. 
 	methodUpdate updateMethodSelections: self nextLineAsList 
@@ -1142,7 +1144,7 @@ sbUpdateSuperclass
 		class notNil.
 	] whileTrue: [
 		classList add: class.
-		superclassUpdate classes add: class. 
+		superclassUpdate classNames add: class name. 
 		class := self environmentSuperClassFor: class.
 	].
 	superclassUpdate writeClassesTo: writeStream.
@@ -1316,7 +1318,9 @@ sbUpdateMethodPragmas
 
 	| methodUpdate |
 	methodUpdate := RowanMethodsUpdate new. 
-	selectedClass notNil ifTrue:[methodUpdate selections add: selectedClass].
+	selectedClass notNil ifTrue:[
+		methodUpdate selectionNames add: selectedClass name.
+		methodUpdate selections add: selectedClass].
 	methodUpdate updateMethodPragmas.
 	methodUpdate writeMethodFiltersTo: writeStream. 
 	methodUpdate updateMethodSelections: self nextLineAsList 
