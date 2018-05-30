@@ -900,8 +900,7 @@ sbUpdateClassList
 	(override := selections at: #'className' ifAbsent: [nil]) notNil ifTrue: [mySelections := Array with: override].
 	mySelections := classList select: [:eachClass | mySelections includes: eachClass name].
 	mySelections do: [:eachClass | 
-		
-		classesUpdate selections add: eachClass].
+		classesUpdate selections add: eachClass asString].
 	classesUpdate writeSelectionsTo: writeStream. 
 	classesUpdate writeTestCaseInfoTo: writeStream. 
 	selectedClass := mySelections size = 1
@@ -932,7 +931,7 @@ sbUpdateDictionaries
 	newSelections do: [:eachName | 
 		| symbolDictionary globalKeyPrefix |
 		globalKeyPrefix := 1 < newSelections size ifTrue: [eachName , '.'] ifFalse: [''].
-		dictionaryUpdate selections add: eachName.
+		dictionaryUpdate selections add: eachName asString.
 		symbolDictionary := symbolList at: (fullList indexOf: eachName).
 		symbolDictionary keys asSortedCollection do: [:eachKey |
 			| eachGlobal |
@@ -1100,7 +1099,7 @@ sbUpdatePackages
 	newSelections do: 
 			[:each |
 			| service |
-			packagesUpdate selections add: each. 
+			packagesUpdate selections add: each asString. 
 			service := Rowan packageServiceClass forPackageNamed: each.
 			classList addAll: service loadedClassHandles].
 	packagesUpdate writeSelectionsTo: writeStream.
@@ -1155,7 +1154,7 @@ sbUpdateSuperclass
 	0 < index ifTrue: [classList := classList copyFrom: index to: classList size].
 	classList notEmpty ifTrue: [
 		selectedClass := classList first.
-		superclassUpdate selections add: selectedClass.
+		superclassUpdate selections add: selectedClass asString.
 	].
 	superclassUpdate writeSelectionsTo: writeStream. 
 !
@@ -1319,8 +1318,7 @@ sbUpdateMethodPragmas
 	| methodUpdate |
 	methodUpdate := RowanMethodsUpdate new. 
 	selectedClass notNil ifTrue:[
-		methodUpdate selectionNames add: selectedClass name.
-		methodUpdate selections add: selectedClass].
+		methodUpdate selections add: selectedClass asString].
 	methodUpdate updateMethodPragmas.
 	methodUpdate writeMethodFiltersTo: writeStream. 
 	methodUpdate updateMethodSelections: self nextLineAsList 
