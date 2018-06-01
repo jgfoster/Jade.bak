@@ -250,11 +250,6 @@ hardBreak
 	library hardBreakSession: gciSessionId.
 !
 
-hasServer
-
-	^server notNil.
-!
-
 heartbeat: receiver arguments: arguments
 
 	| result |
@@ -901,7 +896,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #gsHasPragmas!public! !
 !GciSession categoriesFor: #handlingClientForwarderSendDo:!long running!private! !
 !GciSession categoriesFor: #hardBreak!Jade!public! !
-!GciSession categoriesFor: #hasServer!public! !
 !GciSession categoriesFor: #heartbeat:arguments:!heartbeat!private! !
 !GciSession categoriesFor: #incrementEventCount!long running!private! !
 !GciSession categoriesFor: #indexOfClientForwarder:!public! !

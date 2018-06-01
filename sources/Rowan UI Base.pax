@@ -47,6 +47,7 @@ package classNames
 	yourself.
 
 package methodNames
+	add: #GciSession -> #hasServer;
 	add: #GciSession -> #initializeServer;
 	add: #GciSession -> #postLoginAs:useSocket:;
 	add: #GciSession -> #titleBarFor:;
@@ -395,6 +396,11 @@ TestCase subclass: #RowanServiceTest
 
 !GciSession methodsFor!
 
+hasServer
+
+	^server notNil.
+!
+
 initializeServer
 "
 	GciSession allInstances first initializeServer.
@@ -432,7 +438,11 @@ Server initialization failed. Most functionality will be broken!!'.
 
 postLoginAs: aString useSocket: aBoolean
 	self verifyRowanLoaded ifFalse: [^MessageBox notify: 'Rowan not loaded or $ROWAN_PROJECTS_HOME not set. Logging out.' "log out in RowinLoginShell>>postLogin:"].
-	self initializeServer.
+	"self initializeServer."
+	server := self executeString: '| server | 
+			server := JadeServer64bit32 new initialize; yourself.
+			System _sessionStateAt: 3 put: server.
+			^server'.
 	aBoolean ifTrue: [self attemptSocket].
 	self setInitials: aString	"This gets back the session and serial number"!
 
@@ -482,6 +492,7 @@ verifyRowanLoaded
 
 	^self
 		executeString: '(System myUserProfile objectNamed: ''Rowan'') notNil and:[(System gemEnvironmentVariable: ''ROWAN_PROJECTS_HOME'') notNil] '! !
+!GciSession categoriesFor: #hasServer!public! !
 !GciSession categoriesFor: #initializeServer!private! !
 !GciSession categoriesFor: #postLoginAs:useSocket:!private! !
 !GciSession categoriesFor: #titleBarFor:!public! !
