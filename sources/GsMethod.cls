@@ -113,7 +113,7 @@ originalSource
 printOn: aStream
 
 	aStream
-		nextPutAll: behaviorName;
+		nextPutAll: (behaviorName ifNil:[String new]);
 		nextPutAll: '>>#''';
 		nextPutAll: name;
 		nextPut: $';

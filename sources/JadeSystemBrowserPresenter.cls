@@ -2675,6 +2675,7 @@ updateClassHierarchy
 updateClassInfo
 
 	| index newClassDefinition |
+
 	selectedClassOop := readStream nextLine asNumber.
 	newClassDefinition := readStream nextParagraph.
 	classCommentPresenter value: readStream nextParagraph.

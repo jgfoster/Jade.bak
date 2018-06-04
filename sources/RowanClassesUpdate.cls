@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanCommandResult subclass: #RowanClassesUpdate
-	instanceVariableNames: 'type selections classNames'
+	instanceVariableNames: 'type classNames selectionNames'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

@@ -339,7 +339,7 @@ RowanCommandResult subclass: #RowanClassCategoryUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanCommandResult subclass: #RowanClassesUpdate
-	instanceVariableNames: 'type selections classNames'
+	instanceVariableNames: 'type classNames selectionNames'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -359,7 +359,7 @@ RowanCommandResult subclass: #RowanGlobalsUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanCommandResult subclass: #RowanMethodUpdate
-	instanceVariableNames: 'classOop className methodOop selector category editable source firstSendOffsets stepPoints breakPoints originalMethodSource compilationWarnings isTestClass isOverride'
+	instanceVariableNames: 'classOop className methodOop selector category editable source firstSendOffsets stepPoints breakPoints originalMethodSource compilationWarnings isTestClass isOverride gsMethod'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1490,7 +1490,7 @@ savePackage
 
 updateCommand: aString onSuccessDo: aBlock
 
-	| stonResults |
+
 	
 	[
 		| time1 time2 time3 string |
@@ -1516,10 +1516,16 @@ updateCommand: aString onSuccessDo: aBlock
 	] ensure: [
 		selectedClassChanged := false.
 	].
-	"stonResults := self gciSession 
+	(Smalltalk at: #STONFlag ifAbsentPut: [false]) ifTrue:[
+		| stonResults results |
+		Smalltalk at: #STONFlag put: false.
+		stonResults := self gciSession 
 				serverPerform: #'systemBrowserSTON:' 
 				with: environment printString , ' ' , aString.
-	self halt. "
+		results := STON fromString: stonResults. 
+		results inspect.
+		].
+	
 	^nil.
 ! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
