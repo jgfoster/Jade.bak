@@ -5,6 +5,7 @@ package paxVersion: 1;
 
 
 package classNames
+	add: #BrowserUpdate;
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
 	add: #RowanClassCategoryUpdate;
@@ -60,6 +61,8 @@ package methodNames
 	add: #JadeImageStripper -> #requiredClasses;
 	add: #JadeImageStripper -> #requiredPackageNames;
 	add: #JadeLoginShell -> #aboutJadeite;
+	add: #JadePresenter -> #presentersToRegister;
+	add: #JadePresenter -> #registerPresenterForUpdates;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeServer -> #_describeMethod:;
@@ -216,6 +219,11 @@ GsMethod2 subclass: #RowanMethodDefinition
 MCPatch subclass: #RowanPatch
 	instanceVariableNames: ''
 	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Model subclass: #BrowserUpdate
+	instanceVariableNames: 'updates'
+	classVariableNames: 'Current'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #RowanService
@@ -630,6 +638,19 @@ aboutJadeite
 
 	self class aboutJadeite! !
 !JadeLoginShell categoriesFor: #aboutJadeite!public! !
+
+!JadePresenter methodsFor!
+
+presentersToRegister
+
+	^Dictionary new
+	
+	!
+
+registerPresenterForUpdates
+	self presentersToRegister keysAndValuesDo: [:presenter :selector | BrowserUpdate current register: presenter with: selector]! !
+!JadePresenter categoriesFor: #presentersToRegister!public!rowan! !
+!JadePresenter categoriesFor: #registerPresenterForUpdates!public!rowan! !
 
 !JadePresenterA methodsFor!
 
@@ -1517,13 +1538,13 @@ updateCommand: aString onSuccessDo: aBlock
 		selectedClassChanged := false.
 	].
 	(Smalltalk at: #STONFlag ifAbsentPut: [false]) ifTrue:[
-		| stonResults results |
+		| stonResults update |
+		update := BrowserUpdate current initializeUpdates. 
 		Smalltalk at: #STONFlag put: false.
 		stonResults := self gciSession 
 				serverPerform: #'systemBrowserSTON:' 
 				with: environment printString , ' ' , aString.
-		results := STON fromString: stonResults. 
-		results inspect.
+		update updates: (STON fromString: stonResults). 
 		].
 	
 	^nil.

@@ -88,6 +88,11 @@ compareAncestor
 	RowanPatchBrowser showOn: patch name: packageListPresenter selections first key
 !
 
+createComponents
+
+	super createComponents.
+	self registerPresenterForUpdates.!
+
 deletePackage
 	| packageName |
 	packageListPresenter selections isEmpty ifTrue:[^MessageBox notify: 'No package selected'].
@@ -102,6 +107,9 @@ inspectPackage
 	| service |
 	service := (RowanPackageService on: gciSession) name: packageListPresenter selection key.
 	service inspectDefinition!
+
+intialize
+	super initialize. !
 
 labelOfClass: oldName changedTo: newName
 
@@ -160,6 +168,12 @@ possiblyShowGenericPackageClassTemplate: newDef
 										ifFalse: [(RowanPackageService on: gciSession) name: classCategoryPresenter selections first value]].
 			newClassDef := packageService genericClassCreationTemplate].
 	^newClassDef!
+
+presentersToRegister
+	| presenters |
+	presenters := Dictionary new.
+	presenters at: dictionaryListPresenter put: #dictionaryUpdate:.
+	^presenters!
 
 resetClassDefinitionPresenter
 	classDefinitionPresenter view
@@ -476,12 +490,15 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #classService!private!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #compareAncestor!menu handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #createComponents!initialization!public! !
 !RowanSystemBrowserPresenter categoriesFor: #deletePackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #inspectPackage!menu handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #intialize!initialization!public! !
 !RowanSystemBrowserPresenter categoriesFor: #labelOfClass:changedTo:!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!private! !
 !RowanSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #possiblyShowGenericPackageClassTemplate:!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #presentersToRegister!initialization!public!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #resetClassDefinitionPresenter!private!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassHierarchyFrom:!public!updating! !

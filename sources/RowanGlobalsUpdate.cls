@@ -10,8 +10,8 @@ RowanGlobalsUpdate comment: ''!
 !RowanGlobalsUpdate categoriesForClass!Unclassified! !
 !RowanGlobalsUpdate methodsFor!
 
-update: aPresenter
-
+globalsUpdate: aPresenter
+	self halt. 
 	aPresenter list: globals.! !
-!RowanGlobalsUpdate categoriesFor: #update:!public! !
+!RowanGlobalsUpdate categoriesFor: #globalsUpdate:!public! !
 

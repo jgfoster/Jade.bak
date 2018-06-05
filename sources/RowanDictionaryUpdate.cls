@@ -10,10 +10,15 @@ RowanDictionaryUpdate comment: ''!
 !RowanDictionaryUpdate categoriesForClass!Unclassified! !
 !RowanDictionaryUpdate methodsFor!
 
-update: aPresenter
-	super update: aPresenter.
-	aPresenter list: dictionaries.
-	aPresenter selections: selections.
-	aPresenter view ensureSelectionVisible! !
-!RowanDictionaryUpdate categoriesFor: #update:!public!updating! !
+dictionaryUpdate: aPresenter
+	self rowanFixMe. "Selections should only be done on the requesting window"
+	aPresenter list: (dictionaries collect:[:dictName | dictName -> false]). 
+	"aPresenter selections: selections.
+	aPresenter view ensureSelectionVisible"!
+
+updateMethod
+
+	^#dictionaryUpdate:! !
+!RowanDictionaryUpdate categoriesFor: #dictionaryUpdate:!public!updating! !
+!RowanDictionaryUpdate categoriesFor: #updateMethod!public! !
 

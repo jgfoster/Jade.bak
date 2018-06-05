@@ -10,7 +10,24 @@ RowanCommandResult comment: ''!
 !RowanCommandResult categoriesForClass!Unclassified! !
 !RowanCommandResult methodsFor!
 
+dictionaryUpdate: aPresenter
+	!
+
+doNothing: anObject
+
+	"as the name implies"!
+
+globalsUpdate: aPresenter!
+
 update: aPresenter
-	aPresenter ensureVisible! !
+	aPresenter ensureVisible!
+
+updateMethod
+
+	^#doNothing:! !
+!RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #doNothing:!private! !
+!RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #update:!public!updating! !
+!RowanCommandResult categoriesFor: #updateMethod!public! !
 
