@@ -11,7 +11,6 @@ RowanGlobalsUpdate comment: ''!
 !RowanGlobalsUpdate methodsFor!
 
 globalsUpdate: aPresenter
-	self halt. 
 	aPresenter list: globals.! !
 !RowanGlobalsUpdate categoriesFor: #globalsUpdate:!public! !
 

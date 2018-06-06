@@ -10,12 +10,25 @@ RowanPackageUpdate comment: ''!
 !RowanPackageUpdate categoriesForClass!Unclassified! !
 !RowanPackageUpdate methodsFor!
 
+packagesUpdate: aPresenter
+	self rowanFixMe. "selections need to be handled separately"
+	aPresenter list: (packages collect: [:package | package -> false]).
+	modifiedPackages
+		do: [:mod | aPresenter list do: [:assoc | assoc key = mod ifTrue: [assoc value: true]]].
+	"aPresenter selections: (selections collect: [:x | aPresenter list detect: [:y | x = y key]]).
+	aPresenter view ensureSelectionVisible"!
+
 update: aPresenter
 	super update: aPresenter.
 	aPresenter list: (packages collect: [:package | package -> false]).
 	modifiedPackages
 		do: [:mod | aPresenter list do: [:assoc | assoc key = mod ifTrue: [assoc value: true]]].
 	aPresenter selections: (selections collect: [:x | aPresenter list detect: [:y | x = y key]]).
-	aPresenter view ensureSelectionVisible! !
+	aPresenter view ensureSelectionVisible!
+
+updatePackageSelectionsFor: presenter
+	presenter selections: selections! !
+!RowanPackageUpdate categoriesFor: #packagesUpdate:!public!updating! !
 !RowanPackageUpdate categoriesFor: #update:!public!updating! !
+!RowanPackageUpdate categoriesFor: #updatePackageSelectionsFor:!public!updating! !
 

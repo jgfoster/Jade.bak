@@ -121,6 +121,8 @@ package methodNames
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #MethodSourcePresenter -> #fileSave;
 	add: #Object -> #rowanFixMe;
+	add: #Presenter -> #updateSelectionsFor:;
+	add: #Presenter -> #updateSelectionsForUpdate:;
 	add: 'JadeServer class' -> #gsString;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
 	add: 'JadeSessionManager class' -> #getUrl;
@@ -1545,6 +1547,7 @@ updateCommand: aString onSuccessDo: aBlock
 				serverPerform: #'systemBrowserSTON:' 
 				with: environment printString , ' ' , aString.
 		update updates: (STON fromString: stonResults). 
+		self updateSelectionsFor: update. 
 		].
 	
 	^nil.
@@ -1845,6 +1848,22 @@ rowanFixMe
 	"do nothing. Used for marking to-do items 
 	during Rowan Development"! !
 !Object categoriesFor: #rowanFixMe!public!testing! !
+
+!Presenter methodsFor!
+
+updateSelectionsFor: browserUpdate
+
+	browserUpdate updates do:[:update | self updateSelectionsForUpdate: update].
+
+	!
+
+updateSelectionsForUpdate: update
+
+	"do nothing for most presenters"
+
+	! !
+!Presenter categoriesFor: #updateSelectionsFor:!public!rowan! !
+!Presenter categoriesFor: #updateSelectionsForUpdate:!public!rowan! !
 
 !STON class methodsFor!
 

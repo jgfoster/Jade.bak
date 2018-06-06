@@ -173,6 +173,8 @@ presentersToRegister
 	| presenters |
 	presenters := Dictionary new.
 	presenters at: dictionaryListPresenter put: #dictionaryUpdate:.
+	presenters at: globalsPresenter put: #globalsUpdate:.
+	presenters at: packageListPresenter put: #packagesUpdate:.
 	^presenters!
 
 resetClassDefinitionPresenter
@@ -459,6 +461,11 @@ updatePresenters
 	classDefinitionPresenter value: (self possiblyShowGenericPackageClassTemplate: classDefinition).
 	self resetClassDefinitionPresenter!
 
+updateSelectionsForUpdate: update
+
+	update updatePackageSelectionsFor: packageListPresenter.
+	update updateDictionarySelectionsFor: dictionaryListPresenter!
+
 updateTabLabel
 
 	| cardNumber newLabel |
@@ -509,6 +516,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodsFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateOverrideListFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updatePresenters!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateTabLabel!public!updating! !
 
 !RowanSystemBrowserPresenter class methodsFor!

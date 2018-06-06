@@ -19,15 +19,26 @@ doNothing: anObject
 
 globalsUpdate: aPresenter!
 
+packagesUpdate: aPresenter!
+
 update: aPresenter
 	aPresenter ensureVisible!
 
+updateDictionarySelectionsFor: presenter
+	!
+
 updateMethod
 
-	^#doNothing:! !
+	^#doNothing:!
+
+updatePackageSelectionsFor: presenter
+	! !
 !RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #doNothing:!private! !
 !RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #update:!public!updating! !
+!RowanCommandResult categoriesFor: #updateDictionarySelectionsFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateMethod!public! !
+!RowanCommandResult categoriesFor: #updatePackageSelectionsFor:!public!updating! !
 

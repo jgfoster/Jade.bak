@@ -14,12 +14,20 @@ dictionaryUpdate: presenter
 
 	updates do:[:update | update dictionaryUpdate: presenter]!
 
+globalsUpdate: presenter
+
+	updates do:[:update | update globalsUpdate: presenter]!
+
 initialize
 	self initializeUpdates!
 
 initializeUpdates
 	updates := OrderedCollection new.
 	!
+
+packagesUpdate: presenter
+
+	updates do:[:update | update packagesUpdate: presenter]!
 
 register: presenter with: selector
 	
@@ -40,12 +48,17 @@ updates
 	^updates!
 
 updates: aCollection
+	"don't just reinitialize the updates instance variable because
+	presenters are registered to that object"
+
+	updates removeAll: updates.
 	updates addAll: aCollection.
-	self updateReady. 
-	updates removeAll: aCollection.! !
+	self updateReady! !
 !BrowserUpdate categoriesFor: #dictionaryUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #globalsUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
 !BrowserUpdate categoriesFor: #initializeUpdates!initialization!public! !
+!BrowserUpdate categoriesFor: #packagesUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #register:with:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #unregister:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #updatePresenters!public!updating! !

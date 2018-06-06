@@ -11,14 +11,17 @@ RowanDictionaryUpdate comment: ''!
 !RowanDictionaryUpdate methodsFor!
 
 dictionaryUpdate: aPresenter
-	self rowanFixMe. "Selections should only be done on the requesting window"
-	aPresenter list: (dictionaries collect:[:dictName | dictName -> false]). 
-	"aPresenter selections: selections.
-	aPresenter view ensureSelectionVisible"!
+	aPresenter list: (dictionaries collect:[:dictName | dictName -> false]). !
+
+updateDictionarySelectionsFor: presenter
+	| sels |
+	sels := presenter list select:[:sel | selections includes: sel key].
+	presenter selections: sels!
 
 updateMethod
 
 	^#dictionaryUpdate:! !
 !RowanDictionaryUpdate categoriesFor: #dictionaryUpdate:!public!updating! !
+!RowanDictionaryUpdate categoriesFor: #updateDictionarySelectionsFor:!public!updating! !
 !RowanDictionaryUpdate categoriesFor: #updateMethod!public! !
 
