@@ -23,5 +23,5 @@ updateMethod
 	^#dictionaryUpdate:! !
 !RowanDictionaryUpdate categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanDictionaryUpdate categoriesFor: #updateDictionarySelectionsFor:!public!updating! !
-!RowanDictionaryUpdate categoriesFor: #updateMethod!public! !
+!RowanDictionaryUpdate categoriesFor: #updateMethod!public!updating! !
 

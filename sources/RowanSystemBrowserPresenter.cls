@@ -175,6 +175,7 @@ presentersToRegister
 	presenters at: dictionaryListPresenter put: #dictionaryUpdate:.
 	presenters at: globalsPresenter put: #globalsUpdate:.
 	presenters at: packageListPresenter put: #packagesUpdate:.
+	presenters at: classCategoryPresenter put: #classCategoryUpdate:.
 	^presenters!
 
 resetClassDefinitionPresenter
@@ -464,7 +465,8 @@ updatePresenters
 updateSelectionsForUpdate: update
 
 	update updatePackageSelectionsFor: packageListPresenter.
-	update updateDictionarySelectionsFor: dictionaryListPresenter!
+	update updateDictionarySelectionsFor: dictionaryListPresenter.
+	update updateClassCategorySelectionsFor: classCategoryPresenter.!
 
 updateTabLabel
 
@@ -516,7 +518,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodsFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateOverrideListFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updatePresenters!public!updating! !
-!RowanSystemBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #updateTabLabel!public!updating! !
 
 !RowanSystemBrowserPresenter class methodsFor!

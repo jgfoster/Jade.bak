@@ -344,7 +344,7 @@ RowanShell subclass: #RowanProjectListShell
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanCommandResult subclass: #RowanClassCategoryUpdate
-	instanceVariableNames: 'categories selection cache treeModel'
+	instanceVariableNames: 'categories selection treeModel'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1539,6 +1539,7 @@ updateCommand: aString onSuccessDo: aBlock
 	] ensure: [
 		selectedClassChanged := false.
 	].
+	
 	(Smalltalk at: #STONFlag ifAbsentPut: [false]) ifTrue:[
 		| stonResults update |
 		update := BrowserUpdate current initializeUpdates. 

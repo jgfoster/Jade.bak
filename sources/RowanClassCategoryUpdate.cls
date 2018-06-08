@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanCommandResult subclass: #RowanClassCategoryUpdate
-	instanceVariableNames: 'categories selection cache treeModel'
+	instanceVariableNames: 'categories selection treeModel'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -9,6 +9,30 @@ RowanClassCategoryUpdate guid: (GUID fromString: '{16db26a6-218c-475f-9cfb-039e5
 RowanClassCategoryUpdate comment: ''!
 !RowanClassCategoryUpdate categoriesForClass!Unclassified! !
 !RowanClassCategoryUpdate methodsFor!
+
+classCategoryUpdate: aPresenter
+	| cache root |
+	self newTreeModel.
+	root := treeModel roots first.
+	cache := Dictionary new
+				at: root key put: root;
+				yourself.
+	categories asSortedCollection do: 
+			[:each |
+			| array |
+			array := each subStrings: $-.
+			1 to: array size
+				do: 
+					[:i |
+					| childName parentName child parent |
+					childName := array copyFrom: 1 to: i.
+					parentName := array copyFrom: 1 to: i - 1.
+					parent := cache at: parentName.
+					(cache includesKey: childName)
+						ifFalse: 
+							[cache at: childName put: (child := childName -> each).
+							treeModel add: child asChildOf: parent]]].
+	aPresenter model: treeModel!
 
 newTreeModel
 	treeModel := TreeModel new
@@ -19,25 +43,32 @@ newTreeModel
 	^treeModel!
 
 root
-	^'--Categories--'!
+	^#() -> '--Categories--'!
 
-update: aPresenter
-	| selectionNode |
-	super update: aPresenter.
-	self newTreeModel.
-	categories asSortedCollection do: 
-			[:each |
-			| parent |
-			parent := self root.
-			(each subStrings: $-) do: 
-					[:categoryName |
-					parent := treeModel getNodeFor: categoryName
-								ifAbsent: [treeModel add: categoryName asChildOf: parent]]].
-	aPresenter model: treeModel.
-	selectionNode := treeModel getNodeFor: selection ifAbsent: [self root].
-	aPresenter selection: selectionNode.
-	aPresenter view ensureSelectionVisible! !
+updateClassCategorySelectionsFor: presenter
+	| selectionNode newSelection existingSelection|  
+
+	selection isEmpty ifTrue: [newSelection := treeModel roots first key].
+	existingSelection := (presenter selectionIfNone: [nil -> nil]) key.
+	newSelection = existingSelection ifFalse: [
+		| items item |
+		items := presenter model asBag asArray.
+		0 to: newSelection size do: [:i | 
+			| key |
+			key := newSelection copyFrom: 1 to: i.
+			item := items detect: [:each | each key = key] ifNone: [nil].
+			presenter expand: item.
+		].
+		presenter selection: item.
+	].
+	presenter view ensureSelectionVisible!
+
+updateMethod
+
+	^#classCategoryUpdate:! !
+!RowanClassCategoryUpdate categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanClassCategoryUpdate categoriesFor: #newTreeModel!private! !
 !RowanClassCategoryUpdate categoriesFor: #root!private! !
-!RowanClassCategoryUpdate categoriesFor: #update:!public!updating! !
+!RowanClassCategoryUpdate categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
+!RowanClassCategoryUpdate categoriesFor: #updateMethod!public!updating! !
 

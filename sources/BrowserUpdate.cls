@@ -10,6 +10,10 @@ BrowserUpdate comment: 'Coordinate client presenters with updates from the serve
 !BrowserUpdate categoriesForClass!MVP-Models! !
 !BrowserUpdate methodsFor!
 
+classCategoryUpdate: presenter
+
+	updates do:[:update | update classCategoryUpdate: presenter]!
+
 dictionaryUpdate: presenter
 
 	updates do:[:update | update dictionaryUpdate: presenter]!
@@ -54,6 +58,7 @@ updates: aCollection
 	updates removeAll: updates.
 	updates addAll: aCollection.
 	self updateReady! !
+!BrowserUpdate categoriesFor: #classCategoryUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #dictionaryUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #globalsUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !

@@ -10,6 +10,9 @@ RowanCommandResult comment: ''!
 !RowanCommandResult categoriesForClass!Unclassified! !
 !RowanCommandResult methodsFor!
 
+classCategoryUpdate: aPresenter
+	!
+
 dictionaryUpdate: aPresenter
 	!
 
@@ -24,6 +27,8 @@ packagesUpdate: aPresenter!
 update: aPresenter
 	aPresenter ensureVisible!
 
+updateClassCategorySelectionsFor: presenter!
+
 updateDictionarySelectionsFor: presenter
 	!
 
@@ -33,11 +38,13 @@ updateMethod
 
 updatePackageSelectionsFor: presenter
 	! !
+!RowanCommandResult categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #doNothing:!private! !
 !RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #update:!public!updating! !
+!RowanCommandResult categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateDictionarySelectionsFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateMethod!public! !
 !RowanCommandResult categoriesFor: #updatePackageSelectionsFor:!public!updating! !
