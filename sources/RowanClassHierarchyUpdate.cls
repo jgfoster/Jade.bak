@@ -8,3 +8,8 @@ RowanClassesUpdate subclass: #RowanClassHierarchyUpdate
 RowanClassHierarchyUpdate guid: (GUID fromString: '{0aaf509a-f34e-453b-bdf7-0dbbd42b0d3e}')!
 RowanClassHierarchyUpdate comment: ''!
 !RowanClassHierarchyUpdate categoriesForClass!Unclassified! !
+!RowanClassHierarchyUpdate methodsFor!
+
+updateClassSelectionFor: presenter! !
+!RowanClassHierarchyUpdate categoriesFor: #updateClassSelectionFor:!public!updating! !
+

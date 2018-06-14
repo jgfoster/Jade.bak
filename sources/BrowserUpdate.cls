@@ -14,6 +14,21 @@ classCategoryUpdate: presenter
 
 	updates do:[:update | update classCategoryUpdate: presenter]!
 
+classCommentUpdate: presenter
+
+	updates do:[:update | update classCommentUpdate: presenter]!
+
+classesUpdate: presenter
+
+	updates do:[:update | update classesUpdate: presenter]!
+
+classHierarchyUpdate: presenter
+
+	updates do:[:update | update classHierarchyUpdate: presenter]!
+
+classInfoUpdate: presenter
+	updates do:[:update | update classInfoUpdate: presenter]!
+
 dictionaryUpdate: presenter
 
 	updates do:[:update | update dictionaryUpdate: presenter]!
@@ -29,6 +44,10 @@ initializeUpdates
 	updates := OrderedCollection new.
 	!
 
+methodsUpdate: presenter
+
+	updates do:[:update | update methodsUpdate: presenter]!
+
 packagesUpdate: presenter
 
 	updates do:[:update | update packagesUpdate: presenter]!
@@ -36,6 +55,10 @@ packagesUpdate: presenter
 register: presenter with: selector
 	
 	self when: #updateReady send: selector to: self with: presenter !
+
+superclassUpdate: presenter
+
+	updates do:[:update | update superclassUpdate: presenter]!
 
 unregister: aPresenter
 
@@ -59,12 +82,18 @@ updates: aCollection
 	updates addAll: aCollection.
 	self updateReady! !
 !BrowserUpdate categoriesFor: #classCategoryUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #classCommentUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #classesUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #classHierarchyUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #classInfoUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #dictionaryUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #globalsUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
 !BrowserUpdate categoriesFor: #initializeUpdates!initialization!public! !
+!BrowserUpdate categoriesFor: #methodsUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #packagesUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #register:with:!public!registeringPresenters! !
+!BrowserUpdate categoriesFor: #superclassUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #unregister:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #updatePresenters!public!updating! !
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !

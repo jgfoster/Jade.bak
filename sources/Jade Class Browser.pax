@@ -53,13 +53,13 @@ package!
 
 "Class Definitions"!
 
-GsObject subclass: #GsClass
-	instanceVariableNames: 'category dictionary parent children isVisible classHistory isTestCase'
+JadeValueDialog subclass: #JadeMigrateClassDialog
+	instanceVariableNames: 'copyMethodsPresenter recompileSubclassesPresenter migrateInstancesPresenter removeFromClassHistoryPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeValueDialog subclass: #JadeMigrateClassDialog
-	instanceVariableNames: 'copyMethodsPresenter recompileSubclassesPresenter migrateInstancesPresenter removeFromClassHistoryPresenter'
+GsObject subclass: #GsClass
+	instanceVariableNames: 'category dictionary parent children isVisible classHistory isTestCase'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

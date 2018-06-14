@@ -70,21 +70,6 @@ package!
 
 "Class Definitions"!
 
-GsObject subclass: #GsGlobal
-	instanceVariableNames: 'gsClassName data'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GsObject subclass: #GsSymbolDictionary
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GsObject subclass: #GsUserProfile
-	instanceVariableNames: 'lastLoginTime remainingLogins isDisabled maxSessions language disabledReason lastPasswordChange isSpecial'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 JadePresenterA subclass: #AllUsersPresenter
 	instanceVariableNames: 'userListPresenter userProfilePresenter passwordLimitsPresenter'
 	classVariableNames: ''
@@ -117,6 +102,21 @@ JadePresenterA subclass: #UserProfileSetPresenter
 	classInstanceVariableNames: ''!
 JadeShell subclass: #AllUsersShell
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsGlobal
+	instanceVariableNames: 'gsClassName data'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsSymbolDictionary
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsUserProfile
+	instanceVariableNames: 'lastLoginTime remainingLogins isDisabled maxSessions language disabledReason lastPasswordChange isSpecial'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

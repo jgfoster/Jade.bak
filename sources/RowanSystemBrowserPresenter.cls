@@ -176,6 +176,9 @@ presentersToRegister
 	presenters at: globalsPresenter put: #globalsUpdate:.
 	presenters at: packageListPresenter put: #packagesUpdate:.
 	presenters at: classCategoryPresenter put: #classCategoryUpdate:.
+	presenters at: classListPresenter put: #classesUpdate:.
+	presenters at: classDefinitionPresenter put: #classInfoUpdate:.
+	presenters at: classDefinitionPresenter put: #classCommentUpdate:.
 	^presenters!
 
 resetClassDefinitionPresenter
@@ -455,7 +458,7 @@ updatePresenters
 		updateMethodFilter;
 		updateMethodList;
 		updateOverrideList;
-		updateMethod;
+		updateSelector;
 		updateTabLabel;
 		yourself]
 			ensure: [inUpdate := false].
@@ -466,7 +469,8 @@ updateSelectionsForUpdate: update
 
 	update updatePackageSelectionsFor: packageListPresenter.
 	update updateDictionarySelectionsFor: dictionaryListPresenter.
-	update updateClassCategorySelectionsFor: classCategoryPresenter.!
+	update updateClassCategorySelectionsFor: classCategoryPresenter.
+	update updateClassSelectionFor: classListPresenter!
 
 updateTabLabel
 

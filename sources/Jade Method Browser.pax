@@ -92,11 +92,6 @@ Object subclass: #JadeAbstractHistoryEntry
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsObject subclass: #GsMethod2
-	instanceVariableNames: 'gsClass category isTestCase'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 JadeAbstractHistoryEntry subclass: #JadeMethodExplorerHistoryEntry
 	instanceVariableNames: 'treeSelection methodCategory gsMethod'
 	classVariableNames: ''
@@ -129,6 +124,11 @@ JadeShell subclass: #JadeMethodHistoryBrowser
 	classInstanceVariableNames: ''!
 JadeShell subclass: #JadeMethodListBrowser
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsMethod2
+	instanceVariableNames: 'gsClass category isTestCase'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

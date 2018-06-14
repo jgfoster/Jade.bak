@@ -55,7 +55,9 @@ selectors: anObject
 update: aPresenter
 
 	aPresenter updateMethodFilterFrom: self. 
-	aPresenter updateMethodsFrom: self. ! !
+	aPresenter updateMethodsFrom: self. !
+
+updateClassSelectionFor: presenter! !
 !RowanMethodsUpdate categoriesFor: #inheritedClass!accessing!public! !
 !RowanMethodsUpdate categoriesFor: #inheritedClass:!accessing!public! !
 !RowanMethodsUpdate categoriesFor: #inheritedClasses!accessing!public! !
@@ -71,4 +73,5 @@ update: aPresenter
 !RowanMethodsUpdate categoriesFor: #selectors!accessing!public! !
 !RowanMethodsUpdate categoriesFor: #selectors:!accessing!public! !
 !RowanMethodsUpdate categoriesFor: #update:!public! !
+!RowanMethodsUpdate categoriesFor: #updateClassSelectionFor:!public!updating! !
 

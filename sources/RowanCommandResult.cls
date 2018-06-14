@@ -6,46 +6,68 @@ Object subclass: #RowanCommandResult
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanCommandResult guid: (GUID fromString: '{4ed93b8d-f706-49f3-b224-97cd3ebf739c}')!
-RowanCommandResult comment: ''!
+RowanCommandResult comment: 'Needs to be in GemStone Objects package (for the moment) so GsObject subclass won''t have cyclical dependencies.'!
 !RowanCommandResult categoriesForClass!Unclassified! !
 !RowanCommandResult methodsFor!
 
-classCategoryUpdate: aPresenter
+classCategoryUpdate: presenter
 	!
 
-dictionaryUpdate: aPresenter
+classCommentUpdate: presenter
+	!
+
+classesUpdate: presenter
+	!
+
+classHierarchyUpdate: presenter
+	!
+
+classInfoUpdate: presenter
+	!
+
+dictionaryUpdate: presenter
 	!
 
 doNothing: anObject
 
 	"as the name implies"!
 
-globalsUpdate: aPresenter!
+globalsUpdate: presenter!
 
-packagesUpdate: aPresenter!
+methodsUpdate: presenter
+	!
 
-update: aPresenter
-	aPresenter ensureVisible!
+packagesUpdate: presenter!
+
+superclassUpdate: presenter
+	!
 
 updateClassCategorySelectionsFor: presenter!
+
+updateClassSelectionFor: presenter!
 
 updateDictionarySelectionsFor: presenter
 	!
 
-updateMethod
-
-	^#doNothing:!
-
 updatePackageSelectionsFor: presenter
-	! !
+	!
+
+updateSelector
+	^#doNothing:! !
 !RowanCommandResult categoriesFor: #classCategoryUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classCommentUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classesUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classHierarchyUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classInfoUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #doNothing:!private! !
 !RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #methodsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !
-!RowanCommandResult categoriesFor: #update:!public!updating! !
+!RowanCommandResult categoriesFor: #superclassUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updateClassSelectionFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateDictionarySelectionsFor:!public!updating! !
-!RowanCommandResult categoriesFor: #updateMethod!public! !
 !RowanCommandResult categoriesFor: #updatePackageSelectionsFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updateSelector!public! !
 

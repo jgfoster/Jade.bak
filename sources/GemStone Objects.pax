@@ -14,6 +14,7 @@ package classNames
 	add: #GsSession;
 	add: #GsStackFrame;
 	add: #JadeServerReadStream;
+	add: #RowanCommandResult;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -31,7 +32,12 @@ package!
 
 "Class Definitions"!
 
-Object subclass: #GsObject
+Object subclass: #RowanCommandResult
+	instanceVariableNames: 'executionTime'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #GsObject
 	instanceVariableNames: 'gciSession name oopType'
 	classVariableNames: ''
 	poolDictionaries: ''

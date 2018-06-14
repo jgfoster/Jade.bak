@@ -16,12 +16,7 @@ dictionaryUpdate: aPresenter
 updateDictionarySelectionsFor: presenter
 	| sels |
 	sels := presenter list select:[:sel | selections includes: sel key].
-	presenter selections: sels!
-
-updateMethod
-
-	^#dictionaryUpdate:! !
+	presenter selections: sels! !
 !RowanDictionaryUpdate categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanDictionaryUpdate categoriesFor: #updateDictionarySelectionsFor:!public!updating! !
-!RowanDictionaryUpdate categoriesFor: #updateMethod!public!updating! !
 

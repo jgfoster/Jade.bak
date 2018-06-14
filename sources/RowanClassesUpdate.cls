@@ -16,6 +16,10 @@ classes
 classes: anObject
 	classes := anObject!
 
+classesUpdate: presenter
+
+	presenter list: classNames!
+
 selections
 	^selections!
 
@@ -33,12 +37,17 @@ update: aPresenter
 	type = 'classHierarchy' ifTrue: [^aPresenter updateClassHierarchyFrom: self].
 	aPresenter list: classes.
 	aPresenter selections: selections.
-	aPresenter view ensureSelectionVisible.! !
+	aPresenter view ensureSelectionVisible.!
+
+updateClassSelectionFor: presenter
+	presenter selections: selectionNames! !
 !RowanClassesUpdate categoriesFor: #classes!accessing!private! !
 !RowanClassesUpdate categoriesFor: #classes:!accessing!private! !
+!RowanClassesUpdate categoriesFor: #classesUpdate:!public!updating! !
 !RowanClassesUpdate categoriesFor: #selections!accessing!private! !
 !RowanClassesUpdate categoriesFor: #selections:!accessing!private! !
 !RowanClassesUpdate categoriesFor: #type!accessing!private! !
 !RowanClassesUpdate categoriesFor: #type:!accessing!private! !
 !RowanClassesUpdate categoriesFor: #update:!public! !
+!RowanClassesUpdate categoriesFor: #updateClassSelectionFor:!public!updating! !
 

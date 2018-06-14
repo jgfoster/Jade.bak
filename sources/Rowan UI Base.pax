@@ -13,7 +13,6 @@ package classNames
 	add: #RowanClassHierarchyUpdate;
 	add: #RowanClassInfoUpdate;
 	add: #RowanClassService;
-	add: #RowanCommandResult;
 	add: #RowanDictionaryUpdate;
 	add: #RowanGlobalsUpdate;
 	add: #RowanGsMethod;
@@ -102,6 +101,8 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #queryCommand:;
 	add: #JadeSystemBrowserPresenter -> #savePackage;
 	add: #JadeSystemBrowserPresenter -> #updateCommand:onSuccessDo:;
+	add: #JadeSystemBrowserPresenter -> #updateMethod;
+	add: #JadeSystemBrowserPresenter -> #updateSelector;
 	add: #JadeTextDocument -> #aboutJadeite;
 	add: #JadeTextDocument -> #jadeBrowseClasses;
 	add: #JadeToolsToolBarPresenter -> #browseClasses;
@@ -199,26 +200,6 @@ package!
 "Class Definitions"!
 
 Object subclass: #Rowan
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-Object subclass: #RowanCommandResult
-	instanceVariableNames: 'executionTime'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GsMethod subclass: #RowanGsMethod
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GsMethod2 subclass: #RowanMethodDefinition
-	instanceVariableNames: 'selector source className packageName projectName methodDefinitionService'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-MCPatch subclass: #RowanPatch
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -375,6 +356,21 @@ RowanCommandResult subclass: #RowanMethodUpdate
 	classInstanceVariableNames: ''!
 RowanCommandResult subclass: #RowanPackageUpdate
 	instanceVariableNames: 'packages modifiedPackages selections'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsMethod subclass: #RowanGsMethod
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsMethod2 subclass: #RowanMethodDefinition
+	instanceVariableNames: 'selector source className packageName projectName methodDefinitionService'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCPatch subclass: #RowanPatch
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1539,20 +1535,135 @@ updateCommand: aString onSuccessDo: aBlock
 	] ensure: [
 		selectedClassChanged := false.
 	].
-	
 	(Smalltalk at: #STONFlag ifAbsentPut: [false]) ifTrue:[
 		| stonResults update |
-		update := BrowserUpdate current initializeUpdates. 
-		Smalltalk at: #STONFlag put: false.
+		Transcript cr; show: 'Doing STON update'.
+		inUpdate := true.
+		[update := BrowserUpdate current initializeUpdates. 
+		Smalltalk at: #STONFlag put: true.
 		stonResults := self gciSession 
 				serverPerform: #'systemBrowserSTON:' 
 				with: environment printString , ' ' , aString.
 		update updates: (STON fromString: stonResults). 
-		self updateSelectionsFor: update. 
+		self updateSelectionsFor: update.
+		update updates: #(). ] ensure: [inUpdate := false].
 		].
 	
+	
 	^nil.
-! !
+!
+
+updateMethod
+	| gsMethod isReadOnly listModel methodSourceLabel newSource warnings x |
+	methodSourcePresenter view cancelCallTip.
+	gsMethod := GsMethod fromStream: readStream session: gciSession.
+	isReadOnly := gsMethod isReadOnly.	"current user has write permission for the class"
+	newSource := gsMethod source.
+	methodSourcePresenter view isModified
+		ifTrue: 
+			[newSource = methodSource ifTrue: [^self].
+			(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!')
+				ifTrue: [methodSourcePresenter value copyToClipboard]].
+	methodSource := newSource.
+	methodSourcePresenter value: methodSource.
+	unimplementedSelectors := gsMethod unimplementedSelectors.
+	stepPoints := gsMethod stepPoints.
+	breakPoints := gsMethod breakPoints.
+	self updateMethodStepPoints.
+	methodSourcePresenter view
+		backcolor: JadeTextStyles default colorForNoEdits;
+		isModified: false;
+		isReadOnly: isReadOnly;
+		yourself.
+	(overrideListPresenter list notEmpty
+		and: [overrideListPresenter selectionOrNil ~= overrideListPresenter list last])
+			ifTrue: 
+				[methodSourcePresenter view
+					backcolor: nil;
+					isReadOnly: true;
+					yourself].
+	((methodCategory := gsMethod category) notEmpty and: [self isCategoriesTabSelected])
+		ifTrue: 
+			[| fullList selections index newName |
+			fullList := categoryListPresenter list.
+			selections := categoryListPresenter selections.
+			0 < (index := fullList indexOf: methodCategory)
+				ifTrue: 
+					[fullList at: index put: (newName := ' ' , methodCategory).
+					categoryListPresenter list: fullList.
+					0 < (index := selections indexOf: methodCategory)
+						ifTrue: 
+							[selections at: index put: newName.
+							categoryListPresenter selections: selections].
+					categoryListPresenter view invalidate]].
+	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
+	originalSourceLabel
+		ifNil: [originalSourceLabel := listModel detect: [:each | each text = 'Original Source']].
+	methodSourceLabel := listModel detect: [:each | each text = 'Method Source'].
+	(x := gsMethod originalSource) isEmpty
+		ifTrue: [listModel remove: originalSourceLabel ifAbsent: []]
+		ifFalse: 
+			[(listModel includes: originalSourceLabel)
+				ifFalse: [listModel add: originalSourceLabel before: methodSourceLabel].
+			originalSourcePresenter value: x].
+	(warnings := gsMethod warnings) notEmpty
+		ifTrue: [MessageBox warning: warnings caption: 'Jade Compile Warning']!
+
+updateSelector
+	| gsMethod isReadOnly listModel methodSourceLabel newSource warnings x |
+	methodSourcePresenter view cancelCallTip.
+	gsMethod := GsMethod fromStream: readStream session: gciSession.
+	isReadOnly := gsMethod isReadOnly.	"current user has write permission for the class"
+	newSource := gsMethod source.
+	methodSourcePresenter view isModified
+		ifTrue: 
+			[newSource = methodSource ifTrue: [^self].
+			(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!')
+				ifTrue: [methodSourcePresenter value copyToClipboard]].
+	methodSource := newSource.
+	methodSourcePresenter value: methodSource.
+	unimplementedSelectors := gsMethod unimplementedSelectors.
+	stepPoints := gsMethod stepPoints.
+	breakPoints := gsMethod breakPoints.
+	self updateMethodStepPoints.
+	methodSourcePresenter view
+		backcolor: JadeTextStyles default colorForNoEdits;
+		isModified: false;
+		isReadOnly: isReadOnly;
+		yourself.
+	(overrideListPresenter list notEmpty
+		and: [overrideListPresenter selectionOrNil ~= overrideListPresenter list last])
+			ifTrue: 
+				[methodSourcePresenter view
+					backcolor: nil;
+					isReadOnly: true;
+					yourself].
+	((methodCategory := gsMethod category) notEmpty and: [self isCategoriesTabSelected])
+		ifTrue: 
+			[| fullList selections index newName |
+			fullList := categoryListPresenter list.
+			selections := categoryListPresenter selections.
+			0 < (index := fullList indexOf: methodCategory)
+				ifTrue: 
+					[fullList at: index put: (newName := ' ' , methodCategory).
+					categoryListPresenter list: fullList.
+					0 < (index := selections indexOf: methodCategory)
+						ifTrue: 
+							[selections at: index put: newName.
+							categoryListPresenter selections: selections].
+					categoryListPresenter view invalidate]].
+	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
+	originalSourceLabel
+		ifNil: [originalSourceLabel := listModel detect: [:each | each text = 'Original Source']].
+	methodSourceLabel := listModel detect: [:each | each text = 'Method Source'].
+	(x := gsMethod originalSource) isEmpty
+		ifTrue: [listModel remove: originalSourceLabel ifAbsent: []]
+		ifFalse: 
+			[(listModel includes: originalSourceLabel)
+				ifFalse: [listModel add: originalSourceLabel before: methodSourceLabel].
+			originalSourcePresenter value: x].
+	(warnings := gsMethod warnings) notEmpty
+		ifTrue: [MessageBox warning: warnings caption: 'Jade Compile Warning']! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
@@ -1560,6 +1671,8 @@ updateCommand: aString onSuccessDo: aBlock
 !JadeSystemBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !
+!JadeSystemBrowserPresenter categoriesFor: #updateMethod!public!updating! !
+!JadeSystemBrowserPresenter categoriesFor: #updateSelector!public!updating! !
 
 !JadeTextDocument methodsFor!
 

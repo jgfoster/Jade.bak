@@ -152,6 +152,41 @@ Object subclass: #MCVersionName
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+MCDefinition subclass: #MCClassDefinition
+	instanceVariableNames: 'className definition'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCDefinition subclass: #MCMethodDefinition
+	instanceVariableNames: 'classIsMeta source category selector className timeStamp'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCDefinition subclass: #MCOrganizationDefinition
+	instanceVariableNames: 'categories'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Dialog subclass: #MCHttpRepositoryInfoDialog
+	instanceVariableNames: 'locationPresenter userPresenter passwordPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Dialog subclass: #MCVersionDialog
+	instanceVariableNames: 'namePresenter messagePresenter repositoryListPresenter httpUserPresenter httpPasswordPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeShell subclass: #MCPatchBrowser
+	instanceVariableNames: 'patch includeIdenticalPresenter operationListPresenter leftTextPresenter leftMemoPresenter rightTextPresenter rightMemoPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeShell subclass: #MCRepositoryBrowser
+	instanceVariableNames: 'repositoryListPresenter packageListPresenter versionListPresenter repositoryCreationTemplatePresenter versionNamePresenter versionDatePresenter versionTimePresenter versionAuthorPresenter versionIDPresenter versionAncestorsPresenter versionStepChildrenPresenter versionMessagePresenter loadedVersionNames'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 GsObject subclass: #MCPackage
 	instanceVariableNames: 'repository versionNames loaded'
 	classVariableNames: ''
@@ -234,41 +269,6 @@ MCServerDirectoryRepository subclass: #MCFileTreeRepository
 	classInstanceVariableNames: ''!
 MCFileTreeRepository subclass: #MCGitHubRepository
 	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-MCDefinition subclass: #MCClassDefinition
-	instanceVariableNames: 'className definition'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-MCDefinition subclass: #MCMethodDefinition
-	instanceVariableNames: 'classIsMeta source category selector className timeStamp'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-MCDefinition subclass: #MCOrganizationDefinition
-	instanceVariableNames: 'categories'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-Dialog subclass: #MCHttpRepositoryInfoDialog
-	instanceVariableNames: 'locationPresenter userPresenter passwordPresenter'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-Dialog subclass: #MCVersionDialog
-	instanceVariableNames: 'namePresenter messagePresenter repositoryListPresenter httpUserPresenter httpPasswordPresenter'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-JadeShell subclass: #MCPatchBrowser
-	instanceVariableNames: 'patch includeIdenticalPresenter operationListPresenter leftTextPresenter leftMemoPresenter rightTextPresenter rightMemoPresenter'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-JadeShell subclass: #MCRepositoryBrowser
-	instanceVariableNames: 'repositoryListPresenter packageListPresenter versionListPresenter repositoryCreationTemplatePresenter versionNamePresenter versionDatePresenter versionTimePresenter versionAuthorPresenter versionIDPresenter versionAncestorsPresenter versionStepChildrenPresenter versionMessagePresenter loadedVersionNames'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

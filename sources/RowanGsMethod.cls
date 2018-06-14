@@ -14,6 +14,10 @@ behavior
 	behavior isNumber ifTrue: [behavior := gciSession oopTypeWithOop: behavior].
 	^behavior!
 
+gsBehavior
+
+	^behavior!
+
 initializeMethodSource
 	source := 'newMethod: argument
 		"Method comment"
@@ -33,6 +37,7 @@ source
 	source isEmpty ifTrue: [self initializeMethodSource ].
 	^source! !
 !RowanGsMethod categoriesFor: #behavior!accessing!public! !
+!RowanGsMethod categoriesFor: #gsBehavior!accessing!public! !
 !RowanGsMethod categoriesFor: #initializeMethodSource!private! !
 !RowanGsMethod categoriesFor: #oopType!accessing!public! !
 !RowanGsMethod categoriesFor: #session:!accessing!public! !

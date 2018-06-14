@@ -2564,6 +2564,7 @@ updateAndSelectB: aView
 updateClassCategoryTree
 
 	| root treeModel cache listA listB existingSelection newSelection |
+
 	root := #() -> '--Categories--'.
 	treeModel := TreeModel new
 		searchPolicy: SearchPolicy equality;
@@ -2790,66 +2791,6 @@ updateMenuBar
 	shellView menuBar: menuBar.
 !
 
-updateMethod
-
-	| gsMethod isReadOnly listModel methodSourceLabel newSource warnings x |
-	methodSourcePresenter view cancelCallTip.
-	gsMethod := GsMethod 
-		fromStream: readStream
-		session: gciSession.
-	isReadOnly := gsMethod isReadOnly.	"current user has write permission for the class"
-	newSource := gsMethod source.
-	methodSourcePresenter view isModified ifTrue: [
-		newSource = methodSource ifTrue: [^self].
-		(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!') ifTrue: [
-			methodSourcePresenter value copyToClipboard.
-		].
-	].
-	methodSource := newSource.
-	methodSourcePresenter value: methodSource.
-	unimplementedSelectors := gsMethod unimplementedSelectors.
-	stepPoints := gsMethod stepPoints.
-	breakPoints := gsMethod breakPoints.
-	self updateMethodStepPoints.
-	methodSourcePresenter view 
-		backcolor: JadeTextStyles default colorForNoEdits;
-		isModified: false;
-		isReadOnly: isReadOnly;
-		yourself.
-	(overrideListPresenter list notEmpty and: [overrideListPresenter selectionOrNil ~= overrideListPresenter list last]) ifTrue: [
-		methodSourcePresenter view
-			backcolor: nil;
-			isReadOnly: true;
-			yourself.
-	].
-	((methodCategory := gsMethod category) notEmpty and: [self isCategoriesTabSelected]) ifTrue: [
-		| fullList selections index newName |
-		fullList := categoryListPresenter list.
-		selections := categoryListPresenter selections.
-		0 < (index := fullList indexOf: methodCategory) ifTrue: [
-			fullList at: index put: (newName := ' ' , methodCategory).
-			categoryListPresenter list: fullList.
-			0 < (index := selections indexOf: methodCategory) ifTrue: [
-				selections at: index put: newName.
-				categoryListPresenter selections: selections.
-			].
-			categoryListPresenter view invalidate.
-		].
-	].
-	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
-	originalSourceLabel ifNil: [originalSourceLabel := listModel detect: [:each | each text  = 'Original Source']].
-	methodSourceLabel := listModel detect: [:each | each text = 'Method Source'].
-	(x := gsMethod originalSource) isEmpty ifTrue: [
-		listModel remove: originalSourceLabel ifAbsent: [].
-	] ifFalse: [
-		(listModel includes: originalSourceLabel) ifFalse: [listModel add: originalSourceLabel before: methodSourceLabel].
-		originalSourcePresenter value: x.
-	].
-	(warnings := gsMethod warnings) notEmpty ifTrue: [
-		MessageBox warning: warnings caption: 'Jade Compile Warning'.
-	].
-	!
-
 updateMethodFilter
 
 	| listPresenter pieces type tabs tab filters selections |
@@ -3003,25 +2944,21 @@ updatePackageList
 !
 
 updatePresenters
-
-	[
-		inUpdate := true.
-		self
-			updatePackageDictionaryList;
-			updateClassCategoryTree;
-			updateClassListOrHierarchy;
-			updateClassInfo;
-			updateSuperclassList;
-			updateMethodFilter;
-			updateMethodList;
-			updateOverrideList;
-			updateMethod;
-			updateTabLabel;
-			yourself.
-	] ensure: [
-		inUpdate := false.
-	].
-!
+	
+	[inUpdate := true.
+	self
+		updatePackageDictionaryList;
+		updateClassCategoryTree;
+		updateClassListOrHierarchy;
+		updateClassInfo;
+		updateSuperclassList;
+		updateMethodFilter;
+		updateMethodList;
+		updateOverrideList;
+		updateSelector;
+		updateTabLabel;
+		yourself]
+			ensure: [inUpdate := false]!
 
 updateSuperclassList
 
@@ -3315,7 +3252,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #updateCommand:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateDictionaryList!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateMenuBar!menus!public! !
-!JadeSystemBrowserPresenter categoriesFor: #updateMethod!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateMethodFilter!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateMethodList!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateMethodStepPoints!public!updating! !

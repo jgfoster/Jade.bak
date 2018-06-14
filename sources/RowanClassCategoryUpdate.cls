@@ -46,29 +46,17 @@ root
 	^#() -> '--Categories--'!
 
 updateClassCategorySelectionsFor: presenter
-	| selectionNode newSelection existingSelection|  
-
-	selection isEmpty ifTrue: [newSelection := treeModel roots first key].
-	existingSelection := (presenter selectionIfNone: [nil -> nil]) key.
-	newSelection = existingSelection ifFalse: [
-		| items item |
-		items := presenter model asBag asArray.
-		0 to: newSelection size do: [:i | 
-			| key |
-			key := newSelection copyFrom: 1 to: i.
-			item := items detect: [:each | each key = key] ifNone: [nil].
-			presenter expand: item.
-		].
-		presenter selection: item.
-	].
-	presenter view ensureSelectionVisible!
-
-updateMethod
-
-	^#classCategoryUpdate:! !
+	| newSelection |
+	newSelection := selection isEmpty
+				ifTrue: [treeModel roots first key]
+				ifFalse: [selection subStrings: $-].
+	(presenter model asBag asArray select: [:item | item key size >= newSelection size]) do: 
+			[:assoc |
+			(assoc key first: newSelection size) = newSelection ifTrue: [presenter expand: assoc].
+			assoc key = newSelection ifTrue: [presenter selection: assoc]].
+	presenter view ensureSelectionVisible! !
 !RowanClassCategoryUpdate categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanClassCategoryUpdate categoriesFor: #newTreeModel!private! !
 !RowanClassCategoryUpdate categoriesFor: #root!private! !
 !RowanClassCategoryUpdate categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
-!RowanClassCategoryUpdate categoriesFor: #updateMethod!public!updating! !
 

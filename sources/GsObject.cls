@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-Object subclass: #GsObject
+RowanCommandResult subclass: #GsObject
 	instanceVariableNames: 'gciSession name oopType'
 	classVariableNames: ''
 	poolDictionaries: ''
