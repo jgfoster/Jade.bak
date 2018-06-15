@@ -40,7 +40,9 @@ update: aPresenter
 	aPresenter view ensureSelectionVisible.!
 
 updateClassSelectionFor: presenter
-	presenter selections: selectionNames! !
+	| symbols |
+	symbols := selectionNames collect:[:name | name asSymbol].
+	presenter selections: symbols! !
 !RowanClassesUpdate categoriesFor: #classes!accessing!private! !
 !RowanClassesUpdate categoriesFor: #classes:!accessing!private! !
 !RowanClassesUpdate categoriesFor: #classesUpdate:!public!updating! !

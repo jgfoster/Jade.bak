@@ -10,6 +10,9 @@ RowanSuperclassUpdate comment: ''!
 !RowanSuperclassUpdate categoriesForClass!Unclassified! !
 !RowanSuperclassUpdate methodsFor!
 
+classesUpdate: presenter!
+
 updateClassSelectionFor: presenter! !
+!RowanSuperclassUpdate categoriesFor: #classesUpdate:!public!updating! !
 !RowanSuperclassUpdate categoriesFor: #updateClassSelectionFor:!public!updating! !
 

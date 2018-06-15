@@ -10,6 +10,8 @@ RowanMethodsUpdate comment: ''!
 !RowanMethodsUpdate categoriesForClass!Unclassified! !
 !RowanMethodsUpdate methodsFor!
 
+classesUpdate: presenter!
+
 inheritedClass
 	^inheritedClass!
 
@@ -58,6 +60,7 @@ update: aPresenter
 	aPresenter updateMethodsFrom: self. !
 
 updateClassSelectionFor: presenter! !
+!RowanMethodsUpdate categoriesFor: #classesUpdate:!public!updating! !
 !RowanMethodsUpdate categoriesFor: #inheritedClass!accessing!public! !
 !RowanMethodsUpdate categoriesFor: #inheritedClass:!accessing!public! !
 !RowanMethodsUpdate categoriesFor: #inheritedClasses!accessing!public! !

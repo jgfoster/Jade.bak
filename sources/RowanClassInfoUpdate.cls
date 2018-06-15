@@ -19,12 +19,15 @@ category: anObject
 classCommentUpdate: presenter
 	presenter value: comment!
 
-classInfoUpdate: presenter
-	presenter view isModified
+classDefinitionUpdate: presenter
+	(presenter value notNil and: [presenter value notEmpty])
 		ifTrue: 
-			[template = presenter value ifTrue: [^self].
-			(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Class has unsaved changes!!')
-				ifTrue: [presenter value copyToClipboard]].
+			[presenter view isModified
+				ifTrue: 
+					[
+					template = presenter value ifTrue: [^self].
+					(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Class has unsaved changes!!')
+						ifTrue: [presenter value copyToClipboard]]].
 	presenter value: template.
 	presenter view
 		backcolor: Color white;
@@ -54,7 +57,7 @@ update: aPresenter
 !RowanClassInfoUpdate categoriesFor: #category!accessing!public! !
 !RowanClassInfoUpdate categoriesFor: #category:!accessing!public! !
 !RowanClassInfoUpdate categoriesFor: #classCommentUpdate:!public!updating! !
-!RowanClassInfoUpdate categoriesFor: #classInfoUpdate:!public!updating! !
+!RowanClassInfoUpdate categoriesFor: #classDefinitionUpdate:!public!updating! !
 !RowanClassInfoUpdate categoriesFor: #comment!accessing!public! !
 !RowanClassInfoUpdate categoriesFor: #comment:!accessing!public! !
 !RowanClassInfoUpdate categoriesFor: #oop!accessing!public! !

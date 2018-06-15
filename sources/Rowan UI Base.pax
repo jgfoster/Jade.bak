@@ -60,7 +60,6 @@ package methodNames
 	add: #JadeImageStripper -> #requiredClasses;
 	add: #JadeImageStripper -> #requiredPackageNames;
 	add: #JadeLoginShell -> #aboutJadeite;
-	add: #JadePresenter -> #presentersToRegister;
 	add: #JadePresenter -> #registerPresenterForUpdates;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
@@ -122,8 +121,25 @@ package methodNames
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #MethodSourcePresenter -> #fileSave;
 	add: #Object -> #rowanFixMe;
+	add: #Presenter -> #updateReady:;
 	add: #Presenter -> #updateSelectionsFor:;
 	add: #Presenter -> #updateSelectionsForUpdate:;
+	add: #RowanCommandResult -> #classCategoryUpdate:;
+	add: #RowanCommandResult -> #classCommentUpdate:;
+	add: #RowanCommandResult -> #classDefinitionUpdate:;
+	add: #RowanCommandResult -> #classesHierarchyUpdate:;
+	add: #RowanCommandResult -> #classesUpdate:;
+	add: #RowanCommandResult -> #classHierarchyUpdate:;
+	add: #RowanCommandResult -> #dictionaryUpdate:;
+	add: #RowanCommandResult -> #globalsUpdate:;
+	add: #RowanCommandResult -> #methodsUpdate:;
+	add: #RowanCommandResult -> #packagesUpdate:;
+	add: #RowanCommandResult -> #superclassUpdate:;
+	add: #RowanCommandResult -> #updateClassCategorySelectionsFor:;
+	add: #RowanCommandResult -> #updateClassHierarchySelectionFor:;
+	add: #RowanCommandResult -> #updateClassSelectionFor:;
+	add: #RowanCommandResult -> #updateDictionarySelectionsFor:;
+	add: #RowanCommandResult -> #updatePackageSelectionsFor:;
 	add: 'JadeServer class' -> #gsString;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
 	add: 'JadeSessionManager class' -> #getUrl;
@@ -639,15 +655,8 @@ aboutJadeite
 
 !JadePresenter methodsFor!
 
-presentersToRegister
-
-	^Dictionary new
-	
-	!
-
 registerPresenterForUpdates
-	self presentersToRegister keysAndValuesDo: [:presenter :selector | BrowserUpdate current register: presenter with: selector]! !
-!JadePresenter categoriesFor: #presentersToRegister!public!rowan! !
+	! !
 !JadePresenter categoriesFor: #registerPresenterForUpdates!public!rowan! !
 
 !JadePresenterA methodsFor!
@@ -1965,6 +1974,12 @@ rowanFixMe
 
 !Presenter methodsFor!
 
+updateReady: aBlock
+
+	aBlock value
+
+	!
+
 updateSelectionsFor: browserUpdate
 
 	browserUpdate updates do:[:update | self updateSelectionsForUpdate: update].
@@ -1976,8 +1991,71 @@ updateSelectionsForUpdate: update
 	"do nothing for most presenters"
 
 	! !
+!Presenter categoriesFor: #updateReady:!public!rowan! !
 !Presenter categoriesFor: #updateSelectionsFor:!public!rowan! !
 !Presenter categoriesFor: #updateSelectionsForUpdate:!public!rowan! !
+
+!RowanCommandResult methodsFor!
+
+classCategoryUpdate: presenter
+	!
+
+classCommentUpdate: presenter
+	
+	!
+
+classDefinitionUpdate: presenter
+	!
+
+classesHierarchyUpdate: presenter
+!
+
+classesUpdate: presenter
+	!
+
+classHierarchyUpdate: presenter
+	!
+
+dictionaryUpdate: presenter
+	!
+
+globalsUpdate: presenter!
+
+methodsUpdate: presenter
+	!
+
+packagesUpdate: presenter!
+
+superclassUpdate: presenter
+	!
+
+updateClassCategorySelectionsFor: presenter!
+
+updateClassHierarchySelectionFor: presenter!
+
+updateClassSelectionFor: presenter!
+
+updateDictionarySelectionsFor: presenter
+	!
+
+updatePackageSelectionsFor: presenter
+	! !
+!RowanCommandResult categoriesFor: #classCategoryUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classCommentUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classDefinitionUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classesHierarchyUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classesUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classHierarchyUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #methodsUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #superclassUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updateClassSelectionFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updateDictionarySelectionsFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updatePackageSelectionsFor:!public!updating! !
 
 !STON class methodsFor!
 

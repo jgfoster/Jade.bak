@@ -128,6 +128,12 @@ labelOfClass: oldName changedTo: newName
 
 !
 
+onViewClosed
+	
+	super onViewClosed.
+	subPresenters do:[:presenter |
+		BrowserUpdate current removeEventsTriggeredFor: presenter]!
+
 packageTabName
 	^'Rowan Packages'!
 
@@ -169,17 +175,15 @@ possiblyShowGenericPackageClassTemplate: newDef
 			newClassDef := packageService genericClassCreationTemplate].
 	^newClassDef!
 
-presentersToRegister
-	| presenters |
-	presenters := Dictionary new.
-	presenters at: dictionaryListPresenter put: #dictionaryUpdate:.
-	presenters at: globalsPresenter put: #globalsUpdate:.
-	presenters at: packageListPresenter put: #packagesUpdate:.
-	presenters at: classCategoryPresenter put: #classCategoryUpdate:.
-	presenters at: classListPresenter put: #classesUpdate:.
-	presenters at: classDefinitionPresenter put: #classInfoUpdate:.
-	presenters at: classDefinitionPresenter put: #classCommentUpdate:.
-	^presenters!
+registerPresenterForUpdates
+	BrowserUpdate current register: dictionaryListPresenter with: #dictionaryUpdate:.
+	BrowserUpdate current register: globalsPresenter with: #globalsUpdate:.
+	BrowserUpdate current register: packageListPresenter with: #packagesUpdate:.
+	BrowserUpdate current register: classCategoryPresenter with: #classCategoryUpdate:.
+	BrowserUpdate current register: classListPresenter with: #classesUpdate:.
+	BrowserUpdate current register: classDefinitionPresenter with: #classDefinitionUpdate:.
+	BrowserUpdate current register: classCommentPresenter with: #classCommentUpdate:.
+	BrowserUpdate current register: classHierarchyPresenter with: #classHierarchyUpdate:.!
 
 resetClassDefinitionPresenter
 	classDefinitionPresenter view
@@ -470,7 +474,8 @@ updateSelectionsForUpdate: update
 	update updatePackageSelectionsFor: packageListPresenter.
 	update updateDictionarySelectionsFor: dictionaryListPresenter.
 	update updateClassCategorySelectionsFor: classCategoryPresenter.
-	update updateClassSelectionFor: classListPresenter!
+	update updateClassSelectionFor: classListPresenter.
+	update updateClassHierarchySelectionFor: classHierarchyPresenter!
 
 updateTabLabel
 
@@ -508,10 +513,11 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #inspectPackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #intialize!initialization!public! !
 !RowanSystemBrowserPresenter categoriesFor: #labelOfClass:changedTo:!event handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #onViewClosed!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!private! !
 !RowanSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #possiblyShowGenericPackageClassTemplate:!public!updating! !
-!RowanSystemBrowserPresenter categoriesFor: #presentersToRegister!initialization!public!rowan! !
+!RowanSystemBrowserPresenter categoriesFor: #registerPresenterForUpdates!event handlers!initialization!public!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #resetClassDefinitionPresenter!private!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassHierarchyFrom:!public!updating! !

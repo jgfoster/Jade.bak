@@ -11,7 +11,7 @@ RowanDictionaryUpdate comment: ''!
 !RowanDictionaryUpdate methodsFor!
 
 dictionaryUpdate: aPresenter
-	aPresenter list: (dictionaries collect:[:dictName | dictName -> false]). !
+	aPresenter list: (dictionaries collect: [:dictName | (dictName last: dictName size - 1) -> false])!
 
 updateDictionarySelectionsFor: presenter
 	| sels |

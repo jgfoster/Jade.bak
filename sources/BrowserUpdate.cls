@@ -18,6 +18,13 @@ classCommentUpdate: presenter
 
 	updates do:[:update | update classCommentUpdate: presenter]!
 
+classDefinitionUpdate: presenter
+	updates do: [:update | update classDefinitionUpdate: presenter]!
+
+classesHierarchyUpdate: presenter
+
+	updates do:[:update | update classesHierarchyUpdate: presenter]!
+
 classesUpdate: presenter
 
 	updates do:[:update | update classesUpdate: presenter]!
@@ -25,9 +32,6 @@ classesUpdate: presenter
 classHierarchyUpdate: presenter
 
 	updates do:[:update | update classHierarchyUpdate: presenter]!
-
-classInfoUpdate: presenter
-	updates do:[:update | update classInfoUpdate: presenter]!
 
 dictionaryUpdate: presenter
 
@@ -53,8 +57,13 @@ packagesUpdate: presenter
 	updates do:[:update | update packagesUpdate: presenter]!
 
 register: presenter with: selector
-	
-	self when: #updateReady send: selector to: self with: presenter !
+	"send the update to the presenter so that when the presenter gets
+	removed, it's events go with it."
+	self
+		when: #updateReady
+		send: #updateReady:
+		to: presenter
+		with: [self updates do: [:update | update perform: selector with: presenter]]!
 
 superclassUpdate: presenter
 
@@ -83,9 +92,10 @@ updates: aCollection
 	self updateReady! !
 !BrowserUpdate categoriesFor: #classCategoryUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #classCommentUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #classDefinitionUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #classesHierarchyUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #classesUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #classHierarchyUpdate:!public!updating! !
-!BrowserUpdate categoriesFor: #classInfoUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #dictionaryUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #globalsUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
