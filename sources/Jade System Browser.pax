@@ -828,7 +828,7 @@ sbFileOutMethod: anOrderedCollection
 
 	| aClass |
 	aClass := (self sbClassFrom: anOrderedCollection) thisClass.
-	writeStream nextPutAll: aClass fileOutMethod: anOrderedCollection removeFirst.
+	writeStream nextPutAll: (aClass fileOutMethod: anOrderedCollection removeFirst).
 !
 
 sbFindClass
