@@ -272,7 +272,7 @@ logMethodName: methodName info: anArray
 
 	self configuration logEnabled ifFalse: [^self].
 
-	fileStream := FileStream write: 'autocompletion.log' mode: #'append'.
+	fileStream := FileStream write: 'autocompletion.log' mode: #'append' check: false type: #'ansi'.
 	fileStream
 		nextPutAll: 'time: ', Time now asMilliseconds printString; cr;
 		nextPutAll: methodName ; cr; 

@@ -1,4 +1,4 @@
-Ôªø"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #JadeTextStyles
 	instanceVariableNames: 'colorForCompileError colorForNoEdits colorForUnsavedEdits textStyles'
@@ -35,7 +35,7 @@ defaultTextStyles
 	answer := Set new.
 	answer
 		add: ((ScintillaTextStyle name: #illegal)
-					description: 'Illegal characters, e.g. �';
+					description: 'Illegal characters, e.g. £';
 					forecolor: Color red;
 					isBold: true;
 					yourself);

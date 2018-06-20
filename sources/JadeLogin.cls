@@ -248,7 +248,7 @@ saveDefault
 	| path |
 	path := self class defaultPath.
 	[
-		(FileStream write: path)
+		(FileStream write: path mode: #'truncate' check: false type: #'ansi')	"https://github.com/jgfoster/Jade/issues/151"
 			nextPutAll: self asXML;
 			close.
 	] on: Error do: [:ex | 
@@ -412,7 +412,7 @@ new
 	| path stream string |
 	path := self defaultPath.
 	(File exists: path) ifTrue: [
-		stream := FileStream read: path.
+		stream := FileStream read: path type: #'ansi'.
 		string := stream upToEnd.
 		stream close.
 	] ifFalse: [

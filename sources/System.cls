@@ -28,7 +28,7 @@ performOnServer: aString
 	outPath := File tempPath , 'gsCmd.out'.
 	self removeIfPresent: tmpPath.
 	self removeIfPresent: outPath.
-	stream := FileStream write: batPath.
+	stream := FileStream write: batPath mode: #'truncate' check: false type: #'ansi'.
 	[
 		stream nextPutAll: aString.
 		stream 

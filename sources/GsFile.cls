@@ -17,7 +17,7 @@ existsOnServer: aPathName
 
 openWriteOnServer: aPathName
 
-	^FileStream write: aPathName.
+	^FileStream write: aPathName mode: #'truncate' check: false type: #'ansi'.
 !
 
 removeServerFile: aPathName

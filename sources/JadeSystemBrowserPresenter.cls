@@ -998,7 +998,7 @@ fileOutClassOnPath: aString
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
 	header := self stuffToKeepFromPath: aString andAddTo: newSource.
-	file := FileStream write: aString.
+	file := FileStream write: aString mode: #'truncate' check: false type: #'ansi'.
 	[
 		file nextPutAll: header; nextPutAll: newSource.
 	] ensure: [
@@ -1023,7 +1023,7 @@ fileOutDictionary
 		serverPerform: #'systemBrowser:' 
 		with: string.
 	index := string indexOf: Character lf.
-	file := FileStream write: path.
+	file := FileStream write: path mode: #'truncate' check: false type: #'ansi'.
 	[
 		file nextPutAll: (string copyFrom: index + 1 to: string size).
 	] ensure: [
@@ -1073,7 +1073,7 @@ fileOutMethodOnPath: aString
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
 	header := self stuffToKeepFromPath: aString andAddTo: newSource.
-	file := FileStream write: aString.
+	file := FileStream write: aString mode: #'truncate' check: false type: #'ansi'.
 	[
 		file nextPutAll: header; nextPutAll: newSource.
 	] ensure: [
@@ -2590,7 +2590,7 @@ stuffToKeepFromPath: pathString andAddTo: newSource
 	[
 		file := FileStream
 			read: pathString
-			text: true.
+			type: #'ansi'.
 	] on: Exception do: [:ex | ^''].
 	existingSource := file contents.
 	file close.
