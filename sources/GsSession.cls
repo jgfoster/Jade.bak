@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 GsObject subclass: #GsSession
 	instanceVariableNames: 'process host primitive viewAge state transaction hasOldestCR serial id ip priority hostId quietTime lifeTime backlog description objects pages voteState'

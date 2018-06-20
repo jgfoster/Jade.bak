@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 ImageStripper subclass: #JadeImageStripper
 	instanceVariableNames: ''
@@ -56,7 +56,7 @@ createVersionResource
 				at: 'FileDescription' 		put: 'IDE for GemStone/S';
 				at: 'FileVersion' 			put: versionString;
 				at: 'InternalName' 		put: 'Jade';
-				at: 'LegalCopyright' 		put: 'Copyright � James Foster 2001-2017';
+				at: 'LegalCopyright' 		put: 'Copyright © James Foster 2001-2017';
 				at: 'OriginalFilename' 	put: 'Jade.exe';
 				at: 'ProductName' 		put: 'Jade';
 				at: 'ProductVersion' 		put: versionString;

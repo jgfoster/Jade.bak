@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 GsObject subclass: #GsStackFrame
 	instanceVariableNames: 'ipOffset frameOffset gsMethod stepPoint vars offsets breaks source'
