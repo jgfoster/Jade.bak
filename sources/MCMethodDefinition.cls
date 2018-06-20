@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 MCDefinition subclass: #MCMethodDefinition
 	instanceVariableNames: 'classIsMeta source category selector className timeStamp'

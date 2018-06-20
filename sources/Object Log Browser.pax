@@ -1,4 +1,4 @@
-| package |
+﻿| package |
 package := Package name: 'Object Log Browser'.
 package paxVersion: 1;
 	basicComment: 'Fix Compiler Warning'.

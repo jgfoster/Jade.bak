@@ -1,4 +1,4 @@
-| package |
+﻿| package |
 package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.

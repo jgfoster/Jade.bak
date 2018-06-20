@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #VWComponent
 	instanceVariableNames: 'element name environment category package isPrivate sharedVariables'

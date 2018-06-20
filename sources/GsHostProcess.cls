@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #GsHostProcess
 	instanceVariableNames: 'name status version owner started pid port options logfile sysConf exeConf execConf gemstone imageIndex'

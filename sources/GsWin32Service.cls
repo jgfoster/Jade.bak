@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #GsWin32Service
 	instanceVariableNames: 'name startup account path creator created version options'

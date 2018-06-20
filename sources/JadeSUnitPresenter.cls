@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 JadeSUnitAbstractPresenter subclass: #JadeSUnitPresenter
 	instanceVariableNames: 'packagesPresenter testClassesPresenter status testCounter'

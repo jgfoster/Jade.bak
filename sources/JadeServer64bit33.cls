@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 JadeServer64bit32 subclass: #JadeServer64bit33
 	instanceVariableNames: 'socket'

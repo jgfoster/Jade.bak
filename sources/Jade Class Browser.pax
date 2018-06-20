@@ -1,4 +1,4 @@
-| package |
+﻿| package |
 package := Package name: 'Jade Class Browser'.
 package paxVersion: 1;
 	basicComment: ''.

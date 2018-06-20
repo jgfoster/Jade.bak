@@ -1,4 +1,4 @@
-| package |
+﻿| package |
 package := Package name: 'Jade Login'.
 package paxVersion: 1;
 	basicComment: 'Login window redesign'.

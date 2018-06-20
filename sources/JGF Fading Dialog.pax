@@ -1,4 +1,4 @@
-| package |
+﻿| package |
 package := Package name: 'JGF Fading Dialog'.
 package paxVersion: 1;
 	basicComment: ''.

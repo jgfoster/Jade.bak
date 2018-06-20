@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 GciThreadSafeLibrary subclass: #LibGciTs_3_3
 	instanceVariableNames: ''

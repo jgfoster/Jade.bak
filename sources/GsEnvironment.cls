@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #GsEnvironment
 	instanceVariableNames: 'gemstone gemstoneChildLog gemstoneExeConf gemstoneLang gemstoneLog gemstoneMaxFd gemstoneNrsAll gemstoneSysConf gsCoreTimeOut gsDisableKeepalive gsDisableWarning upgradeLogDir'

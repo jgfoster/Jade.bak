@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 FadingDialog subclass: #WaitOnGemStoneDialog
 	instanceVariableNames: 'busySeconds codePresenter busySecondsPresenter gciSession timerProcess'

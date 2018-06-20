@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+Ôªø"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #JadeTextStyles
 	instanceVariableNames: 'colorForCompileError colorForNoEdits colorForUnsavedEdits textStyles'

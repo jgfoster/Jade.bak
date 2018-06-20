@@ -1,4 +1,4 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
 JadePresenterA subclass: #StoneInfoPresenter
 	instanceVariableNames: 'configurationReportPresenter streamTypePresenter stringTypePresenter versionReportPresenter'
