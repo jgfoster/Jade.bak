@@ -411,13 +411,12 @@ new
 
 	| path stream string |
 	path := self defaultPath.
-	(File exists: path) ifTrue: [
+	string := self defaultXML.
+	[
 		stream := FileStream read: path type: #'ansi'.
 		string := stream upToEnd.
 		stream close.
-	] ifFalse: [
-		string := self defaultXML.
-	].
+	] on: Error do: [:ex | ].	"file doesn't exist or we have an error reading it"
 	^self fromXML: string.
 !
 
