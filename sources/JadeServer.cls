@@ -268,7 +268,10 @@ objectForOop: anInteger
 
 objectInBaseNamed: aString
 
-	^[(SymbolList withAll: self class sharedPools) objectNamed: aString asSymbol] on: Error do: [:ex | ex return: nil].
+	| object |
+	object := [(SymbolList withAll: self class sharedPools) objectNamed: aString asSymbol] on: Error do: [:ex | ex return: nil].
+	object isNil ifTrue: [object := self objectNamed: aString].	"If not found in DataCurator, then check local user (https://github.com/jgfoster/Jade/issues/150)"
+	^object
 !
 
 objectNamed: aString

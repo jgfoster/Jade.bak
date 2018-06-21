@@ -75,7 +75,7 @@ fatal: anObject
 message
 	"Answer the receiver's message field as a Smalltalk object."
 
-	^String fromAddress: (bytes yourAddress + 12)!
+	^AnsiString fromAddress: (bytes yourAddress + 12)!
 
 message: anObject
 	"Set the receiver's message field to the value of anObject."

@@ -81,7 +81,7 @@ fatal: anObject
 message
 	"Answer the receiver's message field as a Smalltalk object."
 
-	^String fromAddress: (bytes yourAddress + 113)!
+	^AnsiString fromAddress: (bytes yourAddress + 113)!
 
 message: anObject
 	"Set the receiver's message field to the value of anObject."
@@ -109,7 +109,7 @@ oopTypeClass
 reason
 	"Answer the receiver's reason field as a Smalltalk object."
 
-	^String fromAddress: (bytes yourAddress + 1138)!
+	^AnsiString fromAddress: (bytes yourAddress + 1138)!
 
 reason: anObject
 	"Set the receiver's reason field to the value of anObject."
