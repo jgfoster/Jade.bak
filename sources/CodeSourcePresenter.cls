@@ -45,7 +45,7 @@ browseSelectedClass
 	string := documentPresenter value copyFrom: range start to: range stop.
 	list := self findClassList.
 	assoc := list 
-		detect: [:each | each key = string]
+		detect: [:each | each key asUtf8String = string]
 		ifNone: [^MessageBox warning: 'Class ' , string printString , ' not found!!!!' caption: 'Jade'].
 	parentPresenter parentPresenter parentPresenter addSystemBrowserForClass: assoc value.
 !
@@ -82,11 +82,12 @@ copySelection
 !
 
 currentSelectionOrLine
+	"answers UTF-8"
 
 	| range |
 	documentPresenter hasSelection ifFalse: [documentPresenter view selectCurrentLine].
 	range := documentPresenter view selectionRange.
-	^(documentPresenter value copyFrom: range start to: range stop) replaceCrLfWithLf.
+	^documentPresenter value copyFrom: range start to: range stop.
 !
 
 currentSelector
@@ -117,7 +118,6 @@ editCut
 
 editDelete
 
-	self selectLfIfEndingOnCr.
 	documentPresenter view
 		clearSelection;
 		updateModel;
@@ -201,7 +201,7 @@ handleInvalidSession
 	documentPresenter ensureVisible.
 	documentPresenter view isModified: false.
 	(MessageBox confirm: 'Copy unsaved method to clipboard?' caption: 'Invalid Session!!') ifTrue: [
-		documentPresenter view selectAll; copySelection.
+		documentPresenter value copyToClipboard.
 	].
 	^true
 !
@@ -216,7 +216,7 @@ isClassSelectedInEditor
 
 	| range string |
 	(range := documentPresenter view selectionRange) isEmpty ifTrue: [^false].
-	string := documentPresenter value copyFrom: range start to: range stop.
+	string := (documentPresenter value copyFrom: range start to: range stop) asCharacterCollection.
 	^(string allSatisfy: [:each | each isAlphaNumeric]) and: [string first isLetter and: [string first isUppercase]]
 !
 
@@ -306,7 +306,7 @@ removeMenu
 removeQuotesFromSelection
 
 	| string |
-	string := documentPresenter view selection trimBlanks.
+	string := documentPresenter view selection trimBlanks asCharacterCollection.
 	(string size >= 2 and: [string first = $' and: [string last = $']]) ifFalse: [
 		^MessageBox notify: 'Selection must begin and end with quote'.
 	].
@@ -314,7 +314,7 @@ removeQuotesFromSelection
 	string := string 
 		copyReplaceAll: ''''''
 		with: ''''.
-	documentPresenter view replaceSelection: string.
+	documentPresenter view replaceSelection: string asUtf8String.
 !
 
 selectAll
@@ -327,22 +327,9 @@ selectionChanging: aSelectionChangingEvent
 	documentPresenter view ensureVisible.
 	MessageBox 
 		confirm: 'Save changes?' 
-		onYes: 			[aSelectionChangingEvent value: self fileSave] 
-		onNo: 			[documentPresenter view isModified: false] 
+		onYes: 	[aSelectionChangingEvent value: self fileSave] 
+		onNo: 	[documentPresenter view isModified: false] 
 		onCancel: 	[aSelectionChangingEvent value: false].
-!
-
-selectLfIfEndingOnCr
-	"deleting a CR without the subsequent LF can leave things somewhat confused"
-
-	| text selectionRange |
-	selectionRange := documentPresenter view selectionRange.
-	text := documentPresenter view "hide; show;" value.			"somehow the value gets out of synch"
-	selectionRange stop < selectionRange start 			ifFalse: [^self ].
-	selectionRange start < documentPresenter view value size 	ifFalse: [^self ].
-	(text at: selectionRange start) = Character cr 			ifFalse: [^self ].
-	(text at: selectionRange start + 1) = Character lf 		ifFalse: [^self ].
-	documentPresenter view selectionRange: (selectionRange start to: selectionRange start + 1).
 !
 
 setBreakAtStepPoint: anInteger
@@ -384,7 +371,7 @@ showCompileError: anArray
 	selectionRange := textView selectionRange.
 	string := textView value.
 	string := string copyFrom: selectionRange start to: selectionRange stop.
-	string := string replaceCrLfWithLf copyFrom: 1 to: offset - 1.
+	string := string copyFrom: 1 to: offset - 1.
 	count := (string select: [:each | each = Character lf]) size.
 	offset := offset + count.
 	textView
@@ -401,7 +388,6 @@ showResult: anObject
 	] ifTrue: [
 		result := ' ' , (gciSession printString: anObject).
 	].
-	"result := result replaceLfWithCrLf."
 	self setCaretToEndOfSelection.
 	(textView := documentPresenter view)
 		replaceSelection: result;
@@ -489,7 +475,6 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #removeQuotesFromSelection!edit!private! !
 !CodeSourcePresenter categoriesFor: #selectAll!public! !
 !CodeSourcePresenter categoriesFor: #selectionChanging:!public! !
-!CodeSourcePresenter categoriesFor: #selectLfIfEndingOnCr!edit!private! !
 !CodeSourcePresenter categoriesFor: #setBreakAtStepPoint:!Breakpoints!public! !
 !CodeSourcePresenter categoriesFor: #setCaretToEndOfSelection!Jade!private! !
 !CodeSourcePresenter categoriesFor: #setDocumentPresenterWith:!public! !
@@ -534,7 +519,7 @@ resource_Default_view
 	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Default_view)
 	"
 
-	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ContainerView) 34 15 nil nil 34 2 8 1409286144 131073 416 nil nil nil 5 nil nil nil 416 852230 ##(Smalltalk.FramingLayout) 170 176 34 4 410 ##(Smalltalk.ScintillaView) 34 50 nil 416 34 2 8 1445007428 1025 544 721990 2 ##(Smalltalk.ValueHolder) nil false 1310726 ##(Smalltalk.EqualitySearchPolicy) nil 524550 ##(Smalltalk.ColorRef) 8 4278190080 nil 5 265030 4 ##(Smalltalk.Menu) nil true 34 24 984134 2 ##(Smalltalk.CommandMenuItem) 1 1180998 4 ##(Smalltalk.CommandDescription) #fileSave 8 '&Save' 9383 1 nil nil nil 983366 1 ##(Smalltalk.DividerMenuItem) 4097 770 1 802 #undo 8 '&Undo' 9397 1 nil nil nil 770 1 802 #redo 8 'R&edo' 9395 1 nil nil nil 850 4097 770 1 802 #editCut 8 'Cu&t' 9393 1 nil nil nil 770 1 802 #editCopy 8 '&Copy' 9351 1 nil nil nil 770 1 802 #editPaste 8 '&Paste' 9389 1 nil nil nil 770 1 802 #editDelete 8 'De&lete' 1629 1 nil nil nil 770 1 802 #editSelectAll 8 'Select &All' 9347 1 nil nil nil 850 4097 770 1 802 #editFind 8 '&Find...' 9357 1 nil nil nil 770 1 802 #editFindNext 8 'Find &Next' 9359 1 nil nil nil 770 1 802 #editReplace 8 '&Replace...' 9361 1 nil nil nil 850 4097 770 1 802 #jadeInspect 8 '&Inspect' 9379 1 nil nil nil 770 1 802 #jadeDisplay 8 '&Display' 9353 1 nil nil nil 770 1 802 #jadeExecute 8 'Execute' 9355 1 nil nil nil 770 1 802 #jadeDebug 8 'De&bug' 9349 1 nil nil nil 850 4097 770 1 802 #addQuotesToSelection 8 'Add &Quotes' 1 1 nil nil nil 770 1 802 #removeQuotesFromSelection 8 'Re&move Quotes' 1 1 nil nil nil 850 4097 770 1 802 #fileIn 8 'File In' 1 1 nil nil nil 8 '' nil 1 nil nil nil nil nil 263174 ##(Smalltalk.Font) nil true 459014 ##(Smalltalk.LOGFONT) 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 86 101 114 100 97 110 97 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 328198 ##(Smalltalk.Point) 193 193 nil 544 nil 8 4294902505 852486 ##(Smalltalk.NullConverter) nil nil 9 nil 170 192 34 4 #normal 1182790 1 ##(Smalltalk.ScintillaTextStyle) 1 nil nil 1 nil nil nil nil #normal nil nil nil #callTip 1986 77 786694 ##(Smalltalk.IndexedColor) 33554457 2034 33554471 1 nil nil nil nil #callTip nil nil nil 34 256 2000 nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil 2016 nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil 1639686 ##(Smalltalk.SmalltalkExpressionStyler) 1 nil nil false 138 144 8 #() 170 192 34 2 #default 1641542 1 ##(Smalltalk.ScintillaMarkerDefinition) 1 nil nil nil 544 #circle nil nil nil nil nil nil 138 ##(Smalltalk.IdentitySet) 2144 nil 170 176 2144 9215 nil nil nil nil 2034 33554447 nil nil 65 nil nil 170 192 34 6 #specialCharacter 8 '()[]<>' #literalArray 8 '()' #literalBytes 8 '[]' 8 '' 3 170 192 34 2 #container 170 192 34 4 #normal 2000 #callTip 2016 nil nil nil nil 1 nil 170 192 34 14 1 1510470 2 ##(Smalltalk.ScintillaIndicatorStyle) 1 544 65025 3 false 1 nil nil nil nil nil nil 3 2466 3 544 33423361 5 false 3 nil nil nil nil nil nil 5 2466 5 544 511 1 false 5 nil nil nil nil nil nil 8 'indicator9' 2466 19 544 33554459 13 nil nil nil nil nil nil nil nil 8 'indicator8' 2466 17 544 33554447 1 nil nil nil nil nil nil nil nil #secondarySelection 2466 23 544 nil 15 nil #secondarySelection 31 nil nil nil nil nil 8 'indicator10' 2466 21 544 33554459 3 nil nil nil nil nil nil nil nil nil nil 170 192 34 6 #Notification 1986 1029 nil 196934 1 ##(Smalltalk.RGB) 31185883 1 nil nil nil nil #Notification nil nil nil #Warning 1986 1027 2690 60239 2690 31326207 1 nil nil nil nil #Warning nil nil nil #Error 1986 1031 2690 335 2690 31317503 1 nil nil nil nil #Error nil nil nil nil 983302 ##(Smalltalk.MessageSequence) 138 144 34 8 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 1874 1 51 1874 1001 551 544 2882 #contextMenu: 34 1 736 544 2882 #modificationEventMask: 8 #(4607) 544 2882 #hoverTime: 8 #(200) 544 2882 #caretPeriod: 8 #(530) 544 2882 #margins: 34 1 34 3 985158 2 ##(Smalltalk.ScintillaMargin) 1 544 61 3 nil nil nil nil 3138 3 544 1 nil 3 67108863 nil nil 3138 5 544 1 nil 3 -67108863 nil nil 544 2882 #tabWidth: 8 #(4) 544 2882 #maxCompletionListHeight: 8 #(9) 544 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 244 1 0 0 44 1 0 0] 8 #() 1874 193 193 nil 29 1181766 2 ##(Smalltalk.FramingConstraints) 1180678 ##(Smalltalk.FramingCalculation) #fixedParentLeft 1 3378 #fixedParentRight 1 3378 #fixedPreviousBottom 1 3378 #fixedParentBottom 1 410 ##(Smalltalk.Toolbar) 34 25 nil 416 34 2 8 1140851500 131137 3456 nil 674 8 4278190080 nil 517 nil 1794 nil true 1826 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 65 114 105 97 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 1874 193 193 nil 3456 674 3536 8 4294902601 170 192 2144 170 192 34 24 37773 853766 ##(Smalltalk.ToolbarButton) 37773 nil 3456 1 802 #jadeDisplay 8 'Print Result of Selection or Line' 1 1 nil 395334 3 ##(Smalltalk.Bitmap) nil true 1572870 ##(Smalltalk.ImageRelativeFileLocator) 8 'Tools.bmp' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy) 8 'dolphindr7.dll' nil nil 7 1874 1857 33 55 37775 3698 37775 nil 3456 1 802 #jadeExecute 8 'Evaluate Selection or Line' 1 1 nil 3776 57 37777 3698 37777 nil 3456 1 802 #jadeInspect 8 'Inspect Selection or Line' 1 1 nil 3776 59 37779 1246982 ##(Smalltalk.ToolbarSystemButton) 37779 nil 3456 1 802 #fileSave 8 'Save' 1 1 nil 1 17 37781 4002 37781 nil 3456 1 802 #editCut 8 'Cut' 1 1 nil 1 1 37783 4002 37783 nil 3456 1 802 #copySelection 8 'Copy' 1 1 nil 1 3 37785 4002 37785 nil 3456 1 802 #editPaste 8 'Paste' 1 1 nil 1 5 37787 4002 37787 nil 3456 1 802 #editDelete 8 'Delete' 1 1 nil 1 11 37789 4002 37789 nil 3456 1 802 #undo 8 'Undo' 1 1 nil 1 7 37791 4002 37791 nil 3456 1 802 #redo 8 'Redo' 1 1 nil 1 9 37793 4002 37793 nil 3456 1 802 #editFind 8 'Find' 1 1 nil 1 25 37795 4002 37795 nil 3456 1 802 #editReplace 8 'Replace' 1 1 nil 1 27 34 15 3712 3904 3952 1050118 ##(Smalltalk.ToolbarSeparator) nil nil 3456 3 nil 1 4016 4466 nil nil 3456 3 nil 1 4064 4112 4160 4208 4256 4304 4466 nil nil 3456 3 nil 1 4352 4400 170 176 34 4 1 117 3776 1 nil 1 nil 1874 33 33 1874 45 45 nil nil 2818 138 144 34 2 2882 #createAt:extent: 34 2 1874 1 1 1874 1001 51 3456 2882 #updateSizePosted 2144 3456 3266 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 244 1 0 0 25 0 0 0] 8 #() 3328 nil 27 3346 3392 1 3408 1 3378 #fixedParentTop 1 3378 #fixedViewTop 51 170 192 34 2 544 8 'document' nil 2818 138 144 34 1 2882 #createAt:extent: 34 2 1874 3839 21 1874 1001 601 416 3266 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 127 7 0 0 10 0 0 0 115 9 0 0 54 1 0 0] 34 2 3456 544 3328 nil 27 )! !
+	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ContainerView) 34 15 nil nil 34 2 8 1409286144 131073 416 nil nil nil 5 nil nil nil 416 852230 ##(Smalltalk.FramingLayout) 170 176 34 4 410 ##(Smalltalk.ScintillaView) 34 50 nil 416 34 2 8 1445007428 1025 544 721990 2 ##(Smalltalk.ValueHolder) nil false 1310726 ##(Smalltalk.EqualitySearchPolicy) nil 524550 ##(Smalltalk.ColorRef) 8 4278190080 nil 5 265030 4 ##(Smalltalk.Menu) nil true 34 24 984134 2 ##(Smalltalk.CommandMenuItem) 1 1180998 4 ##(Smalltalk.CommandDescription) #fileSave 8 '&Save' 9383 1 nil nil nil 983366 1 ##(Smalltalk.DividerMenuItem) 4097 770 1 802 #undo 8 '&Undo' 9397 1 nil nil nil 770 1 802 #redo 8 'R&edo' 9395 1 nil nil nil 850 4097 770 1 802 #editCut 8 'Cu&t' 9393 1 nil nil nil 770 1 802 #editCopy 8 '&Copy' 9351 1 nil nil nil 770 1 802 #editPaste 8 '&Paste' 9389 1 nil nil nil 770 1 802 #editDelete 8 'De&lete' 1629 1 nil nil nil 770 1 802 #editSelectAll 8 'Select &All' 9347 1 nil nil nil 850 4097 770 1 802 #editFind 8 '&Find...' 9357 1 nil nil nil 770 1 802 #editFindNext 8 'Find &Next' 9359 1 nil nil nil 770 1 802 #editReplace 8 '&Replace...' 9361 1 nil nil nil 850 4097 770 1 802 #jadeInspect 8 '&Inspect' 9379 1 nil nil nil 770 1 802 #jadeDisplay 8 '&Display' 9353 1 nil nil nil 770 1 802 #jadeExecute 8 'Execute' 9355 1 nil nil nil 770 1 802 #jadeDebug 8 'De&bug' 9349 1 nil nil nil 850 4097 770 1 802 #addQuotesToSelection 8 'Add &Quotes' 1 1 nil nil nil 770 1 802 #removeQuotesFromSelection 8 'Re&move Quotes' 1 1 nil nil nil 850 4097 770 1 802 #fileIn 8 'File In' 1 1 nil nil nil 8 '' nil 1 nil nil nil nil nil 263174 ##(Smalltalk.Font) nil true 459014 ##(Smalltalk.LOGFONT) 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 86 101 114 100 97 110 97 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 328198 ##(Smalltalk.Point) 193 193 nil 544 nil 504331129 852486 ##(Smalltalk.NullConverter) nil nil 9 nil 170 192 34 4 #normal 1182790 1 ##(Smalltalk.ScintillaTextStyle) 1 nil nil 1 nil nil nil nil #normal nil nil nil #callTip 1970 77 786694 ##(Smalltalk.IndexedColor) 33554457 2018 33554471 1 nil nil nil nil #callTip nil nil nil 34 256 1984 nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil 2000 nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil 1639686 ##(Smalltalk.SmalltalkExpressionStyler) 1 nil nil false 138 144 8 #() 170 192 34 2 #default 1641542 1 ##(Smalltalk.ScintillaMarkerDefinition) 1 nil nil nil 544 #circle nil nil nil nil nil nil 138 ##(Smalltalk.IdentitySet) 2128 nil 170 176 2128 9215 nil nil nil nil 2018 33554447 nil nil 65 nil nil 170 192 34 6 #literalBytes 8 '[]' #literalArray 8 '()' #specialCharacter 8 '()[]<>' 8 '' 3 170 192 34 2 #container 170 192 34 4 #normal 1984 #callTip 2000 nil nil nil nil 1 nil 170 192 34 14 1 1510470 2 ##(Smalltalk.ScintillaIndicatorStyle) 1 544 65025 3 false 1 nil nil nil nil nil nil 3 2450 3 544 33423361 5 false 3 nil nil nil nil nil nil 5 2450 5 544 511 1 false 5 nil nil nil nil nil nil 8 'indicator10' 2450 21 544 33554459 3 nil nil nil nil nil nil nil nil 8 'indicator9' 2450 19 544 33554459 13 nil nil nil nil nil nil nil nil 8 'indicator8' 2450 17 544 33554447 1 nil nil nil nil nil nil nil nil #secondarySelection 2450 23 544 nil 15 nil #secondarySelection 31 nil nil nil nil nil nil nil 170 192 34 6 #Warning 1970 1027 196934 1 ##(Smalltalk.RGB) 60239 2674 31326207 1 nil nil nil nil #Warning nil nil nil #Error 1970 1031 2674 335 2674 31317503 1 nil nil nil nil #Error nil nil nil #Notification 1970 1029 nil 2674 31185883 1 nil nil nil nil #Notification nil nil nil nil 983302 ##(Smalltalk.MessageSequence) 138 144 34 11 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 1874 1 51 1874 1001 551 544 2866 #contextMenu: 34 1 736 544 2866 #textLimit: 8 #(1073741823) 544 2866 #modificationEventMask: 8 #(4607) 544 2866 #hoverTime: 8 #(200) 544 2866 #caretPeriod: 8 #(530) 544 2866 #sciSetEOLMode: 8 #(2) 544 2866 #margins: 34 1 34 3 985158 2 ##(Smalltalk.ScintillaMargin) 1 544 61 3 nil nil nil nil 3186 3 544 1 nil 3 67108863 nil nil 3186 5 544 1 nil 3 -67108863 nil nil 544 2866 #tabWidth: 8 #(4) 544 2866 #maxCompletionListHeight: 8 #(9) 544 2866 #sciSetCodePage: 8 #(65001) 544 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 244 1 0 0 44 1 0 0] 8 #() 1874 193 193 nil 29 1181766 2 ##(Smalltalk.FramingConstraints) 1180678 ##(Smalltalk.FramingCalculation) #fixedParentLeft 1 3458 #fixedParentRight 1 3458 #fixedPreviousBottom 1 3458 #fixedParentBottom 1 410 ##(Smalltalk.Toolbar) 34 25 nil 416 34 2 8 1140851500 131137 3536 nil 674 8 4278190080 nil 517 nil 1794 nil true 1826 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 65 114 105 97 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 1874 193 193 nil 3536 674 3616 8 1795534112 170 192 2128 170 192 34 24 12941 853766 ##(Smalltalk.ToolbarButton) 12941 nil 3536 1 802 #jadeDisplay 8 'Print Result of Selection or Line' 1 1 nil 395334 3 ##(Smalltalk.Bitmap) nil true 1572870 ##(Smalltalk.ImageRelativeFileLocator) 8 'Tools.bmp' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy) 8 'dolphindr7.dll' nil nil 7 1874 1857 33 55 12943 3778 12943 nil 3536 1 802 #jadeExecute 8 'Evaluate Selection or Line' 1 1 nil 3856 57 12945 3778 12945 nil 3536 1 802 #jadeInspect 8 'Inspect Selection or Line' 1 1 nil 3856 59 12947 1246982 ##(Smalltalk.ToolbarSystemButton) 12947 nil 3536 1 802 #fileSave 8 'Save' 1 1 nil 1 17 12949 4082 12949 nil 3536 1 802 #editCut 8 'Cut' 1 1 nil 1 1 12951 4082 12951 nil 3536 1 802 #copySelection 8 'Copy' 1 1 nil 1 3 12953 4082 12953 nil 3536 1 802 #editPaste 8 'Paste' 1 1 nil 1 5 12955 4082 12955 nil 3536 1 802 #editDelete 8 'Delete' 1 1 nil 1 11 12957 4082 12957 nil 3536 1 802 #undo 8 'Undo' 1 1 nil 1 7 12959 4082 12959 nil 3536 1 802 #redo 8 'Redo' 1 1 nil 1 9 12961 4082 12961 nil 3536 1 802 #editFind 8 'Find' 1 1 nil 1 25 12963 4082 12963 nil 3536 1 802 #editReplace 8 'Replace' 1 1 nil 1 27 34 15 3792 3984 4032 1050118 ##(Smalltalk.ToolbarSeparator) nil nil 3536 3 nil 1 4096 4546 nil nil 3536 3 nil 1 4144 4192 4240 4288 4336 4384 4546 nil nil 3536 3 nil 1 4432 4480 170 176 34 4 3856 1 1 117 nil 1 nil 1874 33 33 1874 45 45 nil nil 2802 138 144 34 2 2866 #createAt:extent: 34 2 1874 1 1 1874 1001 51 3536 2866 #updateSizePosted 2128 3536 3346 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 244 1 0 0 25 0 0 0] 8 #() 3408 nil 27 3426 3472 1 3488 1 3458 #fixedParentTop 1 3458 #fixedViewTop 51 170 192 34 2 544 8 'document' nil 2802 138 144 34 1 2866 #createAt:extent: 34 2 1874 2879 21 1874 1001 601 416 3346 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 147 7 0 0 54 1 0 0] 34 2 3536 544 3408 nil 27 )! !
 !CodeSourcePresenter class categoriesFor: #codeFont!public! !
 !CodeSourcePresenter class categoriesFor: #codeFont:!public! !
 !CodeSourcePresenter class categoriesFor: #resource_Default_view!public!resources-views! !

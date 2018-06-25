@@ -62,7 +62,7 @@ onViewOpened
 		ifFalse: [''].
 	message := message copyFrom: 1 to: (message size min: 100).
 	self caption: message.
-	messagePresenter value: detail replaceLfWithCrLf.
+	messagePresenter value: detail.
 	stream := WriteStream on: String new.
 	stack do: [:each | stream nextPutAll: each; cr].
 	stackPresenter value: stream contents.

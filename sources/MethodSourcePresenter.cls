@@ -100,7 +100,7 @@ fileSave
 	(category := gsMethod category) isNil ifTrue: [self error: 'We need a method category!!?'].
 	string := gciSession
 		serverPerform: #'compileMethod:behavior:user:inCategory:'
-		with: documentPresenter value replaceCrLfWithLf
+		with: documentPresenter value
 		with: theClass 
 		with: user 
 		with: category.
@@ -129,7 +129,7 @@ fileSave
 	errors := list select: [:each | each beginsWith: 'ERROR:'].
 	errors isEmpty ifTrue: [^true].
 	list := errors first subStrings: Character tab.
-	string := documentPresenter value replaceCrLfWithLf.
+	string := documentPresenter value.
 	index := (list at: 3) asNumber - 1.
 	a := (string copyFrom: 1 to: index) "replaceLfWithCrLf".
 	b := (list at: 4) "replaceLfWithCrLf".

@@ -90,7 +90,7 @@ createComponents
 currentSelectionOrLine
 
 	self activeTextEdit hasSelection ifFalse: [self activeTextEdit selectCurrentLine].
-	^self activeTextEdit selection replaceCrLfWithLf.
+	^self activeTextEdit selection.
 !
 
 editCopy
@@ -111,7 +111,6 @@ editCut
 
 editDelete
 
-	self selectLfIfEndingOnCr.
 	self activeTextEdit
 		clearSelection;
 		updateModel;
@@ -290,7 +289,7 @@ jadeExecuteAndDisplay: showResult result: anAssociation
 			string := documentPresenter value.
 		].
 		string := string copyFrom: selectionRange start to: selectionRange stop.
-		string := string replaceCrLfWithLf copyFrom: 1 to: offset - 1.
+		string := string copyFrom: 1 to: offset - 1.
 		count := (string select: [:each | each = Character lf]) size.
 		offset := offset + count.
 		textView
@@ -390,20 +389,6 @@ saveDocument
 	result := super saveDocument.
 	result ifTrue: [self isModified: false].
 	^result.
-!
-
-selectLfIfEndingOnCr
-	"deleting a CR without the subsequent LF can leave things somewhat confused"
-
-	| textEdit text text1 text2 selectionRange |
-	textEdit := self activeTextEdit.
-	selectionRange := textEdit selectionRange.
-	text := textEdit view "hide; show;" value.			"somehow the value gets out of synch"
-	selectionRange stop < selectionRange start 				ifFalse: [^self ].
-	selectionRange start < textEdit value size 					ifFalse: [^self ].
-	(text at: selectionRange start) = Character cr 			ifFalse: [^self ].
-	(text at: selectionRange start + 1) = Character lf 		ifFalse: [^self ].
-	textEdit selectionRange: (selectionRange start to: selectionRange start + 1).
 !
 
 setDocumentData: aString
@@ -512,7 +497,6 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #queryCommand:!commands!private! !
 !JadeTextDocument categoriesFor: #removeQuotesFromSelection!edit!private! !
 !JadeTextDocument categoriesFor: #saveDocument!private! !
-!JadeTextDocument categoriesFor: #selectLfIfEndingOnCr!edit!private! !
 !JadeTextDocument categoriesFor: #setDocumentData:!accessing!private! !
 !JadeTextDocument categoriesFor: #showError:on:!private! !
 !JadeTextDocument categoriesFor: #showSelection!edit!private! !

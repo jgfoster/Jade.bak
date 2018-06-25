@@ -6,10 +6,13 @@ package paxVersion: 1;
 package basicPackageVersion: '0.010'.
 
 
+package classNames
+	add: #CharacterCollection;
+	yourself.
+
 package methodNames
 	add: #String -> #asBoolean;
-	add: #String -> #replaceCrLfWithLf;
-	add: #String -> #replaceLfWithCrLf;
+	add: #String -> #asCharacterCollection;
 	add: #UserLibrary -> #exitWindowsEx:;
 	add: #UserLibrary -> #exitWindowsEx:_:;
 	add: #UserLibrary -> #forceSystemLogoff;
@@ -36,6 +39,11 @@ package!
 
 "Class Definitions"!
 
+ArrayedCollection subclass: #CharacterCollection
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 
 "Global Aliases"!
 
@@ -49,22 +57,19 @@ asBoolean
 	^self = 'T'.
 !
 
-replaceCrLfWithLf
+asCharacterCollection
 
-	^self 
-		copyReplaceAll: Character cr asString , Character lf asString 
-		with: Character lf asString.
-!
-
-replaceLfWithCrLf
-
-	^self 
-		copyReplaceAll: Character lf asString 
-		with: Character cr asString , Character lf asString.
-! !
+	| readStream writeStream |
+	readStream := ReadStream on: self.
+	writeStream := WriteStream on: CharacterCollection new.
+	[
+		readStream atEnd not.
+	] whileTrue: [
+		writeStream nextPut: readStream next.
+	].
+	^readStream contents! !
 !String categoriesFor: #asBoolean!converting!JGF!public! !
-!String categoriesFor: #replaceCrLfWithLf!converting!JGF!public! !
-!String categoriesFor: #replaceLfWithCrLf!converting!JGF!public! !
+!String categoriesFor: #asCharacterCollection!converting!JGF!public! !
 
 !UserLibrary methodsFor!
 
