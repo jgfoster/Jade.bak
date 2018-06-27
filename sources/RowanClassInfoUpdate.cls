@@ -20,14 +20,13 @@ classCommentUpdate: presenter
 	presenter value: comment!
 
 classDefinitionUpdate: presenter
-	(presenter value notNil and: [presenter value notEmpty])
+	presenter isOpen ifFalse: [^self].
+	presenter view isModified
 		ifTrue: 
-			[presenter view isModified
-				ifTrue: 
-					[
-					template = presenter value ifTrue: [^self].
-					(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Class has unsaved changes!!')
-						ifTrue: [presenter value copyToClipboard]]].
+			[template = presenter value ifTrue: [^self].
+			self halt.
+			(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Class has unsaved changes!!')
+				ifTrue: [presenter value copyToClipboard]].
 	presenter value: template.
 	presenter view
 		backcolor: Color white;

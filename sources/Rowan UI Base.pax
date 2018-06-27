@@ -1320,6 +1320,9 @@ updateCommand: aString onSuccessDo: aBlock
 	
 	[
 		| time1 time2 time3 string |
+		Transcript cr; show: '---FALSE---'. 
+		Transcript cr; show: aString. 
+		Transcript cr; show: '------'. 
 		time1 := Time millisecondsToRun: [
 			string := self gciSession 
 				serverPerform: #'systemBrowser:' 
@@ -1339,12 +1342,13 @@ updateCommand: aString onSuccessDo: aBlock
 			'network took ' , (time1 - time3) printString , 'ms; ' , 
 			'client took ' , time2 printString , 'ms; ' , 
 			'total of ' , (time1 + time2) printString , 'ms'.
-	] ensure: [
-		selectedClassChanged := false.
-	].
+	
 	(Smalltalk at: #STONFlag ifAbsentPut: [false]) ifTrue:[
 		| stonResults update |
 		Transcript cr; show: 'Doing STON update: '; show: TimeStamp current printString.
+		Transcript cr; show: '---TRUE---'. 
+		Transcript cr; show: aString. 
+		Transcript cr; show: '------'. 
 		inUpdate := true.
 		[update := BrowserUpdate current initializeUpdates. 
 		Smalltalk at: #STONFlag put: true. "set to false to make debugging easier"
@@ -1356,7 +1360,9 @@ updateCommand: aString onSuccessDo: aBlock
 		update updates: #(). ] ensure: [inUpdate := false].
 		].
 	
-	
+	] ensure: [
+		selectedClassChanged := false.
+	].
 	^nil.
 !
 

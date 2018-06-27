@@ -50,11 +50,11 @@ classesUpdate: presenter
 !
 
 updateClassHierarchySelectionFor: presenter
-	| newSelection |
+	| newSelection | 
 	self rowanFixMe.	"Need to incorporate test case classes into the display See #updateClassHierarchy"
 	presenter selectionOrNil: nil.
 	selectionNames isEmpty ifTrue:[^self].
-	newSelection := presenter model asBag asArray detect: [:each | each last = selectionNames first]
+	newSelection := presenter model asBag asArray detect: [:each | each last subStrings first = selectionNames first "substrings - account for class version display"]
 				ifNone: [nil].
 	newSelection
 		ifNotNil: 

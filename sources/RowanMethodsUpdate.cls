@@ -31,7 +31,7 @@ methodFilters: anObject
 	methodFilters := anObject!
 
 methodFilterUpdate: presenter
-	presenter list: methodFilters.
+	presenter list: methodFilters asArray reverse.
 	!
 
 methods
@@ -88,6 +88,7 @@ update: aPresenter
 updateClassSelectionFor: presenter!
 
 updateMethodFilterSelectionFor: presenter
+	Transcript cr; show: selectionNames printString. 
 	presenter selections: selectionNames.
 ! !
 !RowanMethodsUpdate categoriesFor: #classesUpdate:!public!updating! !
