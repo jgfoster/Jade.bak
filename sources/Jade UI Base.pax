@@ -10,6 +10,8 @@ package basicScriptAt: #postinstall put: 'JadeTextStyles default resetColors.'.
 package classNames
 	add: #CodeSourcePresenter;
 	add: #JadeBrowserPresenter;
+	add: #JadeInspector;
+	add: #JadeMigrateClassDialog;
 	add: #JadePresenter;
 	add: #JadePresenterA;
 	add: #JadeShell;
@@ -22,10 +24,6 @@ package classNames
 	add: #ToolbarA;
 	yourself.
 
-package methodNames
-	add: #JadeServer -> #fileInClass:;
-	yourself.
-
 package binaryGlobalNames: (Set new
 	yourself).
 
@@ -35,8 +33,11 @@ package globalAliases: (Set new
 package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\IDE\Base\Development System';
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
+	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
@@ -90,9 +91,19 @@ ValueDialog subclass: #JadeValueDialog
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadeValueDialog subclass: #JadeMigrateClassDialog
+	instanceVariableNames: 'copyMethodsPresenter recompileSubclassesPresenter migrateInstancesPresenter removeFromClassHistoryPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 TextDocument subclass: #JadeTextDocument
 	instanceVariableNames: 'gciSession codePane environment'
 	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeTextDocument subclass: #JadeInspector
+	instanceVariableNames: 'instVarListPresenter'
+	classVariableNames: 'DefaultInspectorClass'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeTextDocument subclass: #JadeWorkspace
@@ -115,27 +126,6 @@ Toolbar subclass: #ToolbarA
 
 
 "Loose Methods"!
-
-!JadeServer methodsFor!
-
-fileInClass: aString
-
-	| list className index dictionaryName dictionary oldClass oldString |
-	list := aString subStrings.
-	className := list at: 3.
-	className first = $' ifFalse: [self error: 'Class name ' , className printString , ' expected to begin and end with a quote!!'].
-	className last = $' ifFalse: [self error: 'Class name ' , className printString , ' expected to begin and end with a quote!!'].
-	className := className copyFrom: 2 to: className size - 1.
-	index := list indexOf: 'inDictionary:'.
-	dictionaryName := list at: index + 1.
-	dictionary := self objectNamed: dictionaryName.
-	oldClass := dictionary at: className ifAbsent: [nil].
-	oldClass notNil ifTrue: [
-		oldString := (oldClass _modifiableDefinitionInDictionary: dictionary named: dictionaryName) , '.'.
-	].
-	oldString = aString ifFalse: [aString evaluate].
-! !
-!JadeServer categoriesFor: #fileInClass:!Classes!public! !
 
 "End of package definition"!
 

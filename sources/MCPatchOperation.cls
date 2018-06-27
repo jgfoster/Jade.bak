@@ -34,6 +34,10 @@ initialize: aStream session: aGciSession
 	self initialize: aStream.
 !
 
+isRemoval
+
+	^false!
+
 modificationMemo
 
 	^''.
@@ -82,6 +86,7 @@ typeString
 !MCPatchOperation categoriesFor: #className!public! !
 !MCPatchOperation categoriesFor: #hasEquivalentText!public! !
 !MCPatchOperation categoriesFor: #initialize:session:!public! !
+!MCPatchOperation categoriesFor: #isRemoval!public! !
 !MCPatchOperation categoriesFor: #modificationMemo!public! !
 !MCPatchOperation categoriesFor: #modificationMemoMarkers!public! !
 !MCPatchOperation categoriesFor: #modificationText!public! !

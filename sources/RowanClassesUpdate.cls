@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanCommandResult subclass: #RowanClassesUpdate
-	instanceVariableNames: 'type classNames selectionNames'
+	instanceVariableNames: 'classNames selectionNames'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -26,12 +26,6 @@ selections
 selections: anObject
 	selections := anObject!
 
-type
-	^type!
-
-type: anObject
-	type := anObject!
-
 update: aPresenter
 	super update: aPresenter.
 	type = 'classHierarchy' ifTrue: [^aPresenter updateClassHierarchyFrom: self].
@@ -48,8 +42,6 @@ updateClassSelectionFor: presenter
 !RowanClassesUpdate categoriesFor: #classesUpdate:!public!updating! !
 !RowanClassesUpdate categoriesFor: #selections!accessing!private! !
 !RowanClassesUpdate categoriesFor: #selections:!accessing!private! !
-!RowanClassesUpdate categoriesFor: #type!accessing!private! !
-!RowanClassesUpdate categoriesFor: #type:!accessing!private! !
 !RowanClassesUpdate categoriesFor: #update:!public! !
 !RowanClassesUpdate categoriesFor: #updateClassSelectionFor:!public!updating! !
 

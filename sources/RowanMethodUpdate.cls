@@ -77,7 +77,7 @@ originalMethodSource: anObject
 	originalMethodSource := anObject!
 
 selector
-	^selector!
+	^gsMethod selector!
 
 selector: anObject
 	selector := anObject!

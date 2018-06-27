@@ -16,15 +16,6 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #JadeServer -> #debugTestNamed:of:;
-	add: #JadeServer -> #getMethodsNamesOf:;
-	add: #JadeServer -> #getPackagesNamesOfAll:;
-	add: #JadeServer -> #getPackagesNamesWithTestClasses;
-	add: #JadeServer -> #getSubclassesNamesOf:;
-	add: #JadeServer -> #getTestCaseClassesNamesOf:;
-	add: #JadeServer -> #getTestMethodsNamesOf:;
-	add: #JadeServer -> #runTestNamed:in:;
-	add: #JadeServer -> #runTestsNamed:in:;
 	add: #JadeTextDocument -> #jadeBrowseTests;
 	add: #JadeToolsToolBarPresenter -> #browseTests;
 	yourself.
@@ -46,7 +37,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
-	add: 'GemStone Session';
 	add: 'Jade UI Base';
 	add: '..\Core\Contributions\Odellsoft\SUnitBrowser\SUnitBrowser';
 	yourself).
@@ -90,125 +80,6 @@ JadeShell subclass: #JadeSUnitBrowser
 
 
 "Loose Methods"!
-
-!JadeServer methodsFor!
-
-debugTestNamed: testName of: testCaseClassName
-	"Open a Debugger for the TestCase class named <testCaseClassName> in the test named <testName>"
-
-	^(self objectNamed: testCaseClassName) debug: testName asSymbol!
-
-getMethodsNamesOf: classNamed
-	"NO SENDERS"
-	"Answer a collection with selectors of GemStone/s class name <className>"
-
-	^(self objectNamed: classNamed) selectors asSortedCollection
-!
-
-getPackagesNamesOfAll: classesNameCollection
-	"NO SENDERS"
-	"Answer aDictionary where each key is a class name and the value is the package that own the class"
-	| classesPackages |
-
-	classesPackages := Dictionary new.
-
-	classesNameCollection do: [:eachClassName | | packageName |
-		packageName := self getPackageNameOf: eachClassName.
-		classesPackages at: eachClassName put: packageName].
-
-	^classesPackages!
-
-getPackagesNamesWithTestClasses
-	"Answer a collection with all package names that contain at least one Test class (subclass of TestCase)"
-
-	| comma packageOrganizer packageOrganizerClass packagesNames stream testCaseClass |
-	testCaseClass := self objectInBaseNamed: #'TestCase'.
-	testCaseClass isNil ifTrue: [^''].
-	packageOrganizerClass := self objectInBaseNamed: #'PackageOrganizer'.
-	packageOrganizerClass isNil ifTrue: [^'<All>'].
-	packageOrganizer := packageOrganizerClass default.
-	packagesNames := Set new.
-	testCaseClass allSubclasses do: [:each | 
-		| package |
-		package := packageOrganizer packageOfClass: each ifNone: [nil].
-		package notNil ifTrue: [packagesNames add: package packageName].
-	].
-	comma := ''.
-	stream := WriteStream on: String new.
-	packagesNames asSortedCollection do: [:each | stream nextPutAll: comma; nextPutAll: each. comma := ','].
-	^stream contents!
-
-getSubclassesNamesOf: classNamed 
-	"NO SENDERS"
-	"Answer a collection with all subclasses of GemStone/S class named <classNamed>"
-
-	^((self objectNamed: classNamed) allSubclasses collect: [:each | each name]) asSortedCollection!
-
-getTestCaseClassesNamesOf: packageName
-	"Answer a collection with all test classes of the GemStone/S package named <packageNamed>"
-
-	| classes comma stream |
-	packageName isEmpty ifTrue: [^''].
-	classes := (self objectInBaseNamed: #'TestCase') allSubclasses.
-	packageName = '<All>' ifFalse: [
-		| packageInfo packageOrganizer |
-		packageOrganizer := (self objectInBaseNamed: #'PackageOrganizer') default.
-		packageInfo := packageOrganizer packageNamed: packageName ifAbsent: [^''].
-		packageInfo classes isEmpty ifTrue: [^''].
-		classes := packageInfo classes select: [:each | classes includes: each].
-	].
-	stream := WriteStream on: String new.
-	comma := ''.
-	classes do: [:each | stream nextPutAll: comma; nextPutAll: each name. comma := ','].
-	^stream contents!
-
-getTestMethodsNamesOf: classNamed 
-	"Answer a collection with all test selectors of the GemStone/S class named <classNamed>"
-
-	| class comma stream testSelectors gsClass |
-	stream := WriteStream on: String new.
-	gsClass := self objectNamed: classNamed.
-	gsClass isNil ifTrue: [^''].
-	(class := self objectNamed: #'TestCase') isNil ifTrue: [^''].
-	(gsClass isSubclassOf: class) ifFalse: [^''].
-	testSelectors :=  gsClass testSelectors asSortedCollection.
-	testSelectors isEmpty ifTrue: [^''].
-	comma := ''.
-	 testSelectors do: [:each | stream nextPutAll: comma; nextPutAll: each. comma := ','].
-	^stream contents!
-
-runTestNamed: testName in: gsClass
-	"The receiver run the test named <testName> of GemStone/S class named <gsClass>"
-	| testResult |
-
-	testResult := (self objectNamed: gsClass) run: testName asSymbol.
-
-	^testResult errorCount printString, ',' ,testResult failureCount printString, ',', testResult passedCount printString!
-
-runTestsNamed: testCollection in: gsClass
-	"NO SENDERS"
-	"The receiver run the all test of the collection <testCollection> of GemStone/S class named <gsClass>"
-	| testResult |
-
-	testResult := ((self objectNamed: gsClass) buildSuiteFromMethods: testCollection) run.
-
-"	stream := WriteStream on: String new.
-	testResult failures do: [:each | stream nextPutAll: ',', 'F_', each selector].
-	testResult errors do: [:each | stream nextPutAll: ',', 'E_', each selector].
-	testResult passed do: [:each | stream nextPutAll: ',', 'P_', each selector].
-
-	^stream contents"
-
-	^testResult printString! !
-!JadeServer categoriesFor: #debugTestNamed:of:!public!Test Browser! !
-!JadeServer categoriesFor: #getMethodsNamesOf:!public!Test Browser! !
-!JadeServer categoriesFor: #getPackagesNamesOfAll:!public!Test Browser! !
-!JadeServer categoriesFor: #getPackagesNamesWithTestClasses!public!Test Browser! !
-!JadeServer categoriesFor: #getSubclassesNamesOf:!public!Test Browser! !
-!JadeServer categoriesFor: #getTestCaseClassesNamesOf:!public!Test Browser! !
-!JadeServer categoriesFor: #getTestMethodsNamesOf:!public!Test Browser! !
-!JadeServer categoriesFor: #runTestNamed:in:!public!Test Browser! !
-!JadeServer categoriesFor: #runTestsNamed:in:!public!Test Browser! !
 
 !JadeTextDocument methodsFor!
 

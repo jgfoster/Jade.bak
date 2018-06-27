@@ -50,24 +50,7 @@ repository: anMCRepository
 !
 
 versionNames
-	^versionNames!
-
-versionNames: aList
-
-	| list |
-	list := aList asArray.
-	list := list collect: [:each1 | 
-		| pieces |
-		pieces := each1 subStrings: $..
-		pieces = #('current') ifTrue: [
-			0 -> 'current'
-		] ifFalse: [
-			((pieces at: pieces size - 1) collect: [:each2 | each2 isDigit ifTrue: [each2] ifFalse: [$0]]) asNumber -> each1.
-		].
-	].
-	list := list asSortedCollection.	"at first it seemed that the server provided them in order but that seems to not be consistent"
-	list := list collect: [:each | MCVersionName new name: each value].
-	versionNames := list.! !
+	^versionNames! !
 !MCPackage categoriesFor: #infoForVersion:!public! !
 !MCPackage categoriesFor: #isLoaded!public! !
 !MCPackage categoriesFor: #isModified!public! !
@@ -77,5 +60,4 @@ versionNames: aList
 !MCPackage categoriesFor: #repository!accessing!public! !
 !MCPackage categoriesFor: #repository:!accessing!public! !
 !MCPackage categoriesFor: #versionNames!accessing!public! !
-!MCPackage categoriesFor: #versionNames:!accessing!public! !
 

@@ -53,6 +53,7 @@ updateClassHierarchySelectionFor: presenter
 	| newSelection |
 	self rowanFixMe.	"Need to incorporate test case classes into the display See #updateClassHierarchy"
 	presenter selectionOrNil: nil.
+	selectionNames isEmpty ifTrue:[^self].
 	newSelection := presenter model asBag asArray detect: [:each | each last = selectionNames first]
 				ifNone: [nil].
 	newSelection

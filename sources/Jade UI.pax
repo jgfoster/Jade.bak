@@ -23,14 +23,6 @@ package methodNames
 	add: #GsProcess -> #stepOver:;
 	add: #GsProcess -> #terminate;
 	add: #GsProcess -> #trimStackToLevel:;
-	add: #JadeServer -> #_oopAndStringFor:;
-	add: #JadeServer -> #_sourceForProcess:frame:;
-	add: #JadeServer -> #_stepPointFromProcess:frame:method:level:;
-	add: #JadeServer -> #_stepPointsForBreaksInMethod:;
-	add: #JadeServer -> #_trimStackOf:toLevel:;
-	add: #JadeServer -> #asAsciiString:;
-	add: #JadeServer -> #isResumableCategory:number:context:;
-	add: #JadeServer -> #step:inFrame:;
 	add: #JadeServer32bit -> #_oopAndStringFor:;
 	add: #JadeServer32bit -> #_stepPointFromProcess:frame:method:level:;
 	add: #JadeServer32bit -> #_trimStackOf:toLevel:;
@@ -69,9 +61,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
-	add: 'GemStone Objects';
 	add: 'GemStone Session';
-	add: 'Jade Inspector';
 	add: 'Jade Method Browser';
 	add: 'Jade UI Base';
 	add: 'VisualWorks Component';
@@ -174,151 +164,6 @@ trimStackToLevel: anInteger
 !GsProcess categoriesFor: #stepOver:!public! !
 !GsProcess categoriesFor: #terminate!public! !
 !GsProcess categoriesFor: #trimStackToLevel:!public! !
-
-!JadeServer methodsFor!
-
-_oopAndStringFor: anObject
-
-	^(self oopOf: anObject) -> anObject printString.
-!
-
-_sourceForProcess: gsProcess frame: level
-
-	| frame homeMethod stepPoint keys values gsMethod receiver |
-	writeStream := WriteStream on: String new.
-	(frame := gsProcess _frameContentsAt: level) isNil ifTrue: [^'No frame found for level ' , level printString].
-	gsMethod := frame at: 1.
-	stepPoint := self 
-		_stepPointFromProcess: gsProcess 
-		frame: frame 
-		method: gsMethod
-		level: level.
-	writeStream
-		nextPutAll: '<?xml version=''1.0'' ?><frame oop=';
-		nextPutAll: (self oopOf: frame) printString printString;
-		nextPutAll: ' ipOffset=';
-		nextPutAll: (frame at: 2) printString printString;
-		nextPutAll: ' frameOffset=';
-		nextPutAll: ((frame at: 3) isNil ifTrue: [''] ifFalse: [(frame at: 3) printString]) printString;
-		nextPutAll: ' stepPoint=';
-		nextPutAll: stepPoint printString printString;
-		nextPutAll: '>'; lf;
-		yourself.
-	receiver := frame at: 10.
-	values := OrderedCollection new.
-	(self isClientForwarder: receiver) ifTrue: [
-		keys := OrderedCollection with: 'clientObject'.
-		values add: receiver clientObject.
-		receiver := '[aClientForwarder(' , (self oopOf: receiver) printString , ')]'.
-	] ifFalse: [
-		((receiver isKindOf: BlockClosure) or: [receiver isKindOf: Class]) ifTrue: [
-			keys := OrderedCollection new.
-		] ifFalse: [
-			keys := receiver class allInstVarNames asOrderedCollection collect: [:each | '-' , each].
-			1 to: keys size do: [:i |
-				values add: (receiver instVarAt: i).
-			].
-		].
-	].
-	keys addFirst: #'receiver'.
-	values addFirst: receiver.
-	keys addAll: (frame at: 9).
-	keys := keys reject: [:each | each first == $.].
-	values addAll: (frame size >= 11
-		ifTrue: [frame copyFrom: 11 to: frame size]
-		ifFalse: [#()]).
-	1 to: (keys size min: values size) do: [:i | | oop assoc key value |
-		key := keys at: i.
-		value := values at: i.
-		assoc := self _oopAndStringFor: value.
-		oop := assoc key.
-		value := assoc value.
-		value size > 500 ifTrue: [value := (value copyFrom: 1 to: 500) , '...'].
-		value := value collect: [:char | (char asciiValue < 32 or: [127 < char asciiValue]) ifTrue: [$?] ifFalse: [char]].
-		writeStream
-			nextPutAll: '<var oop=';
-			nextPutAll: oop asString printString;
-			nextPutAll: ' name=';
-			nextPutAll: key asString printString;
-			nextPutAll: ' ><';
-			nextPutAll: '!![';
-			nextPutAll: 'CDATA';
-			nextPutAll: '[';
-			nextPutAll: value;
-			nextPutAll: ']';
-			nextPutAll: ']';
-			nextPutAll: '></var>'; lf;
-			yourself.
-	].
-	homeMethod := self homeMethodFor: gsMethod.
-	writeStream 
-		nextPutAll: '<source';
-		nextPutAll: ' ><';
-		nextPutAll: '!![';
-		nextPutAll: 'CDATA';
-		nextPutAll: '[';
-		yourself.
-	self _describeMethod: homeMethod.
-	writeStream
-		nextPutAll: ']';
-		nextPutAll: ']';
-		nextPutAll: '></source>';
-		nextPutAll: '</frame>'; lf;
-		yourself.
-	^self asAsciiString: writeStream contents.
-!
-
-_stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
-
-	self subclassResponsibility.!
-
-_stepPointsForBreaksInMethod: gsMethod
-
-	^gsMethod _stepPointsFromBreakIpOffsets: gsMethod _breakpointIpOffsets!
-
-_trimStackOf: aGsProcess toLevel: anInteger
-
-	aGsProcess _trimStackToLevel: anInteger.
-	^aGsProcess.
-!
-
-asAsciiString: aString
-
-	^String withAll: (aString asArray collect: [:char | 
-		((32 <= char asciiValue and: [char asciiValue <= 127]) or: [char isSeparator])
-			ifTrue: [char]
-			ifFalse: [$?].
-	]).
-!
-
-isResumableCategory: category number: number context: context
-
-	| exceptionA receiver |
-	category == GemStoneError ifTrue: [
-		^number // 1000 = 2 or: [number // 1000 = 6].
-	].
-	(exceptionA := Globals at: #ExceptionA ifAbsent: [nil]) isNil ifTrue: [
-		^true.
-	].
-	receiver := (context _frameContentsAt: 1) at: 8.
-	(receiver isKindOf: exceptionA) ifTrue: [
-		^receiver isResumable.
-	].
-	^true.
-!
-
-step: aGsProcess inFrame: anInteger
-
-	aGsProcess _stepOverInFrame: anInteger.
-! !
-!JadeServer categoriesFor: #_oopAndStringFor:!Debugger!public! !
-!JadeServer categoriesFor: #_sourceForProcess:frame:!Debugger!public! !
-!JadeServer categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!public! !
-!JadeServer categoriesFor: #_stepPointsForBreaksInMethod:!Debugger!public! !
-!JadeServer categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
-!JadeServer categoriesFor: #asAsciiString:!Debugger!public! !
-!JadeServer categoriesFor: #isResumableCategory:number:context:!Debugger!public! !
-!JadeServer categoriesFor: #step:inFrame:!Debugger!public! !
 
 !JadeServer32bit methodsFor!
 

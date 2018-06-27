@@ -124,12 +124,6 @@ hasEquivalentText
 	^left = right.
 !
 
-initialize: aStream
-
-	obsoletion := MCDefinition fromStream: aStream.
-	modification := MCDefinition fromStream: aStream.
-!
-
 matchCountFromObsoletionLine: obsInteger modificationLine: modInteger
 
 	| obsOffset modOffset |
@@ -192,7 +186,6 @@ selector
 !MCModification categoriesFor: #firstDifferenceAfter:!differences!public! !
 !MCModification categoriesFor: #firstMatchAfter:!differences!public! !
 !MCModification categoriesFor: #hasEquivalentText!public! !
-!MCModification categoriesFor: #initialize:!public! !
 !MCModification categoriesFor: #matchCountFromObsoletionLine:modificationLine:!differences!public! !
 !MCModification categoriesFor: #modificationMemo!public! !
 !MCModification categoriesFor: #modificationMemoMarkers!differences!public! !

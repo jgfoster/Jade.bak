@@ -43,9 +43,6 @@ isTestCase
 	self rowanFixMe.
 	^false!
 
-methodDefinitionService
-	^methodDefinitionService ifNil: [methodDefinitionService := RowanMethodService on: gciSession]!
-
 packageName
 	^packageName!
 
@@ -76,7 +73,6 @@ source: anObject
 !RowanMethodDefinition categoriesFor: #initialize!initialization!public! !
 !RowanMethodDefinition categoriesFor: #isReadOnly!public!testing! !
 !RowanMethodDefinition categoriesFor: #isTestCase!public!testing! !
-!RowanMethodDefinition categoriesFor: #methodDefinitionService!public!services! !
 !RowanMethodDefinition categoriesFor: #packageName!accessing!private! !
 !RowanMethodDefinition categoriesFor: #packageName:!accessing!private! !
 !RowanMethodDefinition categoriesFor: #projectName!accessing!private! !

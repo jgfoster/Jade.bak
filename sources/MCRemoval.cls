@@ -20,10 +20,9 @@ detailsString
 	^definition detailsString.
 !
 
-initialize: aStream
+isRemoval
 
-	definition := MCDefinition fromStream: aStream.
-!
+	^true!
 
 obsoletionMemo
 
@@ -41,7 +40,7 @@ selector
 ! !
 !MCRemoval categoriesFor: #className!public! !
 !MCRemoval categoriesFor: #detailsString!public! !
-!MCRemoval categoriesFor: #initialize:!public! !
+!MCRemoval categoriesFor: #isRemoval!public! !
 !MCRemoval categoriesFor: #obsoletionMemo!public! !
 !MCRemoval categoriesFor: #obsoletionText!public! !
 !MCRemoval categoriesFor: #selector!public! !

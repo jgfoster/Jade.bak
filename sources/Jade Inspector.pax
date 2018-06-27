@@ -8,19 +8,11 @@ package basicPackageVersion: '0.026'.
 package basicScriptAt: #postinstall put: 'JadeInspector setNavigationInspector'.
 
 package classNames
-	add: #JadeInspector;
 	add: #JadeNavigationInspector;
 	yourself.
 
 package methodNames
-	add: #CodeSourcePresenter -> #jadeInspect;
-	add: #JadeServer -> #inspect:;
-	add: #JadeServer -> #inspectDictionary:on:;
-	add: #JadeServer -> #inspectNamedInstanceVariablesOf:on:;
-	add: #JadeServer -> #keysForDictionary:;
-	add: #JadeServer -> #print:on:;
-	add: #JadeServer -> #printStringOf:;
-	add: #JadeServer -> #printStringOf:to:;
+	add: #JadeInspector -> #openNavigationInspector;
 	add: #JadeServer64bit24 -> #inspect:;
 	add: #JadeServer64bit24 -> #inspectClientForwarder:;
 	add: #JadeServer64bit24 -> #isClientForwarder:;
@@ -28,6 +20,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #inspect:;
 	add: #JadeServer64bit3x -> #inspectNamedInstanceVariablesOf:on:;
 	add: #JadeServer64bit3x -> #keysForDictionary:;
+	add: 'JadeInspector class' -> #setNavigationInspector;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -42,8 +35,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: 'GemStone Session';
 	add: 'Jade UI Base';
 	yourself).
@@ -52,11 +43,6 @@ package!
 
 "Class Definitions"!
 
-JadeTextDocument subclass: #JadeInspector
-	instanceVariableNames: 'instVarListPresenter'
-	classVariableNames: 'DefaultInspectorClass'
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 JadeInspector subclass: #JadeNavigationInspector
 	instanceVariableNames: 'oopsCollection objectIndex'
 	classVariableNames: ''
@@ -68,128 +54,23 @@ JadeInspector subclass: #JadeNavigationInspector
 
 "Loose Methods"!
 
-!CodeSourcePresenter methodsFor!
+!JadeInspector methodsFor!
 
-jadeInspect
+openNavigationInspector
 
-	| result |
+	instVarListPresenter hasSelection ifFalse: [^JadeNavigationInspector showOn: self model session: gciSession].
 
-	result := self jadeExecuteAndDisplay: false.	result == self ifTrue: [^self].
-	JadeInspector showOn: result session: gciSession.
-! !
-!CodeSourcePresenter categoriesFor: #jadeInspect!Jade!private! !
+	^(instVarListPresenter selection key = 'self')
+		ifTrue: [JadeNavigationInspector showOn: self model session: gciSession] 
+		ifFalse: [JadeNavigationInspector showOn: instVarListPresenter selection value session: gciSession]! !
+!JadeInspector categoriesFor: #openNavigationInspector!accessing!private! !
 
-!JadeServer methodsFor!
+!JadeInspector class methodsFor!
 
-inspect: anObject
+setNavigationInspector
 
-	| stream string |
-	(stream := WriteStream on: String new)
-		nextPutAll: anObject class name; tab;
-		yourself.
-	(self oopOf: anObject) printOn: stream.
-	stream lf.
-	(anObject isKindOf: Dictionary superclass) ifTrue: [^self inspectDictionary: anObject on: stream].
-	self inspectNamedInstanceVariablesOf: anObject on: stream.
-	anObject class format > 0 ifTrue: [
-		1 to: (anObject _basicSize min: 200) do: [:i | 
-			i printOn: stream.
-			stream tab.
-			self print: (self oopOf: (anObject _at: i)) on: stream.
-			stream lf.
-		].
-	].
-	(string := anObject printString) size > 5000 ifTrue: [string := (string copyFrom: 1 to: 5000) , '...'].
-	string class == String ifFalse: [
-		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
-	].
-	^stream 
-		nextPutAll: string; 
-		contents.
-!
-
-inspectDictionary: aDictionary on: aStream
-
-	| keys keyDict |
-	keys := self keysForDictionary: aDictionary.
-	keyDict := Dictionary new.
-	keys do: [:each | 
-		| key |
-		key := each printString , '~' , (self oopOf: each) printString.
-		key := key collect: [:char | char asciiValue < 32 ifTrue: [$?] ifFalse: [char]].
-		keyDict
-			at: key
-			put: each.
-	].
-	keys size printOn: aStream.
-	aStream lf.
-	keyDict keys asSortedCollection do: [:each | 
-		| index keyString key value valueString |
-		index := each findLast: [:char | char = $~].
-		keyString := each copyFrom: 1 to: index - 1.
-		key := keyDict at: each.
-		value := aDictionary at: key. 
-		valueString := (self printStringOf: value to: 10).
-		aStream nextPutAll: keyString , '->' , valueString; tab.
-		self print: (self oopOf: value) on: aStream.
-		aStream lf.
-	].
-	^aStream 
-		lf; 
-		contents.
-!
-
-inspectNamedInstanceVariablesOf: anObject on: aStream
-
-	| list size |
-	list := anObject class allInstVarNames.
-	size := list size.
-	anObject class format > 0 ifTrue: [
-		size := size + (anObject _basicSize min: 200).
-	].
-	size printOn: aStream.
-	aStream lf.
-	1 to: list size do: [:i | 
-		aStream nextPutAll: (list at: i); tab.
-		self print: (self oopOf: (anObject instVarAt: i)) on: aStream.
-		aStream lf.
-	].
-!
-
-keysForDictionary: aDictionary 
-
-	^aDictionary keys.
-!
-
-print: anObject on: aStream
-	"convert multi-byte strings to single-byte"
-
-	| string |
-	string := self printStringOf: anObject.
-	string class == String ifFalse: [
-		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
-	].
-	aStream nextPutAll: string.
-!
-
-printStringOf: anObject
-
-	^anObject printString.!
-
-printStringOf: anObject to: anInteger
-
-	| string |
-	(string := self printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
-	string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
-	^string.
-! !
-!JadeServer categoriesFor: #inspect:!Inspector!public! !
-!JadeServer categoriesFor: #inspectDictionary:on:!Inspector!public! !
-!JadeServer categoriesFor: #inspectNamedInstanceVariablesOf:on:!Inspector!public! !
-!JadeServer categoriesFor: #keysForDictionary:!Inspector!public! !
-!JadeServer categoriesFor: #print:on:!Inspector!public! !
-!JadeServer categoriesFor: #printStringOf:!Inspector!public! !
-!JadeServer categoriesFor: #printStringOf:to:!Inspector!public! !
+	self setDefaultInspectorClass: JadeNavigationInspector! !
+!JadeInspector class categoriesFor: #setNavigationInspector!public! !
 
 !JadeServer64bit24 methodsFor!
 

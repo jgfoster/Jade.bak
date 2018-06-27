@@ -38,18 +38,6 @@ browseImplementors
 
 	self browseImplementorsOf: self currentSelector.!
 
-browseSelectedClass
-
-	| range string list assoc |
-	range := documentPresenter view selectionRange.
-	string := documentPresenter value copyFrom: range start to: range stop.
-	list := self findClassList.
-	assoc := list 
-		detect: [:each | each key = string]
-		ifNone: [^MessageBox warning: 'Class ' , string printString , ' not found!!!!' caption: 'Jade'].
-	parentPresenter parentPresenter parentPresenter addSystemBrowserForClass: assoc value.
-!
-
 browseSenders
 
 	self browseSendersOf: self currentSelector.!
@@ -260,6 +248,14 @@ jadeExecuteAndDisplay: showResult
 	].
 !
 
+jadeInspect
+
+	| result |
+
+	result := self jadeExecuteAndDisplay: false.	result == self ifTrue: [^self].
+	JadeInspector showOn: result session: gciSession.
+!
+
 menuTitle: aString
 
 	menuTitle := aString.
@@ -452,7 +448,6 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #addMenuTo:!menus!public! !
 !CodeSourcePresenter categoriesFor: #addQuotesToSelection!edit!private! !
 !CodeSourcePresenter categoriesFor: #browseImplementors!public! !
-!CodeSourcePresenter categoriesFor: #browseSelectedClass!public! !
 !CodeSourcePresenter categoriesFor: #browseSenders!public! !
 !CodeSourcePresenter categoriesFor: #clearBreakAtStepPoint:!Breakpoints!public! !
 !CodeSourcePresenter categoriesFor: #clearSelection!public! !
@@ -482,6 +477,7 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #jadeDisplay!Jade!private! !
 !CodeSourcePresenter categoriesFor: #jadeExecute!Jade!private! !
 !CodeSourcePresenter categoriesFor: #jadeExecuteAndDisplay:!Jade!private! !
+!CodeSourcePresenter categoriesFor: #jadeInspect!Jade!private! !
 !CodeSourcePresenter categoriesFor: #menuTitle:!menus!public! !
 !CodeSourcePresenter categoriesFor: #mySave!private! !
 !CodeSourcePresenter categoriesFor: #pasteClipboard!public! !

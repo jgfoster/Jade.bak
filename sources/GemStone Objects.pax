@@ -8,11 +8,6 @@ package basicPackageVersion: '0.054'.
 package basicScriptAt: #postinstall put: '''Loaded: GemStone Objects'' yourself.'.
 
 package classNames
-	add: #GsMethod;
-	add: #GsObject;
-	add: #GsProcess;
-	add: #GsSession;
-	add: #GsStackFrame;
 	add: #JadeServerReadStream;
 	add: #RowanCommandResult;
 	yourself.
@@ -25,7 +20,6 @@ package globalAliases: (Set new
 
 package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Core\Object Arts\Dolphin\ActiveX\Components\XML DOM\XML DOM';
 	yourself).
 
 package!
@@ -34,31 +28,6 @@ package!
 
 Object subclass: #RowanCommandResult
 	instanceVariableNames: 'executionTime'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanCommandResult subclass: #GsObject
-	instanceVariableNames: 'gciSession name oopType'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GsObject subclass: #GsMethod
-	instanceVariableNames: 'behavior behaviorName breakPoints category isReadOnly originalSource source stepPoints unimplementedSelectors warnings'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GsObject subclass: #GsProcess
-	instanceVariableNames: 'stack type'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GsObject subclass: #GsSession
-	instanceVariableNames: 'process host primitive viewAge state transaction hasOldestCR serial id ip priority hostId quietTime lifeTime backlog description objects pages voteState'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GsObject subclass: #GsStackFrame
-	instanceVariableNames: 'ipOffset frameOffset gsMethod stepPoint vars offsets breaks source'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

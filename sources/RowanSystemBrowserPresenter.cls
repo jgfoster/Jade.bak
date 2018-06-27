@@ -89,9 +89,8 @@ compareAncestor
 !
 
 createComponents
-
 	super createComponents.
-	self registerPresenterForUpdates.!
+	self registerPresentersForUpdates!
 
 deletePackage
 	| packageName |
@@ -101,6 +100,11 @@ deletePackage
 		ifFalse: [^self].
 	self updateCommand: 'unloadPackage' , Character tab asString , packageName , Character lf asString
 				, self requestString!
+
+getViews
+
+	super getViews.
+	self registerTabPresentersForUpdates!
 
 inspectPackage
 
@@ -175,7 +179,7 @@ possiblyShowGenericPackageClassTemplate: newDef
 			newClassDef := packageService genericClassCreationTemplate].
 	^newClassDef!
 
-registerPresenterForUpdates
+registerPresentersForUpdates
 	BrowserUpdate current register: dictionaryListPresenter with: #dictionaryUpdate:.
 	BrowserUpdate current register: globalsPresenter with: #globalsUpdate:.
 	BrowserUpdate current register: packageListPresenter with: #packagesUpdate:.
@@ -183,7 +187,12 @@ registerPresenterForUpdates
 	BrowserUpdate current register: classListPresenter with: #classesUpdate:.
 	BrowserUpdate current register: classDefinitionPresenter with: #classDefinitionUpdate:.
 	BrowserUpdate current register: classCommentPresenter with: #classCommentUpdate:.
-	BrowserUpdate current register: classHierarchyPresenter with: #classHierarchyUpdate:.!
+	BrowserUpdate current register: classHierarchyPresenter with: #classHierarchyUpdate:.
+	BrowserUpdate current register: superclassListPresenter with: #superclassListUpdate:.
+	BrowserUpdate current register: methodListPresenter with: #methodsUpdate:.!
+
+registerTabPresentersForUpdates
+	BrowserUpdate current register: self methodFilterListPresenter with: #methodFilterUpdate:!
 
 resetClassDefinitionPresenter
 	classDefinitionPresenter view
@@ -330,6 +339,35 @@ updateFromCommand: update
 		isModified: false;
 		yourself!
 
+updateMethodFilter
+
+	| listPresenter pieces type tabs tab filters selections |
+	listPresenter := self methodFilterListPresenter.
+	pieces := readStream nextLine subStrings: Character tab.
+	pieces isEmpty ifTrue:[^self].
+	type := pieces at: 1.
+	1 < pieces size ifTrue: [environment := (pieces at: 2) asNumber].
+	(tabs := methodFilterTabs cards) isEmpty ifTrue: [^self].
+	tab := tabs detect: [:each | each name = type].
+	tab ensureVisible.
+	filters := readStream nextLineAsList reverse.
+	filters = listPresenter list ifFalse: [
+		listPresenter list: filters.
+	].
+	selections := readStream nextLineAsList.
+	selections := listPresenter list select: [:each | selections includes: each].
+	selections = listPresenter selections ifFalse: [
+		listPresenter selections: selections.
+	].
+	selections notEmpty ifTrue: [
+		listPresenter view ensureSelectionVisible.
+	] ifFalse: [
+		filters notEmpty ifTrue: [
+			listPresenter view ensureVisible: 1.
+		].
+	].
+!
+
 updateMethodFilterFrom: update
 
 	| listPresenter type tabs tab filters selections |
@@ -475,7 +513,9 @@ updateSelectionsForUpdate: update
 	update updateDictionarySelectionsFor: dictionaryListPresenter.
 	update updateClassCategorySelectionsFor: classCategoryPresenter.
 	update updateClassSelectionFor: classListPresenter.
-	update updateClassHierarchySelectionFor: classHierarchyPresenter!
+	update updateClassHierarchySelectionFor: classHierarchyPresenter.
+	update updateSuperclassSelectionFor: superclassListPresenter.
+	update updateMethodFilterSelectionFor: self methodFilterListPresenter.!
 
 updateTabLabel
 
@@ -510,6 +550,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #compareAncestor!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #createComponents!initialization!public! !
 !RowanSystemBrowserPresenter categoriesFor: #deletePackage!menu handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #getViews!public! !
 !RowanSystemBrowserPresenter categoriesFor: #inspectPackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #intialize!initialization!public! !
 !RowanSystemBrowserPresenter categoriesFor: #labelOfClass:changedTo:!event handlers!public! !
@@ -517,12 +558,14 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!private! !
 !RowanSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #possiblyShowGenericPackageClassTemplate:!public!updating! !
-!RowanSystemBrowserPresenter categoriesFor: #registerPresenterForUpdates!event handlers!initialization!public!rowan! !
+!RowanSystemBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!rowan! !
+!RowanSystemBrowserPresenter categoriesFor: #registerTabPresentersForUpdates!event handlers!initialization!public!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #resetClassDefinitionPresenter!private!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassHierarchyFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassInfo!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateFromCommand:!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #updateMethodFilter!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFilterFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodsFrom:!public!updating! !

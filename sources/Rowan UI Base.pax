@@ -15,10 +15,8 @@ package classNames
 	add: #RowanClassService;
 	add: #RowanDictionaryUpdate;
 	add: #RowanGlobalsUpdate;
-	add: #RowanGsMethod;
 	add: #RowanKeyValuePrompter;
 	add: #RowanLoginShell;
-	add: #RowanMethodDefinition;
 	add: #RowanMethodListBrowser;
 	add: #RowanMethodListPresenter;
 	add: #RowanMethodSelectionPresenter;
@@ -30,7 +28,6 @@ package classNames
 	add: #RowanPackageService;
 	add: #RowanPackageShell;
 	add: #RowanPackageUpdate;
-	add: #RowanPatch;
 	add: #RowanPatchBrowser;
 	add: #RowanPresenter;
 	add: #RowanProjectListPresenter;
@@ -47,30 +44,24 @@ package classNames
 	yourself.
 
 package methodNames
+	add: #CodeSourcePresenter -> #browseSelectedClass;
 	add: #GciSession -> #hasServer;
 	add: #GciSession -> #initializeServer;
 	add: #GciSession -> #postLoginAs:useSocket:;
 	add: #GciSession -> #titleBarFor:;
 	add: #GciSession -> #verifyRowanLoaded;
-	add: #GsClass -> #methodsUpTo:filterList:isVariables:;
 	add: #GsMethod -> #methodDefinitionService;
-	add: #GsMethod2 -> #asUpdatedVersion:;
 	add: #JadeImageStripper -> #closeLoginShells;
 	add: #JadeImageStripper -> #createVersionResource;
 	add: #JadeImageStripper -> #requiredClasses;
 	add: #JadeImageStripper -> #requiredPackageNames;
 	add: #JadeLoginShell -> #aboutJadeite;
-	add: #JadePresenter -> #registerPresenterForUpdates;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeServer -> #_describeMethod:;
-	add: #JadeServer -> #compile:frame:process:;
-	add: #JadeServer -> #moveMethod:toCategory:;
 	add: #JadeServer -> #sbAddPackage:;
 	add: #JadeServer -> #sbChangesInPackage:;
 	add: #JadeServer -> #sbClassTemplate;
-	add: #JadeServer -> #sbMethodCategory:;
-	add: #JadeServer -> #sbPostSaveClass:;
 	add: #JadeServer -> #sbRemoveClasses;
 	add: #JadeServer -> #sbRemoveMethods:;
 	add: #JadeServer -> #sbUnloadPackage:;
@@ -82,12 +73,8 @@ package methodNames
 	add: #JadeServer -> #sbUpdateMethodCategories;
 	add: #JadeServer -> #sbUpdateMethods;
 	add: #JadeServer -> #sbUpdateMethodVariables;
-	add: #JadeServer -> #sbUpdatePackage:;
 	add: #JadeServer -> #sbUpdatePackages;
-	add: #JadeServer -> #sbUpdatePackagesOrDictionaries;
 	add: #JadeServer -> #sbUpdateSuperclass;
-	add: #JadeServer -> #systemBrowserSTON:;
-	add: #JadeServer -> #systemBrowserSTONA:;
 	add: #JadeServer64bit -> #recompile:withSource:;
 	add: #JadeServer64bit -> #systemBrowserSTON:;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
@@ -115,8 +102,6 @@ package methodNames
 	add: #MCClassDefinition -> #initialize:;
 	add: #MCPatchBrowser -> #browseChangedThing;
 	add: #MCPatchBrowser -> #operationSelected;
-	add: #MCPatchOperation -> #isRemoval;
-	add: #MCRemoval -> #isRemoval;
 	add: #MethodListPresenter -> #browseClass;
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #MethodSourcePresenter -> #fileSave;
@@ -132,14 +117,18 @@ package methodNames
 	add: #RowanCommandResult -> #classHierarchyUpdate:;
 	add: #RowanCommandResult -> #dictionaryUpdate:;
 	add: #RowanCommandResult -> #globalsUpdate:;
+	add: #RowanCommandResult -> #methodFilterUpdate:;
 	add: #RowanCommandResult -> #methodsUpdate:;
 	add: #RowanCommandResult -> #packagesUpdate:;
-	add: #RowanCommandResult -> #superclassUpdate:;
+	add: #RowanCommandResult -> #superclassListUpdate:;
 	add: #RowanCommandResult -> #updateClassCategorySelectionsFor:;
 	add: #RowanCommandResult -> #updateClassHierarchySelectionFor:;
 	add: #RowanCommandResult -> #updateClassSelectionFor:;
 	add: #RowanCommandResult -> #updateDictionarySelectionsFor:;
+	add: #RowanCommandResult -> #updateMethodFilterSelectionFor:;
 	add: #RowanCommandResult -> #updatePackageSelectionsFor:;
+	add: #RowanCommandResult -> #updateSuperclassSelectionFor:;
+	add: #RowanMethodDefinition -> #methodDefinitionService;
 	add: 'JadeServer class' -> #gsString;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
 	add: 'JadeSessionManager class' -> #getUrl;
@@ -194,9 +183,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone Objects';
 	add: 'GemStone Services';
 	add: 'GemStone Session';
-	add: 'Jade Class Browser';
 	add: 'Jade Deployment';
-	add: 'Jade Inspector';
 	add: 'Jade Login';
 	add: 'Jade Method Browser';
 	add: 'Jade System Browser';
@@ -346,7 +333,7 @@ RowanCommandResult subclass: #RowanClassCategoryUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanCommandResult subclass: #RowanClassesUpdate
-	instanceVariableNames: 'type classNames selectionNames'
+	instanceVariableNames: 'classNames selectionNames'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -375,28 +362,13 @@ RowanCommandResult subclass: #RowanPackageUpdate
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-GsMethod subclass: #RowanGsMethod
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-GsMethod2 subclass: #RowanMethodDefinition
-	instanceVariableNames: 'selector source className packageName projectName methodDefinitionService'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-MCPatch subclass: #RowanPatch
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 RowanClassesUpdate subclass: #RowanClassHierarchyUpdate
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanClassesUpdate subclass: #RowanMethodsUpdate
-	instanceVariableNames: 'methods methodFilters selectors selectedClass selectedSelectors inheritedClasses inheritedClass'
+	instanceVariableNames: 'methods methodFilters selectors selectedClass selectedSelectors inheritedClasses inheritedClass type'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -415,6 +387,23 @@ TestCase subclass: #RowanServiceTest
 
 
 "Loose Methods"!
+
+!CodeSourcePresenter methodsFor!
+
+browseSelectedClass
+	| range string list assoc parent shell |
+	range := documentPresenter view selectionRange.
+	string := documentPresenter value copyFrom: range start to: range stop.
+	list := self findClassList.
+	assoc := list detect: [:each | each key = string]
+				ifNone: [^MessageBox warning: 'Class ' , string printString , ' not found!!!!' caption: 'Jade'].
+	parent := parentPresenter parentPresenter parentPresenter.
+	parent isNil
+		ifTrue: 
+			[shell := RowanSystemBrowser showOnSession: gciSession.
+			shell selectClass: string selector: String new]
+		ifFalse: [parent addSystemBrowserForClass: assoc value]! !
+!CodeSourcePresenter categoriesFor: #browseSelectedClass!public! !
 
 !GciSession methodsFor!
 
@@ -520,49 +509,11 @@ verifyRowanLoaded
 !GciSession categoriesFor: #titleBarFor:!public! !
 !GciSession categoriesFor: #verifyRowanLoaded!private! !
 
-!GsClass methodsFor!
-
-methodsUpTo: aClass filterList: aList isVariables: aBoolean
-
-	|  stream string |
-	stream := WriteStream on: String new.
-	aList do: [:each | stream nextPutAll: each; tab].
-	string := gciSession
-		serverPerform: #'methodsFor:upTo:filter:isVariables:' 
-		with: self
-		with: aClass
-		with: stream contents 
-		with: aBoolean.
-	^RowanMethodDefinition
-		listFromString: string 
-		session: gciSession.
-! !
-!GsClass categoriesFor: #methodsUpTo:filterList:isVariables:!Methods!public! !
-
 !GsMethod methodsFor!
 
 methodDefinitionService
 	^RowanMethodService on: gciSession! !
 !GsMethod categoriesFor: #methodDefinitionService!public!rowan! !
-
-!GsMethod2 methodsFor!
-
-asUpdatedVersion: stringOop
-	"Answer <RowanMethodDefinition> of the new method based on the receiver."
-	| stringToGetNewMethod |
-
-	stringToGetNewMethod := stringOop, Character tab asString, 
-						name, Character tab asString, 
-						category, Character tab asString, 
-						gsClass oopType lowPart printString, Character tab asString, 
-						gsClass name, Character tab asString, 
-						gsClass category, Character tab asString, 
-						gsClass dictionary , Character tab asString,
-						isTestCase printString.
-
-	^GsMethod2 fromString: stringToGetNewMethod session: gciSession.
-! !
-!GsMethod2 categoriesFor: #asUpdatedVersion:!public! !
 
 !JadeImageStripper methodsFor!
 
@@ -653,12 +604,6 @@ aboutJadeite
 	self class aboutJadeite! !
 !JadeLoginShell categoriesFor: #aboutJadeite!public! !
 
-!JadePresenter methodsFor!
-
-registerPresenterForUpdates
-	! !
-!JadePresenter categoriesFor: #registerPresenterForUpdates!public!rowan! !
-
 !JadePresenterA methodsFor!
 
 browseImplementorsOf: aGsMethodOrString
@@ -736,34 +681,6 @@ _describeMethod: aMethod
  
 !
 
-compile: aString frame: anInteger process: aGsProcess
-	"Compile method from within debugger"
-
-	| oldMethod aBehavior selector category result |
-	oldMethod := aGsProcess localMethodAt: anInteger.
-	result := self recompile: oldMethod withSource: aString.
-	(result isKindOf: Boolean) ifTrue: [^result].
-	aBehavior := oldMethod inClass.
-	selector := oldMethod selector.
-	selector isNil ifTrue: [^result].
-	category := self _behavior: aBehavior categoryOfSelector: selector.
-	result := ((System myUserProfile resolveSymbol: #UserGlobals) value at: #rowanCompile
-				ifAbsent: [false])
-					ifTrue: [aBehavior rwCompileMethod: aString category: category]
-					ifFalse: 
-						[self
-							compileMethod: aString
-							behavior: aBehavior
-							user: nil
-							inCategory: category].
-	^result!
-
-moveMethod: aGsMethod toCategory: aString
-	aGsMethod inClass
-		rwMoveMethod: aGsMethod selector
-		toCategory: aString.
-!
-
 sbAddPackage: anOrderedCollection
 	| string service |
 	string := anOrderedCollection removeFirst.
@@ -800,18 +717,6 @@ sbClassTemplate
 		template: def.
 	classInfoUpdate writeInfoOn: writeStream
 !
-
-sbMethodCategory: anOrderedCollection
-	| behavior category |
-	behavior := self sbClassFrom: anOrderedCollection.
-	category := anOrderedCollection removeFirst.
-	anOrderedCollection do: [:each | behavior rwMoveMethod: each asSymbol toCategory: category].
-	self systemBrowserUpdate!
-
-sbPostSaveClass: anOrderedCollection
-	"this has been Rowanized"
-
-	self systemBrowserUpdate !
 
 sbRemoveClasses
 	| isPackages containers classNames |
@@ -1044,74 +949,6 @@ sbUpdateMethodVariables
 
 !
 
-sbUpdatePackage: aString
-	| package workingCopy list index |
-	self mcPackageClass isNil
-		ifTrue: 
-			[writeStream
-				nextPut: $%;
-				lf.
-			writeStream
-				nextPut: $%;
-				lf.
-			^self ].
-	package := self mcPackageClass named: aString.
-	workingCopy := self mcWorkingCopyClass forPackage: package.
-	list := workingCopy ancestors collect: [:each | 0 -> each].
-	index := 1.
-	[list size < 4 and: [index <= list size]] whileTrue: 
-			[| assoc |
-			assoc := list at: index.
-			assoc value ancestors do: [:parent | list add: assoc key + 1 -> parent].
-			index := index + 1].
-	list do: 
-			[:each |
-			| date time |
-			date := each value date isNil
-						ifTrue: ['']
-						ifFalse: [each value date asStringUsingFormat: #(3 2 1 $- 1 1)].
-			time := each value time isNil
-						ifTrue: ['']
-						ifFalse: [each value time asStringUsingFormat: #($: true false)].
-			writeStream
-				nextPutAll: each key printString;
-				tab;
-				nextPutAll: each value name;
-				tab;
-				nextPutAll: date;
-				nextPut: $T;
-				nextPutAll: time;
-				tab;
-				nextPutAll: (each value message
-							collect: [:char | (char asciiValue < 32 or: [127 < char asciiValue]) ifTrue: [$.] ifFalse: [char]]);
-				lf].
-	writeStream
-		nextPut: $%;
-		lf.
-	workingCopy repositoryGroup repositories do: 
-			[:each |
-			writeStream
-				nextPutAll: each class name;
-				tab;
-				nextPutAll: each description;
-				tab;
-				yourself.
-			each class name = #MCHttpRepository
-				ifTrue: 
-					[writeStream
-						nextPutAll: each user;
-						tab;
-						nextPutAll: each password;
-						yourself]
-				ifFalse: 
-					[writeStream
-						tab;
-						tab].
-			writeStream lf].
-	writeStream
-		nextPut: $%;
-		lf!
-
 sbUpdatePackages
 	| override modifiedList oldSelections newSelections fullList packagesUpdate |
 	
@@ -1143,19 +980,6 @@ sbUpdatePackages
 			classList addAll: service loadedClassHandles].
 	packagesUpdate writeSelectionsTo: writeStream.
 	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first]
-!
-
-sbUpdatePackagesOrDictionaries
-
-	| selectedTab |
-	selectedTab := self nextLine.
-	"Removed for Rowan which may not have Monticello loaded, but have a package tab"
-	"(self mcWorkingCopyClass isNil or: [self gsPackagePolicy isNil]) ifTrue: [selectedTab := 'dictionaryList']." 
-	writeStream nextPutAll: selectedTab; lf.
-	classList := OrderedCollection new.
-	selectedTab = 'dictionaryList' ifTrue: [^self sbUpdateDictionaries].
-	selectedTab = 'packageList' ifTrue: [^self sbUpdatePackages].
-	self error: 'unexpected token'.
 !
 
 sbUpdateSuperclass
@@ -1196,33 +1020,11 @@ sbUpdateSuperclass
 		superclassUpdate selections add: selectedClass asString.
 	].
 	superclassUpdate writeSelectionsTo: writeStream. 
-!
-
-systemBrowserSTON: aString
-	^self copy systemBrowserSTONA: aString.
-!
-
-systemBrowserSTONA: aString
-
-	| time |
-	time := self millisecondsElapsedTime: [
-		selections := Dictionary new.
-		readStream := ReadStream on: aString.
-		writeStream := WriteStream on: String new.
-		writeStream lf.
-		self environment: (readStream upTo: Character space) asNumber.
-		self systemBrowserCommand.
-	].
-	^STON toString: RowanCommandResult results
 ! !
 !JadeServer categoriesFor: #_describeMethod:!Debugger!GsObject!public!System Browser! !
-!JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
-!JadeServer categoriesFor: #moveMethod:toCategory:!Methods!public! !
 !JadeServer categoriesFor: #sbAddPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbChangesInPackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbClassTemplate!public!System Browser! !
-!JadeServer categoriesFor: #sbMethodCategory:!public!System Browser! !
-!JadeServer categoriesFor: #sbPostSaveClass:!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveClasses!public!System Browser! !
 !JadeServer categoriesFor: #sbRemoveMethods:!public!System Browser! !
 !JadeServer categoriesFor: #sbUnloadPackage:!public!System Browser! !
@@ -1234,12 +1036,8 @@ systemBrowserSTONA: aString
 !JadeServer categoriesFor: #sbUpdateMethodCategories!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethods!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateMethodVariables!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!public!System Browser! !
 !JadeServer categoriesFor: #sbUpdateSuperclass!public!System Browser! !
-!JadeServer categoriesFor: #systemBrowserSTON:!public!System Browser! !
-!JadeServer categoriesFor: #systemBrowserSTONA:!public!System Browser! !
 
 !JadeServer class methodsFor!
 
@@ -1546,10 +1344,10 @@ updateCommand: aString onSuccessDo: aBlock
 	].
 	(Smalltalk at: #STONFlag ifAbsentPut: [false]) ifTrue:[
 		| stonResults update |
-		Transcript cr; show: 'Doing STON update'.
+		Transcript cr; show: 'Doing STON update: '; show: TimeStamp current printString.
 		inUpdate := true.
 		[update := BrowserUpdate current initializeUpdates. 
-		Smalltalk at: #STONFlag put: true.
+		Smalltalk at: #STONFlag put: true. "set to false to make debugging easier"
 		stonResults := self gciSession 
 				serverPerform: #'systemBrowserSTON:' 
 				with: environment printString , ' ' , aString.
@@ -1861,20 +1659,6 @@ operationSelected
 !MCPatchBrowser categoriesFor: #browseChangedThing!public! !
 !MCPatchBrowser categoriesFor: #operationSelected!public! !
 
-!MCPatchOperation methodsFor!
-
-isRemoval
-
-	^false! !
-!MCPatchOperation categoriesFor: #isRemoval!public! !
-
-!MCRemoval methodsFor!
-
-isRemoval
-
-	^true! !
-!MCRemoval categoriesFor: #isRemoval!public! !
-
 !MethodListPresenter methodsFor!
 
 browseClass
@@ -2021,12 +1805,15 @@ dictionaryUpdate: presenter
 
 globalsUpdate: presenter!
 
+methodFilterUpdate: presenter
+	!
+
 methodsUpdate: presenter
 	!
 
 packagesUpdate: presenter!
 
-superclassUpdate: presenter
+superclassListUpdate: presenter
 	!
 
 updateClassCategorySelectionsFor: presenter!
@@ -2038,8 +1825,12 @@ updateClassSelectionFor: presenter!
 updateDictionarySelectionsFor: presenter
 	!
 
+updateMethodFilterSelectionFor: presenter!
+
 updatePackageSelectionsFor: presenter
-	! !
+	!
+
+updateSuperclassSelectionFor: presenter! !
 !RowanCommandResult categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classCommentUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classDefinitionUpdate:!public!updating! !
@@ -2048,14 +1839,23 @@ updatePackageSelectionsFor: presenter
 !RowanCommandResult categoriesFor: #classHierarchyUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #methodFilterUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !
-!RowanCommandResult categoriesFor: #superclassUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #superclassListUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassSelectionFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateDictionarySelectionsFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updateMethodFilterSelectionFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updatePackageSelectionsFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updateSuperclassSelectionFor:!public!updating! !
+
+!RowanMethodDefinition methodsFor!
+
+methodDefinitionService
+	^methodDefinitionService ifNil: [methodDefinitionService := RowanMethodService on: gciSession]! !
+!RowanMethodDefinition categoriesFor: #methodDefinitionService!public!services! !
 
 !STON class methodsFor!
 

@@ -20,11 +20,6 @@ detailsString
 	^definition detailsString.
 !
 
-initialize: aStream
-
-	definition := MCDefinition fromStream: aStream.
-!
-
 modificationMemo
 
 	^definition displayMemo.
@@ -41,7 +36,6 @@ selector
 ! !
 !MCAddition categoriesFor: #className!public! !
 !MCAddition categoriesFor: #detailsString!public! !
-!MCAddition categoriesFor: #initialize:!public! !
 !MCAddition categoriesFor: #modificationMemo!public! !
 !MCAddition categoriesFor: #modificationText!public! !
 !MCAddition categoriesFor: #selector!public! !

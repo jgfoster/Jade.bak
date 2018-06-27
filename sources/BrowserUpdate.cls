@@ -48,6 +48,9 @@ initializeUpdates
 	updates := OrderedCollection new.
 	!
 
+methodFilterUpdate: presenter
+	updates do: [:update | update methodFilterUpdate: presenter]!
+
 methodsUpdate: presenter
 
 	updates do:[:update | update methodsUpdate: presenter]!
@@ -65,9 +68,8 @@ register: presenter with: selector
 		to: presenter
 		with: [self updates do: [:update | update perform: selector with: presenter]]!
 
-superclassUpdate: presenter
-
-	updates do:[:update | update superclassUpdate: presenter]!
+superclassListUpdate: presenter
+	updates do: [:update | update superclassListUpdate: presenter]!
 
 unregister: aPresenter
 
@@ -100,10 +102,11 @@ updates: aCollection
 !BrowserUpdate categoriesFor: #globalsUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
 !BrowserUpdate categoriesFor: #initializeUpdates!initialization!public! !
+!BrowserUpdate categoriesFor: #methodFilterUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #methodsUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #packagesUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #register:with:!public!registeringPresenters! !
-!BrowserUpdate categoriesFor: #superclassUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #superclassListUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #unregister:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #updatePresenters!public!updating! !
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !

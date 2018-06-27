@@ -85,6 +85,22 @@ isVisible
 	^isVisible.
 !
 
+methodsUpTo: aClass filterList: aList isVariables: aBoolean
+
+	|  stream string |
+	stream := WriteStream on: String new.
+	aList do: [:each | stream nextPutAll: each; tab].
+	string := gciSession
+		serverPerform: #'methodsFor:upTo:filter:isVariables:' 
+		with: self
+		with: aClass
+		with: stream contents 
+		with: aBoolean.
+	^RowanMethodDefinition
+		listFromString: string 
+		session: gciSession.
+!
+
 nameWithVersion
 
 	^name , classHistory.
@@ -131,6 +147,7 @@ updateParentInDictionary: aDictionary
 !GsClass categoriesFor: #initialize:!public! !
 !GsClass categoriesFor: #isTestCase!public! !
 !GsClass categoriesFor: #isVisible!public! !
+!GsClass categoriesFor: #methodsUpTo:filterList:isVariables:!Methods!public! !
 !GsClass categoriesFor: #nameWithVersion!public! !
 !GsClass categoriesFor: #parent!accessing!public! !
 !GsClass categoriesFor: #superclassListForMeta:!public! !

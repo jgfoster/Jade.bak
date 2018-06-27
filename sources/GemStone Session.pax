@@ -12,20 +12,30 @@ package classNames
 	add: #GciSessionWithSocket;
 	add: #GsAnsiError;
 	add: #GsApplicationError;
+	add: #GsClass;
 	add: #GsClientForwarderSend;
 	add: #GsCompileError;
 	add: #GsDoesNotUnderstand;
 	add: #GsError;
 	add: #GsEventError;
 	add: #GsFatalError;
+	add: #GsGlobal;
 	add: #GsHaltError;
 	add: #GsHardBreak;
 	add: #GsInvalidSessionError;
+	add: #GsMethod;
+	add: #GsMethod2;
+	add: #GsObject;
 	add: #GsPause;
+	add: #GsProcess;
 	add: #GsRuntimeError;
+	add: #GsSession;
 	add: #GsSoftBreak;
 	add: #GsStackBreakpoint;
+	add: #GsStackFrame;
+	add: #GsSymbolDictionary;
 	add: #GsTestFailure;
+	add: #GsUserProfile;
 	add: #JadeServer;
 	add: #JadeServer32bit;
 	add: #JadeServer64bit;
@@ -35,6 +45,26 @@ package classNames
 	add: #JadeServer64bit34;
 	add: #JadeServer64bit3x;
 	add: #JadeServerTestCase;
+	add: #MCAddition;
+	add: #MCDictionaryRepository;
+	add: #MCDirectoryRepository;
+	add: #MCFileBasedRepository;
+	add: #MCFileTreeRepository;
+	add: #MCGitHubRepository;
+	add: #MCHttpRepository;
+	add: #MCModification;
+	add: #MCPackage;
+	add: #MCPackageVersion;
+	add: #MCPatch;
+	add: #MCPatchOperation;
+	add: #MCRemoval;
+	add: #MCRepository;
+	add: #MCServerDirectoryRepository;
+	add: #MCVersionInfo;
+	add: #MCWorkingCopy;
+	add: #RowanGsMethod;
+	add: #RowanMethodDefinition;
+	add: #RowanPatch;
 	add: #TerminateProcess;
 	add: #WaitOnGemStoneDialog;
 	yourself.
@@ -68,9 +98,12 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'GemStone C Interface';
 	add: 'GemStone Objects';
+	add: 'GemStone Services';
 	add: 'JGF Fading Dialog';
+	add: 'Rowan STON';
 	add: '..\Core\Object Arts\Dolphin\Sockets\Sockets Connection';
 	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
+	add: '..\Core\Object Arts\Dolphin\ActiveX\Components\XML DOM\XML DOM';
 	yourself).
 
 package!
@@ -214,6 +247,156 @@ JadeServer64bit32 subclass: #JadeServer64bit34
 	classInstanceVariableNames: ''!
 FadingDialog subclass: #WaitOnGemStoneDialog
 	instanceVariableNames: 'busySeconds codePresenter busySecondsPresenter gciSession timerProcess'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #GsObject
+	instanceVariableNames: 'gciSession name oopType'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsClass
+	instanceVariableNames: 'category dictionary parent children isVisible classHistory isTestCase'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsGlobal
+	instanceVariableNames: 'gsClassName data'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsMethod
+	instanceVariableNames: 'behavior behaviorName breakPoints category isReadOnly originalSource source stepPoints unimplementedSelectors warnings'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsMethod2
+	instanceVariableNames: 'gsClass category isTestCase'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsProcess
+	instanceVariableNames: 'stack type'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsSession
+	instanceVariableNames: 'process host primitive viewAge state transaction hasOldestCR serial id ip priority hostId quietTime lifeTime backlog description objects pages voteState'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsStackFrame
+	instanceVariableNames: 'ipOffset frameOffset gsMethod stepPoint vars offsets breaks source'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsSymbolDictionary
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #GsUserProfile
+	instanceVariableNames: 'lastLoginTime remainingLogins isDisabled maxSessions language disabledReason lastPasswordChange isSpecial'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #MCPackage
+	instanceVariableNames: 'repository versionNames loaded'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #MCPackageVersion
+	instanceVariableNames: 'date time author id ancestors stepChildren message'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #MCPatch
+	instanceVariableNames: 'operations'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #MCPatchOperation
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #MCRepository
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #MCVersionInfo
+	instanceVariableNames: 'date time author id ancestors stepChildren message'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsObject subclass: #MCWorkingCopy
+	instanceVariableNames: 'isModified ancestors repositories'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsMethod subclass: #RowanGsMethod
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GsMethod2 subclass: #RowanMethodDefinition
+	instanceVariableNames: 'selector source className packageName projectName methodDefinitionService'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCPatch subclass: #RowanPatch
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCPatchOperation subclass: #MCAddition
+	instanceVariableNames: 'definition'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCPatchOperation subclass: #MCModification
+	instanceVariableNames: 'obsoletion obsoletionMemo obsoletionMemoMarkers obsoletionLines modification modificationMemo modificationMemoMarkers modificationLines'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCPatchOperation subclass: #MCRemoval
+	instanceVariableNames: 'definition'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCRepository subclass: #MCDictionaryRepository
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCRepository subclass: #MCFileBasedRepository
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCFileBasedRepository subclass: #MCDirectoryRepository
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCFileBasedRepository subclass: #MCHttpRepository
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCDirectoryRepository subclass: #MCServerDirectoryRepository
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCServerDirectoryRepository subclass: #MCFileTreeRepository
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+MCFileTreeRepository subclass: #MCGitHubRepository
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

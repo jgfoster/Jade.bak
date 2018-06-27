@@ -81,14 +81,6 @@ onViewOpened
 	self displayObject.
 !
 
-openNavigationInspector
-
-	instVarListPresenter hasSelection ifFalse: [^JadeNavigationInspector showOn: self model session: gciSession].
-
-	^(instVarListPresenter selection key = 'self')
-		ifTrue: [JadeNavigationInspector showOn: self model session: gciSession] 
-		ifFalse: [JadeNavigationInspector showOn: instVarListPresenter selection value session: gciSession]!
-
 selectedInstVar
 
 	| string |
@@ -170,7 +162,6 @@ setLastGsShape: className
 !JadeInspector categoriesFor: #isModified!private! !
 !JadeInspector categoriesFor: #model:!private! !
 !JadeInspector categoriesFor: #onViewOpened!accessing!private! !
-!JadeInspector categoriesFor: #openNavigationInspector!accessing!private! !
 !JadeInspector categoriesFor: #selectedInstVar!accessing!private! !
 !JadeInspector categoriesFor: #setDocumentPresenterLabel!accessing!private! !
 !JadeInspector categoriesFor: #setLastGsShape:!accessing!private! !
@@ -208,10 +199,6 @@ setDefaultInspectorClass: aJadeInspectorClass
 	DefaultInspectorClass := aJadeInspectorClass
 !
 
-setNavigationInspector
-
-	self setDefaultInspectorClass: JadeNavigationInspector!
-
 setNormalInspector
 
 	self setDefaultInspectorClass: JadeInspector!
@@ -237,7 +224,6 @@ showOn: anObject session: aGciSession
 !JadeInspector class categoriesFor: #resource_Default_view!public! !
 !JadeInspector class categoriesFor: #resource_Special_view!public!resources-views! !
 !JadeInspector class categoriesFor: #setDefaultInspectorClass:!public! !
-!JadeInspector class categoriesFor: #setNavigationInspector!public! !
 !JadeInspector class categoriesFor: #setNormalInspector!public! !
 !JadeInspector class categoriesFor: #showOn:session:!public! !
 
