@@ -17,7 +17,8 @@ disabledReason
 
 editGroup: anArray value: aBoolean
 
-	| selector |
+	| selector string |
+	string := gciSession encode: (anArray at: 2).
 	anArray
 		at: 3
 		put: aBoolean.
@@ -26,13 +27,14 @@ editGroup: anArray value: aBoolean
 		ifFalse: [#'removeGroup:fromUser:'].
 	gciSession
 		serverPerform: selector
-		with: (anArray at: 2) 
+		with: (gciSession encode: string)
 		with: self.
 !
 
 editPrivilege: anArray value: aBoolean
 
-	| selector |
+	| selector string |
+	string := gciSession encode: (anArray at: 2).
 	anArray
 		at: 3
 		put: aBoolean.
@@ -41,7 +43,7 @@ editPrivilege: anArray value: aBoolean
 		ifFalse: [#'removePrivilege:fromUser:'].
 	gciSession
 		serverPerform: selector
-		with: (anArray at: 2) 
+		with: (gciSession decode: string)
 		with: self.
 !
 
@@ -125,6 +127,7 @@ symbolList
 	string := gciSession
 		serverPerform: #'dictionaryListFor:'
 		with: self.
+	string := gciSession decode: string.
 	list := string subStrings: Character lf.
 	list := list collect: [:each | GsSymbolDictionary new initialize: each session: gciSession].
 	^list.

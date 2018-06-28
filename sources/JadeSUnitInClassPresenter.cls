@@ -53,7 +53,10 @@ testClassName: anObject
 	self reset.
 	testClassName isEmpty ifTrue: [^self].
 	[
-		tests := gciSession serverPerform: #getTestMethodsNamesOf: with: testClassName.
+		tests := gciSession 
+			serverPerform: #getTestMethodsNamesOf: 
+			with: (gciSession encode: testClassName).
+		tests := gciSession decode: tests.
 		tests := (tests subStrings: ',') collect: [:each | GsTestMethod name: each].
 	] on: Error do: [:ex | 
 		^self		"fix error on system history navigation, sometime GS answer error #2106"

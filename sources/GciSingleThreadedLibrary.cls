@@ -95,17 +95,9 @@ critical: aBlock
 
 fetchBytes: anOopType
 
-	| oopClass |
-	oopClass := self fetchClass: anOopType.
-	oopClass = self oopClassString 						ifTrue: [^self fetchChars: anOopType].
-	oopClass = self oopClassSymbol 					ifTrue: [^(self fetchChars: anOopType) asSymbol].
-	oopClass = self oopClassByteArray 				ifTrue: [^self fetchBytes: anOopType class: ByteArray].
-	oopClass = self oopClassUnicode7 				ifTrue: [^self fetchBytes: anOopType class: Unicode7].
-	oopClass = self oopClassUnicode16 				ifTrue: [^self fetchBytes: anOopType class: Unicode16].
-	oopClass = self oopClassUnicode32 				ifTrue: [^self fetchBytes: anOopType class: Unicode32].
-	oopClass = self oopClassDoubleByteString 	ifTrue: [^self fetchBytes: anOopType class: DoubleByteString].
-	oopClass = self oopClassQuadByteString		ifTrue: [^self fetchBytes: anOopType class: QuadByteString].
-	^anOopType.
+	^self
+		fetchBytes: anOopType
+		classOop: (self fetchClass: anOopType)
 !
 
 fetchBytes: anOopType class: aClass
@@ -120,6 +112,19 @@ fetchBytes: anOopType class: aClass
 		_: size.
 	result = size ifTrue: [^bytes].
 	self signalLastError.
+!
+
+fetchBytes: anOopType classOop: oopClass
+
+	oopClass = self oopClassString 			ifTrue: [^self fetchChars: anOopType].
+	oopClass = self oopClassSymbol 			ifTrue: [^(self fetchChars: anOopType) asSymbol].
+	oopClass = self oopClassByteArray 		ifTrue: [^self fetchBytes: anOopType class: ByteArray].
+	oopClass = self oopClassUnicode7 		ifTrue: [^self fetchBytes: anOopType class: Unicode7].
+	oopClass = self oopClassUnicode16 		ifTrue: [^self fetchBytes: anOopType class: Unicode16].
+	oopClass = self oopClassUnicode32 		ifTrue: [^self fetchBytes: anOopType class: Unicode32].
+	oopClass = self oopClassDoubleByteString 	ifTrue: [^self fetchBytes: anOopType class: DoubleByteString].
+	oopClass = self oopClassQuadByteString	ifTrue: [^self fetchBytes: anOopType class: QuadByteString].
+	^anOopType.
 !
 
 fetchChars: anOopType
@@ -459,11 +464,11 @@ pollForSignalSession: anInteger
 	].
 !
 
-sendInterpreted: aString to: anOopType with: anArray session: anInteger
+sendInterpreted: aSymbol to: anOopType with: anArray session: anInteger
 
 	^self 
 		session: anInteger
-		send: aString 
+		send: aSymbol 
 		to: anOopType 
 		with: anArray 
 !
@@ -489,13 +494,13 @@ session: session continue: gsProcessOop withObject: anOop
 	].
 !
 
-session: session execute: stringOrOop context: contextOop environment: anInteger
+session: session execute: aString context: contextOop environment: anInteger
 
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
 	self critical: [
 		self gciSetSessionId: session.
 		self
-			gciNbExecuteStrFromContext: stringOrOop
+			gciNbExecuteStrFromContext: aString
 			_: contextOop
 			_: self oopNil.
 		^self nbResult.
@@ -635,6 +640,7 @@ version
 !GciSingleThreadedLibrary categoriesFor: #critical:!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchBytes:!not subclassResponsibility!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchBytes:class:!private! !
+!GciSingleThreadedLibrary categoriesFor: #fetchBytes:classOop:!not subclassResponsibility!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchChars:!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchClass:!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchObjImpl:!private! !

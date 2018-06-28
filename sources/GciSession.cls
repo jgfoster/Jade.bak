@@ -22,7 +22,7 @@ GciSoftBreak'!
 _executeString: aString fromContextOop: anOopType environment: anInteger
 	^library 
 		session: gciSessionId
-		execute: (aString copyWithout: Character cr)
+		execute: aString asUtf8String
 		context: anOopType
 		environment: anInteger
 !
@@ -140,7 +140,7 @@ debugString: aString fromContext: anObject environment: anInteger
 
 	^self
 		serverPerformInterpreted: #'debugString:fromContext:environment:' 
-		with: aString 
+		with: (self encode: aString)
 		with: anObject 
 		with: anInteger.
 !
@@ -150,6 +150,14 @@ debugToFilePath: aString
 	^library gciDbgEstablishToFile: aString
 !
 
+decode: aString
+
+	^library decode: aString!
+
+encode: aString
+
+	^library encode: aString!
+
 eventCount
 
 	^eventCount.
@@ -158,7 +166,7 @@ eventCount
 executeString: aString
 
 	^self
-		executeString: aString 
+		executeString: (self encode: aString)
 		fromContext: nil
 		environment: 0.
 !
@@ -550,14 +558,14 @@ send: aSymbol to: anObject withAll: anArray
 		].
 !
 
-sendInterpreted: aString to: anObject withAll: anArray
+sendInterpreted: aSymbol to: anObject withAll: anArray
 
 	| stream arguments |
 	stream := WriteStream on: String new.
 	stream 
 		nextPutAll: (anObject == server ifTrue: ['jadeServer'] ifFalse: [anObject printString]); cr;
 		nextPutAll: '	performInterpreted: #''';
-		nextPutAll: aString;
+		nextPutAll: aSymbol;
 		nextPut: $'; cr;
 		nextPutAll: '	withAll: (Array';
 		yourself.
@@ -570,7 +578,7 @@ sendInterpreted: aString to: anObject withAll: anArray
 		withExplanation: stream contents 
 		do: [
 			library 
-				sendInterpreted: aString 
+				sendInterpreted: aSymbol 
 				to: (self oopTypeFor: anObject) 
 				with: arguments
 				session: gciSessionId.
@@ -594,11 +602,11 @@ serverPerform: aSymbol
 		to: server.
 !
 
-serverPerform: aSymbol with: arg1
+serverPerform: aSymbol with: anObject
 
 	^self
 		serverPerform: aSymbol 
-		withArguments: (Array with: arg1).
+		withArguments: (Array with: anObject).
 !
 
 serverPerform: aSymbol with: arg1 with: arg2
@@ -684,7 +692,8 @@ setInitials: initials
 	server isNil ifTrue: [^self].
 	string := self
 		serverPerform: #'mcInitials:' 
-		with: initials.
+		with: (self encode: initials).
+	string := self decode: string.
 	pieces := string subStrings collect: [:each | each asNumber].
 	stoneSessionID := pieces at: 1.
 	stoneSerial := pieces at: 2.
@@ -964,6 +973,8 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #commit!Jade convenience!public! !
 !GciSession categoriesFor: #debugString:fromContext:environment:!long running!public! !
 !GciSession categoriesFor: #debugToFilePath:!Jade convenience!public! !
+!GciSession categoriesFor: #decode:!public! !
+!GciSession categoriesFor: #encode:!public! !
 !GciSession categoriesFor: #eventCount!public! !
 !GciSession categoriesFor: #executeString:!Jade convenience!public! !
 !GciSession categoriesFor: #executeString:fromContext:environment:!long running!public! !

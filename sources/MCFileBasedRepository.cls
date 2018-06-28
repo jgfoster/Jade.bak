@@ -29,7 +29,7 @@ loadPackageNamed: packageName versionName: versionName
 
 	gciSession
 		serverPerform: #'mcVersionLoad:fromFile:autoMigrate:' 
-		with: (self fullNameOfPackage: packageName versionName: versionName)
+		with: (gciSession encode: (self fullNameOfPackage: packageName versionName: versionName))
 		with: self
 		with: true.
 !
@@ -51,7 +51,7 @@ topazFrom: aString
 
 	^gciSession
 		serverPerform: #'mcTopazFrom:inFileRepository:'
-		with: aString
+		with: (gciSession encode: aString)
 		with: self.
 !
 

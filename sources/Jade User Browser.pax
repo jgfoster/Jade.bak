@@ -22,21 +22,16 @@ package classNames
 package methodNames
 	add: #JadeServer -> #addGroup:toUser:;
 	add: #JadeServer -> #addPrivilege:toUser:;
-	add: #JadeServer -> #addUser:toStream:;
-	add: #JadeServer -> #allGroups;
 	add: #JadeServer -> #allUsersPasswordLimits;
-	add: #JadeServer -> #categoryListFor:;
-	add: #JadeServer -> #classListFor:category:;
 	add: #JadeServer -> #dictionaryListFor:;
-	add: #JadeServer -> #globalsFor:;
 	add: #JadeServer -> #groupListFor:;
 	add: #JadeServer -> #newUser:;
 	add: #JadeServer -> #privilegeListFor:;
 	add: #JadeServer -> #removeGroup:fromUser:;
 	add: #JadeServer -> #removePrivilege:fromUser:;
 	add: #JadeServer -> #userList;
-	add: #JadeServer32bit -> #addUser:toStream:;
-	add: #JadeServer64bit -> #addUser:toStream:;
+	add: #JadeServer32bit -> #_addUser:toStream:;
+	add: #JadeServer64bit -> #_addUser:toStream:;
 	add: #JadeTextDocument -> #jadeBrowseUsers;
 	add: #JadeToolsToolBarPresenter -> #browseUsers;
 	yourself.
@@ -130,121 +125,32 @@ JadeShell subclass: #AllUsersShell
 
 addGroup: aString toUser: aUserProfile
 
-	aUserProfile addGroup: aString.
+	aUserProfile addGroup: (self _decodeString: aString).
 !
 
 addPrivilege: aString toUser: aUserProfile
 
-	aUserProfile addPrivilege: aString.
-!
-
-addUser: aUserProfile toStream: aStream
-
-	(self oopOf: aUserProfile) printOn: aStream.
-	aStream tab; nextPutAll: aUserProfile userId.
-	aStream tab; nextPutAll: (aUserProfile lastLoginTime asStringUsingFormat: #(1 2 3 $  2 1 $: true true true false)).
-	aStream tab. aUserProfile loginsAllowedBeforeExpiration printOn: aStream.
-	aStream tab. aUserProfile isDisabled printOn: aStream.
-	aStream tab. aUserProfile activeUserIdLimit printOn: aStream.
-	aStream tab.	"; nextPutAll: aUserProfile nativeLanguage asString."
-	aStream tab. aUserProfile reasonForDisabledAccount printOn: aStream.
-	aStream tab; nextPutAll: (aUserProfile lastPasswordChange asStringUsingFormat: #(1 2 3 $  2 1 $: true true true false)).
-	aStream tab. aUserProfile passwordNeverExpires printOn: aStream.
-	aStream lf.
-!
-
-allGroups
-
-	| allGroups myGroups stream |
-	allGroups := AllGroups keys asSortedCollection.
-	myGroups := (AllUsers userWithId: 'GcUser') groups.
-	stream := WriteStream on: String new.
-	allGroups do: [:each | 
-		stream nextPutAll: each; tab.
-		(myGroups includes: each) printOn: stream.
-		stream lf.
-	].
-	^stream contents.
+	aUserProfile addPrivilege: (self _decodeString: aString).
 !
 
 allUsersPasswordLimits
 
 	| stream |
-	stream := WriteStream on: String new.
-	AllUsers disallowUsedPasswords printOn: stream. stream tab.
-	AllUsers minPasswordSize printOn: stream. stream tab.
-	AllUsers maxPasswordSize printOn: stream. stream tab.
-	AllUsers maxRepeatingChars printOn: stream. stream tab.
-	AllUsers maxConsecutiveChars printOn: stream. stream tab.
-	AllUsers maxCharsOfSameType printOn: stream. stream tab.
-	AllUsers staleAccountAgeLimit printOn: stream. stream tab.
-	AllUsers passwordAgeLimit printOn: stream. stream lf.
+	stream := self _writeStreamOnString.
+	AllUsers disallowUsedPasswords 	printOn: stream. stream tab.
+	AllUsers minPasswordSize 		printOn: stream. stream tab.
+	AllUsers maxPasswordSize 		printOn: stream. stream tab.
+	AllUsers maxRepeatingChars 	printOn: stream. stream tab.
+	AllUsers maxConsecutiveChars 	printOn: stream. stream tab.
+	AllUsers maxCharsOfSameType 	printOn: stream. stream tab.
+	AllUsers staleAccountAgeLimit 	printOn: stream. stream tab.
+	AllUsers passwordAgeLimit 	printOn: stream. stream lf.
 	AllUsers disallowedPasswords do: [:each | 
 		stream nextPutAll: each; tab.
 	].
-	stream lf. AllUsers passwordAgeWarning printOn: stream. stream lf.
-	^stream contents.
-!
-
-categoryListFor: aSymbolDictionary
-
-	| categories stream |
-	categories := Set new.
-	aSymbolDictionary do: [:each | 
-		each isBehavior ifTrue: [
-			categories add: each category.
-		].
-	].
-	categories copy do: [:each | 
-		1 to: each size do: [:i | 
-			(each at: i) = $- ifTrue: [
-				| string |
-				string := each copyFrom: 1 to: i - 1.
-				(categories includes: string) ifFalse: [
-					categories add: string.
-					self _addToPureExportSet: string.
-				].
-			].
-		].
-	].
-	stream := WriteStream on: String new.
-	categories asSortedCollection do: [:each | 
-		(self oopOf: each) printOn: stream.
-		stream tab; nextPutAll: each; lf.
-	].
-	^stream contents.
-!
-
-classListFor: aDictionary category: aString
-
-	| visibleClasses allClasses stream queue |
-	visibleClasses := aDictionary asArray select: [:each | 
-		each isBehavior and: [aString isNil or: [
-			| category |
-			(category := each category) notNil and: [
-			category = aString or: [
-			category matchPattern: (Array with: aString with: $*)]]]]].
-	allClasses := visibleClasses asIdentitySet.
-	queue := visibleClasses asOrderedCollection.
-	[
-		queue notEmpty.
-	] whileTrue: [
-		| parent |
-		parent := queue removeFirst superclass.
-		(parent notNil and: [(allClasses includes: parent) not]) ifTrue: [
-			queue add: parent.
-			allClasses add: parent.
-		].
-	].
-	stream := WriteStream on: String new.
-	allClasses do: [:each |
-		self
-			_addClass: each 
-			toStream: stream 
-			isVisible: (visibleClasses includes: each)
-			fromDictionary: aDictionary.
-	].
-	^stream contents.
+	stream lf. 
+	AllUsers passwordAgeWarning printOn: stream. stream lf.
+	^self _encodeString: stream contents.
 !
 
 dictionaryListFor: aUserProfile
@@ -254,34 +160,12 @@ dictionaryListFor: aUserProfile
 	list := symbolList namesReport subStrings: Character lf.
 	list := list reject: [:each | each isEmpty].
 	list := list collect: [:each | each subStrings].
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	list do: [:each | 
 		(self oopOf: (symbolList at: (each at: 1) asNumber)) printOn: stream.
 		stream tab; nextPutAll: (each at: 2); lf.
 	].
-	^stream contents.
-!
-
-globalsFor: aSymbolDictionary
-
-	| stream |
-	stream := WriteStream on: String new.
-	aSymbolDictionary keysAndValuesDo: [:eachKey :eachValue | 
-		eachValue isBehavior ifFalse: [
-			| data |
-			data := (self _oopAndStringFor: eachValue) value.
-			data size > 200 ifTrue: [data := data copyFrom: 1 to: 200].
-			data := String withAll: (data asArray collect: [:each | (each >= Character space and: [each <= $~]) ifTrue: [each] ifFalse: [$?]]).
-			stream
-	"1"		nextPutAll: (self oopOf: eachValue) printString; tab;
-	"2"		nextPutAll: eachKey; tab;
-	"3"		nextPutAll: eachValue class name; tab;
-	"4"		nextPutAll: data; tab;
-				lf;
-				yourself.
-		].
-	].
-	^stream contents.
+	^self _encodeString: stream contents.
 !
 
 groupListFor: aUserProfile
@@ -289,28 +173,28 @@ groupListFor: aUserProfile
 	| allGroups myGroups stream |
 	allGroups := AllGroups keys asSortedCollection.
 	myGroups := aUserProfile groups.
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	allGroups do: [:each | 
 		stream nextPutAll: each; tab.
 		(myGroups includes: each) printOn: stream.
 		stream lf.
 	].
-	^stream contents.
+	^self _encodeString: stream contents.
 !
 
 newUser: aString
 
 	| userProfile stream |
 	userProfile := UserProfile 
-		newWithUserId: aString
+		newWithUserId: (self _decodeString: aString)
 		password: 'swordfish'
 		privileges: #()
 		inGroups: #().
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	self
-		addUser: userProfile 
+		_addUser: userProfile 
 		toStream: stream.
-	^stream contents.
+	^self _encodeString: stream contents.
 !
 
 privilegeListFor: aUserProfile
@@ -318,23 +202,23 @@ privilegeListFor: aUserProfile
 	| allPrivileges myPrivileges stream |
 	allPrivileges := (aUserProfile class instVarAt: 6) at: #'PrivilegeNames'.
 	myPrivileges := aUserProfile privileges.
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	allPrivileges do: [:each | 
 		stream nextPutAll: each; tab.
 		(myPrivileges includes: each) printOn: stream.
 		stream lf.
 	].
-	^stream contents.
+	^self _encodeString: stream contents.
 !
 
 removeGroup: aString fromUser: aUserProfile
 
-	aUserProfile removeGroup: aString.
+	aUserProfile removeGroup: (self _decodeString: aString).
 !
 
 removePrivilege: aString fromUser: aUserProfile
 
-	aUserProfile deletePrivilege: aString.
+	aUserProfile deletePrivilege: (self _decodeString: aString).
 !
 
 userList
@@ -346,23 +230,14 @@ userList
 		remove: me;
 		addFirst: me;
 		yourself.
-	stream := WriteStream on: String new.
-	list do: [:each | 
-		self
-			addUser: each 
-			toStream: stream.
-	].
-	^stream contents.
+	stream := self _writeStreamOnString.
+	list do: [:each | self _addUser: each toStream: stream].
+	^self _encodeString: stream contents.
 ! !
 !JadeServer categoriesFor: #addGroup:toUser:!public!UserProfile! !
 !JadeServer categoriesFor: #addPrivilege:toUser:!public!UserProfile! !
-!JadeServer categoriesFor: #addUser:toStream:!public!UserProfile! !
-!JadeServer categoriesFor: #allGroups!public!UserProfile! !
 !JadeServer categoriesFor: #allUsersPasswordLimits!public!UserProfile! !
-!JadeServer categoriesFor: #categoryListFor:!public!SymbolDictionary! !
-!JadeServer categoriesFor: #classListFor:category:!Classes!public! !
 !JadeServer categoriesFor: #dictionaryListFor:!public! !
-!JadeServer categoriesFor: #globalsFor:!public! !
 !JadeServer categoriesFor: #groupListFor:!public!UserProfile! !
 !JadeServer categoriesFor: #newUser:!public!UserProfile! !
 !JadeServer categoriesFor: #privilegeListFor:!public!UserProfile! !
@@ -372,32 +247,32 @@ userList
 
 !JadeServer32bit methodsFor!
 
-addUser: aUserProfile toStream: aStream
+_addUser: aUserProfile toStream: aStream
 
 	Exception
 		category: nil
 		number: nil
 		do: [:ex :cat :num :args | aStream lf. ^self].
 	super
-		addUser: aUserProfile 
+		_addUser: aUserProfile 
 		toStream: aStream.
 ! !
-!JadeServer32bit categoriesFor: #addUser:toStream:!public!UserProfile! !
+!JadeServer32bit categoriesFor: #_addUser:toStream:!private!UserProfile! !
 
 !JadeServer64bit methodsFor!
 
-addUser: aUserProfile toStream: aStream
+_addUser: aUserProfile toStream: aStream
 
 	[
 		super
-			addUser: aUserProfile 
+			_addUser: aUserProfile 
 			toStream: aStream.
 	] on: Error do: [:ex | 
 		aStream lf.
 		ex return.
 	].
 ! !
-!JadeServer64bit categoriesFor: #addUser:toStream:!public!UserProfile! !
+!JadeServer64bit categoriesFor: #_addUser:toStream:!private!UserProfile! !
 
 !JadeTextDocument methodsFor!
 

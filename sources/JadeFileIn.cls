@@ -15,11 +15,11 @@ defineClass
 	[
 		gciSession 
 			serverPerform: #'fileInClass:' 
-			with: text trimBlanks.
+			with: (gciSession encode: text trimBlanks).
 	] on: GsCompileError do: [:ex | 
 		(JadeWorkspace showOnSession: gciSession)
 			caption: 'Jade Workspace - Compile Error';
-			showError: ex list on: text trimBlanks.
+			showError: ex list on: (gciSession decode: text) trimBlanks.
 	].
 !
 

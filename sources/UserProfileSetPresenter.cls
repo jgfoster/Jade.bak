@@ -29,6 +29,7 @@ fillFields
 
 	| string lines numbers |
 	string := gciSession serverPerform: #'allUsersPasswordLimits'.
+	string := gciSession decode: string.
 	lines := string subStrings: Character lf.
 	numbers := lines first subStrings: Character tab.
 	disallowUsedPasswordsPresenter 	value: numbers first = 'true'.

@@ -18,8 +18,8 @@ storeVersion: anMCWorkingCopy name: nameString message: messageString from: aMCV
 	gciSession
 		serverPerform: #'mcStore:name:message:repository:'
 		with: anMCWorkingCopy
-		with: nameString 
-		with: messageString 
+		with: (gciSession encode: nameString) 
+		with: (gciSession encode: messageString) 
 		with: self.
 !
 
@@ -33,8 +33,8 @@ user: userString password: passwordString
 	gciSession
 		serverPerform: #'mcHttpRepository:user:password:'
 		with: self
-		with: userString 
-		with: passwordString.
+		with: (gciSession encode: userString) 
+		with: (gciSession encode: passwordString).
 !
 
 userAndPassword

@@ -42,7 +42,6 @@ package methodNames
 	add: #Gcilw6x -> #jadeServerClass;
 	add: #LibGciRpc64 -> #jadeServerClass;
 	add: #LibGciRpc64_3_0 -> #jadeServerClass;
-	add: #LibGciRpc64_3_1 -> #jadeServerClass;
 	add: #LibGciRpc64_3_2 -> #jadeServerClass;
 	add: #LibGciRpc64_3_3 -> #jadeServerClass;
 	add: #LibGciRpc64_3_4 -> #jadeServerClass;
@@ -199,7 +198,7 @@ JadeServer64bit32 subclass: #JadeServer64bit33
 	classVariableNames: 'Breakpoint GsNMethod GsSocket'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeServer64bit32 subclass: #JadeServer64bit34
+JadeServer64bit33 subclass: #JadeServer64bit34
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -243,14 +242,6 @@ jadeServerClass
 	^JadeServer64bit3x
 ! !
 !LibGciRpc64_3_0 categoriesFor: #jadeServerClass!public! !
-
-!LibGciRpc64_3_1 methodsFor!
-
-jadeServerClass
-
-	^JadeServer64bit3x
-! !
-!LibGciRpc64_3_1 categoriesFor: #jadeServerClass!public! !
 
 !LibGciRpc64_3_2 methodsFor!
 

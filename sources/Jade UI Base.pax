@@ -120,8 +120,9 @@ Toolbar subclass: #ToolbarA
 
 fileInClass: aString
 
-	| list className index dictionaryName dictionary oldClass oldString |
-	list := aString subStrings.
+	| list className index dictionaryName dictionary oldClass oldString sourceString |
+	sourceString := self _decodeString: aString.
+	list := sourceString subStrings.
 	className := list at: 3.
 	className first = $' ifFalse: [self error: 'Class name ' , className printString , ' expected to begin and end with a quote!!'].
 	className last = $' ifFalse: [self error: 'Class name ' , className printString , ' expected to begin and end with a quote!!'].
@@ -133,7 +134,7 @@ fileInClass: aString
 	oldClass notNil ifTrue: [
 		oldString := (oldClass _modifiableDefinitionInDictionary: dictionary named: dictionaryName) , '.'.
 	].
-	oldString = aString ifFalse: [aString evaluate].
+	oldString = sourceString ifFalse: [sourceString evaluate].
 ! !
 !JadeServer categoriesFor: #fileInClass:!Classes!public! !
 

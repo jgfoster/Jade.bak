@@ -91,7 +91,7 @@ fileSave
 		methodExists := gciSession
 			serverPerform: #'class:includesSelector:'
 			with: theClass
-			with: newSelector.
+			with: (gciSession encode: newSelector).
 		methodExists ifTrue: [
 			(MessageBox confirm: 'Replace method?' caption: 'Method already exists!!') ifFalse: [^self].
 		].
@@ -100,11 +100,11 @@ fileSave
 	(category := gsMethod category) isNil ifTrue: [self error: 'We need a method category!!?'].
 	string := gciSession
 		serverPerform: #'compileMethod:behavior:user:inCategory:'
-		with: documentPresenter value
+		with: (gciSession encode: documentPresenter value)
 		with: theClass 
 		with: user 
 		with: category.
-
+	string := gciSession decode: string.
 	stream := ReadStream on: string.
 	(line := stream nextLine) notEmpty ifTrue: [
 		| pieces |

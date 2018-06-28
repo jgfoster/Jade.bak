@@ -10,16 +10,19 @@ JadeServer32bit comment: ''!
 !JadeServer32bit categoriesForClass!Unclassified! !
 !JadeServer32bit methodsFor!
 
-asString: anObject
+_asString: anObject
 
+	(anObject isKindOf: String) ifTrue: [^anObject].
 	Exception
-		category: nil 
-		number: nil 
-		do: [:ex :cat :num :args | ^'????'].
-	^super asString: anObject.
+		category: nil
+		number: nil
+		do: [:ex :cat :num :args | 
+			^'<<printString error: ' , ex printString , '>>'.
+		].
+	^anObject printString.
 !
 
-installTranscript
+_installTranscript
 
 	Exception
 		category: nil
@@ -28,13 +31,25 @@ installTranscript
 	super installTranscript.
 !
 
-objectForOop: anInteger
+_mcInitialsA: aString
+
+	(System class includesSelector: #'_cacheName:') ifFalse: [^true].
+	Exception
+		category: nil
+		number: nil
+		do: [:ex :cat :num :args | ^false].
+	super _mcInitialsA: aString.
+	^true.
+!
+
+_objectForOop: anInteger
 
 	^Object _objectForOop: anInteger
 ! !
-!JadeServer32bit categoriesFor: #asString:!public!Transcript! !
-!JadeServer32bit categoriesFor: #installTranscript!public!Transcript! !
-!JadeServer32bit categoriesFor: #objectForOop:!public!System Browser! !
+!JadeServer32bit categoriesFor: #_asString:!private!Transcript! !
+!JadeServer32bit categoriesFor: #_installTranscript!private!Transcript! !
+!JadeServer32bit categoriesFor: #_mcInitialsA:!private! !
+!JadeServer32bit categoriesFor: #_objectForOop:!private!System Browser! !
 
 !JadeServer32bit class methodsFor!
 

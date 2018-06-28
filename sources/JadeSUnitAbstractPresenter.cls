@@ -42,7 +42,7 @@ runTests: anOrderedCollection in: testClassName
 
 	jadeResult := JadeTestResult new.
 	anOrderedCollection do: [:gsTestMethod | | result resultArray | 
-		result := gciSession serverPerform: #runTestNamed:in: with: gsTestMethod methodName with: testClassName.
+		result := gciSession serverPerform: #runTestNamed:in: with: (gciSession encode: gsTestMethod methodName) with: testClassName.
 		resultArray := result subStrings: ','.
 		(resultArray first ~= '0') ifTrue: [gsTestMethod result: 'error'. jadeResult addError: gsTestMethod methodName].
 		(resultArray second ~= '0') ifTrue: [gsTestMethod result: 'failure'. jadeResult addFailure: gsTestMethod methodName].

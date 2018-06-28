@@ -15,27 +15,23 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #JadeServer -> #addSessionWithId:toStream:;
+	add: #JadeServer -> #_addSessionWithId:toStream:;
+	add: #JadeServer -> #_streamType;
+	add: #JadeServer -> #_stringType;
+	add: #JadeServer -> #_systemConfigAsDictionary;
 	add: #JadeServer -> #allSessions;
 	add: #JadeServer -> #descriptionOfConfigOption:;
 	add: #JadeServer -> #descriptionOfErrorNumber:;
-	add: #JadeServer -> #gemLogPath;
 	add: #JadeServer -> #mySessionInfo;
 	add: #JadeServer -> #sendSigAbortToSession:;
 	add: #JadeServer -> #sendSigUsr1ToSession:;
 	add: #JadeServer -> #sleepAndCommit;
 	add: #JadeServer -> #stoneInfo;
 	add: #JadeServer -> #stopSession:;
-	add: #JadeServer -> #streamType;
-	add: #JadeServer -> #stringType;
-	add: #JadeServer -> #systemConfigAsDictionary;
-	add: #JadeServer32bit -> #addSessionWithId:toStream:;
-	add: #JadeServer64bit -> #addSessionWithId:toStream:;
-	add: #JadeServer64bit -> #metacelloConfigurations;
-	add: #JadeServer64bit -> #streamType;
-	add: #JadeServer64bit -> #stringType;
-	add: #JadeServer64bit33 -> #gemLogPath;
-	add: #JadeServer64bit34 -> #gemLogPath;
+	add: #JadeServer32bit -> #_addSessionWithId:toStream:;
+	add: #JadeServer64bit -> #_addSessionWithId:toStream:;
+	add: #JadeServer64bit -> #_streamType;
+	add: #JadeServer64bit -> #_stringType;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -103,7 +99,7 @@ JadeWorkspace subclass: #JadeTranscript
 
 !JadeServer methodsFor!
 
-addSessionWithId: anInteger toStream: aStream
+_addSessionWithId: anInteger toStream: aStream
 
 	| array gsSession timeGmt x |
 	array := System descriptionOfSession: anInteger.
@@ -157,29 +153,72 @@ addSessionWithId: anInteger toStream: aStream
 		yourself.
 !
 
+_streamType
+
+	^'Legacy'!
+
+_stringType
+
+	^'String'!
+
+_systemConfigAsDictionary
+
+	| char dict i line list stream |
+	list := Array new.
+	stream := GsFile openReadOnServer: '$GEMSTONE/data/system.conf'.
+	[
+		[
+			line := stream nextLine reject: [:each | each == Character cr or: [each == Character lf]].
+			(2 < line size and: [(line copyFrom: 1 to: 2) = '#=']) ifTrue: [
+				list add: self _writeStreamOnString.
+			] ifFalse: [
+				list last nextPutAll: line; cr.
+			].
+			stream atEnd not.
+		] whileTrue: [].
+	] ensure: [
+		stream close.
+	].
+	list := list copyFrom: 3 to: list size.
+	list := list collect: [:each | each contents].
+	dict := Dictionary new.
+	list do: [:each | 
+		line := (ReadStream on: each) nextLine.
+		line = '# End of Default GemStone Configuration Options' ifTrue: [^dict].
+		(line copyFrom: 1 to: 2) = '# ' ifFalse: [line error: 'Unrecognized config file format!!'].
+		i := 3.
+		[
+			i <= line size and: [(char := line at: i) == $_ or: [char isAlphaNumeric]].
+		] whileTrue: [
+			i := i + 1.
+		].
+		dict at: (line copyFrom: 3 to: i - 1) put: each.
+	].
+	self error: 'End of file not recognized!!'.!
+
 allSessions
 
-	| list stream |
-	stream := WriteStream on: String new.
+	| list stream string |
+	stream := self _writeStreamOnString.
 	stream nextPutAll: '<?xml version=''1.0'' ?><sessions>'.
 	list := System currentSessionNames subStrings: Character lf.
 	list := list reject: [:each | each isEmpty].
 	list := list collect: [:each | (each subStrings at: 3) asNumber].
 	list do: [:each | 
 		self
-			addSessionWithId: each
+			_addSessionWithId: each
 			toStream: stream.
 	].
-	^stream 
+	string := stream 
 		nextPutAll: '</sessions>';
 		contents.
-!
+	^self _encodeString: string!
 
 descriptionOfConfigOption: aString
 
 	| dict key string |
-	dict := self systemConfigAsDictionary.
-	(string := dict at: aString ifAbsent: [nil]) notNil ifTrue: [^string].	string := aString asUppercase.
+	dict := self _systemConfigAsDictionary.
+	(string := dict at: aString ifAbsent: [nil]) notNil ifTrue: [^self _encodeString: string].	string := aString asUppercase.
 	dict keys do: [:each1 | 
 		key := (each1 reject: [:each2 | each2 = $_]) asUppercase.
 		key = string ifTrue: [^dict at: each1].
@@ -192,7 +231,7 @@ descriptionOfErrorNumber: anInteger
 	array := GemStoneError at: #'English'.
 	anInteger <= 0 ifTrue: [^'Invalid number!!'].
 	array size < anInteger ifTrue: [^'Invalid number!!'].
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	array := array at: anInteger.
 	array isNil ifTrue: [^'No entry in GemStoneError for #' , anInteger printString , '!!'].
 	(array isKindOf: String) ifTrue: [array := Array with: array].
@@ -204,19 +243,14 @@ descriptionOfErrorNumber: anInteger
 			stream nextPutAll: each.
 		].
 	].
-	^stream contents.
-!
-
-gemLogPath
-
-	^''
+	^self _encodeString: stream contents.
 !
 
 mySessionInfo
 
 	| dict stream |
-	stream := WriteStream on: String new.
-	stream nextPutAll: self gemLogPath; cr.
+	stream := self _writeStreamOnString.
+	stream nextPutAll: self _gemLogPath; cr.
 	dict := System gemVersionReport.
 	dict keys asSortedCollection do: [:each | 
 		stream nextPutAll: each; tab; nextPutAll: (dict at: each) asString; cr.
@@ -227,7 +261,7 @@ mySessionInfo
 		stream nextPutAll: each; tab; nextPutAll: (dict at: each) asString; cr.
 	].
 	stream nextPut: $%; cr.
-	^stream contents!
+	^self _encodeString: stream contents!
 
 sendSigAbortToSession: anInteger
 
@@ -255,9 +289,9 @@ sleepAndCommit
 stoneInfo
 
 	| dict stream |
-	stream := (WriteStream on: String new)
-		nextPutAll: self streamType; tab;
-		nextPutAll: self stringType; tab;
+	stream := self _writeStreamOnString
+		nextPutAll: self _streamType; tab;
+		nextPutAll: self _stringType; tab;
 		cr;
 		yourself.
 	dict := System stoneVersionReport.
@@ -270,112 +304,54 @@ stoneInfo
 		stream nextPutAll: each; tab; nextPutAll: (dict at: each) asString; cr.
 	].
 	stream nextPut: $%; cr.
-	^stream contents!
+	^self _encodeString: stream contents!
 
 stopSession: anInteger
 
 	System stopSession: anInteger.
-!
-
-streamType
-
-	^'Legacy'!
-
-stringType
-
-	^'String'!
-
-systemConfigAsDictionary
-
-	| char dict i line list stream |
-	list := Array new.
-	stream := GsFile openReadOnServer: '$GEMSTONE/data/system.conf'.
-	[
-		[
-			line := stream nextLine reject: [:each | each == Character cr or: [each == Character lf]].
-			(2 < line size and: [(line copyFrom: 1 to: 2) = '#=']) ifTrue: [
-				list add: (WriteStream on: String new).
-			] ifFalse: [
-				list last nextPutAll: line; cr.
-			].
-			stream atEnd not.
-		] whileTrue: [].
-	] ensure: [
-		stream close.
-	].
-	list := list copyFrom: 3 to: list size.
-	list := list collect: [:each | each contents].
-	dict := Dictionary new.
-	list do: [:each | 
-		line := (ReadStream on: each) nextLine.
-		line = '# End of Default GemStone Configuration Options' ifTrue: [^dict].
-		(line copyFrom: 1 to: 2) = '# ' ifFalse: [line error: 'Unrecognized config file format!!'].
-		i := 3.
-		[
-			i <= line size and: [(char := line at: i) == $_ or: [char isAlphaNumeric]].
-		] whileTrue: [
-			i := i + 1.
-		].
-		dict at: (line copyFrom: 3 to: i - 1) put: each.
-	].
-	self error: 'End of file not recognized!!'.! !
-!JadeServer categoriesFor: #addSessionWithId:toStream:!private!Sessions! !
+! !
+!JadeServer categoriesFor: #_addSessionWithId:toStream:!private!Sessions! !
+!JadeServer categoriesFor: #_streamType!private!Transcript! !
+!JadeServer categoriesFor: #_stringType!private!Transcript! !
+!JadeServer categoriesFor: #_systemConfigAsDictionary!private!Transcript! !
 !JadeServer categoriesFor: #allSessions!public!Sessions! !
 !JadeServer categoriesFor: #descriptionOfConfigOption:!public!Transcript! !
 !JadeServer categoriesFor: #descriptionOfErrorNumber:!public!Sessions! !
-!JadeServer categoriesFor: #gemLogPath!public!Transcript! !
 !JadeServer categoriesFor: #mySessionInfo!public!Transcript! !
 !JadeServer categoriesFor: #sendSigAbortToSession:!public!Sessions! !
 !JadeServer categoriesFor: #sendSigUsr1ToSession:!public!Sessions! !
 !JadeServer categoriesFor: #sleepAndCommit!public!Transcript! !
 !JadeServer categoriesFor: #stoneInfo!public!Transcript! !
 !JadeServer categoriesFor: #stopSession:!public!Sessions! !
-!JadeServer categoriesFor: #streamType!public!Transcript! !
-!JadeServer categoriesFor: #stringType!public!Transcript! !
-!JadeServer categoriesFor: #systemConfigAsDictionary!public!Transcript! !
 
 !JadeServer32bit methodsFor!
 
-addSessionWithId: anInteger toStream: aStream
+_addSessionWithId: anInteger toStream: aStream
 
 	Exception
 		category: nil
 		number: nil
 		do: [:ex :cat :num :args | '?????'].
 	super
-		addSessionWithId: anInteger 
+		_addSessionWithId: anInteger 
 		toStream: aStream.
 ! !
-!JadeServer32bit categoriesFor: #addSessionWithId:toStream:!public!Sessions! !
+!JadeServer32bit categoriesFor: #_addSessionWithId:toStream:!private!Sessions! !
 
 !JadeServer64bit methodsFor!
 
-addSessionWithId: anInteger toStream: aStream
+_addSessionWithId: anInteger toStream: aStream
 
 	[
 		super
-			addSessionWithId: anInteger
+			_addSessionWithId: anInteger
 			toStream: aStream.
 	] on: Error do: [:ex | 
 		ex resume: '?????'.
 	].
 !
 
-metacelloConfigurations
-
-	| list |
-	list := Array new.
-	GsSession currentSession symbolList do: [:eachSymbolList | 
-		eachSymbolList do: [:eachGlobal | 
-			(eachGlobal isBehavior and: [
-			(eachGlobal class includesSelector: #'isMetacelloConfig') and: [
-			eachGlobal isMetacelloConfig]]) ifTrue: [list add: eachGlobal].
-		].
-	].
-	^list
-!
-
-streamType
+_streamType
 
 	| isLegacy type |
 	type := Globals at: #'PositionableStream_position' ifAbsent: [#'Legacy'].
@@ -385,30 +361,13 @@ streamType
 	self error: 'Inconsistent PositionableStream configuration'.
 !
 
-stringType
+_stringType
 
 	^(Globals at: #StringConfiguration ifAbsent: [String]) name
 ! !
-!JadeServer64bit categoriesFor: #addSessionWithId:toStream:!public!Sessions! !
-!JadeServer64bit categoriesFor: #metacelloConfigurations!public!Transcript! !
-!JadeServer64bit categoriesFor: #streamType!public!Transcript! !
-!JadeServer64bit categoriesFor: #stringType!public!Transcript! !
-
-!JadeServer64bit33 methodsFor!
-
-gemLogPath
-
-	^System gemLogPath
-! !
-!JadeServer64bit33 categoriesFor: #gemLogPath!public!Transcript! !
-
-!JadeServer64bit34 methodsFor!
-
-gemLogPath
-
-	^System gemLogPath
-! !
-!JadeServer64bit34 categoriesFor: #gemLogPath!public!Transcript! !
+!JadeServer64bit categoriesFor: #_addSessionWithId:toStream:!private!Sessions! !
+!JadeServer64bit categoriesFor: #_streamType!private!Transcript! !
+!JadeServer64bit categoriesFor: #_stringType!private!Transcript! !
 
 "End of package definition"!
 

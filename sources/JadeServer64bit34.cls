@@ -1,6 +1,6 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
-JadeServer64bit32 subclass: #JadeServer64bit34
+JadeServer64bit33 subclass: #JadeServer64bit34
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -9,6 +9,10 @@ JadeServer64bit34 guid: (GUID fromString: '{1fe2384e-a7cc-4e95-8b1e-52399b34f562
 JadeServer64bit34 comment: ''!
 !JadeServer64bit34 categoriesForClass!Unclassified! !
 !JadeServer64bit34 methodsFor!
+
+_environmentSuperClassFor: aBehavior
+
+	^aBehavior superclassForEnv: environment!
 
 classOrganizer
 
@@ -22,7 +26,7 @@ debugString: aString fromContext: anObject environment: anInteger
 	"See String>>evaluateInContext:symbolList:"
 
 	[
-		^ (aString
+		^ ((self _decodeString: aString)
 			_compileInContext: anObject 
 			symbolList: GsSession currentSession symbolList 
 			oldLitVars: nil 
@@ -39,7 +43,7 @@ executeString: aString fromContext: anObject environment: anInteger
 	"See String>>evaluateInContext:symbolList:"
 
 	[
-		^ (aString
+		^ ((self _decodeString: aString)
 			_compileInContext: anObject 
 			symbolList: GsSession currentSession symbolList 
 			oldLitVars: nil 
@@ -50,7 +54,8 @@ executeString: aString fromContext: anObject environment: anInteger
 		ex resume.
 	].
 ! !
-!JadeServer64bit34 categoriesFor: #classOrganizer!public! !
+!JadeServer64bit34 categoriesFor: #_environmentSuperClassFor:!private!System Browser! !
+!JadeServer64bit34 categoriesFor: #classOrganizer!private! !
 !JadeServer64bit34 categoriesFor: #debugString:fromContext:environment:!public! !
 !JadeServer64bit34 categoriesFor: #executeString:fromContext:environment:!public! !
 

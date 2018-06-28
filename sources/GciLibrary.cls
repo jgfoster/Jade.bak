@@ -25,6 +25,14 @@ commitSession: anInteger
 	self subclassResponsibility.
 !
 
+decode: aString
+
+	^aString asAnsiString!
+
+encode: aString
+
+	^aString asAnsiString!
+
 errorStructureClass
 
 	self subclassResponsibility.
@@ -199,7 +207,7 @@ pollForSignalSession: anInteger
 	self subclassResponsibility.
 !
 
-sendInterpreted: aString to: anOopType with: anArray session: anInteger
+sendInterpreted: aSymbol to: anOopType with: anArray session: anInteger
 
 	self subclassResponsibility.
 !
@@ -269,6 +277,8 @@ version
 !GciLibrary categoriesFor: #abortSession:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #beginSession:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #commitSession:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #decode:!public! !
+!GciLibrary categoriesFor: #encode:!public! !
 !GciLibrary categoriesFor: #errorStructureClass!private!subclassResponsibility! !
 !GciLibrary categoriesFor: #gsHasPragmas!public! !
 !GciLibrary categoriesFor: #hardBreakSession:!public!subclassResponsibility! !

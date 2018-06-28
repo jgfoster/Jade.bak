@@ -145,7 +145,7 @@ saveMethod
 	| result |
 	result := gciSession
 		serverPerform: #'compile:frame:process:' 
-		with: (self getDocumentData reject: [:each | each == Character cr])
+		with: (gciSession encode: self getDocumentData)
 		with: frameListPresenter selectionByIndex + frameListOffset
 		with: gsProcess.
 	(result isKindOf: Boolean) ifTrue: [
@@ -158,7 +158,7 @@ saveMethod
 			^self selectedFrame.
 		].
 	].
-	MessageBox notify: result.
+	MessageBox notify: (gciSession decode: result).
 !
 
 selectedFrame 

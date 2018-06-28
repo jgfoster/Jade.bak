@@ -29,19 +29,58 @@ _allSelectors
 	].
 	^allSelectors!
 
+_asString: anObject
+
+	self subclassResponsibility.
+!
+
+_categoryOfMethod: aMethod
+
+	| selector |
+	(selector := aMethod selector) isNil ifTrue: [^''].
+	^self _behavior: aMethod inClass categoryOfSelector: selector.
+!
+
+_currentUserMayEditMethod: aMethod
+
+	| objectSecurityPolicy |
+	objectSecurityPolicy := self _objectSecurityPolicyFor: aMethod inClass.
+	^self _isPackagePolicyEnabled or: [objectSecurityPolicy isNil or: [objectSecurityPolicy currentUserCanWrite]].
+!
+
+_decodeString: aString
+
+	^aString!
+
+_defectiveTestsIn: aClass
+
+	| testClass results stream |
+	testClass := aClass thisClass.
+	results := testClass suite run.
+	stream := self _writeStreamOnString.
+	stream nextPutAll: results printString; lf.
+	results defects asSet do: [:each | 
+		| selector class |
+		selector := each selector asSymbol.
+		class := each class whichClassIncludesSelector: selector.
+		stream nextPutAll: class name , ' debug: ' , each selector printString; lf.
+	].
+	^self _encodeString: stream contents.
+!
+
 _describeMethod: aMethod
-	"Provide info needed to create a GsMethod in Jade client"
+	"Private - Provide info needed to create a GsMethod in Jade client"
 	"Nice to add packageName and mcTimestamp"
 
 	| allSelectors class list oldGsMethod string x |
-	self environment: (self environmentForMethod: aMethod).
+	self environment: (self _environmentForMethod: aMethod).
 	writeStream 	"Line 1 for GsMethod (line 3 for JadeSystemBrowserPresenter)"
 "1"		nextPutAll: (class := aMethod inClass) asOop printString; tab;
 "2"		nextPutAll: class printString; tab;
 "3"		nextPutAll: aMethod asOop printString; tab;
 "4"		nextPutAll: ((x := aMethod selector) isNil ifFalse: [x] ifTrue: ['']); tab;
-"5"		nextPutAll: (self categoryOfMethod: aMethod); tab;
-"6"		nextPutAll: (self currentUserMayEditMethod: aMethod) asString; tab;
+"5"		nextPutAll: (self _categoryOfMethod: aMethod); tab;
+"6"		nextPutAll: (self _currentUserMayEditMethod: aMethod) asString; tab;
 		lf.
 
 	"Method source"
@@ -89,23 +128,219 @@ _describeMethod: aMethod
 	writeStream nextPutAll: string; nextPut: $%; lf.
  !
 
+_encodeString: aString
+
+	^String withAll: (aString collect: [:each | (32 <= each codePoint and: [each codePoint <= 255]) ifTrue: [each] ifFalse: [$?]]).
+!
+
+_environmentForMethod: aGsNMethod
+
+	^0!
+
+_environmentSuperClassFor: aBehavior
+
+	^aBehavior superclass!
+
+_gemLogPath
+
+	^''
+!
+
+_gsPackagePolicy
+
+	| class |
+	class := self _gsPackagePolicyClass.
+	class isNil ifTrue: [^nil].
+	^class current.
+!
+
+_gsPackagePolicyClass
+
+	^self objectInBaseNamed: #'GsPackagePolicy'.
+!
+
+_inspectDictionary: aDictionary on: aStream
+
+	| keys keyDict |
+	keys := self _keysForDictionary: aDictionary.
+	keyDict := Dictionary new.
+	keys do: [:each | 
+		| key |
+		key := each printString , '~' , (self oopOf: each) printString.
+		key := key collect: [:char | char asciiValue < 32 ifTrue: [$?] ifFalse: [char]].
+		keyDict
+			at: key
+			put: each.
+	].
+	keys size printOn: aStream.
+	aStream lf.
+	keyDict keys asSortedCollection do: [:each | 
+		| index keyString key value valueString |
+		index := each findLast: [:char | char = $~].
+		keyString := each copyFrom: 1 to: index - 1.
+		key := keyDict at: each.
+		value := aDictionary at: key. 
+		valueString := (self printStringOf: value to: 10).
+		valueString := self _decodeString: valueString.
+		aStream nextPutAll: keyString , '->' , valueString; tab.
+		self print: (self oopOf: value) on: aStream.
+		aStream lf.
+	].
+	^aStream 
+		lf; 
+		contents.
+!
+
+_inspectNamedInstanceVariablesOf: anObject on: aStream
+
+	| list size |
+	list := anObject class allInstVarNames.
+	size := list size.
+	anObject class format > 0 ifTrue: [
+		size := size + (anObject _basicSize min: 200).
+	].
+	size printOn: aStream.
+	aStream lf.
+	1 to: list size do: [:i | 
+		aStream nextPutAll: (list at: i); tab.
+		self print: (self oopOf: (anObject instVarAt: i)) on: aStream.
+		aStream lf.
+	].
+!
+
+_installTranscript
+
+	| transcript |
+	transcript := self objectInBaseNamed: #'Transcript'.
+
+	"If no Transcript object, then install me!!"
+	(transcript == nil or: [transcript class name == self class name]) ifTrue: [
+		UserGlobals at: #'Transcript' put: self.
+		System commitTransaction.
+		^self.
+	].
+	
+	"Transcript object from Seaside"
+	transcript class name = 'TranscriptProxy class' ifTrue: [
+		| clientForwarder |
+		clientForwarder := ClientForwarder new.
+		clientForwarder	clientObject: 2.
+		transcript registerTranscriptClientForwarder: clientForwarder.
+		^self.
+	].
+!
+
+_isClientForwarder: anObject
+
+	^anObject _class name == #'ClientForwarder'.
+!
+
+_keysForDictionary: aDictionary 
+
+	^aDictionary keys.
+!
+
+_mcHttpRepositoryClass
+
+	^self objectInBaseNamed: #'MCHttpRepository'.
+!
+
+_mcInitialsA: aString
+	"Private - Subclasses provide error handling, typically means string is too long"
+
+	System _cacheName: aString.
+!
+
+_mcPackageClass
+
+	^self objectInBaseNamed: #'MCPackage'.
+!
+
+_methodSignatureForSelector: aSymbol
+
+	^aSymbol.
+!
+
+_millisecondsElapsedTime: aBlock
+
+	^Time millisecondsElapsedTime: aBlock.
+!
+
+_moveMethod: aGsMethod toCategory: aString
+
+	aGsMethod inClass
+		moveMethod: aGsMethod selector
+		toCategory: aString.
+!
+
+_nameOfFirstDictionaryReferencing: aGlobal
+
+	| list |
+	list := self symbolList dictionaryAndSymbolOf: aGlobal.
+	list isNil ifTrue: [^''].
+	^list first name!
+
+_nextLine
+
+	^readStream upTo: Character lf.
+!
+
+_nextLineAsList
+
+	^(self _nextLine subStrings: Character tab) reject: [:each | each isEmpty].
+!
+
+_objectForOop: anInteger
+
+	self subclassResponsibility.!
+
+_refreshSymbolList
+
+	GsSession currentSession symbolList replaceElementsFrom: self symbolList.	"replace the transcient one with the persistent one"
+!
+
+_registerOBNotifications
+
+	| platform clientForwarder |
+	(platform := self objectInBaseNamed: #'OBGemStonePlatform') isNil ifTrue: [^self].
+	clientForwarder := ClientForwarder new.
+	clientForwarder	clientObject: 1.
+	self
+		_registerOBNotificationsForPlatform: platform 
+		clientForwarder: clientForwarder.
+!
+
+_registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
+
+	platform 
+		registerBrowseClientForwarder: clientForwarder;
+		registerChoiceClientForwarder: clientForwarder;
+		registerCloseClientForwarder: clientForwarder;
+		registerConfirmationClientForwarder: clientForwarder;
+		registerInformClientForwarder: clientForwarder;
+		registerMultiLineTextClientForwarder: clientForwarder;
+		registerTextClientForwarder: clientForwarder;
+		yourself.
+!
+
+_string
+
+	^String new!
+
+_writeStreamOnString
+
+	^WriteStream on: self _string!
+
 abort
 
 	classOrganizers := Array new: 4.
 	System abortTransaction.
-	self refreshSymbolList.
+	self _refreshSymbolList.
 !
 
 asString: anObject
 
-	(anObject isKindOf: String) ifTrue: [^anObject].
-	Exception
-		category: nil
-		number: nil
-		do: [:ex :cat :num :args | 
-			^'<<printString error: ' , ex printString , '>>'.
-		].
-	^anObject printString.
+	self subclassResponsibility.
 !
 
 beginTransaction
@@ -132,6 +367,7 @@ contents
 !
 
 cr
+	"Transcript protocol"
 
 	self nextPut: Character cr.
 !
@@ -139,28 +375,23 @@ cr
 debugString: aString fromContext: anObject environment: anInteger
 
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
-	^'nil halt. ' , aString
+	^'nil halt. ' , (self _decodeString: aString)
 		evaluateInContext: anObject 
 		symbolList: GsSession currentSession symbolList. !
-
-delay
-
-	(Delay forMilliseconds: 10) wait.
-!
 
 describeMethod: aMethod
 	"Provide info needed to create a GsMethod in Jade client"
 
-	writeStream := WriteStream on: String new.
+	writeStream := self _writeStreamOnString.
 	self _describeMethod: (self homeMethodFor: aMethod).
-	^writeStream contents
+	^self _encodeString: writeStream contents
 !
 
 errorListFor: aCollection
 
 	| stream |
 	aCollection class name == #'ErrorDescription' ifTrue: [^''].
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	aCollection do: [:each | 
 		stream
 			nextPutAll: (each at: 1) printString; tab;
@@ -168,13 +399,13 @@ errorListFor: aCollection
 			nextPutAll: ((2 < each size and: [(each at: 3) notNil]) ifTrue: [(each at: 3)] ifFalse: [(GemStoneError at: #English) at: (each at: 1)]); tab;
 			lf.
 	].
-	^stream contents.
+	^self _encodeString: stream contents.
 !
 
 executeString: aString fromContext: anObject environment: anInteger
 
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
-	^aString
+	^(self _decodeString: aString)
 		evaluateInContext: anObject 
 		symbolList: GsSession currentSession symbolList. !
 
@@ -186,56 +417,32 @@ initialize
 
 	classOrganizers := Array new: 4.
 	self 
-		installTranscript;
-		registerOBNotifications;
+		_installTranscript;
+		_registerOBNotifications;
 		yourself.!
-
-installTranscript
-
-	| transcript |
-	transcript := self objectInBaseNamed: #'Transcript'.
-
-	"If no Transcript object, then install me!!"
-	(transcript == nil or: [transcript class name == self class name]) ifTrue: [
-		UserGlobals at: #'Transcript' put: self.
-		System commitTransaction.
-		^self.
-	].
-	
-	"Transcript object from Seaside"
-	transcript class name = 'TranscriptProxy class' ifTrue: [
-		| clientForwarder |
-		clientForwarder := ClientForwarder new.
-		clientForwarder	clientObject: 2.
-		transcript registerTranscriptClientForwarder: clientForwarder.
-		^self.
-	].
-!
-
-is32Bit
-
-	^false.
-!
-
-isClientForwarder: anObject
-
-	^anObject _class name == #'ClientForwarder'.
-!
 
 makeListener
 
 	^nil.
 !
 
+mcRemoveRepository: aRepository fromPackage: aMCWorkingCopy
+
+	aMCWorkingCopy repositoryGroup removeRepository: aRepository.
+!
+
 nextPut: aCharacter
+	"Transcript protocol"
 
 	self nextPutAll: aCharacter asString.
 !
 
 nextPutAll: anObject
+	"Transcript protocol"
 
 	| string args |
-	string := self asString: anObject.
+	string := self _asString: anObject.
+	string := self _encodeString: string.
 	args := Array
 		with: self
 		with: 1
@@ -249,22 +456,19 @@ nextPutAll: anObject
 
 obConfirmationRequest: anOBConfirmationRequest
 
-	^String new 
+	| string |
+	string := String new 
 		addAll: anOBConfirmationRequest cancelChoice;
 		add: Character lf;
 		addAll: anOBConfirmationRequest okChoice;
 		add: Character lf;
 		addAll: anOBConfirmationRequest prompt;
 		yourself.
-!
+	^self _encodeString: string!
 
 obInformRequest: anOBInformRequest
 
-	^anOBInformRequest message!
-
-objectForOop: anInteger
-
-	self subclassResponsibility.!
+	^self _encodeString: anOBInformRequest message!
 
 objectInBaseNamed: aString
 
@@ -281,53 +485,24 @@ objectNamed: aString
 
 obTextRequest: anOBTextRequest
 
-	| prompt template |
+	| prompt string template |
 	prompt := anOBTextRequest prompt.
 	template := anOBTextRequest template.
-	^String new 
+	string := String new 
 		addAll: prompt size printString;
 		add: Character lf;
 		addAll: prompt;
 		addAll: template;
 		yourself.
-!
+	^self _encodeString: string!
 
 oopOf: anObject
 
 	^anObject asOop.
 !
 
-refreshSymbolList
-
-	GsSession currentSession symbolList replaceElementsFrom: self symbolList.	"replace the transcient one with the persistent one"
-!
-
-registerOBNotifications
-
-	| platform clientForwarder |
-	(platform := self objectInBaseNamed: #'OBGemStonePlatform') isNil ifTrue: [^self].
-	clientForwarder := ClientForwarder new.
-	clientForwarder	clientObject: 1.
-	self
-		registerOBNotificationsForPlatform: platform 
-		clientForwarder: clientForwarder.
-!
-
-registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
-
-	platform 
-		registerBrowseClientForwarder: clientForwarder;
-		registerChoiceClientForwarder: clientForwarder;
-		registerCloseClientForwarder: clientForwarder;
-		registerConfirmationClientForwarder: clientForwarder;
-		registerInformClientForwarder: clientForwarder;
-		registerMultiLineTextClientForwarder: clientForwarder;
-		registerTextClientForwarder: clientForwarder;
-		yourself.
-!
-
 reset
-	"WriteStream protocol"!
+	"WriteStream protocol used by Transcript"!
 
 setBreakAtStepPoint: anInteger inMethod: aGsMethod
 
@@ -335,13 +510,10 @@ setBreakAtStepPoint: anInteger inMethod: aGsMethod
 !
 
 show: anObject
+	"Transcript protocol"
 
 	self nextPutAll: anObject printString.
 !
-
-sourceForProcess: gsProcess frame: level
-
-	self subclassResponsibility!
 
 stackForProcess: aGsProcess
 
@@ -351,11 +523,11 @@ stackForProcess: aGsProcess
 		number: nil
 		do: [:ex :cat :num :args | nil].
 	array := aGsProcess _reportOfSize: 5000.
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	array do: [:each | 
 		stream nextPutAll: each; lf.
 	].
-	^stream contents.
+	^self _encodeString: stream contents.
 !
 
 terminate: aGsProcess
@@ -365,8 +537,39 @@ terminate: aGsProcess
 	(Delay forMilliseconds: 10) wait.	"allow forked processes to finish"
 ! !
 !JadeServer categoriesFor: #_addToPureExportSet:!private! !
-!JadeServer categoriesFor: #_allSelectors!Debugger!GsObject!public!System Browser! !
-!JadeServer categoriesFor: #_describeMethod:!Debugger!GsObject!public!System Browser! !
+!JadeServer categoriesFor: #_allSelectors!Debugger!GsObject!private!System Browser! !
+!JadeServer categoriesFor: #_asString:!private!Transcript! !
+!JadeServer categoriesFor: #_categoryOfMethod:!private!System Browser! !
+!JadeServer categoriesFor: #_currentUserMayEditMethod:!private!System Browser! !
+!JadeServer categoriesFor: #_decodeString:!private! !
+!JadeServer categoriesFor: #_defectiveTestsIn:!private! !
+!JadeServer categoriesFor: #_describeMethod:!Debugger!GsObject!private!System Browser! !
+!JadeServer categoriesFor: #_encodeString:!private! !
+!JadeServer categoriesFor: #_environmentForMethod:!private! !
+!JadeServer categoriesFor: #_environmentSuperClassFor:!private!System Browser! !
+!JadeServer categoriesFor: #_gemLogPath!private!Transcript! !
+!JadeServer categoriesFor: #_gsPackagePolicy!private! !
+!JadeServer categoriesFor: #_gsPackagePolicyClass!private! !
+!JadeServer categoriesFor: #_inspectDictionary:on:!private! !
+!JadeServer categoriesFor: #_inspectNamedInstanceVariablesOf:on:!private! !
+!JadeServer categoriesFor: #_installTranscript!private!Transcript! !
+!JadeServer categoriesFor: #_isClientForwarder:!Debugger!private! !
+!JadeServer categoriesFor: #_keysForDictionary:!private! !
+!JadeServer categoriesFor: #_mcHttpRepositoryClass!private! !
+!JadeServer categoriesFor: #_mcInitialsA:!private! !
+!JadeServer categoriesFor: #_mcPackageClass!private! !
+!JadeServer categoriesFor: #_methodSignatureForSelector:!private!System Browser! !
+!JadeServer categoriesFor: #_millisecondsElapsedTime:!private!System Browser! !
+!JadeServer categoriesFor: #_moveMethod:toCategory:!private! !
+!JadeServer categoriesFor: #_nameOfFirstDictionaryReferencing:!private! !
+!JadeServer categoriesFor: #_nextLine!private!System Browser! !
+!JadeServer categoriesFor: #_nextLineAsList!private!System Browser! !
+!JadeServer categoriesFor: #_objectForOop:!private! !
+!JadeServer categoriesFor: #_refreshSymbolList!private! !
+!JadeServer categoriesFor: #_registerOBNotifications!private! !
+!JadeServer categoriesFor: #_registerOBNotificationsForPlatform:clientForwarder:!private! !
+!JadeServer categoriesFor: #_string!private! !
+!JadeServer categoriesFor: #_writeStreamOnString!private! !
 !JadeServer categoriesFor: #abort!public! !
 !JadeServer categoriesFor: #asString:!public!Transcript! !
 !JadeServer categoriesFor: #beginTransaction!public! !
@@ -375,32 +578,24 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #contents!public! !
 !JadeServer categoriesFor: #cr!public!Transcript! !
 !JadeServer categoriesFor: #debugString:fromContext:environment:!public! !
-!JadeServer categoriesFor: #delay!public! !
 !JadeServer categoriesFor: #describeMethod:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #errorListFor:!public! !
 !JadeServer categoriesFor: #executeString:fromContext:environment:!public! !
-!JadeServer categoriesFor: #homeMethodFor:!public! !
+!JadeServer categoriesFor: #homeMethodFor:!private! !
 !JadeServer categoriesFor: #initialize!public! !
-!JadeServer categoriesFor: #installTranscript!public!Transcript! !
-!JadeServer categoriesFor: #is32Bit!public! !
-!JadeServer categoriesFor: #isClientForwarder:!Debugger!public! !
 !JadeServer categoriesFor: #makeListener!private! !
+!JadeServer categoriesFor: #mcRemoveRepository:fromPackage:!public! !
 !JadeServer categoriesFor: #nextPut:!public!Transcript! !
 !JadeServer categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeServer categoriesFor: #obConfirmationRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #obInformRequest:!OmniBrowser!public! !
-!JadeServer categoriesFor: #objectForOop:!private! !
 !JadeServer categoriesFor: #objectInBaseNamed:!private! !
 !JadeServer categoriesFor: #objectNamed:!private! !
 !JadeServer categoriesFor: #obTextRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #oopOf:!private! !
-!JadeServer categoriesFor: #refreshSymbolList!public! !
-!JadeServer categoriesFor: #registerOBNotifications!public! !
-!JadeServer categoriesFor: #registerOBNotificationsForPlatform:clientForwarder:!public! !
-!JadeServer categoriesFor: #reset!public! !
+!JadeServer categoriesFor: #reset!public!Transcript! !
 !JadeServer categoriesFor: #setBreakAtStepPoint:inMethod:!Methods!public! !
 !JadeServer categoriesFor: #show:!public!Transcript! !
-!JadeServer categoriesFor: #sourceForProcess:frame:!public! !
 !JadeServer categoriesFor: #stackForProcess:!public! !
 !JadeServer categoriesFor: #terminate:!Processes!public! !
 

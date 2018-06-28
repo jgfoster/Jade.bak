@@ -39,7 +39,7 @@ package!
 
 "Class Definitions"!
 
-ArrayedCollection subclass: #CharacterCollection
+ArrayedCollection variableSubclass: #CharacterCollection
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -58,7 +58,7 @@ asBoolean
 !
 
 asCharacterCollection
-
+ 
 	| readStream writeStream |
 	readStream := ReadStream on: self.
 	writeStream := WriteStream on: CharacterCollection new.

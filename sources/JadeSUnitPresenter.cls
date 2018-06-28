@@ -42,7 +42,10 @@ onClassesChanged
 
 	testClassesPresenter hasSelection ifFalse: [status value: self. ^testCasesPresenter model: ListModel  new].
 
-	gsResult := gciSession serverPerform: #getTestMethodsNamesOf: with: testClassesPresenter selection.
+	gsResult := gciSession 
+		serverPerform: #getTestMethodsNamesOf: 
+		with: (gciSession encode: testClassesPresenter selection).
+	gsResult := gciSession decode: gsResult.
 	testMethods := (gsResult  subStrings: ',') collect: [:each | GsTestMethod name: each].
 
 	testCasesPresenter model: (ListModel on: testMethods).
@@ -55,14 +58,13 @@ onClassesChanged
 !
 
 onPackageChanged
+
 	| gsResult |
-
 	testCounter := Array with: 0 with: OrderedCollection new.
-
 	packagesPresenter hasSelection ifFalse: [testClassesPresenter model: ListModel new. testCasesPresenter model: ListModel  new. ^status value: self.].
-
-	gsResult := gciSession serverPerform: #getTestCaseClassesNamesOf: with: packagesPresenter selection.
-
+	gsResult := gciSession 
+		serverPerform: #getTestCaseClassesNamesOf: 
+		with: (gciSession encode: packagesPresenter selection).
 	testClassesPresenter model: (ListModel on: (gsResult subStrings: ',') asSortedCollection).
 	status value: nil.
 	status value: self.!
@@ -76,6 +78,7 @@ onViewOpened
  	status := ValueHolder new.
 
 	gsResult := gciSession serverPerform: #getPackagesNamesWithTestClasses.
+	gsResult := gciSession decode: gsResult.
 	packagesNames := gsResult subStrings: ','.
 
 	packagesPresenter model: (ListModel on: packagesNames asSortedCollection).

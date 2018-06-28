@@ -33,6 +33,7 @@ errorListFor: anOop inSession: aGciSession
 	result := aGciSession
 		serverPerform: #'errorListFor:'
 		with: anOop.
+	result := aGciSession decode: result.
 	list := result subStrings: Character lf.
 	list := list collect: [:each | each , '	' subStrings: Character tab].
 	list := list collect: [:each | 

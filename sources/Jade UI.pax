@@ -23,28 +23,28 @@ package methodNames
 	add: #GsProcess -> #stepOver:;
 	add: #GsProcess -> #terminate;
 	add: #GsProcess -> #trimStackToLevel:;
+	add: #JadeServer -> #_asAsciiString:;
 	add: #JadeServer -> #_oopAndStringFor:;
+	add: #JadeServer -> #_recompile:withSource:;
 	add: #JadeServer -> #_sourceForProcess:frame:;
 	add: #JadeServer -> #_stepPointFromProcess:frame:method:level:;
 	add: #JadeServer -> #_stepPointsForBreaksInMethod:;
 	add: #JadeServer -> #_trimStackOf:toLevel:;
-	add: #JadeServer -> #asAsciiString:;
 	add: #JadeServer -> #compile:frame:process:;
 	add: #JadeServer -> #isResumableCategory:number:context:;
+	add: #JadeServer -> #sourceForProcess:frame:;
 	add: #JadeServer -> #step:inFrame:;
 	add: #JadeServer32bit -> #_oopAndStringFor:;
+	add: #JadeServer32bit -> #_recompile:withSource:;
 	add: #JadeServer32bit -> #_stepPointFromProcess:frame:method:level:;
 	add: #JadeServer32bit -> #_trimStackOf:toLevel:;
-	add: #JadeServer32bit -> #recompile:withSource:;
 	add: #JadeServer32bit -> #sourceForProcess:frame:;
 	add: #JadeServer64bit -> #_oopAndStringFor:;
+	add: #JadeServer64bit -> #_recompile:withSource:;
 	add: #JadeServer64bit -> #_stepPointFromProcess:frame:method:level:;
 	add: #JadeServer64bit -> #_trimStackOf:toLevel:;
-	add: #JadeServer64bit -> #recompile:withSource:;
 	add: #JadeServer64bit -> #sourceForProcess:frame:;
 	add: #JadeServer64bit33 -> #_stepPointFromProcess:frame:method:level:;
-	add: #JadeServer64bit33 -> #step:inFrame:;
-	add: #JadeServer64bit34 -> #step:inFrame:;
 	add: #JadeServer64bit3x -> #_stepPointsForBreaksInMethod:;
 	add: #JadeTextDocument -> #fileIn;
 	add: #JadeTextDocument -> #jadeInspect;
@@ -179,15 +179,28 @@ trimStackToLevel: anInteger
 
 !JadeServer methodsFor!
 
+_asAsciiString: aString
+
+	^String withAll: (aString asArray collect: [:char | 
+		((32 <= char asciiValue and: [char asciiValue <= 127]) or: [char isSeparator])
+			ifTrue: [char]
+			ifFalse: [$?].
+	]).
+!
+
 _oopAndStringFor: anObject
 
 	^(self oopOf: anObject) -> anObject printString.
 !
 
+_recompile: aMethod withSource: aString
+
+	self subclassResponsibility!
+
 _sourceForProcess: gsProcess frame: level
 
 	| frame homeMethod stepPoint keys values gsMethod receiver |
-	writeStream := WriteStream on: String new.
+	writeStream := self _writeStreamOnString.
 	(frame := gsProcess _frameContentsAt: level) isNil ifTrue: [^'No frame found for level ' , level printString].
 	gsMethod := frame at: 1.
 	stepPoint := self 
@@ -208,7 +221,7 @@ _sourceForProcess: gsProcess frame: level
 		yourself.
 	receiver := frame at: 10.
 	values := OrderedCollection new.
-	(self isClientForwarder: receiver) ifTrue: [
+	(self _isClientForwarder: receiver) ifTrue: [
 		keys := OrderedCollection with: 'clientObject'.
 		values add: receiver clientObject.
 		receiver := '[aClientForwarder(' , (self oopOf: receiver) printString , ')]'.
@@ -267,7 +280,7 @@ _sourceForProcess: gsProcess frame: level
 		nextPutAll: '></source>';
 		nextPutAll: '</frame>'; lf;
 		yourself.
-	^self asAsciiString: writeStream contents.
+	^self _encodeString: writeStream contents.
 !
 
 _stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
@@ -284,34 +297,26 @@ _trimStackOf: aGsProcess toLevel: anInteger
 	^aGsProcess.
 !
 
-asAsciiString: aString
-
-	^String withAll: (aString asArray collect: [:char | 
-		((32 <= char asciiValue and: [char asciiValue <= 127]) or: [char isSeparator])
-			ifTrue: [char]
-			ifFalse: [$?].
-	]).
-!
-
 compile: aString frame: anInteger process: aGsProcess
 	"Compile method from within debugger"
 
-	| oldMethod aBehavior selector category result |
+	| oldMethod aBehavior selector category result string |
+	string := self _decodeString: aString.
 	oldMethod := aGsProcess localMethodAt: anInteger.
 	result := self 
-		recompile: oldMethod
-		withSource: aString.
+		_recompile: oldMethod
+		withSource: string.
 	(result isKindOf: Boolean) ifTrue: [^result].
 	aBehavior := oldMethod inClass.
 	selector := oldMethod selector.
-	selector isNil ifTrue: [^result].
+	selector isNil ifTrue: [^self _encodeString: result].
 	category := self _behavior: aBehavior categoryOfSelector: selector.
 	result := self
-		compileMethod: aString 
+		compileMethod: string 
 		behavior: aBehavior 
 		user: nil 
 		inCategory: category.
-	^result.!
+	^(self _encodeString: result).!
 
 isResumableCategory: category number: number context: context
 
@@ -329,18 +334,24 @@ isResumableCategory: category number: number context: context
 	^true.
 !
 
+sourceForProcess: gsProcess frame: level
+
+	self subclassResponsibility!
+
 step: aGsProcess inFrame: anInteger
 
 	aGsProcess _stepOverInFrame: anInteger.
 ! !
-!JadeServer categoriesFor: #_oopAndStringFor:!Debugger!public! !
-!JadeServer categoriesFor: #_sourceForProcess:frame:!Debugger!public! !
-!JadeServer categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!public! !
-!JadeServer categoriesFor: #_stepPointsForBreaksInMethod:!Debugger!public! !
-!JadeServer categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
-!JadeServer categoriesFor: #asAsciiString:!Debugger!public! !
+!JadeServer categoriesFor: #_asAsciiString:!Debugger!private! !
+!JadeServer categoriesFor: #_oopAndStringFor:!Debugger!private! !
+!JadeServer categoriesFor: #_recompile:withSource:!Debugger!private! !
+!JadeServer categoriesFor: #_sourceForProcess:frame:!Debugger!private! !
+!JadeServer categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!private! !
+!JadeServer categoriesFor: #_stepPointsForBreaksInMethod:!Debugger!private! !
+!JadeServer categoriesFor: #_trimStackOf:toLevel:!Debugger!private! !
 !JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
 !JadeServer categoriesFor: #isResumableCategory:number:context:!Debugger!public! !
+!JadeServer categoriesFor: #sourceForProcess:frame:!public! !
 !JadeServer categoriesFor: #step:inFrame:!Debugger!public! !
 
 !JadeServer32bit methodsFor!
@@ -352,6 +363,15 @@ _oopAndStringFor: anObject
 		number: nil
 		do: [:ex :cat :num :args | ^0 -> '<ERROR IN #printString>'].
 	^super _oopAndStringFor: anObject.
+!
+
+_recompile: aMethod withSource: aString
+
+	Exception
+		category: nil 
+		number: nil 
+		do: [:ex :cat :num :args | ^'compile error found in JadeServer>>#compile:frame:process:'].
+	^aMethod _recompileWithSource: aString.
 !
 
 _stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
@@ -377,31 +397,22 @@ _trimStackOf: aGsProcess toLevel: anInteger
 		toLevel: anInteger.
 !
 
-recompile: aMethod withSource: aString
-
-	Exception
-		category: nil 
-		number: nil 
-		do: [:ex :cat :num :args | ^'compile error found in JadeServer>>#compile:frame:process:'].
-	^aMethod _recompileWithSource: aString.
-!
-
 sourceForProcess: gsProcess frame: level
 
 	Exception
 		category: nil
 		number: nil
 		do: [:ex :cat :num :args | 
-			^self asAsciiString: ('?????' , ex printString , ' - ' , num printString , ' - ' ,  args printString , 
+			^self _asAsciiString: ('?????' , ex printString , ' - ' , num printString , ' - ' ,  args printString , 
 				Character cr asString , (GsProcess stackReportToLevel: 50))].
 	^self
 		_sourceForProcess: gsProcess 
 		frame: level.
 ! !
-!JadeServer32bit categoriesFor: #_oopAndStringFor:!Debugger!public! !
-!JadeServer32bit categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!public! !
-!JadeServer32bit categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
-!JadeServer32bit categoriesFor: #recompile:withSource:!Debugger!public! !
+!JadeServer32bit categoriesFor: #_oopAndStringFor:!Debugger!private! !
+!JadeServer32bit categoriesFor: #_recompile:withSource:!Debugger!private! !
+!JadeServer32bit categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!private! !
+!JadeServer32bit categoriesFor: #_trimStackOf:toLevel:!Debugger!private! !
 !JadeServer32bit categoriesFor: #sourceForProcess:frame:!Debugger!public! !
 
 !JadeServer64bit methodsFor!
@@ -412,6 +423,18 @@ _oopAndStringFor: anObject
 		super _oopAndStringFor: anObject.
 	] on: Error do: [:ex | 
 		ex return: 0 -> ('<ERROR IN #printString for ' , anObject class name , '>').
+	].
+!
+
+_recompile: aMethod withSource: aString
+
+	^[
+		| result |
+		result := aMethod _recompileWithSource: aString.
+		result isNil ifTrue: [^true].		"Bug 41195 returns nil if success so assume it is the same method"
+		result.
+	] on: Error do: [:ex | 
+		ex description.
 	].
 !
 
@@ -434,18 +457,6 @@ _trimStackOf: aGsProcess toLevel: anInteger
 	].
 !
 
-recompile: aMethod withSource: aString
-
-	^[
-		| result |
-		result := aMethod _recompileWithSource: aString.
-		result isNil ifTrue: [^true].		"Bug 41195 returns nil if success so assume it is the same method"
-		result.
-	] on: Error do: [:ex | 
-		ex description.
-	].
-!
-
 sourceForProcess: gsProcess frame: level
 
 	^[
@@ -453,19 +464,19 @@ sourceForProcess: gsProcess frame: level
 			_sourceForProcess: gsProcess 
 			frame: level.
 	] on: Error do: [:ex | 
-			ex return: (self asAsciiString: ('?????' , ex description , Character cr asString , (GsProcess stackReportToLevel: 50))).
+			ex return: (self _asAsciiString: ('?????' , ex description , Character cr asString , (GsProcess stackReportToLevel: 50))).
 	].
 ! !
-!JadeServer64bit categoriesFor: #_oopAndStringFor:!Debugger!public! !
-!JadeServer64bit categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!public! !
-!JadeServer64bit categoriesFor: #_trimStackOf:toLevel:!Debugger!public! !
-!JadeServer64bit categoriesFor: #recompile:withSource:!Debugger!public! !
+!JadeServer64bit categoriesFor: #_oopAndStringFor:!Debugger!private! !
+!JadeServer64bit categoriesFor: #_recompile:withSource:!Debugger!private! !
+!JadeServer64bit categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!private! !
+!JadeServer64bit categoriesFor: #_trimStackOf:toLevel:!Debugger!private! !
 !JadeServer64bit categoriesFor: #sourceForProcess:frame:!Debugger!public! !
 
 !JadeServer64bit33 methodsFor!
 
 _stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
-	"http://kermit.gemtalksystems.com/bug?bug=45553
+	"Private - http://kermit.gemtalksystems.com/bug?bug=45553
 	https://github.com/jgfoster/Jade/issues/51"
 
 	| array homeMethod index localMethod localStepPoint sourceOffset |
@@ -475,30 +486,16 @@ _stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
 	sourceOffset := localMethod _sourceOffsetsAt: localStepPoint.
 	homeMethod := self homeMethodFor: localMethod.
 	^homeMethod _sourceOffsets indexOf: sourceOffset.
-	!
-
-step: aGsProcess inFrame: anInteger
-
-	aGsProcess _stepOverInFrame: anInteger.
-! !
-!JadeServer64bit33 categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!public! !
-!JadeServer64bit33 categoriesFor: #step:inFrame:!Debugger!public!Socket! !
-
-!JadeServer64bit34 methodsFor!
-
-step: aGsProcess inFrame: anInteger
-
-	aGsProcess _stepOverInFrame: anInteger.
-! !
-!JadeServer64bit34 categoriesFor: #step:inFrame:!Debugger!public!Socket! !
+	! !
+!JadeServer64bit33 categoriesFor: #_stepPointFromProcess:frame:method:level:!Debugger!private! !
 
 !JadeServer64bit3x methodsFor!
 
 _stepPointsForBreaksInMethod: gsMethod
-	"Presumably there is a way to do this, just not the same as 32-bit and 64-bit 2.x"
+	"Private - Presumably there is a way to do this, just not the same as 32-bit and 64-bit 2.x"
 
 	^#()! !
-!JadeServer64bit3x categoriesFor: #_stepPointsForBreaksInMethod:!Debugger!public! !
+!JadeServer64bit3x categoriesFor: #_stepPointsForBreaksInMethod:!Debugger!private! !
 
 !JadeTextDocument methodsFor!
 

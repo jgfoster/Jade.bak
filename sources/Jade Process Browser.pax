@@ -11,14 +11,11 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #JadeServer -> #addProcess:to:withStatus:scheduler:;
-	add: #JadeServer -> #addProcess2:to:withStatus:scheduler:;
+	add: #JadeServer -> #_addProcess:to:withStatus:scheduler:;
+	add: #JadeServer -> #_addProcess2:to:withStatus:scheduler:;
+	add: #JadeServer -> #_waitingProcesses;
 	add: #JadeServer -> #processes;
-	add: #JadeServer -> #waitingProcesses;
-	add: #JadeServer64bit33 -> #waitingProcesses;
-	add: #JadeServer64bit34 -> #waitingProcesses;
-	add: #JadeServer64bit3x -> #addProcess:to:withStatus:scheduler:;
-	add: #JadeServer64bit3x -> #addProcess2:to:withStatus:scheduler:;
+	add: #JadeServer64bit33 -> #_waitingProcesses;
 	add: #JadeTranscript -> #browseProcesses;
 	yourself.
 
@@ -59,7 +56,7 @@ JadeShell subclass: #JadeProcessBrowser
 
 !JadeServer methodsFor!
 
-addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
+_addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
 
 	| x |
 	aStream lf
@@ -74,9 +71,9 @@ addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
 "9"		"type: forked or main"
 "10"		"live or terminated"
 		yourself.
-	self addProcess2: aProcess to: aStream withStatus: aString scheduler: aScheduler.!
+	self _addProcess2: aProcess to: aStream withStatus: aString scheduler: aScheduler.!
 
-addProcess2: aProcess to: aStream withStatus: aString scheduler: aScheduler
+_addProcess2: aProcess to: aStream withStatus: aString scheduler: aScheduler
 
 	aStream 
 "5"		tab;	"stackId"
@@ -87,11 +84,16 @@ addProcess2: aProcess to: aStream withStatus: aString scheduler: aScheduler
 "10"		"live or terminated"
 		yourself.!
 
+_waitingProcesses
+
+	^ProcessorScheduler scheduler waitingProcesses
+!
+
 processes
 
 	| scheduler stream |
 	scheduler := ProcessorScheduler scheduler.
-	stream := (WriteStream on: String new)
+	stream := self _writeStreamOnString
 		nextPutAll: 'highestPriority'; 			space; nextPutAll: scheduler highestPriority 			printString; tab;
 		nextPutAll: 'highIOPriority'; 			space; nextPutAll: scheduler highIOPriority 			printString; tab;
 		nextPutAll: 'lowestPriority'; 			space; nextPutAll: scheduler lowestPriority 				printString; tab;
@@ -102,74 +104,27 @@ processes
 		nextPutAll: 'userInterruptPriority'; 		space; nextPutAll: scheduler userInterruptPriority 		printString; tab;
 		nextPutAll: 'userSchedulingPriority'; 		space; nextPutAll: scheduler userSchedulingPriority 		printString; tab;
 		yourself.
-	scheduler readyProcesses 		do: [:each | self addProcess: each to: stream withStatus: 'ready'		scheduler: scheduler].
-	scheduler suspendedProcesses 	do: [:each | self addProcess: each to: stream withStatus: 'suspended'	scheduler: scheduler].
-	self waitingProcesses			do: [:each | self addProcess: each to: stream withStatus: 'waiting'	scheduler: scheduler].
-	^stream contents.
+	scheduler readyProcesses 		do: [:each | self _addProcess: each to: stream withStatus: 'ready'		scheduler: scheduler].
+	scheduler suspendedProcesses 	do: [:each | self _addProcess: each to: stream withStatus: 'suspended'	scheduler: scheduler].
+	self _waitingProcesses		do: [:each | self _addProcess: each to: stream withStatus: 'waiting'		scheduler: scheduler].
+	^self _encodeString: stream contents.
 
-!
-
-waitingProcesses
-
-	^ProcessorScheduler scheduler waitingProcesses
 ! !
-!JadeServer categoriesFor: #addProcess:to:withStatus:scheduler:!Processes!public! !
-!JadeServer categoriesFor: #addProcess2:to:withStatus:scheduler:!Processes!public! !
+!JadeServer categoriesFor: #_addProcess:to:withStatus:scheduler:!private!Processes! !
+!JadeServer categoriesFor: #_addProcess2:to:withStatus:scheduler:!private!Processes! !
+!JadeServer categoriesFor: #_waitingProcesses!private!Processes! !
 !JadeServer categoriesFor: #processes!Processes!public! !
-!JadeServer categoriesFor: #waitingProcesses!Processes!public! !
 
 !JadeServer64bit33 methodsFor!
 
-waitingProcesses
+_waitingProcesses
 
 	| processToIgnore |
 	processToIgnore := Processor activeProcess environmentAt: #'parent' ifAbsent: [nil].
 	^ProcessorScheduler scheduler waitingProcesses reject: [:each | each == processToIgnore]
 
 ! !
-!JadeServer64bit33 categoriesFor: #waitingProcesses!Processes!public! !
-
-!JadeServer64bit34 methodsFor!
-
-waitingProcesses
-
-	| processToIgnore |
-	processToIgnore := Processor activeProcess environmentAt: #'parent' ifAbsent: [nil].
-	^ProcessorScheduler scheduler waitingProcesses reject: [:each | each == processToIgnore]
-
-! !
-!JadeServer64bit34 categoriesFor: #waitingProcesses!Processes!public! !
-
-!JadeServer64bit3x methodsFor!
-
-addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
-
-	| instVarNumber modeInfo modeInfo_forked modeInfo_terminated |
-	super addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler.
-	(instVarNumber := GsProcess instVarNames indexOf: #'modeInfo') == 0 ifTrue: [^self].
-	modeInfo := aProcess instVarAt: instVarNumber.
-	(modeInfo_forked := GsProcess _classVars at: #'ModeInfo_forked' ifAbsent: [nil]) ifNil: [^self].
-	(modeInfo_terminated := GsProcess _classVars at: #'ModeInfo_terminated' ifAbsent: [nil]) ifNil: [^self].
-	aStream
-"9"		nextPutAll: (0 < (modeInfo bitAnd: modeInfo_forked) ifTrue: ['forked'] ifFalse: ['main']); tab;
-"10"		nextPutAll: (0 < (modeInfo bitAnd: modeInfo_terminated) ifTrue: ['terminated'] ifFalse: ['']); tab;
-		yourself.
-!
-
-addProcess2: aProcess to: aStream withStatus: aString scheduler: aScheduler
-
-	| x |
-	aStream 
-"5"		nextPutAll: ((x := aProcess stackId) == -1 	ifTrue: [''] ifFalse: [x printString]); tab;
-"6"		nextPutAll: ((x := aProcess waitingOn) 	isNil ifTrue: [''] ifFalse: [x asOop printString]); tab;
-"7"		nextPutAll: ((x := aProcess _signalTime) 	isNil ifTrue: [''] ifFalse: [(x - aScheduler _now) printString]); tab;
-"8"		nextPutAll: (aProcess isPartialContinuation	ifTrue: ['partial'] ifFalse: [aProcess isContinuation ifTrue: ['full'] ifFalse: ['']]); tab;
-"9"		"type: forked or main"
-"10"		"live or terminated"
-		yourself.
-! !
-!JadeServer64bit3x categoriesFor: #addProcess:to:withStatus:scheduler:!Processes!public! !
-!JadeServer64bit3x categoriesFor: #addProcess2:to:withStatus:scheduler:!Processes!public! !
+!JadeServer64bit33 categoriesFor: #_waitingProcesses!private!Processes! !
 
 !JadeTranscript methodsFor!
 

@@ -16,32 +16,18 @@ package classNames
 
 package methodNames
 	add: #JadeBrowserPresenter -> #newMethodPresenter;
-	add: #JadeServer -> #addAccessorsFor:inBehavior:;
-	add: #JadeServer -> #addMethodCategoryNamesToMethodFilters;
-	add: #JadeServer -> #assignClass:toCategory:;
-	add: #JadeServer -> #categoryOfMethod:;
+	add: #JadeServer -> #_addMethodCategoryNamesToMethodFilters;
+	add: #JadeServer -> #_objectSecurityPolicyFor:;
+	add: #JadeServer -> #_packagePolicy:includesSelector:forClass:;
+	add: #JadeServer -> #_selectedClassOverridesSelector:;
+	add: #JadeServer -> #_systemBrowserCommand;
 	add: #JadeServer -> #class:includesSelector:;
-	add: #JadeServer -> #classesForUser:;
-	add: #JadeServer -> #commentFor:;
 	add: #JadeServer -> #compiledMethodAt:inClass:;
-	add: #JadeServer -> #currentUserMayEditMethod:;
 	add: #JadeServer -> #dictionaryAndSymbolOf:;
 	add: #JadeServer -> #dictionaryAndSymbolOf:forUser:;
 	add: #JadeServer -> #environment;
 	add: #JadeServer -> #environment:;
-	add: #JadeServer -> #environmentSuperClassFor:;
 	add: #JadeServer -> #historyOf:;
-	add: #JadeServer -> #isPackagePolicyEnabled;
-	add: #JadeServer -> #methodSignatureForSelector:;
-	add: #JadeServer -> #millisecondsElapsedTime:;
-	add: #JadeServer -> #moveClassesInDictionary:category:to:;
-	add: #JadeServer -> #moveDictionary:toBefore:forUser:;
-	add: #JadeServer -> #nextLine;
-	add: #JadeServer -> #nextLineAsList;
-	add: #JadeServer -> #objectSecurityPolicyFor:;
-	add: #JadeServer -> #packagePolicy:includesSelector:forClass:;
-	add: #JadeServer -> #removeDictionary:fromUser:;
-	add: #JadeServer -> #removeKey:fromSymbolDictionary:;
 	add: #JadeServer -> #sbAddDictionary:;
 	add: #JadeServer -> #sbAddMethodCategory:;
 	add: #JadeServer -> #sbAddMissingAccessors:;
@@ -123,11 +109,9 @@ package methodNames
 	add: #JadeServer -> #sbUpdatePackages;
 	add: #JadeServer -> #sbUpdatePackagesOrDictionaries;
 	add: #JadeServer -> #sbUpdateSuperclass;
-	add: #JadeServer -> #selectedClassOverridesSelector:;
 	add: #JadeServer -> #symbolList;
 	add: #JadeServer -> #systemBrowser:;
 	add: #JadeServer -> #systemBrowserA:;
-	add: #JadeServer -> #systemBrowserCommand;
 	add: #JadeServer -> #systemBrowserUpdate;
 	add: #JadeServer -> #writeList:;
 	add: #JadeServer32bit -> #systemBrowser:;
@@ -135,18 +119,12 @@ package methodNames
 	add: #JadeServer64bit -> #systemBrowser:;
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:;
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:forUser:;
-	add: #JadeServer64bit34 -> #environmentSuperClassFor:;
 	add: #JadeServer64bit34 -> #sbUpdateMethodsByCategories;
-	add: #JadeServer64bit3x -> #addMethodCategoryNamesToMethodFilters;
-	add: #JadeServer64bit3x -> #categoryOfMethod:;
 	add: #JadeServer64bit3x -> #class:includesSelector:;
 	add: #JadeServer64bit3x -> #compiledMethodAt:inClass:;
 	add: #JadeServer64bit3x -> #environment;
 	add: #JadeServer64bit3x -> #environment:;
 	add: #JadeServer64bit3x -> #initialize;
-	add: #JadeServer64bit3x -> #methodSignatureForSelector:;
-	add: #JadeServer64bit3x -> #objectSecurityPolicyFor:;
-	add: #JadeServer64bit3x -> #packagePolicy:includesSelector:forClass:;
 	add: #JadeServer64bit3x -> #sbBrowseMethodsWithPragma:;
 	add: #JadeServer64bit3x -> #sbClassComment:;
 	add: #JadeServer64bit3x -> #sbFileOutMethod:;
@@ -158,7 +136,6 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByPragmas;
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByVariables;
 	add: #JadeServer64bit3x -> #sbUpdateMethodStepPointsFor:;
-	add: #JadeServer64bit3x -> #selectedClassOverridesSelector:;
 	add: #JadeTextDocument -> #jadeBrowseClasses;
 	add: #JadeToolsToolBarPresenter -> #browseClasses;
 	yourself.
@@ -197,6 +174,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade Test Browser';
 	add: 'Jade UI';
 	add: 'Jade UI Base';
+	add: 'JGF Dolphin';
 	add: 'Monticello';
 	yourself).
 
@@ -245,69 +223,100 @@ newMethodPresenter
 
 !JadeServer methodsFor!
 
-addAccessorsFor: aString inBehavior: aBehavior
-
-	aBehavior compileAccessingMethodsFor: (Array with: aString asSymbol).
-!
-
-addMethodCategoryNamesToMethodFilters
+_addMethodCategoryNamesToMethodFilters
 
 	classList do: [:each | methodFilters addAll: each categoryNames].
 !
 
-assignClass: aClass toCategory: aString
+_objectSecurityPolicyFor: anObject
 
-	aClass thisClass category: aString.
+	^anObject segment.
 !
 
-categoryOfMethod: aMethod
+_packagePolicy: aPackagePolicy includesSelector: aSymbol forClass: aClass
 
-	| selector |
-	(selector := aMethod selector) isNil ifTrue: [^''].
-	^self _behavior: aMethod inClass categoryOfSelector: selector.
+	^aPackagePolicy notNil and: [aPackagePolicy includesSelector: aSymbol for: aClass].
+!
+
+_selectedClassOverridesSelector: aSymbol
+
+	^selectedClass superclass notNil and: [selectedClass superclass canUnderstand: aSymbol].
+!
+
+_systemBrowserCommand
+
+	| list command |
+	list := self _nextLineAsList asOrderedCollection.
+	command := list removeFirst.
+	command = 'addDictionary'				ifTrue: [^self sbAddDictionary: list].
+	command = 'addMethodCategory' 		ifTrue: [^self sbAddMethodCategory: list].
+	command = 'addMissingAccessors'		ifTrue: [^self sbAddMissingAccessors: list].
+	command = 'addPackage' 				ifTrue: [^self sbAddPackage: list].
+	command = 'addRepository'			ifTrue: [^self sbAddRepository: list].
+
+	command = 'break' 					ifTrue: [^self sbBreak: list].
+	command = 'browseClassReferences'		ifTrue: [^self sbBrowseClassReferences: list].
+	command = 'browseGlobalReferences'		ifTrue: [^self sbBrowseGlobalReferences: list].
+	command = 'browseImplementors'		ifTrue: [^self sbBrowseImplementors: list].
+	command = 'browseMethodHistory'		ifTrue: [^self sbBrowseMethodHistory: list].
+	command = 'browseMethodsContaining'	ifTrue: [^self sbBrowseMethodsContaining: list].
+	command = 'browseMethodsWithPragma'	ifTrue: [^self sbBrowseMethodsWithPragma: list].
+	command = 'browseSenders'			ifTrue: [^self sbBrowseSenders: list].
+
+	command = 'changeClassName'			ifTrue: [^self sbChangeClassName: list].
+	command = 'changesInPackage'			ifTrue: [^self sbChangesInPackage: list].
+	command = 'checkUniqueClassName'		ifTrue: [^self sbCheckUniqueClassName: list].
+	command = 'class' 					ifTrue: [^self sbClass: list].
+	command = 'classCategory'				ifTrue: [^self sbClassCategory: list].
+	command = 'classComment'			ifTrue: [^self sbClassComment: list].
+	command = 'classesToDictionary'		ifTrue: [^self sbClassesToDictionary: list].
+	command = 'comparePackages'			ifTrue: [^self sbComparePackages: list].
+
+	command = 'fileOutClass'				ifTrue: [^self sbFileOutClass: list].
+	command = 'fileOutDictionary'			ifTrue: [^self sbFileOutDictionary: list].
+	command = 'fileOutMethod'			ifTrue: [^self sbFileOutMethod: list].
+	command = 'findClass' 				ifTrue: [^self sbFindClass].
+	command = 'findSelectors'				ifTrue: [^self sbFindSelectors: list].
+
+
+	command = 'listMethodPragmas'			ifTrue: [^self sbListMethodPragmas: list].
+	command = 'loadLatestVersion'			ifTrue: [^self sbLoadLatestVersionOfConfiguration: list].
+
+	command = 'method' 					ifTrue: [^self sbSaveMethod: list].
+	command = 'methodCategory'			ifTrue: [^self sbMethodCategory: list].
+	command = 'methodClass'				ifTrue: [^self sbMethodClass: list].
+
+	command = 'objectLog'				ifTrue: [^self sbObjectLog: list].
+
+	command = 'postSaveClass'			ifTrue: [^self sbPostSaveClass: list].
+
+	command = 'removeClasses'			ifTrue: [^self sbRemoveClasses].
+	command = 'removeDictionaries'			ifTrue: [^self sbRemoveDictionaries: list].
+	command = 'removeGlobals'			ifTrue: [^self sbRemoveGlobals].
+	command = 'removeMethodCategories' 	ifTrue: [^self sbRemoveMethodCategories: list].
+	command = 'removeMethods'			ifTrue: [^self sbRemoveMethods: list].
+	command = 'removePriorVersions'		ifTrue: [^self sbRemovePriorVersions].
+	command = 'removeRepository'			ifTrue: [^self sbRemoveRepository: list].
+	command = 'revertClass'				ifTrue: [^self sbRevertClass].
+
+	command = 'savePackage'				ifTrue: [^self sbSavePackage: list].
+	command = 'setHomeDictionary'			ifTrue: [^self sbSetHomeDictionary: list].
+
+	command = 'uniqueVersionName'		ifTrue: [^self sbUniqueVersionName: list].
+	command = 'unloadPackage'			ifTrue: [^self sbUnloadPackage: list].
+	command = 'update' 					ifTrue: [^self systemBrowserUpdate].
+
+	self error: 'Unknown command: ' , command printString.
 !
 
 class: aClass includesSelector: aSelector
 
-	^aClass includesSelector: aSelector asSymbol.
-!
-
-classesForUser: aUserProfile
-
-	| stream |
-	stream := WriteStream on: String new.
-	aUserProfile symbolList do: [:eachDict |
-		eachDict keysAndValuesDo: [:key :value |
-			value isBehavior ifTrue: [
-				stream nextPutAll: key; space; nextPutAll: value category asString; tab.
-			].
-		].
-		stream lf.
-	].
-	^stream contents.
-!
-
-commentFor: aClass
-
-	| description |
-	(Class canUnderstand: #'classComment') ifTrue: [
-		^aClass classComment.
-	].
-	(description := aClass description) isNil ifTrue: [^nil].
-	(description class name = #'GsClassDocumentation') ifTrue: [^description detailsAboutClass].
-	^description printString.
+	^aClass includesSelector: (self _decodeString: aSelector) asSymbol.
 !
 
 compiledMethodAt: aSymbol inClass: aClass
 
 	^aClass compiledMethodAt: aSymbol.
-!
-
-currentUserMayEditMethod: aMethod
-
-	| objectSecurityPolicy |
-	objectSecurityPolicy := self objectSecurityPolicyFor: aMethod inClass.
-	^self isPackagePolicyEnabled or: [objectSecurityPolicy isNil or: [objectSecurityPolicy currentUserCanWrite]].
 !
 
 dictionaryAndSymbolOf: aClass
@@ -328,10 +337,6 @@ environment
 environment: anInteger
 	"Ignored prior to 3.x"!
 
-environmentSuperClassFor: aBehavior
-
-	^aBehavior superclass!
-
 historyOf: aClass
 
 	| history |
@@ -339,81 +344,6 @@ historyOf: aClass
 		history := Array with: aClass.
 	].
 	^history.
-!
-
-isPackagePolicyEnabled
-
-	^self gsPackagePolicy notNil!
-
-methodSignatureForSelector: aSymbol
-
-	^aSymbol.
-!
-
-millisecondsElapsedTime: aBlock
-
-	^Time millisecondsElapsedTime: aBlock.
-!
-
-moveClassesInDictionary: sourceDictionary category: aString to: destinationDictionary
-
-	sourceDictionary copy keysAndValuesDo: [:eachKey :eachValue | 
-		(eachValue isBehavior and: [eachValue category = aString]) ifTrue: [
-			sourceDictionary removeKey: eachKey.
-			destinationDictionary
-				at: eachKey
-				put: eachValue.
-		].
-	].
-!
-
-moveDictionary: source toBefore: target forUser: aUserProfile
-
-	| list |
-	list := aUserProfile symbolList.
-	list remove: source.
-	target notNil ifTrue: [
-		list
-			add: source 
-			before: target.
-	] ifFalse: [
-		list addLast: source.
-	].
-
-!
-
-nextLine
-
-	^readStream upTo: Character lf.
-!
-
-nextLineAsList
-
-	^(self nextLine subStrings: Character tab) reject: [:each | each isEmpty].
-!
-
-objectSecurityPolicyFor: anObject
-
-	^anObject segment.
-!
-
-packagePolicy: aPackagePolicy includesSelector: aSymbol forClass: aClass
-
-	^aPackagePolicy notNil and: [aPackagePolicy includesSelector: aSymbol for: aClass].
-!
-
-removeDictionary: aDictionary fromUser: aUserProfile
-
-	| symbolList index |
-	symbolList := aUserProfile symbolList.
-	index := symbolList indexOf: aDictionary.
-	aUserProfile removeDictionaryAt: index.
-!
-
-removeKey: aString fromSymbolDictionary: aSymbolDictionary
-
-	aSymbolDictionary removeKey: aString asSymbol.
-
 !
 
 sbAddDictionary: anOrderedCollection
@@ -430,7 +360,7 @@ sbAddDictionary: anOrderedCollection
 	symbolList
 		createDictionaryNamed: newName
 		at: index.
-	self refreshSymbolList.
+	self _refreshSymbolList.
 	selections at: #'dictionary' put: newName.
 	self systemBrowserUpdate.
 !
@@ -466,7 +396,7 @@ sbAddPackage: anOrderedCollection
 	| string |
 	string := anOrderedCollection removeFirst.
 	selections at: #'package' put: string.
-	self mcWorkingCopyClass forPackage: (self mcPackageClass named: string).
+	self mcWorkingCopyClass forPackage: (self _mcPackageClass named: string).
 	self systemBrowserUpdate.
 !
 
@@ -500,17 +430,17 @@ sbBrowseClassReferences: anOrderedCollection
 	class := (self sbClassFrom: anOrderedCollection) thisClass.
 	writeStream 
 		nextPutAll: 'browseClassReferences'; lf;
-		nextPutAll: (self referencesToObject: class); 
+		nextPutAll: (self _referencesToObject: class); 
 		yourself.
 !
 
 sbBrowseGlobalReferences: anOrderedCollection
 
 	| global |
-	global := self objectForOop: anOrderedCollection removeFirst asNumber.
+	global := self _objectForOop: anOrderedCollection removeFirst asNumber.
 	writeStream 
 		nextPutAll: 'browseGlobalReferences'; lf;
-		nextPutAll: (self referencesToObject: global); 
+		nextPutAll: (self _referencesToObject: global); 
 		yourself.
 !
 
@@ -572,7 +502,7 @@ sbChangeClassName: aList
 
 	| oldName class newName changedIn |
 	oldName := aList removeFirst asSymbol.
-	class := self objectForOop: aList removeFirst asNumber.
+	class := self _objectForOop: aList removeFirst asNumber.
 	class name == oldName ifFalse: [self error: 'Current name is ' , class name printString].
 	newName := aList removeFirst asSymbol.
 	class changeNameTo: newName.
@@ -594,7 +524,7 @@ sbChangeClassName: aList
 sbChangesInPackage: anOrderedCollection
 
 	| current repository patch string |
-	current := self mcWorkingCopyClass forPackage: (self mcPackageClass named: anOrderedCollection removeFirst).
+	current := self mcWorkingCopyClass forPackage: (self _mcPackageClass named: anOrderedCollection removeFirst).
 	repository := anOrderedCollection removeFirst.
 	repository := current repositoryGroup repositories detect: [:each | each description = repository].
 	patch := current changesRelativeToRepository: repository.
@@ -613,7 +543,7 @@ sbCheckUniqueClassName: aList
 
 	| oldName class newName |
 	oldName := aList removeFirst asSymbol.
-	class := self objectForOop: aList removeFirst asNumber.
+	class := self _objectForOop: aList removeFirst asNumber.
 	class name == oldName ifFalse: [
 		writeStream nextPutAll: 'Current name is ' , class name printString. 
 		^self.
@@ -693,9 +623,9 @@ sbClassesToDictionary: anOrderedCollection
 	action := anOrderedCollection removeFirst.
 	targetName := anOrderedCollection removeFirst asSymbol.
 	target := self symbolList detect: [:each | each name = targetName].
-	sourceNames := self nextLineAsList collect: [:each | each asSymbol].
+	sourceNames := self _nextLineAsList collect: [:each | each asSymbol].
 	sources := sourceNames collect: [:eachName | self symbolList detect: [:eachDictionary | eachDictionary name = eachName]].
-	classNames := self nextLineAsList collect: [:each | each asSymbol].
+	classNames := self _nextLineAsList collect: [:each | each asSymbol].
 	classNames do: [:eachName | 
 		| source class |
 		source := sources detect: [:eachDict | 
@@ -750,7 +680,7 @@ sbClassTemplate
 sbComparePackages: anOrderedCollection
 
 	| current ancestor repository patch string |
-	current := self mcWorkingCopyClass forPackage: (self mcPackageClass named: anOrderedCollection removeFirst).
+	current := self mcWorkingCopyClass forPackage: (self _mcPackageClass named: anOrderedCollection removeFirst).
 	ancestor := anOrderedCollection removeFirst.
 	repository := anOrderedCollection removeFirst.
 	repository := current repositoryGroup repositories detect: [:each | each description = repository].
@@ -844,11 +774,11 @@ sbFindClass
 				category := eachGlobal category.
 				category isNil ifTrue: [category := ''].
 "1"			self sbAddNameOf: eachGlobal.
-				writeStream
+			writeStream
 "2"				nextPutAll: name; tab;
 "3"				nextPutAll: category; tab;		"Class category"
 "4"				nextPutAll: (classToPackageMap at: eachGlobal ifAbsent: ['']); tab;		"Package name if available"
-					lf.
+				lf.
 			].
 		].
 	].
@@ -910,7 +840,7 @@ sbInstVarsOldParent: oldParent newParent: newParent oldChild: oldChild
 !
 
 sbListMethodPragmas
-	"none before 3x"
+	"Private - none before 3x"
 !
 
 sbLoadLatestVersionOfConfiguration: anOrderedCollection
@@ -928,14 +858,14 @@ sbMethodCategory: anOrderedCollection
 	category := anOrderedCollection removeFirst.
 	anOrderedCollection do: [:each | 
 		behavior 
-			moveMethod: each asSymbol
+			_moveMethod: each asSymbol
 			toCategory: category.
 	].
 	self systemBrowserUpdate.
 !
 
 sbMethodClass: anOrderedCollection
-	"Drag/drop method onto class"
+	"Private - Drag/drop method onto class"
 
 	| sourceBehavior action targetName set target |
 	sourceBehavior := self sbClassFrom: anOrderedCollection.
@@ -989,13 +919,13 @@ sbMigrateAll: aClass
 sbNextParagraph
 
 	| stream |
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	[
 		readStream peek = $%.
 	] whileFalse: [
-		stream nextPutAll: self nextLine; lf.
+		stream nextPutAll: self _nextLine; lf.
 	].
-	self nextLine.
+	self _nextLine.
 	^stream contents.
 !
 
@@ -1017,7 +947,7 @@ sbPostSaveClass: anOrderedCollection
 sbReadMethodFilter
 
 	| pieces |
-	pieces := self nextLine subStrings: Character tab.
+	pieces := self _nextLine subStrings: Character tab.
 	methodFilterType := pieces at: 1.
 	writeStream 
 		nextPutAll: methodFilterType; tab;
@@ -1061,9 +991,9 @@ sbRecompileSubclassesOf: newClass andCopyMethods: aBoolean
 sbRemoveClasses
 
 	| isPackages containers classNames |
-	isPackages := self nextLine = 'packageList'.
-	containers := self nextLineAsList.
-	classNames := (self nextLineAsList reject: [:each | each isEmpty]) collect: [:each | (each subStrings: Character space) first asSymbol].
+	isPackages := self _nextLine = 'packageList'.
+	containers := self _nextLineAsList.
+	classNames := (self _nextLineAsList reject: [:each | each isEmpty]) collect: [:each | (each subStrings: Character space) first asSymbol].
 	self symbolList do: [:eachDictionary | 
 		| dictionaryName |
 		dictionaryName := eachDictionary name asString.
@@ -1105,7 +1035,7 @@ sbRemoveDictionaries: anOrderedCollection
 	anOrderedCollection do: [:each | 
 		self symbolList removeDictionaryNamed: each asSymbol.
 	].
-	self refreshSymbolList.
+	self _refreshSymbolList.
 	self systemBrowserUpdate.
 !
 
@@ -1113,9 +1043,9 @@ sbRemoveGlobals
 
 	| symbolList dictionaries globals |
 	symbolList := self symbolList.
-	dictionaries := self nextLineAsList collect: [:each | each asSymbol].
+	dictionaries := self _nextLineAsList collect: [:each | each asSymbol].
 	dictionaries := dictionaries collect: [:eachName | symbolList detect: [:eachDict | eachDict name = eachName]].
-	globals := self nextLineAsList collect: [:each | each asSymbol].
+	globals := self _nextLineAsList collect: [:each | each asSymbol].
 	dictionaries do: [:eachDict | 
 		globals do: [:eachKey | 
 			eachDict removeKey: eachKey ifAbsent: [].
@@ -1159,9 +1089,9 @@ sbRemoveMethods: anOrderedCollection
 sbRemovePriorVersions
 
 	| isPackages containers classNames |
-	isPackages := self nextLine = 'packageList'.
-	containers := self nextLineAsList.
-	classNames := (self nextLineAsList reject: [:each | each isEmpty]) collect: [:each | (each subStrings: Character space) first asSymbol].
+	isPackages := self _nextLine = 'packageList'.
+	containers := self _nextLineAsList.
+	classNames := (self _nextLineAsList reject: [:each | each isEmpty]) collect: [:each | (each subStrings: Character space) first asSymbol].
 	self symbolList do: [:eachDictionary | 
 		| dictionaryName |
 		dictionaryName := eachDictionary name asString.
@@ -1200,9 +1130,9 @@ sbRemoveRepository: list
 sbRevertClass
 
 	| isPackages container className |
-	isPackages := self nextLine = 'packageList'.
-	container := self nextLine trimSeparators.
-	className := self nextLine trimSeparators.
+	isPackages := self _nextLine = 'packageList'.
+	container := self _nextLine trimSeparators.
+	className := self _nextLine trimSeparators.
 	self symbolList do: [:eachDictionary | 
 		| dictionaryName class flag |
 		dictionaryName := eachDictionary name asString.
@@ -1229,7 +1159,7 @@ sbRunClassTests: aString
 
 	| behavior |
 	behavior := self sbClassFrom: (aString subStrings: Character tab).
-	^self defectiveTestsIn: behavior.
+	^self _defectiveTestsIn: behavior.
 !
 
 sbRunMethodTests: aString
@@ -1276,7 +1206,7 @@ sbSetHomeDictionary: list
 	| name dictionary packagePolicy |
 	name := list removeFirst asSymbol.
 	dictionary := self symbolList detect: [:each | each name = name].
-	(packagePolicy := self gsPackagePolicy) notNil ifTrue: [
+	(packagePolicy := self _gsPackagePolicy) notNil ifTrue: [
 		packagePolicy homeSymbolDict: dictionary.
 	].
 	self systemBrowserUpdate.
@@ -1298,7 +1228,7 @@ sbUnloadPackage: anOrderedCollection
 
 	| string |
 	string := anOrderedCollection removeFirst.
-	(self mcWorkingCopyClass forPackage: (self mcPackageClass named: string)) unload.
+	(self mcWorkingCopyClass forPackage: (self _mcPackageClass named: string)) unload.
 	self systemBrowserUpdate.
 !
 
@@ -1311,7 +1241,7 @@ sbUpdateClassCategories
 		writeStream nextPutAll: each; tab.
 	].
 	writeStream lf.
-	selection := self nextLine.
+	selection := self _nextLine.
 	(override := selections at: #'category' ifAbsent: [nil]) notNil ifTrue: [selection := override , '-'].
 	selection := 1 < selection size 
 		ifTrue: [selection copyFrom: 1 to: selection size - 1]
@@ -1329,7 +1259,7 @@ sbUpdateClassCategories
 sbUpdateClasses
 
 	| tabName |
-	tabName := self nextLine.
+	tabName := self _nextLine.
 	writeStream nextPutAll: tabName; lf.
 	tabName = 'classList' ifTrue: [^self sbUpdateClassList].
 	tabName = 'classHierarchy' ifTrue: [^self sbUpdateClassHierarchy].
@@ -1354,7 +1284,7 @@ sbUpdateClassHierarchy
 	].
 	writeStream nextPut: $%; lf.
 	"now figure out which class to select"
-	currentSelection := self nextLineAsList.
+	currentSelection := self _nextLineAsList.
 	(override := selections at: #'className' ifAbsent: [nil]) notNil ifTrue: [currentSelection := Array with: override].
 	currentSelection isEmpty ifTrue: [
 		selectedClass := nil.
@@ -1427,7 +1357,7 @@ sbUpdateClassList
 		self sbAddNameOf: eachClass.
 	].
 	writeStream lf.
-	mySelections := self nextLineAsList collect: [:each | (each subStrings: Character space) first asSymbol].
+	mySelections := self _nextLineAsList collect: [:each | (each subStrings: Character space) first asSymbol].
 	(override := selections at: #'className' ifAbsent: [nil]) notNil ifTrue: [mySelections := Array with: override].
 	mySelections := classList select: [:eachClass | mySelections includes: eachClass name].
 	mySelections do: [:each | self sbAddNameOf: each].
@@ -1446,10 +1376,10 @@ sbUpdateClassList
 sbUpdateDictionaries
 
 	| override packagePolicy home symbolList oldSelections newSelections fullList globals |
-	oldSelections := self nextLineAsList.
+	oldSelections := self _nextLineAsList.
 	(override := selections at: #'dictionary' ifAbsent: [nil]) notNil ifTrue: [oldSelections := Array with: override].
 	symbolList := self symbolList.
-	(packagePolicy := self gsPackagePolicy) notNil  ifTrue: [
+	(packagePolicy := self _gsPackagePolicy) notNil  ifTrue: [
 		home := packagePolicy homeSymbolDict.
 	].
 	fullList := symbolList collect: [:each | (each == home ifTrue: ['H'] ifFalse: ['V']) , each name].
@@ -1475,7 +1405,7 @@ sbUpdateDictionaries
 		| eachAssociation eachValue string |
 		eachAssociation := globals at: eachKey.
 		eachValue := eachAssociation value.
-		string := self asString: eachValue.
+		string := self _asString: eachValue.
 		100 < string size ifTrue: [string := string copyFrom: 1 to: 100].
 		string := string collect: [:char | (char asciiValue < 32 or: [127 < char asciiValue]) ifTrue: [$.] ifFalse: [char]].
 		string := String withAll: string asArray.
@@ -1499,7 +1429,7 @@ sbUpdateMethod: aSymbol
 	self writeList: names.	"Line 1"
 
 	"Which inherited implementation is selected?"
-	selection := self nextLine.
+	selection := self _nextLine.
 	(names includes: selection) ifFalse: [selection := names last].
 	writeStream nextPutAll: selection; lf.	"Line 2"
 
@@ -1507,7 +1437,7 @@ sbUpdateMethod: aSymbol
 	self _describeMethod: method.!
 
 sbUpdateMethodBreakPointsFor: aMethod
-	"Answers an Array of step points"
+	"Private - Answers an Array of step points"
 
 	^aMethod _stepPointsFromBreakIpOffsets: aMethod _breakpointIpOffsets.		"at least as far back as 32-bit 6.3.0 and 64-bit 2.3.0, but not in 64-bit 3.0"
 !
@@ -1515,7 +1445,7 @@ sbUpdateMethodBreakPointsFor: aMethod
 sbUpdateMethodCategories
 
 	methodFilters := IdentitySet new.
-	self addMethodCategoryNamesToMethodFilters.
+	self _addMethodCategoryNamesToMethodFilters.
 	methodFilters isEmpty ifTrue: [methodFilters := #(#'other')].
 	"Reverse order to be consistent with variables, where we add superclasses to the end"
 	self writeList: methodFilters asSortedCollection asArray reverse.
@@ -1535,7 +1465,7 @@ sbUpdateMethodFilter
 sbUpdateMethodFilterSelections
 
 	| mySelections override |
-	mySelections := self nextLineAsList.
+	mySelections := self _nextLineAsList.
 	(override := selections at: #'methodCategory' ifAbsent: [nil]) notNil ifTrue: [mySelections := Array with: override].
 	mySelections := methodFilters select: [:each | mySelections includes: each asString].
 	mySelections notEmpty ifTrue: [methodFilters := mySelections].
@@ -1570,7 +1500,7 @@ sbUpdateMethods
 		anySatisfy := anySatisfy or: [each name = #'TestCase'].
 	].
 	isTestClass := anySatisfy ifTrue: [$T] ifFalse: [$F].
-	gsPackagePolicy := self gsPackagePolicy.
+	gsPackagePolicy := self _gsPackagePolicy.
 	methodFilterType = 'categoryList' ifTrue: [selectors := self sbUpdateMethodsByCategories] ifFalse: [
 	methodFilterType = 'variableList' ifTrue: [selectors := self sbUpdateMethodsByVariables] ifFalse: [
 	methodFilterType = 'pragmaList' ifTrue: [selectors := self sbUpdateMethodsByPragmas] ifFalse: [
@@ -1578,12 +1508,12 @@ sbUpdateMethods
 	selectors := selectors asSortedCollection.
 	selectors do: [:each | 	"JadeSystemBrowserPresenter>>#'updateMethodList' "
 		writeStream 
-"1"		nextPutAll: each; tab;
-"2"		nextPut: ((self selectedClassOverridesSelector: each) ifTrue: [$T] ifFalse: [$F]); tab;
-"3"		nextPut: isTestClass; tab;
-"4"		nextPut: ((self packagePolicy: gsPackagePolicy includesSelector: each forClass: selectedClass) ifTrue: [$T] ifFalse: [$F]); tab;
-"5"		nextPutAll: (self methodSignatureForSelector: each); tab;	"sometimes the method key is different from the selector and from the method signature (particularly in Ruby)"
-		lf.
+"1"			nextPutAll: each; tab;
+"2"			nextPut: ((self _selectedClassOverridesSelector: each) ifTrue: [$T] ifFalse: [$F]); tab;
+"3"			nextPut: isTestClass; tab;
+"4"			nextPut: ((self _packagePolicy: gsPackagePolicy includesSelector: each forClass: selectedClass) ifTrue: [$T] ifFalse: [$F]); tab;
+"5"			nextPutAll: (self _methodSignatureForSelector: each); tab;	"sometimes the method key is different from the selector and from the method signature (particularly in Ruby)"
+			lf.
 	].
 	writeStream nextPut: $%; lf.
 	self sbUpdateMethodSelectionsIn: selectors.
@@ -1602,7 +1532,7 @@ sbUpdateMethodsByCategories
 !
 
 sbUpdateMethodsByPragmas
-	"none before 3.x"
+	"Private - none before 3.x"
 
 	^#()!
 
@@ -1622,7 +1552,7 @@ sbUpdateMethodsByVariables
 sbUpdateMethodSelectionsIn: aList
 
 	| priorSelections override newSelections |
-	priorSelections := self nextLineAsList.
+	priorSelections := self _nextLineAsList.
 	(override := selections at: #'method' ifAbsent: [nil]) notNil ifTrue: [priorSelections := Array with: override].
 	newSelections := aList select: [:each | priorSelections includes: each asString].
 	self writeList: newSelections.
@@ -1630,7 +1560,7 @@ sbUpdateMethodSelectionsIn: aList
 !
 
 sbUpdateMethodStepPointsFor: aMethod
-	"Answers an Array of Associations (offset -> selector) indexed by step point"
+	"Private - Answers an Array of Associations (offset -> selector) indexed by step point"
 
 	| offsets selectors |
 	offsets := (self homeMethodFor: aMethod)  _sourceOffsets.
@@ -1672,7 +1602,7 @@ sbUpdateMethodVariables
 sbUpdatePackage: aString
 
 	| package workingCopy list index |
-	package := self mcPackageClass named: aString.
+	package := self _mcPackageClass named: aString.
 	workingCopy := self mcWorkingCopyClass forPackage: package.
 	list := workingCopy ancestors collect: [:each | 0 -> each].
 	index := 1.
@@ -1722,7 +1652,7 @@ sbUpdatePackage: aString
 sbUpdatePackages
 
 	| override modifiedList oldSelections newSelections fullList |
-	oldSelections := self nextLineAsList.
+	oldSelections := self _nextLineAsList.
 	(override := selections at: #'package' ifAbsent: [nil]) notNil ifTrue: [oldSelections := Array with: override].
 	fullList := self mcLoadedVersionNames subStrings: Character lf.
 	fullList := fullList reject: [:each | each isEmpty].
@@ -1741,7 +1671,7 @@ sbUpdatePackages
 	].
 	newSelections do: [:each | 
 		writeStream nextPutAll: each; tab.
-		classList addAll: (self mcPackageClass named: each) packageInfo classes.
+		classList addAll: (self _mcPackageClass named: each) packageInfo classes.
 	].
 	writeStream lf.
 	newSelections size = 1 ifTrue: [self sbUpdatePackage: newSelections first].
@@ -1750,8 +1680,8 @@ sbUpdatePackages
 sbUpdatePackagesOrDictionaries
 
 	| selectedTab |
-	selectedTab := self nextLine.
-	(self mcWorkingCopyClass isNil or: [self gsPackagePolicy isNil]) ifTrue: [selectedTab := 'dictionaryList'].
+	selectedTab := self _nextLine.
+	(self mcWorkingCopyClass isNil or: [self _gsPackagePolicy isNil]) ifTrue: [selectedTab := 'dictionaryList'].
 	writeStream nextPutAll: selectedTab; lf.
 	classList := OrderedCollection new.
 	selectedTab = 'dictionaryList' ifTrue: [^self sbUpdateDictionaries].
@@ -1762,7 +1692,7 @@ sbUpdatePackagesOrDictionaries
 sbUpdateSuperclass
 
 	| class tabName selected index |
-	tabName := self nextLine.
+	tabName := self _nextLine.
 	(#('default' 'instanceTab' 'classTab') includes: tabName) ifFalse: [self error: 'Unexpected token!!'].
 	tabName = 'default' ifTrue: [
 		tabName := (selectedClass notNil and: [selectedClass selectors isEmpty and: [selectedClass class selectors notEmpty]]) 
@@ -1782,10 +1712,10 @@ sbUpdateSuperclass
 	] whileTrue: [
 		classList add: class.
 		self sbAddNameOf: class.
-		class := self environmentSuperClassFor: class.
+		class := self _environmentSuperClassFor: class.
 	].
 	classList := classList reverse.
-	selected := self nextLine.
+	selected := self _nextLine.
 	index := classList findFirst: [:each | each name asString = selected].
 	index = 0 ifTrue: [index := classList size].
 	0 < index ifTrue: [classList := classList copyFrom: index to: classList size].
@@ -1795,11 +1725,6 @@ sbUpdateSuperclass
 		self sbAddNameOf: selectedClass.
 	].
 	writeStream lf.
-!
-
-selectedClassOverridesSelector: aSymbol
-
-	^selectedClass superclass notNil and: [selectedClass superclass canUnderstand: aSymbol].
 !
 
 symbolList
@@ -1815,81 +1740,15 @@ systemBrowser: aString
 systemBrowserA: aString
 
 	| time |
-	time := self millisecondsElapsedTime: [
+	time := self _millisecondsElapsedTime: [
 		selections := Dictionary new.
-		readStream := ReadStream on: aString.
-		writeStream := WriteStream on: String new.
+		readStream := ReadStream on: (self _decodeString: aString).
+		writeStream := self _writeStreamOnString.
 		writeStream lf.
 		self environment: (readStream upTo: Character space) asNumber.
-		self systemBrowserCommand.
+		self _systemBrowserCommand.
 	].
-	^time printString , writeStream contents.
-!
-
-systemBrowserCommand
-
-	| list command |
-	list := self nextLineAsList asOrderedCollection.
-	command := list removeFirst.
-	command = 'addDictionary'				ifTrue: [^self sbAddDictionary: list].
-	command = 'addMethodCategory' 		ifTrue: [^self sbAddMethodCategory: list].
-	command = 'addMissingAccessors'		ifTrue: [^self sbAddMissingAccessors: list].
-	command = 'addPackage' 				ifTrue: [^self sbAddPackage: list].
-	command = 'addRepository'			ifTrue: [^self sbAddRepository: list].
-
-	command = 'break' 					ifTrue: [^self sbBreak: list].
-	command = 'browseClassReferences'		ifTrue: [^self sbBrowseClassReferences: list].
-	command = 'browseGlobalReferences'		ifTrue: [^self sbBrowseGlobalReferences: list].
-	command = 'browseImplementors'		ifTrue: [^self sbBrowseImplementors: list].
-	command = 'browseMethodHistory'		ifTrue: [^self sbBrowseMethodHistory: list].
-	command = 'browseMethodsContaining'	ifTrue: [^self sbBrowseMethodsContaining: list].
-	command = 'browseMethodsWithPragma'	ifTrue: [^self sbBrowseMethodsWithPragma: list].
-	command = 'browseSenders'			ifTrue: [^self sbBrowseSenders: list].
-
-	command = 'changeClassName'			ifTrue: [^self sbChangeClassName: list].
-	command = 'changesInPackage'			ifTrue: [^self sbChangesInPackage: list].
-	command = 'checkUniqueClassName'		ifTrue: [^self sbCheckUniqueClassName: list].
-	command = 'class' 					ifTrue: [^self sbClass: list].
-	command = 'classCategory'				ifTrue: [^self sbClassCategory: list].
-	command = 'classComment'			ifTrue: [^self sbClassComment: list].
-	command = 'classesToDictionary'		ifTrue: [^self sbClassesToDictionary: list].
-	command = 'comparePackages'			ifTrue: [^self sbComparePackages: list].
-
-	command = 'fileOutClass'				ifTrue: [^self sbFileOutClass: list].
-	command = 'fileOutDictionary'			ifTrue: [^self sbFileOutDictionary: list].
-	command = 'fileOutMethod'			ifTrue: [^self sbFileOutMethod: list].
-	command = 'findClass' 				ifTrue: [^self sbFindClass].
-	command = 'findSelectors'				ifTrue: [^self sbFindSelectors: list].
-
-
-	command = 'listMethodPragmas'			ifTrue: [^self sbListMethodPragmas: list].
-	command = 'loadLatestVersion'			ifTrue: [^self sbLoadLatestVersionOfConfiguration: list].
-
-	command = 'method' 					ifTrue: [^self sbSaveMethod: list].
-	command = 'methodCategory'			ifTrue: [^self sbMethodCategory: list].
-	command = 'methodClass'				ifTrue: [^self sbMethodClass: list].
-
-	command = 'objectLog'				ifTrue: [^self sbObjectLog: list].
-
-	command = 'postSaveClass'			ifTrue: [^self sbPostSaveClass: list].
-
-	command = 'removeClasses'			ifTrue: [^self sbRemoveClasses].
-	command = 'removeDictionaries'			ifTrue: [^self sbRemoveDictionaries: list].
-	command = 'removeGlobals'			ifTrue: [^self sbRemoveGlobals].
-	command = 'removeMethodCategories' 	ifTrue: [^self sbRemoveMethodCategories: list].
-	command = 'removeMethods'			ifTrue: [^self sbRemoveMethods: list].
-	command = 'removePriorVersions'		ifTrue: [^self sbRemovePriorVersions].
-	command = 'removeRepository'			ifTrue: [^self sbRemoveRepository: list].
-	command = 'revertClass'				ifTrue: [^self sbRevertClass].
-
-	command = 'savePackage'				ifTrue: [^self sbSavePackage: list].
-	command = 'setHomeDictionary'			ifTrue: [^self sbSetHomeDictionary: list].
-
-	command = 'uniqueVersionName'		ifTrue: [^self sbUniqueVersionName: list].
-	command = 'unloadPackage'			ifTrue: [^self sbUnloadPackage: list].
-	command = 'update' 					ifTrue: [^self systemBrowserUpdate].
-
-	self error: 'Unknown command: ' , command printString.
+	^self _encodeString: time printString , writeStream contents.
 !
 
 systemBrowserUpdate
@@ -1911,120 +1770,104 @@ writeList: aList
 	aList do: [:each | writeStream nextPutAll: each; tab].
 	writeStream lf.
 ! !
-!JadeServer categoriesFor: #addAccessorsFor:inBehavior:!public! !
-!JadeServer categoriesFor: #addMethodCategoryNamesToMethodFilters!public!System Browser! !
-!JadeServer categoriesFor: #assignClass:toCategory:!Classes!public! !
-!JadeServer categoriesFor: #categoryOfMethod:!public!System Browser! !
+!JadeServer categoriesFor: #_addMethodCategoryNamesToMethodFilters!private!System Browser! !
+!JadeServer categoriesFor: #_objectSecurityPolicyFor:!private!System Browser! !
+!JadeServer categoriesFor: #_packagePolicy:includesSelector:forClass:!private!System Browser! !
+!JadeServer categoriesFor: #_selectedClassOverridesSelector:!private!System Browser! !
+!JadeServer categoriesFor: #_systemBrowserCommand!private!System Browser! !
 !JadeServer categoriesFor: #class:includesSelector:!Classes!public! !
-!JadeServer categoriesFor: #classesForUser:!Classes!public! !
-!JadeServer categoriesFor: #commentFor:!public! !
-!JadeServer categoriesFor: #compiledMethodAt:inClass:!public!System Browser! !
-!JadeServer categoriesFor: #currentUserMayEditMethod:!public!System Browser! !
-!JadeServer categoriesFor: #dictionaryAndSymbolOf:!public!System Browser! !
-!JadeServer categoriesFor: #dictionaryAndSymbolOf:forUser:!public!System Browser! !
-!JadeServer categoriesFor: #environment!public!System Browser! !
-!JadeServer categoriesFor: #environment:!public!System Browser! !
-!JadeServer categoriesFor: #environmentSuperClassFor:!public!System Browser! !
+!JadeServer categoriesFor: #compiledMethodAt:inClass:!private!System Browser! !
+!JadeServer categoriesFor: #dictionaryAndSymbolOf:!private!System Browser! !
+!JadeServer categoriesFor: #dictionaryAndSymbolOf:forUser:!private!System Browser! !
+!JadeServer categoriesFor: #environment!private!System Browser! !
+!JadeServer categoriesFor: #environment:!private!System Browser! !
 !JadeServer categoriesFor: #historyOf:!private! !
-!JadeServer categoriesFor: #isPackagePolicyEnabled!public!System Browser! !
-!JadeServer categoriesFor: #methodSignatureForSelector:!public!System Browser! !
-!JadeServer categoriesFor: #millisecondsElapsedTime:!public!System Browser! !
-!JadeServer categoriesFor: #moveClassesInDictionary:category:to:!Classes!public! !
-!JadeServer categoriesFor: #moveDictionary:toBefore:forUser:!public!SymbolDictionary! !
-!JadeServer categoriesFor: #nextLine!public!System Browser! !
-!JadeServer categoriesFor: #nextLineAsList!public!System Browser! !
-!JadeServer categoriesFor: #objectSecurityPolicyFor:!public!System Browser! !
-!JadeServer categoriesFor: #packagePolicy:includesSelector:forClass:!public!System Browser! !
-!JadeServer categoriesFor: #removeDictionary:fromUser:!public! !
-!JadeServer categoriesFor: #removeKey:fromSymbolDictionary:!public!SymbolDictionary! !
-!JadeServer categoriesFor: #sbAddDictionary:!public! !
-!JadeServer categoriesFor: #sbAddMethodCategory:!public!System Browser! !
-!JadeServer categoriesFor: #sbAddMissingAccessors:!public!System Browser! !
-!JadeServer categoriesFor: #sbAddNameOf:!public!System Browser! !
-!JadeServer categoriesFor: #sbAddPackage:!public!System Browser! !
-!JadeServer categoriesFor: #sbAddRepository:!public!System Browser! !
-!JadeServer categoriesFor: #sbBreak:!public!System Browser! !
-!JadeServer categoriesFor: #sbBrowseClassReferences:!public!System Browser! !
-!JadeServer categoriesFor: #sbBrowseGlobalReferences:!public!System Browser! !
-!JadeServer categoriesFor: #sbBrowseImplementors:!public!System Browser! !
-!JadeServer categoriesFor: #sbBrowseMethodHistory:!public!System Browser! !
-!JadeServer categoriesFor: #sbBrowseMethodsContaining:!public!System Browser! !
-!JadeServer categoriesFor: #sbBrowseMethodsWithPragma:!public!System Browser! !
-!JadeServer categoriesFor: #sbBrowseSenders:!public!System Browser! !
-!JadeServer categoriesFor: #sbChangeClassName:!public!System Browser! !
-!JadeServer categoriesFor: #sbChangesInPackage:!public!System Browser! !
-!JadeServer categoriesFor: #sbCheckUniqueClassName:!public!System Browser! !
-!JadeServer categoriesFor: #sbClass:!public!System Browser! !
-!JadeServer categoriesFor: #sbClassCategory:!public!System Browser! !
-!JadeServer categoriesFor: #sbClassComment:!public!System Browser! !
-!JadeServer categoriesFor: #sbClassesToDictionary:!public!System Browser! !
-!JadeServer categoriesFor: #sbClassFrom:!public!System Browser! !
-!JadeServer categoriesFor: #sbClassTemplate!public!System Browser! !
-!JadeServer categoriesFor: #sbComparePackages:!public!System Browser! !
-!JadeServer categoriesFor: #sbCopyMethodsFor:!public!System Browser! !
-!JadeServer categoriesFor: #sbFileOutClass:!public!System Browser! !
-!JadeServer categoriesFor: #sbFileOutDictionary:!public!System Browser! !
-!JadeServer categoriesFor: #sbFileOutMethod:!public!System Browser! !
-!JadeServer categoriesFor: #sbFindClass!public!System Browser! !
-!JadeServer categoriesFor: #sbFindClassPackageMap!public!System Browser! !
-!JadeServer categoriesFor: #sbFindSelectors:!public!System Browser! !
-!JadeServer categoriesFor: #sbInstVarsOldParent:newParent:oldChild:!public!System Browser! !
-!JadeServer categoriesFor: #sbListMethodPragmas!public!System Browser! !
-!JadeServer categoriesFor: #sbLoadLatestVersionOfConfiguration:!public!System Browser! !
-!JadeServer categoriesFor: #sbMethodCategory:!public!System Browser! !
-!JadeServer categoriesFor: #sbMethodClass:!public!System Browser! !
-!JadeServer categoriesFor: #sbMigrateAll:!public!System Browser! !
-!JadeServer categoriesFor: #sbNextParagraph!public!System Browser! !
-!JadeServer categoriesFor: #sbPostSaveClass:!public!System Browser! !
-!JadeServer categoriesFor: #sbReadMethodFilter!public!System Browser! !
-!JadeServer categoriesFor: #sbRecompileSubclassesOf:andCopyMethods:!public!System Browser! !
-!JadeServer categoriesFor: #sbRemoveClasses!public!System Browser! !
-!JadeServer categoriesFor: #sbRemoveDictionaries:!public!System Browser! !
-!JadeServer categoriesFor: #sbRemoveGlobals!public!System Browser! !
-!JadeServer categoriesFor: #sbRemoveHistory:!public!System Browser! !
-!JadeServer categoriesFor: #sbRemoveKey:fromDictionary:!public!System Browser! !
-!JadeServer categoriesFor: #sbRemoveMethodCategories:!public!System Browser! !
-!JadeServer categoriesFor: #sbRemoveMethods:!public!System Browser! !
-!JadeServer categoriesFor: #sbRemovePriorVersions!public!System Browser! !
-!JadeServer categoriesFor: #sbRemoveRepository:!public!System Browser! !
-!JadeServer categoriesFor: #sbRevertClass!public!System Browser! !
-!JadeServer categoriesFor: #sbRunClassTests:!public!System Browser! !
-!JadeServer categoriesFor: #sbRunMethodTests:!public!System Browser! !
-!JadeServer categoriesFor: #sbSavePackage:!public!System Browser! !
-!JadeServer categoriesFor: #sbSetHomeDictionary:!public!System Browser! !
-!JadeServer categoriesFor: #sbUniqueVersionName:!public!System Browser! !
-!JadeServer categoriesFor: #sbUnloadPackage:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateClassCategories!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateClasses!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateClassHierarchy!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateClassInfo!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateClassList!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateDictionaries!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethod:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodBreakPointsFor:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodCategories!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodFilter!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodFilterSelections!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodInheritedImplementationsOf:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodPragmas!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethods!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodsByCategories!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodsByPragmas!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodsByVariables!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodSelectionsIn:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodStepPointsFor:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateMethodVariables!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdatePackage:!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdatePackages!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!public!System Browser! !
-!JadeServer categoriesFor: #sbUpdateSuperclass!public!System Browser! !
-!JadeServer categoriesFor: #selectedClassOverridesSelector:!public!System Browser! !
-!JadeServer categoriesFor: #symbolList!public!System Browser! !
+!JadeServer categoriesFor: #sbAddDictionary:!private! !
+!JadeServer categoriesFor: #sbAddMethodCategory:!private!System Browser! !
+!JadeServer categoriesFor: #sbAddMissingAccessors:!private!System Browser! !
+!JadeServer categoriesFor: #sbAddNameOf:!private!System Browser! !
+!JadeServer categoriesFor: #sbAddPackage:!private!System Browser! !
+!JadeServer categoriesFor: #sbAddRepository:!private!System Browser! !
+!JadeServer categoriesFor: #sbBreak:!private!System Browser! !
+!JadeServer categoriesFor: #sbBrowseClassReferences:!private!System Browser! !
+!JadeServer categoriesFor: #sbBrowseGlobalReferences:!private!System Browser! !
+!JadeServer categoriesFor: #sbBrowseImplementors:!private!System Browser! !
+!JadeServer categoriesFor: #sbBrowseMethodHistory:!private!System Browser! !
+!JadeServer categoriesFor: #sbBrowseMethodsContaining:!private!System Browser! !
+!JadeServer categoriesFor: #sbBrowseMethodsWithPragma:!private!System Browser! !
+!JadeServer categoriesFor: #sbBrowseSenders:!private!System Browser! !
+!JadeServer categoriesFor: #sbChangeClassName:!private!System Browser! !
+!JadeServer categoriesFor: #sbChangesInPackage:!private!System Browser! !
+!JadeServer categoriesFor: #sbCheckUniqueClassName:!private!System Browser! !
+!JadeServer categoriesFor: #sbClass:!private!System Browser! !
+!JadeServer categoriesFor: #sbClassCategory:!private!System Browser! !
+!JadeServer categoriesFor: #sbClassComment:!private!System Browser! !
+!JadeServer categoriesFor: #sbClassesToDictionary:!private!System Browser! !
+!JadeServer categoriesFor: #sbClassFrom:!private!System Browser! !
+!JadeServer categoriesFor: #sbClassTemplate!private!System Browser! !
+!JadeServer categoriesFor: #sbComparePackages:!private!System Browser! !
+!JadeServer categoriesFor: #sbCopyMethodsFor:!private!System Browser! !
+!JadeServer categoriesFor: #sbFileOutClass:!private!System Browser! !
+!JadeServer categoriesFor: #sbFileOutDictionary:!private!System Browser! !
+!JadeServer categoriesFor: #sbFileOutMethod:!private!System Browser! !
+!JadeServer categoriesFor: #sbFindClass!private!System Browser! !
+!JadeServer categoriesFor: #sbFindClassPackageMap!private!System Browser! !
+!JadeServer categoriesFor: #sbFindSelectors:!private!System Browser! !
+!JadeServer categoriesFor: #sbInstVarsOldParent:newParent:oldChild:!private!System Browser! !
+!JadeServer categoriesFor: #sbListMethodPragmas!private!System Browser! !
+!JadeServer categoriesFor: #sbLoadLatestVersionOfConfiguration:!private!System Browser! !
+!JadeServer categoriesFor: #sbMethodCategory:!private!System Browser! !
+!JadeServer categoriesFor: #sbMethodClass:!private!System Browser! !
+!JadeServer categoriesFor: #sbMigrateAll:!private!System Browser! !
+!JadeServer categoriesFor: #sbNextParagraph!private!System Browser! !
+!JadeServer categoriesFor: #sbPostSaveClass:!private!System Browser! !
+!JadeServer categoriesFor: #sbReadMethodFilter!private!System Browser! !
+!JadeServer categoriesFor: #sbRecompileSubclassesOf:andCopyMethods:!private!System Browser! !
+!JadeServer categoriesFor: #sbRemoveClasses!private!System Browser! !
+!JadeServer categoriesFor: #sbRemoveDictionaries:!private!System Browser! !
+!JadeServer categoriesFor: #sbRemoveGlobals!private!System Browser! !
+!JadeServer categoriesFor: #sbRemoveHistory:!private!System Browser! !
+!JadeServer categoriesFor: #sbRemoveKey:fromDictionary:!private!System Browser! !
+!JadeServer categoriesFor: #sbRemoveMethodCategories:!private!System Browser! !
+!JadeServer categoriesFor: #sbRemoveMethods:!private!System Browser! !
+!JadeServer categoriesFor: #sbRemovePriorVersions!private!System Browser! !
+!JadeServer categoriesFor: #sbRemoveRepository:!private!System Browser! !
+!JadeServer categoriesFor: #sbRevertClass!private!System Browser! !
+!JadeServer categoriesFor: #sbRunClassTests:!private!System Browser! !
+!JadeServer categoriesFor: #sbRunMethodTests:!private!System Browser! !
+!JadeServer categoriesFor: #sbSavePackage:!private!System Browser! !
+!JadeServer categoriesFor: #sbSetHomeDictionary:!private!System Browser! !
+!JadeServer categoriesFor: #sbUniqueVersionName:!private!System Browser! !
+!JadeServer categoriesFor: #sbUnloadPackage:!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateClassCategories!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateClasses!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateClassHierarchy!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateClassInfo!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateClassList!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateDictionaries!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethod:!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodBreakPointsFor:!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodCategories!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodFilter!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodFilterSelections!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodInheritedImplementationsOf:!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodPragmas!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethods!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodsByCategories!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodsByPragmas!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodsByVariables!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodSelectionsIn:!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodStepPointsFor:!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateMethodVariables!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdatePackage:!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdatePackages!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!private!System Browser! !
+!JadeServer categoriesFor: #sbUpdateSuperclass!private!System Browser! !
+!JadeServer categoriesFor: #symbolList!private!System Browser! !
 !JadeServer categoriesFor: #systemBrowser:!public!System Browser! !
-!JadeServer categoriesFor: #systemBrowserA:!public!System Browser! !
-!JadeServer categoriesFor: #systemBrowserCommand!public!System Browser! !
-!JadeServer categoriesFor: #systemBrowserUpdate!public!System Browser! !
-!JadeServer categoriesFor: #writeList:!public!System Browser! !
+!JadeServer categoriesFor: #systemBrowserA:!private!System Browser! !
+!JadeServer categoriesFor: #systemBrowserUpdate!private!System Browser! !
+!JadeServer categoriesFor: #writeList:!private!System Browser! !
 
 !JadeServer32bit methodsFor!
 
@@ -2065,7 +1908,7 @@ systemBrowser: aString
 		ex pass.
 	].
 ! !
-!JadeServer64bit categoriesFor: #sbRemoveKey:fromDictionary:!public!System Browser! !
+!JadeServer64bit categoriesFor: #sbRemoveKey:fromDictionary:!private!System Browser! !
 !JadeServer64bit categoriesFor: #systemBrowser:!public!System Browser! !
 
 !JadeServer64bit32 methodsFor!
@@ -2087,14 +1930,10 @@ dictionaryAndSymbolOf: aClass forUser: aUserProfile
 		ifTrue: [nil]
 		ifFalse: [array first].
 ! !
-!JadeServer64bit32 categoriesFor: #dictionaryAndSymbolOf:!public! !
-!JadeServer64bit32 categoriesFor: #dictionaryAndSymbolOf:forUser:!public! !
+!JadeServer64bit32 categoriesFor: #dictionaryAndSymbolOf:!private! !
+!JadeServer64bit32 categoriesFor: #dictionaryAndSymbolOf:forUser:!private! !
 
 !JadeServer64bit34 methodsFor!
-
-environmentSuperClassFor: aBehavior
-
-	^aBehavior superclassForEnv: environment!
 
 sbUpdateMethodsByCategories
 
@@ -2111,32 +1950,13 @@ sbUpdateMethodsByCategories
 	].
 	^selectors.
 ! !
-!JadeServer64bit34 categoriesFor: #environmentSuperClassFor:!public!System Browser! !
-!JadeServer64bit34 categoriesFor: #sbUpdateMethodsByCategories!public!System Browser! !
+!JadeServer64bit34 categoriesFor: #sbUpdateMethodsByCategories!private!System Browser! !
 
 !JadeServer64bit3x methodsFor!
 
-addMethodCategoryNamesToMethodFilters
-
-	classList do: [:each | 
-		each 
-			env: environment 
-			categorysDo:[ :categName :selectors | methodFilters add: categName ].
-	].
-!
-
-categoryOfMethod: aMethod
-
-	| category selector |
-	(selector := aMethod selector) isNil ifTrue: [^''].
-	category := self _behavior: aMethod inClass categoryOfSelector: aMethod selector.
-	category ifNil: [category := #'other'].
-	^category.
-!
-
 class: aClass includesSelector: aSelector
 
-	^aClass includesSelector: aSelector asSymbol environmentId: environment.
+	^aClass includesSelector: (self _decodeString: aSelector) asSymbol environmentId: environment.
 !
 
 compiledMethodAt: aSymbol inClass: aClass
@@ -2159,62 +1979,6 @@ initialize
 
 	super initialize.
 	environment := 0.
-!
-
-methodSignatureForSelector: aSymbol
-	"Ruby bridge methods can have some strange selectors!!"
-
-	| class comma i j method source |
-	environment ~~ 1 ifTrue: [^aSymbol].
-	class := selectedClass whichClassIncludesSelector: aSymbol environmentId: environment.
-	method := class compiledMethodAt: aSymbol environmentId: environment.
-	source := (method sourceString subStrings: Character lf) first trimBlanks.
-	(4 < source size and: [(source copyFrom: 1 to: 4) = 'def ']) ifTrue: [
-		source := source copyFrom: 5 to: source size.
-		(source includes: $#) ifTrue: [source := (source copyFrom: 1 to: (source indexOf: $#) - 1) trimBlanks].
-		^source.
-	].
-	(i := aSymbol indexOf: $#) == 0 ifTrue: [^aSymbol].
-	source := aSymbol copyFrom: 1 to: i - 1.
-	(aSymbol copyFrom: i to: aSymbol size) = '#0__' ifTrue: [^source].
-	comma := ''.
-	source add: $(.
-	j := (aSymbol at: i + 1) asString asNumber.
-	1 to: j do: [:k | 
-		source 
-			add: comma;
-			add: 'arg'.
-		1 < j ifTrue: [source add: k printString].
-		comma := $,.
-	].
-	(aSymbol at: i + 2) == $* ifTrue: [
-		source 
-			add: comma;
-			add: (0 == j ifTrue: ['args'] ifFalse: ['rest']).
-		comma := $,.
-	].
-	aSymbol last == $& ifTrue: [
-		source
-			add: comma;
-			add: '&block'.
-	].
-	source add: $).
-	^source.
-!
-
-objectSecurityPolicyFor: anObject
-
-	^anObject objectSecurityPolicy.
-!
-
-packagePolicy: aPackagePolicy includesSelector: aSymbol forClass: aClass
-
-	| dict |
-	^aPackagePolicy notNil and: [
-		(dict := aClass transientMethodDictForEnv: environment) notNil and: [
-			dict keys includes: aSymbol.		"includesKey: requires protected mode!!"
-		].
-	].
 !
 
 sbBrowseMethodsWithPragma: anOrderedCollection
@@ -2290,7 +2054,7 @@ sbMethod: anOrderedCollection
 !
 
 sbUpdateMethodBreakPointsFor: aMethod
-	"Answers an Array of step points"
+	"Private - Answers an Array of step points"
 
 	| list array |
 	(array := aMethod _allBreakpoints) isNil ifTrue: [^#()].      "{ breakpointNumber1 . method . ipOffset1 . ... }"
@@ -2366,7 +2130,7 @@ sbUpdateMethodsByVariables
 !
 
 sbUpdateMethodStepPointsFor: aMethod
-	"Answers an Array of Associations (offset -> selector) indexed by step point"
+	"Private - Answers an Array of Associations (offset -> selector) indexed by step point"
 
 	|  selectors list |
 	(selectors := aMethod _allDebugInfo: 10) ifNil: [^#()].
@@ -2380,34 +2144,23 @@ sbUpdateMethodStepPointsFor: aMethod
 	].
 	^list.
 
-!
-
-selectedClassOverridesSelector: aSymbol
-
-	^selectedClass superclass notNil and: [(selectedClass superclass whichClassIncludesSelector: aSymbol environmentId: environment) ~~ nil].
 ! !
-!JadeServer64bit3x categoriesFor: #addMethodCategoryNamesToMethodFilters!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #categoryOfMethod:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #class:includesSelector:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #compiledMethodAt:inClass:!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #compiledMethodAt:inClass:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #environment!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #environment:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #initialize!public! !
-!JadeServer64bit3x categoriesFor: #methodSignatureForSelector:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #objectSecurityPolicyFor:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #packagePolicy:includesSelector:forClass:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbBrowseMethodsWithPragma:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbClassComment:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbFileOutMethod:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbListMethodPragmas:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbMethod:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbUpdateMethodBreakPointsFor:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbUpdateMethodPragmas!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbUpdateMethodsByCategories!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbUpdateMethodsByPragmas!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbUpdateMethodsByVariables!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #sbUpdateMethodStepPointsFor:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #selectedClassOverridesSelector:!public!System Browser! !
+!JadeServer64bit3x categoriesFor: #initialize!private! !
+!JadeServer64bit3x categoriesFor: #sbBrowseMethodsWithPragma:!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbClassComment:!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbFileOutMethod:!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbListMethodPragmas:!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbMethod:!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbUpdateMethodBreakPointsFor:!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbUpdateMethodPragmas!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbUpdateMethodsByCategories!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbUpdateMethodsByPragmas!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbUpdateMethodsByVariables!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbUpdateMethodStepPointsFor:!private!System Browser! !
 
 !JadeTextDocument methodsFor!
 

@@ -90,7 +90,7 @@ createComponents
 currentSelectionOrLine
 
 	self activeTextEdit hasSelection ifFalse: [self activeTextEdit selectCurrentLine].
-	^self activeTextEdit selection.
+	^self activeTextEdit selection asCharacterCollection.
 !
 
 editCopy
@@ -166,7 +166,7 @@ executeSelectionOrLine
 		value: result, compile errors, or general description of error"
 	[
 		^true -> (gciSession 
-			executeString: self currentSelectionOrLine 
+			executeString: (gciSession encode: self currentSelectionOrLine) 
 			fromContext: self contextObject
 			 environment: environment).
 	] on: GsCompileError do: [:ex | 

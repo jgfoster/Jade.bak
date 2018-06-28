@@ -190,7 +190,7 @@ withSelectorDo: aBlock
 	].
 	result := gciSession
 		serverPerform: #selectorsMatching:
-		with: selector.
+		with: (gciSession encode: selector).
 	result isNil ifTrue: [^self].
 	list := result subStrings: Character lf.
 	(selector := ChoicePrompter choices: list) isNil ifTrue: [^self].

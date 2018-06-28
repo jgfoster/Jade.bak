@@ -347,13 +347,13 @@ oopZero
 	^OopType64 fromInteger: 2.
 !
 
-sendInterpreted: aString to: anOopType with: anArray session: anInteger
+sendInterpreted: aSymbol to: anOopType with: anArray session: anInteger
 
 	self critical: [
 		self gciSetSessionId: anInteger.
 		self
 			gciNbPerformNoDebug: anOopType 
-			_: aString 
+			_: aSymbol 
 			_: anArray 
 			_: anArray size
 			_: 16r21.		"GCI_PERFORM_FLAG_ENABLE_DEBUG + GCI_PERFORM_FLAG_INTERPRETED"

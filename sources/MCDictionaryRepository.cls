@@ -35,7 +35,7 @@ loadPackageNamed: packageName versionName: versionName
 
 	gciSession
 		serverPerform: #'mcVersionLoad:fromDictionary:autoMigrate:' 
-		with: packageName , '-' , (versionName copyFrom: 1 to: versionName size - 4)
+		with: (gciSession encode: packageName , '-' , (versionName copyFrom: 1 to: versionName size - 4))
 		with: self
 		with: true.
 !
@@ -60,7 +60,7 @@ topazFrom: aString
 	(string endsWith: '.mcz') ifTrue: [string := string copyFrom: 1 to: string size - 4].
 	^gciSession
 		serverPerform: #'mcTopazFrom:inDictionaryRepository:'
-		with: string
+		with: (gciSession encode: string)
 		with: self.
 !
 
@@ -74,9 +74,10 @@ versionInfoFor: aString
 	| string version |
 	string := gciSession 
 		serverPerform: #mcVersionInfoFromDictionaryPackageNamed:in:
-		with: aString
+		with: (gciSession encode: aString)
 		with: self.
 	string isEmpty ifTrue: [^nil].
+	string := gciSession decode: string.
 	version := MCPackageVersion fromString: string session: gciSession.
 	^version!
 
@@ -87,9 +88,10 @@ versionInfoForPackageNamed: aString version: aString2
 	(string endsWith: '.mcz') ifTrue: [string := string copyFrom: 1 to: string size - 4].
 	string := gciSession 
 		serverPerform: #mcVersionInfoFromDictionaryPackageNamed:in:
-		with: string
+		with: (gciSession encode: string)
 		with: self.
 	string isEmpty ifTrue: [^nil].
+	string := gciSession decode: string.
 	version := MCPackageVersion fromString: string session: gciSession.
 	^version! !
 !MCDictionaryRepository categoriesFor: #allVersionInfoNames!public! !

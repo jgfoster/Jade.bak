@@ -44,6 +44,7 @@ fillSessionList
 	| string list |
 	[
 		string := gciSession serverPerform: #'allSessions'.
+		string := gciSession decode: string.
 	] on: GsError , Error do: [:ex | 
 		sessionListPresenter view hide.
 		sessionListErrorPresenter value: 

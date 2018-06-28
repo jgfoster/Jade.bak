@@ -42,10 +42,10 @@ browseSelectedClass
 
 	| range string list assoc |
 	range := documentPresenter view selectionRange.
-	string := documentPresenter value copyFrom: range start to: range stop.
+	string := (documentPresenter value copyFrom: range start to: range stop) asCharacterCollection.
 	list := self findClassList.
 	assoc := list 
-		detect: [:each | each key asUtf8String = string]
+		detect: [:each | each key asCharacterCollection = string]
 		ifNone: [^MessageBox warning: 'Class ' , string printString , ' not found!!!!' caption: 'Jade'].
 	parentPresenter parentPresenter parentPresenter addSystemBrowserForClass: assoc value.
 !
@@ -82,12 +82,12 @@ copySelection
 !
 
 currentSelectionOrLine
-	"answers UTF-8"
-
+	"answers CharacterCollection"
+ 
 	| range |
 	documentPresenter hasSelection ifFalse: [documentPresenter view selectCurrentLine].
 	range := documentPresenter view selectionRange.
-	^documentPresenter value copyFrom: range start to: range stop.
+	^(documentPresenter value copyFrom: range start to: range stop) asCharacterCollection.
 !
 
 currentSelector
@@ -164,9 +164,12 @@ environment: anInteger
 !
 
 executeSelectionOrLine
-
+ 
 	[
-		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: model environment: environment).
+		^true -> (gciSession 
+			executeString: (gciSession encode: self currentSelectionOrLine) 
+			fromContext: model 
+			environment: environment).
 	] on: GsCompileError do: [:ex | 
 		^false -> ex list.
 	].
@@ -186,7 +189,8 @@ findClassList
 	| string list |
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
-		with: '0 findClass'.
+		with: (self gciSession encode: '0 findClass').
+	string := self gciSession decode: string.
 	list := (string subStrings: Character lf) collect: [:each | each subStrings: Character tab].
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
@@ -227,14 +231,17 @@ isModified
 jadeDebug
 
 	[
-		gciSession debugString: self currentSelectionOrLine fromContext: model environment: environment.
+		gciSession 
+			debugString: (gciSession encode: self currentSelectionOrLine) 
+			fromContext: model 
+			environment: environment.
 	] on: GsCompileError do: [:ex | 
 		self jadeExecute.
 	].
 !
 
 jadeDisplay
-
+  
 	self jadeExecuteAndDisplay: true.
 !
 
@@ -244,7 +251,7 @@ jadeExecute
 !
 
 jadeExecuteAndDisplay: showResult 
-
+  
 	| result |
 	result := self executeSelectionOrLine.
 	result key ifTrue: [
@@ -390,7 +397,7 @@ showResult: anObject
 	].
 	self setCaretToEndOfSelection.
 	(textView := documentPresenter view)
-		replaceSelection: result;
+		replaceSelection: result asUtf8String;
 		selectionStart: textView caretPosition - result size length: result size.
 !
 

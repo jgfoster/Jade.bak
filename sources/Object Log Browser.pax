@@ -69,7 +69,7 @@ sbObjectLog: anOrderedCollection
 		anOrderedCollection do: [:each | 			| oop entry |
 			oop := each asNumber.			entry := class objectLog detect: [:each2 | (self oopOf: each2) = oop] ifNone: [nil].			entry notNil ifTrue: [class objectLog remove: entry].
 		].
-		^self systemBrowserCommand.
+		^self _systemBrowserCommand.
 	].
 	writeStream nextPutAll: 'objectLog'; lf.
 	priorities := anOrderedCollection removeFirst asArray collect: [:each | each asString asNumber].
@@ -106,7 +106,7 @@ sbObjectLog: anOrderedCollection
 		writeStream lf.
 	].
 ! !
-!JadeServer categoriesFor: #sbObjectLog:!public!System Browser! !
+!JadeServer categoriesFor: #sbObjectLog:!private!System Browser! !
 
 !JadeTextDocument methodsFor!
 

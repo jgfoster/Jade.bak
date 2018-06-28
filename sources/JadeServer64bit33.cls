@@ -10,6 +10,23 @@ JadeServer64bit33 comment: ''!
 !JadeServer64bit33 categoriesForClass!Unclassified! !
 !JadeServer64bit33 methodsFor!
 
+_decodeString: aString
+
+	^aString asUnicodeString!
+
+_encodeString: aString
+
+	^aString encodeAsUTF8!
+
+_gemLogPath
+
+	^System gemLogPath
+!
+
+_string
+
+	^Unicode16 new!
+
 acceptConnection
 
 	| listener time flag |
@@ -207,9 +224,9 @@ processAction: arguments
 	stream reset.
 	semaphore signal.		"okay for process to continue"
 	request := arguments at: 2.
-	request == #'terminate' 	ifTrue: [process terminate. self add: #'terminate' toByteStream: stream. 				^self].
-	request == #'resume' 	ifTrue: [																				semaphore wait. 	^self].	"this should resume from the last line of #'doSocketRequest'."
-	request == #'stepInto' 	ifTrue: [process stepIntoFromLevel: 			(arguments at: 3). 	semaphore wait. 	^self].
+	request == #'terminate' 	ifTrue: [process terminate. self add: #'terminate' toByteStream: stream. 			^self].
+	request == #'resume' 	ifTrue: [												semaphore wait. 	^self].	"this should resume from the last line of #'doSocketRequest'."
+	request == #'stepInto' 	ifTrue: [process stepIntoFromLevel: 		(arguments at: 3). 	semaphore wait. 	^self].
 	request == #'stepOut' 	ifTrue: [process stepOverFromLevel: 		(arguments at: 3). 	semaphore wait. 	^self].	"1 added by JadeDebugger>>#'stepOut'"
 	request == #'stepOver'	ifTrue: [process stepThroughFromLevel: 	(arguments at: 3). 	semaphore wait. 	^self].	"thru gives us more natural behavior"
 	self error: 'Unrecognized command!!'.
@@ -218,13 +235,13 @@ processAction: arguments
 readExceptionFrom: aStream errorClass: gciErrorSTypeClass
 
 	| category number context exception name message arguments stack gciErrSType |
-	category		:= self readObjectFrom: aStream.	number			:= self readObjectFrom: aStream.
+	category		:= self readObjectFrom: aStream.	number		:= self readObjectFrom: aStream.
 	context 		:= self readObjectFrom: aStream.
 	exception 		:= self readObjectFrom: aStream.
-	name 			:= self readObjectFrom: aStream.	name yourself.
+	name 		:= self readObjectFrom: aStream.	name yourself.
 	message 		:= self readObjectFrom: aStream.
 	arguments 	:= self readObjectFrom: aStream.
-	stack 			:= self readObjectFrom: aStream.
+	stack 		:= self readObjectFrom: aStream.
 	(gciErrSType	:= gciErrorSTypeClass new)		category: category value;
 		number: number;
 		context: context value;
@@ -256,7 +273,7 @@ readObjectFrom: aStream errorClass: gciErrorSTypeClass
 			oid := oid * 16r100 + each.
 		].
 		^System notNil
-			ifTrue: [self objectForOop: oid]	"Usually this will execute in GemStone"
+			ifTrue: [self _objectForOop: oid]	"Usually this will execute in GemStone"
 			ifFalse: [type == 3			"This can execute in Dolphin to support testing"
 				ifTrue: [OopType32 fromInteger: oid]
 				ifFalse: [OopType64 fromInteger: oid]
@@ -353,6 +370,10 @@ readSocket: anInteger
 	socket write: bytes.
 	^bytes size.
 ! !
+!JadeServer64bit33 categoriesFor: #_decodeString:!private! !
+!JadeServer64bit33 categoriesFor: #_encodeString:!private! !
+!JadeServer64bit33 categoriesFor: #_gemLogPath!private!Transcript! !
+!JadeServer64bit33 categoriesFor: #_string!private! !
 !JadeServer64bit33 categoriesFor: #acceptConnection!public! !
 !JadeServer64bit33 categoriesFor: #add:toByteStream:!public!streaming! !
 !JadeServer64bit33 categoriesFor: #addArray:toByteStream:!public!streaming! !

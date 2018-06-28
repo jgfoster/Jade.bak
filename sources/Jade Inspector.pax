@@ -14,20 +14,15 @@ package classNames
 
 package methodNames
 	add: #CodeSourcePresenter -> #jadeInspect;
+	add: #JadeServer -> #_printStringOf:;
 	add: #JadeServer -> #inspect:;
-	add: #JadeServer -> #inspectDictionary:on:;
-	add: #JadeServer -> #inspectNamedInstanceVariablesOf:on:;
-	add: #JadeServer -> #keysForDictionary:;
 	add: #JadeServer -> #print:on:;
-	add: #JadeServer -> #printStringOf:;
 	add: #JadeServer -> #printStringOf:to:;
+	add: #JadeServer64bit24 -> #_inspectClientForwarder:;
 	add: #JadeServer64bit24 -> #inspect:;
-	add: #JadeServer64bit24 -> #inspectClientForwarder:;
-	add: #JadeServer64bit24 -> #isClientForwarder:;
-	add: #JadeServer64bit24 -> #printStringOf:;
+	add: #JadeServer64bit33 -> #print:on:;
+	add: #JadeServer64bit33 -> #printStringOf:to:;
 	add: #JadeServer64bit3x -> #inspect:;
-	add: #JadeServer64bit3x -> #inspectNamedInstanceVariablesOf:on:;
-	add: #JadeServer64bit3x -> #keysForDictionary:;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -80,16 +75,20 @@ jadeInspect
 
 !JadeServer methodsFor!
 
+_printStringOf: anObject
+
+	^anObject printString.!
+
 inspect: anObject
 
 	| stream string |
-	(stream := WriteStream on: String new)
+	(stream := self _writeStreamOnString)
 		nextPutAll: anObject class name; tab;
 		yourself.
 	(self oopOf: anObject) printOn: stream.
 	stream lf.
-	(anObject isKindOf: Dictionary superclass) ifTrue: [^self inspectDictionary: anObject on: stream].
-	self inspectNamedInstanceVariablesOf: anObject on: stream.
+	(anObject isKindOf: Dictionary superclass) ifTrue: [^self _inspectDictionary: anObject on: stream].
+	self _inspectNamedInstanceVariablesOf: anObject on: stream.
 	anObject class format > 0 ifTrue: [
 		1 to: (anObject _basicSize min: 200) do: [:i | 
 			i printOn: stream.
@@ -99,110 +98,39 @@ inspect: anObject
 		].
 	].
 	(string := anObject printString) size > 5000 ifTrue: [string := (string copyFrom: 1 to: 5000) , '...'].
-	string class == String ifFalse: [
-		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
-	].
-	^stream 
-		nextPutAll: string; 
-		contents.
-!
-
-inspectDictionary: aDictionary on: aStream
-
-	| keys keyDict |
-	keys := self keysForDictionary: aDictionary.
-	keyDict := Dictionary new.
-	keys do: [:each | 
-		| key |
-		key := each printString , '~' , (self oopOf: each) printString.
-		key := key collect: [:char | char asciiValue < 32 ifTrue: [$?] ifFalse: [char]].
-		keyDict
-			at: key
-			put: each.
-	].
-	keys size printOn: aStream.
-	aStream lf.
-	keyDict keys asSortedCollection do: [:each | 
-		| index keyString key value valueString |
-		index := each findLast: [:char | char = $~].
-		keyString := each copyFrom: 1 to: index - 1.
-		key := keyDict at: each.
-		value := aDictionary at: key. 
-		valueString := (self printStringOf: value to: 10).
-		aStream nextPutAll: keyString , '->' , valueString; tab.
-		self print: (self oopOf: value) on: aStream.
-		aStream lf.
-	].
-	^aStream 
-		lf; 
-		contents.
-!
-
-inspectNamedInstanceVariablesOf: anObject on: aStream
-
-	| list size |
-	list := anObject class allInstVarNames.
-	size := list size.
-	anObject class format > 0 ifTrue: [
-		size := size + (anObject _basicSize min: 200).
-	].
-	size printOn: aStream.
-	aStream lf.
-	1 to: list size do: [:i | 
-		aStream nextPutAll: (list at: i); tab.
-		self print: (self oopOf: (anObject instVarAt: i)) on: aStream.
-		aStream lf.
-	].
-!
-
-keysForDictionary: aDictionary 
-
-	^aDictionary keys.
+	stream nextPutAll: string.
+	^self _encodeString: stream contents
 !
 
 print: anObject on: aStream
 	"convert multi-byte strings to single-byte"
 
 	| string |
-	string := self printStringOf: anObject.
+	string := self _printStringOf: anObject.
 	string class == String ifFalse: [
 		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
 	].
 	aStream nextPutAll: string.
 !
 
-printStringOf: anObject
-
-	^anObject printString.!
-
 printStringOf: anObject to: anInteger
 
 	| string |
-	(string := self printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
+	(string := self _printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
 	string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
-	^string.
+	^self _encodeString: string.
 ! !
+!JadeServer categoriesFor: #_printStringOf:!Inspector!private! !
 !JadeServer categoriesFor: #inspect:!Inspector!public! !
-!JadeServer categoriesFor: #inspectDictionary:on:!Inspector!public! !
-!JadeServer categoriesFor: #inspectNamedInstanceVariablesOf:on:!Inspector!public! !
-!JadeServer categoriesFor: #keysForDictionary:!Inspector!public! !
 !JadeServer categoriesFor: #print:on:!Inspector!public! !
-!JadeServer categoriesFor: #printStringOf:!Inspector!public! !
 !JadeServer categoriesFor: #printStringOf:to:!Inspector!public! !
 
 !JadeServer64bit24 methodsFor!
 
-inspect: anObject
-
-	^(self isClientForwarder: anObject)
-		ifTrue: [self inspectClientForwarder: anObject]
-		ifFalse: [super inspect: anObject].
-!
-
-inspectClientForwarder: anObject
+_inspectClientForwarder: anObject
 
 	| stream |
-	(stream := WriteStream on: String new)
+	(stream := self _writeStreamOnString)
 		nextPutAll: 'ClientForwarder'; tab;
 		yourself.
 	(self oopOf: anObject) printOn: stream.
@@ -211,37 +139,49 @@ inspectClientForwarder: anObject
 		nextPutAll: 'clientObject'; tab;
 		yourself.
 	self print: (self oopOf: anObject clientObject) on: stream.
-	stream lf; nextPutAll: (self printStringOf: anObject).
-	^stream contents.
+	stream lf; nextPutAll: (self _printStringOf: anObject).
+	^self _encodeString: stream contents.
 !
 
-isClientForwarder: anObject
+inspect: anObject
 
-	^(Reflection classOf: anObject) name == #'ClientForwarder' 
-!
-
-printStringOf: anObject
-
-	^(self isClientForwarder: anObject)
-		ifFalse: [anObject printString]
-		ifTrue: ['aClientForwarder(' , anObject clientObject printString , ')'].
+	^(self _isClientForwarder: anObject)
+		ifTrue: [self _inspectClientForwarder: anObject]
+		ifFalse: [super inspect: anObject].
 ! !
+!JadeServer64bit24 categoriesFor: #_inspectClientForwarder:!Inspector!private! !
 !JadeServer64bit24 categoriesFor: #inspect:!Inspector!public! !
-!JadeServer64bit24 categoriesFor: #inspectClientForwarder:!Inspector!public! !
-!JadeServer64bit24 categoriesFor: #isClientForwarder:!Debugger!public! !
-!JadeServer64bit24 categoriesFor: #printStringOf:!Inspector!public! !
+
+!JadeServer64bit33 methodsFor!
+
+print: anObject on: aStream
+
+	| string |
+	string := self _printStringOf: anObject.
+	aStream nextPutAll: string.
+!
+
+printStringOf: anObject to: anInteger
+
+	| string |
+	(string := self _printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
+	^self _encodeString: string.
+! !
+!JadeServer64bit33 categoriesFor: #print:on:!Inspector!public! !
+!JadeServer64bit33 categoriesFor: #printStringOf:to:!Inspector!public! !
 
 !JadeServer64bit3x methodsFor!
 
 inspect: anObject
+
 	| dynamic dynamicSize indexedSize instVarNames namedSize stream string isRcBag |
-	(self isClientForwarder: anObject) ifTrue: [^self inspectClientForwarder: anObject].
-	(stream := WriteStream on: String new)
+	(self _isClientForwarder: anObject) ifTrue: [^self _inspectClientForwarder: anObject].
+	(stream := self _writeStreamOnString)
 		nextPutAll: anObject class name; tab;
 		yourself.
 	(self oopOf: anObject) printOn: stream.
 	stream lf.
-	(anObject isKindOf: Dictionary superclass) ifTrue: [^self inspectDictionary: anObject on: stream].
+	(anObject isKindOf: Dictionary superclass) ifTrue: [^self _inspectDictionary: anObject on: stream].
 	instVarNames := anObject class allInstVarNames.
 	namedSize := instVarNames size.
 	dynamic := anObject dynamicInstanceVariables.
@@ -281,49 +221,10 @@ inspect: anObject
 				stream lf] ].
 
 	(string := anObject printString) size > 5000 ifTrue: [string := (string copyFrom: 1 to: 5000) , '...'].
-	string class == String ifFalse: [
-		string := String withAll: (string collect: [:each | (32 <= each codePoint and: [each codePoint <= 255]) ifTrue: [each] ifFalse: [$?]]).
-	].
-	^stream 
-		nextPutAll: string; 
-		contents.
-!
-
-inspectNamedInstanceVariablesOf: anObject on: aStream
-
-	| list dynamic size |
-	list := anObject class allInstVarNames.
-	dynamic := anObject dynamicInstanceVariables.
-	size := list size + dynamic size.
-	anObject class format > 0 ifTrue: [
-		size := size + (anObject _basicSize min: 200).
-	].
-	size printOn: aStream.
-	aStream lf.
-	1 to: list size do: [:i | 
-		aStream nextPutAll: (list at: i); tab.
-		self print: (self oopOf: (anObject instVarAt: i)) on: aStream.
-		aStream lf.
-	].
-	1 to: dynamic size do: [:i | 
-		aStream nextPutAll: (dynamic at: i); tab.
-		self print: (self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) on: aStream.
-		aStream lf.
-	].
-!
-
-keysForDictionary: aDictionary 
-	"RubyHash does not implement #'keys' or #'keysDo:'!!"
-
-	| keys |
-	(aDictionary isKindOf: RubyHash) ifFalse: [^super keysForDictionary: aDictionary].
-	keys := Set new.
-	aDictionary keysAndValuesDo: [:eachKey :eachValue | keys add: eachKey].
-	^keys.
+	stream nextPutAll: string.
+	^self _encodeString: stream contents.
 ! !
 !JadeServer64bit3x categoriesFor: #inspect:!Inspector!public!Transcript! !
-!JadeServer64bit3x categoriesFor: #inspectNamedInstanceVariablesOf:on:!Inspector!public!Transcript! !
-!JadeServer64bit3x categoriesFor: #keysForDictionary:!Inspector!public! !
 
 "End of package definition"!
 

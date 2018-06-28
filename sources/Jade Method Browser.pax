@@ -27,24 +27,19 @@ package methodNames
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadeServer -> #_addMethod:toStream:;
 	add: #JadeServer -> #_behavior:categoryOfSelector:;
+	add: #JadeServer -> #_behaviorFor:in:;
 	add: #JadeServer -> #_methodsFor:categories:;
 	add: #JadeServer -> #_methodsFor:filter:isVariables:;
 	add: #JadeServer -> #_methodsFor:variables:;
 	add: #JadeServer -> #_packageNameFor:;
-	add: #JadeServer -> #behaviorFor:in:;
+	add: #JadeServer -> #_referencesToObject:;
+	add: #JadeServer -> #_stringOfLineNumbersWithBreaksIn:;
 	add: #JadeServer -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer -> #compileMethod:behavior:user:inCategory:;
-	add: #JadeServer -> #environmentForMethod:;
 	add: #JadeServer -> #implementorsOf:;
 	add: #JadeServer -> #implementorsOf:startingAt:;
 	add: #JadeServer -> #methodsContaining:;
 	add: #JadeServer -> #methodsFor:upTo:filter:isVariables:;
-	add: #JadeServer -> #moveMethod:toCategory:;
-	add: #JadeServer -> #nameOfFirstDictionaryReferencing:;
-	add: #JadeServer -> #referencesToObject:;
-	add: #JadeServer -> #removeCategory:fromBehavior:;
-	add: #JadeServer -> #removeMethod:;
-	add: #JadeServer -> #renameCategory:to:inBehavior:;
 	add: #JadeServer -> #runAsTest:;
 	add: #JadeServer -> #sbSaveMethod:;
 	add: #JadeServer -> #selectorsMatching:;
@@ -52,12 +47,9 @@ package methodNames
 	add: #JadeServer -> #sourceFor:in:;
 	add: #JadeServer -> #stepPointsFor:in:;
 	add: #JadeServer -> #streamOfMethods:;
-	add: #JadeServer -> #stringOfLineNumbersWithBreaksIn:;
 	add: #JadeServer64bit3x -> #_behavior:categoryOfSelector:;
 	add: #JadeServer64bit3x -> #_methodsFor:categories:;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
-	add: #JadeServer64bit3x -> #environmentForMethod:;
-	add: #JadeServer64bit3x -> #nameOfFirstDictionaryReferencing:;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -154,8 +146,9 @@ methodsUpTo: aClass filterList: aList isVariables: aBoolean
 		serverPerform: #'methodsFor:upTo:filter:isVariables:' 
 		with: self
 		with: aClass
-		with: stream contents 
+		with: (gciSession encode: stream contents) 
 		with: aBoolean.
+	string := gciSession decode: string.
 	^GsMethod2
 		listFromString: string 
 		session: gciSession.
@@ -205,7 +198,7 @@ browseSendersOf: aGsMethodOrString
 !JadeServer methodsFor!
 
 _addMethod: aGsMethod toStream: aStream
-	"See GsMethod2>>initialize:"
+	"Private - See GsMethod2>>initialize:"
 
 	| inClass testCaseClass |
 	inClass := aGsMethod inClass.
@@ -219,7 +212,7 @@ _addMethod: aGsMethod toStream: aStream
 "4"	(self oopOf: inClass) printOn: aStream.
 "5"	aStream tab; nextPutAll: inClass name; tab.
 "6"	inClass category notNil ifTrue: [aStream nextPutAll: inClass category].
-"7"	aStream tab; nextPutAll: (self nameOfFirstDictionaryReferencing: inClass thisClass); tab.
+"7"	aStream tab; nextPutAll: (self _nameOfFirstDictionaryReferencing: inClass thisClass); tab.
 
 	"SUnit Test Method"
 	testCaseClass := Globals
@@ -232,6 +225,19 @@ _addMethod: aGsMethod toStream: aStream
 _behavior: aBehavior categoryOfSelector: aSymbol
 
 	^aBehavior categoryOfSelector: aSymbol!
+
+_behaviorFor: selector in: aClass
+
+	| behavior |
+	behavior := aClass.
+	[
+		behavior notNil.
+	] whileTrue: [
+		(behavior includesSelector: selector) ifTrue: [^behavior].
+		behavior := behavior superclass.
+	].
+	self error: 'Method not found in class or in any superclass'.
+!
 
 _methodsFor: aClass categories: aList
 
@@ -281,17 +287,24 @@ _packageNameFor: aCategoryName
 	^(list asSortedCollection: [:a :b | a size <= b size]) last.
 !
 
-behaviorFor: selector in: aClass
+_referencesToObject: anObject
 
-	| behavior |
-	behavior := aClass.
-	[
-		behavior notNil.
-	] whileTrue: [
-		(behavior includesSelector: selector) ifTrue: [^behavior].
-		behavior := behavior superclass.
+	^self streamOfMethods: (self classOrganizer referencesToObject: anObject).
+!
+
+_stringOfLineNumbersWithBreaksIn: aGsMethod
+
+	| stepPoints offsets lines stream |
+	stepPoints := (aGsMethod class canUnderstand: #'_breakpointIpOffsets')
+		ifTrue: [aGsMethod _stepPointsFromBreakIpOffsets: aGsMethod _breakpointIpOffsets]
+		ifFalse: [#()].
+	offsets := stepPoints collect: [:each | aGsMethod _sourceOffsetsAt: each].
+	lines := offsets collect: [:each | 
+		((aGsMethod sourceString copyFrom: 1 to: each) select: [:char | char = Character lf]) size + 1.
 	].
-	self error: 'Method not found in class or in any superclass'.
+	stream := self _writeStreamOnString.
+	lines do: [:each | each printOn: stream. stream space].
+	^self _encodeString: stream contents.
 !
 
 compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCategory: categorySymbol
@@ -370,15 +383,16 @@ compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCatego
 		ERROR: [details] (repeat line for each error)
 		[warnings] (if no errors)"
 
-	| userProfile result gsMethod stream errDict errorList warnings |
+	| userProfile result gsMethod stream errDict errorList sourceString warnings |
+	sourceString := self _decodeString: methodString.
 	userProfile := aUserProfileOrNil isNil
 		ifTrue: [System myUserProfile]
 		ifFalse: [aUserProfileOrNil].
 	result := self 		"key: GsNMethod value: ((Array withAll: errors) or aStringOfWarnings)"
-		compileMethod: methodString 
+		compileMethod: sourceString 
 		behavior: aBehavior 
 		symbolList: userProfile symbolList 
-		inCategory: categoryString asSymbol.
+		inCategory: (self _decodeString: categoryString) asSymbol.
 	(gsMethod := result key) isNil ifTrue: [
 		errorList := result value.
 		warnings := ''.
@@ -386,7 +400,7 @@ compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCatego
 		errorList := #().
 		warnings := result value.
 	].
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	gsMethod notNil ifTrue: [
 		stream 
 			nextPutAll: gsMethod asOop printString;
@@ -413,12 +427,8 @@ compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCatego
 	].
 	warnings isNil ifTrue: [warnings := ''].
 	stream lf; nextPutAll: warnings.
-	^stream contents.
+	^self _encodeString: stream contents
 !
-
-environmentForMethod: aGsNMethod
-
-	^0!
 
 implementorsOf: anObject
 
@@ -439,18 +449,20 @@ implementorsOf: aGsMethod startingAt: aClass
 		(myClass includesSelector: selector) ifTrue: [list add: myClass].
 		(myClass := myClass superclass) notNil.
 	] whileTrue: [].
-	^self stringForClassList: list.
+	^self _stringForClassList: list.
 !
 
 methodsContaining: aString
 
-	^self streamOfMethods: (self classOrganizer substringSearch: aString) first.
+	| string |
+	string := self _decodeString: aString.
+	^self streamOfMethods: (self classOrganizer substringSearch: string) first.
 !
 
 methodsFor: childClass upTo: parentClass filter: aString isVariables: aBoolean 
 
 	| filterList answerList aClass stream selectors |
-	filterList := (aString subStrings: Character tab) reject: [:each | each isEmpty].
+	filterList := ((self _decodeString: aString) subStrings: Character tab) reject: [:each | each isEmpty].
 	aBoolean ifTrue: [filterList := (filterList collect: [:each | each asSymbol]) asIdentitySet].
 	aClass := childClass.
 	answerList := IdentitySet new.
@@ -471,45 +483,9 @@ methodsFor: childClass upTo: parentClass filter: aString isVariables: aBoolean
 	] whileFalse: [
 		aClass := aClass superclass.
 	].
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	answerList do: [:each | self _addMethod: each toStream: stream].
-	^stream contents!
-
-moveMethod: aGsMethod toCategory: aString
-
-	aGsMethod inClass
-		moveMethod: aGsMethod selector
-		toCategory: aString.
-!
-
-nameOfFirstDictionaryReferencing: aGlobal
-
-	| list |
-	list := self symbolList dictionaryAndSymbolOf: aGlobal.
-	list isNil ifTrue: [^''].
-	^list first name!
-
-referencesToObject: anObject
-
-	^self streamOfMethods: (self classOrganizer referencesToObject: anObject).
-!
-
-removeCategory: aString fromBehavior: aBehavior
-
-	aBehavior removeCategory: aString.
-!
-
-removeMethod: aGsMethod
-
-	aGsMethod inClass removeSelector: aGsMethod selector.
-!
-
-renameCategory: oldString to: newString inBehavior: aBehavior
-
-	aBehavior
-		renameCategory: oldString asSymbol
-		to: newString.
-!
+	^self _encodeString: stream contents!
 
 runAsTest: aGsMethod
 
@@ -518,7 +494,7 @@ runAsTest: aGsMethod
 !
 
 sbSaveMethod: anOrderedCollection
-	"Save in method editor"
+	"Private - Save in method editor"
 
 	| behavior category string association gsMethod |
 	behavior := self sbClassFrom: anOrderedCollection.
@@ -545,11 +521,12 @@ sbSaveMethod: anOrderedCollection
 
 selectorsMatching: aString
 
-	| user stream list |
-	list := (aString subStrings: $*) asOrderedCollection collect: [:each | each asUppercase].
+	| user stream list string |
+	string := self _decodeString: aString.
+	list := (string subStrings: $*) asOrderedCollection collect: [:each | each asUppercase].
 	list size - 1 to: 1 do: [:i | list add: $* afterIndex: i].
-	aString last = $* ifTrue: [list addLast: $*].
-	stream := WriteStream on: String new.
+	string last = $* ifTrue: [list addLast: $*].
+	stream := self _writeStreamOnString.
 	user := AllUsers 
 		userWithId: #SymbolUser 
 		ifAbsent: [AllUsers userWithId: #DataCurator].
@@ -558,7 +535,7 @@ selectorsMatching: aString
 	list := list select: [:each | (self classOrganizer implementorsOf: each) notEmpty].
 	list := list asSortedCollection.
 	list do: [:each | stream nextPutAll: each; nextPut: Character lf; yourself].
-	^stream contents.
+	^self _encodeString: stream contents.
 !
 
 sendersOf: anObject
@@ -572,12 +549,12 @@ sendersOf: anObject
 
 sourceFor: anObject in: aClass
 
-	| behavior selector packageName category mcTimestamp dict source |
+	| behavior selector packageName category mcTimestamp dict source stream |
 	selector := (anObject isKindOf: String) 
 		ifTrue: [anObject asSymbol]
 		ifFalse: [anObject selector].
 	behavior := self
-		behaviorFor: selector 
+		_behaviorFor: selector 
 		in: aClass.
 	category := self _behavior: behavior categoryOfSelector: selector.
 	packageName := category first = $*
@@ -595,23 +572,24 @@ sourceFor: anObject in: aClass
 		].
 	].
 	source := behavior sourceCodeAt: selector.
-	^(WriteStream on: String new)
+	stream := self _writeStreamOnString
 		nextPutAll: packageName; tab;
 		nextPutAll: category; tab;
 		nextPutAll: mcTimestamp; lf;
 		nextPutAll: source;
-		contents.
+		yourself.
+	^self _encodeString: stream contents.
 !
 
 stepPointsFor: aGsMethod in: aClass
 
 	| behavior method source breakStepPoints stepPoint stream |
 	behavior := self
-		behaviorFor: aGsMethod selector
+		_behaviorFor: aGsMethod selector
 		in: aClass.
 	source := behavior sourceCodeAt: aGsMethod selector.
 	method := self compiledMethodAt: aGsMethod selector inClass: behavior.
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	breakStepPoints := (aGsMethod class canUnderstand: #'_breakpointIpOffsets')
 		ifTrue: [aGsMethod _stepPointsFromBreakIpOffsets: aGsMethod _breakpointIpOffsets]
 		ifFalse: [#()].
@@ -623,66 +601,45 @@ stepPointsFor: aGsMethod in: aClass
 		stream nextPut: Character space.
 	].
 	stream lf; 
-		nextPutAll: (self stringOfLineNumbersWithBreaksIn: method); lf;
+		nextPutAll: (self _stringOfLineNumbersWithBreaksIn: method); lf;
 		nextPutAll: source;
 		yourself.
-	^stream contents.
+	^self _encodeString: stream contents.
 !
 
 streamOfMethods: aList
 
 	| stream |
-	stream := WriteStream on: String new.
+	stream := self _writeStreamOnString.
 	aList do: [:each | 
 		self
 			_addMethod: each 
 			toStream: stream.
 	].
-	^stream contents.
-!
-
-stringOfLineNumbersWithBreaksIn: aGsMethod
-
-	| stepPoints offsets lines stream |
-	stepPoints := (aGsMethod class canUnderstand: #'_breakpointIpOffsets')
-		ifTrue: [aGsMethod _stepPointsFromBreakIpOffsets: aGsMethod _breakpointIpOffsets]
-		ifFalse: [#()].
-	offsets := stepPoints collect: [:each | aGsMethod _sourceOffsetsAt: each].
-	lines := offsets collect: [:each | 
-		((aGsMethod sourceString copyFrom: 1 to: each) select: [:char | char = Character lf]) size + 1.
-	].
-	stream := WriteStream on: String new.
-	lines do: [:each | each printOn: stream. stream space].
-	^stream contents.
+	^self _encodeString: stream contents.
 ! !
-!JadeServer categoriesFor: #_addMethod:toStream:!Methods!public! !
-!JadeServer categoriesFor: #_behavior:categoryOfSelector:!Methods!public! !
-!JadeServer categoriesFor: #_methodsFor:categories:!Methods!public! !
-!JadeServer categoriesFor: #_methodsFor:filter:isVariables:!Methods!public! !
-!JadeServer categoriesFor: #_methodsFor:variables:!Methods!public! !
-!JadeServer categoriesFor: #_packageNameFor:!Methods!public! !
-!JadeServer categoriesFor: #behaviorFor:in:!Methods!public! !
-!JadeServer categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
+!JadeServer categoriesFor: #_addMethod:toStream:!Methods!private! !
+!JadeServer categoriesFor: #_behavior:categoryOfSelector:!Methods!private! !
+!JadeServer categoriesFor: #_behaviorFor:in:!Methods!private! !
+!JadeServer categoriesFor: #_methodsFor:categories:!Methods!private! !
+!JadeServer categoriesFor: #_methodsFor:filter:isVariables:!Methods!private! !
+!JadeServer categoriesFor: #_methodsFor:variables:!Methods!private! !
+!JadeServer categoriesFor: #_packageNameFor:!Methods!private! !
+!JadeServer categoriesFor: #_referencesToObject:!Methods!private! !
+!JadeServer categoriesFor: #_stringOfLineNumbersWithBreaksIn:!Methods!private! !
+!JadeServer categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!private!System Browser! !
 !JadeServer categoriesFor: #compileMethod:behavior:user:inCategory:!Methods!public! !
-!JadeServer categoriesFor: #environmentForMethod:!Methods!public! !
 !JadeServer categoriesFor: #implementorsOf:!Methods!public! !
 !JadeServer categoriesFor: #implementorsOf:startingAt:!public! !
 !JadeServer categoriesFor: #methodsContaining:!Methods!public! !
 !JadeServer categoriesFor: #methodsFor:upTo:filter:isVariables:!Methods!public! !
-!JadeServer categoriesFor: #moveMethod:toCategory:!Methods!public! !
-!JadeServer categoriesFor: #nameOfFirstDictionaryReferencing:!Methods!public! !
-!JadeServer categoriesFor: #referencesToObject:!Methods!public! !
-!JadeServer categoriesFor: #removeCategory:fromBehavior:!Methods!public! !
-!JadeServer categoriesFor: #removeMethod:!Methods!public! !
-!JadeServer categoriesFor: #renameCategory:to:inBehavior:!Methods!public! !
 !JadeServer categoriesFor: #runAsTest:!Methods!public! !
-!JadeServer categoriesFor: #sbSaveMethod:!public!System Browser! !
+!JadeServer categoriesFor: #sbSaveMethod:!private!System Browser! !
 !JadeServer categoriesFor: #selectorsMatching:!Methods!public! !
 !JadeServer categoriesFor: #sendersOf:!Methods!public! !
 !JadeServer categoriesFor: #sourceFor:in:!Methods!public! !
 !JadeServer categoriesFor: #stepPointsFor:in:!Methods!public! !
 !JadeServer categoriesFor: #streamOfMethods:!Methods!public! !
-!JadeServer categoriesFor: #stringOfLineNumbersWithBreaksIn:!Methods!public! !
 
 !JadeServer64bit3x methodsFor!
 
@@ -706,7 +663,7 @@ _methodsFor: aClass categories: aList
 !
 
 compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCategory: categorySymbol
-	"returns (nil -> anArrayOfErrors) or (aGsNMethod -> compilerWarnings) or (aGsNMethod -> nil)"
+	"Private - returns (nil -> anArrayOfErrors) or (aGsNMethod -> compilerWarnings) or (aGsNMethod -> nil)"
 
 	| method warnings |
 	[[
@@ -733,23 +690,10 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 	] on: Error do: [:ex | 
 		ex return: method -> warnings.
 	].
-!
-
-environmentForMethod: aGsNMethod
-
-	^aGsNMethod environmentId!
-
-nameOfFirstDictionaryReferencing: aGlobal
-
-	| list |
-	list := self symbolList dictionariesAndSymbolsOf: aGlobal.
-	list isEmpty ifTrue: [^''].
-	^list first first name! !
-!JadeServer64bit3x categoriesFor: #_behavior:categoryOfSelector:!Methods!public! !
-!JadeServer64bit3x categoriesFor: #_methodsFor:categories:!Methods!public! !
-!JadeServer64bit3x categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #environmentForMethod:!Methods!public! !
-!JadeServer64bit3x categoriesFor: #nameOfFirstDictionaryReferencing:!Methods!public! !
+! !
+!JadeServer64bit3x categoriesFor: #_behavior:categoryOfSelector:!Methods!private! !
+!JadeServer64bit3x categoriesFor: #_methodsFor:categories:!Methods!private! !
+!JadeServer64bit3x categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!private!System Browser! !
 
 "End of package definition"!
 

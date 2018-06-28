@@ -10,20 +10,16 @@ JadeServer64bit comment: ''!
 !JadeServer64bit categoriesForClass!Unclassified! !
 !JadeServer64bit methodsFor!
 
-asString: anObject
+_asString: anObject
 
 	^[
-		super asString: anObject.
+		super _asString: anObject.
 	] on: Error do: [:ex | 
 		ex return: '???'.
 	].
 !
 
-homeMethodFor: aGsMethod
-
-	^[aGsMethod homeMethod] on: Error do: [:ex | ex return: aGsMethod]!
-
-installTranscript
+_installTranscript
 
 	[
 		super installTranscript.
@@ -32,14 +28,29 @@ installTranscript
 	].
 !
 
-objectForOop: anInteger
+_mcInitialsA: aString
+
+	^[
+		super _mcInitialsA: aString.
+		true.
+	] on: Error do: [:ex | 
+		ex return: false.
+	].
+!
+
+_objectForOop: anInteger
 
 	^Object _objectForOop: anInteger.
-! !
-!JadeServer64bit categoriesFor: #asString:!public!Transcript! !
-!JadeServer64bit categoriesFor: #homeMethodFor:!public! !
-!JadeServer64bit categoriesFor: #installTranscript!public!Transcript! !
-!JadeServer64bit categoriesFor: #objectForOop:!public!System Browser! !
+!
+
+homeMethodFor: aGsMethod
+
+	^[aGsMethod homeMethod] on: Error do: [:ex | ex return: aGsMethod]! !
+!JadeServer64bit categoriesFor: #_asString:!private!Transcript! !
+!JadeServer64bit categoriesFor: #_installTranscript!private!Transcript! !
+!JadeServer64bit categoriesFor: #_mcInitialsA:!private! !
+!JadeServer64bit categoriesFor: #_objectForOop:!private!System Browser! !
+!JadeServer64bit categoriesFor: #homeMethodFor:!private! !
 
 !JadeServer64bit class methodsFor!
 

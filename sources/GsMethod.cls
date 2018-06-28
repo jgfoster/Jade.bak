@@ -179,6 +179,7 @@ fromOopType: anOopType session: aGciSession
 	string := aGciSession 
 		serverPerform: #'describeMethod:'
 		with: anOopType.
+	string := aGciSession decode: string.
 	^self new
 		initialize: (JadeServerReadStream on: string)
 		session: aGciSession

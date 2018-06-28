@@ -155,7 +155,7 @@ addSubclass
 	j := classDefinition indexOfSubCollection: '''' startingAt: i + 1.
 	superclass := classDefinition copyFrom: i + 1 to: j - 1.
 	string := '(
-' , superclass , ' subclass: ''MyNewSubclass''' , (classDefinition copyFrom: j + 1 to: classDefinition size).
+' asCharacterCollection , superclass , ' subclass: ''MyNewSubclass''' , (classDefinition copyFrom: j + 1 to: classDefinition size).
 	j := 1.
 	[
 		i := string indexOfSubCollection: '#(' startingAt: j.
@@ -243,7 +243,8 @@ browseImplementorsOf
 
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
-		with: stream contents.
+		with: (self gciSession encode: stream contents).
+	string := self gciSession decode: string.
 	list := string subStrings: Character lf.
 	list := list copyFrom: 2 to: list size.
 	(selector := ChoicePrompter choices: list) isNil ifTrue: [^self].
@@ -311,10 +312,10 @@ browseSelectedClass
 
 	| range string list assoc |
 	range := methodSourcePresenter view selectionRange.
-	string := methodSourcePresenter value copyFrom: range start to: range stop.
+	string := (methodSourcePresenter value copyFrom: range start to: range stop) asCharacterCollection.
 	list := self findClassList.
 	assoc := list 
-		detect: [:each | each key = string]
+		detect: [:each | each key asCharacterCollection = string]
 		ifNone: [^MessageBox warning: 'Class ' , string printString , ' not found!!' caption: 'Jade'].
 	parentPresenter parentPresenter addSystemBrowserForClass: assoc value.
 !
@@ -384,7 +385,7 @@ classCategoryPresenter
 classDefChanged
 
 	inUpdate ifTrue: [^self].
-	classDefinitionPresenter value = classDefinition ifTrue: [
+	classDefinitionPresenter value asCharacterCollection = classDefinition ifTrue: [
 		classDefinitionPresenter view 
 			backcolor: Color white;
 			isModified: false;
@@ -686,7 +687,7 @@ createSchematicWiringForVariableList
 currentMethodSource
 
 	| source fromStream writeStream |
-	fromStream := ReadStream on: methodSourcePresenter value.
+	fromStream := ReadStream on: methodSourcePresenter value asCharacterCollection.
 	writeStream := WriteStream on: String new.
 	[
 		fromStream atEnd not.
@@ -706,13 +707,14 @@ currentMethodSource
 	] whileTrue: [
 		source := source copyFrom: 1 to: source size - 1.
 	].
+	source add: Character lf.
 	^source.
 !
 
 currentSelectionOrLine
 
 	View focus hasSelection ifFalse: [View focus selectCurrentLine].
-	^View focus selection.
+	^View focus selection asCharacterCollection.
 !
 
 defaultFileExtension
@@ -918,14 +920,14 @@ editSaveMethod
 		methodCategory := categoryListPresenter selection trimBlanks.
 	].
 
-	stream := (WriteStream on: String new)
+	stream := (WriteStream on: CharacterCollection new)
 		nextPutAll: 'method'; tab;
 		nextPutAll: self selectedClassNameWithoutVersion; tab;
 		nextPutAll: selectedClassOop printString; tab;
 		nextPutAll: instanceClassTabs currentCard name; tab;
 		nextPutAll: methodCategory; tab; 
 		lf;
-		nextPutAll: self currentMethodSource; lf;
+		nextPutAll: self currentMethodSource;
 		nextPut: $%; lf;
 		yourself.
 	[
@@ -952,7 +954,10 @@ editUndo
 executeSelectionOrLine
 
 	[
-		^true -> (self gciSession executeString: self currentSelectionOrLine fromContext: self contextObject environment: environment).
+		^true -> (self gciSession 
+			executeString: (self gciSession encode: self currentSelectionOrLine) 
+			fromContext: self contextObject 
+			environment: environment).
 	] on: GsCompileError do: [:ex | 
 		^false -> ex list.
 	].
@@ -991,10 +996,13 @@ fileOutClass
 
 fileOutClassOnPath: aString
 
-	| header file newSource index |
+	| header file newSource index string |
+	string := environment printString , ' fileOutClass' , Character tab asString , self behaviorIdentifier.
+	self gciSession encode: string.
 	newSource := self gciSession 
 		serverPerform: #'systemBrowser:' 
-		with: environment printString , ' fileOutClass' , Character tab asString , self behaviorIdentifier.
+		with: string.
+	newSource := self gciSession decode: newSource.
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
 	header := self stuffToKeepFromPath: aString andAddTo: newSource.
@@ -1019,9 +1027,11 @@ fileOutDictionary
 		showModal.
 	path isNil ifTrue: [^self].
 	string := environment printString , ' fileOutDictionary' , Character tab asString , dictionaryName.
+	string := self gciSession encode: string.
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
 		with: string.
+	string := self gciSession decode: string.
 	index := string indexOf: Character lf.
 	file := FileStream write: path mode: #'truncate' check: false type: #'ansi'.
 	[
@@ -1066,10 +1076,13 @@ fileOutMethod
 
 fileOutMethodOnPath: aString
 
-	| header file newSource index |
+	| header file newSource index string |
+	string := environment printString , ' fileOutMethod' , Character tab asString , self behaviorIdentifier , Character tab asString , self selectedMethodName.
+	string := self gciSession encode: string.
 	newSource := self gciSession 
 		serverPerform: #'systemBrowser:' 
-		with: environment printString , ' fileOutMethod' , Character tab asString , self behaviorIdentifier , Character tab asString , self selectedMethodName.
+		with: string.
+	newSource := self gciSession decode: newSource.
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
 	header := self stuffToKeepFromPath: aString andAddTo: newSource.
@@ -1166,7 +1179,7 @@ handleInvalidSession
 		methodSourcePresenter ensureVisible.
 		methodSourcePresenter view isModified: false.
 		(MessageBox confirm: 'Copy unsaved method to clipboard?' caption: 'Invalid Session!!') ifTrue: [
-			methodSourcePresenter view selectAll; copySelection.
+			methodSourcePresenter value copyToClipboard.
 		].
 		hadDialog := true.
 	].
@@ -1175,7 +1188,7 @@ handleInvalidSession
 		classDefinitionPresenter ensureVisible.
 		classDefinitionPresenter view isModified: false.
 		(MessageBox confirm: 'Copy unsaved class definition to clipboard?' caption: 'Invalid Session!!') ifTrue: [
-			classDefinitionPresenter view selectAll; copySelection.
+			classDefinitionPresenter value copyToClipboard.
 		].
 		hadDialog := true.
 	].
@@ -1285,7 +1298,7 @@ isClassSelectedInEditor
 
 	| range string |
 	(range := methodSourcePresenter view selectionRange) isEmpty ifTrue: [^false].
-	string := methodSourcePresenter value copyFrom: range start to: range stop.
+	string := (methodSourcePresenter value copyFrom: range start to: range stop) asCharacterCollection.
 	^(string allSatisfy: [:each | each isAlphaNumeric]) and: [string first isLetter and: [string first isUppercase]]
 !
 
@@ -1349,7 +1362,10 @@ isVariablesTabSelected
 jadeDebug
 
 	[
-		gciSession debugString: self currentSelectionOrLine fromContext: nil environment: environment.
+		gciSession 
+			debugString: (gciSession encode: self currentSelectionOrLine) 
+			fromContext: nil 
+			environment: environment.
 	] on: GsCompileError do: [:ex | 
 		self jadeExecute.
 	].
@@ -1651,7 +1667,7 @@ methodSourcePresenter
 methodValueChanged
 
 	inUpdate ifTrue: [^self].
-	methodSourcePresenter value = methodSource ifTrue: [
+	methodSourcePresenter value asCharacterCollection = methodSource ifTrue: [
 		methodSourcePresenter view 
 			backcolor: JadeTextStyles default colorForNoEdits;
 			isModified: false;
@@ -2261,9 +2277,9 @@ reportCompileError: anArrayOfArray
 	| source position stream string indicators |
 	indicators := OrderedCollection new.
 	methodSourcePresenter view clearContainerIndicators.
-	source := self currentMethodSource , Character lf asString.
+	source := self currentMethodSource.
 	position := methodSourcePresenter view caretPosition.
-	methodSourcePresenter value: source.
+	methodSourcePresenter value: source asUtf8String.
 	methodSourcePresenter view caretPosition: position.
 	stream := WriteStream on: String new.
 	anArrayOfArray do: [:eachArray | 
@@ -2394,9 +2410,12 @@ selectClass: aString selector: methodString
 	Array with: className with: dictionaryName with: catetory with: packageName.
 "
 	| string list className isMeta array |
+	string := environment printString , ' findClass'.
+	string := self gciSession encode: string.
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
-		with: environment printString , ' findClass'.
+		with: string.
+	string := self gciSession decode: string.
 	list := (string subStrings: Character lf) collect: [:each | each subStrings: Character tab].
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
@@ -2813,9 +2832,9 @@ updateClassHierarchy
 updateClassInfo
 
 	| index newClassDefinition |
-	selectedClassOop := readStream nextLine asNumber.
-	newClassDefinition := readStream nextParagraph.
-	classCommentPresenter value: readStream nextParagraph.
+	selectedClassOop := readStream _nextLine asNumber.
+	newClassDefinition := readStream nextParagraph asCharacterCollection.
+	classCommentPresenter value: readStream nextParagraph asUtf8String.
 
 	classDefinitionPresenter view isModified ifTrue: [
 		newClassDefinition = classDefinition ifTrue: [^self].
@@ -2838,7 +2857,7 @@ updateClassInfo
 			].
 		].
 	].
-	classDefinitionPresenter value: classDefinition.
+	classDefinitionPresenter value: classDefinition asUtf8String.
 	classDefinitionPresenter view 
 		backcolor: Color white;
 		isModified: false;
@@ -2895,9 +2914,11 @@ updateCommand: aString onSuccessDo: aBlock
 	[
 		| time1 time2 time3 string |
 		time1 := Time millisecondsToRun: [
+			string := self gciSession encode: environment printString , ' ' , aString.
 			string := self gciSession 
 				serverPerform: #'systemBrowser:' 
-				with: environment printString , ' ' , aString.
+				with: string.
+			string := self gciSession decode: string.
 			eventCount := self gciSession eventCount.
 		].
 		time2 := Time millisecondsToRun: [
@@ -2972,7 +2993,7 @@ updateMethod
 		].
 	].
 	methodSource := newSource.
-	methodSourcePresenter value: methodSource.
+	methodSourcePresenter value: methodSource asUtf8String.
 	unimplementedSelectors := gsMethod unimplementedSelectors.
 	stepPoints := gsMethod stepPoints.
 	breakPoints := gsMethod breakPoints.
@@ -3009,7 +3030,7 @@ updateMethod
 		listModel remove: originalSourceLabel ifAbsent: [].
 	] ifFalse: [
 		(listModel includes: originalSourceLabel) ifFalse: [listModel add: originalSourceLabel before: methodSourceLabel].
-		originalSourcePresenter value: x.
+		originalSourcePresenter value: x asUtf8String.
 	].
 	(warnings := gsMethod warnings) notEmpty ifTrue: [
 		MessageBox warning: warnings caption: 'Jade Compile Warning'.
@@ -3190,7 +3211,7 @@ updatePresenters
 updateSuperclassList
 
 	| tabs tabName tab list selected |
-	tabName := readStream nextLine.
+	tabName := readStream _nextLine.
 	(tabs := instanceClassTabs cards) isEmpty ifTrue: [^self].
 	tab := tabs 
 		detect: [:each | each name = tabName]

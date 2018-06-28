@@ -10,20 +10,15 @@ JadeServer64bit24 comment: ''!
 !JadeServer64bit24 categoriesForClass!Unclassified! !
 !JadeServer64bit24 methodsFor!
 
+_isClientForwarder: anObject
+
+	^(Reflection classOf: anObject) name == #'ClientForwarder' 
+!
+
 oopOf: anObject
 
 	^Reflection oopOf: anObject.
-!
-
-registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
-
-	super
-		registerOBNotificationsForPlatform: platform 
-		clientForwarder: clientForwarder.
-	platform 
-		registerMultipleChoiceClientForwarder: clientForwarder;
-		yourself.
 ! !
+!JadeServer64bit24 categoriesFor: #_isClientForwarder:!private! !
 !JadeServer64bit24 categoriesFor: #oopOf:!private! !
-!JadeServer64bit24 categoriesFor: #registerOBNotificationsForPlatform:clientForwarder:!public! !
 

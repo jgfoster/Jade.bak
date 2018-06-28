@@ -116,7 +116,7 @@ uniqueVersionName
 		[self cancel] forkAt: Processor userBackgroundPriority.
 		^nil.
 	].
-	self model authorInitials: string.
+	self model authorInitials: (self model encode: string).
 	^self model uniqueVersionName.
 !
 

@@ -1,6 +1,6 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
-ArrayedCollection subclass: #CharacterCollection
+ArrayedCollection variableSubclass: #CharacterCollection
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''

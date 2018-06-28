@@ -8,6 +8,18 @@ JadeServer64bit3x subclass: #JadeServer64bit32
 JadeServer64bit32 guid: (GUID fromString: '{b2cb5f19-4347-4b6e-922e-705e99f7cb99}')!
 JadeServer64bit32 comment: ''!
 !JadeServer64bit32 categoriesForClass!Unclassified! !
+!JadeServer64bit32 methodsFor!
+
+_gsPackagePolicy
+
+	| class |
+	class := self _gsPackagePolicyClass.
+	class isNil ifTrue: [^nil].
+	class enabled ifFalse: [^nil].
+	^class current
+! !
+!JadeServer64bit32 categoriesFor: #_gsPackagePolicy!private! !
+
 !JadeServer64bit32 class methodsFor!
 
 gsClassDefinitionStringFor: aClass
