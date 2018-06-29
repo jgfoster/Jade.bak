@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanCommandResult subclass: #RowanMethodUpdate
-	instanceVariableNames: 'classOop className methodOop selector category editable source firstSendOffsets stepPoints breakPoints originalMethodSource compilationWarnings isTestClass isOverride gsMethod'
+	instanceVariableNames: 'classOop className methodOop selector category editable source firstSendOffsets stepPoints breakPoints originalMethodSource compilationWarnings isTestClass isOverride gsMethod selected'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -52,6 +52,10 @@ firstSendOffsets
 firstSendOffsets: anObject
 	firstSendOffsets := anObject!
 
+initialize
+	super initialize. 
+	selected := false!
+
 isOverride
 	^isOverride!
 
@@ -76,6 +80,12 @@ originalMethodSource
 originalMethodSource: anObject
 	originalMethodSource := anObject!
 
+selected
+	^selected!
+
+selected: anObject
+	selected := anObject!
+
 selector
 	^gsMethod selector!
 
@@ -92,7 +102,29 @@ stepPoints
 	^stepPoints!
 
 stepPoints: anObject
-	stepPoints := anObject! !
+	stepPoints := anObject!
+
+updateSelectedSelectorFor: presenter
+
+	self rowanFixMe.  "step points, break points, override, other tabs? "
+	presenter view isModified
+		ifTrue: 
+			[gsMethod source = presenter value ifTrue: [^self].
+			(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!')
+				ifTrue: [presenter value copyToClipboard]].
+	presenter value: gsMethod source.
+	stepPoints := gsMethod stepPoints.
+	breakPoints := gsMethod breakPoints.
+	presenter view
+		backcolor: JadeTextStyles default colorForNoEdits;
+		isModified: false;
+		isReadOnly: gsMethod isReadOnly;
+		yourself.
+!
+
+updateSelectorFor: presenter
+
+	selected ifTrue:[self updateSelectedSelectorFor: presenter].! !
 !RowanMethodUpdate categoriesFor: #breakPoints!accessing!private! !
 !RowanMethodUpdate categoriesFor: #breakPoints:!accessing!private! !
 !RowanMethodUpdate categoriesFor: #category!accessing!private! !
@@ -107,6 +139,7 @@ stepPoints: anObject
 !RowanMethodUpdate categoriesFor: #editable:!accessing!private! !
 !RowanMethodUpdate categoriesFor: #firstSendOffsets!accessing!private! !
 !RowanMethodUpdate categoriesFor: #firstSendOffsets:!accessing!private! !
+!RowanMethodUpdate categoriesFor: #initialize!initialization!public! !
 !RowanMethodUpdate categoriesFor: #isOverride!accessing!private! !
 !RowanMethodUpdate categoriesFor: #isOverride:!accessing!private! !
 !RowanMethodUpdate categoriesFor: #isTestClass!accessing!private! !
@@ -115,10 +148,14 @@ stepPoints: anObject
 !RowanMethodUpdate categoriesFor: #methodOop:!accessing!private! !
 !RowanMethodUpdate categoriesFor: #originalMethodSource!accessing!private! !
 !RowanMethodUpdate categoriesFor: #originalMethodSource:!accessing!private! !
+!RowanMethodUpdate categoriesFor: #selected!accessing!private! !
+!RowanMethodUpdate categoriesFor: #selected:!accessing!private! !
 !RowanMethodUpdate categoriesFor: #selector!accessing!private! !
 !RowanMethodUpdate categoriesFor: #selector:!accessing!private! !
 !RowanMethodUpdate categoriesFor: #source!accessing!private! !
 !RowanMethodUpdate categoriesFor: #source:!accessing!private! !
 !RowanMethodUpdate categoriesFor: #stepPoints!accessing!private! !
 !RowanMethodUpdate categoriesFor: #stepPoints:!accessing!private! !
+!RowanMethodUpdate categoriesFor: #updateSelectedSelectorFor:!public!updating! !
+!RowanMethodUpdate categoriesFor: #updateSelectorFor:!public!updating! !
 

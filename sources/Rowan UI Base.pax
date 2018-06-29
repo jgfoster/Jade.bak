@@ -126,8 +126,11 @@ package methodNames
 	add: #RowanCommandResult -> #updateClassSelectionFor:;
 	add: #RowanCommandResult -> #updateDictionarySelectionsFor:;
 	add: #RowanCommandResult -> #updateMethodFilterSelectionFor:;
+	add: #RowanCommandResult -> #updateMethodSelectionFor:;
 	add: #RowanCommandResult -> #updatePackageSelectionsFor:;
+	add: #RowanCommandResult -> #updateSelectorFor:;
 	add: #RowanCommandResult -> #updateSuperclassSelectionFor:;
+	add: #RowanGsMethod -> #printOn:;
 	add: #RowanMethodDefinition -> #methodDefinitionService;
 	add: 'JadeServer class' -> #gsString;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
@@ -208,12 +211,62 @@ Object subclass: #Rowan
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #BrowserUpdate
-	instanceVariableNames: 'updates'
+	instanceVariableNames: 'updates debug'
 	classVariableNames: 'Current'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #RowanService
 	instanceVariableNames: 'transport remoteService name isDirty'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanClassCategoryUpdate
+	instanceVariableNames: 'categories selection treeModel'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanClassesUpdate
+	instanceVariableNames: 'classNames selectionNames'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanClassInfoUpdate
+	instanceVariableNames: 'oop template category comment'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanDictionaryUpdate
+	instanceVariableNames: 'dictionaries selections'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanGlobalsUpdate
+	instanceVariableNames: 'globals'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanMethodUpdate
+	instanceVariableNames: 'classOop className methodOop selector category editable source firstSendOffsets stepPoints breakPoints originalMethodSource compilationWarnings isTestClass isOverride gsMethod selected'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanCommandResult subclass: #RowanPackageUpdate
+	instanceVariableNames: 'packages modifiedPackages selections'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanClassesUpdate subclass: #RowanClassHierarchyUpdate
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanClassesUpdate subclass: #RowanMethodsUpdate
+	instanceVariableNames: 'methods methodFilters selectors selectedClass selectedSelectors inheritedClasses inheritedClass type'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanClassesUpdate subclass: #RowanSuperclassUpdate
+	instanceVariableNames: 'tabName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -324,56 +377,6 @@ RowanShell subclass: #RowanPackageShell
 	classInstanceVariableNames: ''!
 RowanShell subclass: #RowanProjectListShell
 	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanCommandResult subclass: #RowanClassCategoryUpdate
-	instanceVariableNames: 'categories selection treeModel'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanCommandResult subclass: #RowanClassesUpdate
-	instanceVariableNames: 'classNames selectionNames'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanCommandResult subclass: #RowanClassInfoUpdate
-	instanceVariableNames: 'oop template category comment'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanCommandResult subclass: #RowanDictionaryUpdate
-	instanceVariableNames: 'dictionaries selections'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanCommandResult subclass: #RowanGlobalsUpdate
-	instanceVariableNames: 'globals'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanCommandResult subclass: #RowanMethodUpdate
-	instanceVariableNames: 'classOop className methodOop selector category editable source firstSendOffsets stepPoints breakPoints originalMethodSource compilationWarnings isTestClass isOverride gsMethod'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanCommandResult subclass: #RowanPackageUpdate
-	instanceVariableNames: 'packages modifiedPackages selections'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanClassesUpdate subclass: #RowanClassHierarchyUpdate
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanClassesUpdate subclass: #RowanMethodsUpdate
-	instanceVariableNames: 'methods methodFilters selectors selectedClass selectedSelectors inheritedClasses inheritedClass type'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-RowanClassesUpdate subclass: #RowanSuperclassUpdate
-	instanceVariableNames: 'tabName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1316,7 +1319,7 @@ savePackage
 
 updateCommand: aString onSuccessDo: aBlock
 
-
+	Smalltalk at: #roundTrips put: (Smalltalk at: #roundTrips) + 1.
 	
 	[
 		| time1 time2 time3 string |
@@ -1833,8 +1836,12 @@ updateDictionarySelectionsFor: presenter
 
 updateMethodFilterSelectionFor: presenter!
 
+updateMethodSelectionFor: presenter!
+
 updatePackageSelectionsFor: presenter
 	!
+
+updateSelectorFor: presenter!
 
 updateSuperclassSelectionFor: presenter! !
 !RowanCommandResult categoriesFor: #classCategoryUpdate:!public!updating! !
@@ -1854,8 +1861,24 @@ updateSuperclassSelectionFor: presenter! !
 !RowanCommandResult categoriesFor: #updateClassSelectionFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateDictionarySelectionsFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateMethodFilterSelectionFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updateMethodSelectionFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updatePackageSelectionsFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updateSelectorFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateSuperclassSelectionFor:!public!updating! !
+
+!RowanGsMethod methodsFor!
+
+printOn: aStream
+	super printOn: aStream.
+	aStream cr.
+	self class allInstVarNames do: 
+			[:instVarName |
+			aStream
+				nextPutAll: instVarName;
+				nextPutAll: ' - ';
+				nextPutAll: (self instVarNamed: instVarName) printString;
+				cr]! !
+!RowanGsMethod categoriesFor: #printOn:!printing!public! !
 
 !RowanMethodDefinition methodsFor!
 

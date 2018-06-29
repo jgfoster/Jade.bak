@@ -189,7 +189,8 @@ registerPresentersForUpdates
 	BrowserUpdate current register: classCommentPresenter with: #classCommentUpdate:.
 	BrowserUpdate current register: classHierarchyPresenter with: #classHierarchyUpdate:.
 	BrowserUpdate current register: superclassListPresenter with: #superclassListUpdate:.
-	BrowserUpdate current register: methodListPresenter with: #methodsUpdate:.!
+	BrowserUpdate current register: methodListPresenter with: #methodsUpdate:.
+	BrowserUpdate current register: methodSourcePresenter with: #updateSelectorFor:.!
 
 registerTabPresentersForUpdates
 	BrowserUpdate current register: self methodFilterListPresenter with: #methodFilterUpdate:!
@@ -515,7 +516,8 @@ updateSelectionsForUpdate: update
 	update updateClassSelectionFor: classListPresenter.
 	update updateClassHierarchySelectionFor: classHierarchyPresenter.
 	update updateSuperclassSelectionFor: superclassListPresenter.
-	update updateMethodFilterSelectionFor: self methodFilterListPresenter.!
+	update updateMethodFilterSelectionFor: self methodFilterListPresenter.
+	update updateMethodSelectionFor: self methodListPresenter.!
 
 updateTabLabel
 

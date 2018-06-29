@@ -26,7 +26,7 @@ package!
 
 "Class Definitions"!
 
-Object subclass: #RowanCommandResult
+Model subclass: #RowanCommandResult
 	instanceVariableNames: 'executionTime'
 	classVariableNames: ''
 	poolDictionaries: ''

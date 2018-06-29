@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #BrowserUpdate
-	instanceVariableNames: 'updates'
+	instanceVariableNames: 'updates debug'
 	classVariableNames: 'Current'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -33,6 +33,16 @@ classHierarchyUpdate: presenter
 
 	updates do:[:update | update classHierarchyUpdate: presenter]!
 
+debug
+	^debug!
+
+debug: aBoolean
+	aBoolean
+		ifTrue: 
+			[Smalltalk at: #triggers put: 0.
+			Smalltalk at: #roundTrips put: 0].
+	debug := aBoolean!
+
 dictionaryUpdate: presenter
 
 	updates do:[:update | update dictionaryUpdate: presenter]!
@@ -42,7 +52,8 @@ globalsUpdate: presenter
 	updates do:[:update | update globalsUpdate: presenter]!
 
 initialize
-	self initializeUpdates!
+	self initializeUpdates.
+	debug := false. !
 
 initializeUpdates
 	updates := OrderedCollection new.
@@ -59,14 +70,34 @@ packagesUpdate: presenter
 
 	updates do:[:update | update packagesUpdate: presenter]!
 
+performDebugUpdateSelector: selector presenter: presenter
+	Transcript
+		cr;
+		show: '====Begin Updates===='.
+	self updates do: 
+			[:update |
+			Transcript
+				cr;
+				show: update printString.
+			update perform: selector with: presenter].
+	^Transcript
+		cr;
+		show: '====End Updates===='!
+
+performUpdateSelector: selector presenter: presenter
+	^debug
+		ifTrue: [self performDebugUpdateSelector: selector presenter: presenter]
+		ifFalse: [self updates do: [:update | update perform: selector with: presenter]]!
+
 register: presenter with: selector
 	"send the update to the presenter so that when the presenter gets
 	removed, it's events go with it."
+
 	self
 		when: #updateReady
 		send: #updateReady:
 		to: presenter
-		with: [self updates do: [:update | update perform: selector with: presenter]]!
+		with: [self performUpdateSelector: selector presenter: presenter]!
 
 superclassListUpdate: presenter
 	updates do: [:update | update superclassListUpdate: presenter]!
@@ -75,12 +106,9 @@ unregister: aPresenter
 
 	self removeEventsTriggeredFor: aPresenter!
 
-updatePresenters
-
-	updates do: [:update | update trigger: #updateReady]. !
-
 updateReady
-	self trigger: #updateReady!
+	Smalltalk at: #triggers put: (Smalltalk at: #triggers) + 1.
+	updates isEmpty ifFalse: [self trigger: #updateReady]!
 
 updates
 	^updates!
@@ -98,6 +126,8 @@ updates: aCollection
 !BrowserUpdate categoriesFor: #classesHierarchyUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #classesUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #classHierarchyUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #debug!accessing!private! !
+!BrowserUpdate categoriesFor: #debug:!accessing!private! !
 !BrowserUpdate categoriesFor: #dictionaryUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #globalsUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
@@ -105,10 +135,11 @@ updates: aCollection
 !BrowserUpdate categoriesFor: #methodFilterUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #methodsUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #packagesUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #performDebugUpdateSelector:presenter:!public!updating! !
+!BrowserUpdate categoriesFor: #performUpdateSelector:presenter:!public!updating! !
 !BrowserUpdate categoriesFor: #register:with:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #superclassListUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #unregister:!public!registeringPresenters! !
-!BrowserUpdate categoriesFor: #updatePresenters!public!updating! !
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !
 !BrowserUpdate categoriesFor: #updates!accessing!private! !
 !BrowserUpdate categoriesFor: #updates:!accessing!private! !

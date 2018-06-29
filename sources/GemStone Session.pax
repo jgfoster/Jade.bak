@@ -245,11 +245,6 @@ JadeServer64bit32 subclass: #JadeServer64bit34
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-FadingDialog subclass: #WaitOnGemStoneDialog
-	instanceVariableNames: 'busySeconds codePresenter busySecondsPresenter gciSession timerProcess'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 RowanCommandResult subclass: #GsObject
 	instanceVariableNames: 'gciSession name oopType'
 	classVariableNames: ''
@@ -397,6 +392,11 @@ MCServerDirectoryRepository subclass: #MCFileTreeRepository
 	classInstanceVariableNames: ''!
 MCFileTreeRepository subclass: #MCGitHubRepository
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+FadingDialog subclass: #WaitOnGemStoneDialog
+	instanceVariableNames: 'busySeconds codePresenter busySecondsPresenter gciSession timerProcess'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

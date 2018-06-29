@@ -31,8 +31,8 @@ methodFilters: anObject
 	methodFilters := anObject!
 
 methodFilterUpdate: presenter
-	presenter list: methodFilters asArray reverse.
-	!
+	
+	presenter list: methodFilters asArray reverse!
 
 methods
 	^methods!
@@ -41,18 +41,23 @@ methods: anObject
 	methods := anObject!
 
 methodsUpdate: presenter
-	| methodList |
+	"The method list update knows which method is selected. 
+	Mark the selected method update accordingling for later update"
+
+	| methodList selectedMethodUpdates |
+	selectedMethodUpdates := methods select: [:method | selectedSelectors includes: method selector].
+	selectedMethodUpdates do: [:update | update selected: true].
 	methodList := OrderedCollection new.
 	methods do: 
 			[:update |
 			| displayArray |
 			displayArray := Array new: 5.
-			displayArray 
+			displayArray
 				at: 1 put: update selector asString;
 				at: 2 put: update isOverride;
 				at: 3 put: update isTestClass;
-				at: 4 put: false; "unused"
-				at: 5 put: update selector asString. 
+				at: 4 put: false;
+				at: 5 put: update selector asString.	"unused"
 			methodList add: displayArray].
 	presenter list: methodList!
 
@@ -89,7 +94,12 @@ updateClassSelectionFor: presenter!
 
 updateMethodFilterSelectionFor: presenter
 	presenter selections: selectionNames.
-! !
+!
+
+updateMethodSelectionFor: presenter
+	| selections |
+	selections := presenter list select: [:item | selectedSelectors includes: item first asSymbol].
+	presenter selections: selections! !
 !RowanMethodsUpdate categoriesFor: #classesUpdate:!public!updating! !
 !RowanMethodsUpdate categoriesFor: #inheritedClass!accessing!public! !
 !RowanMethodsUpdate categoriesFor: #inheritedClass:!accessing!public! !
@@ -112,4 +122,5 @@ updateMethodFilterSelectionFor: presenter
 !RowanMethodsUpdate categoriesFor: #update:!public!updating! !
 !RowanMethodsUpdate categoriesFor: #updateClassSelectionFor:!public!updating! !
 !RowanMethodsUpdate categoriesFor: #updateMethodFilterSelectionFor:!public!updating! !
+!RowanMethodsUpdate categoriesFor: #updateMethodSelectionFor:!public!updating! !
 

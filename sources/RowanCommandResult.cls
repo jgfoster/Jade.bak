@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-Object subclass: #RowanCommandResult
+Model subclass: #RowanCommandResult
 	instanceVariableNames: 'executionTime'
 	classVariableNames: ''
 	poolDictionaries: ''
