@@ -116,29 +116,15 @@ fetchBytes: anOopType class: aClass
 
 fetchBytes: anOopType classOop: oopClass
 
-	oopClass = self oopClassString 			ifTrue: [^self fetchChars: anOopType].
-	oopClass = self oopClassSymbol 			ifTrue: [^(self fetchChars: anOopType) asSymbol].
+	oopClass = self oopClassString 			ifTrue: [^self fetchOneByteString: anOopType].
+	oopClass = self oopClassSymbol 			ifTrue: [^(self fetchOneByteString: anOopType) asSymbol].
 	oopClass = self oopClassByteArray 		ifTrue: [^self fetchBytes: anOopType class: ByteArray].
 	oopClass = self oopClassUnicode7 		ifTrue: [^self fetchBytes: anOopType class: Unicode7].
-	oopClass = self oopClassUnicode16 		ifTrue: [^self fetchBytes: anOopType class: Unicode16].
+	oopClass = self oopClassUnicode16 		ifTrue: [^self fetchTwoByteString: anOopType].
 	oopClass = self oopClassUnicode32 		ifTrue: [^self fetchBytes: anOopType class: Unicode32].
-	oopClass = self oopClassDoubleByteString 	ifTrue: [^self fetchBytes: anOopType class: DoubleByteString].
+	oopClass = self oopClassDoubleByteString 	ifTrue: [^self fetchTwoByteString: anOopType].
 	oopClass = self oopClassQuadByteString	ifTrue: [^self fetchBytes: anOopType class: QuadByteString].
 	^anOopType.
-!
-
-fetchChars: anOopType
-
-	| size string result |
-	size := self gciFetchSize: anOopType.
-	string := AnsiString new: size.
-	result := self 
-		gciFetchBytes: anOopType
-		_: 1
-		_: string
-		_: size.
-	result = size ifTrue: [^string].
-	self signalLastError.
 !
 
 fetchClass: anOopType
@@ -158,6 +144,37 @@ fetchObjImpl: anOopType
 	result ~~ 3 ifTrue: [self signalIfError].
 	^result.
 !
+
+fetchOneByteString: anOopType
+
+	| size string result |
+	size := self gciFetchSize: anOopType.
+	string := AnsiString new: size.
+	result := self 
+		gciFetchBytes: anOopType
+		_: 1
+		_: string
+		_: size.
+	result = size ifTrue: [^string].
+	self signalLastError.
+!
+
+fetchTwoByteString: anOopType
+
+	| bytes result size stream |
+	size := self gciFetchSize: anOopType.
+	bytes := ByteArray new: size.
+	result := self 
+		gciFetchBytes: anOopType
+		_: 1
+		_: bytes
+		_: size.
+	result ~= size ifTrue: [self signalLastError].
+	stream := WriteStream on: Utf8String new.
+	1 to: result by: 2 do: [:i | 
+		stream nextPut: (Character codePoint: (bytes at: i + 1) * 256 + (bytes at: i)).
+	].
+	^stream contents!
 
 gciAbort
 
@@ -500,7 +517,7 @@ session: session execute: aString context: contextOop environment: anInteger
 	self critical: [
 		self gciSetSessionId: session.
 		self
-			gciNbExecuteStrFromContext: aString
+			gciNbExecuteStrFromContext: (self encode: aString)
 			_: contextOop
 			_: self oopNil.
 		^self nbResult.
@@ -641,9 +658,10 @@ version
 !GciSingleThreadedLibrary categoriesFor: #fetchBytes:!not subclassResponsibility!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchBytes:class:!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchBytes:classOop:!not subclassResponsibility!private! !
-!GciSingleThreadedLibrary categoriesFor: #fetchChars:!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchClass:!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchObjImpl:!private! !
+!GciSingleThreadedLibrary categoriesFor: #fetchOneByteString:!private! !
+!GciSingleThreadedLibrary categoriesFor: #fetchTwoByteString:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciAbort!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciBegin!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciCallInProgress!private! !

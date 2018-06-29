@@ -166,7 +166,7 @@ executeSelectionOrLine
 		value: result, compile errors, or general description of error"
 	[
 		^true -> (gciSession 
-			executeString: (gciSession encode: self currentSelectionOrLine) 
+			executeString: self currentSelectionOrLine 
 			fromContext: self contextObject
 			 environment: environment).
 	] on: GsCompileError do: [:ex | 

@@ -167,7 +167,7 @@ executeSelectionOrLine
  
 	[
 		^true -> (gciSession 
-			executeString: (gciSession encode: self currentSelectionOrLine) 
+			executeString: self currentSelectionOrLine
 			fromContext: model 
 			environment: environment).
 	] on: GsCompileError do: [:ex | 

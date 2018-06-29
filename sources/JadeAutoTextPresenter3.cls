@@ -128,42 +128,41 @@ getClassName
 
 getCurrentWord
 	""
-	| breakCharacters leftPosition rightPosition leftStream rightStream currentCharacter |
-	(view class == ScintillaView) ifFalse: [^self].
+	"| breakCharacters leftPosition rightPosition leftStream rightStream currentCharacter |"
+	true ifTrue: [^self] ifFalse: [self utf8].	"Needs work to handle UTF-8 in ScintillaView"
+"	(view class == ScintillaView) ifFalse: [^self].
 	wordRightSideIsEmpty := true.
 	(view value size <= 1) ifTrue: [^self].
 	currentText := ''.
 	breakCharacters := self getBreakCharacters.
-	leftStream := WriteStream on: String new.
+	leftStream := WriteStream on: Array new.
 	rightStream := WriteStream on: String new.
 	leftPosition := view caretPosition.
 	rightPosition := view caretPosition + 1.
 
 	[(leftPosition > 0) and: [breakCharacters includes: (view characterAt: leftPosition)]]  whileTrue: [leftPosition := leftPosition - 1].
-
+"
 	"move left"
-	currentCharacter := view characterAt: leftPosition.
+"	currentCharacter := view characterAt: leftPosition.
 	[(leftPosition >= 1) and:[(breakCharacters includes: currentCharacter) not]] 
 	whileTrue: [((currentCharacter = Character null) and: [currentCharacter = Character lf]) ifFalse: [leftStream nextPut: (view characterAt: leftPosition)].
 			leftPosition := leftPosition - 1. 
 			currentCharacter := view characterAt: leftPosition.
 			].
-	((view characterAt: view caretPosition) = Character space) "if the current is Space --> the is no right part"
+	((view characterAt: view caretPosition) = Character space) ""if the current is Space --> the is no right part""
 	ifFalse: [
 		currentCharacter := view characterAt: rightPosition.
 		[(rightPosition < self value size) and:[(breakCharacters includes: currentCharacter) not]] 
 		whileTrue: [((currentCharacter = Character null) and: [currentCharacter = Character lf]) 
-				ifFalse: [	wordRightSideIsEmpty := false. "the cursor is in the middle of a word --> disable popup menu"
+				ifFalse: [	wordRightSideIsEmpty := false. ""the cursor is in the middle of a word --> disable popup menu""
 						rightStream nextPut: (view characterAt: rightPosition)].
 				rightPosition := rightPosition + 1. 
 				currentCharacter := view characterAt: rightPosition.
 				].
 	].
 	currentText trimBlanks notEmpty ifTrue: [previousText := currentText].
-	currentText := (leftStream contents reverse, rightStream contents) trimBlanks.
-
-	
-	!
+	currentText := (leftStream contents reverse , rightStream contents) trimBlanks.
+"!
 
 getNamesForClassUnaryMessage
 

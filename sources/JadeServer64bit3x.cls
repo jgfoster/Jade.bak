@@ -75,9 +75,9 @@ _inspectNamedInstanceVariablesOf: anObject on: aStream
 _installTranscript
 
 	| sessionTemps |
-	Transcript class name == #'TranscriptStreamPortable' ifFalse: [^super installTranscript].
+	Transcript class name == #'TranscriptStreamPortable' ifFalse: [^super _installTranscript].
 	sessionTemps := SessionTemps current.
-	(sessionTemps at: #'TranscriptStream_SessionStream' ifAbsent: [nil]) notNil ifTrue: [^super installTranscript].
+	(sessionTemps at: #'TranscriptStream_SessionStream' ifAbsent: [nil]) notNil ifTrue: [^super _installTranscript].
 	sessionTemps at: #'TranscriptStream_SessionStream' put: self.
 !
 
@@ -150,7 +150,10 @@ describeMethod: aMethod
 executeString: aString fromContext: anObject environment: anInteger
 
 	[
-		^super executeString: aString fromContext: anObject environment: anInteger.
+		^super 
+			executeString: aString 
+			fromContext: anObject 
+			environment: anInteger.
 	] on: CompileWarning do: [:ex | 
 		ex resume.
 	].

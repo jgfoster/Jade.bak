@@ -28,7 +28,7 @@ _installTranscript
 		category: nil
 		number: nil
 		do: [:ex :cat :num :args | ^self].
-	super installTranscript.
+	super _installTranscript.
 !
 
 _mcInitialsA: aString

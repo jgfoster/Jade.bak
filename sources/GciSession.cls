@@ -22,7 +22,7 @@ GciSoftBreak'!
 _executeString: aString fromContextOop: anOopType environment: anInteger
 	^library 
 		session: gciSessionId
-		execute: aString asUtf8String
+		execute: aString
 		context: anOopType
 		environment: anInteger
 !
@@ -166,7 +166,7 @@ eventCount
 executeString: aString
 
 	^self
-		executeString: (self encode: aString)
+		executeString: aString
 		fromContext: nil
 		environment: 0.
 !
@@ -372,11 +372,11 @@ Server initialization failed. Most functionality will be broken!!'.
 		ex return: nil.
 	].
 
-	(server isKindOf: String) ifTrue: [
+	((server isKindOf: String) or: [server isKindOf: ByteArray]) ifTrue: [
 		self logout.
 		GciLoginFailed
 			signal: 'JadeServer compile error:
-' , server
+' , server asAnsiString
 			with: self.
 	].
 	1 ~~ 1 ifTrue: [		"messasges that are sent by a ClientForwarderSend should not be stripped"
