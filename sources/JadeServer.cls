@@ -31,7 +31,7 @@ _allSelectors
 
 _asString: anObject
 
-	self subclassResponsibility.
+	^anObject printString
 !
 
 _categoryOfMethod: aMethod
@@ -130,7 +130,13 @@ _describeMethod: aMethod
 
 _encodeString: aString
 
-	^String withAll: (aString collect: [:each | (32 <= each codePoint and: [each codePoint <= 255]) ifTrue: [each] ifFalse: [$?]]).
+	^String withAll: (aString collect: [:each | 
+		| codePoint |
+		codePoint := each codePoint.
+		((32 <= codePoint and: [codePoint <= 255]) or: [each == Character tab or: [each == Character lf]]) 
+			ifTrue: [each] 
+			ifFalse: [$?]
+	]).
 !
 
 _environmentForMethod: aGsNMethod
@@ -210,11 +216,12 @@ _inspectNamedInstanceVariablesOf: anObject on: aStream
 
 _installTranscript
 
-	| transcript |
-	transcript := self objectInBaseNamed: #'Transcript'.
-
+	| baseName className transcript |
+	transcript := self objectNamed: #'Transcript'.
+	baseName := 'JadeServer'.
+	className := transcript class name.
 	"If no Transcript object, then install me!!"
-	(transcript == nil or: [transcript class name == self class name]) ifTrue: [
+	(transcript == nil or: [className size >= baseName size and: [(className copyFrom: 1 to: baseName size) = baseName]]) ifTrue: [
 		UserGlobals at: #'Transcript' put: self.
 		System commitTransaction.
 		^self.
@@ -338,11 +345,6 @@ abort
 	self _refreshSymbolList.
 !
 
-asString: anObject
-
-	self subclassResponsibility.
-!
-
 beginTransaction
 
 	classOrganizers := Array new: 4.
@@ -415,6 +417,7 @@ homeMethodFor: aGsMethod
 
 initialize
 
+UserGlobals at: #'James' put: Time now printString , ' - initialize'.
 	classOrganizers := Array new: 4.
 	self 
 		_installTranscript;
@@ -445,7 +448,7 @@ nextPutAll: anObject
 	string := self _encodeString: string.
 	args := Array
 		with: self
-		with: 1
+		with: 2
 		with: #'nextPutAll:'
 		with: (Array with: string).
 	System
@@ -571,7 +574,6 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #_string!private! !
 !JadeServer categoriesFor: #_writeStreamOnString!private! !
 !JadeServer categoriesFor: #abort!public! !
-!JadeServer categoriesFor: #asString:!public!Transcript! !
 !JadeServer categoriesFor: #beginTransaction!public! !
 !JadeServer categoriesFor: #clearBreakAtStepPoint:inMethod:!Methods!public! !
 !JadeServer categoriesFor: #commit!public! !
@@ -680,6 +682,12 @@ gsString
 	^gsString.
 !
 
+new
+
+	^self basicNew 
+		initialize;
+		yourself!
+
 sessionStateCode
 
 	^'System _sessionStateAt: 3 put: server.'! !
@@ -688,5 +696,6 @@ sessionStateCode
 !JadeServer class categoriesFor: #gsClassDefinitionStringFor:!public! !
 !JadeServer class categoriesFor: #gsMethodClassName!public! !
 !JadeServer class categoriesFor: #gsString!public! !
+!JadeServer class categoriesFor: #new!public! !
 !JadeServer class categoriesFor: #sessionStateCode!public! !
 

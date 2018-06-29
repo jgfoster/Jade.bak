@@ -25,9 +25,9 @@ _asString: anObject
 	(anObject isKindOf: String) ifTrue: [^anObject].
 	(anObject _class name == #'ClientForwarder') ifTrue: [^'aClientForwarder(' , (self _asString: anObject clientObject) , ')'].
 	^[
-		anObject printString.
+		super _asString: anObject.
 	] on: Error , Admonition do: [:ex | 
-		ex return: '<<printString error: ' , ex description , '>>'.
+		ex return: '<<#printString error: ' , ex description , '>>'.
 	].
 !
 

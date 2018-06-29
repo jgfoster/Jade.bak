@@ -15,14 +15,14 @@ _asString: anObject
 	^[
 		super _asString: anObject.
 	] on: Error do: [:ex | 
-		ex return: '???'.
+		ex return: '?<#printString error: ' , ex description , '>?'.
 	].
 !
 
 _installTranscript
 
 	[
-		super installTranscript.
+		super _installTranscript.
 	] on: Error do: [:ex | 
 		ex return.
 	].

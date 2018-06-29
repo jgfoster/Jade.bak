@@ -558,7 +558,8 @@ mcInitials: aString
 	string := System session printString , Character space asString , 
 		(GsSession serialOfSession: System session) printString , Character space asString , 
 		packagePolicyEnabledFlag.
-	^self _encodeString: string!
+	string := self _encodeString: string.
+	^string!
 
 mcLoadedVersionNames
 

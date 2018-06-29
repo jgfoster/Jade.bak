@@ -41,6 +41,7 @@ package classNames
 package methodNames
 	add: #Gcilw6x -> #jadeServerClass;
 	add: #LibGciRpc64 -> #jadeServerClass;
+	add: #LibGciRpc64_24 -> #jadeServerClass;
 	add: #LibGciRpc64_3_0 -> #jadeServerClass;
 	add: #LibGciRpc64_3_2 -> #jadeServerClass;
 	add: #LibGciRpc64_3_3 -> #jadeServerClass;
@@ -234,6 +235,14 @@ jadeServerClass
 	^JadeServer64bit
 ! !
 !LibGciRpc64 categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64_24 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit24
+! !
+!LibGciRpc64_24 categoriesFor: #jadeServerClass!public! !
 
 !LibGciRpc64_3_0 methodsFor!
 

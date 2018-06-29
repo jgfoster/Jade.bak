@@ -140,7 +140,7 @@ registerClassData
 	| gsMethods gsClassMethods |
 
 	categoryListPresenter hasSelection ifTrue: [^self]. "if a category is selected then not all methods are displayed --> we only register a class data with ALL methods (no category selected)"
-	(self selectedClasses size = 1) ifFalse: [^self]. "with multiple classes we ignore the registration, which class own listed methods ???"
+	(self selectedClasses size = 1) ifFalse: [^self]. "with multiple classes we ignore the registration, which class own listed methods ?"
 	gsClassMethods := OrderedCollection new.
 	gsMethods := OrderedCollection new.
 	self hasClassSideSelected ifTrue: [gsClassMethods := self gsClassMethods] ifFalse: [gsMethods := self gsMethods].

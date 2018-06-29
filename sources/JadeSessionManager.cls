@@ -45,7 +45,7 @@ version
 getVersion
 
 	| string |
-	string := [SessionManager current class git: 'describe'] on: ExternalProcessExecuteError do: [:ex | ^'???'].
+	string := [SessionManager current class git: 'describe'] on: ExternalProcessExecuteError do: [:ex | ^'?<' , ex description , '>?'].
 	^(ReadStream on: string) nextLine
 !
 

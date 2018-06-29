@@ -17,6 +17,7 @@ package classNames
 package methodNames
 	add: #JadeBrowserPresenter -> #newMethodPresenter;
 	add: #JadeServer -> #_addMethodCategoryNamesToMethodFilters;
+	add: #JadeServer -> #_isPackagePolicyEnabled;
 	add: #JadeServer -> #_objectSecurityPolicyFor:;
 	add: #JadeServer -> #_packagePolicy:includesSelector:forClass:;
 	add: #JadeServer -> #_selectedClassOverridesSelector:;
@@ -227,6 +228,10 @@ _addMethodCategoryNamesToMethodFilters
 
 	classList do: [:each | methodFilters addAll: each categoryNames].
 !
+
+_isPackagePolicyEnabled
+
+	^self _gsPackagePolicy notNil!
 
 _objectSecurityPolicyFor: anObject
 
@@ -1488,6 +1493,7 @@ sbUpdateMethodInheritedImplementationsOf: aSymbol
 
 sbUpdateMethodPragmas
 
+	methodFilters := #().
 	self sbUpdateMethodFilterSelections.
 !
 
@@ -1771,6 +1777,7 @@ writeList: aList
 	writeStream lf.
 ! !
 !JadeServer categoriesFor: #_addMethodCategoryNamesToMethodFilters!private!System Browser! !
+!JadeServer categoriesFor: #_isPackagePolicyEnabled!private!System Browser! !
 !JadeServer categoriesFor: #_objectSecurityPolicyFor:!private!System Browser! !
 !JadeServer categoriesFor: #_packagePolicy:includesSelector:forClass:!private!System Browser! !
 !JadeServer categoriesFor: #_selectedClassOverridesSelector:!private!System Browser! !

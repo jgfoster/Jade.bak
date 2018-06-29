@@ -131,13 +131,13 @@ fetchChars: anOopType
 
 	| size string result |
 	size := self gciFetchSize: anOopType.
-	string := String new: size + 1.
+	string := AnsiString new: size.
 	result := self 
 		gciFetchBytes: anOopType
 		_: 1
 		_: string
 		_: size.
-	result = size ifTrue: [^string copyFrom: 1 to: size].
+	result = size ifTrue: [^string].
 	self signalLastError.
 !
 

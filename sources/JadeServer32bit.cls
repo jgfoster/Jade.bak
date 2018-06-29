@@ -17,9 +17,9 @@ _asString: anObject
 		category: nil
 		number: nil
 		do: [:ex :cat :num :args | 
-			^'<<printString error: ' , ex printString , '>>'.
+			^'<<#printString error: ' , ex printString , '>>'.
 		].
-	^anObject printString.
+	^super _asString: anObject.
 !
 
 _installTranscript

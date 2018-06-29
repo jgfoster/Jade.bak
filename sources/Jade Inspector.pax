@@ -14,9 +14,9 @@ package classNames
 
 package methodNames
 	add: #CodeSourcePresenter -> #jadeInspect;
-	add: #JadeServer -> #_printStringOf:;
 	add: #JadeServer -> #inspect:;
 	add: #JadeServer -> #print:on:;
+	add: #JadeServer -> #printStringOf:;
 	add: #JadeServer -> #printStringOf:to:;
 	add: #JadeServer64bit24 -> #_inspectClientForwarder:;
 	add: #JadeServer64bit24 -> #inspect:;
@@ -75,10 +75,6 @@ jadeInspect
 
 !JadeServer methodsFor!
 
-_printStringOf: anObject
-
-	^anObject printString.!
-
 inspect: anObject
 
 	| stream string |
@@ -106,23 +102,27 @@ print: anObject on: aStream
 	"convert multi-byte strings to single-byte"
 
 	| string |
-	string := self _printStringOf: anObject.
+	string := self printStringOf: anObject.
 	string class == String ifFalse: [
 		string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
 	].
 	aStream nextPutAll: string.
 !
 
+printStringOf: anObject
+
+	^anObject printString.!
+
 printStringOf: anObject to: anInteger
 
 	| string |
-	(string := self _printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
+	(string := self printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
 	string := String withAll: (string collect: [:each | (32 <= each asciiValue and: [each asciiValue <= 255]) ifTrue: [each] ifFalse: [$?]]).
 	^self _encodeString: string.
 ! !
-!JadeServer categoriesFor: #_printStringOf:!Inspector!private! !
 !JadeServer categoriesFor: #inspect:!Inspector!public! !
 !JadeServer categoriesFor: #print:on:!Inspector!public! !
+!JadeServer categoriesFor: #printStringOf:!Inspector!private! !
 !JadeServer categoriesFor: #printStringOf:to:!Inspector!public! !
 
 !JadeServer64bit24 methodsFor!
@@ -139,7 +139,7 @@ _inspectClientForwarder: anObject
 		nextPutAll: 'clientObject'; tab;
 		yourself.
 	self print: (self oopOf: anObject clientObject) on: stream.
-	stream lf; nextPutAll: (self _printStringOf: anObject).
+	stream lf; nextPutAll: (self printStringOf: anObject).
 	^self _encodeString: stream contents.
 !
 
@@ -157,14 +157,14 @@ inspect: anObject
 print: anObject on: aStream
 
 	| string |
-	string := self _printStringOf: anObject.
+	string := self printStringOf: anObject.
 	aStream nextPutAll: string.
 !
 
 printStringOf: anObject to: anInteger
 
 	| string |
-	(string := self _printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
+	(string := self printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
 	^self _encodeString: string.
 ! !
 !JadeServer64bit33 categoriesFor: #print:on:!Inspector!public! !

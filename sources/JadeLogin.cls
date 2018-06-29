@@ -221,6 +221,7 @@ initials: aString
 !
 
 login
+
 	^GciSession 
 		libraryClass: (GciLibrary withDisplayName: gemVersion)
 		stoneNRS: self stoneNRS

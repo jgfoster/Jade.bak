@@ -20,6 +20,7 @@ package classNames
 	yourself.
 
 package methodNames
+	add: #JadeServer -> #_addUser:toStream:;
 	add: #JadeServer -> #addGroup:toUser:;
 	add: #JadeServer -> #addPrivilege:toUser:;
 	add: #JadeServer -> #allUsersPasswordLimits;
@@ -122,6 +123,20 @@ JadeShell subclass: #AllUsersShell
 "Loose Methods"!
 
 !JadeServer methodsFor!
+
+_addUser: aUserProfile toStream: aStream
+
+	(self oopOf: aUserProfile) printOn: aStream.
+	aStream tab; nextPutAll: aUserProfile userId.
+	aStream tab; nextPutAll: (aUserProfile lastLoginTime asStringUsingFormat: #(1 2 3 $  2 1 $: true true true false)).
+	aStream tab. aUserProfile loginsAllowedBeforeExpiration printOn: aStream.
+	aStream tab. aUserProfile isDisabled printOn: aStream.
+	aStream tab. aUserProfile activeUserIdLimit printOn: aStream.
+	aStream tab.	"; nextPutAll: aUserProfile nativeLanguage asString."
+	aStream tab. aUserProfile reasonForDisabledAccount printOn: aStream.
+	aStream tab; nextPutAll: (aUserProfile lastPasswordChange asStringUsingFormat: #(1 2 3 $  2 1 $: true true true false)).
+	aStream tab. aUserProfile passwordNeverExpires printOn: aStream.
+	aStream lf.!
 
 addGroup: aString toUser: aUserProfile
 
@@ -234,6 +249,7 @@ userList
 	list do: [:each | self _addUser: each toStream: stream].
 	^self _encodeString: stream contents.
 ! !
+!JadeServer categoriesFor: #_addUser:toStream:!private!UserProfile! !
 !JadeServer categoriesFor: #addGroup:toUser:!public!UserProfile! !
 !JadeServer categoriesFor: #addPrivilege:toUser:!public!UserProfile! !
 !JadeServer categoriesFor: #allUsersPasswordLimits!public!UserProfile! !

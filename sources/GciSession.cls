@@ -358,7 +358,9 @@ initializeServer
 "
 	library ifNil: [^self].
 	[
-		server := self executeString: library jadeServerClass gsString.
+		| string |
+		string := library encode: library jadeServerClass gsString.
+		server := self executeString: string.
 	] on: GsRuntimeError do: [:ex | 
 		| number notes |
 		number := ex errorReport number.
@@ -377,7 +379,6 @@ Server initialization failed. Most functionality will be broken!!'.
 ' , server
 			with: self.
 	].
-
 	1 ~~ 1 ifTrue: [		"messasges that are sent by a ClientForwarderSend should not be stripped"
 		self 
 			signalConfirmationRequestUsing: nil;
