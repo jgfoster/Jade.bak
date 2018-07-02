@@ -105,8 +105,8 @@ stepPoints: anObject
 	stepPoints := anObject!
 
 updateSelectedSelectorFor: presenter
-
-	self rowanFixMe.  "step points, break points, override, other tabs? "
+	
+	self rowanFixMe.  "step points, break points, override, read only, other tabs? "
 	presenter view isModified
 		ifTrue: 
 			[gsMethod source = presenter value ifTrue: [^self].
@@ -118,7 +118,7 @@ updateSelectedSelectorFor: presenter
 	presenter view
 		backcolor: JadeTextStyles default colorForNoEdits;
 		isModified: false;
-		isReadOnly: gsMethod isReadOnly;
+		isReadOnly: false;
 		yourself.
 !
 

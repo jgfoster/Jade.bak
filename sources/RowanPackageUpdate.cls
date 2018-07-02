@@ -15,16 +15,7 @@ packagesUpdate: aPresenter
 	aPresenter list: (packages collect: [:package | package -> false]).
 	modifiedPackages
 		do: [:mod | aPresenter list do: [:assoc | assoc key = mod ifTrue: [assoc value: true]]].
-	"aPresenter selections: (selections collect: [:x | aPresenter list detect: [:y | x = y key]]).
-	aPresenter view ensureSelectionVisible"!
-
-update: presenter
-	presenter ensureVisible.
-	presenter list: (packages collect: [:package | package -> false]).
-	modifiedPackages
-		do: [:mod | presenter list do: [:assoc | assoc key = mod ifTrue: [assoc value: true]]].
-	presenter selections: (selections collect: [:x | presenter list detect: [:y | x = y key]]).
-	presenter view ensureSelectionVisible!
+	!
 
 updatePackageSelectionsFor: presenter
 	| selectionAssociations |
@@ -36,6 +27,5 @@ updatePackageSelectionsFor: presenter
 		].
 	presenter selections: selectionAssociations! !
 !RowanPackageUpdate categoriesFor: #packagesUpdate:!public!updating! !
-!RowanPackageUpdate categoriesFor: #update:!public!updating! !
 !RowanPackageUpdate categoriesFor: #updatePackageSelectionsFor:!public!updating! !
 

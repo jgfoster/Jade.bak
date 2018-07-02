@@ -2893,10 +2893,11 @@ updateOverrideList
 updatePackageDictionaryList
 
 	| next |
-
+	self rowanFixMe. "project list is updated by STON only" 
 	next := readStream nextLine.
 	next = 'dictionaryList' ifTrue: [^self updateDictionaryList].
 	next = 'packageList' ifTrue: [^self updatePackageList].
+	next = 'projectList' ifTrue: [^self updatePackageList]. 
 	self error: 'Unexpected token'.
 !
 

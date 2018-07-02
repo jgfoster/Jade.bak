@@ -16,6 +16,10 @@ addProjectNamed: projectName
 		to: remoteService
 		withAll: (Array with: projectName with: self class defaultProjectName).!
 
+basicName: aString
+	"don't round trip to the server to get information" 
+	name := aString!
+
 branch
 	^branch!
 
@@ -188,6 +192,7 @@ write
 
 	^transport send: #write to: remoteService  ! !
 !RowanProjectService categoriesFor: #addProjectNamed:!public! !
+!RowanProjectService categoriesFor: #basicName:!accessing!public! !
 !RowanProjectService categoriesFor: #branch!accessing!public! !
 !RowanProjectService categoriesFor: #branch:!accessing!public! !
 !RowanProjectService categoriesFor: #branches!public!rowan! !

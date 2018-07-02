@@ -24,7 +24,6 @@ classDefinitionUpdate: presenter
 	presenter view isModified
 		ifTrue: 
 			[template = presenter value ifTrue: [^self].
-			self halt.
 			(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Class has unsaved changes!!')
 				ifTrue: [presenter value copyToClipboard]].
 	presenter value: template.

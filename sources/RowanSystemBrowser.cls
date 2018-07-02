@@ -21,7 +21,7 @@ shellName
 	^'Rowan System Browser'.
 !
 
-systemBrowserPresenter
+systemBrowserPresenter	
 	^RowanSystemBrowserPresenter! !
 !RowanSystemBrowser categoriesFor: #restoreLayoutAndContentsFromFile!public! !
 !RowanSystemBrowser categoriesFor: #shellName!overrides!private! !
