@@ -306,6 +306,63 @@ updateClassInfo
 		isModified: false;
 		yourself!
 
+updateCommand: aString onSuccessDo: aBlock
+	Smalltalk at: #STONFlag ifAbsentPut: [false].	"ensure temporary flag is initialized"
+	
+	[| time1 time2 time3 string |
+	(Smalltalk at: #STONFlag)
+		ifFalse: 
+			[Transcript
+				cr;
+				show: '---FALSE---'.
+			Transcript
+				cr;
+				show: aString.
+			Transcript
+				cr;
+				show: '------'.
+			time1 := Time millisecondsToRun: 
+							[string := self gciSession serverPerform: #systemBrowser:
+										with: environment printString , ' ' , aString.
+							eventCount := self gciSession eventCount].
+			time2 := Time millisecondsToRun: 
+							[| responseType |
+							readStream := JadeServerReadStream on: string.
+							time3 := readStream nextLine asNumber.
+							aBlock value.
+							(responseType := readStream nextLine) = 'update' ifFalse: [^responseType].
+							self updatePresenters].
+			self
+				statusBarServerRequestText: 'server took ' , time3 printString , 'ms; ' , 'network took '
+						, (time1 - time3) printString , 'ms; '
+						, 'client took ' , time2 printString
+						, 'ms; ' , 'total of '
+						, (time1 + time2) printString , 'ms'].
+	(Smalltalk at: #STONFlag)
+		ifTrue: 
+			[| stonResults update |
+			Transcript
+				cr;
+				show: 'Doing STON update: ';
+				show: TimeStamp current printString.
+			Transcript
+				cr;
+				show: '---TRUE---'.
+			Transcript
+				cr;
+				show: aString.
+			Transcript
+				cr;
+				show: '------'.
+			update := BrowserUpdate current initializeUpdates.
+			stonResults := self gciSession serverPerform: #systemBrowserSTON:
+						with: environment printString , ' ' , aString.
+			update updates: (STON fromString: stonResults).
+			self updateSelectionsFor: update.
+			update updates: #()]]
+			ensure: [selectedClassChanged := false].
+	^nil!
+
 updateFromCommand: update
 	| index newClassDefinition |
 	selectedClassOop := update oop.
@@ -563,6 +620,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassHierarchyFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassInfo!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateFromCommand:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFilter!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFilterFrom:!public!updating! !

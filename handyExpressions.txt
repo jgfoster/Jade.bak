@@ -1,0 +1,5 @@
+BrowserUpdate current debug: true.
+BrowserUpdate current debug: false.
+
+Smalltalk at: #STONFlag 
+
