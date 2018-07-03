@@ -1086,7 +1086,7 @@ fileOutMethodOnPath: aString
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
 	header := self stuffToKeepFromPath: aString andAddTo: newSource.
-	file := FileStream write: aString mode: #'truncate' check: false type: #'ansi'.
+	file := FileStream write: aString mode: #'truncate' check: false type: #'utf8'.
 	[
 		file nextPutAll: header; nextPutAll: newSource.
 	] ensure: [
@@ -1420,7 +1420,8 @@ jadeExecuteAndDisplay: aBoolean
 		textView
 			caretPosition: selectionRange start + offset - 1;
 			replaceSelection: result;
-			selectionStart: textView caretPosition - result size length: result size.
+			selectionStart: textView caretPosition - result size length: result size.
+
 		^self
 	].
 !
@@ -1428,7 +1429,8 @@ jadeExecuteAndDisplay: aBoolean
 jadeInspect
 
 	| result |
-	result := self jadeExecuteAndDisplay: false.	result == self ifTrue: [^self].	"flag for compile error"
+	result := self jadeExecuteAndDisplay: false.
+	result == self ifTrue: [^self].	"flag for compile error"
 	JadeInspector showOn: result session: gciSession.
 !
 
