@@ -80,7 +80,7 @@ Object subclass: #GciSession
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Object subclass: #JadeServer
-	instanceVariableNames: 'classList classOrganizers readStream writeStream selectedClass methodFilterType methodFilters selections'
+	instanceVariableNames: 'classList classOrganizers readStream writeStream selectedClass methodFilterType methodFilters selections showUnimplementedMessages'
 	classVariableNames: 'AllGroups AllUsers ClassOrganizer ClientForwarder GemStoneError Globals GsMethodDictionary ProcessorScheduler SymbolDictionary SymbolList System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!

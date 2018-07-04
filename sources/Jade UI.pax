@@ -31,6 +31,8 @@ package methodNames
 	add: #JadeServer -> #asAsciiString:;
 	add: #JadeServer -> #compile:frame:process:;
 	add: #JadeServer -> #isResumableCategory:number:context:;
+	add: #JadeServer -> #showUnimplementedMessages;
+	add: #JadeServer -> #showUnimplementedMessages:;
 	add: #JadeServer -> #step:inFrame:;
 	add: #JadeServer32bit -> #_oopAndStringFor:;
 	add: #JadeServer32bit -> #_stepPointFromProcess:frame:method:level:;
@@ -89,7 +91,7 @@ Object subclass: #JadeFileIn
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #JadePreferencesPresenter
-	instanceVariableNames: 'autoCommitPresenter autoMigratePresenter codeFontPresenter defaultFontPresenter nativeCodePresenter'
+	instanceVariableNames: 'autoCommitPresenter autoMigratePresenter codeFontPresenter defaultFontPresenter nativeCodePresenter unimplementedPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -329,6 +331,16 @@ isResumableCategory: category number: number context: context
 	^true.
 !
 
+showUnimplementedMessages
+
+	^showUnimplementedMessages
+!
+
+showUnimplementedMessages: aBoolean
+
+	showUnimplementedMessages := aBoolean.
+!
+
 step: aGsProcess inFrame: anInteger
 
 	aGsProcess _stepOverInFrame: anInteger.
@@ -341,6 +353,8 @@ step: aGsProcess inFrame: anInteger
 !JadeServer categoriesFor: #asAsciiString:!Debugger!public! !
 !JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
 !JadeServer categoriesFor: #isResumableCategory:number:context:!Debugger!public! !
+!JadeServer categoriesFor: #showUnimplementedMessages!public! !
+!JadeServer categoriesFor: #showUnimplementedMessages:!public! !
 !JadeServer categoriesFor: #step:inFrame:!Debugger!public! !
 
 !JadeServer32bit methodsFor!
