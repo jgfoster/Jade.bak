@@ -58,7 +58,6 @@ JadeShell subclass: #JadeProcessBrowser
 
 _addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
 
-	| x |
 	aStream lf
 "1"		nextPutAll: aString; tab;
 "2"		nextPutAll: aProcess asOop printString; tab;

@@ -962,10 +962,9 @@ sbReadMethodFilter
 
 sbRecompileSubclassesOf: newClass andCopyMethods: aBoolean
 
-	| history oldClass symbolList list |
+	| history oldClass list |
 	history := self historyOf: newClass thisClass.
 	oldClass := history at: history size - 1.
-	symbolList := self symbolList.
 	list := self classOrganizer subclassesOf: oldClass.
 	list do: [:oldSubclass |
 		| instVars classInstVars definition string newSubclass i j |
