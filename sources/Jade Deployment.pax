@@ -41,7 +41,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\Core\Contributions\Burning River\ExternalProcess\ExternalProcess';
 	add: 'GemStone C Interface';
-	add: 'GemStone Services';
 	add: 'GemStone Session';
 	add: 'Jade Login';
 	add: '..\Core\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper';

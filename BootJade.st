@@ -7,7 +7,6 @@ list := #(
 	'GemStone C Interface'
 	'GemStone Objects'
 	'GemStone Session'
-	'GemStone Services'
 	'VisualWorks Component'
 	'Jade UI Base'
 	'Jade Class Browser'

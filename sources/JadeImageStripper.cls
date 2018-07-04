@@ -110,9 +110,6 @@ requiredClasses
 		addAll: GciError withAllSubclasses;
 		addAll: GsError withAllSubclasses;
 		addAll: GciLibrary withAllSubclasses;
-		addAll: GsHostProcess withAllSubclasses;
-		addAll: GsShellCommand withAllSubclasses;
-		addAll: GsWin32Service withAllSubclasses;
 		add: NTLibrary;
 		add: StParseNodeVisitor;
 		addAll: StProgramNode withAllSubclasses;
