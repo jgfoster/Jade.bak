@@ -1,7 +1,7 @@
-﻿"Filed out from Dolphin Smalltalk 7"!
+"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #JadeServer
-	instanceVariableNames: 'classList classOrganizers readStream writeStream selectedClass methodFilterType methodFilters selections'
+	instanceVariableNames: 'classList classOrganizers readStream writeStream selectedClass methodFilterType methodFilters selections showUnimplementedMessages'
 	classVariableNames: 'AllGroups AllUsers ClassOrganizer ClientForwarder GemStoneError Globals GsMethodDictionary ProcessorScheduler SymbolDictionary SymbolList System UserGlobals UserProfile'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
@@ -89,7 +89,7 @@ _describeMethod: aMethod
 	writeStream nextPut: $%; lf.	"Lines 2-N"
 
 	"unimplemented selectors"			"https://github.com/jgfoster/Jade/issues/117"
-	((aMethod class includesSelector: #'_selectorPool') and: [aMethod class includesSelector: #'_sourceOffsetOfFirstSendOf:']) ifTrue: [
+	(showUnimplementedMessages and: [(aMethod class includesSelector: #'_selectorPool') and: [aMethod class includesSelector: #'_sourceOffsetOfFirstSendOf:']]) ifTrue: [
 		allSelectors := self _allSelectors.
 		(aMethod _selectorPool reject: [:each | allSelectors includes: each]) do: [:each | 
 			(aMethod _sourceOffsetOfFirstSendOf: each) printOn: writeStream.
@@ -417,8 +417,8 @@ homeMethodFor: aGsMethod
 
 initialize
 
-UserGlobals at: #'James' put: Time now printString , ' - initialize'.
 	classOrganizers := Array new: 4.
+	showUnimplementedMessages := true.
 	self 
 		_installTranscript;
 		_registerOBNotifications;

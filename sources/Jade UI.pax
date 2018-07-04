@@ -1,4 +1,4 @@
-﻿| package |
+| package |
 package := Package name: 'Jade UI'.
 package paxVersion: 1;
 	basicComment: ''.
@@ -32,6 +32,8 @@ package methodNames
 	add: #JadeServer -> #_trimStackOf:toLevel:;
 	add: #JadeServer -> #compile:frame:process:;
 	add: #JadeServer -> #isResumableCategory:number:context:;
+	add: #JadeServer -> #showUnimplementedMessages;
+	add: #JadeServer -> #showUnimplementedMessages:;
 	add: #JadeServer -> #sourceForProcess:frame:;
 	add: #JadeServer -> #step:inFrame:;
 	add: #JadeServer32bit -> #_oopAndStringFor:;
@@ -89,7 +91,7 @@ Object subclass: #JadeFileIn
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #JadePreferencesPresenter
-	instanceVariableNames: 'autoCommitPresenter autoMigratePresenter codeFontPresenter defaultFontPresenter nativeCodePresenter'
+	instanceVariableNames: 'autoCommitPresenter autoMigratePresenter codeFontPresenter defaultFontPresenter nativeCodePresenter unimplementedPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -334,6 +336,16 @@ isResumableCategory: category number: number context: context
 	^true.
 !
 
+showUnimplementedMessages
+
+	^showUnimplementedMessages
+!
+
+showUnimplementedMessages: aBoolean
+
+	showUnimplementedMessages := aBoolean.
+!
+
 sourceForProcess: gsProcess frame: level
 
 	self subclassResponsibility!
@@ -351,6 +363,8 @@ step: aGsProcess inFrame: anInteger
 !JadeServer categoriesFor: #_trimStackOf:toLevel:!Debugger!private! !
 !JadeServer categoriesFor: #compile:frame:process:!Debugger!public! !
 !JadeServer categoriesFor: #isResumableCategory:number:context:!Debugger!public! !
+!JadeServer categoriesFor: #showUnimplementedMessages!public! !
+!JadeServer categoriesFor: #showUnimplementedMessages:!public! !
 !JadeServer categoriesFor: #sourceForProcess:frame:!public! !
 !JadeServer categoriesFor: #step:inFrame:!Debugger!public! !
 
