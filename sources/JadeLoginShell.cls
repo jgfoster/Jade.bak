@@ -74,24 +74,6 @@ createComponents
 	debugPathPresenter		:= self add: TextPresenter			new name: 'debugPath'.
 !
 
-createSchematicWiring
-
-	super createSchematicWiring.
-	versionListPresenter		when: #selectionChanged 	send: #isModified: 	to: self with: true.
-	stoneHostPresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
-	stoneNamePresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
-	gemTypePresenter		when: #valueChanged 	send: #isModified: 	to: self with: true.
-	gemHostPresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
-	gemServicePresenter 	when: #valueChanged 	send: #isModified: 	to: self with: true.
-	gemTaskPresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
-	userIDPresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
-	passwordPresenter 		when: #valueChanged 	send: #isModified: 	to: self with: true.
-	loginTypePresenter		when: #valueChanged 	send: #isModified: 	to: self with: true.
-	hostUserIDPresenter		when: #valueChanged 	send: #isModified: 	to: self with: true.
-	hostPasswordPresenter	when: #valueChanged 	send: #isModified: 	to: self with: true.
-	initialsPresenter		when: #valueChanged	send: #isModified:	to: self with: true.
-	debugPathPresenter		when: #valueChanged	send: #isModified:	to: self with: true.!
-
 debugGCI
 
 	| default fileTypes path |
@@ -183,16 +165,6 @@ fillVersionList
 	list := list asSortedCollection: [:a :b | self isVersion: a lessThanOrEqualTo: b].
 	versionListPresenter list: list!
 
-isModified
-
-	^isModified.
-!
-
-isModified: aBoolean
-
-	isModified := aBoolean.
-!
-
 isVersion: a lessThanOrEqualTo: b
 
 	| aList bList |
@@ -227,18 +199,6 @@ login
 		^self.
 	]. 
 	self postLogin: session.
-!
-
-model: anObject
-
-	super model: anObject.
-	self isModified: false.
-!
-
-onCloseRequested: boolValueHolder
-
-	self isModified: false.
-	^super onCloseRequested: boolValueHolder.
 !
 
 onViewClosed
@@ -302,10 +262,6 @@ queryCommand: query
 		query isEnabled: ((View focus isKindOf: TextEdit) and: [View focus canRedo]).
 		^true.
 	].
-	(#(#fileSave) includes: query commandSymbol) ifTrue: [
-		query isEnabled: self isModified.
-		^true.
-	].
 	^super queryCommand: query.
 !
 
@@ -321,7 +277,6 @@ sendRequiredMessages
 setDocumentData: aString
 
 	self model updateFrom: (JadeLogin fromXML: aString).
-	self isModified: false.
 	self updateView.
 !
 
@@ -384,13 +339,11 @@ updateView
 	hostPasswordPresenter	value: self model hostPassword.
 	initialsPresenter		value: self model initials.
 	debugPathPresenter		value: self model debugPath.
-	self isModified: false.
 ! !
 !JadeLoginShell categoriesFor: #aboutJade!public! !
 !JadeLoginShell categoriesFor: #addLogin!commands!public! !
 !JadeLoginShell categoriesFor: #checkScintillaVersion!public! !
 !JadeLoginShell categoriesFor: #createComponents!public! !
-!JadeLoginShell categoriesFor: #createSchematicWiring!public! !
 !JadeLoginShell categoriesFor: #debugGCI!commands!public! !
 !JadeLoginShell categoriesFor: #editCopy!public! !
 !JadeLoginShell categoriesFor: #editCut!public! !
@@ -401,12 +354,8 @@ updateView
 !JadeLoginShell categoriesFor: #editUndo!public! !
 !JadeLoginShell categoriesFor: #fileOpen!commands!public! !
 !JadeLoginShell categoriesFor: #fillVersionList!public! !
-!JadeLoginShell categoriesFor: #isModified!public! !
-!JadeLoginShell categoriesFor: #isModified:!public! !
 !JadeLoginShell categoriesFor: #isVersion:lessThanOrEqualTo:!public! !
 !JadeLoginShell categoriesFor: #login!public! !
-!JadeLoginShell categoriesFor: #model:!accessing!public! !
-!JadeLoginShell categoriesFor: #onCloseRequested:!public! !
 !JadeLoginShell categoriesFor: #onViewClosed!public! !
 !JadeLoginShell categoriesFor: #onViewOpened!public! !
 !JadeLoginShell categoriesFor: #openGemTalkHomePage!public! !
