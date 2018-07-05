@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #JadeLogin
-	instanceVariableNames: 'debugPath gemHost gemNRS gemService gemTask gemType gemVersion gsPassword gsUserID hostPassword hostUserID initials loginType stoneHost stoneName stoneNRS'
+	instanceVariableNames: 'debugPath gemHost gemNRS gemService gemTask gemType gemVersion gsPassword gsUserID hostPassword hostUserID initials lastLogin loginType sessions stoneHost stoneName stoneNRS'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -9,6 +9,16 @@ JadeLogin guid: (GUID fromString: '{585bd13e-3a03-47f3-b78d-5c29ef797913}')!
 JadeLogin comment: ''!
 !JadeLogin categoriesForClass!Unclassified! !
 !JadeLogin methodsFor!
+
+activeCount
+
+	^sessions size!
+
+addSession: aGciSession
+
+	sessions add: aGciSession.
+	lastLogin := DateAndTime now.
+!
 
 asXML
 
@@ -33,6 +43,11 @@ asXML
 	^doc xml.
 !
 
+clearSessions
+
+	sessions := IdentitySet new.
+!
+
 debugPath
 
 	^debugPath ifNil: [''].
@@ -42,7 +57,6 @@ debugPath: aString
 
 	self debugPath = aString ifTrue: [^self].
 	debugPath := aString.
-	self trigger: #changed.
 !
 
 gemHost
@@ -56,10 +70,7 @@ gemHost: aString
 
 	self gemHost = aString ifTrue: [^self].
 	gemHost := aString.
-	self
-		generateGemNRS;
-		trigger: #changed;
-		yourself.
+	self generateGemNRS.
 !
 
 gemNRS
@@ -71,7 +82,6 @@ gemNRS: aString
 
 	self gemNRS = aString ifTrue: [^self].
 	gemNRS := aString.
-	self trigger: #changed.
 !
 
 gemService
@@ -83,10 +93,7 @@ gemService: aString
 
 	self gemService = aString ifTrue: [^self].
 	gemService := aString.
-	self
-		generateGemNRS;
-		trigger: #changed;
-		yourself.
+	self generateGemNRS.
 !
 
 gemTask
@@ -100,10 +107,7 @@ gemTask: aString
 
 	self gemTask = aString ifTrue: [^self].
 	gemTask := aString.
-	self
-		generateGemNRS;
-		trigger: #changed;
-		yourself.
+	self generateGemNRS.
 !
 
 gemType
@@ -114,7 +118,6 @@ gemType: aSymbol
 	(#( #linked #remote ) includes: aSymbol) ifFalse: [self error: 'Invalid Gem type'].
 	self gemType = aSymbol ifTrue: [^self].
 	gemType := aSymbol.
-	self trigger: #changed.
 !
 
 gemVersion
@@ -147,7 +150,6 @@ gsPassword: aString
 
 	self gsPassword = aString ifTrue: [^self].
 	gsPassword := aString.
-	self trigger: #changed.
 !
 
 gsUserID
@@ -161,8 +163,12 @@ gsUserID: aString
 
 	self gsUserID = aString ifTrue: [^self].
 	gsUserID := aString.
-	self trigger: #changed.
 !
+
+hasActiveSessions
+
+	sessions := sessions select: [:each | each isValidSession].
+	^sessions notEmpty!
 
 hostPassword
 	^hostPassword!
@@ -171,7 +177,6 @@ hostPassword: aString
 
 	self hostPassword = aString ifTrue: [^self].
 	hostPassword := aString.
-	self trigger: #changed.
 !
 
 hostUserID
@@ -181,7 +186,19 @@ hostUserID: aString
 
 	self hostUserID = aString ifTrue: [^self].
 	hostUserID := aString.
-	self trigger: #changed.
+!
+
+icon
+
+	self hasActiveSessions ifTrue: [^Presenter icon].
+	self isAbleToLoadLibrary ifTrue: [^Object icon].
+	^Model icon.	"red - not available because we have another DLL loaded"
+	!
+
+initialize
+
+	super initialize.
+	self clearSessions.
 !
 
 initializeFromXML: aString
@@ -217,7 +234,23 @@ initials: aString
 
 	self initials = aString ifTrue: [^self].
 	initials := aString.
-	self trigger: #changed.
+!
+
+isAbleToLoadLibrary
+
+	| library |
+	^(library := GciLibrary activeLibrary) isNil or: [library class displayName = self gemVersion]!
+
+lastLogin
+
+	^lastLogin
+!
+
+lastLoginString
+
+	^self lastLogin 
+		ifNil: ['']
+		ifNotNil: [:value | value printString]
 !
 
 login
@@ -243,6 +276,12 @@ loginType: anObject
 	hostPassword 	:= ''.
 !
 
+postCopy
+
+	super postCopy.
+	lastLogin := nil.
+	sessions := IdentitySet new.!
+
 saveDefault
 
 	| path |
@@ -267,10 +306,7 @@ stoneHost: aString
 
 	self stoneHost = aString ifTrue: [^self].
 	stoneHost := aString.
-	self
-		generateStoneNRS;
-		trigger: #changed;
-		yourself.
+	self generateStoneNRS.
 
 !
 
@@ -283,10 +319,7 @@ stoneName: aString
 
 	self stoneName = aString ifTrue: [^self].
 	stoneName := aString.
-	self
-		generateStoneNRS;
-		trigger: #changed;
-		yourself.
+	self generateStoneNRS.
 !
 
 stoneNRS
@@ -296,31 +329,11 @@ stoneNRS: aString
 
 	self stoneNRS = aString ifTrue: [^self].
 	stoneNRS := aString.
-	self trigger: #changed.
-!
-
-updateFrom: aJadeLogin
-
-	aJadeLogin isNil ifTrue: [^self].
-	gemVersion 	:= aJadeLogin gemVersion.
-	stoneHost 	:= aJadeLogin stoneHost.
-	stoneName 	:= aJadeLogin stoneName.
-	stoneNRS 		:= aJadeLogin stoneNRS.
-	gemType 		:= aJadeLogin gemType.
-	gemHost 		:= aJadeLogin gemHost.
-	gemService 	:= aJadeLogin gemService.
-	gemTask 		:= aJadeLogin gemTask.
-	gemNRS 		:= aJadeLogin gemNRS.
-	loginType		:= aJadeLogin loginType.
-	hostUserID 	:= aJadeLogin hostUserID.
-	hostPassword 	:= aJadeLogin hostPassword.
-	gsUserID 		:= aJadeLogin gsUserID.
-	gsPassword 	:= aJadeLogin gsPassword.
-	initials		:= aJadeLogin initials.
-	debugPath		:= aJadeLogin debugPath.
-	self trigger: #changed.
 ! !
+!JadeLogin categoriesFor: #activeCount!public! !
+!JadeLogin categoriesFor: #addSession:!public! !
 !JadeLogin categoriesFor: #asXML!public! !
+!JadeLogin categoriesFor: #clearSessions!public! !
 !JadeLogin categoriesFor: #debugPath!accessing!public! !
 !JadeLogin categoriesFor: #debugPath:!accessing!public! !
 !JadeLogin categoriesFor: #gemHost!accessing!public! !
@@ -341,16 +354,23 @@ updateFrom: aJadeLogin
 !JadeLogin categoriesFor: #gsPassword:!accessing!public! !
 !JadeLogin categoriesFor: #gsUserID!accessing!public! !
 !JadeLogin categoriesFor: #gsUserID:!accessing!public! !
+!JadeLogin categoriesFor: #hasActiveSessions!public! !
 !JadeLogin categoriesFor: #hostPassword!accessing!public! !
 !JadeLogin categoriesFor: #hostPassword:!accessing!public! !
 !JadeLogin categoriesFor: #hostUserID!accessing!public! !
 !JadeLogin categoriesFor: #hostUserID:!accessing!public! !
+!JadeLogin categoriesFor: #icon!public! !
+!JadeLogin categoriesFor: #initialize!public! !
 !JadeLogin categoriesFor: #initializeFromXML:!public! !
 !JadeLogin categoriesFor: #initials!accessing!public! !
 !JadeLogin categoriesFor: #initials:!accessing!public! !
+!JadeLogin categoriesFor: #isAbleToLoadLibrary!public! !
+!JadeLogin categoriesFor: #lastLogin!accessing!public! !
+!JadeLogin categoriesFor: #lastLoginString!accessing!public! !
 !JadeLogin categoriesFor: #login!public! !
 !JadeLogin categoriesFor: #loginType!accessing!public! !
 !JadeLogin categoriesFor: #loginType:!accessing!public! !
+!JadeLogin categoriesFor: #postCopy!public! !
 !JadeLogin categoriesFor: #saveDefault!public! !
 !JadeLogin categoriesFor: #stoneHost!accessing!public! !
 !JadeLogin categoriesFor: #stoneHost:!accessing!public! !
@@ -358,9 +378,21 @@ updateFrom: aJadeLogin
 !JadeLogin categoriesFor: #stoneName:!accessing!public! !
 !JadeLogin categoriesFor: #stoneNRS!accessing!public! !
 !JadeLogin categoriesFor: #stoneNRS:!accessing!public! !
-!JadeLogin categoriesFor: #updateFrom:!public! !
 
 !JadeLogin class methodsFor!
+
+default
+
+	| path stream string |
+	path := self defaultPath.
+	string := self defaultXML.
+	[
+		stream := FileStream read: path type: #'ansi'.
+		string := stream upToEnd.
+		stream close.
+	] on: Error do: [:ex | ].	"file doesn't exist or we have an error reading it"
+	^self fromXML: string.
+!
 
 defaultPath
 
@@ -375,7 +407,7 @@ defaultXML
 
 ^'<?xml version="1.0"?>
 <JadeLogin 
-	gemVersion="64-bit 3.2" 
+	gemVersion="64-bit 3.4.1" 
 	stoneHost="localhost" 
 	stoneName="gs64stone" 
 	stoneNRS="!!tcp@localhost#server!!gs64stone" 
@@ -409,34 +441,11 @@ fromXML: aString
 
 new
 
-	| path stream string |
-	path := self defaultPath.
-	string := self defaultXML.
-	[
-		stream := FileStream read: path type: #'ansi'.
-		string := stream upToEnd.
-		stream close.
-	] on: Error do: [:ex | ].	"file doesn't exist or we have an error reading it"
-	^self fromXML: string.
-!
-
-publishedEventsOfInstances
-
-	^super publishedEventsOfInstances
-		add: #changed;
-		yourself.
-!
-
-sample
-"
-	JadeLogin sample.
-"
-	^self fromXML: self defaultXML.
+	^self fromXML: self defaultXML
 ! !
+!JadeLogin class categoriesFor: #default!public! !
 !JadeLogin class categoriesFor: #defaultPath!public! !
 !JadeLogin class categoriesFor: #defaultXML!public! !
 !JadeLogin class categoriesFor: #fromXML:!public! !
 !JadeLogin class categoriesFor: #new!public! !
-!JadeLogin class categoriesFor: #publishedEventsOfInstances!public! !
-!JadeLogin class categoriesFor: #sample!public! !
 
