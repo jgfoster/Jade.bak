@@ -10,15 +10,9 @@ LibGciRpc64_3_5 comment: ''!
 !LibGciRpc64_3_5 categoriesForClass!Unclassified! !
 !LibGciRpc64_3_5 class methodsFor!
 
-displayName
-
-	^'64-bit 3.5.0'.
-!
-
 fileNameSearch
 
 	^'libgcirpc-3.5.0-32.dll'.
 ! !
-!LibGciRpc64_3_5 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_5 class categoriesFor: #fileNameSearch!public! !
 

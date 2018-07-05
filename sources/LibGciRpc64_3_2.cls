@@ -25,15 +25,9 @@ gciErr: errorReport
 
 !LibGciRpc64_3_2 class methodsFor!
 
-displayName
-
-	^'64-bit 3.2'.
-!
-
 fileNameSearch
 
 	^'libgcirpc-3.2.0-32.dll'.
 ! !
-!LibGciRpc64_3_2 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2 class categoriesFor: #fileNameSearch!public! !
 

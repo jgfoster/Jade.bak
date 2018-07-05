@@ -10,15 +10,9 @@ LibGciRpc64_3_3_04 comment: ''!
 !LibGciRpc64_3_3_04 categoriesForClass!Unclassified! !
 !LibGciRpc64_3_3_04 class methodsFor!
 
-displayName
-
-	^'64-bit 3.3.4'.
-!
-
 fileNameSearch
 
 	^'libgcirpc-3.3.4-32.dll'.
 ! !
-!LibGciRpc64_3_3_04 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_3_04 class categoriesFor: #fileNameSearch!public! !
 

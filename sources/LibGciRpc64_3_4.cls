@@ -53,15 +53,9 @@ specialFromOop: anOop
 
 !LibGciRpc64_3_4 class methodsFor!
 
-displayName
-
-	^'64-bit 3.4.0'.
-!
-
 fileNameSearch
 
 	^'libgcirpc-3.4.0-32.dll'.
 ! !
-!LibGciRpc64_3_4 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_4 class categoriesFor: #fileNameSearch!public! !
 
