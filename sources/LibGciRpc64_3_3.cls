@@ -1,6 +1,6 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
-LibGciRpc64 subclass: #LibGciRpc64_3_3
+LibGciRpc64_3_1 subclass: #LibGciRpc64_3_3
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -9,17 +9,6 @@ LibGciRpc64_3_3 guid: (GUID fromString: '{905626b7-882d-4151-8165-7b33d4bc9095}'
 LibGciRpc64_3_3 comment: ''!
 !LibGciRpc64_3_3 categoriesForClass!Unclassified! !
 !LibGciRpc64_3_3 methodsFor!
-
-errorStructureClass
-
-	^GciErrSType64_31.
-!
-
-gciErr: errorReport
-
-	<cdecl: bool GciErr GciErrSType64_31*>
-	^self invalidCall
-!
 
 gsHasPragmas
 
@@ -32,8 +21,6 @@ specialFromOop: anOop
 	].
 	^super specialFromOop: anOop
 ! !
-!LibGciRpc64_3_3 categoriesFor: #errorStructureClass!private! !
-!LibGciRpc64_3_3 categoriesFor: #gciErr:!private! !
 !LibGciRpc64_3_3 categoriesFor: #gsHasPragmas!public! !
 !LibGciRpc64_3_3 categoriesFor: #specialFromOop:!public! !
 

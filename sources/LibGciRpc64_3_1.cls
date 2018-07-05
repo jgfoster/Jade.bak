@@ -1,6 +1,6 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
-LibGciRpc64 subclass: #LibGciRpc64_3_1
+LibGciRpc64_3_0 subclass: #LibGciRpc64_3_1
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
