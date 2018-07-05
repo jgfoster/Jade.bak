@@ -1,4 +1,4 @@
-﻿| package |
+| package |
 package := Package name: 'GemStone Session'.
 package paxVersion: 1;
 	basicComment: ''.
@@ -43,9 +43,10 @@ package methodNames
 	add: #LibGciRpc64 -> #jadeServerClass;
 	add: #LibGciRpc64_24 -> #jadeServerClass;
 	add: #LibGciRpc64_3_0 -> #jadeServerClass;
-	add: #LibGciRpc64_3_2 -> #jadeServerClass;
-	add: #LibGciRpc64_3_3 -> #jadeServerClass;
-	add: #LibGciRpc64_3_4 -> #jadeServerClass;
+	add: #LibGciRpc64_3_1_0 -> #jadeServerClass;
+	add: #LibGciRpc64_3_2_0 -> #jadeServerClass;
+	add: #LibGciRpc64_3_3_0 -> #jadeServerClass;
+	add: #LibGciRpc64_3_4_0 -> #jadeServerClass;
 	add: #LibGciTs_3_3 -> #jadeServerClass;
 	yourself.
 
@@ -252,29 +253,37 @@ jadeServerClass
 ! !
 !LibGciRpc64_3_0 categoriesFor: #jadeServerClass!public! !
 
-!LibGciRpc64_3_2 methodsFor!
+!LibGciRpc64_3_1_0 methodsFor!
+
+jadeServerClass
+
+	^JadeServer64bit3x
+! !
+!LibGciRpc64_3_1_0 categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64_3_2_0 methodsFor!
 
 jadeServerClass
 
 	^JadeServer64bit32
 ! !
-!LibGciRpc64_3_2 categoriesFor: #jadeServerClass!public! !
+!LibGciRpc64_3_2_0 categoriesFor: #jadeServerClass!public! !
 
-!LibGciRpc64_3_3 methodsFor!
+!LibGciRpc64_3_3_0 methodsFor!
 
 jadeServerClass
 
 	^JadeServer64bit33
 ! !
-!LibGciRpc64_3_3 categoriesFor: #jadeServerClass!public! !
+!LibGciRpc64_3_3_0 categoriesFor: #jadeServerClass!public! !
 
-!LibGciRpc64_3_4 methodsFor!
+!LibGciRpc64_3_4_0 methodsFor!
 
 jadeServerClass
 
 	^JadeServer64bit34
 ! !
-!LibGciRpc64_3_4 categoriesFor: #jadeServerClass!public! !
+!LibGciRpc64_3_4_0 categoriesFor: #jadeServerClass!public! !
 
 !LibGciTs_3_3 methodsFor!
 

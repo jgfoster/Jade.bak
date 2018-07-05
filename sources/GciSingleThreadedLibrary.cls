@@ -401,6 +401,8 @@ hardBreakSession: anInteger
 
 initialize
 
+	(ActiveLibrary isNil or: [ActiveLibrary == self]) ifFalse: [self error: 'GemStone allows only one library per process!!'].
+	ActiveLibrary := self.
 	super initialize.
 	semaphore := Semaphore forMutualExclusion.
 	self gciInit ifFalse: [self error: 'GciInit() failed!!'].
