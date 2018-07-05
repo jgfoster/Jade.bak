@@ -431,15 +431,3 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #sendInterpreted:to:with:session:!public! !
 !LibGciRpc64 categoriesFor: #specialFromOop:!public! !
 
-!LibGciRpc64 class methodsFor!
-
-displayName
-
-	| string |
-	string := self name.
-	string := string copyFrom: 'LibGciRpc64' size + 2 to: string size.
-	string := string copyReplaceAll: '_0' with: '.'.
-	string := string copyReplaceAll: '_' with: '.'.
-	^'64-bit ' , string! !
-!LibGciRpc64 class categoriesFor: #displayName!public! !
-

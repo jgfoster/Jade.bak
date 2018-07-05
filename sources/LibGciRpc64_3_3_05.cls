@@ -1,6 +1,6 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
-LibGciRpc64_3_3 subclass: #LibGciRpc64_3_3_05
+LibGciRpc64_3_3_0 subclass: #LibGciRpc64_3_3_05
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -8,11 +8,3 @@ LibGciRpc64_3_3 subclass: #LibGciRpc64_3_3_05
 LibGciRpc64_3_3_05 guid: (GUID fromString: '{441ababf-871b-4370-940c-91c646dc1187}')!
 LibGciRpc64_3_3_05 comment: ''!
 !LibGciRpc64_3_3_05 categoriesForClass!Unclassified! !
-!LibGciRpc64_3_3_05 class methodsFor!
-
-fileNameSearch
-
-	^'libgcirpc-3.3.5-32.dll'.
-! !
-!LibGciRpc64_3_3_05 class categoriesFor: #fileNameSearch!public! !
-
