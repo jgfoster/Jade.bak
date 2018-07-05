@@ -2,7 +2,7 @@
 
 ExternalLibrary subclass: #GciLibrary
 	instanceVariableNames: ''
-	classVariableNames: ''
+	classVariableNames: 'ActiveLibrary'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciLibrary guid: (GUID fromString: '{ad9a79e0-d6ef-4d77-83fc-015b118b2331}')!
@@ -320,6 +320,10 @@ version
 
 !GciLibrary class methodsFor!
 
+activeLibrary
+
+	^ActiveLibrary!
+
 addMissingMethods
 	"The external function address is cached in the method and if it is inherited we will use the first one called.
 	Having our own method allows us to have multiple libraries loaded and to call the proper function."
@@ -362,6 +366,7 @@ fileNameSearch
 onStartup2
 
 	default := nil.
+	ActiveLibrary := nil.
 !
 
 open: pathString
@@ -399,6 +404,7 @@ withDisplayName: aString
 
 	^self allSubclasses detect: [:each | each displayName = aString].
 ! !
+!GciLibrary class categoriesFor: #activeLibrary!public! !
 !GciLibrary class categoriesFor: #addMissingMethods!public! !
 !GciLibrary class categoriesFor: #displayName!public! !
 !GciLibrary class categoriesFor: #fileName!public! !

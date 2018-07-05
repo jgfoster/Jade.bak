@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Shell subclass: #JadeLoginShell
-	instanceVariableNames: 'loginList debugPathPresenter gemHostPresenter gemServicePresenter gemTaskPresenter gemTypePresenter hostPasswordPresenter hostUserIDPresenter initialsPresenter isModified loginListPresenter loginTypePresenter passwordPresenter stoneHostPresenter stoneNamePresenter userIDPresenter versionListPresenter'
+	instanceVariableNames: 'debugPathPresenter gemHostPresenter gemServicePresenter gemTaskPresenter gemTypePresenter hostPasswordPresenter hostUserIDPresenter initialsPresenter inUpdateView isModified loginListPresenter loginTypePresenter passwordPresenter stoneHostPresenter stoneNamePresenter userIDPresenter versionListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -38,9 +38,13 @@ with contributions from Bruno Buzzi Brassesco.'
 
 addLogin
 
-	self 
-		model: self class defaultModel;
-		updateView;
+	| login |
+	login := loginListPresenter selectionOrNil 
+		ifNil: [JadeLogin default]
+		ifNotNil: [:value | value copy].
+	loginListPresenter 
+		list: (loginListPresenter list copyWith: login);
+		selection: login;
 		yourself.
 !
 
@@ -72,6 +76,38 @@ createComponents
 	hostPasswordPresenter	:= self add: TextPresenter			new name: 'hostPassword'.
 	initialsPresenter		:= self add: TextPresenter			new name: 'initials'.
 	debugPathPresenter		:= self add: TextPresenter			new name: 'debugPath'.
+!
+
+createSchematicWiring
+
+	super createSchematicWiring.
+	loginListPresenter	
+		when: #'selectionChanged'	send: #'selectionChanged' 	to: self;
+		when: #'actionPerformed'	send: #'login'			to: self;
+		yourself.
+	versionListPresenter		when: #selectionChanged 	send: #modified 	to: self.
+	stoneHostPresenter 		when: #valueChanged 	send: #modified 	to: self.
+	stoneNamePresenter 		when: #valueChanged 	send: #modified 	to: self.
+	gemTypePresenter		when: #valueChanged 	send: #modified 	to: self.
+	gemHostPresenter 		when: #valueChanged 	send: #modified 	to: self.
+	gemServicePresenter 	when: #valueChanged 	send: #modified 	to: self.
+	gemTaskPresenter 		when: #valueChanged 	send: #modified 	to: self.
+	userIDPresenter 		when: #valueChanged 	send: #modified 	to: self.
+	passwordPresenter 		when: #valueChanged 	send: #modified 	to: self.
+	loginTypePresenter		when: #valueChanged 	send: #modified 	to: self.
+	hostUserIDPresenter		when: #valueChanged 	send: #modified 	to: self.
+	hostPasswordPresenter	when: #valueChanged 	send: #modified 	to: self.
+	initialsPresenter		when: #valueChanged	send: #modified 	to: self.
+	debugPathPresenter		when: #valueChanged	send: #modified 	to: self.
+!
+
+dataPath
+
+	| regKey appData |
+	regKey := RegKey userRoot at: 'Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' ifAbsent: [nil].
+	appData := regKey valueAt: 'AppData'.
+	(appData endsWith: ' Dat') ifTrue: [appData := appData , 'a'].		"Wine seems to cut off a character"
+	^appData , '\JadeData.gss'.
 !
 
 debugGCI
@@ -148,22 +184,36 @@ editUndo
 fileOpen
 	"Prompts for a file to open into the receiver"
 
-	| openFilename |
-	openFilename := FileOpenDialog new
-		fileTypes: self class fileTypes;
-		defaultExtension: self class defaultFileExtension;
+	| login path stream string |
+	path := FileOpenDialog new
+		fileTypes: (Array with: #('GemStone/Smalltalk Files (*.GSS)' '*.GSS' ) with: #('All Files (*.*)' '*.*' ));
+		defaultExtension: 'gss';
 		value: SessionManager current imageBase , 'connections\*.GSS';
 		showModal.
-	openFilename isNil ifTrue: [^self].
-	self fileLoad.
+	path isNil ifTrue: [^self].
+	stream := FileStream read: path type: #'ansi'.
+	string := stream upToEnd.
+	stream close.
+	login := JadeLogin fromXML: string.
+	loginListPresenter 
+		list: (loginListPresenter list copyWith: login);
+		selection: login;
+		yourself.
 !
 
 fillVersionList
+
 	| list |
 	list := GciLibrary allSubclasses collect: [:each | each displayName].
 	list := list reject: [:each | each isNil].
 	list := list asSortedCollection: [:a :b | self isVersion: a lessThanOrEqualTo: b].
 	versionListPresenter list: list!
+
+initialize
+
+	super initialize.
+	inUpdateView := false.
+!
 
 isVersion: a lessThanOrEqualTo: b
 
@@ -185,10 +235,34 @@ isVersion: a lessThanOrEqualTo: b
 	^true.
 !
 
+loadData
+
+	| data list |
+	[
+		| fileStream |
+		fileStream := FileStream read: self dataPath type: #'binary'.
+		data := Object binaryReadFrom: fileStream.
+		fileStream close.
+	] on: Error do: [:ex | 
+		data := OrderedCollection new
+			add: (list := OrderedCollection with: JadeLogin default);
+			add: list first;
+			yourself.
+	].
+	loginListPresenter 
+		list: (data at: 1);
+		selectionOrNil: (data at: 2);
+		yourself.
+!
+
 login
 
 	| session |
 	self updateModel.
+	self model isAbleToLoadLibrary ifFalse: [
+		Sound beep.
+		^self
+	].
 	[
 		session := self model login.
 	] on: Error do: [:ex | 
@@ -201,10 +275,15 @@ login
 	self postLogin: session.
 !
 
+modified
+
+	inUpdateView ifTrue: [^self].
+	self updateModel.
+	loginListPresenter view updateAll.!
+
 onViewClosed
 
-	self updateModel.
-	model saveDefault.
+	self saveData.
 	super onViewClosed.
 !
 
@@ -214,6 +293,7 @@ onViewOpened
 	self view position: 80 @ 5.
 	self 
 		fillVersionList;
+		loadData;
 		updateView;
 		sendRequiredMessages;
 		yourself.
@@ -235,7 +315,9 @@ openJadeHomePage
 
 postLogin: aGciSession
 
+	model addSession: aGciSession.
 	versionListPresenter view disable.
+	loginListPresenter view updateAll.
 	self setWorkingDirectory.
 	JadeTranscript showOnSession: aGciSession.
 !
@@ -262,22 +344,63 @@ queryCommand: query
 		query isEnabled: ((View focus isKindOf: TextEdit) and: [View focus canRedo]).
 		^true.
 	].
+	(#(#login) includes: query commandSymbol) ifTrue: [
+		query isEnabled: (loginListPresenter hasSelection and: [loginListPresenter selection isAbleToLoadLibrary]).
+		^true
+	].
+	(#(#removeLogin) includes: query commandSymbol) ifTrue: [
+		query isEnabled: loginListPresenter hasSelection.
+		^true
+	].
 	^super queryCommand: query.
 !
 
-removeLogin!
+removeLogin
+
+	self updateModel.
+	loginListPresenter 
+		list: (loginListPresenter list copyWithout: loginListPresenter selection);
+		selectionOrNil: nil;
+		yourself.
+!
+
+saveData
+	"Version is essentially the number of elements"
+
+	| data fileStream |
+	data := OrderedCollection new
+		add: loginListPresenter list;
+		add: loginListPresenter selectionOrNil;
+		yourself.
+	[
+		fileStream := FileStream 
+			write: self dataPath 
+			mode: #'truncate' 
+			check: false 
+			type: #'binary'.
+		data binaryStoreOn: fileStream.
+		fileStream close.
+	] on: Error do: [:ex | 
+		MessageBox warning: ex description.
+		fileStream ifNotNil: [fileStream close].
+		ex return.
+	].
+!
+
+selectionChanged
+
+	self 
+		updateModel;
+		model: loginListPresenter selectionOrNil;
+		updateView;
+		yourself.
+	!
 
 sendRequiredMessages
 	"The ImageStripper seems to think these messages aren't needed, but we die during runtime packaging with a MessageNotUnderstood."
 
 	'string1' equals: 'string2'.
 	1 isImmediate.
-!
-
-setDocumentData: aString
-
-	self model updateFrom: (JadeLogin fromXML: aString).
-	self updateView.
 !
 
 setWorkingDirectory
@@ -301,6 +424,8 @@ showStoneNRS
 
 updateModel
 
+	inUpdateView ifTrue: [^self].
+	self model ifNil: [^self].
 	self model
 		gemVersion:	versionListPresenter 		selection;
 		stoneHost: 	stoneHostPresenter 		value trimBlanks;
@@ -321,29 +446,40 @@ updateModel
 
 updateView
 
-	| selection |
-	selection := versionListPresenter list 
-		detect: [:each | each = self model gemVersion] 
-		ifNone: [versionListPresenter list last].
-	versionListPresenter		selection: selection.
-	stoneHostPresenter 		value: self model stoneHost.
-	stoneNamePresenter 		value: self model stoneName.
-	gemTypePresenter 		value: self model gemType.
-	gemHostPresenter 		value: self model gemHost.
-	gemServicePresenter 	value: self model gemService.
-	gemTaskPresenter 		value: self model gemTask.
-	userIDPresenter 		value: self model gsUserID.
-	passwordPresenter 		value: self model gsPassword.
-	loginTypePresenter		value: self model loginType.
-	hostUserIDPresenter		value: self model hostUserID.
-	hostPasswordPresenter	value: self model hostPassword.
-	initialsPresenter		value: self model initials.
-	debugPathPresenter		value: self model debugPath.
-! !
+	[
+		inUpdateView := true.
+		self model ifNil: [
+			(self view viewNamed: 'bottom') hide.
+		] ifNotNil: [
+			| selection |
+			(self view viewNamed: 'bottom') show.
+			selection := versionListPresenter list 
+				detect: [:each | each = self model gemVersion] 
+				ifNone: [versionListPresenter list last].
+			versionListPresenter		selection: selection.
+			stoneHostPresenter 		value: self model stoneHost.
+			stoneNamePresenter 		value: self model stoneName.
+			gemTypePresenter 		value: self model gemType.
+			gemHostPresenter 		value: self model gemHost.
+			gemServicePresenter 	value: self model gemService.
+			gemTaskPresenter 		value: self model gemTask.
+			userIDPresenter 		value: self model gsUserID.
+			passwordPresenter 		value: self model gsPassword.
+			loginTypePresenter		value: self model loginType.
+			hostUserIDPresenter		value: self model hostUserID.
+			hostPasswordPresenter	value: self model hostPassword.
+			initialsPresenter		value: self model initials.
+			debugPathPresenter		value: self model debugPath.
+		].
+	] ensure: [
+		inUpdateView := false.
+	].! !
 !JadeLoginShell categoriesFor: #aboutJade!public! !
 !JadeLoginShell categoriesFor: #addLogin!commands!public! !
 !JadeLoginShell categoriesFor: #checkScintillaVersion!public! !
 !JadeLoginShell categoriesFor: #createComponents!public! !
+!JadeLoginShell categoriesFor: #createSchematicWiring!public! !
+!JadeLoginShell categoriesFor: #dataPath!public! !
 !JadeLoginShell categoriesFor: #debugGCI!commands!public! !
 !JadeLoginShell categoriesFor: #editCopy!public! !
 !JadeLoginShell categoriesFor: #editCut!public! !
@@ -354,8 +490,11 @@ updateView
 !JadeLoginShell categoriesFor: #editUndo!public! !
 !JadeLoginShell categoriesFor: #fileOpen!commands!public! !
 !JadeLoginShell categoriesFor: #fillVersionList!public! !
+!JadeLoginShell categoriesFor: #initialize!public! !
 !JadeLoginShell categoriesFor: #isVersion:lessThanOrEqualTo:!public! !
+!JadeLoginShell categoriesFor: #loadData!public! !
 !JadeLoginShell categoriesFor: #login!public! !
+!JadeLoginShell categoriesFor: #modified!public! !
 !JadeLoginShell categoriesFor: #onViewClosed!public! !
 !JadeLoginShell categoriesFor: #onViewOpened!public! !
 !JadeLoginShell categoriesFor: #openGemTalkHomePage!public! !
@@ -363,8 +502,9 @@ updateView
 !JadeLoginShell categoriesFor: #postLogin:!public! !
 !JadeLoginShell categoriesFor: #queryCommand:!public! !
 !JadeLoginShell categoriesFor: #removeLogin!commands!public! !
+!JadeLoginShell categoriesFor: #saveData!public! !
+!JadeLoginShell categoriesFor: #selectionChanged!public! !
 !JadeLoginShell categoriesFor: #sendRequiredMessages!public! !
-!JadeLoginShell categoriesFor: #setDocumentData:!accessing!public! !
 !JadeLoginShell categoriesFor: #setWorkingDirectory!public! !
 !JadeLoginShell categoriesFor: #showGemNRS!commands!public! !
 !JadeLoginShell categoriesFor: #showStoneNRS!commands!public! !
@@ -372,22 +512,6 @@ updateView
 !JadeLoginShell categoriesFor: #updateView!public! !
 
 !JadeLoginShell class methodsFor!
-
-defaultFileExtension
-
-	^'gss'!
-
-defaultModel
-
-	^JadeLogin new.
-!
-
-fileTypes
-
-	^Array 
-		with: #('GemStone/Smalltalk Files (*.GSS)' '*.GSS' )
-		with: #('All Files (*.*)' '*.*' ).
-!
 
 icon
 
@@ -402,16 +526,7 @@ resource_Default_view
 	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Default_view)
 	"
 
-	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ShellView) 34 27 nil nil 8 #(13238272 65536) 416 nil 524550 ##(Smalltalk.ColorRef) 8 4278190080 328198 ##(Smalltalk.Point) 1401 841 551 nil nil nil 416 1180166 ##(Smalltalk.ProportionalLayout) 170 176 34 4 410 ##(Smalltalk.ContainerView) 34 15 nil 416 34 2 8 1140850688 131073 608 nil nil nil 7 nil nil nil 608 852230 ##(Smalltalk.FramingLayout) 170 176 34 10 410 ##(Smalltalk.Toolbar) 34 25 nil 608 34 2 8 1409289036 131137 736 nil 466 8 4278190080 nil 7 nil nil nil 736 466 816 8 1795534112 170 192 8 #() 170 192 34 10 58597 853766 ##(Smalltalk.ToolbarButton) 58597 nil 736 1 1180998 4 ##(Smalltalk.CommandDescription) #editCut 8 'Cut' 1 1 nil 395334 3 ##(Smalltalk.Bitmap) nil true 1572870 ##(Smalltalk.ImageRelativeFileLocator) 8 'EditBar.bmp' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy) 8 'dolphindr7.dll' nil nil 7 514 193 33 1 58599 930 58599 nil 736 1 962 #editCopy 8 'Copy' 1 1 nil 1024 3 58601 930 58601 nil 736 1 962 #editPaste 8 'Paste' 1 1 nil 1024 5 58603 930 58603 nil 736 1 962 #editDelete 8 'Delete' 1 1 nil 1024 11 58605 930 58605 nil 736 1 962 #editUndo 8 'Undo' 1 1 nil 1024 7 34 6 944 1152 1200 1248 1296 1050118 ##(Smalltalk.ToolbarSeparator) nil nil 736 3 nil 1 170 176 34 2 1024 1 nil 1 nil 514 33 33 514 45 45 nil nil 983302 ##(Smalltalk.MessageSequence) 138 144 34 2 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 514 1 1 514 241 51 736 1522 #updateSizePosted 880 736 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 120 0 0 0 25 0 0 0] 8 #() 514 193 193 nil 27 1181766 2 ##(Smalltalk.FramingConstraints) 1180678 ##(Smalltalk.FramingCalculation) #fixedParentLeft 1 1730 #fixedViewLeft 241 1730 #fixedParentTop 1 1730 #fixedViewTop 51 410 ##(Smalltalk.PushButton) 34 20 nil 608 34 2 8 1140924416 1 1808 nil nil nil 7 nil nil nil 1808 nil 8 1795593280 962 #addLogin 8 '+' 1 1 nil nil false nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 1319 61 514 51 51 1808 1522 #text: 34 1 8 '+' 1808 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 147 2 0 0 30 0 0 0 172 2 0 0 55 0 0 0] 8 #() 1680 nil 29 1698 1730 #fixedParentRight -49 1760 51 1776 61 1792 51 410 ##(Smalltalk.PushButton) 34 20 nil 608 34 2 8 1140924416 1 2160 nil nil nil 7 nil nil nil 2160 nil 8 1795593280 962 #removeLogin 8 '-' 1 1 nil nil false nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 1319 121 514 51 51 2160 1522 #text: 34 1 8 '-' 2160 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 147 2 0 0 60 0 0 0 172 2 0 0 85 0 0 0] 8 #() 1680 nil 29 1698 2144 -49 1760 51 1730 #fixedPreviousBottom 11 1792 51 410 ##(Smalltalk.ListView) 34 30 nil 608 34 2 8 1409355853 1025 2512 590662 2 ##(Smalltalk.ListModel) 138 144 880 nil 1310726 ##(Smalltalk.IdentitySearchPolicy) 466 8 4278190080 nil 7 nil nil nil 2512 nil 8 1795483760 459270 ##(Smalltalk.Message) #displayString 8 #() ##(Smalltalk.IconicListAbstract) 1049926 1 ##(Smalltalk.IconImageManager) nil nil nil nil nil nil 138 144 34 6 920646 5 ##(Smalltalk.ListViewColumn) 8 'Version' 201 #left 2706 #gemVersion 8 #() ##(Smalltalk.SortedCollection) nil nil 2512 nil 1 nil nil 2818 8 'Gem Host' 201 #left 2706 #gemHost 2880 2706 #<= 2880 nil nil 2512 nil 1 nil nil 2818 8 'NetLDI' 201 #left 2706 #gemService 2880 2706 #<= 2880 nil nil 2512 nil 1 nil nil 2818 8 'Stone' 201 #left 2706 #stoneName 2880 2706 #<= 2880 nil nil 2512 nil 1 nil nil 2818 8 'User' 201 #left 2706 #gsUserID 2880 2706 #<= 2880 nil nil 2512 nil 1 nil nil 2818 8 'Last Login' 303 #left 2706 #lastLoginString 880 2706 #<= 880 nil nil 2512 nil 3 nil nil #report 880 nil 131169 nil 34 4 nil nil 514 1 1 nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 1 51 514 1319 297 2512 1522 #text: 34 1 8 'Version' 2512 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 147 2 0 0 173 0 0 0] 8 #() 1680 nil 27 1698 1744 1 2144 -49 2496 1 1730 #fixedParentBottom 1 410 ##(Smalltalk.Toolbar) 34 25 nil 608 34 2 8 1140853580 131137 3488 nil 466 8 4278190080 nil 519 nil 263174 ##(Smalltalk.Font) nil true 459014 ##(Smalltalk.LOGFONT) 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 65 114 105 97 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 514 193 193 nil 3488 466 3568 8 1795534112 170 192 880 170 192 34 4 58607 1246982 ##(Smalltalk.ToolbarSystemButton) 58607 nil 3488 1 962 #getHelpOn 8 'Get help on widget' 1 1 nil 1 23 58609 930 58609 nil 3488 1 962 #openHelp 8 'Jade Help' 1 1 nil 1010 nil true 1056 8 'Tools.bmp' 1104 nil 7 514 1857 33 71 34 2 3776 3824 170 176 34 4 1 1 3872 31 nil 1 nil 514 33 33 514 45 45 nil 656198 1 ##(Smalltalk.FlowLayout) 1 1 1 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 241 1 514 1129 51 3488 1522 #updateSizePosted 880 3488 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 120 0 0 0 0 0 0 0 172 2 0 0 25 0 0 0] 8 #() 1680 nil 27 1698 1730 #fixedPreviousRight 1 2144 1 1776 1 1792 51 170 192 34 6 2512 8 'loginList' 736 8 'Edit Tools' 3488 8 'Other Tools' nil 1458 138 144 34 1 1522 #createAt:extent: 34 2 514 1 1 514 1369 347 608 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 172 2 0 0 173 0 0 0] 34 5 736 3488 2512 1808 2160 1680 nil 27 39 410 ##(Smalltalk.ContainerView) 34 15 nil 416 34 2 8 1140850688 131073 4480 nil nil nil 7 nil nil nil 4480 674 170 176 34 4 410 ##(Smalltalk.ContainerView) 34 15 nil 4480 34 2 8 1140850688 131073 4592 nil nil nil 7 nil nil nil 4592 674 170 176 34 28 410 ##(Smalltalk.StaticText) 34 16 nil 4592 34 2 8 1140850944 1 4704 nil nil nil 7 nil nil nil 4704 nil 8 1795590816 852486 ##(Smalltalk.NullConverter) nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 11 213 514 371 41 4704 1522 #text: 34 1 8 'GemStone User ID:' 4704 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 106 0 0 0 190 0 0 0 126 0 0 0] 8 #() 1680 nil 27 1698 1744 11 1760 371 2496 3 1792 41 410 ##(Smalltalk.ComboBox) 34 17 nil 4592 34 2 8 1144063491 1025 5040 2578 138 144 880 nil 2640 466 8 4278190080 nil 7 nil nil nil 5040 nil 8 1796107360 2706 #displayString 8 #() 880 401 1458 138 144 34 1 1522 #createAt:extent: 34 2 514 391 11 514 285 53 5040 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 5 0 0 0 81 1 0 0 31 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 1776 11 1792 47 410 ##(Smalltalk.StaticText) 34 16 nil 4592 34 2 8 1140850944 1 5392 nil nil nil 7 nil nil nil 5392 nil 8 1795590816 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 11 167 514 371 39 5392 1522 #text: 34 1 8 'Stone Name:' 5392 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 83 0 0 0 190 0 0 0 102 0 0 0] 8 #() 1680 nil 27 1698 1744 11 1760 371 2496 11 1792 39 410 ##(Smalltalk.TextEdit) 34 16 nil 4592 34 2 8 1140916352 1025 5712 nil 466 8 4278190080 nil 7 nil nil nil 5712 nil 8 1795431936 4786 nil nil 1 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 391 167 514 285 45 5712 1522 #setMarginWidths: 34 1 8 #(3 3) 5712 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 83 0 0 0 81 1 0 0 105 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 1730 #fixedPreviousTop 1 1792 45 410 ##(Smalltalk.StaticText) 34 16 nil 4592 34 2 8 1140850944 1 6080 nil nil nil 7 nil nil nil 6080 nil 8 1795590816 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 11 67 514 371 31 6080 1522 #text: 34 1 8 'RPC Gem Host Name or IP:' 6080 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 33 0 0 0 190 0 0 0 48 0 0 0] 8 #() 1680 nil 27 1698 1744 11 1760 371 2496 11 1792 31 410 ##(Smalltalk.StaticText) 34 16 nil 4592 34 2 8 1140850944 1 6400 nil nil nil 7 nil nil nil 6400 nil 8 1795590816 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 11 313 514 371 41 6400 1522 #text: 34 1 8 'Monticello User Name:' 6400 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 156 0 0 0 190 0 0 0 176 0 0 0] 8 #() 1680 nil 27 1698 1744 11 1760 371 2496 11 1792 41 410 ##(Smalltalk.TextEdit) 34 16 nil 4592 34 2 8 1140916352 1025 6720 nil 466 8 4278190080 nil 7 nil nil nil 6720 nil 8 1795431936 4786 nil nil 1 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 391 313 514 285 45 6720 1522 #setMarginWidths: 34 1 8 #(3 3) 6720 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 156 0 0 0 81 1 0 0 178 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 6064 1 1792 45 410 ##(Smalltalk.StaticText) 34 16 nil 4592 34 2 8 1140850944 1 7072 nil nil nil 7 nil nil nil 7072 nil 8 1795590816 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 11 21 514 371 41 7072 1522 #text: 34 1 8 'GemStone/Smalltalk Version:' 7072 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 10 0 0 0 190 0 0 0 30 0 0 0] 8 #() 1680 nil 27 1698 1744 11 1760 371 1776 21 1792 41 410 ##(Smalltalk.StaticText) 34 16 nil 4592 34 2 8 1140850944 1 7392 nil nil nil 7 nil nil nil 7392 nil 8 1795590816 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 11 113 514 371 31 7392 1522 #text: 34 1 8 'NetLDI Service Name or Port:' 7392 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 56 0 0 0 190 0 0 0 71 0 0 0] 8 #() 1680 nil 27 1698 1744 11 1760 371 2496 3 1792 31 410 ##(Smalltalk.TextEdit) 34 16 nil 4592 34 2 8 1140916352 1025 7712 nil 466 5792 nil 7 nil nil nil 7712 nil 8 1795431936 4786 nil nil 1 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 391 67 514 285 45 7712 1522 #setMarginWidths: 34 1 8 #(3 3) 7712 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 33 0 0 0 81 1 0 0 55 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 6064 1 1792 45 410 ##(Smalltalk.TextEdit) 34 16 nil 4592 34 2 8 1140916352 1025 8048 nil 466 5792 nil 7 nil nil nil 8048 nil 8 1795431936 4786 nil nil 1 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 391 113 514 285 45 8048 1522 #setMarginWidths: 34 1 8 #(3 3) 8048 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 56 0 0 0 81 1 0 0 78 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 6064 1 1792 45 410 ##(Smalltalk.TextEdit) 34 16 nil 4592 34 2 8 1140916352 1025 8384 nil 466 5792 nil 7 nil nil nil 8384 nil 8 1795431936 4786 nil nil 1 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 391 213 514 285 45 8384 1522 #setMarginWidths: 34 1 8 #(3 3) 8384 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 106 0 0 0 81 1 0 0 128 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 6064 1 1792 45 410 ##(Smalltalk.TextEdit) 34 16 nil 4592 34 2 8 1140916384 1025 8720 nil 466 8 4278190080 nil 7 nil nil nil 8720 nil 8 1795431936 4786 nil nil 1 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 391 259 514 285 45 8720 1522 #setMarginWidths: 34 1 8 #(3 3) 8720 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 129 0 0 0 81 1 0 0 151 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 6064 1 1792 45 410 ##(Smalltalk.StaticText) 34 16 nil 4592 34 2 8 1140850944 1 9072 nil nil nil 7 nil nil nil 9072 nil 8 1795590816 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 11 259 514 371 41 9072 1522 #text: 34 1 8 'GemStone Password:' 9072 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 129 0 0 0 190 0 0 0 149 0 0 0] 8 #() 1680 nil 27 1698 1744 11 1760 371 2496 3 1792 41 170 192 34 14 5712 8 'stoneName' 8720 8 'password' 8384 8 'userID' 5040 8 'versionList' 6720 8 'initials' 7712 8 'gemHost' 8048 8 'gemService' nil 1458 138 144 34 1 1522 #createAt:extent: 34 2 514 1 1 514 685 367 4592 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 86 1 0 0 183 0 0 0] 34 14 7072 5040 6080 7712 7392 8048 5392 5712 4704 8384 9072 8720 6400 6720 1680 nil 27 1698 1744 1 1730 #relativeParentWidth 327734 ##(Smalltalk.Float) 8 0 0 0 0 0 0 224 63 1776 1 3472 1 410 ##(Smalltalk.ContainerView) 34 15 nil 4480 34 2 8 1140850688 131073 9760 nil nil nil 7 nil nil nil 9760 674 170 176 34 26 410 ##(Smalltalk.TextEdit) 34 16 nil 9760 34 2 8 1140916352 1025 9872 nil 466 5792 nil 7 nil nil nil 9872 nil 8 1795431936 4786 nil nil 1 1458 138 144 34 3 1522 #createAt:extent: 34 2 514 321 115 514 355 45 9872 1522 #text: 34 1 8 'gemnetobject' 9872 1522 #setMarginWidths: 34 1 8 #(3 3) 9872 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 160 0 0 0 57 0 0 0 81 1 0 0 79 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 6064 1 1792 45 410 ##(Smalltalk.ContainerView) 34 15 nil 9760 34 2 8 1409286144 393217 10256 nil 466 8 4278190080 nil 7 nil nil nil 10256 656390 ##(Smalltalk.GridLayout) 1 3 1 1 170 192 34 4 410 ##(Smalltalk.RadioButton) 34 16 nil 10256 34 2 8 1140924425 1 10416 721990 2 ##(Smalltalk.ValueHolder) nil nil 1376774 ##(Smalltalk.PluggableSearchPolicy) 2706 #= 8 #() 2706 #hash 8 #() false 466 10336 nil 7 nil nil nil 10416 nil 8 1795593280 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 1 39 514 297 39 10416 1522 #text: 34 1 8 'Native OS User' 10416 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 19 0 0 0 148 0 0 0 38 0 0 0] 8 #() 1680 nil 27 8 'member' 410 ##(Smalltalk.RadioButton) 34 16 nil 10256 34 2 8 1141055497 1 10880 10482 nil nil 10514 2706 #= 8 #() 2706 #hash 8 #() false 466 10336 nil 7 nil nil nil 10880 nil 8 1795593280 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 1 1 514 297 39 10880 1522 #text: 34 1 8 'NetLDI Guest' 10880 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 148 0 0 0 19 0 0 0] 8 #() 1680 nil 27 8 'guest' nil 1458 138 144 34 1 1522 #createAt:extent: 34 2 514 11 163 514 301 81 10256 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 81 0 0 0 155 0 0 0 121 0 0 0] 34 2 10880 10416 1680 nil 27 1698 1744 11 1760 301 2496 5 1792 81 410 ##(Smalltalk.StaticText) 34 16 nil 9760 34 2 8 1140850944 1 11488 nil nil nil 7 nil nil nil 11488 nil 8 1795590816 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 321 163 514 161 41 11488 1522 #text: 34 1 8 'OS User ID:' 11488 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 160 0 0 0 81 0 0 0 240 0 0 0 101 0 0 0] 8 #() 1680 nil 27 1698 4224 11 1760 161 6064 1 1792 41 410 ##(Smalltalk.PushButton) 34 20 nil 9760 34 2 8 1140924416 1 11808 nil nil nil 7 nil nil nil 11808 nil 8 1795593280 962 #debugGCI 8 'Debug GCI' 1 1 nil nil false nil nil nil 1458 138 144 34 3 1522 #createAt:extent: 34 2 514 11 5 514 141 51 11808 1522 #isEnabled: 8 #(false) 11808 1522 #text: 34 1 8 'Debug GCI' 11808 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 2 0 0 0 75 0 0 0 27 0 0 0] 8 #() 1680 nil 29 1698 1744 11 1760 141 2496 5 1792 51 410 ##(Smalltalk.StaticText) 34 16 nil 9760 34 2 8 1140850944 1 12176 nil nil nil 7 nil nil nil 12176 nil 8 1795590816 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 321 209 514 161 41 12176 1522 #text: 34 1 8 'Password:' 12176 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 160 0 0 0 104 0 0 0 240 0 0 0 124 0 0 0] 8 #() 1680 nil 27 1698 1730 #fixedPreviousLeft -169 1760 161 2496 3 1792 41 410 ##(Smalltalk.StaticText) 34 16 nil 9760 34 2 8 1140850944 1 12512 nil nil nil 7 nil nil nil 12512 nil 8 1795590816 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 11 69 514 301 41 12512 1522 #text: 34 1 8 'Stone Host (from Gem):' 12512 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 34 0 0 0 155 0 0 0 54 0 0 0] 8 #() 1680 nil 27 1698 1744 11 1760 301 2496 11 1792 41 410 ##(Smalltalk.StaticText) 34 16 nil 9760 34 2 8 1140850944 1 12832 nil nil nil 7 nil nil nil 12832 nil 8 1795590816 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 11 115 514 301 31 12832 1522 #text: 34 1 8 'NetLDI Task Name:' 12832 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 57 0 0 0 155 0 0 0 72 0 0 0] 8 #() 1680 nil 27 1698 1744 11 1760 301 2496 3 1792 31 410 ##(Smalltalk.PushButton) 34 20 nil 9760 34 2 8 1140924416 1 13152 nil nil nil 7 nil nil nil 13152 nil 8 1795593280 962 #login 8 'Login' 1 1 nil nil true nil nil nil 1458 138 144 34 3 1522 #createAt:extent: 34 2 514 11 305 514 665 61 13152 1522 #isEnabled: 8 #(false) 13152 1522 #text: 34 1 8 'Login' 13152 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 152 0 0 0 81 1 0 0 182 0 0 0] 8 #() 1680 nil 29 1698 1744 11 2144 -9 2496 1 1792 61 410 ##(Smalltalk.TextEdit) 34 16 nil 9760 34 2 8 1140916352 1025 13520 nil 466 5792 nil 7 nil nil nil 13520 nil 8 1795431936 4786 nil nil 1 1458 138 144 34 3 1522 #createAt:extent: 34 2 514 321 69 514 355 45 13520 1522 #text: 34 1 8 'localhost' 13520 1522 #setMarginWidths: 34 1 8 #(3 3) 13520 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 160 0 0 0 34 0 0 0 81 1 0 0 56 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 6064 1 1792 45 410 ##(Smalltalk.TextEdit) 34 16 nil 9760 34 2 8 1140916384 1025 13904 nil 466 8 4278190080 nil 7 nil nil nil 13904 nil 8 1795431936 4786 nil nil 1 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 491 209 514 185 45 13904 1522 #setMarginWidths: 34 1 8 #(3 3) 13904 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 245 0 0 0 104 0 0 0 81 1 0 0 126 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 6064 1 1792 45 410 ##(Smalltalk.StaticPath) 34 17 nil 9760 34 2 8 1140850944 1 14256 nil nil nil 7 nil nil nil 14256 nil 8 1795590816 4786 nil nil nil 8 'XXX' 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 161 15 514 515 45 14256 1522 #text: 34 1 14352 14256 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 80 0 0 0 7 0 0 0 81 1 0 0 29 0 0 0] 8 #() 1680 nil 27 1698 1744 161 2144 -9 6064 11 1792 45 410 ##(Smalltalk.ContainerView) 34 15 nil 9760 34 2 8 1140850688 393217 14576 nil 466 8 4278190080 nil 7 nil nil nil 14576 10354 3 5 1 1 170 192 34 4 410 ##(Smalltalk.RadioButton) 34 16 nil 14576 34 2 8 1140924425 1 14720 10482 nil nil 10514 2706 #= 8 #() 2706 #hash 8 #() false 466 14656 nil 7 nil nil nil 14720 nil 8 1795593280 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 1 1 514 331 45 14720 1522 #text: 34 1 8 'RPC Gem' 14720 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 165 0 0 0 22 0 0 0] 8 #() 1680 nil 27 8 'remote' 410 ##(Smalltalk.RadioButton) 34 16 nil 14576 34 2 8 1141055497 1 15152 10482 nil nil 10514 2706 #= 8 #() 2706 #hash 8 #() false 466 14656 nil 7 nil nil nil 15152 nil 8 1795593280 4786 nil nil nil 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 331 1 514 331 45 15152 1522 #text: 34 1 8 'Linked Gem (32-bit only)' 15152 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 165 0 0 0 0 0 0 0 74 1 0 0 22 0 0 0] 8 #() 1680 nil 27 8 'linked' nil 1458 138 144 34 1 1522 #createAt:extent: 34 2 514 11 257 514 665 49 14576 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 128 0 0 0 81 1 0 0 152 0 0 0] 34 2 14720 15152 1680 nil 27 1698 1744 11 2144 -9 2496 5 1792 49 410 ##(Smalltalk.TextEdit) 34 16 nil 9760 34 2 8 1140916352 1025 15760 nil 466 8 4278190080 nil 7 nil nil nil 15760 nil 8 1795431936 4786 nil nil 1 1458 138 144 34 2 1522 #createAt:extent: 34 2 514 491 163 514 185 45 15760 1522 #setMarginWidths: 34 1 8 #(3 3) 15760 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 245 0 0 0 81 0 0 0 81 1 0 0 103 0 0 0] 8 #() 1680 nil 27 1698 4224 11 2144 -9 6064 1 1792 45 170 192 34 14 9872 8 'gemTask' 15760 8 'hostUserID' 14576 8 'gemType' 13520 8 'stoneHost' 10256 8 'loginType' 14256 8 'debugPath' 13904 8 'hostPassword' nil 1458 138 144 34 1 1522 #createAt:extent: 34 2 514 685 1 514 685 367 9760 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 86 1 0 0 0 0 0 0 172 2 0 0 183 0 0 0] 34 13 11808 14256 12512 13520 12832 9872 10256 11488 15760 12176 13904 14576 13152 1680 nil 27 1698 9712 9730 8 0 0 0 0 0 0 224 63 2144 1 1776 1 3472 1 170 192 34 4 4592 8 'Basic' 9760 8 'Advanced' nil 1458 138 144 34 1 1522 #createAt:extent: 34 2 514 1 357 514 1369 367 4480 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 178 0 0 0 172 2 0 0 105 1 0 0] 34 2 4592 9760 1680 nil 27 41 true 170 192 34 4 608 8 'top' 4480 8 'bottom' nil 461638 4 ##(Smalltalk.MenuBar) nil true 34 3 265030 4 ##(Smalltalk.Menu) nil true 34 5 984134 2 ##(Smalltalk.CommandMenuItem) 1 962 #addLogin 8 '&New' 9373 1 nil nil nil 16834 1 962 #fileOpen 8 '&Open...' 9375 1 nil nil nil 16834 1 962 #removeLogin 8 '&Remove' 1 1 nil nil nil 983366 1 ##(Smalltalk.DividerMenuItem) 4097 16834 1 962 #exit 8 'E&xit' 17639 1 nil nil nil 8 '&File' nil 134217729 nil nil 61491 nil nil 16786 nil true 34 9 16834 1 962 #editUndo 8 '&Undo' 9397 1 nil nil nil 16834 1 962 #editRedo 8 '&Redo' 9395 1 nil nil nil 16994 4097 16834 1 962 #editCut 8 'Cu&t' 9393 1 nil nil nil 16834 1 962 #editCopy 8 '&Copy' 9351 1 nil nil nil 16834 1 962 #editPaste 8 '&Paste' 9389 1 nil nil nil 16834 1 962 #editDelete 8 'De&lete' 1629 1 nil nil nil 16994 4097 16834 1 962 #editSelectAll 8 'Select &All' 9347 1 nil nil nil 8 '&Edit' nil 134217729 nil nil 61507 nil nil 16786 nil true 34 10 16834 1 962 #helpContents 8 '&Contents' 1 1 nil nil nil 16834 1 962 #helpOnThisTool 8 '&On this Tool' 1249 1 nil nil nil 16834 1 962 #helpWhatsThis 8 '&What''s This?' 5345 1 nil nil nil 16994 4097 16834 1 962 #openGemTalkHomePage 8 '&GemTalk Home Page' 1025 1 nil nil nil 16834 1 962 #openJadeHomePage 8 '&Jade Home Page' 1 1 nil nil nil 16994 4097 16834 1 962 #showGemNRS 8 'Show Gem &NRS' 1 1 nil nil nil 16834 1 962 #showStoneNRS 8 'Show Stone N&RS' 1 1 nil nil nil 16834 1 962 #aboutJade 8 '&About Jade' 1 1 nil nil nil 8 '&Help' nil 134217729 nil nil 61525 nil nil 8 '' nil 134217729 nil nil nil nil nil nil nil nil 13715 263494 3 ##(Smalltalk.Icon) nil true 1056 8 'icons\GS32.ico' nil 17986 nil true 1056 8 'icons\GS16.ico' nil nil nil 1 nil nil 1458 138 144 34 3 1522 #createAt:extent: 34 2 514 2879 21 514 1401 841 416 1522 #text: 34 1 8 'Jade Login' 416 1522 #updateMenuBar 880 416 1618 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 159 5 0 0 10 0 0 0 91 8 0 0 174 1 0 0] 34 3 608 410 ##(Smalltalk.Splitter) 34 12 nil 416 34 2 8 1140850688 1 18288 nil 466 8 4278190080 nil 519 nil nil nil 18288 1458 138 144 34 1 1522 #createAt:extent: 34 2 514 1 347 514 1369 11 18288 1618 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 173 0 0 0 172 2 0 0 178 0 0 0] 8 #() 1680 nil 27 4480 1680 nil 27 )!
-
-showOnSample
-
-	^self showOn: JadeLogin sample.
-! !
-!JadeLoginShell class categoriesFor: #defaultFileExtension!constants!public! !
-!JadeLoginShell class categoriesFor: #defaultModel!public! !
-!JadeLoginShell class categoriesFor: #fileTypes!constants!public! !
+	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ShellView) 34 27 nil nil 8 #(13238272 65536) 416 nil 524550 ##(Smalltalk.ColorRef) 8 4278190080 328198 ##(Smalltalk.Point) 1401 841 551 nil nil nil 416 1180166 ##(Smalltalk.ProportionalLayout) 170 176 34 4 410 ##(Smalltalk.ContainerView) 34 15 nil 416 34 2 8 1140850688 131073 608 nil nil nil 7 nil nil nil 608 852230 ##(Smalltalk.FramingLayout) 170 176 34 4 410 ##(Smalltalk.ContainerView) 34 15 nil 608 34 2 8 1140850688 131073 736 nil nil nil 7 nil nil nil 736 674 170 176 34 28 410 ##(Smalltalk.TextEdit) 34 16 nil 736 34 2 8 1140916352 1025 848 nil 466 8 4278190080 nil 7 nil nil nil 848 nil 8 1718754816 852486 ##(Smalltalk.NullConverter) nil nil 1 983302 ##(Smalltalk.MessageSequence) 138 144 34 2 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 514 391 213 514 285 45 848 1058 #setMarginWidths: 34 1 8 #(3 3) 848 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 106 0 0 0 81 1 0 0 128 0 0 0] 8 #() 514 193 193 nil 27 1181766 2 ##(Smalltalk.FramingConstraints) 1180678 ##(Smalltalk.FramingCalculation) #fixedPreviousRight 11 1298 #fixedParentRight -9 1298 #fixedPreviousTop 1 1298 #fixedViewTop 45 410 ##(Smalltalk.StaticText) 34 16 nil 736 34 2 8 1140850944 1 1376 nil nil nil 7 nil nil nil 1376 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 11 113 514 371 31 1376 1058 #text: 34 1 8 'NetLDI Service Name or Port:' 1376 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 56 0 0 0 190 0 0 0 71 0 0 0] 8 #() 1248 nil 27 1266 1298 #fixedParentLeft 11 1298 #fixedViewLeft 371 1298 #fixedPreviousBottom 3 1360 31 410 ##(Smalltalk.StaticText) 34 16 nil 736 34 2 8 1140850944 1 1744 nil nil nil 7 nil nil nil 1744 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 11 67 514 371 31 1744 1058 #text: 34 1 8 'RPC Gem Host Name or IP:' 1744 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 33 0 0 0 190 0 0 0 48 0 0 0] 8 #() 1248 nil 27 1266 1696 11 1712 371 1728 11 1360 31 410 ##(Smalltalk.StaticText) 34 16 nil 736 34 2 8 1140850944 1 2064 nil nil nil 7 nil nil nil 2064 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 11 259 514 371 41 2064 1058 #text: 34 1 8 'GemStone Password:' 2064 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 129 0 0 0 190 0 0 0 149 0 0 0] 8 #() 1248 nil 27 1266 1696 11 1712 371 1728 3 1360 41 410 ##(Smalltalk.TextEdit) 34 16 nil 736 34 2 8 1140916352 1025 2384 nil 466 928 nil 7 nil nil nil 2384 nil 8 1718754816 962 nil nil 1 994 138 144 34 2 1058 #createAt:extent: 34 2 514 391 67 514 285 45 2384 1058 #setMarginWidths: 34 1 8 #(3 3) 2384 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 33 0 0 0 81 1 0 0 55 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1328 -9 1344 1 1360 45 410 ##(Smalltalk.TextEdit) 34 16 nil 736 34 2 8 1140916352 1025 2720 nil 466 928 nil 7 nil nil nil 2720 nil 8 1718754816 962 nil nil 1 994 138 144 34 2 1058 #createAt:extent: 34 2 514 391 167 514 285 45 2720 1058 #setMarginWidths: 34 1 8 #(3 3) 2720 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 83 0 0 0 81 1 0 0 105 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1328 -9 1344 1 1360 45 410 ##(Smalltalk.StaticText) 34 16 nil 736 34 2 8 1140850944 1 3056 nil nil nil 7 nil nil nil 3056 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 11 313 514 371 41 3056 1058 #text: 34 1 8 'Monticello User Name:' 3056 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 156 0 0 0 190 0 0 0 176 0 0 0] 8 #() 1248 nil 27 1266 1696 11 1712 371 1728 11 1360 41 410 ##(Smalltalk.StaticText) 34 16 nil 736 34 2 8 1140850944 1 3376 nil nil nil 7 nil nil nil 3376 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 11 167 514 371 39 3376 1058 #text: 34 1 8 'Stone Name:' 3376 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 83 0 0 0 190 0 0 0 102 0 0 0] 8 #() 1248 nil 27 1266 1696 11 1712 371 1728 11 1360 39 410 ##(Smalltalk.StaticText) 34 16 nil 736 34 2 8 1140850944 1 3696 nil nil nil 7 nil nil nil 3696 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 11 21 514 371 41 3696 1058 #text: 34 1 8 'GemStone/Smalltalk Version:' 3696 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 10 0 0 0 190 0 0 0 30 0 0 0] 8 #() 1248 nil 27 1266 1696 11 1712 371 1298 #fixedParentTop 21 1360 41 410 ##(Smalltalk.ComboBox) 34 17 nil 736 34 2 8 1144063491 1025 4032 590662 2 ##(Smalltalk.ListModel) 138 144 8 #() nil 1310726 ##(Smalltalk.IdentitySearchPolicy) 466 8 4278190080 nil 7 nil nil nil 4032 nil 8 1719430240 459270 ##(Smalltalk.Message) #displayString 8 #() 4144 401 994 138 144 34 1 1058 #createAt:extent: 34 2 514 391 11 514 285 53 4032 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 5 0 0 0 81 1 0 0 31 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1328 -9 4016 11 1360 47 410 ##(Smalltalk.TextEdit) 34 16 nil 736 34 2 8 1140916352 1025 4464 nil 466 928 nil 7 nil nil nil 4464 nil 8 1718754816 962 nil nil 1 994 138 144 34 2 1058 #createAt:extent: 34 2 514 391 113 514 285 45 4464 1058 #setMarginWidths: 34 1 8 #(3 3) 4464 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 56 0 0 0 81 1 0 0 78 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1328 -9 1344 1 1360 45 410 ##(Smalltalk.TextEdit) 34 16 nil 736 34 2 8 1140916384 1025 4800 nil 466 8 4278190080 nil 7 nil nil nil 4800 nil 8 1718754816 962 nil nil 1 994 138 144 34 2 1058 #createAt:extent: 34 2 514 391 259 514 285 45 4800 1058 #setMarginWidths: 34 1 8 #(3 3) 4800 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 129 0 0 0 81 1 0 0 151 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1328 -9 1344 1 1360 45 410 ##(Smalltalk.StaticText) 34 16 nil 736 34 2 8 1140850944 1 5152 nil nil nil 7 nil nil nil 5152 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 11 213 514 371 41 5152 1058 #text: 34 1 8 'GemStone User ID:' 5152 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 106 0 0 0 190 0 0 0 126 0 0 0] 8 #() 1248 nil 27 1266 1696 11 1712 371 1728 3 1360 41 410 ##(Smalltalk.TextEdit) 34 16 nil 736 34 2 8 1140916352 1025 5472 nil 466 8 4278190080 nil 7 nil nil nil 5472 nil 8 1718754816 962 nil nil 1 994 138 144 34 2 1058 #createAt:extent: 34 2 514 391 313 514 285 45 5472 1058 #setMarginWidths: 34 1 8 #(3 3) 5472 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 195 0 0 0 156 0 0 0 81 1 0 0 178 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1328 -9 1344 1 1360 45 170 192 34 14 2720 8 'stoneName' 5472 8 'initials' 4464 8 'gemService' 4032 8 'versionList' 4800 8 'password' 2384 8 'gemHost' 848 8 'userID' nil 994 138 144 34 1 1058 #createAt:extent: 34 2 514 1 1 514 685 367 736 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 86 1 0 0 183 0 0 0] 34 14 3696 4032 1744 2384 1376 4464 3376 2720 5152 848 2064 4800 3056 5472 1248 nil 27 1266 1696 1 1298 #relativeParentWidth 327734 ##(Smalltalk.Float) 8 0 0 0 0 0 0 224 63 4016 1 1298 #fixedParentBottom 1 410 ##(Smalltalk.ContainerView) 34 15 nil 608 34 2 8 1140850688 131073 6208 nil nil nil 7 nil nil nil 6208 674 170 176 34 26 410 ##(Smalltalk.PushButton) 34 20 nil 6208 34 2 8 1140924416 1 6320 nil nil nil 7 nil nil nil 6320 nil 8 1718916160 1180998 4 ##(Smalltalk.CommandDescription) #debugGCI 8 'Debug GCI' 1 1 nil nil false nil nil nil 994 138 144 34 3 1058 #createAt:extent: 34 2 514 11 5 514 141 51 6320 1058 #isEnabled: 8 #(false) 6320 1058 #text: 34 1 8 'Debug GCI' 6320 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 2 0 0 0 75 0 0 0 27 0 0 0] 8 #() 1248 nil 29 1266 1696 11 1712 141 1728 5 1360 51 410 ##(Smalltalk.StaticText) 34 16 nil 6208 34 2 8 1140850944 1 6704 nil nil nil 7 nil nil nil 6704 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 321 163 514 161 41 6704 1058 #text: 34 1 8 'OS User ID:' 6704 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 160 0 0 0 81 0 0 0 240 0 0 0 101 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1712 161 1344 1 1360 41 410 ##(Smalltalk.TextEdit) 34 16 nil 6208 34 2 8 1140916352 1025 7024 nil 466 928 nil 7 nil nil nil 7024 nil 8 1718754816 962 nil nil 1 994 138 144 34 3 1058 #createAt:extent: 34 2 514 321 115 514 355 45 7024 1058 #text: 34 1 8 'gemnetobject' 7024 1058 #setMarginWidths: 34 1 8 #(3 3) 7024 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 160 0 0 0 57 0 0 0 81 1 0 0 79 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1328 -9 1344 1 1360 45 410 ##(Smalltalk.TextEdit) 34 16 nil 6208 34 2 8 1140916384 1025 7408 nil 466 8 4278190080 nil 7 nil nil nil 7408 nil 8 1718754816 962 nil nil 1 994 138 144 34 2 1058 #createAt:extent: 34 2 514 491 209 514 185 45 7408 1058 #setMarginWidths: 34 1 8 #(3 3) 7408 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 245 0 0 0 104 0 0 0 81 1 0 0 126 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1328 -9 1344 1 1360 45 410 ##(Smalltalk.StaticText) 34 16 nil 6208 34 2 8 1140850944 1 7760 nil nil nil 7 nil nil nil 7760 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 321 209 514 161 41 7760 1058 #text: 34 1 8 'Password:' 7760 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 160 0 0 0 104 0 0 0 240 0 0 0 124 0 0 0] 8 #() 1248 nil 27 1266 1298 #fixedPreviousLeft -169 1712 161 1728 3 1360 41 410 ##(Smalltalk.ContainerView) 34 15 nil 6208 34 2 8 1140850688 393217 8096 nil 466 8 4278190080 nil 7 nil nil nil 8096 656390 ##(Smalltalk.GridLayout) 3 5 1 1 170 192 34 4 410 ##(Smalltalk.RadioButton) 34 16 nil 8096 34 2 8 1140924425 1 8256 721990 2 ##(Smalltalk.ValueHolder) nil nil 1376774 ##(Smalltalk.PluggableSearchPolicy) 4242 #= 8 #() 4242 #hash 8 #() false 466 8176 nil 7 nil nil nil 8256 nil 8 1718916160 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 1 1 514 331 45 8256 1058 #text: 34 1 8 'RPC Gem' 8256 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 165 0 0 0 22 0 0 0] 8 #() 1248 nil 27 8 'remote' 410 ##(Smalltalk.RadioButton) 34 16 nil 8096 34 2 8 1141055497 1 8720 8322 nil nil 8354 4242 #= 8 #() 4242 #hash 8 #() false 466 8176 nil 7 nil nil nil 8720 nil 8 1718916160 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 331 1 514 331 45 8720 1058 #text: 34 1 8 'Linked Gem (32-bit only)' 8720 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 165 0 0 0 0 0 0 0 74 1 0 0 22 0 0 0] 8 #() 1248 nil 27 8 'linked' nil 994 138 144 34 1 1058 #createAt:extent: 34 2 514 11 257 514 665 49 8096 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 128 0 0 0 81 1 0 0 152 0 0 0] 34 2 8256 8720 1248 nil 27 1266 1696 11 1328 -9 1728 5 1360 49 410 ##(Smalltalk.StaticText) 34 16 nil 6208 34 2 8 1140850944 1 9328 nil nil nil 7 nil nil nil 9328 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 11 115 514 301 31 9328 1058 #text: 34 1 8 'NetLDI Task Name:' 9328 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 57 0 0 0 155 0 0 0 72 0 0 0] 8 #() 1248 nil 27 1266 1696 11 1712 301 1728 3 1360 31 410 ##(Smalltalk.ContainerView) 34 15 nil 6208 34 2 8 1409286144 393217 9648 nil 466 8 4278190080 nil 7 nil nil nil 9648 8194 1 3 1 1 170 192 34 4 410 ##(Smalltalk.RadioButton) 34 16 nil 9648 34 2 8 1141055497 1 9792 8322 nil nil 8354 4242 #= 8 #() 4242 #hash 8 #() false 466 9728 nil 7 nil nil nil 9792 nil 8 1718916160 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 1 1 514 297 39 9792 1058 #text: 34 1 8 'NetLDI Guest' 9792 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 148 0 0 0 19 0 0 0] 8 #() 1248 nil 27 8 'guest' 410 ##(Smalltalk.RadioButton) 34 16 nil 9648 34 2 8 1140924425 1 10224 8322 nil nil 8354 4242 #= 8 #() 4242 #hash 8 #() false 466 9728 nil 7 nil nil nil 10224 nil 8 1718916160 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 1 39 514 297 39 10224 1058 #text: 34 1 8 'Native OS User' 10224 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 19 0 0 0 148 0 0 0 38 0 0 0] 8 #() 1248 nil 27 8 'member' nil 994 138 144 34 1 1058 #createAt:extent: 34 2 514 11 163 514 301 81 9648 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 81 0 0 0 155 0 0 0 121 0 0 0] 34 2 9792 10224 1248 nil 27 1266 1696 11 1712 301 1728 5 1360 81 410 ##(Smalltalk.StaticPath) 34 17 nil 6208 34 2 8 1140850944 1 10832 nil nil nil 7 nil nil nil 10832 nil 8 1718913696 962 nil nil nil 8 'XXX' 994 138 144 34 2 1058 #createAt:extent: 34 2 514 161 15 514 515 45 10832 1058 #text: 34 1 10928 10832 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 80 0 0 0 7 0 0 0 81 1 0 0 29 0 0 0] 8 #() 1248 nil 27 1266 1696 161 1328 -9 1344 11 1360 45 410 ##(Smalltalk.TextEdit) 34 16 nil 6208 34 2 8 1140916352 1025 11152 nil 466 8 4278190080 nil 7 nil nil nil 11152 nil 8 1718754816 962 nil nil 1 994 138 144 34 2 1058 #createAt:extent: 34 2 514 491 163 514 185 45 11152 1058 #setMarginWidths: 34 1 8 #(3 3) 11152 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 245 0 0 0 81 0 0 0 81 1 0 0 103 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1328 -9 1344 1 1360 45 410 ##(Smalltalk.TextEdit) 34 16 nil 6208 34 2 8 1140916352 1025 11504 nil 466 928 nil 7 nil nil nil 11504 nil 8 1718754816 962 nil nil 1 994 138 144 34 3 1058 #createAt:extent: 34 2 514 321 69 514 355 45 11504 1058 #text: 34 1 8 'localhost' 11504 1058 #setMarginWidths: 34 1 8 #(3 3) 11504 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 160 0 0 0 34 0 0 0 81 1 0 0 56 0 0 0] 8 #() 1248 nil 27 1266 1312 11 1328 -9 1344 1 1360 45 410 ##(Smalltalk.PushButton) 34 20 nil 6208 34 2 8 1140924416 1 11888 nil nil nil 7 nil nil nil 11888 nil 8 1718916160 6402 #login 8 'Login' 1 1 nil nil true nil nil nil 994 138 144 34 3 1058 #createAt:extent: 34 2 514 11 305 514 665 61 11888 1058 #isEnabled: 8 #(false) 11888 1058 #text: 34 1 8 'Login' 11888 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 152 0 0 0 81 1 0 0 182 0 0 0] 8 #() 1248 nil 29 1266 1696 11 1328 -9 1728 1 1360 61 410 ##(Smalltalk.StaticText) 34 16 nil 6208 34 2 8 1140850944 1 12256 nil nil nil 7 nil nil nil 12256 nil 8 1718913696 962 nil nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 11 69 514 301 41 12256 1058 #text: 34 1 8 'Stone Host (from Gem):' 12256 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 5 0 0 0 34 0 0 0 155 0 0 0 54 0 0 0] 8 #() 1248 nil 27 1266 1696 11 1712 301 1728 11 1360 41 170 192 34 14 9648 8 'loginType' 8096 8 'gemType' 11152 8 'hostUserID' 11504 8 'stoneHost' 7408 8 'hostPassword' 7024 8 'gemTask' 10832 8 'debugPath' nil 994 138 144 34 1 1058 #createAt:extent: 34 2 514 685 1 514 685 367 6208 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 86 1 0 0 0 0 0 0 172 2 0 0 183 0 0 0] 34 13 6320 10832 12256 11504 9328 7024 9648 6704 11152 7760 7408 8096 11888 1248 nil 27 1266 6144 6162 8 0 0 0 0 0 0 224 63 1328 1 4016 1 6192 1 170 192 34 4 736 8 'Basic' 6208 8 'Advanced' nil 994 138 144 34 1 1058 #createAt:extent: 34 2 514 1 357 514 1369 367 608 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 178 0 0 0 172 2 0 0 105 1 0 0] 34 2 736 6208 1248 nil 27 41 410 ##(Smalltalk.ContainerView) 34 15 nil 416 34 2 8 1140850688 131073 13136 nil nil nil 7 nil nil nil 13136 674 170 176 34 10 410 ##(Smalltalk.PushButton) 34 20 nil 13136 34 2 8 1140924416 1 13248 nil nil nil 7 nil nil nil 13248 nil 8 1718916160 6402 #removeLogin 8 '-' 1 1 nil nil false nil nil nil 994 138 144 34 3 1058 #createAt:extent: 34 2 514 1319 121 514 51 51 13248 1058 #isEnabled: 8 #(false) 13248 1058 #text: 34 1 8 '-' 13248 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 147 2 0 0 60 0 0 0 172 2 0 0 85 0 0 0] 8 #() 1248 nil 29 1266 1328 -49 1712 51 1728 11 1360 51 410 ##(Smalltalk.Toolbar) 34 25 nil 13136 34 2 8 1140853580 131137 13616 nil 466 8 4278190080 nil 519 nil 263174 ##(Smalltalk.Font) nil true 459014 ##(Smalltalk.LOGFONT) 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 65 114 105 97 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 514 193 193 nil 13616 466 13696 8 1718856992 170 192 4144 170 192 34 4 42035 1246982 ##(Smalltalk.ToolbarSystemButton) 42035 nil 13616 1 6402 #getHelpOn 8 'Get help on widget' 1 1 nil 1 23 42037 853766 ##(Smalltalk.ToolbarButton) 42037 nil 13616 1 6402 #openHelp 8 'Jade Help' 1 1 nil 395334 3 ##(Smalltalk.Bitmap) nil true 1572870 ##(Smalltalk.ImageRelativeFileLocator) 8 'Tools.bmp' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy) 8 'dolphindr7.dll' nil nil 7 514 1857 33 71 34 2 13904 13968 170 176 34 4 1 1 14032 31 nil 1 nil 514 33 33 514 45 45 nil 656198 1 ##(Smalltalk.FlowLayout) 1 1 1 994 138 144 34 2 1058 #createAt:extent: 34 2 514 241 1 514 1129 51 13616 1058 #updateSizePosted 4144 13616 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 120 0 0 0 0 0 0 0 172 2 0 0 25 0 0 0] 8 #() 1248 nil 27 1266 1312 1 1328 1 4016 1 1360 51 410 ##(Smalltalk.Toolbar) 34 25 nil 13136 34 2 8 1409289036 131137 14464 nil 466 8 4278190080 nil 7 nil nil nil 14464 466 14544 8 1718856992 170 192 4144 170 192 34 10 42025 13954 42025 nil 14464 1 6402 #editCut 8 'Cut' 1 1 nil 14018 nil true 14064 8 'EditBar.bmp' 14112 nil 7 514 193 33 1 42027 13954 42027 nil 14464 1 6402 #editCopy 8 'Copy' 1 1 nil 14688 3 42029 13954 42029 nil 14464 1 6402 #editPaste 8 'Paste' 1 1 nil 14688 5 42031 13954 42031 nil 14464 1 6402 #editDelete 8 'Delete' 1 1 nil 14688 11 42033 13954 42033 nil 14464 1 6402 #editUndo 8 'Undo' 1 1 nil 14688 7 34 6 14640 14736 14784 14832 14880 1050118 ##(Smalltalk.ToolbarSeparator) nil nil 14464 3 nil 1 170 176 34 2 14688 1 nil 1 nil 514 33 33 514 45 45 nil nil 994 138 144 34 2 1058 #createAt:extent: 34 2 514 1 1 514 241 51 14464 1058 #updateSizePosted 4144 14464 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 120 0 0 0 25 0 0 0] 8 #() 1248 nil 27 1266 1696 1 1712 241 4016 1 1360 51 410 ##(Smalltalk.ListView) 34 30 nil 13136 34 2 8 1409355853 1025 15232 4098 138 144 4144 nil 4176 466 8 4278190080 nil 7 265030 4 ##(Smalltalk.Menu) nil true 34 3 984134 2 ##(Smalltalk.CommandMenuItem) 1 6402 #addLogin 8 '&Add' 1 1 nil nil nil 15410 1 6402 #removeLogin 8 '&Remove' 1 1 nil nil nil 15410 1 6402 #login 8 '&Login' 1 1 nil nil nil 8 '' nil 134217729 nil nil nil nil nil nil nil 15232 nil 8 1718806640 4242 #displayString 8 #() ##(Smalltalk.IconicListAbstract) 1049926 1 ##(Smalltalk.IconImageManager) nil nil nil nil nil nil 138 144 34 7 920646 5 ##(Smalltalk.ListViewColumn) 8 'Version' 241 #left 4242 #gemVersion 8 #() 787814 3 ##(Smalltalk.BlockClosure) 0 nil 1180966 ##(Smalltalk.CompiledExpression) 2 1 106 8 'Dolphin' 8 'SortedCollection' 8 'doIt' 8 '[:a :b | a gemVersion <= b gemVersion]' 8 #[30 105 226 0 226 32 130 106] #gemVersion 15792 7 513 nil nil nil 15232 nil 1 nil nil 15698 8 'Gem Host' 201 #left 4242 #gemHost 15760 15778 0 nil 15810 2 1 4240 8 'doIt' 8 '[:a :b | a gemHost <= b gemHost]' 8 #[30 105 226 0 226 32 130 106] #gemHost 15984 7 513 nil nil nil 15232 nil 1 nil nil 15698 8 'NetLDI' 201 #left 4242 #gemService 15760 15778 0 nil 15810 2 1 4240 8 'doIt' 8 '[:a :b | a gemService <= b gemService]' 8 #[30 105 226 0 226 32 130 106] #gemService 16112 7 513 nil nil nil 15232 nil 1 nil nil 15698 8 'Stone' 201 #left 4242 #stoneName 15760 15778 0 nil 15810 2 1 4240 8 'doIt' 8 '[:a :b | a stoneName <= b stoneName]' 8 #[30 105 226 0 226 32 130 106] #stoneName 16240 7 513 nil nil nil 15232 nil 1 nil nil 15698 8 'User' 201 #left 4242 #gsUserID 15760 15778 0 nil 15810 2 1 4240 8 'doIt' 8 '[:a :b | a gsUserID <= b gsUserID]' 8 #[30 105 226 0 226 32 130 106] #gsUserID 16368 7 513 nil nil nil 15232 nil 1 nil nil 15698 8 'Active' 121 #right 4242 #activeCount 4144 15778 0 nil 15810 2 1 4240 8 'doIt' 8 '[:a :b | a activeCount <= b activeCount]' 8 #[30 105 226 0 226 32 130 106] #activeCount 16496 7 513 nil nil nil 15232 nil 1 nil nil 15698 8 'Last Login' 501 #left 4242 #lastLoginString 8 #() 15778 0 nil 15810 2 1 4240 8 'doIt' 8 '[:a :b | a lastLogin <= b lastLogin]' 8 #[30 105 226 0 226 32 130 106] #lastLogin 16640 7 513 nil nil nil 15232 nil 1 nil nil #report 4144 nil 131169 nil 34 4 nil nil 514 1 1 nil 994 138 144 34 3 1058 #createAt:extent: 34 2 514 1 51 514 1319 297 15232 1058 #contextMenu: 34 1 15376 15232 1058 #text: 34 1 8 'Version' 15232 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 147 2 0 0 173 0 0 0] 8 #() 1248 nil 27 1266 1696 1 1328 -49 1728 1 6192 1 410 ##(Smalltalk.PushButton) 34 20 nil 13136 34 2 8 1140924416 1 17008 nil nil nil 7 nil nil nil 17008 nil 8 1718916160 6402 #addLogin 8 '+' 1 1 nil nil false nil nil nil 994 138 144 34 3 1058 #createAt:extent: 34 2 514 1319 61 514 51 51 17008 1058 #isEnabled: 8 #(false) 17008 1058 #text: 34 1 8 '+' 17008 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 147 2 0 0 30 0 0 0 172 2 0 0 55 0 0 0] 8 #() 1248 nil 29 1266 1328 -49 1712 51 4016 61 1360 51 170 192 34 6 14464 8 'Edit Tools' 13616 8 'Other Tools' 15232 8 'loginList' nil 994 138 144 34 1 1058 #createAt:extent: 34 2 514 1 1 514 1369 347 13136 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 172 2 0 0 173 0 0 0] 34 5 14464 13616 15232 17008 13248 1248 nil 27 39 true 170 192 34 4 608 8 'bottom' 13136 8 'top' nil 461638 4 ##(Smalltalk.MenuBar) nil true 34 3 15362 nil true 34 5 15410 1 6402 #addLogin 8 '&New' 9373 1 nil nil nil 15410 1 6402 #fileOpen 8 '&Open...' 9375 1 nil nil nil 15410 1 6402 #removeLogin 8 '&Remove' 1 1 nil nil nil 983366 1 ##(Smalltalk.DividerMenuItem) 4097 15410 1 6402 #exit 8 'E&xit' 17639 1 nil nil nil 8 '&Login' nil 134217729 nil nil 54649 nil nil 15362 nil true 34 9 15410 1 6402 #editUndo 8 '&Undo' 9397 1 nil nil nil 15410 1 6402 #editRedo 8 '&Redo' 9395 1 nil nil nil 17906 4097 15410 1 6402 #editCut 8 'Cu&t' 9393 1 nil nil nil 15410 1 6402 #editCopy 8 '&Copy' 9351 1 nil nil nil 15410 1 6402 #editPaste 8 '&Paste' 9389 1 nil nil nil 15410 1 6402 #editDelete 8 'De&lete' 1629 1 nil nil nil 17906 4097 15410 1 6402 #editSelectAll 8 'Select &All' 9347 1 nil nil nil 8 '&Edit' nil 134217729 nil nil 54651 nil nil 15362 nil true 34 10 15410 1 6402 #helpContents 8 '&Contents' 1 1 nil nil nil 15410 1 6402 #helpOnThisTool 8 '&On this Tool' 1249 1 nil nil nil 15410 1 6402 #helpWhatsThis 8 '&What''s This?' 5345 1 nil nil nil 17906 4097 15410 1 6402 #openGemTalkHomePage 8 '&GemTalk Home Page' 1025 1 nil nil nil 15410 1 6402 #openJadeHomePage 8 '&Jade Home Page' 1 1 nil nil nil 17906 4097 15410 1 6402 #showGemNRS 8 'Show Gem &NRS' 1 1 nil nil nil 15410 1 6402 #showStoneNRS 8 'Show Stone N&RS' 1 1 nil nil nil 15410 1 6402 #aboutJade 8 '&About Jade' 1 1 nil nil nil 8 '&Help' nil 134217729 nil nil 54653 nil nil 8 '' nil 134217729 nil nil nil nil nil nil nil nil 9647 263494 3 ##(Smalltalk.Icon) nil true 14064 8 'icons\GS32.ico' nil 18898 nil true 14064 8 'icons\GS16.ico' nil nil nil 1 nil nil 994 138 144 34 3 1058 #createAt:extent: 34 2 514 5119 21 514 1401 841 416 1058 #text: 34 1 8 'Jade Login' 416 1058 #updateMenuBar 4144 416 1186 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 9 0 0 10 0 0 0 187 12 0 0 174 1 0 0] 34 3 13136 410 ##(Smalltalk.Splitter) 34 12 nil 416 34 2 8 1140850688 1 19200 nil 466 8 4278190080 nil 519 nil nil nil 19200 994 138 144 34 1 1058 #createAt:extent: 34 2 514 1 347 514 1369 11 19200 1186 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 173 0 0 0 172 2 0 0 178 0 0 0] 8 #() 1248 nil 27 608 1248 nil 27 )! !
 !JadeLoginShell class categoriesFor: #icon!constants!public! !
 !JadeLoginShell class categoriesFor: #resource_Default_view!public!resources-views! !
-!JadeLoginShell class categoriesFor: #showOnSample!public! !
 

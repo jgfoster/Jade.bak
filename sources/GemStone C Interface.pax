@@ -149,7 +149,7 @@ GciError subclass: #GciLoginFailed
 	classInstanceVariableNames: ''!
 ExternalLibrary subclass: #GciLibrary
 	instanceVariableNames: ''
-	classVariableNames: ''
+	classVariableNames: 'ActiveLibrary'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciLibrary subclass: #GciSingleThreadedLibrary
