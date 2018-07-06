@@ -188,7 +188,7 @@ writeObject: anObject
 					[:dictionary |
 					instanceVariableNames do: 
 							[:each |
-							(anObject instVarAt: (instanceVariableNames indexOf: each asSymbol))
+							(anObject instVarAt: (instanceVariableNames indexOf: each))
 								ifNotNil: [:value | dictionary at: each asSymbol put: value]
 								ifNil: [anObject stonShouldWriteNilInstVars ifTrue: [dictionary at: each asSymbol put: nil]]]]]!
 

@@ -24,6 +24,7 @@ package methodNames
 	add: #ByteArray -> #stonContainSubObjects;
 	add: #ByteArray -> #stonOn:;
 	add: #Character -> #stonOn:;
+	add: #Class -> #stonName;
 	add: #Collection -> #stonOn:;
 	add: #Date -> #stonContainSubObjects;
 	add: #Date -> #stonOn:;
@@ -191,6 +192,14 @@ fromSton: stonReader
 	^ stonReader parseListSingleton first
 ! !
 !Character class categoriesFor: #fromSton:!must not strip!public! !
+
+!Class methodsFor!
+
+stonName
+	"Override to encode my instances using a different class name."
+	
+	^ self name! !
+!Class categoriesFor: #stonName!public!rowan! !
 
 !Collection methodsFor!
 
@@ -386,7 +395,7 @@ stonContainSubObjects
 stonOn: stonWriter
 	"Use an ISO style HH:MM:SS representation"
 
-	stonWriter writeObject: self listSingleton: (self asStringUsingFormat: #($: true false))! !
+	stonWriter writeString: self! !
 !String categoriesFor: #stonContainSubObjects!public!ston! !
 !String categoriesFor: #stonOn:!public!ston! !
 

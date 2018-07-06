@@ -11,7 +11,6 @@ RowanPackageUpdate comment: ''!
 !RowanPackageUpdate methodsFor!
 
 packagesUpdate: aPresenter
-	self rowanFixMe. "selections need to be handled separately"
 	aPresenter list: (packages collect: [:package | package -> false]).
 	modifiedPackages
 		do: [:mod | aPresenter list do: [:assoc | assoc key = mod ifTrue: [assoc value: true]]].

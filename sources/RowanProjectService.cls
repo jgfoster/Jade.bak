@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanProjectService
-	instanceVariableNames: 'sha branch isSkew'
+	instanceVariableNames: 'sha branch isSkew packages'
 	classVariableNames: 'DefaultProjectName'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -147,12 +147,21 @@ packageNameString
 
 	^transport send: #packageNameString to: remoteService  !
 
+projectPackagesUpdate: aPresenter
+	aPresenter list: packages!
+
 projects
 	| oops services |
 	oops := transport send: #projects to: remoteService.
 	services := self createClientFrom: oops.
 	services := services asSortedCollection: [:a :b | a name < b name].
 	^services!
+
+projectSelectionUpdate: aPresenter
+	aPresenter selection: self!
+
+projectsUpdate: aPresenter
+	updates do: [:update | update projectsUpdate: aPresenter]!
 
 pullFromGit
 
@@ -211,7 +220,10 @@ write
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
 !RowanProjectService categoriesFor: #packageNames!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !
+!RowanProjectService categoriesFor: #projectPackagesUpdate:!public!updating! !
 !RowanProjectService categoriesFor: #projects!public!rowan! !
+!RowanProjectService categoriesFor: #projectSelectionUpdate:!public!updating! !
+!RowanProjectService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanProjectService categoriesFor: #pullFromGit!public!rowan! !
 !RowanProjectService categoriesFor: #pushToGit!public!rowan! !
 !RowanProjectService categoriesFor: #remoteDefaultProjectName!accessing!public! !

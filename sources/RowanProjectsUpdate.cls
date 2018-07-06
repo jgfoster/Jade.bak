@@ -11,12 +11,12 @@ RowanProjectsUpdate comment: ''!
 !RowanProjectsUpdate methodsFor!
 
 projectSelectionUpdate: aPresenter
-	aPresenter selection: selection!
+	aPresenter selections: selection!
 
 projectsUpdate: aPresenter
 	aPresenter list: projects! !
-!RowanProjectsUpdate categoriesFor: #projectSelectionUpdate:!public! !
-!RowanProjectsUpdate categoriesFor: #projectsUpdate:!public! !
+!RowanProjectsUpdate categoriesFor: #projectSelectionUpdate:!public!updating! !
+!RowanProjectsUpdate categoriesFor: #projectsUpdate:!public!updating! !
 
 !RowanProjectsUpdate class methodsFor!
 

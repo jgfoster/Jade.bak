@@ -18,3 +18,17 @@ on: stonWriter
 !STONStreamWriter categoriesFor: #initialize!public! !
 !STONStreamWriter categoriesFor: #on:!public! !
 
+!STONStreamWriter class methodsFor!
+
+new
+	^self basicNew
+		initialize;
+		yourself!
+
+on: stonWriter
+	^self new
+		on: stonWriter;
+		yourself! !
+!STONStreamWriter class categoriesFor: #new!public! !
+!STONStreamWriter class categoriesFor: #on:!instance creation!public! !
+

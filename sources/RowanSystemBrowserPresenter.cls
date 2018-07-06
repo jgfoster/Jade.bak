@@ -572,7 +572,8 @@ updateSelectionsForUpdate: update
 	update updateClassHierarchySelectionFor: classHierarchyPresenter.
 	update updateSuperclassSelectionFor: superclassListPresenter.
 	update updateMethodFilterSelectionFor: self methodFilterListPresenter.
-	update updateMethodSelectionFor: self methodListPresenter.!
+	update updateMethodSelectionFor: self methodListPresenter.
+	!
 
 updateTabLabel
 

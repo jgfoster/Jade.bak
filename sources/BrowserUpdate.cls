@@ -89,6 +89,14 @@ performUpdateSelector: selector presenter: presenter
 		ifTrue: [self performDebugUpdateSelector: selector presenter: presenter]
 		ifFalse: [self updates do: [:update | update perform: selector with: presenter]]!
 
+projectPackagesUpdate: presenter
+
+	updates do:[:update | update projectPackagesUpdate: presenter]!
+
+projectSelectionUpdate: presenter
+
+	updates do:[:update | update projectSelectionUpdate: presenter]!
+
 projectsUpdate: presenter
 
 	updates do:[:update | update projectsUpdate: presenter]!
@@ -140,6 +148,8 @@ updates: aCollection
 !BrowserUpdate categoriesFor: #packagesUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #performDebugUpdateSelector:presenter:!public!updating! !
 !BrowserUpdate categoriesFor: #performUpdateSelector:presenter:!public!updating! !
+!BrowserUpdate categoriesFor: #projectPackagesUpdate:!public!updating! !
+!BrowserUpdate categoriesFor: #projectSelectionUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #projectsUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #register:with:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #superclassListUpdate:!public!updating! !

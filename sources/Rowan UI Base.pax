@@ -122,6 +122,7 @@ package methodNames
 	add: #RowanCommandResult -> #methodFilterUpdate:;
 	add: #RowanCommandResult -> #methodsUpdate:;
 	add: #RowanCommandResult -> #packagesUpdate:;
+	add: #RowanCommandResult -> #projectPackagesUpdate:;
 	add: #RowanCommandResult -> #projectSelectionUpdate:;
 	add: #RowanCommandResult -> #projectsUpdate:;
 	add: #RowanCommandResult -> #superclassListUpdate:;
@@ -220,7 +221,7 @@ Model subclass: #BrowserUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name isDirty'
+	instanceVariableNames: 'transport remoteService name isDirty updates'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -295,7 +296,7 @@ RowanService subclass: #RowanPackageService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanProjectService
-	instanceVariableNames: 'sha branch isSkew'
+	instanceVariableNames: 'sha branch isSkew packages'
 	classVariableNames: 'DefaultProjectName'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1788,6 +1789,8 @@ methodsUpdate: presenter
 
 packagesUpdate: presenter!
 
+projectPackagesUpdate: presenter!
+
 projectSelectionUpdate: aPresenter
 !
 
@@ -1826,6 +1829,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanCommandResult categoriesFor: #methodFilterUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #projectPackagesUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #projectsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #superclassListUpdate:!public!updating! !
