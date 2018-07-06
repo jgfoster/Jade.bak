@@ -465,8 +465,14 @@ compareAncestor
 
 contextObject
 
+	| oopType |
 	selectedClassOop == 0 ifTrue: [^nil].
-	^self gciSession oopTypeWithOop: selectedClassOop!
+	oopType := self gciSession oopTypeWithOop: selectedClassOop.
+	self isClassSideSelected ifTrue: [
+		oopType := self gciSession send: #'class' to: oopType.
+	].
+	^oopType
+!
 
 createComponents
 
