@@ -1659,7 +1659,7 @@ sbUpdatePackages
 	| override modifiedList oldSelections newSelections fullList |
 	oldSelections := self _nextLineAsList.
 	(override := selections at: #'package' ifAbsent: [nil]) notNil ifTrue: [oldSelections := Array with: override].
-	fullList := self mcLoadedVersionNames subStrings: Character lf.
+	fullList := self _mcLoadedVersionNames subStrings: Character lf.
 	fullList := fullList reject: [:each | each isEmpty].
 	fullList := fullList asSortedCollection asArray.
 	fullList := fullList collect: [:each | each subStrings: Character tab].

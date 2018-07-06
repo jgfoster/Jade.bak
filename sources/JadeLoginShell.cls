@@ -281,11 +281,10 @@ modified
 	self updateModel.
 	loginListPresenter view updateAll.!
 
-onViewClosed
+onCloseRequested
 
 	self saveData.
-	super onViewClosed.
-!
+	^super onCloseRequested!
 
 onViewOpened
 
@@ -495,7 +494,7 @@ updateView
 !JadeLoginShell categoriesFor: #loadData!public! !
 !JadeLoginShell categoriesFor: #login!public! !
 !JadeLoginShell categoriesFor: #modified!public! !
-!JadeLoginShell categoriesFor: #onViewClosed!public! !
+!JadeLoginShell categoriesFor: #onCloseRequested!public! !
 !JadeLoginShell categoriesFor: #onViewOpened!public! !
 !JadeLoginShell categoriesFor: #openGemTalkHomePage!public! !
 !JadeLoginShell categoriesFor: #openJadeHomePage!public! !

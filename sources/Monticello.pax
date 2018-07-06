@@ -47,6 +47,7 @@ package methodNames
 	add: #JadeServer -> #_describeMCOrganizationDefinition:on:;
 	add: #JadeServer -> #_describeMCRemoval:on:;
 	add: #JadeServer -> #_mcDescriptionOfPatch:baseName:alternateName:;
+	add: #JadeServer -> #_mcLoadedVersionNames;
 	add: #JadeServer -> #_mcRepositoryFrom:;
 	add: #JadeServer -> #_mcTopazFrom:on:;
 	add: #JadeServer -> #authorInitials:;
@@ -381,6 +382,28 @@ _mcDescriptionOfPatch: aPatch baseName: aString1 alternateName: aString2
 
 !
 
+_mcLoadedVersionNames
+
+	| mcWorkingCopyClass stream |
+	(mcWorkingCopyClass := self mcWorkingCopyClass) isNil ifTrue: [^nil].
+	stream := self _writeStreamOnString.
+	mcWorkingCopyClass allManagers do: [:each | 
+		| packageOrVersion |
+		packageOrVersion := each ancestors
+			detect: [:ignored | true]
+			ifNone: [each package].
+		packageOrVersion := packageOrVersion notNil
+			ifTrue: [packageOrVersion name]
+			ifFalse: [''].
+		stream
+			nextPutAll: packageOrVersion; tab;
+			nextPut: (each modified ifTrue: [$Y] ifFalse: [$N]); tab;
+			nextPutAll: each package name;
+			lf.
+	].
+	^stream contents.
+!
+
 _mcRepositoryFrom: aRepository
 
 	| stream |
@@ -580,24 +603,7 @@ mcInitials: aString
 
 mcLoadedVersionNames
 
-	| mcWorkingCopyClass stream |
-	(mcWorkingCopyClass := self mcWorkingCopyClass) isNil ifTrue: [^nil].
-	stream := self _writeStreamOnString.
-	mcWorkingCopyClass allManagers do: [:each | 
-		| packageOrVersion |
-		packageOrVersion := each ancestors
-			detect: [:ignored | true]
-			ifNone: [each package].
-		packageOrVersion := packageOrVersion notNil
-			ifTrue: [packageOrVersion name]
-			ifFalse: [''].
-		stream
-			nextPutAll: packageOrVersion; tab;
-			nextPut: (each modified ifTrue: [$Y] ifFalse: [$N]); tab;
-			nextPutAll: each package name;
-			lf.
-	].
-	^self _encodeString: stream contents.
+	^self _encodeString: self _mcLoadedVersionNames
 !
 
 mcNewDirectoryRepository: aString
@@ -883,6 +889,7 @@ mcWorkingCopyClass
 !JadeServer categoriesFor: #_describeMCOrganizationDefinition:on:!Monticello!private! !
 !JadeServer categoriesFor: #_describeMCRemoval:on:!Monticello!private! !
 !JadeServer categoriesFor: #_mcDescriptionOfPatch:baseName:alternateName:!Monticello!private! !
+!JadeServer categoriesFor: #_mcLoadedVersionNames!Monticello!public! !
 !JadeServer categoriesFor: #_mcRepositoryFrom:!Monticello!private! !
 !JadeServer categoriesFor: #_mcTopazFrom:on:!Monticello!private! !
 !JadeServer categoriesFor: #authorInitials:!Monticello!public! !
