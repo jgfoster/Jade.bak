@@ -872,10 +872,17 @@ sbMethodCategory: anOrderedCollection
 sbMethodClass: anOrderedCollection
 	"Private - Drag/drop method onto class"
 
-	| sourceBehavior action targetName set target |
+	| action list set sourceBehavior target targetName targetVersion |
 	sourceBehavior := self sbClassFrom: anOrderedCollection.
 	action := anOrderedCollection removeFirst.
-	targetName := anOrderedCollection removeFirst asSymbol.
+	targetName := anOrderedCollection removeFirst.
+	list := targetName subStrings.
+	targetName := list first asSymbol.
+	1 < list size ifTrue: [
+		targetVersion := list at: 2.
+		targetVersion := targetVersion copyFrom: 2 to: targetVersion size - 1.
+		targetVersion := (targetVersion subStrings: $/) collect: [:each | each asNumber].
+	].
 	set := IdentitySet new.
 	self symbolList do: [:eachDict | 
 		eachDict do: [:eachGlobal | 
@@ -885,6 +892,10 @@ sbMethodClass: anOrderedCollection
 	1 < set size ifTrue: [self error: 'Target name is ambiguous!!'].
 	1 = set size ifFalse: [self error: 'Target not found!!'].
 	target := set asArray first.
+	targetVersion notNil ifTrue: [
+		target classHistory size ~~ (targetVersion at: 2) ifTrue: [self error: 'Target not found with proper version history!!'].
+		target := target classHistory at: (targetVersion at: 1).
+	].
 	sourceBehavior isMeta ifTrue: [target := target class].
 	anOrderedCollection do: [:each | 
 		| gsMethod result |
