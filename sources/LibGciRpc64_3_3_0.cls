@@ -25,6 +25,14 @@ fetchBytes: anOopType classOop: oopClass
 		fetchBytes: anOopType 
 		classOop: oopClass!
 
+gciExecuteFromContextDbg_: source _: contextObject _: symbolList _: flags _: environmentId
+	"GciExecuteFromContextDbg_( OopType source, OopType contextObject,
+  OopType symbolList , int flags,  ushort environmentId);"
+
+	<cdecl: OopType64 GciExecuteFromContextDbg_ OopType64 OopType64 OopType64 sdword word>
+	^self invalidCall
+!
+
 gciNbExecute_: source _: symbolList _: environmentId
 	"GciNbExecute_(OopType source, OopType symbolList, ushort environmentId);"
 
@@ -53,6 +61,13 @@ gciNewUtf8String_: utf8data _: nBytes _: convertToUnicode
  	^self invalidCall
 !
 
+gciPerform: receiver _: selector _: args _: numArgs
+	"OopType GciPerform(OopType receiver, const char selector[], const OopType args[], int numArgs );"
+
+	<cdecl: OopType64 GciPerform OopType64 lpvoid OopType64 sdword>
+ 	^self invalidCall
+!
+
 gsHasPragmas
 
 	^true!
@@ -62,20 +77,15 @@ oopClassUtf8
 	^OopType64 fromInteger: 154113!
 
 session: session execute: aString context: contextOop environment: anInteger
-	"http://kermit.gemtalksystems.com/bug?bug=47634"
-	| stringOop utf8 |
+
+	| utf8 |
 	self verifyEnvironment: anInteger.
 	utf8 := aString asUtf8String.
 	self critical: [
+		| oop1 oop2 result | 
 		self gciSetSessionId: session.
-		stringOop := self 
-			gciNewUtf8String_: utf8 
-			_: utf8 size 
-			_: 1.
-		contextOop ifNil: [
-			self gciNbExecute_: stringOop _: self oopNil _: anInteger.
-		] ifNotNil: [
-			(aString asCharacterCollection allSatisfy: [:each | each codePoint <= 255]) ifFalse: [self error: 'Unable to execute string!!'].
+		"http://kermit.gemtalksystems.com/bug?bug=47634 means that we can't use Gci*ExecuteStr*() for UTF-8."
+		(utf8 allSatisfy: [:each | each codePoint <= 127]) ifTrue: [
 			self
 				gciNbExecuteStrFromContextDbg_: utf8 
 				_: utf8 size
@@ -84,9 +94,37 @@ session: session execute: aString context: contextOop environment: anInteger
 				_: self oopNil 
 				_: 0 
 				_: anInteger.
+			^self nbResult
 		].
-		^self nbResult
-	].
+		oop1 := self 
+			gciNewUtf8String_: utf8 
+			_: utf8 size 
+			_: 1.		"the flag to return Unicode doesn't work so we get back UTF-8"
+		oop2 := self
+			gciPerform: oop1 
+			_: 'asUnicodeString' 
+			_: self oopNil 
+			_: 0.
+		"http://kermit.gemtalksystems.com/bug?bug=47648 means that we can't use the context during a non-blocking call"
+		contextOop isGsNil ifTrue: [
+			self 
+				gciNbExecute_: oop2 
+				_: self oopNil 
+				_: anInteger.
+			result := self nbResult.
+			self _releaseOops: (Array with: oop1 with: oop2).
+			^result
+		].
+		"Due to GemStone/S bugs #47634 and #47648 an execute of Unicode source in a context will be blocking!!"
+		result := self 
+			gciExecuteFromContextDbg_: oop2
+			_: contextOop 
+			_: self oopNil  
+			_: 0 
+			_: anInteger.
+		self _releaseOops: (Array with: oop1 with: oop2).
+		^result
+	]
 !
 
 session: session oopForString: aString
@@ -116,9 +154,11 @@ verifyEnvironment: anInteger
 !LibGciRpc64_3_3_0 categoriesFor: #decode:!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #encode:!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #fetchBytes:classOop:!public! !
+!LibGciRpc64_3_3_0 categoriesFor: #gciExecuteFromContextDbg_:_:_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciNbExecute_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciNbExecuteStrFromContextDbg_:_:_:_:_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciNewUtf8String_:_:_:!private! !
+!LibGciRpc64_3_3_0 categoriesFor: #gciPerform:_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gsHasPragmas!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #oopClassUtf8!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #session:execute:context:environment:!public! !

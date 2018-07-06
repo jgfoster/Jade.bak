@@ -23,6 +23,16 @@ Array
 !GciSingleThreadedLibrary categoriesForClass!Unclassified! !
 !GciSingleThreadedLibrary methodsFor!
 
+_releaseOops: anArray
+
+	| array |
+	array := self oopTypeArrayClass new: anArray size.
+	1 to: anArray size do: [:i | 
+		array at: i put: (anArray at: i).
+	].
+	self gciReleaseOops: array _: array size.
+!
+
 _semaphore
 
 	^semaphore.
@@ -572,13 +582,8 @@ session: session oopForString: aString
 session: anInteger releaseOops: anArray
 
 	self critical: [
-		| array |
 		self gciSetSessionId: anInteger.
-		array := self oopTypeArrayClass new: anArray size.
-		1 to: anArray size do: [:i | 
-			array at: i put: (anArray at: i).
-		].
-		self gciReleaseOops: array _: array size.
+		self _releaseOops: anArray.
 	].
 !
 
@@ -651,6 +656,7 @@ version
 
 	^self gciVersion.
 ! !
+!GciSingleThreadedLibrary categoriesFor: #_releaseOops:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #_semaphore!private! !
 !GciSingleThreadedLibrary categoriesFor: #abortSession:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #beginSession:!public!required! !
