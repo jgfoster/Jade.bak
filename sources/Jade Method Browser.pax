@@ -28,11 +28,14 @@ package methodNames
 	add: #JadeServer -> #_addMethod:toStream:;
 	add: #JadeServer -> #_behavior:categoryOfSelector:;
 	add: #JadeServer -> #_behaviorFor:in:;
+	add: #JadeServer -> #_implementorsOf:;
 	add: #JadeServer -> #_methodsFor:categories:;
 	add: #JadeServer -> #_methodsFor:filter:isVariables:;
 	add: #JadeServer -> #_methodsFor:variables:;
 	add: #JadeServer -> #_packageNameFor:;
 	add: #JadeServer -> #_referencesToObject:;
+	add: #JadeServer -> #_sendersOf:;
+	add: #JadeServer -> #_streamOfMethods:;
 	add: #JadeServer -> #_stringOfLineNumbersWithBreaksIn:;
 	add: #JadeServer -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer -> #compileMethod:behavior:user:inCategory:;
@@ -47,6 +50,7 @@ package methodNames
 	add: #JadeServer -> #sourceFor:in:;
 	add: #JadeServer -> #stepPointsFor:in:;
 	add: #JadeServer -> #streamOfMethods:;
+	add: #JadeServer64bit33 -> #sendersOf:;
 	add: #JadeServer64bit3x -> #_behavior:categoryOfSelector:;
 	add: #JadeServer64bit3x -> #_methodsFor:categories:;
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
@@ -239,6 +243,15 @@ _behaviorFor: selector in: aClass
 	self error: 'Method not found in class or in any superclass'.
 !
 
+_implementorsOf: anObject
+
+	| symbol |
+	symbol := (anObject isKindOf: String)
+		ifTrue: [anObject asSymbol]
+		ifFalse: [anObject selector].
+	^self _streamOfMethods: (self classOrganizer implementorsOf: symbol).
+!
+
 _methodsFor: aClass categories: aList
 
 	| methods |
@@ -289,7 +302,28 @@ _packageNameFor: aCategoryName
 
 _referencesToObject: anObject
 
-	^self streamOfMethods: (self classOrganizer referencesToObject: anObject).
+	^self _streamOfMethods: (self classOrganizer referencesToObject: anObject)
+!
+
+_sendersOf: anObject
+
+	| symbol |
+	symbol := (anObject isKindOf: String)
+		ifTrue: [anObject asSymbol]
+		ifFalse: [anObject selector].
+	^self _streamOfMethods: (self classOrganizer sendersOf: symbol) first
+!
+
+_streamOfMethods: aList
+
+	| stream |
+	stream := self _writeStreamOnString.
+	aList do: [:each | 
+		self
+			_addMethod: each 
+			toStream: stream.
+	].
+	^stream contents.
 !
 
 _stringOfLineNumbersWithBreaksIn: aGsMethod
@@ -432,12 +466,7 @@ compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCatego
 
 implementorsOf: anObject
 
-	| symbol |
-	symbol := (anObject isKindOf: String)
-		ifTrue: [anObject asSymbol]
-		ifFalse: [anObject selector].
-	^self streamOfMethods: (self classOrganizer implementorsOf: symbol).
-!
+	^self _encodeString: (self _implementorsOf: (self _decodeString: anObject))!
 
 implementorsOf: aGsMethod startingAt: aClass
 
@@ -449,14 +478,14 @@ implementorsOf: aGsMethod startingAt: aClass
 		(myClass includesSelector: selector) ifTrue: [list add: myClass].
 		(myClass := myClass superclass) notNil.
 	] whileTrue: [].
-	^self _stringForClassList: list.
+	^self _encodeString: (self _stringForClassList: list).
 !
 
 methodsContaining: aString
 
 	| string |
 	string := self _decodeString: aString.
-	^self streamOfMethods: (self classOrganizer substringSearch: string) first.
+	^self _encodeString: (self _streamOfMethods: (self classOrganizer substringSearch: string) first)
 !
 
 methodsFor: childClass upTo: parentClass filter: aString isVariables: aBoolean 
@@ -542,9 +571,9 @@ sendersOf: anObject
 
 	| symbol |
 	symbol := (anObject isKindOf: String)
-		ifTrue: [anObject asSymbol]
+		ifTrue: [(self _decodeString: anObject) asSymbol]
 		ifFalse: [anObject selector].
-	^self streamOfMethods: (self classOrganizer sendersOf: symbol) first.
+	^self _encodeString: (self _sendersOf: symbol)
 !
 
 sourceFor: anObject in: aClass
@@ -609,23 +638,19 @@ stepPointsFor: aGsMethod in: aClass
 
 streamOfMethods: aList
 
-	| stream |
-	stream := self _writeStreamOnString.
-	aList do: [:each | 
-		self
-			_addMethod: each 
-			toStream: stream.
-	].
-	^self _encodeString: stream contents.
+	^self _encodeString: (self _streamOfMethods: aList)
 ! !
 !JadeServer categoriesFor: #_addMethod:toStream:!Methods!private! !
 !JadeServer categoriesFor: #_behavior:categoryOfSelector:!Methods!private! !
 !JadeServer categoriesFor: #_behaviorFor:in:!Methods!private! !
+!JadeServer categoriesFor: #_implementorsOf:!Methods!private! !
 !JadeServer categoriesFor: #_methodsFor:categories:!Methods!private! !
 !JadeServer categoriesFor: #_methodsFor:filter:isVariables:!Methods!private! !
 !JadeServer categoriesFor: #_methodsFor:variables:!Methods!private! !
 !JadeServer categoriesFor: #_packageNameFor:!Methods!private! !
 !JadeServer categoriesFor: #_referencesToObject:!Methods!private! !
+!JadeServer categoriesFor: #_sendersOf:!Methods!public! !
+!JadeServer categoriesFor: #_streamOfMethods:!Methods!private! !
 !JadeServer categoriesFor: #_stringOfLineNumbersWithBreaksIn:!Methods!private! !
 !JadeServer categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!private!System Browser! !
 !JadeServer categoriesFor: #compileMethod:behavior:user:inCategory:!Methods!public! !
@@ -640,6 +665,15 @@ streamOfMethods: aList
 !JadeServer categoriesFor: #sourceFor:in:!Methods!public! !
 !JadeServer categoriesFor: #stepPointsFor:in:!Methods!public! !
 !JadeServer categoriesFor: #streamOfMethods:!Methods!public! !
+
+!JadeServer64bit33 methodsFor!
+
+sendersOf: anObject
+
+	^(anObject isKindOf: Utf8)
+		ifTrue: [super sendersOf: (self _decodeString: anObject)]
+		ifFalse: [super sendersOf: anObject]! !
+!JadeServer64bit33 categoriesFor: #sendersOf:!Methods!public! !
 
 !JadeServer64bit3x methodsFor!
 

@@ -26,7 +26,7 @@ debugString: aString fromContext: anObject environment: anInteger
 	"See String>>evaluateInContext:symbolList:"
 
 	[
-		^ ((self _decodeString: aString)
+		^((self _decodeString: aString)
 			_compileInContext: anObject 
 			symbolList: GsSession currentSession symbolList 
 			oldLitVars: nil 
@@ -43,7 +43,7 @@ executeString: aString fromContext: anObject environment: anInteger
 	"See String>>evaluateInContext:symbolList:"
 
 	[
-		^ ((self _decodeString: aString)
+		^((self _decodeString: aString)
 			_compileInContext: anObject 
 			symbolList: GsSession currentSession symbolList 
 			oldLitVars: nil 

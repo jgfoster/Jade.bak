@@ -47,6 +47,7 @@ package methodNames
 	add: #JadeServer -> #_describeMCOrganizationDefinition:on:;
 	add: #JadeServer -> #_describeMCRemoval:on:;
 	add: #JadeServer -> #_mcDescriptionOfPatch:baseName:alternateName:;
+	add: #JadeServer -> #_mcRepositoryFrom:;
 	add: #JadeServer -> #_mcTopazFrom:on:;
 	add: #JadeServer -> #authorInitials:;
 	add: #JadeServer -> #mcAddHttpRepository:;
@@ -376,8 +377,22 @@ _mcDescriptionOfPatch: aPatch baseName: aString1 alternateName: aString2
 		each isModification 	ifTrue: [self _describeMCModification: 	each on: stream].
 		each isRemoval 	ifTrue: [self _describeMCRemoval: 		each on: stream].
 	].
-	^self _encodeString: stream contents.
+	^stream contents.
 
+!
+
+_mcRepositoryFrom: aRepository
+
+	| stream |
+	stream := self _writeStreamOnString.
+	(self oopOf: aRepository) printOn: stream.
+	stream 
+		tab;
+		nextPutAll: aRepository description;
+		tab;
+		nextPutAll: aRepository class name;
+		tab.
+	^stream contents.
 !
 
 _mcTopazFrom: aSnapshot on: aStream
@@ -531,7 +546,9 @@ mcAllVersionNamesInDict: anMCRepository
 
 mcCreationTemplateFor: anMCRepository
 
-	^self _encodeString: anMCRepository asCreationTemplate.
+	| template |
+	(template := anMCRepository asCreationTemplate) isNil ifTrue: [^nil].
+	^self _encodeString: template.
 !
 
 mcHttpRepository: aRepository user: userString password: passwordString
@@ -558,8 +575,8 @@ mcInitials: aString
 	string := System session printString , Character space asString , 
 		(GsSession serialOfSession: System session) printString , Character space asString , 
 		packagePolicyEnabledFlag.
-	string := self _encodeString: string.
-	^string!
+	^self _encodeString: string
+!
 
 mcLoadedVersionNames
 
@@ -633,10 +650,10 @@ mcPatchFrom: aString1 to: aString2 inDictionaryRepository: aDictionaryRepository
 	].
 	rightSnapshot := (aDictionaryRepository versionFromVersionNamed: string2) snapshot.
 	patch := rightSnapshot patchRelativeToBase: leftSnapshot.
-	^self 
+	^self _encodeString: (self 
 		_mcDescriptionOfPatch: patch
 		baseName: string1
-		alternateName: string2.
+		alternateName: string2)
 !
 
 mcPatchFrom: aString1 to: aString2 inFileBasedRepository: aFileRepository
@@ -654,10 +671,10 @@ mcPatchFrom: aString1 to: aString2 inFileBasedRepository: aFileRepository
 	].
 	rightSnapshot := (aFileRepository versionFromFileNamed: string2) snapshot.
 	patch := rightSnapshot patchRelativeToBase: leftSnapshot.
-	^self 
+	^self _encodeString: (self 
 		_mcDescriptionOfPatch: patch
 		baseName: string1
-		alternateName: string2.
+		alternateName: string2)
 !
 
 mcRemoveRepository: aRepository
@@ -670,16 +687,7 @@ mcRemoveRepository: aRepository
 
 mcRepositoryFrom: aRepository
 
-	| stream |
-	stream := self _writeStreamOnString.
-	(self oopOf: aRepository) printOn: stream.
-	stream 
-		tab;
-		nextPutAll: aRepository description;
-		tab;
-		nextPutAll: aRepository class name;
-		tab.
-	^self _encodeString: stream contents.
+	^self _encodeString: (self _mcRepositoryFrom: aRepository)
 !
 
 mcRepositoryGroup
@@ -695,7 +703,7 @@ mcRepositoryList
 	(group := self mcRepositoryGroup) isNil ifTrue: [^nil].
 	stream := self _writeStreamOnString.
 	group repositories do: [:each | 
-		stream nextPutAll: (self mcRepositoryFrom: each).
+		stream nextPutAll: (self _mcRepositoryFrom: each).
 		stream lf.
 	].
 	^self _encodeString: stream contents.
@@ -754,7 +762,7 @@ mcUniqueVersionNameFor: anMCWorkingCopy
 
 mcUserAndPasswordInHTTP: anMCHttpRepository
 
-	^self _encodeString: anMCHttpRepository user , Character tab asString , anMCHttpRepository password.
+	^self _encodeString: (anMCHttpRepository user , Character tab asString , anMCHttpRepository password)
 !
 
 mcVersionInfoFrom: aVersionInfo
@@ -875,6 +883,7 @@ mcWorkingCopyClass
 !JadeServer categoriesFor: #_describeMCOrganizationDefinition:on:!Monticello!private! !
 !JadeServer categoriesFor: #_describeMCRemoval:on:!Monticello!private! !
 !JadeServer categoriesFor: #_mcDescriptionOfPatch:baseName:alternateName:!Monticello!private! !
+!JadeServer categoriesFor: #_mcRepositoryFrom:!Monticello!private! !
 !JadeServer categoriesFor: #_mcTopazFrom:on:!Monticello!private! !
 !JadeServer categoriesFor: #authorInitials:!Monticello!public! !
 !JadeServer categoriesFor: #mcAddHttpRepository:!Monticello!public! !

@@ -101,7 +101,7 @@ _stringForClassList: aList
 			_addClass: each 
 			toStream: stream.
 	].
-	^self _encodeString: stream contents.
+	^stream contents.
 !
 
 classOrganizer
@@ -117,7 +117,7 @@ superclassesOf: aClass isMeta: aBoolean
 	| myClass list |
 	myClass := aBoolean ifTrue: [aClass class] ifFalse: [aClass].
 	list := myClass _allSuperList , (Array with: myClass).
-	^self _stringForClassList: list.
+	^self _encodeString: (self _stringForClassList: list).
 ! !
 !JadeServer categoriesFor: #_addClass:toStream:!Classes!private! !
 !JadeServer categoriesFor: #_addClass:toStream:isVisible:fromDictionary:!Classes!private! !

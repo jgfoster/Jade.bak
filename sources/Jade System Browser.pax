@@ -453,7 +453,7 @@ sbBrowseImplementors: anOrderedCollection
 
 	writeStream 
 		nextPutAll: 'browseImplementors'; lf;
-		nextPutAll: (self implementorsOf: anOrderedCollection removeFirst);
+		nextPutAll: (self _implementorsOf: anOrderedCollection removeFirst);
 		yourself.
 !
 
@@ -499,7 +499,7 @@ sbBrowseSenders: anOrderedCollection
 
 	writeStream 
 		nextPutAll: 'browseSenders'; lf;
-		nextPutAll: (self sendersOf: anOrderedCollection removeFirst);
+		nextPutAll: (self _sendersOf: anOrderedCollection removeFirst);
 		yourself.
 !
 
@@ -2005,7 +2005,7 @@ sbBrowseMethodsWithPragma: anOrderedCollection
 	].
 	writeStream 
 		nextPutAll: 'browseMethodsWithPragma'; lf;
-		nextPutAll: (self streamOfMethods: methods);
+		nextPutAll: (self _streamOfMethods: methods);
 		yourself.
 !
 

@@ -215,12 +215,13 @@ allSessions
 
 descriptionOfConfigOption: aString
 
-	| dict key string |
+	| dict key string unicode |
 	dict := self _systemConfigAsDictionary.
-	(string := dict at: aString ifAbsent: [nil]) notNil ifTrue: [^self _encodeString: string].	string := aString asUppercase.
+	unicode := self _decodeString: aString.
+	(string := dict at: unicode ifAbsent: [nil]) notNil ifTrue: [^self _encodeString: string].	unicode := unicode asUppercase.
 	dict keys do: [:each1 | 
 		key := (each1 reject: [:each2 | each2 = $_]) asUppercase.
-		key = string ifTrue: [^dict at: each1].
+		key = unicode ifTrue: [^dict at: each1].
 	].
 	^''!
 

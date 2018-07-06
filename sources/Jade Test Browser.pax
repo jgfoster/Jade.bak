@@ -92,7 +92,7 @@ JadeShell subclass: #JadeSUnitBrowser
 debugTestNamed: testName of: testCaseClassName
 	"Open a Debugger for the TestCase class named <testCaseClassName> in the test named <testName>"
 
-	^(self objectNamed: testCaseClassName) debug: testName asSymbol!
+	^(self objectNamed: (self _decodeString: testCaseClassName)) debug: (self _decodeString: testName) asSymbol!
 
 getPackagesNamesWithTestClasses
 	"Answer a collection with all package names that contain at least one Test class (subclass of TestCase)"
@@ -152,7 +152,7 @@ runTestNamed: testName in: gsClass
 	"The receiver run the test named <testName> of GemStone/S class named <gsClass>"
 	| testResult |
 
-	testResult := (self objectNamed: gsClass) run: (self _decodeString: testName) asSymbol.
+	testResult := (self objectNamed: (self _decodeString: gsClass)) run: (self _decodeString: testName) asSymbol.
 
 	^self _encodeString: testResult errorCount printString, ',' ,testResult failureCount printString, ',', testResult passedCount printString! !
 !JadeServer categoriesFor: #debugTestNamed:of:!public!Test Browser! !

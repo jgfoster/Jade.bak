@@ -404,16 +404,16 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #oopAt:!private! !
 !LibGciRpc64 categoriesFor: #oopClassArray!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopClassByteArray!public!Reserved OOPs! !
-!LibGciRpc64 categoriesFor: #oopClassDoubleByteString!public! !
-!LibGciRpc64 categoriesFor: #oopClassQuadByteString!public! !
+!LibGciRpc64 categoriesFor: #oopClassDoubleByteString!public!Reserved OOPs! !
+!LibGciRpc64 categoriesFor: #oopClassQuadByteString!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopClassString!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopClassSymbol!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopClassSystem!public!Reserved OOPs! !
-!LibGciRpc64 categoriesFor: #oopClassUnicode16!public! !
-!LibGciRpc64 categoriesFor: #oopClassUnicode32!public! !
-!LibGciRpc64 categoriesFor: #oopClassUnicode7!public! !
+!LibGciRpc64 categoriesFor: #oopClassUnicode16!public!Reserved OOPs! !
+!LibGciRpc64 categoriesFor: #oopClassUnicode32!public!Reserved OOPs! !
+!LibGciRpc64 categoriesFor: #oopClassUnicode7!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopFalse!public!Reserved OOPs! !
-!LibGciRpc64 categoriesFor: #oopForInteger:!public! !
+!LibGciRpc64 categoriesFor: #oopForInteger:!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopGemStoneError!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopIllegal!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopMaxSmallInteger!public!Reserved OOPs! !
@@ -424,9 +424,9 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #oopRemoteNil!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopTrue!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopTwo!public!Reserved OOPs! !
-!LibGciRpc64 categoriesFor: #oopTypeArrayClass!public! !
-!LibGciRpc64 categoriesFor: #oopTypeClass!public! !
-!LibGciRpc64 categoriesFor: #oopTypeWithOop:!public! !
+!LibGciRpc64 categoriesFor: #oopTypeArrayClass!public!Reserved OOPs! !
+!LibGciRpc64 categoriesFor: #oopTypeClass!public!Reserved OOPs! !
+!LibGciRpc64 categoriesFor: #oopTypeWithOop:!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopZero!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #sendInterpreted:to:with:session:!public! !
 !LibGciRpc64 categoriesFor: #specialFromOop:!public! !

@@ -2,7 +2,7 @@
 
 JadeServer64bit32 subclass: #JadeServer64bit33
 	instanceVariableNames: 'socket'
-	classVariableNames: 'Breakpoint GsNMethod GsSocket'
+	classVariableNames: 'Breakpoint GsNMethod GsSocket Utf8'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeServer64bit33 guid: (GUID fromString: '{4100a18b-fbc2-4ea5-86a8-b8a8c6194269}')!

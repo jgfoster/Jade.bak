@@ -313,12 +313,12 @@ compile: aString frame: anInteger process: aGsProcess
 	selector := oldMethod selector.
 	selector isNil ifTrue: [^self _encodeString: result].
 	category := self _behavior: aBehavior categoryOfSelector: selector.
-	result := self
+	^self
 		compileMethod: string 
 		behavior: aBehavior 
 		user: nil 
-		inCategory: category.
-	^(self _encodeString: result).!
+		inCategory: category
+!
 
 isResumableCategory: category number: number context: context
 

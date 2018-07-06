@@ -119,7 +119,7 @@ fetchBytes: anOopType classOop: oopClass
 	oopClass = self oopClassString 			ifTrue: [^self fetchOneByteString: anOopType].
 	oopClass = self oopClassSymbol 			ifTrue: [^(self fetchOneByteString: anOopType) asSymbol].
 	oopClass = self oopClassByteArray 		ifTrue: [^self fetchBytes: anOopType class: ByteArray].
-	oopClass = self oopClassUnicode7 		ifTrue: [^self fetchBytes: anOopType class: Unicode7].
+	oopClass = self oopClassUnicode7 		ifTrue: [^self fetchOneByteString: anOopType].
 	oopClass = self oopClassUnicode16 		ifTrue: [^self fetchTwoByteString: anOopType].
 	oopClass = self oopClassUnicode32 		ifTrue: [^self fetchBytes: anOopType class: Unicode32].
 	oopClass = self oopClassDoubleByteString 	ifTrue: [^self fetchTwoByteString: anOopType].

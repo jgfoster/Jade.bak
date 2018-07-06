@@ -9,7 +9,12 @@ JadeServer guid: (GUID fromString: '{fc038152-9707-4c5f-8977-a1f8d02eb005}')!
 JadeServer comment: '(System _sessionStateAt: 3).	"pre-3.2"
 (System __sessionStateAt: 3).	"3.2 and on"
 GciSession allInstances , GciSessionWithSocket allInstances do: [:each | each initializeServer].
-GciSession allInstances do: [:each | each logout].'!
+GciSession allInstances do: [:each | each logout].
+
+All transfers between client and server of strings should be UTF-8 encoded.
+Public methods are called from the client.
+All public methods should expect (and decode) UTF-8 and should return UTF-8.
+All private methods shoud expect and return Unicode16.'!
 !JadeServer categoriesForClass!Unclassified! !
 !JadeServer methodsFor!
 
