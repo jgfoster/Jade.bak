@@ -12,8 +12,11 @@ JadeInspector comment: ''!
 
 contextObject
 
-	^model.
-!
+    	instVarListPresenter hasSelection ifFalse: [^model].
+
+	((instVarListPresenter selection key = 'self') or: [instVarListPresenter selection key = '-.asOop']) ifTrue: [^model].
+ 
+	^instVarListPresenter selection value!
 
 createComponents
 
@@ -61,6 +64,10 @@ inspectInstVar
 		showOn: instVarListPresenter selection value 
 		session: gciSession.
 !
+
+isJadeInspector
+
+	^true!
 
 isModified
 
@@ -167,6 +174,7 @@ setLastGsShape: className
 !JadeInspector categoriesFor: #createSchematicWiring!accessing!private! !
 !JadeInspector categoriesFor: #displayObject!accessing!private! !
 !JadeInspector categoriesFor: #inspectInstVar!accessing!private! !
+!JadeInspector categoriesFor: #isJadeInspector!private! !
 !JadeInspector categoriesFor: #isModified!private! !
 !JadeInspector categoriesFor: #model:!private! !
 !JadeInspector categoriesFor: #onViewOpened!accessing!private! !

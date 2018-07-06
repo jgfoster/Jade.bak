@@ -23,6 +23,7 @@ package methodNames
 	add: #JadeServer64bit33 -> #print:on:;
 	add: #JadeServer64bit33 -> #printStringOf:to:;
 	add: #JadeServer64bit3x -> #inspect:;
+	add: #Object -> #isJadeInspector;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -225,6 +226,13 @@ inspect: anObject
 	^self _encodeString: stream contents.
 ! !
 !JadeServer64bit3x categoriesFor: #inspect:!Inspector!public!Transcript! !
+
+!Object methodsFor!
+
+isJadeInspector
+
+	^false! !
+!Object categoriesFor: #isJadeInspector!public! !
 
 "End of package definition"!
 

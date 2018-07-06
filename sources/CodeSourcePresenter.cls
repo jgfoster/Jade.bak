@@ -164,18 +164,16 @@ environment: anInteger
 !
 
 executeSelectionOrLine
- 
+	| contextObject |
+
+	contextObject := self topShell isJadeInspector ifTrue: [self topShell contextObject] ifFalse: [model].
 	[
-		^true -> (gciSession 
-			executeString: self currentSelectionOrLine
-			fromContext: model 
-			environment: environment).
+		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: contextObject environment: environment).
 	] on: GsCompileError do: [:ex | 
 		^false -> ex list.
 	].
 	self error: 'How did we get here?'.
-	^false -> #(nil).
-!
+^false -> #(nil).!
 
 fileSave
 		"Private - Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"
