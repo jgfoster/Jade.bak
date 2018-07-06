@@ -14,10 +14,7 @@ projectSelectionUpdate: aPresenter
 	aPresenter selection: selection!
 
 projectsUpdate: aPresenter
-	| services |
-	services := projects
-				collect: [:project | (RowanProjectService new basicName: project) isDirty: (modifiedProjects includes: project)].
-	aPresenter list: services! !
+	aPresenter list: projects! !
 !RowanProjectsUpdate categoriesFor: #projectSelectionUpdate:!public! !
 !RowanProjectsUpdate categoriesFor: #projectsUpdate:!public! !
 
