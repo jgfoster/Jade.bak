@@ -12,11 +12,10 @@ JadeInspector comment: ''!
 
 contextObject
 
-    	instVarListPresenter hasSelection ifFalse: [^model].
-
+	instVarListPresenter hasSelection ifFalse: [^model].
 	((instVarListPresenter selection key = 'self') or: [instVarListPresenter selection key = '-.asOop']) ifTrue: [^model].
- 
-	^instVarListPresenter selection value!
+	^instVarListPresenter selection value
+!
 
 createComponents
 

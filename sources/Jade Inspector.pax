@@ -232,7 +232,7 @@ inspect: anObject
 isJadeInspector
 
 	^false! !
-!Object categoriesFor: #isJadeInspector!public! !
+!Object categoriesFor: #isJadeInspector!public!testing! !
 
 "End of package definition"!
 
