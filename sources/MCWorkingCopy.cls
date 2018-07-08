@@ -32,18 +32,6 @@ authorInitials: aString
 		with: aString.
 !
 
-classesInCategory: aGsString 
-
-	| string |
-	string := gciSession 
-		serverPerform: #mcClassesInCategory:package:
-		with: aGsString
-		with: self.
-	^GsClass 
-		listFromString: string 
-		session: gciSession.
-!
-
 globals
 
 	^#().
@@ -103,7 +91,7 @@ newVersionWithName: nameString message: messageString
 removeRepository: aRepository 
 
 	gciSession
-		serverPerform: #'mcRemoveRepository:toPackage:' 
+		serverPerform: #'mcRemoveRepository:fromPackage:' 
 		with: aRepository
 		with: self.
 	self repositories remove: aRepository.
@@ -128,13 +116,13 @@ versionNameAndMessage
 	string := gciSession
 		serverPerform: #'mcVersionNameAndMessageFrom:' 
 		with: self.
+	string := gciSession decode: string.
 	list := string subStrings: Character tab.
 	^list first -> list last.
 ! !
 !MCWorkingCopy categoriesFor: #addRepository:!public! !
 !MCWorkingCopy categoriesFor: #ancestors!public! !
 !MCWorkingCopy categoriesFor: #authorInitials:!public! !
-!MCWorkingCopy categoriesFor: #classesInCategory:!public! !
 !MCWorkingCopy categoriesFor: #globals!public! !
 !MCWorkingCopy categoriesFor: #initialize:!public! !
 !MCWorkingCopy categoriesFor: #isModified!public! !

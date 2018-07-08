@@ -144,9 +144,11 @@ updateA: aString
 
 	| time1 time2 time3 string stream |
 	time1 := Time millisecondsToRun: [
+		string := gciSession encode: '0 ' , aString.
 		string := gciSession 
 			serverPerform: #'systemBrowser:' 
-			with: '0 ' , aString.
+			with: string.
+		string := gciSession decode: string.
 	].
 	time2 := Time millisecondsToRun: [
 		| x |

@@ -19,7 +19,7 @@ addDirectoryRepository
 	path isNil ifTrue: [^nil].
 	^gciSession
 		serverPerform: #'mcNewDirectoryRepository:' 
-		with: path!
+		with: (gciSession encode: path)!
 
 addFileTreeRepository
 
@@ -27,7 +27,7 @@ addFileTreeRepository
 	(path := Prompter prompt: 'Enter server path:') isNil ifTrue: [^nil].
 	^gciSession
 		serverPerform: #'mcNewFileTreeRepository:' 
-		with: path!
+		with: (gciSession encode: path)!
 
 addGitHubRepository
 
@@ -35,7 +35,7 @@ addGitHubRepository
 	(path := Prompter prompt: 'Enter location (e.g., ''github://glassdb/zinc:gemstone3.1/repository''):') isNil ifTrue: [^nil].
 	^gciSession
 		serverPerform: #'mcNewGitHubRepository:' 
-		with: path!
+		with: (gciSession encode: path)!
 
 addHttpRepository
 
@@ -45,7 +45,7 @@ addHttpRepository
 	string := info location , delimiter , info user , delimiter , info password.
 	^gciSession
 		serverPerform: #'mcAddHttpRepository:' 
-		with: string!
+		with: (gciSession encode: string)!
 
 addRepository
 
@@ -68,7 +68,7 @@ addServerDirectoryRepository
 	(path := Prompter prompt: 'Enter server path:') isNil ifTrue: [^nil].
 	^gciSession
 		serverPerform: #'mcNewServerDirectoryRepository:' 
-		with: path!
+		with: (gciSession encode: path)!
 
 compareVersion
 
@@ -184,7 +184,7 @@ mergeVersion
 	versionFullName := package name , '-' , versionName name.
 	gciSession
 		serverPerform: #'mcVersionMerge:from:autoMigrate:' 
-		with: versionFullName
+		with: (gciSession encode: versionFullName)
 		with: repository
 		with: true.
 	self getLoadedVersionNames.
