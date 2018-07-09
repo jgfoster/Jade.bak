@@ -29,6 +29,7 @@ package methodNames
 	add: #JadeServer -> #_behavior:categoryOfSelector:;
 	add: #JadeServer -> #_behaviorFor:in:;
 	add: #JadeServer -> #_implementorsOf:;
+	add: #JadeServer -> #_methodsContaining:;
 	add: #JadeServer -> #_methodsFor:categories:;
 	add: #JadeServer -> #_methodsFor:filter:isVariables:;
 	add: #JadeServer -> #_methodsFor:variables:;
@@ -250,6 +251,13 @@ _implementorsOf: anObject
 		ifTrue: [anObject asSymbol]
 		ifFalse: [anObject selector].
 	^self _streamOfMethods: (self classOrganizer implementorsOf: symbol).
+!
+
+_methodsContaining: aString
+
+	| string |
+	string := self _decodeString: aString.
+	^self _streamOfMethods: (self classOrganizer substringSearch: string) first
 !
 
 _methodsFor: aClass categories: aList
@@ -483,9 +491,7 @@ implementorsOf: aGsMethod startingAt: aClass
 
 methodsContaining: aString
 
-	| string |
-	string := self _decodeString: aString.
-	^self _encodeString: (self _streamOfMethods: (self classOrganizer substringSearch: string) first)
+	^self _encodeString: (self _methodsContaining: aString)
 !
 
 methodsFor: childClass upTo: parentClass filter: aString isVariables: aBoolean 
@@ -644,6 +650,7 @@ streamOfMethods: aList
 !JadeServer categoriesFor: #_behavior:categoryOfSelector:!Methods!private! !
 !JadeServer categoriesFor: #_behaviorFor:in:!Methods!private! !
 !JadeServer categoriesFor: #_implementorsOf:!Methods!private! !
+!JadeServer categoriesFor: #_methodsContaining:!Methods!public! !
 !JadeServer categoriesFor: #_methodsFor:categories:!Methods!private! !
 !JadeServer categoriesFor: #_methodsFor:filter:isVariables:!Methods!private! !
 !JadeServer categoriesFor: #_methodsFor:variables:!Methods!private! !

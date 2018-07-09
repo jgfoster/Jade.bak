@@ -484,7 +484,7 @@ sbBrowseMethodsContaining: anOrderedCollection
 
 	writeStream 
 		nextPutAll: 'browseMethodsContaining'; lf;
-		nextPutAll: (self methodsContaining: anOrderedCollection removeFirst);
+		nextPutAll: (self _methodsContaining: anOrderedCollection removeFirst);
 		yourself.
 !
 
