@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 GsObject subclass: #GsSession
-	instanceVariableNames: 'process host primitive viewAge state transaction hasOldestCR serial id ip priority hostId quietTime lifeTime backlog description objects pages voteState'
+	instanceVariableNames: 'backlog cacheDesc description hasOldestCR host hostId id ip lifeTime objects pages primitive priority process quietTime serial state transaction viewAge voteState'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -13,6 +13,10 @@ GsSession comment: ''!
 backlog
 
 	^backlog!
+
+cacheDesc
+
+	^cacheDesc!
 
 description
 
@@ -40,25 +44,26 @@ initializeXML: xmlElement
 
 	| value |
 	super initializeXML: xmlElement.
-	(value := xmlElement getAttribute: 'process'			) notNil ifTrue: [process 		:= value asNumber].
-	(value := xmlElement getAttribute: 'host'				) notNil ifTrue: [host 				:= value].
-	(value := xmlElement getAttribute: 'primitive'			) notNil ifTrue: [primitive 		:= value. self updatePrimitive].
-	(value := xmlElement getAttribute: 'viewAge'			) notNil ifTrue: [viewAge 		:= value asNumber].
-	(value := xmlElement getAttribute: 'state'				) notNil ifTrue: [state 			:= value asNumber].
-	(value := xmlElement getAttribute: 'transaction'		) notNil ifTrue: [transaction	:= value asNumber].
-	(value := xmlElement getAttribute: 'hasOldestCR'	) notNil ifTrue: [hasOldestCR := value].
-	(value := xmlElement getAttribute: 'serial'				) notNil ifTrue: [serial 			:= value asNumber].
-	(value := xmlElement getAttribute: 'id'					) notNil ifTrue: [id 				:= value asNumber].
-	(value := xmlElement getAttribute: 'ip'					) notNil ifTrue: [ip 				:= value].
-	(value := xmlElement getAttribute: 'priority'			) notNil ifTrue: [priority 			:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
-	(value := xmlElement getAttribute: 'hostId'				) notNil ifTrue: [hostId			:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
-	(value := xmlElement getAttribute: 'quietTime'		) notNil ifTrue: [quietTime 	:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
-	(value := xmlElement getAttribute: 'lifeTime'			) notNil ifTrue: [lifeTime 		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
-	(value := xmlElement getAttribute: 'backlog'			) notNil ifTrue: [backlog 		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'backlog'		) notNil ifTrue: [backlog 		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'cacheDesc'		) notNil ifTrue: [cacheDesc		:= value = '' ifTrue: [nil] ifFalse: [value]].
 	(value := xmlElement getAttribute: 'description'		) notNil ifTrue: [description  	:= value].
-	(value := xmlElement getAttribute: 'objects'			) notNil ifTrue: [objects  		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
-	(value := xmlElement getAttribute: 'pages'				) notNil ifTrue: [pages  			:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
-	(value := xmlElement getAttribute: 'voteState'		) notNil ifTrue: [voteState 		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'hasOldestCR'	) notNil ifTrue: [hasOldestCR 	:= value].
+	(value := xmlElement getAttribute: 'host'			) notNil ifTrue: [host 		:= value].
+	(value := xmlElement getAttribute: 'hostId'			) notNil ifTrue: [hostId		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'id'			) notNil ifTrue: [id 			:= value asNumber].
+	(value := xmlElement getAttribute: 'ip'			) notNil ifTrue: [ip 			:= value].
+	(value := xmlElement getAttribute: 'lifeTime'		) notNil ifTrue: [lifeTime 		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'objects'		) notNil ifTrue: [objects  		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'pages'			) notNil ifTrue: [pages  		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'primitive'		) notNil ifTrue: [primitive 		:= value. self updatePrimitive].
+	(value := xmlElement getAttribute: 'priority'		) notNil ifTrue: [priority 		:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'process'		) notNil ifTrue: [process 		:= value asNumber].
+	(value := xmlElement getAttribute: 'quietTime'		) notNil ifTrue: [quietTime 	:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
+	(value := xmlElement getAttribute: 'serial'			) notNil ifTrue: [serial 		:= value asNumber].
+	(value := xmlElement getAttribute: 'state'			) notNil ifTrue: [state 		:= value asNumber].
+	(value := xmlElement getAttribute: 'transaction'		) notNil ifTrue: [transaction	:= value asNumber].
+	(value := xmlElement getAttribute: 'viewAge'		) notNil ifTrue: [viewAge 		:= value asNumber].
+	(value := xmlElement getAttribute: 'voteState'		) notNil ifTrue: [voteState 	:= value = '' ifTrue: [nil] ifFalse: [value asNumber]].
 !
 
 ip
@@ -142,6 +147,7 @@ viewAge
 voteState
 	^voteState! !
 !GsSession categoriesFor: #backlog!accessing!public! !
+!GsSession categoriesFor: #cacheDesc!accessing!public! !
 !GsSession categoriesFor: #description!accessing!public! !
 !GsSession categoriesFor: #hasOldestCR!accessing!public! !
 !GsSession categoriesFor: #host!accessing!public! !

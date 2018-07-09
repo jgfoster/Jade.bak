@@ -148,6 +148,8 @@ _addSessionWithId: anInteger toStream: aStream
 		nextPutAll: ((x := array at: 19) isNil ifTrue: [''] ifFalse: [x printString]) printString;
 		nextPutAll: ' voteState=';
 		nextPutAll: ((x := array at: 20) isNil ifTrue: [''] ifFalse: [x printString]) printString;
+		nextPutAll: ' cacheDesc=';
+		nextPutAll: ((x := (System gemCacheStatisticsForSessionId: anInteger) at: 1) isNil ifTrue: [''] ifFalse: [x]) printString;
 		nextPutAll: ' />';
 		yourself.
 !

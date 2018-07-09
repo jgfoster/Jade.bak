@@ -47,7 +47,7 @@ GsObject subclass: #GsProcess
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GsObject subclass: #GsSession
-	instanceVariableNames: 'process host primitive viewAge state transaction hasOldestCR serial id ip priority hostId quietTime lifeTime backlog description objects pages voteState'
+	instanceVariableNames: 'backlog cacheDesc description hasOldestCR host hostId id ip lifeTime objects pages primitive priority process quietTime serial state transaction viewAge voteState'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
