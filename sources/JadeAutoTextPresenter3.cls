@@ -127,42 +127,17 @@ getClassName
 	^currentGsShape name!
 
 getCurrentWord
-	""
-	"| breakCharacters leftPosition rightPosition leftStream rightStream currentCharacter |"
-	true ifTrue: [^self] ifFalse: [self utf8].	"Needs work to handle UTF-8 in ScintillaView"
-"	(view class == ScintillaView) ifFalse: [^self].
-	wordRightSideIsEmpty := true.
-	(view value size <= 1) ifTrue: [^self].
-	currentText := ''.
-	breakCharacters := self getBreakCharacters.
-	leftStream := WriteStream on: Array new.
-	rightStream := WriteStream on: String new.
-	leftPosition := view caretPosition.
-	rightPosition := view caretPosition + 1.
+	"The receiver get and set the current word being typed by the user"
+	| start end | 
 
-	[(leftPosition > 0) and: [breakCharacters includes: (view characterAt: leftPosition)]]  whileTrue: [leftPosition := leftPosition - 1].
-"
-	"move left"
-"	currentCharacter := view characterAt: leftPosition.
-	[(leftPosition >= 1) and:[(breakCharacters includes: currentCharacter) not]] 
-	whileTrue: [((currentCharacter = Character null) and: [currentCharacter = Character lf]) ifFalse: [leftStream nextPut: (view characterAt: leftPosition)].
-			leftPosition := leftPosition - 1. 
-			currentCharacter := view characterAt: leftPosition.
-			].
-	((view characterAt: view caretPosition) = Character space) ""if the current is Space --> the is no right part""
-	ifFalse: [
-		currentCharacter := view characterAt: rightPosition.
-		[(rightPosition < self value size) and:[(breakCharacters includes: currentCharacter) not]] 
-		whileTrue: [((currentCharacter = Character null) and: [currentCharacter = Character lf]) 
-				ifFalse: [	wordRightSideIsEmpty := false. ""the cursor is in the middle of a word --> disable popup menu""
-						rightStream nextPut: (view characterAt: rightPosition)].
-				rightPosition := rightPosition + 1. 
-				currentCharacter := view characterAt: rightPosition.
-				].
-	].
+	(view class == ScintillaView) ifFalse: [^self].
+	wordRightSideIsEmpty := (view characterAt: view caretPosition) isAlphaNumeric not.
+	start := view tokenStartAt: view caretPosition - 1.
+	end := view tokenEndAt: view caretPosition - 1.
+	(((view text size < start) or: [view text size < end]) or:[(start = end) or: [start = 0] ]) ifTrue: [^self].
+	currentText := view text copyFrom: start to: end.
 	currentText trimBlanks notEmpty ifTrue: [previousText := currentText].
-	currentText := (leftStream contents reverse , rightStream contents) trimBlanks.
-"!
+	^currentText!
 
 getNamesForClassUnaryMessage
 
@@ -339,14 +314,8 @@ onAutoComplete: aString startingAt: anInteger accept: aValueHolder
 	"This method is executed when an autocompletation has been entered. The user has selected an option in the autocompletation menu"
 
 	aValueHolder value: false.
- "
-	view performUndoableAction: [
-		self insertText: aString at: anInteger. 
-	].
-"
-
 	
-	[self insertText: aString at: anInteger.] forkAt: 4!
+	self insertText: aString at: anInteger!
 
 onKeyPressed: aKeyEvent
 	"This is the main method for autocompletation, each key stroke is registered and analyzed here"
@@ -364,7 +333,8 @@ onKeyPressed: aKeyEvent
 
 	[self processKeyPressed: aKeyEvent. 
 	self isKeyboardShorcut ifTrue: [self replaceKeyboardShortcut].
-	"self isAddingParenthesisOrBrackets ifTrue: [self addParenthesisOrBracketsToSelection]"] forkAt: 4.!
+	"self isAddingParenthesisOrBrackets ifTrue: [self addParenthesisOrBracketsToSelection]"] forkAt: 4.
+	!
 
 onLeftButtonPressed: aKeyEvent
 	"This is the main method for autocompletation, each key stroke is registered and analyzed here"
@@ -395,7 +365,7 @@ processKeyPressed: aKeyEvent
 
 	((Character value: aKeyEvent wParam) = $.) ifTrue: [currentText := ''. ^previousText := ''.].
 
-	self getCurrentWord.
+	self getCurrentWord. "set to <currentText> the code being typed by the user"
 
 	(aKeyEvent wParam = 8) ifTrue: [^self]. "pressing -backspace-"
 	(currentText size > 0) ifFalse: [^self]. "start to pop up autocompletion for words larger than 1 "
@@ -495,7 +465,7 @@ wordRightSideIsEmpty: anObject
 !JadeAutoTextPresenter3 categoriesFor: #getBreakCharacters!public! !
 !JadeAutoTextPresenter3 categoriesFor: #getClassInstancesVariables!autocompletion list!public! !
 !JadeAutoTextPresenter3 categoriesFor: #getClassName!public! !
-!JadeAutoTextPresenter3 categoriesFor: #getCurrentWord!public! !
+!JadeAutoTextPresenter3 categoriesFor: #getCurrentWord!autocompletation cycle!key event!public! !
 !JadeAutoTextPresenter3 categoriesFor: #getNamesForClassUnaryMessage!autocompletion list!public! !
 !JadeAutoTextPresenter3 categoriesFor: #getNamesForIdentifier!autocompletion list!public! !
 !JadeAutoTextPresenter3 categoriesFor: #getNamesForUnaryMessage!autocompletion list!public! !
