@@ -863,7 +863,7 @@ sbMethodCategory: anOrderedCollection
 	category := anOrderedCollection removeFirst.
 	anOrderedCollection do: [:each | 
 		behavior 
-			_moveMethod: each asSymbol
+			moveMethod: each asSymbol
 			toCategory: category.
 	].
 	self systemBrowserUpdate.
