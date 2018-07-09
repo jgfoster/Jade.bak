@@ -1,4 +1,4 @@
-﻿| package |
+| package |
 package := Package name: 'Monticello'.
 package paxVersion: 1;
 	basicComment: ''.
@@ -685,8 +685,8 @@ mcPatchFrom: aString1 to: aString2 inFileBasedRepository: aFileRepository
 
 mcRemoveRepository: aRepository
 
-	| repositoryClass group |
-	(repositoryClass := self _mcHttpRepositoryClass) isNil ifTrue: [self error: 'MCHttpRepository not found!!'].
+	| group |
+	self _mcHttpRepositoryClass isNil ifTrue: [self error: 'MCHttpRepository not found!!'].
 	(group := self mcRepositoryGroup) isNil ifTrue: [self error: 'MCRepositoryGroup not found!!'].
 	group removeRepository: aRepository.
 !

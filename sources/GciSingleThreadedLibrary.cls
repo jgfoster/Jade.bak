@@ -367,6 +367,16 @@ gciSetNet: stoneName _: hostUserID _: hostPassword _: gemService
 
 !
 
+gciSetNet__: stoneName _: hostUserID _: hostPassword _: gemService _: passwordIsEncrypted _: errString _: maxErrSize _: netldiName
+	"GciSetNetEx__(const char *StoneName, const char *HostUserId,
+           const char *HostPassword, const char *GemService,
+           BoolType passwordIsEncrypted,
+           char *errString, size_t maxErrSize, const char* netldiName);"
+
+	<cdecl: bool GciSetNetEx__ lpstr lpstr lpstr lpstr bool lpvoid qword lpstr>
+	^self invalidCall
+!
+
 gciSetSessionId: anInteger
 
 	<cdecl: void GciSetSessionId sdword >
@@ -699,6 +709,7 @@ version
 !GciSingleThreadedLibrary categoriesFor: #gciPollForSignal!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciReleaseOops:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciSetNet:_:_:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciSetNet__:_:_:_:_:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciSetSessionId:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciShutdown!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciSoftBreak!private! !
