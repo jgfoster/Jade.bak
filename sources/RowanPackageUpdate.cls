@@ -11,9 +11,7 @@ RowanPackageUpdate comment: ''!
 !RowanPackageUpdate methodsFor!
 
 packagesUpdate: aPresenter
-	aPresenter list: (packages collect: [:package | package -> false]).
-	modifiedPackages
-		do: [:mod | aPresenter list do: [:assoc | assoc key = mod ifTrue: [assoc value: true]]].
+	aPresenter list: packages asOrderedCollection. 
 	!
 
 updatePackageSelectionsFor: presenter

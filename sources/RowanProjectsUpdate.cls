@@ -10,11 +10,18 @@ RowanProjectsUpdate comment: ''!
 !RowanProjectsUpdate categoriesForClass!Unclassified! !
 !RowanProjectsUpdate methodsFor!
 
-projectSelectionUpdate: aPresenter
-	aPresenter selections: selection!
+projectSelectionUpdate: presenter
+	| newSelections |
+	newSelections := presenter list
+				select: [:service | (selection detect: [:sel | sel name = service name] ifNone: []) notNil].
+	presenter selections: newSelections!
 
-projectsUpdate: aPresenter
-	aPresenter list: projects! !
+projectsUpdate: presenter
+	"don't just replace the list as we want to preserve selections"
+
+	presenter list isEmpty ifTrue: [^presenter list: projects].
+	presenter list addAll: (projects difference: presenter list).
+	presenter list removeAll: (presenter list difference: projects)! !
 !RowanProjectsUpdate categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanProjectsUpdate categoriesFor: #projectsUpdate:!public!updating! !
 

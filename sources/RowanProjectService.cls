@@ -10,6 +10,10 @@ RowanProjectService comment: ''!
 !RowanProjectService categoriesForClass!Unclassified! !
 !RowanProjectService methodsFor!
 
+= anObject
+
+	^name = anObject name!
+
 addProjectNamed: projectName
 	transport
 		send: #createProjectNamed:in:
@@ -88,6 +92,7 @@ displayName
 	^displayName!
 
 displayStringFor: displayThing
+	name ifNil: [^self].
 	self isDirty
 		ifTrue: 
 			[displayThing font
@@ -100,6 +105,9 @@ displayStringFor: displayThing
 				ifTrue: [displayThing forecolor: Color red]
 				ifFalse: [displayThing forecolor: Color black]]
 		ifFalse: [displayThing forecolor: Color black]!
+
+hash
+	^self name hash!
 
 isLoaded
 
@@ -147,8 +155,12 @@ packageNameString
 
 	^transport send: #packageNameString to: remoteService  !
 
-projectPackagesUpdate: aPresenter
-	aPresenter list: packages!
+projectPackagesUpdate: presenter
+	"don't just replace the list as we want to preserve selections"
+	presenter list isEmpty ifTrue: [^presenter list: packages asOrderedCollection ].
+	self halt. 
+	presenter list addAll: (packages difference: presenter list).
+	presenter list removeAll: (presenter list difference: packages)!
 
 projects
 	| oops services |
@@ -157,11 +169,13 @@ projects
 	services := services asSortedCollection: [:a :b | a name < b name].
 	^services!
 
-projectSelectionUpdate: aPresenter
-	aPresenter selection: self!
+projectSelectionUpdate: presenter
+	| newSelections |
+	newSelections := presenter list select: [:service | self name = service name].
+	presenter selections: newSelections!
 
 projectsUpdate: aPresenter
-	updates do: [:update | update projectsUpdate: aPresenter]!
+	updates ifNotNil: [updates do: [:update | update projectsUpdate: aPresenter]]!
 
 pullFromGit
 
@@ -200,6 +214,7 @@ sha: anObject
 write
 
 	^transport send: #write to: remoteService  ! !
+!RowanProjectService categoriesFor: #=!comparing!public! !
 !RowanProjectService categoriesFor: #addProjectNamed:!public! !
 !RowanProjectService categoriesFor: #basicName:!accessing!public! !
 !RowanProjectService categoriesFor: #branch!accessing!public! !
@@ -212,6 +227,7 @@ write
 !RowanProjectService categoriesFor: #defaultProjectName:!accessing!public! !
 !RowanProjectService categoriesFor: #displayName!accessing!public! !
 !RowanProjectService categoriesFor: #displayStringFor:!displaying!public! !
+!RowanProjectService categoriesFor: #hash!comparing!public! !
 !RowanProjectService categoriesFor: #isLoaded!public!testing! !
 !RowanProjectService categoriesFor: #isSkew!accessing!private! !
 !RowanProjectService categoriesFor: #isSkew:!accessing!private! !

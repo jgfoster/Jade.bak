@@ -18,6 +18,15 @@ createPackageNamed: packageName inProject: projectName
 
 	transport send: #createPackageNamed:inProject: to: remoteService withAll: (Array with: packageName with: projectName)!
 
+displayStringFor: displayThing
+	name ifNil: [^self].
+	self isDirty
+		ifTrue: 
+			[displayThing font
+				beItalic;
+				beBold.
+			displayThing forecolor: Color black]!
+
 genericClassCreationTemplate
 
 	^transport send: #genericClassCreationTemplate to: remoteService 
@@ -34,6 +43,7 @@ remoteServiceName
 	^'Rowan packageServiceClass'! !
 !RowanPackageService categoriesFor: #classCreationTemplate!public!rowan! !
 !RowanPackageService categoriesFor: #createPackageNamed:inProject:!public!rowan! !
+!RowanPackageService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanPackageService categoriesFor: #genericClassCreationTemplate!public!rowan! !
 !RowanPackageService categoriesFor: #name:!accessing!public! !
 !RowanPackageService categoriesFor: #remoteServiceName!must not strip!public! !

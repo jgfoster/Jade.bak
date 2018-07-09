@@ -39,8 +39,7 @@ debug
 debug: aBoolean
 	aBoolean
 		ifTrue: 
-			[Smalltalk at: #triggers put: 0.
-			Smalltalk at: #roundTrips put: 0].
+			[Smalltalk at: #roundTrips put: 0].
 	debug := aBoolean!
 
 dictionaryUpdate: presenter
@@ -118,7 +117,6 @@ unregister: aPresenter
 	self removeEventsTriggeredFor: aPresenter!
 
 updateReady
-	Smalltalk at: #triggers put: (Smalltalk at: #triggers) + 1.
 	updates isEmpty ifFalse: [self trigger: #updateReady]!
 
 updates
