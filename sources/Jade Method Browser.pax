@@ -183,7 +183,6 @@ stepPointsFor: aGsMethod
 browseImplementorsOf: aGsMethodOrString
 
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
-
 	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseImplementorsOf: aGsMethodOrString;
 		yourself.
@@ -474,7 +473,11 @@ compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCatego
 
 implementorsOf: anObject
 
-	^self _encodeString: (self _implementorsOf: (self _decodeString: anObject))!
+	| result |
+	result := self _implementorsOf: ((anObject isKindOf: Collection)
+		ifTrue: [self _decodeString: anObject]
+		ifFalse: [anObject]).
+	^self _encodeString: result!
 
 implementorsOf: aGsMethod startingAt: aClass
 
