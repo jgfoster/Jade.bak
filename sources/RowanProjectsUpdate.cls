@@ -18,7 +18,6 @@ projectSelectionUpdate: presenter
 
 projectsUpdate: presenter
 	"don't just replace the list as we want to preserve selections"
-
 	presenter list isEmpty ifTrue: [^presenter list: projects].
 	presenter list addAll: (projects difference: presenter list).
 	presenter list removeAll: (presenter list difference: projects)! !

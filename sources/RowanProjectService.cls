@@ -157,8 +157,7 @@ packageNameString
 
 projectPackagesUpdate: presenter
 	| newList |
-	presenter list isEmpty ifTrue: [^presenter list: packages asOrderedCollection].
-	newList := SortedCollection sortBlock: [:x :y | x name < y name].
+		newList := SortedCollection sortBlock: [:x :y | x name < y name].
 	newList
 		addAll: presenter list;
 		addAll: packages.
@@ -176,8 +175,16 @@ projectSelectionUpdate: presenter
 	newSelections := presenter list select: [:service | self name = service name].
 	presenter selections: newSelections!
 
-projectsUpdate: aPresenter
-	updates ifNotNil: [updates do: [:update | update projectsUpdate: aPresenter]]!
+projectsUpdate: presenter
+	| listProject |
+	listProject := presenter list detect: [:listProj | listProj name = name] ifNone: [].
+	listProject
+		ifNotNil: 
+			[:proj |
+			proj sha: sha.
+			proj isDirty: isDirty.
+			proj isSkew: isSkew].
+	updates ifNotNil: [updates do: [:update | update projectsUpdate: presenter]]!
 
 pullFromGit
 

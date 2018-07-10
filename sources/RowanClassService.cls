@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta isExtension version versions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -28,13 +28,17 @@ sampleClassName
 	^transport send: #sampleClassName to: remoteService.  !
 
 subclassCreationTemplate
-	^transport send: #subclassCreationTemplate to: self remoteService! !
+	^transport send: #subclassCreationTemplate to: self remoteService!
+
+toolTip
+	^self name , '(' , version printString , '/' , versions printString , ')'! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
+!RowanClassService categoriesFor: #toolTip!printing!public! !
 
 !RowanClassService class methodsFor!
 
