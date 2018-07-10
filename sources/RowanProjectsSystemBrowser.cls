@@ -10,6 +10,11 @@ RowanProjectsSystemBrowser comment: ''!
 !RowanProjectsSystemBrowser categoriesForClass!Unclassified! !
 !RowanProjectsSystemBrowser methodsFor!
 
+addSystemBrowserWithLayoutInfo: each
+	| browser |
+	browser := (self systemBrowserPresenter createIn: cardsPresenter gciSession: gciSession) layoutInfo: each.
+	browser projectDictionaryChanged!
+
 shellName
 
 	^'Rowan Projects Browser'.
@@ -17,6 +22,7 @@ shellName
 
 systemBrowserPresenter
 	^RowanProjectsBrowserPresenter! !
+!RowanProjectsSystemBrowser categoriesFor: #addSystemBrowserWithLayoutInfo:!public! !
 !RowanProjectsSystemBrowser categoriesFor: #shellName!overrides!private! !
 !RowanProjectsSystemBrowser categoriesFor: #systemBrowserPresenter!public! !
 

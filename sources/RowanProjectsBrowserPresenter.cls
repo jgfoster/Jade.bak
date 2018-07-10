@@ -17,7 +17,7 @@ addPackageDictionaryInfoTo: aStream
 	tabName := projectDictionaryTabs currentCard name.
 	aStream nextPutAll: tabName; lf.
 	tabName = 'projectList' ifTrue: [
-		projectListPresenter selections do: [:each | aStream nextPutAll: each key; tab].
+		projectListPresenter selections do: [:each | aStream nextPutAll: each name; tab].
 	] ifFalse: [
 		dictionaryListPresenter selections do: [:each | aStream nextPutAll: each key; tab].
 	].
@@ -73,7 +73,7 @@ createSchematicWiringForProjectList
 		when: #'dragOver:'			send: #'onDragOverPackageList:'	to: self;
 		when: #'drop:'				send: #'onDropOnPackageList:'		to: self;
 		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
+		"when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;"
 		when: #'selectionChanged' 		send: #'ensureVisible'				to: projectListPresenter;
 		when: #'selectionChanged'		send: #'updateProjectInfo'			to: self;
 		when: #'selectionChanged'		send: #'updatePackages' 			to: self. 
@@ -146,9 +146,16 @@ textTabChanged
 
 !
 
+updateAndSelectA: aView
+
+	inUpdate ifTrue: [^self].
+	"self updateCommand: self requestStringForUpdate."
+	self updateMenuBar.
+	aView notNil ifTrue: [aView ensureVisible].
+!
+
 updateCommand: aString onSuccessDo: aBlock
 	"Only use STON to update in our new browser"
-
 	stonCritical critical: 
 			[
 			[| stonResults update |
@@ -156,7 +163,6 @@ updateCommand: aString onSuccessDo: aBlock
 			stonResults := self gciSession serverPerform: #systemBrowserSTON:
 						with: environment printString , ' ' , aString.
 			update updates: (STON fromString: stonResults).
-			self projectDictionaryChanged.
 			self updateSelectionsFor: update.
 			self updateTabLabel.
 			update updates: #()]
@@ -167,11 +173,14 @@ updatePackages
 	"assume that we are already under stonCritical semaphore protection"
 
 	| browserUpdate stonString stonResults |
+	Transcript cr; show: '------ start package update--------'.
 	browserUpdate := BrowserUpdate current initializeUpdates.
-	packageListPresenter clear.
+	packageListPresenter clear. 
+	Transcript cr; show: 'packageListPresenter ', packageListPresenter identityHash printString, ' cleared'. 
 	stonString := STON toString: projectListPresenter selections.
 	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
 	browserUpdate updates: (STON fromString: stonResults).
+	Transcript cr; show: '------ end package update--------'.
 !
 
 updateProjectInfo
@@ -240,6 +249,7 @@ updateTabLabel
 !RowanProjectsBrowserPresenter categoriesFor: #projectDictionaryChanged!event handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!rowan! !
 !RowanProjectsBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
+!RowanProjectsBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updatePackages!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateProjectInfo!event handlers!public!updating! !

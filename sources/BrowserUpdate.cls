@@ -84,9 +84,7 @@ performDebugUpdateSelector: selector presenter: presenter
 		show: '====End Updates===='!
 
 performUpdateSelector: selector presenter: presenter
-	^debug
-		ifTrue: [self performDebugUpdateSelector: selector presenter: presenter]
-		ifFalse: [self updates do: [:update | update perform: selector with: presenter]]!
+	updates do: [:update | update perform: selector with: presenter]!
 
 projectPackagesUpdate: presenter
 
@@ -103,6 +101,7 @@ projectsUpdate: presenter
 register: presenter with: selector
 	"send the update to the presenter so that when the presenter gets
 	removed, it's events go with it."
+
 	self
 		when: #updateReady
 		send: #updateReady:
@@ -153,8 +152,8 @@ updates: aCollection
 !BrowserUpdate categoriesFor: #superclassListUpdate:!public!updating! !
 !BrowserUpdate categoriesFor: #unregister:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !
-!BrowserUpdate categoriesFor: #updates!accessing!private! !
-!BrowserUpdate categoriesFor: #updates:!accessing!private! !
+!BrowserUpdate categoriesFor: #updates!accessing!public! !
+!BrowserUpdate categoriesFor: #updates:!accessing!public! !
 
 !BrowserUpdate class methodsFor!
 

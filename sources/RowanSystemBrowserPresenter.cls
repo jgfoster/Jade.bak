@@ -312,16 +312,7 @@ updateCommand: aString onSuccessDo: aBlock
 	[| time1 time2 time3 string |
 	(Smalltalk at: #STONFlag)
 		ifFalse: 
-			[Transcript
-				cr;
-				show: '---FALSE---'.
-			Transcript
-				cr;
-				show: aString.
-			Transcript
-				cr;
-				show: '------'.
-			time1 := Time millisecondsToRun: 
+			[time1 := Time millisecondsToRun: 
 							[string := self gciSession serverPerform: #systemBrowser:
 										with: environment printString , ' ' , aString.
 							eventCount := self gciSession eventCount].
@@ -341,19 +332,6 @@ updateCommand: aString onSuccessDo: aBlock
 	(Smalltalk at: #STONFlag)
 		ifTrue: 
 			[| stonResults update |
-			Transcript
-				cr;
-				show: 'Doing STON update: ';
-				show: TimeStamp current printString.
-			Transcript
-				cr;
-				show: '---TRUE---'.
-			Transcript
-				cr;
-				show: aString.
-			Transcript
-				cr;
-				show: '------'.
 			update := BrowserUpdate current initializeUpdates.
 			stonResults := self gciSession serverPerform: #systemBrowserSTON:
 						with: environment printString , ' ' , aString.

@@ -156,11 +156,13 @@ packageNameString
 	^transport send: #packageNameString to: remoteService  !
 
 projectPackagesUpdate: presenter
-	"don't just replace the list as we want to preserve selections"
-	presenter list isEmpty ifTrue: [^presenter list: packages asOrderedCollection ].
-	self halt. 
-	presenter list addAll: (packages difference: presenter list).
-	presenter list removeAll: (presenter list difference: packages)!
+	| newList |
+	presenter list isEmpty ifTrue: [^presenter list: packages asOrderedCollection].
+	newList := SortedCollection sortBlock: [:x :y | x name < y name].
+	newList
+		addAll: presenter list;
+		addAll: packages.
+	presenter list: newList!
 
 projects
 	| oops services |
