@@ -166,6 +166,7 @@ printStringOf: anObject to: anInteger
 
 	| string |
 	(string := self printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
+	string := String withAll: (string collect: [:each | 32 <= each asciiValue ifTrue: [each] ifFalse: [$?]]).
 	^self _encodeString: string.
 ! !
 !JadeServer64bit33 categoriesFor: #print:on:!Inspector!public! !

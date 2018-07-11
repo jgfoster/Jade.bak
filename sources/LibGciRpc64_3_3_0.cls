@@ -92,7 +92,7 @@ session: session execute: aString context: contextOop environment: anInteger
 				_: self oopClassString
 				_: contextOop 
 				_: self oopNil 
-				_: 0 
+				_: 1	"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
 				_: anInteger.
 			^self nbResult
 		].
@@ -104,7 +104,7 @@ session: session execute: aString context: contextOop environment: anInteger
 			gciPerform: oop1 
 			_: 'asUnicodeString' 
 			_: self oopNil 
-			_: 0.
+			_: 0.		"number of arguments"
 		"http://kermit.gemtalksystems.com/bug?bug=47648 means that we can't use the context during a non-blocking call"
 		contextOop isGsNil ifTrue: [
 			self 
@@ -120,7 +120,7 @@ session: session execute: aString context: contextOop environment: anInteger
 			gciExecuteFromContextDbg_: oop2
 			_: contextOop 
 			_: self oopNil  
-			_: 0 
+			_: 1			"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
 			_: anInteger.
 		self _releaseOops: (Array with: oop1 with: oop2).
 		^result
