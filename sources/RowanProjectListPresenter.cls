@@ -186,23 +186,23 @@ writeProject
 	((RowanProjectService on: gciSession) name: projectName) write.
 	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
 !RowanProjectListPresenter categoriesFor: #browseProjects!public! !
-!RowanProjectListPresenter categoriesFor: #checkout!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #cloneProject!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #commit!menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #checkout!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #cloneProject!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #commit!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #createComponents!public! !
-!RowanProjectListPresenter categoriesFor: #inspectProject!menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #inspectProject!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #list:!public! !
-!RowanProjectListPresenter categoriesFor: #loadProject!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #makeDefault!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #newService!menu handlers!private! !
-!RowanProjectListPresenter categoriesFor: #openChangesShell:!menu handlers!private! !
+!RowanProjectListPresenter categoriesFor: #loadProject!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #makeDefault!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #newService!private!project menu handlers! !
+!RowanProjectListPresenter categoriesFor: #openChangesShell:!private!project menu handlers! !
 !RowanProjectListPresenter categoriesFor: #primaryPresenter!public! !
-!RowanProjectListPresenter categoriesFor: #projectChanges!menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #projectChanges!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #projectListPresenter!private! !
-!RowanProjectListPresenter categoriesFor: #projectLog!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #pullFromGit!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #pushToGit!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #showPackages!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #unloadProject!menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #writeProject!menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #projectLog!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #pullFromGit!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #pushToGit!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #showPackages!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #unloadProject!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #writeProject!project menu handlers!public! !
 

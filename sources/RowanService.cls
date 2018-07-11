@@ -177,6 +177,24 @@ updateSuperclassSelectionFor: presenter! !
 
 !RowanService class methodsFor!
 
+defaultIcon
+	"Answer a suitable default icon to use for this class. Not all classes use their 
+	default icon; one must define an appropriate #icon method in each class where the 
+	icon required differs from that of the superclass."
+
+	^(self environment at: #Icon) fromId: self defaultIconName.
+!
+
+defaultIconName
+	"Answer a filename to use for an icon of this class."
+
+	^File composeStem: 'Magic' extension: 'ico'.!
+
+icon
+	"Answers an Icon that can be used to represent this class"
+
+	^##(self) defaultIcon!
+
 named: projectName
 	| inst |
 	inst := self new name: projectName.
@@ -195,6 +213,9 @@ on: aSession
 
 sampleDefinitions
 	^self new sampleDefinitions! !
+!RowanService class categoriesFor: #defaultIcon!private! !
+!RowanService class categoriesFor: #defaultIconName!private! !
+!RowanService class categoriesFor: #icon!private! !
 !RowanService class categoriesFor: #named:!instance creation!public! !
 !RowanService class categoriesFor: #new!initialization!public! !
 !RowanService class categoriesFor: #on:!initialization!public! !

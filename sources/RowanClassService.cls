@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta isExtension version versions'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta isExtension version versions template oop filters filterType'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -14,8 +14,31 @@ classCreationTemplate
 
 	^transport send: #classCreationTemplate to: self remoteService!
 
+comment
+	^comment!
+
+comment: anObject
+	comment := anObject!
+
 createSampleClass
 	transport send: #createSampleClass to: remoteService.  !
+
+displayString
+	| displayString |
+	displayString := self name.
+	versions ~= 1
+		ifTrue: [displayString := displayString , ' (' , version printString , '/' , versions printString , ')'].
+	^displayString!
+
+displayStringFor: displayThing
+	isExtension ifTrue: [displayThing forecolor: Color darkMagenta ].
+	^self displayString!
+
+filters
+	^filters!
+
+filters: anObject
+	filters := anObject!
 
 remoteServiceName
 	^'Rowan classServiceClass'!
@@ -30,23 +53,28 @@ sampleClassName
 subclassCreationTemplate
 	^transport send: #subclassCreationTemplate to: self remoteService!
 
+template
+	^template!
+
+template: anObject
+	template := anObject!
+
 toolTip
-	^self name , '(' , version printString , '/' , versions printString , ')'! !
+	^self displayString
+! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
+!RowanClassService categoriesFor: #comment!accessing!public! !
+!RowanClassService categoriesFor: #comment:!accessing!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
+!RowanClassService categoriesFor: #displayString!printing!public! !
+!RowanClassService categoriesFor: #displayStringFor:!printing!public! !
+!RowanClassService categoriesFor: #filters!accessing!public! !
+!RowanClassService categoriesFor: #filters:!accessing!public! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
+!RowanClassService categoriesFor: #template!accessing!private! !
+!RowanClassService categoriesFor: #template:!accessing!private! !
 !RowanClassService categoriesFor: #toolTip!printing!public! !
-
-!RowanClassService class methodsFor!
-
-replicateSampleService
-
-	| session string |
-	session := GciSession allInstances detect:[:ea | ea isValidSession].
-	string := session executeString: 'RowanClassService sampleServiceString'.
-	^STON fromString: string! !
-!RowanClassService class categoriesFor: #replicateSampleService!public! !
 

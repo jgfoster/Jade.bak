@@ -262,14 +262,6 @@ write
 
 !RowanProjectService class methodsFor!
 
-defaultIcon
-	"Answer a suitable default icon to use for this class. Not all classes use their 
-	default icon; one must define an appropriate #icon method in each class where the 
-	icon required differs from that of the superclass."
-
-	^(self environment at: #Icon) fromId: self defaultIconName.
-!
-
 defaultIconName
 	"Answer a filename to use for an icon of this class."
 
@@ -291,7 +283,6 @@ icon
 
 initialize
 	DefaultProjectName := nil! !
-!RowanProjectService class categoriesFor: #defaultIcon!private! !
 !RowanProjectService class categoriesFor: #defaultIconName!private! !
 !RowanProjectService class categoriesFor: #defaultProjectName!public! !
 !RowanProjectService class categoriesFor: #defaultProjectName:!public! !
