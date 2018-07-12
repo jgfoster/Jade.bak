@@ -11,7 +11,6 @@ JadeSystemBrowserPresenter comment: ''!
 !JadeSystemBrowserPresenter methodsFor!
 
 aboutToChange: aSelectionChangingEvent
-
 	aSelectionChangingEvent value ifTrue: [
 		aSelectionChangingEvent value: self isOkayToChange.
 	].

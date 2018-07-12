@@ -29,9 +29,15 @@ classesUpdate: presenter
 classHierarchyUpdate: presenter
 	!
 
+classMethodsUpdate: presenter
+	!
+
 classNameFrom: aClassOop
 
 	^transport send: #name to: aClassOop!
+
+classUpdate: presenter
+	!
 
 clientDefinitionClass
 
@@ -58,11 +64,27 @@ inspectDefinition
 	definition := transport send: #definition to: remoteService.
 	JadeInspector showOn: definition session: transport!
 
+isClassService
+
+	^false!
+
 isDirty
 	^isDirty!
 
 isDirty: anObject
 	isDirty := anObject!
+
+isMethodService
+
+	^false!
+
+isPackageService
+
+	^false!
+
+isProjectService
+
+	^false!
 
 methodFilterUpdate: presenter
 	!
@@ -96,6 +118,11 @@ remoteServiceName
 removeSampleSymbolDictionary
 
 	transport send: #removeSampleSymbolDictionary to: remoteService!
+
+replicateFrom: newService
+	newService name = name
+		ifTrue: 
+			[1 to: self class instSize do: [:index | self instVarAt: index put: (newService instVarAt: index)]]!
 
 sampleDefinitions
 	| anArrayOop |
@@ -140,15 +167,21 @@ updateSuperclassSelectionFor: presenter! !
 !RowanService categoriesFor: #classesHierarchyUpdate:!public!updating! !
 !RowanService categoriesFor: #classesUpdate:!public!updating! !
 !RowanService categoriesFor: #classHierarchyUpdate:!public!updating! !
+!RowanService categoriesFor: #classMethodsUpdate:!public!updating! !
 !RowanService categoriesFor: #classNameFrom:!public! !
+!RowanService categoriesFor: #classUpdate:!public!updating! !
 !RowanService categoriesFor: #clientDefinitionClass!private! !
 !RowanService categoriesFor: #createClientFrom:!private! !
 !RowanService categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !
 !RowanService categoriesFor: #initializeRemoteService!initialization!private! !
 !RowanService categoriesFor: #inspectDefinition!public!rowan! !
+!RowanService categoriesFor: #isClassService!public!testing! !
 !RowanService categoriesFor: #isDirty!accessing!private! !
 !RowanService categoriesFor: #isDirty:!accessing!private! !
+!RowanService categoriesFor: #isMethodService!public!testing! !
+!RowanService categoriesFor: #isPackageService!public!testing! !
+!RowanService categoriesFor: #isProjectService!public!testing! !
 !RowanService categoriesFor: #methodFilterUpdate:!public!updating! !
 !RowanService categoriesFor: #methodsUpdate:!public!updating! !
 !RowanService categoriesFor: #name!accessing!private! !
@@ -160,6 +193,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanService categoriesFor: #remoteService!public! !
 !RowanService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanService categoriesFor: #removeSampleSymbolDictionary!public! !
+!RowanService categoriesFor: #replicateFrom:!public!updating! !
 !RowanService categoriesFor: #sampleDefinitions!examples!public! !
 !RowanService categoriesFor: #setRemoteName!accessing!public! !
 !RowanService categoriesFor: #superclassListUpdate:!public!updating! !

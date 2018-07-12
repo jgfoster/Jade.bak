@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user'
+	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -29,9 +29,25 @@ clientDefinitionClass
 createSampleMethod
 	transport send: #createSampleMethod to: remoteService.  !
 
+hasSubs
+	^hasSubs!
+
+hasSubs: anObject
+	hasSubs := anObject!
+
+hasSupers
+	^hasSupers!
+
+hasSupers: anObject
+	hasSupers := anObject!
+
 implementorsOf: aString
 
 	^methodDefinitions!
+
+isMethodService
+
+	^true!
 
 meta
 	^meta!
@@ -63,6 +79,9 @@ removeSelector: aSelector class: class
 
 	^transport send: #removeSelector:class: to: self remoteService withAll: (Array with: aSelector with: class)
 	!
+
+replicateFrom: newService
+	^self isMethodService ifTrue: [super replicateFrom: newService]!
 
 sampleClassInstance
 
@@ -101,7 +120,12 @@ user: anObject
 !RowanMethodService categoriesFor: #className:!accessing!private! !
 !RowanMethodService categoriesFor: #clientDefinitionClass!private! !
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
+!RowanMethodService categoriesFor: #hasSubs!accessing!private! !
+!RowanMethodService categoriesFor: #hasSubs:!accessing!private! !
+!RowanMethodService categoriesFor: #hasSupers!accessing!private! !
+!RowanMethodService categoriesFor: #hasSupers:!accessing!private! !
 !RowanMethodService categoriesFor: #implementorsOf:!method accessing!public! !
+!RowanMethodService categoriesFor: #isMethodService!public!testing! !
 !RowanMethodService categoriesFor: #meta!accessing!private! !
 !RowanMethodService categoriesFor: #meta:!accessing!private! !
 !RowanMethodService categoriesFor: #methodDefinitions!accessing!private! !
@@ -111,6 +135,7 @@ user: anObject
 !RowanMethodService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanMethodService categoriesFor: #removeSelector!public!remote! !
 !RowanMethodService categoriesFor: #removeSelector:class:!public!remote! !
+!RowanMethodService categoriesFor: #replicateFrom:!public!updating! !
 !RowanMethodService categoriesFor: #sampleClassInstance!examples!public! !
 !RowanMethodService categoriesFor: #selector!accessing!private! !
 !RowanMethodService categoriesFor: #selector:!accessing!private! !

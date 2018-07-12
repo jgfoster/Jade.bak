@@ -117,6 +117,8 @@ package methodNames
 	add: #RowanCommandResult -> #classesHierarchyUpdate:;
 	add: #RowanCommandResult -> #classesUpdate:;
 	add: #RowanCommandResult -> #classHierarchyUpdate:;
+	add: #RowanCommandResult -> #classMethodsUpdate:;
+	add: #RowanCommandResult -> #classUpdate:;
 	add: #RowanCommandResult -> #dictionaryUpdate:;
 	add: #RowanCommandResult -> #globalsUpdate:;
 	add: #RowanCommandResult -> #methodFilterUpdate:;
@@ -281,12 +283,12 @@ RowanClassesUpdate subclass: #RowanSuperclassUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta isExtension version versions template oop filters filterType'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta isExtension version versions template oop allFilters filters filterType methods'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user'
+	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1776,6 +1778,12 @@ classesUpdate: presenter
 classHierarchyUpdate: presenter
 	!
 
+classMethodsUpdate: presenter
+	!
+
+classUpdate: presenter
+	!
+
 dictionaryUpdate: presenter
 	!
 
@@ -1824,6 +1832,8 @@ updateSuperclassSelectionFor: presenter! !
 !RowanCommandResult categoriesFor: #classesHierarchyUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classesUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classHierarchyUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classMethodsUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodFilterUpdate:!public!updating! !

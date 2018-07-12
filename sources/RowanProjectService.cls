@@ -113,6 +113,10 @@ isLoaded
 
 	^sha isEmpty not!
 
+isProjectService
+
+	^true!
+
 isSkew
 	^isSkew!
 
@@ -211,6 +215,9 @@ removeProjectNamed: projectName
 removeSampleProject
 	self removeProjectNamed: self sampleProjectName!
 
+replicateFrom: newService
+	^self isProjectService ifTrue: [super replicateFrom: newService]!
+
 sampleProjectName
 	^transport send: #sampleProjectName to: remoteService!
 
@@ -238,6 +245,7 @@ write
 !RowanProjectService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanProjectService categoriesFor: #hash!comparing!public! !
 !RowanProjectService categoriesFor: #isLoaded!public!testing! !
+!RowanProjectService categoriesFor: #isProjectService!public!testing! !
 !RowanProjectService categoriesFor: #isSkew!accessing!private! !
 !RowanProjectService categoriesFor: #isSkew:!accessing!private! !
 !RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
@@ -255,6 +263,7 @@ write
 !RowanProjectService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanProjectService categoriesFor: #removeProjectNamed:!public! !
 !RowanProjectService categoriesFor: #removeSampleProject!public! !
+!RowanProjectService categoriesFor: #replicateFrom:!public!updating! !
 !RowanProjectService categoriesFor: #sampleProjectName!public! !
 !RowanProjectService categoriesFor: #sha!accessing!public! !
 !RowanProjectService categoriesFor: #sha:!accessing!public! !
