@@ -17,6 +17,7 @@ package classNames
 package methodNames
 	add: #JadeBrowserPresenter -> #newMethodPresenter;
 	add: #JadeServer -> #_addMethodCategoryNamesToMethodFilters;
+	add: #JadeServer -> #_class:includesSelector:;
 	add: #JadeServer -> #_isPackagePolicyEnabled;
 	add: #JadeServer -> #_objectSecurityPolicyFor:;
 	add: #JadeServer -> #_packagePolicy:includesSelector:forClass:;
@@ -29,6 +30,8 @@ package methodNames
 	add: #JadeServer -> #environment;
 	add: #JadeServer -> #environment:;
 	add: #JadeServer -> #historyOf:;
+	add: #JadeServer -> #runClassTests:;
+	add: #JadeServer -> #runMethodTests:;
 	add: #JadeServer -> #sbAddDictionary:;
 	add: #JadeServer -> #sbAddMethodCategory:;
 	add: #JadeServer -> #sbAddMissingAccessors:;
@@ -80,8 +83,6 @@ package methodNames
 	add: #JadeServer -> #sbRemovePriorVersions;
 	add: #JadeServer -> #sbRemoveRepository:;
 	add: #JadeServer -> #sbRevertClass;
-	add: #JadeServer -> #sbRunClassTests:;
-	add: #JadeServer -> #sbRunMethodTests:;
 	add: #JadeServer -> #sbSavePackage:;
 	add: #JadeServer -> #sbSetHomeDictionary:;
 	add: #JadeServer -> #sbUniqueVersionName:;
@@ -229,6 +230,11 @@ _addMethodCategoryNamesToMethodFilters
 	classList do: [:each | methodFilters addAll: each categoryNames].
 !
 
+_class: aClass includesSelector: aSelector
+
+	^aClass includesSelector: aSelector.
+!
+
 _isPackagePolicyEnabled
 
 	^self _gsPackagePolicy notNil!
@@ -316,7 +322,7 @@ _systemBrowserCommand
 
 class: aClass includesSelector: aSelector
 
-	^aClass includesSelector: (self _decodeString: aSelector) asSymbol.
+	^self _aClass includesSelector: (self _decodeString: aSelector) asSymbol.
 !
 
 compiledMethodAt: aSymbol inClass: aClass
@@ -349,6 +355,22 @@ historyOf: aClass
 		history := Array with: aClass.
 	].
 	^history.
+!
+
+runClassTests: aString
+
+	| behavior |
+	behavior := self sbClassFrom: ((self _decodeString: aString) subStrings: Character tab).
+	^self _encodeString: (self _defectiveTestsIn: behavior)
+!
+
+runMethodTests: aString
+
+	| list class |
+	list := (self _decodeString: aString) subStrings: Character tab.
+	class := (self sbClassFrom: list) thisClass.
+	list do: [:each | class debug: each asSymbol].
+	^true.
 !
 
 sbAddDictionary: anOrderedCollection
@@ -1170,22 +1192,6 @@ sbRevertClass
 	self systemBrowserUpdate.
 !
 
-sbRunClassTests: aString
-
-	| behavior |
-	behavior := self sbClassFrom: (aString subStrings: Character tab).
-	^self _defectiveTestsIn: behavior.
-!
-
-sbRunMethodTests: aString
-
-	| list class |
-	list := aString subStrings: Character tab.
-	class := (self sbClassFrom: list) thisClass.
-	list do: [:each | class debug: each asSymbol].
-	^true.
-!
-
 sbSavePackage: list
 
 	| packageName package repositoryDescription repository versionName httpUser httpPassword comment |
@@ -1495,7 +1501,7 @@ sbUpdateMethodInheritedImplementationsOf: aSymbol
 	[
 		currentClass notNil.
 	] whileTrue: [
-		(self class: currentClass includesSelector: aSymbol) ifTrue: [classes add: currentClass].
+		(self _class: currentClass includesSelector: aSymbol) ifTrue: [classes add: currentClass].
 		currentClass := currentClass superclass.
 	].
 	^classes reverse.
@@ -1787,6 +1793,7 @@ writeList: aList
 	writeStream lf.
 ! !
 !JadeServer categoriesFor: #_addMethodCategoryNamesToMethodFilters!private!System Browser! !
+!JadeServer categoriesFor: #_class:includesSelector:!Classes!private! !
 !JadeServer categoriesFor: #_isPackagePolicyEnabled!private!System Browser! !
 !JadeServer categoriesFor: #_objectSecurityPolicyFor:!private!System Browser! !
 !JadeServer categoriesFor: #_packagePolicy:includesSelector:forClass:!private!System Browser! !
@@ -1799,6 +1806,8 @@ writeList: aList
 !JadeServer categoriesFor: #environment!private!System Browser! !
 !JadeServer categoriesFor: #environment:!private!System Browser! !
 !JadeServer categoriesFor: #historyOf:!private! !
+!JadeServer categoriesFor: #runClassTests:!public!System Browser! !
+!JadeServer categoriesFor: #runMethodTests:!private!System Browser! !
 !JadeServer categoriesFor: #sbAddDictionary:!private! !
 !JadeServer categoriesFor: #sbAddMethodCategory:!private!System Browser! !
 !JadeServer categoriesFor: #sbAddMissingAccessors:!private!System Browser! !
@@ -1850,8 +1859,6 @@ writeList: aList
 !JadeServer categoriesFor: #sbRemovePriorVersions!private!System Browser! !
 !JadeServer categoriesFor: #sbRemoveRepository:!private!System Browser! !
 !JadeServer categoriesFor: #sbRevertClass!private!System Browser! !
-!JadeServer categoriesFor: #sbRunClassTests:!private!System Browser! !
-!JadeServer categoriesFor: #sbRunMethodTests:!private!System Browser! !
 !JadeServer categoriesFor: #sbSavePackage:!private!System Browser! !
 !JadeServer categoriesFor: #sbSetHomeDictionary:!private!System Browser! !
 !JadeServer categoriesFor: #sbUniqueVersionName:!private!System Browser! !

@@ -25,9 +25,13 @@ _gemLogPath
 	^System gemLogPath
 !
 
+_objectSecurityPolicyFor: anObject
+
+	^anObject objectSecurityPolicy!
+
 _string
 
-	^Unicode16 new!
+	^StringConfiguration new!
 
 acceptConnection
 
@@ -375,6 +379,7 @@ readSocket: anInteger
 !JadeServer64bit33 categoriesFor: #_decodeString:!private! !
 !JadeServer64bit33 categoriesFor: #_encodeString:!private! !
 !JadeServer64bit33 categoriesFor: #_gemLogPath!private!Transcript! !
+!JadeServer64bit33 categoriesFor: #_objectSecurityPolicyFor:!private! !
 !JadeServer64bit33 categoriesFor: #_string!private! !
 !JadeServer64bit33 categoriesFor: #acceptConnection!public! !
 !JadeServer64bit33 categoriesFor: #add:toByteStream:!public!streaming! !

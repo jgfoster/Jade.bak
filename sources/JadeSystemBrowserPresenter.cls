@@ -2344,7 +2344,7 @@ runClassTests
 		nextPutAll: self behaviorIdentifier;
 		yourself.
 	string := self gciSession 
-		serverPerform: #'sbRunClassTests:' 
+		serverPerform: #'runClassTests:' 
 		with: stream contents.
 	string isNil ifTrue: [self error: 'Test run did not return expected value!!'. ^self].
 	list := string subStrings: Character lf.
@@ -2368,7 +2368,7 @@ runMethodTests
 
 	| result |
 	result := self gciSession 
-		serverPerform: #'sbRunMethodTests:' 
+		serverPerform: #'runMethodTests:' 
 		with: self methodsIdentifier.
 	result == true ifFalse: [self error: 'unexpected result!!'].
 	MessageBox notify: 'Ran ' , methodListPresenter selections size printString , ' test(s)'.
