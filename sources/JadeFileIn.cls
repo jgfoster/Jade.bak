@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #JadeFileIn
-	instanceVariableNames: 'gciSession stream line words text category packageName'
+	instanceVariableNames: 'gciSession stream line words text category className packageName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -25,20 +25,28 @@ defineClass
 
 defineClassMethod
 
-	| className |
-	className := ((line subStrings: $:) at: 2) subStrings first.
+	| name pieces |
+	pieces := line subStrings: $:.
+	name := 1 < pieces size
+		ifTrue: [(pieces at: 2) subStrings first]
+		ifFalse: [className].
 	self
 		defineMethod: self readUpToPercent
-		inClassNamed: className , ' class'
+		inClassNamed: name , ' class'
 		inPackageNamed: packageName
 		inCategory: category.
 !
 
 defineInstanceMethod
 
+	| name pieces |
+	pieces := line subStrings: $:.
+	name := 1 < pieces size
+		ifTrue: [(pieces at: 2) trimBlanks]
+		ifFalse: [className].
 	self
 		defineMethod: self readUpToPercent
-		inClassNamed: ((line subStrings: $:) at: 2) trimBlanks
+		inClassNamed: name
 		inPackageNamed: packageName
 		inCategory: category.
 !
@@ -155,20 +163,21 @@ processLine
 	| ucLine |
 	(line isEmpty or: [line first = $!!]) ifTrue: [^self].
 	ucLine := line asUppercase.
-	(ucLine beginsWith: 'CATEGORY:'		) ifTrue: [^self setCategory		].
-	(ucLine beginsWith: 'CLASSMETHOD:'		) ifTrue: [^self defineClassMethod	].
-	(ucLine beginsWith: 'DOIT'				) ifTrue: [^self readDoIt			].
-	(ucLine beginsWith: 'INPUT'			) ifTrue: [^self readInput			].
-	(ucLine beginsWith: 'METHOD:'			) ifTrue: [^self defineInstanceMethod	].
-	(ucLine beginsWith: 'RUN'				) ifTrue: [^self readDoIt			].
-	(ucLine beginsWith: 'EXPECTVALUE'		) ifTrue: [^self readExpectValue		].
-	(ucLine beginsWith: 'REMOVEALLMETHODS'	) ifTrue: [^self readRemoveAllMethods	].
+	(ucLine beginsWith: 'CATEGORY:'					) ifTrue: [^self setCategory					].
+	(ucLine beginsWith: 'CLASSMETHOD:'				) ifTrue: [^self defineClassMethod			].
+	(ucLine beginsWith: 'COMMIT'					) ifTrue: [^self readCommit					].
+	(ucLine beginsWith: 'DOIT'						) ifTrue: [^self readDoIt					].
+	(ucLine beginsWith: 'ENV'						) ifTrue: [^self readSetCompileEnv			].
+	(ucLine beginsWith: 'ERRORCOUNT'				) ifTrue: [^self readErrorCount				].
+	(ucLine beginsWith: 'EXPECTVALUE'				) ifTrue: [^self readExpectValue				].
+	(ucLine beginsWith: 'INPUT'					) ifTrue: [^self readInput					].
+	(ucLine beginsWith: 'METHOD:'					) ifTrue: [^self defineInstanceMethod			].
+	(ucLine beginsWith: 'RUN'						) ifTrue: [^self readDoIt					].
+	(ucLine beginsWith: 'REMOVEALLMETHODS'		) ifTrue: [^self readRemoveAllMethods		].
 	(ucLine beginsWith: 'REMOVEALLCLASSMETHODS'	) ifTrue: [^self readRemoveAllClassMethods	].
-	(ucLine beginsWith: 'ERRORCOUNT'		) ifTrue: [^self readErrorCount	].
-	(ucLine beginsWith: 'COMMIT'			) ifTrue: [^self readCommit	].
-	(ucLine beginsWith: 'SEND'				) ifTrue: [^self readSend ].
-	(ucLine beginsWith: 'SET COMPILE_ENV:'	) ifTrue: [^self readSetCompileEnv].
-	(ucLine beginsWith: 'ENV'				) ifTrue: [^self readSetCompileEnv].
+	(ucLine beginsWith: 'SEND'						) ifTrue: [^self readSend 					].
+	(ucLine beginsWith: 'SET CLASS'					) ifTrue: [^self readSetClass				].
+	(ucLine beginsWith: 'SET COMPILE_ENV:'			) ifTrue: [^self readSetCompileEnv			].
 
 	MessageBox notify: 'Sorry, we are not yet prepared to handle ' , ucLine printString , ' during file-in!!'.
 	SessionManager current pause.
@@ -231,6 +240,10 @@ readSend
 	text := line copyFrom: 6 to: line size.
 	self doIt.
 !
+
+readSetClass
+
+	className := line subStrings last.!
 
 readSetCompileEnv
 
@@ -349,6 +362,7 @@ stream: aStream
 !JadeFileIn categoriesFor: #readRemoveAllClassMethods!public! !
 !JadeFileIn categoriesFor: #readRemoveAllMethods!public! !
 !JadeFileIn categoriesFor: #readSend!public! !
+!JadeFileIn categoriesFor: #readSetClass!public! !
 !JadeFileIn categoriesFor: #readSetCompileEnv!public! !
 !JadeFileIn categoriesFor: #readUpToPercent!public! !
 !JadeFileIn categoriesFor: #readWithProgress:!public! !

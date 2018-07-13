@@ -254,9 +254,7 @@ _implementorsOf: anObject
 
 _methodsContaining: aString
 
-	| string |
-	string := self _decodeString: aString.
-	^self _streamOfMethods: (self classOrganizer substringSearch: string) first
+	^self _streamOfMethods: (self classOrganizer substringSearch: aString) first
 !
 
 _methodsFor: aClass categories: aList
@@ -494,7 +492,7 @@ implementorsOf: aGsMethod startingAt: aClass
 
 methodsContaining: aString
 
-	^self _encodeString: (self _methodsContaining: aString)
+	^self _encodeString: (self _methodsContaining: (self _decodeString: aString))
 !
 
 methodsFor: childClass upTo: parentClass filter: aString isVariables: aBoolean 

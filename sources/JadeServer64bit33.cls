@@ -25,6 +25,13 @@ _gemLogPath
 	^System gemLogPath
 !
 
+_nameOfFirstDictionaryReferencing: aGlobal
+
+	| list |
+	list := self symbolList dictionariesAndSymbolsOf: aGlobal.
+	list isNil ifTrue: [^''].
+	^list first first name!
+
 _objectSecurityPolicyFor: anObject
 
 	^anObject objectSecurityPolicy!
@@ -379,6 +386,7 @@ readSocket: anInteger
 !JadeServer64bit33 categoriesFor: #_decodeString:!private! !
 !JadeServer64bit33 categoriesFor: #_encodeString:!private! !
 !JadeServer64bit33 categoriesFor: #_gemLogPath!private!Transcript! !
+!JadeServer64bit33 categoriesFor: #_nameOfFirstDictionaryReferencing:!private! !
 !JadeServer64bit33 categoriesFor: #_objectSecurityPolicyFor:!private! !
 !JadeServer64bit33 categoriesFor: #_string!private! !
 !JadeServer64bit33 categoriesFor: #acceptConnection!public! !

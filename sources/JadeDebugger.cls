@@ -255,6 +255,7 @@ stackInitialSelectionData
 		'(TestCase)>>#shouldnt:raise: @4 line 2'
 		'GSTestCase >> assert: @1 line 1'
 		'GSTestCase >> assert: (envId 0) @1 line 1'
+		'(GSTestCase) >> assert: @2 line 3'
 		'Object >> _doesNotUnderstand:'
 		'Object >> _doesNotUnderstand:args:envId:reason: @7 line 12'
 		'Object >> _doesNotUnderstand:args:envId:reason: (envId 0) @7 line 12'

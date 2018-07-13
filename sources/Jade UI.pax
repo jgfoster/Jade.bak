@@ -86,7 +86,7 @@ package!
 "Class Definitions"!
 
 Object subclass: #JadeFileIn
-	instanceVariableNames: 'gciSession stream line words text category packageName'
+	instanceVariableNames: 'gciSession stream line words text category className packageName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
