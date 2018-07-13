@@ -10,6 +10,11 @@ RowanMethodService comment: ''!
 !RowanMethodService categoriesForClass!Kernel-Objects! !
 !RowanMethodService methodsFor!
 
+basicSubSuperIcon
+	hasSupers ifTrue: [^JadeSystemBrowserPresenter overriddenIcon].
+	hasSubs ifTrue: [^RowanProjectsBrowserPresenter downArrowIcon].
+	^Icon blank!
+
 category
 	^category!
 
@@ -99,6 +104,9 @@ source
 source: anObject
 	source := anObject!
 
+subSuperIcon
+	^(self basicSubSuperIcon) imageIndex!
+
 updateSelectorFromCompiledMethod: aString
 
 	| stream | 
@@ -114,6 +122,7 @@ user
 
 user: anObject
 	user := anObject! !
+!RowanMethodService categoriesFor: #basicSubSuperIcon!displaying!public! !
 !RowanMethodService categoriesFor: #category!accessing!private! !
 !RowanMethodService categoriesFor: #category:!accessing!private! !
 !RowanMethodService categoriesFor: #className!accessing!private! !
@@ -141,6 +150,7 @@ user: anObject
 !RowanMethodService categoriesFor: #selector:!accessing!private! !
 !RowanMethodService categoriesFor: #source!accessing!private! !
 !RowanMethodService categoriesFor: #source:!accessing!private! !
+!RowanMethodService categoriesFor: #subSuperIcon!displaying!public! !
 !RowanMethodService categoriesFor: #updateSelectorFromCompiledMethod:!private! !
 !RowanMethodService categoriesFor: #user!accessing!private! !
 !RowanMethodService categoriesFor: #user:!accessing!private! !

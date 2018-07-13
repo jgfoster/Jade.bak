@@ -111,6 +111,7 @@ package methodNames
 	add: #Presenter -> #updateReady:;
 	add: #Presenter -> #updateSelectionsFor:;
 	add: #Presenter -> #updateSelectionsForUpdate:;
+	add: #RowanCommandResult -> #categoryUpdate:;
 	add: #RowanCommandResult -> #classCategoryUpdate:;
 	add: #RowanCommandResult -> #classCommentUpdate:;
 	add: #RowanCommandResult -> #classDefinitionUpdate:;
@@ -1759,6 +1760,9 @@ updateSelectionsForUpdate: update
 
 !RowanCommandResult methodsFor!
 
+categoryUpdate: presenter
+	!
+
 classCategoryUpdate: presenter
 	!
 
@@ -1826,6 +1830,7 @@ updatePackageSelectionsFor: presenter
 updateSelectorFor: presenter!
 
 updateSuperclassSelectionFor: presenter! !
+!RowanCommandResult categoriesFor: #categoryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classCommentUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classDefinitionUpdate:!public!updating! !

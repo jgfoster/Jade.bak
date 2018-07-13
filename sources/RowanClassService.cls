@@ -16,6 +16,14 @@ allFilters
 allFilters: anObject
 	allFilters := anObject!
 
+categoryUpdate: presenter
+	| selections  availableSelections|
+	presenter list = allFilters ifTrue:[^self].
+	selections := presenter selections. 
+	presenter list: allFilters. 
+	availableSelections := allFilters select: [:filter | selections includes: filter].
+	presenter selections: availableSelections. !
+
 classCreationTemplate
 
 	^transport send: #classCreationTemplate to: self remoteService!
@@ -28,13 +36,6 @@ classMethodsUpdate: presenter
 		ifFalse: 
 			[visibleMethods := methods select: [:methodService | filters includes: methodService category]].
 	presenter list: visibleMethods!
-
-classUpdate: presenter
-	"don't just replace the list as we want to preserve selections"
-
-	presenter list isEmpty ifTrue: [^presenter list: allFilters].
-	presenter list addAll: (allFilters difference: presenter list).
-	presenter list removeAll: (presenter list difference: allFilters)!
 
 comment
 	^comment!
@@ -91,13 +92,7 @@ removeSelector: selector
 	transport send: #removeSelector: to: remoteService withAll: (Array with: selector)!
 
 replicateFrom: newService
-	self isClassService ifFalse: [^self].
-	newService name = name ifFalse: [^self].
-	1 to: self class instSize
-		do: 
-			[:index | 
-			(self class allInstVarNames at: index) = 'filters'
-				ifFalse: [self instVarAt: index put: (newService instVarAt: index)]]!
+	self isClassService ifTrue: [^super replicateFrom: newService]!
 
 sampleClassName
 	^transport send: #sampleClassName to: remoteService.  !
@@ -116,9 +111,9 @@ toolTip
 ! !
 !RowanClassService categoriesFor: #allFilters!accessing!private! !
 !RowanClassService categoriesFor: #allFilters:!accessing!private! !
+!RowanClassService categoriesFor: #categoryUpdate:!public!updating! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #classMethodsUpdate:!public!updating! !
-!RowanClassService categoriesFor: #classUpdate:!public!updating! !
 !RowanClassService categoriesFor: #comment!accessing!public! !
 !RowanClassService categoriesFor: #comment:!accessing!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !

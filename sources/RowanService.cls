@@ -10,6 +10,9 @@ RowanService comment: ''!
 !RowanService categoriesForClass!Kernel-Objects! !
 !RowanService methodsFor!
 
+categoryUpdate: presenter
+	!
+
 classCategoryUpdate: presenter
 	!
 
@@ -161,6 +164,7 @@ updatePackageSelectionsFor: presenter
 updateSelectorFor: presenter!
 
 updateSuperclassSelectionFor: presenter! !
+!RowanService categoriesFor: #categoryUpdate:!public!updating! !
 !RowanService categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanService categoriesFor: #classCommentUpdate:!public!updating! !
 !RowanService categoriesFor: #classDefinitionUpdate:!public!updating! !
