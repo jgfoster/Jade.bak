@@ -15,6 +15,10 @@ addSystemBrowserWithLayoutInfo: each
 	browser := (self systemBrowserPresenter createIn: cardsPresenter gciSession: gciSession) layoutInfo: each.
 	browser projectDictionaryChanged!
 
+layoutFilePath
+
+	^SessionManager current imageBase , 'Rowan System Browser Layout.stb'!
+
 shellName
 
 	^'Rowan Projects Browser'.
@@ -23,6 +27,7 @@ shellName
 systemBrowserPresenter
 	^RowanProjectsBrowserPresenter! !
 !RowanProjectsSystemBrowser categoriesFor: #addSystemBrowserWithLayoutInfo:!public! !
+!RowanProjectsSystemBrowser categoriesFor: #layoutFilePath!public! !
 !RowanProjectsSystemBrowser categoriesFor: #shellName!overrides!private! !
 !RowanProjectsSystemBrowser categoriesFor: #systemBrowserPresenter!public! !
 

@@ -1479,7 +1479,6 @@ layoutInfo
 !
 
 layoutInfo: anArray
-
 	environment := (anArray size < 3) ifTrue: [0] ifFalse: [anArray at: 3].
 	view ensureVisible.
 	anArray isNil ifTrue: [
