@@ -14,6 +14,13 @@ activeCount
 
 	^sessions size!
 
+activeSession
+
+	sessions := sessions select: [:each | each isValidSession].
+	^sessions isEmpty
+		ifTrue: [nil]
+		ifFalse: [sessions detect: [:each | each notNil]]!
+
 addSession: aGciSession
 
 	sessions add: aGciSession.
@@ -332,6 +339,7 @@ stoneNRS: aString
 	stoneNRS := aString.
 ! !
 !JadeLogin categoriesFor: #activeCount!public! !
+!JadeLogin categoriesFor: #activeSession!public! !
 !JadeLogin categoriesFor: #addSession:!public! !
 !JadeLogin categoriesFor: #asXML!public! !
 !JadeLogin categoriesFor: #clearSessions!public! !
