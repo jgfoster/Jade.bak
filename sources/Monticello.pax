@@ -1,4 +1,4 @@
-| package |
+﻿| package |
 package := Package name: 'Monticello'.
 package paxVersion: 1;
 	basicComment: ''.
@@ -585,9 +585,9 @@ mcHttpRepository: aRepository user: userString password: passwordString
 mcInitials: aString
 	"Do initial setup and return useful information"
 
-	| mcPlatformSupport name packagePolicyEnabledFlag string x |
+	| mcPlatformSupport name string |
 	name := self _decodeString: aString.
-	string := name , '-Jade-' , GsSession currentSession serialNumber printString , '-' , System myUserProfile userId.
+	string := name , ' (Jade)'.
 	[
 		self _mcInitialsA: string.
 	] whileFalse: [	"Keep shortening it till it fits!!"
@@ -595,11 +595,7 @@ mcInitials: aString
 	].
 	mcPlatformSupport := self objectInBaseNamed: #'MCPlatformSupport'.
 	mcPlatformSupport notNil ifTrue: [mcPlatformSupport setAuthorInitials: name].
-	packagePolicyEnabledFlag := (x := self objectInBaseNamed: #'GsPackagePolicy') isNil ifTrue: ['0'] ifFalse: [x current enabled ifTrue: ['1'] ifFalse: ['0']].
-	string := System session printString , Character space asString , 
-		(GsSession serialOfSession: System session) printString , Character space asString , 
-		packagePolicyEnabledFlag.
-	^self _encodeString: string
+	^self _encodeString: self _preferences
 !
 
 mcLoadedVersionNames

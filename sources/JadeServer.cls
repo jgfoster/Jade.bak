@@ -306,6 +306,22 @@ _objectForOop: anInteger
 
 	self subclassResponsibility.!
 
+_preferences
+	"Return useful information"
+
+	| mcPlatformSupport packagePolicyEnabled stream x |
+	stream := (WriteStream on: self _string)
+		nextPutAll: System session printString; tab;
+		nextPutAll: (GsSession serialOfSession: System session) printString; tab;
+		nextPutAll: packagePolicyEnabled printString; tab;
+		nextPutAll: (((x := System configurationAt: #GemNativeCodeEnabled) isKindOf: SmallInteger) ifTrue: [(0 < x) printString] ifFalse: [x printString]); tab;
+		nextPutAll: (mcPlatformSupport ifNil: [nil] ifNotNil: [mcPlatformSupport autoMigrate]) printString; tab;
+		nextPutAll: 'nil'; tab;	"isAutoCommit"
+		nextPutAll: self showUnimplementedMessages printString; tab;
+		yourself.
+	^stream contents
+!
+
 _refreshSymbolList
 
 	GsSession currentSession symbolList replaceElementsFrom: self symbolList.	"replace the transcient one with the persistent one"
@@ -509,6 +525,11 @@ oopOf: anObject
 	^anObject asOop.
 !
 
+preferences
+
+	^self _encodeString: self _preferences
+!
+
 reset
 	"WriteStream protocol used by Transcript"!
 
@@ -573,6 +594,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #_nextLine!private!System Browser! !
 !JadeServer categoriesFor: #_nextLineAsList!private!System Browser! !
 !JadeServer categoriesFor: #_objectForOop:!private! !
+!JadeServer categoriesFor: #_preferences!public! !
 !JadeServer categoriesFor: #_refreshSymbolList!private! !
 !JadeServer categoriesFor: #_registerOBNotifications!private! !
 !JadeServer categoriesFor: #_registerOBNotificationsForPlatform:clientForwarder:!private! !
@@ -600,6 +622,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #objectNamed:!private! !
 !JadeServer categoriesFor: #obTextRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #oopOf:!private! !
+!JadeServer categoriesFor: #preferences!public! !
 !JadeServer categoriesFor: #reset!public!Transcript! !
 !JadeServer categoriesFor: #setBreakAtStepPoint:inMethod:!Methods!public! !
 !JadeServer categoriesFor: #show:!public!Transcript! !

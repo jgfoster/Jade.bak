@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isHandlingClientForwarderSend isPackagePolicyEnabled library netPort netTask server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: 'GemCursor'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -323,7 +323,11 @@ initials: initials
 debugPath: debugPath
 
 	| list |
+	isAutoCommit := false.
+	isAutoMigrate := false.
 	isHandlingClientForwarderSend := false.
+	isNativeCode := true.
+	isShowUnimplementedMessages := true.
 	eventCount := 0.
 	stoneNRS := stoneString.
 	gemNRS := gemString.
@@ -387,9 +391,44 @@ Server initialization failed. Most functionality will be broken!!'.
 	].
 !
 
+isAutoCommit
+
+	^isAutoCommit
+!
+
+isAutoCommit: aBoolean
+
+	isAutoCommit == aBoolean ifTrue: [^self].
+	self error: 'Auto-commit is not yet supported (see https://github.com/jgfoster/Jade/issues/8)'.
+	isAutoCommit := aBoolean.
+!
+
+isAutoMigrate
+
+	^isAutoMigrate
+!
+
+isAutoMigrate: aBoolean
+
+	isAutoMigrate == aBoolean ifTrue: [^self].
+	self executeString: 'McPlatformSupport autoMigrate: ' , aBoolean printString.
+	isAutoMigrate := true.
+!
+
 isLinkedGem
 
 	^gemNRS isEmpty.
+!
+
+isNativeCode
+
+	^isNativeCode!
+
+isNativeCode: aBoolean
+
+	isNativeCode == aBoolean ifTrue: [^self].
+	self executeString: 'System configurationAt: #GemNativeCodeEnabled put: ' , aBoolean printString.
+	isNativeCode := aBoolean.
 !
 
 isOopType: anObject
@@ -404,6 +443,18 @@ isPackagePolicyEnabled
 isRemoteGem
 
 	^self isLinkedGem not.
+!
+
+isShowUnimplementedMessages
+
+	^isShowUnimplementedMessages
+!
+
+isShowUnimplementedMessages: aBoolean
+
+	isShowUnimplementedMessages == aBoolean ifTrue: [^self].
+	self serverPerform: #'showUnimplementedMessages:' with: aBoolean.
+	isShowUnimplementedMessages := aBoolean.
 !
 
 isValidSession
@@ -492,7 +543,7 @@ oopTypeWithOop: anInteger
 postLoginAs: aString 
 
 	self initializeServer.
-	self setInitials: aString.		"This gets back the session and serial number"
+	self setInitials: aString.		"This gets back the session and serial number and some preferences"
 !
 
 printString: anOopType
@@ -689,16 +740,13 @@ serverPerformInterpreted: aSymbol withArguments: anArray
 
 setInitials: initials
 
-	| pieces string |
+	| string |
 	server isNil ifTrue: [^self].
 	string := self
 		serverPerform: #'mcInitials:' 
 		with: (self encode: initials).
-	string := self decode: string.
-	pieces := string subStrings collect: [:each | each asNumber].
-	stoneSessionID := pieces at: 1.
-	stoneSerial := pieces at: 2.
-	isPackagePolicyEnabled := (pieces at: 3) = 1.!
+	self updatePreferencesFrom: string.
+!
 
 signalConfirmationRequestUsing: anOopType64 
 
@@ -880,6 +928,25 @@ titleBarFor: aString
 	^stream contents.
 !
 
+updatePreferences
+
+	| string |
+	string := self serverPerform: #'preferences'.
+	self updatePreferencesFrom: string.
+!
+
+updatePreferencesFrom: aString
+
+	| pieces x |
+	pieces := (self decode: aString) subStrings: Character tab.
+	stoneSessionID := (pieces at: 1) asNumber.
+	stoneSerial := (pieces at: 2) asNumber.
+	isPackagePolicyEnabled := (pieces at: 3) = 'true'.
+	isNativeCode				 	:= (x := pieces at: 4) = 'nil' ifTrue: [nil] ifFalse: [x = 'true'].
+	isAutoMigrate					:= (x := pieces at: 5) = 'nil' ifTrue: [nil] ifFalse: [x = 'true'].
+	isAutoCommit 					:= (x := pieces at: 6) = 'nil' ifTrue: [nil] ifFalse: [x = 'true'].
+	isShowUnimplementedMessages	:= (x := pieces at: 7) = 'nil' ifTrue: [nil] ifFalse: [x = 'true'].!
+
 userID
 
 	^userID.
@@ -994,10 +1061,18 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #indexOfClientForwarder:!public! !
 !GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:debugPath:!private! !
 !GciSession categoriesFor: #initializeServer!private! !
+!GciSession categoriesFor: #isAutoCommit!accessing!public! !
+!GciSession categoriesFor: #isAutoCommit:!accessing!public! !
+!GciSession categoriesFor: #isAutoMigrate!accessing!public! !
+!GciSession categoriesFor: #isAutoMigrate:!accessing!public! !
 !GciSession categoriesFor: #isLinkedGem!public! !
+!GciSession categoriesFor: #isNativeCode!accessing!public! !
+!GciSession categoriesFor: #isNativeCode:!accessing!public! !
 !GciSession categoriesFor: #isOopType:!public! !
 !GciSession categoriesFor: #isPackagePolicyEnabled!public! !
 !GciSession categoriesFor: #isRemoteGem!public! !
+!GciSession categoriesFor: #isShowUnimplementedMessages!accessing!public! !
+!GciSession categoriesFor: #isShowUnimplementedMessages:!accessing!public! !
 !GciSession categoriesFor: #isValidSession!public! !
 !GciSession categoriesFor: #libraryVersion!public! !
 !GciSession categoriesFor: #loadLibrary:debugPath:!public! !
@@ -1045,6 +1120,8 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #stopHeartbeat!Jade!public! !
 !GciSession categoriesFor: #terminate:!public! !
 !GciSession categoriesFor: #titleBarFor:!public! !
+!GciSession categoriesFor: #updatePreferences!private! !
+!GciSession categoriesFor: #updatePreferencesFrom:!private! !
 !GciSession categoriesFor: #userID!public! !
 !GciSession categoriesFor: #valueOfArrayOop:!Jade convenience!public! !
 !GciSession categoriesFor: #valueOfOop:!Jade convenience!public! !

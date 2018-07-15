@@ -62,19 +62,19 @@ createComponents
 
 	super createComponents.
 	versionListPresenter		:= self add: ListPresenter			new name: 'versionList'.
-	stoneHostPresenter 		:= self add: TextPresenter 		new name: 'stoneHost'.
-	stoneNamePresenter 		:= self add: TextPresenter 		new name: 'stoneName'.
+	stoneHostPresenter 		:= self add: TextPresenter 			new name: 'stoneHost'.
+	stoneNamePresenter 	:= self add: TextPresenter 			new name: 'stoneName'.
 	gemTypePresenter 		:= self add: RadioButtonSetPresenter 	new name: 'gemType'.
-	gemHostPresenter 		:= self add: TextPresenter 		new name: 'gemHost'.
-	gemServicePresenter 	:= self add: TextPresenter 		new name: 'gemService'.
-	gemTaskPresenter 		:= self add: TextPresenter 		new name: 'gemTask'.
-	userIDPresenter 		:= self add: TextPresenter 		new name: 'userID'.
-	passwordPresenter 		:= self add: TextPresenter 		new name: 'password'.
+	gemHostPresenter 		:= self add: TextPresenter 			new name: 'gemHost'.
+	gemServicePresenter 	:= self add: TextPresenter 			new name: 'gemService'.
+	gemTaskPresenter 		:= self add: TextPresenter 			new name: 'gemTask'.
+	userIDPresenter 		:= self add: TextPresenter 			new name: 'userID'.
+	passwordPresenter 		:= self add: TextPresenter 			new name: 'password'.
 	loginListPresenter		:= self add: ListPresenter			new name: 'loginList'.
 	loginTypePresenter 		:= self add: RadioButtonSetPresenter 	new name: 'loginType'.
 	hostUserIDPresenter		:= self add: TextPresenter			new name: 'hostUserID'.
 	hostPasswordPresenter	:= self add: TextPresenter			new name: 'hostPassword'.
-	initialsPresenter		:= self add: TextPresenter			new name: 'initials'.
+	initialsPresenter			:= self add: TextPresenter			new name: 'initials'.
 	debugPathPresenter		:= self add: TextPresenter			new name: 'debugPath'.
 !
 
@@ -239,22 +239,25 @@ isVersion: a lessThanOrEqualTo: b
 
 loadData
 
-	| data list |
+	| data |
 	[
 		| fileStream |
 		fileStream := FileStream read: self dataPath type: #'binary'.
 		data := Object binaryReadFrom: fileStream.
 		fileStream close.
 	] on: Error do: [:ex | 
-		data := OrderedCollection new
-			add: (list := OrderedCollection with: JadeLogin default);
-			add: list first;
-			yourself.
+		data := OrderedCollection new.
 	].
+	data size < 1 ifTrue: [data add: (OrderedCollection with: JadeLogin default)].
+	data size < 2 ifTrue: [data add: data first first].
+	data size < 3 ifTrue: [data add: JadePreferencesPresenter defaultFont].
+	data size < 4 ifTrue: [data add: JadePreferencesPresenter codeFont].
 	loginListPresenter 
 		list: (data at: 1);
 		selectionOrNil: (data at: 2);
 		yourself.
+	JadePreferencesPresenter defaultFont: (data at: 3).
+	JadePreferencesPresenter codeFont: (data at: 4).
 !
 
 login
@@ -388,6 +391,8 @@ saveData
 	data := OrderedCollection new
 		add: loginListPresenter list;
 		add: loginListPresenter selectionOrNil;
+		add: JadePreferencesPresenter defaultFont;
+		add: JadePreferencesPresenter codeFont;
 		yourself.
 	[
 		fileStream := FileStream 
