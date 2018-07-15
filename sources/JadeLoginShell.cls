@@ -87,7 +87,7 @@ createSchematicWiring
 		yourself.
 	versionListPresenter		when: #selectionChanged 	send: #modified 	to: self.
 	stoneHostPresenter 		when: #valueChanged 	send: #modified 	to: self.
-	stoneNamePresenter 		when: #valueChanged 	send: #modified 	to: self.
+	stoneNamePresenter 	when: #valueChanged 	send: #modified 	to: self.
 	gemTypePresenter		when: #valueChanged 	send: #modified 	to: self.
 	gemHostPresenter 		when: #valueChanged 	send: #modified 	to: self.
 	gemServicePresenter 	when: #valueChanged 	send: #modified 	to: self.
@@ -97,8 +97,9 @@ createSchematicWiring
 	loginTypePresenter		when: #valueChanged 	send: #modified 	to: self.
 	hostUserIDPresenter		when: #valueChanged 	send: #modified 	to: self.
 	hostPasswordPresenter	when: #valueChanged 	send: #modified 	to: self.
-	initialsPresenter		when: #valueChanged	send: #modified 	to: self.
+	initialsPresenter			when: #valueChanged	send: #modified 	to: self.
 	debugPathPresenter		when: #valueChanged	send: #modified 	to: self.
+	self					when: #closeRequested:	send: #saveData	to: self.
 !
 
 dataPath
@@ -287,11 +288,6 @@ modified
 	inUpdateView ifTrue: [^self].
 	self updateModel.
 	loginListPresenter view updateAll.!
-
-onCloseRequested
-
-	self saveData.
-	^super onCloseRequested!
 
 onViewOpened
 
@@ -517,7 +513,6 @@ updateView
 !JadeLoginShell categoriesFor: #login!public! !
 !JadeLoginShell categoriesFor: #logout:!public! !
 !JadeLoginShell categoriesFor: #modified!public! !
-!JadeLoginShell categoriesFor: #onCloseRequested!public! !
 !JadeLoginShell categoriesFor: #onViewOpened!public! !
 !JadeLoginShell categoriesFor: #openGemTalkHomePage!public! !
 !JadeLoginShell categoriesFor: #openJadeHomePage!public! !
