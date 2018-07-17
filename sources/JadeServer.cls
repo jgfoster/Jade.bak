@@ -432,6 +432,10 @@ executeString: aString fromContext: anObject environment: anInteger
 		evaluateInContext: anObject 
 		symbolList: GsSession currentSession symbolList. !
 
+hasDirtyObjects
+
+	^System _writtenObjects notEmpty!
+
 homeMethodFor: aGsMethod
 
 	^aGsMethod!
@@ -610,6 +614,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #describeMethod:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #errorListFor:!public! !
 !JadeServer categoriesFor: #executeString:fromContext:environment:!public! !
+!JadeServer categoriesFor: #hasDirtyObjects!public! !
 !JadeServer categoriesFor: #homeMethodFor:!private! !
 !JadeServer categoriesFor: #initialize!public! !
 !JadeServer categoriesFor: #makeListener!private! !
