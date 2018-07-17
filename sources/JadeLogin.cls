@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #JadeLogin
-	instanceVariableNames: 'debugPath gemHost gemNRS gemService gemTask gemType gemVersion gsPassword gsUserID hostPassword hostUserID initials lastLogin loginType sessions stoneHost stoneName stoneNRS'
+	instanceVariableNames: 'debugPath gemHost gemNRS gemService gemTask gemType gemVersion gsPassword gsUserID hostPassword hostUserID initials lastLogin loginType session stoneHost stoneName stoneNRS transcript'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -9,23 +9,6 @@ JadeLogin guid: (GUID fromString: '{585bd13e-3a03-47f3-b78d-5c29ef797913}')!
 JadeLogin comment: ''!
 !JadeLogin categoriesForClass!Unclassified! !
 !JadeLogin methodsFor!
-
-activeCount
-
-	^sessions size!
-
-activeSession
-
-	sessions := sessions select: [:each | each isValidSession].
-	^sessions isEmpty
-		ifTrue: [nil]
-		ifFalse: [sessions detect: [:each | each notNil]]!
-
-addSession: aGciSession
-
-	sessions add: aGciSession.
-	lastLogin := DateAndTime now.
-!
 
 asXML
 
@@ -48,11 +31,6 @@ asXML
 		yourself.
 	doc setDocumentElement: root.
 	^doc xml.
-!
-
-clearSessions
-
-	sessions := IdentitySet new.
 !
 
 debugPath
@@ -172,11 +150,6 @@ gsUserID: aString
 	gsUserID := aString.
 !
 
-hasActiveSessions
-
-	sessions := sessions select: [:each | each isValidSession].
-	^sessions notEmpty!
-
 hostPassword
 	^hostPassword!
 
@@ -197,15 +170,10 @@ hostUserID: aString
 
 icon
 
-	self hasActiveSessions ifTrue: [^Presenter icon].
-	self isAbleToLoadLibrary ifTrue: [^Object icon].
-	^Model icon.	"red - not available because we have another DLL loaded"
-	!
-
-initialize
-
-	super initialize.
-	self clearSessions.
+	(session notNil and: [session isValidSession not]) ifTrue: [session := nil].
+	session notNil ifTrue: [^Presenter icon].		"green - logged in"
+	self isAbleToLoadLibrary ifTrue: [^Object icon].	"yellow - can log in"
+	^Model icon	"red - not available because we have another DLL loaded"
 !
 
 initializeFromXML: aString
@@ -287,8 +255,10 @@ loginType: anObject
 postCopy
 
 	super postCopy.
-	lastLogin := nil.
-	sessions := IdentitySet new.!
+	lastLogin 	:= nil.
+	session	:= nil.
+	transcript 	:= nil.
+!
 
 saveDefault
 
@@ -302,6 +272,16 @@ saveDefault
 		MessageBox errorMsg: 'JadeLogin>>#''saveDefault'' resulted in ' , ex description.
 		ex return.
 	].
+!
+
+session
+
+	^session!
+
+session: aGciSession
+
+	session := aGciSession.
+	lastLogin := DateAndTime now.
 !
 
 stoneHost
@@ -337,12 +317,18 @@ stoneNRS: aString
 
 	self stoneNRS = aString ifTrue: [^self].
 	stoneNRS := aString.
+!
+
+transcript
+
+	^transcript
+!
+
+transcript: aJadeTranscript
+
+	transcript := aJadeTranscript.
 ! !
-!JadeLogin categoriesFor: #activeCount!public! !
-!JadeLogin categoriesFor: #activeSession!public! !
-!JadeLogin categoriesFor: #addSession:!public! !
 !JadeLogin categoriesFor: #asXML!public! !
-!JadeLogin categoriesFor: #clearSessions!public! !
 !JadeLogin categoriesFor: #debugPath!accessing!public! !
 !JadeLogin categoriesFor: #debugPath:!accessing!public! !
 !JadeLogin categoriesFor: #gemHost!accessing!public! !
@@ -363,13 +349,11 @@ stoneNRS: aString
 !JadeLogin categoriesFor: #gsPassword:!accessing!public! !
 !JadeLogin categoriesFor: #gsUserID!accessing!public! !
 !JadeLogin categoriesFor: #gsUserID:!accessing!public! !
-!JadeLogin categoriesFor: #hasActiveSessions!public! !
 !JadeLogin categoriesFor: #hostPassword!accessing!public! !
 !JadeLogin categoriesFor: #hostPassword:!accessing!public! !
 !JadeLogin categoriesFor: #hostUserID!accessing!public! !
 !JadeLogin categoriesFor: #hostUserID:!accessing!public! !
 !JadeLogin categoriesFor: #icon!public! !
-!JadeLogin categoriesFor: #initialize!public! !
 !JadeLogin categoriesFor: #initializeFromXML:!public! !
 !JadeLogin categoriesFor: #initials!accessing!public! !
 !JadeLogin categoriesFor: #initials:!accessing!public! !
@@ -381,12 +365,16 @@ stoneNRS: aString
 !JadeLogin categoriesFor: #loginType:!accessing!public! !
 !JadeLogin categoriesFor: #postCopy!public! !
 !JadeLogin categoriesFor: #saveDefault!public! !
+!JadeLogin categoriesFor: #session!accessing!public! !
+!JadeLogin categoriesFor: #session:!accessing!public! !
 !JadeLogin categoriesFor: #stoneHost!accessing!public! !
 !JadeLogin categoriesFor: #stoneHost:!accessing!public! !
 !JadeLogin categoriesFor: #stoneName!accessing!public! !
 !JadeLogin categoriesFor: #stoneName:!accessing!public! !
 !JadeLogin categoriesFor: #stoneNRS!accessing!public! !
 !JadeLogin categoriesFor: #stoneNRS:!accessing!public! !
+!JadeLogin categoriesFor: #transcript!accessing!public! !
+!JadeLogin categoriesFor: #transcript:!accessing!public! !
 
 !JadeLogin class methodsFor!
 
