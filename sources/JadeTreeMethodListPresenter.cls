@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 JadeMethodListPresenter subclass: #JadeTreeMethodListPresenter
-	instanceVariableNames: 'treeMethodsPresenter treeMethodsMap historyEntries entriesIndex'
+	instanceVariableNames: 'treeMethodsPresenter treeMethodsMap historyEntries entriesIndex historyList historyIndex'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -49,7 +49,7 @@ browse: performSelector method: aGsMethodOrString
 browseImplementorsOf: aGsMethod
  	| methodName |
 
-	methodName := (aGsMethod class = String) ifTrue: [aGsMethod] ifFalse: [aGsMethod name].
+	methodName := aGsMethod isString ifTrue: [aGsMethod] ifFalse: [aGsMethod name].
 
 	self browseMethodsFromString: (self gsBrowse: #implementorsOf: methodSelector: aGsMethod) methodName: methodName type: #definitions.!
 
@@ -107,20 +107,20 @@ browseMethodsFromString: aString methodName: methodName type: browseType
 browseSendersOf: aGsMethod
 	| methodName |
 
-	methodName := (aGsMethod class = String) ifTrue: [aGsMethod] ifFalse: [aGsMethod name].
+	methodName := aGsMethod isString ifTrue: [aGsMethod] ifFalse: [aGsMethod name].
 
 	self browseMethodsFromString: (self gsBrowse: #sendersOf: methodSelector: aGsMethod) methodName: methodName type: #references.
 !
 
 buildHistoryBackMenu
 
-	^(self buildHistoryMenuWith: (historyEntries copyFrom: 1 to: entriesIndex) command: #historyBack:)
+	^(self buildHistoryMenuWith: (historyList copyFrom: 1 to: historyIndex) command: #historyBack:)
 		text: 'Backward';
 		yourself!
 
 buildHistoryForwardMenu
 
-	^(self buildHistoryMenuWith: (historyEntries copyFrom: entriesIndex to: historyEntries size) command: #historyForward:)
+	^(self buildHistoryMenuWith: (historyList copyFrom: historyIndex to: historyList size) command: #historyForward:)
 		text: 'Forward';
 		yourself!
 
@@ -130,11 +130,11 @@ buildHistoryMenuWith: entryCollection command: command
 	classesNames := Set new.
 	popup := Menu new.
 
-	(entryCollection select: [:each | each notNil]) do: [:historyEntry | 
-		(classesNames includes: historyEntry getClassName) 
-		ifFalse: [subMenu := popup addSubmenu: historyEntry getClassName.
-				classesNames add: historyEntry getClassName].
-		subMenu addCommand: (Message selector: command argument: historyEntry) description: historyEntry getMethodName.
+	(entryCollection select: [:each | each notNil]) do: [:array | 
+		(classesNames includes: array first) 
+		ifFalse: [subMenu := popup addSubmenu: array first.
+				classesNames add: array first].
+		subMenu addCommand: (Message selector: command argument: array) description: array second.
 		subMenu setDefault: 1
 	].
 
@@ -161,12 +161,20 @@ createSchematicWiring
 
 deleteHistory
 
-	historyEntries := OrderedCollection new.
-	entriesIndex := 1.!
+	historyList := OrderedCollection new.
+	historyIndex := 1.!
 
 dropGsMethod: aDragDropSession 
+	| treeNode gsMethod |
 
-	(treeMethodsMap at: aDragDropSession suggestedTarget ifAbsent: [^self]) add: aDragDropSession suggestedSource.!
+	treeNode := aDragDropSession suggestedTarget.
+	gsMethod := aDragDropSession suggestedSource.
+
+	(treeMethodsMap at: treeNode ifAbsent: [^self]) add: gsMethod.
+
+	(historyList select: [:each | each first = gsMethod gsClass name and:[each second = gsMethod name]]) do: [:eachArray | eachArray at: 3 put: treeNode].
+
+	!
 
 dropNode: aDragDropSession
 
@@ -194,16 +202,16 @@ hasTreeListSelection
 
 historyBack
 
-	entriesIndex := entriesIndex - 1.
-	(entriesIndex <= 0) ifTrue: [entriesIndex := 1].
+	historyIndex := historyIndex - 1.
+	(historyIndex <= 0) ifTrue: [historyIndex := 1].
 
-	(historyEntries size = 0) ifTrue: [^self].
+	(historyList size = 0) ifTrue: [^self].
 
-	self restoreFrom: (historyEntries at: entriesIndex).!
+	self restoreFrom: (historyList at: historyIndex).!
 
-historyBack: aJadeHistoryEntry
+historyBack: anArray
 	
-	self restoreFrom: aJadeHistoryEntry!
+	self restoreFrom: anArray!
 
 historyEntries
 	^historyEntries!
@@ -213,23 +221,23 @@ historyEntries: anObject
 
 historyForward
 
-	entriesIndex := entriesIndex + 1.
-	(entriesIndex > historyEntries size) ifTrue: [entriesIndex := 1].
+	historyIndex := historyIndex + 1.
+	(historyIndex > historyList size) ifTrue: [historyIndex := 1].
 
-	(historyEntries size = 0) ifTrue: [^self].
+	(historyList size = 0) ifTrue: [^self].
 
-	self restoreFrom: (historyEntries at: entriesIndex).!
+	self restoreFrom: (historyList at: historyIndex).!
 
-historyForward: aJadeHistoryEntry
+historyForward: anArray
 
-	self restoreFrom: aJadeHistoryEntry!
+	self restoreFrom: anArray!
 
 initialize
 
 	super initialize.
 
-	historyEntries := OrderedCollection new.
-	entriesIndex := 1.
+	historyList := OrderedCollection new.
+	historyIndex := 1.
 	treeMethodsMap := Dictionary new.!
 
 onDragMethodsTree: aDragDropSession
@@ -268,13 +276,21 @@ onHistoryDropDown: aToolbarButton
 	^0!
 
 onMethodSelectionChanged
-	| entry |
+	| entry gsMethod className |
 
-	self selectedMethod ifNil: [^self].
+	treeMethodsPresenter hasSelection ifFalse: [^self].
+	methodListPresenter selections size == 1 ifFalse: [^self].
 
-	entry := JadeMethodExplorerHistoryEntry newFrom: self.
+	gsMethod := methodListPresenter selections last.
+	className := gsMethod gsClass name.
+	((className indexOfSubCollection: ' class') ~= 0) ifTrue: [className := className, ' class'].
+	entry := Array
+		with: className
+		with: gsMethod name
+		with: treeMethodsPresenter selection
+		with: gsMethod.
 
-	(historyEntries anySatisfy: [:each | each gsMethod == entry gsMethod]) ifFalse: [historyEntries add: entry].!
+	historyList detect: [:array | (array first = entry first) and:[array second = entry second]] ifNone: [historyList add: entry].!
 
 onTreeListChanged
 
@@ -300,17 +316,23 @@ onViewOpened
 		to: self.
 !
 
+removeNode
+
+	treeMethodsPresenter hasSelection ifFalse: [^self].
+
+	treeMethodsPresenter model remove: treeMethodsPresenter selection ifAbsent: []!
+
 removeQueryElement
 
 	treeMethodsPresenter hasSelection ifFalse: [^self].
 
 	treeMethodsPresenter model remove: treeMethodsPresenter selection ifAbsent: []!
 
-restoreFrom: aJadeHistoryEntry
+restoreFrom: anArray
 
-	treeMethodsPresenter selection: aJadeHistoryEntry treeSelection ifAbsent: [].
+	treeMethodsPresenter selection: anArray third ifAbsent: [].
 
-	methodListPresenter selectMethod: aJadeHistoryEntry gsMethod!
+	methodListPresenter selectMethod: anArray fourth!
 
 selectedExplorerNode
 
@@ -370,6 +392,7 @@ treeMethodsPresenter: anObject
 !JadeTreeMethodListPresenter categoriesFor: #onMethodSelectionChanged!public! !
 !JadeTreeMethodListPresenter categoriesFor: #onTreeListChanged!public! !
 !JadeTreeMethodListPresenter categoriesFor: #onViewOpened!public! !
+!JadeTreeMethodListPresenter categoriesFor: #removeNode!public! !
 !JadeTreeMethodListPresenter categoriesFor: #removeQueryElement!public! !
 !JadeTreeMethodListPresenter categoriesFor: #restoreFrom:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #selectedExplorerNode!public! !
@@ -390,7 +413,7 @@ resource_Default_view
 	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Default_view)
 	"
 
-	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ContainerView) 34 15 0 0 34 2 8 1409286144 131073 416 0 0 0 5 0 0 0 416 1180166 ##(Smalltalk.ProportionalLayout) 170 176 8 #() true 170 192 528 0 983302 ##(Smalltalk.MessageSequence) 138 144 34 1 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 328198 ##(Smalltalk.Point) 2719 21 674 1501 1011 416 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 14 5 0 0 10 0 0 0 252 7 0 0 3 2 0 0] 34 3 410 ##(Smalltalk.ContainerView) 34 15 0 416 34 2 8 1140850688 131073 784 0 0 0 5 0 0 0 784 788230 ##(Smalltalk.BorderLayout) 1 1 410 ##(Smalltalk.ContainerView) 34 15 0 784 34 2 8 1140850688 131073 880 0 721158 ##(Smalltalk.SystemColor) 31 0 5 0 0 0 880 482 170 176 528 false 170 192 34 2 410 ##(Smalltalk.Toolbar) 34 25 0 880 34 2 8 1409288972 131137 1040 0 524550 ##(Smalltalk.ColorRef) 8 4278190080 0 517 0 263174 ##(Smalltalk.Font) 0 true 459014 ##(Smalltalk.LOGFONT) 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 65 114 105 97 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 674 193 193 0 1040 1106 1136 8 4294905199 170 192 528 170 192 34 6 39477 1115910 ##(Smalltalk.ToolbarIconButton) 39477 0 1040 1 1180998 4 ##(Smalltalk.CommandDescription) #deleteHistory 8 'Delete History' 1 1 263494 3 ##(Smalltalk.Icon) 0 true 1572870 ##(Smalltalk.ImageRelativeFileLocator) 8 'CompileFailedMethod.ico' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy) 8 'dolphindr7.dll' 0 395334 3 ##(Smalltalk.Bitmap) 0 true 0 0 0 0 3 674 33 33 1 39327 1330 39327 0 1040 17 1362 #historyBack 8 'History Back' 1 1 1410 0 true 1456 8 'HistoryBack.ico' 1504 1538 0 true 0 0 0 0 3 674 33 33 1 39329 1330 39329 0 1040 17 1362 #historyForward 8 'History Forward' 1 1 1410 0 true 1456 8 'HistoryForward.ico' 1504 1538 0 true 0 0 0 0 3 674 33 33 1 34 3 1584 1696 1344 170 176 34 6 1776 3 1552 5 1664 1 0 1 0 674 33 33 674 45 45 0 656198 1 ##(Smalltalk.FlowLayout) 1 1 1 562 138 144 34 2 626 #createAt:extent: 34 2 674 1 1 674 1501 51 1040 626 #updateSizePosted 528 1040 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 238 2 0 0 25 0 0 0] 8 #() 674 193 193 0 27 8 'historyToolbar' 0 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 1 674 1501 51 880 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 238 2 0 0 25 0 0 0] 34 1 1040 2096 0 27 0 0 0 410 ##(Smalltalk.ContainerView) 34 15 0 784 34 2 8 1140850688 131073 2288 0 0 0 5 0 0 0 2288 482 170 176 34 2 410 ##(Smalltalk.ReferenceView) 34 14 0 2288 34 2 8 1140850688 131073 2400 0 1106 8 4278190080 0 5 0 0 0 2400 1180166 ##(Smalltalk.ResourceIdentifier) ##(Smalltalk.MethodListPresenter) #resource_MultiClass_view 0 562 138 144 34 1 626 #createAt:extent: 34 2 674 507 1 674 995 451 2400 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 253 0 0 0 0 0 0 0 238 2 0 0 225 0 0 0] 528 2096 0 27 5 false 170 192 34 4 410 ##(Smalltalk.TreeView) 34 27 0 2288 34 2 8 1409352231 1025 2704 590918 3 ##(Smalltalk.TreeModel) 0 1310726 ##(Smalltalk.IdentitySearchPolicy) 525062 ##(Smalltalk.TreeNode) 0 0 0 170 192 528 1106 8 4278190080 0 29 265030 4 ##(Smalltalk.Menu) 0 true 34 2 984134 2 ##(Smalltalk.CommandMenuItem) 1 1362 #addList 8 'Add List' 1 1 0 0 0 2962 1 1362 #removeQueryElement 8 'Remove Query' 1 1 0 0 0 8 '' 0 134217729 0 0 0 0 0 0 0 2704 0 8 4294906017 459270 ##(Smalltalk.Message) #displayString 8 #() ##(Smalltalk.IconicListAbstract) 1049926 1 ##(Smalltalk.IconImageManager) 0 0 0 0 0 170 176 528 17 #noIcons 1 0 562 138 144 34 2 626 #createAt:extent: 34 2 674 1 1 674 497 451 2704 626 #contextMenu: 34 1 2928 2704 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 248 0 0 0 225 0 0 0] 8 #() 2096 0 27 8 'treeMethods' 2400 8 'methodList' 0 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 51 674 1501 451 2288 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 238 2 0 0 250 0 0 0] 34 3 2704 410 ##(Smalltalk.Splitter) 34 12 0 2288 34 2 8 1140850688 1 3584 0 1106 8 4278190080 0 517 0 0 0 3584 562 138 144 34 1 626 #createAt:extent: 34 2 674 497 1 674 11 451 3584 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 248 0 0 0 0 0 0 0 253 0 0 0 225 0 0 0] 8 #() 2096 0 27 2400 2096 0 27 170 192 528 0 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 1 674 1501 501 784 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 238 2 0 0 250 0 0 0] 34 2 880 2288 2096 0 27 410 ##(Smalltalk.Splitter) 34 12 0 416 34 2 8 1140850688 1 4016 0 1106 8 4278190080 0 517 0 0 0 4016 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 501 674 1501 11 4016 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 250 0 0 0 238 2 0 0 255 0 0 0] 8 #() 2096 0 27 410 ##(Smalltalk.ContainerView) 34 15 0 416 34 2 8 1140850688 131073 4272 0 0 0 5 0 0 0 4272 482 170 176 528 false 170 192 34 2 410 ##(Smalltalk.ReferenceView) 34 14 0 4272 34 2 8 1140850688 131073 4400 0 1106 2480 0 5 0 0 0 4400 2498 ##(Smalltalk.MethodSourcePresenter) #resource_Default_view 0 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 1 674 1501 501 4400 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 238 2 0 0 250 0 0 0] 528 2096 0 27 8 'methodSource' 0 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 511 674 1501 501 4272 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 255 0 0 0 238 2 0 0 249 1 0 0] 34 1 4400 2096 0 27 2096 0 27 )!
+	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ContainerView) 34 15 nil nil 34 2 8 1409286144 131073 416 nil nil nil 5 nil nil nil 416 1180166 ##(Smalltalk.ProportionalLayout) 170 176 8 #() true 170 192 528 nil 983302 ##(Smalltalk.MessageSequence) 138 144 34 1 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 328198 ##(Smalltalk.Point) 1097 21 674 1501 1011 416 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 36 2 0 0 10 0 0 0 18 5 0 0 3 2 0 0] 34 3 410 ##(Smalltalk.ContainerView) 34 15 nil 416 34 2 8 1140850688 131073 784 nil nil nil 5 nil nil nil 784 788230 ##(Smalltalk.BorderLayout) 1 1 410 ##(Smalltalk.ContainerView) 34 15 nil 784 34 2 8 1140850688 131073 880 nil 721158 ##(Smalltalk.SystemColor) 31 nil 5 nil nil nil 880 482 170 176 528 false 170 192 34 2 410 ##(Smalltalk.Toolbar) 34 25 nil 880 34 2 8 1409288972 131137 1040 nil 524550 ##(Smalltalk.ColorRef) 8 4278190080 nil 517 nil 263174 ##(Smalltalk.Font) nil true 459014 ##(Smalltalk.LOGFONT) 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 65 114 105 97 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 674 193 193 nil 1040 1106 1136 8 1819218097 170 192 528 170 192 34 6 51691 1115910 ##(Smalltalk.ToolbarIconButton) 51691 nil 1040 17 1180998 4 ##(Smalltalk.CommandDescription) #historyForward 8 'History Forward' 1 1 263494 3 ##(Smalltalk.Icon) nil true 1572870 ##(Smalltalk.ImageRelativeFileLocator) 8 'HistoryForward.ico' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy) 8 'dolphindr7.dll' nil 395334 3 ##(Smalltalk.Bitmap) nil true nil nil nil nil 3 674 33 33 1 51693 1330 51693 nil 1040 1 1362 #deleteHistory 8 'Delete History' 1 1 1410 nil true 1456 8 'CompileFailedMethod.ico' 1504 1538 nil true nil nil nil nil 3 674 33 33 1 51689 1330 51689 nil 1040 17 1362 #historyBack 8 'History Back' 1 1 1410 nil true 1456 8 'HistoryBack.ico' 1504 1538 nil true nil nil nil nil 3 674 33 33 1 34 3 1696 1344 1584 170 176 34 6 1552 3 1664 5 1776 1 nil 1 nil 674 33 33 674 45 45 nil 656198 1 ##(Smalltalk.FlowLayout) 1 1 1 562 138 144 34 2 626 #createAt:extent: 34 2 674 1 1 674 1501 51 1040 626 #updateSizePosted 528 1040 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 238 2 0 0 25 0 0 0] 8 #() 674 193 193 nil 27 8 'historyToolbar' nil 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 1 674 1501 51 880 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 238 2 0 0 25 0 0 0] 34 1 1040 2096 nil 27 nil nil nil 410 ##(Smalltalk.ContainerView) 34 15 nil 784 34 2 8 1140850688 131073 2288 nil nil nil 5 nil nil nil 2288 482 170 176 34 2 410 ##(Smalltalk.ReferenceView) 34 14 nil 2288 34 2 8 1140850688 131073 2400 nil 1106 8 4278190080 nil 5 nil nil nil 2400 1180166 ##(Smalltalk.ResourceIdentifier) ##(Smalltalk.MethodListPresenter) #resource_MultiClass_view nil 562 138 144 34 1 626 #createAt:extent: 34 2 674 507 1 674 995 451 2400 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 253 0 0 0 0 0 0 0 238 2 0 0 225 0 0 0] 528 2096 nil 27 5 false 170 192 34 4 410 ##(Smalltalk.TreeView) 34 27 nil 2288 34 2 8 1409352231 1025 2704 590918 3 ##(Smalltalk.TreeModel) nil 1310726 ##(Smalltalk.IdentitySearchPolicy) 525062 ##(Smalltalk.TreeNode) nil nil nil 170 192 528 1106 8 4278190080 nil 29 265030 4 ##(Smalltalk.Menu) nil true 34 2 984134 2 ##(Smalltalk.CommandMenuItem) 1 1362 #addNode 8 'Add Node' 1 1 nil nil nil 2962 1 1362 #removeNode 8 'Remove Node' 1 1 nil nil nil 8 '' nil 134217729 nil nil nil nil nil nil nil 2704 nil 8 1819019918 459270 ##(Smalltalk.Message) #displayString 8 #() ##(Smalltalk.IconicListAbstract) 1049926 1 ##(Smalltalk.IconImageManager) nil nil nil nil nil 170 176 528 17 #noIcons 1 170 ##(Smalltalk.PluggableLookupTable) 528 562 138 144 34 2 626 #createAt:extent: 34 2 674 1 1 674 497 451 2704 626 #contextMenu: 34 1 2928 2704 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 248 0 0 0 225 0 0 0] 8 #() 2096 nil 27 8 'treeMethods' 2400 8 'methodList' nil 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 51 674 1501 451 2288 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 25 0 0 0 238 2 0 0 250 0 0 0] 34 3 2704 410 ##(Smalltalk.Splitter) 34 12 nil 2288 34 2 8 1140850688 1 3600 nil 1106 8 4278190080 nil 517 nil nil nil 3600 562 138 144 34 1 626 #createAt:extent: 34 2 674 497 1 674 11 451 3600 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 248 0 0 0 0 0 0 0 253 0 0 0 225 0 0 0] 8 #() 2096 nil 27 2400 2096 nil 27 170 192 528 nil 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 1 674 1501 501 784 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 238 2 0 0 250 0 0 0] 34 2 880 2288 2096 nil 27 410 ##(Smalltalk.Splitter) 34 12 nil 416 34 2 8 1140850688 1 4032 nil 1106 8 4278190080 nil 517 nil nil nil 4032 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 501 674 1501 11 4032 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 250 0 0 0 238 2 0 0 255 0 0 0] 8 #() 2096 nil 27 410 ##(Smalltalk.ContainerView) 34 15 nil 416 34 2 8 1140850688 131073 4288 nil nil nil 5 nil nil nil 4288 482 170 176 528 false 170 192 34 2 410 ##(Smalltalk.ReferenceView) 34 14 nil 4288 34 2 8 1140850688 131073 4416 nil 1106 2480 nil 5 nil nil nil 4416 2498 ##(Smalltalk.MethodSourcePresenter) #resource_Default_view nil 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 1 674 1501 501 4416 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 238 2 0 0 250 0 0 0] 528 2096 nil 27 8 'methodSource' nil 562 138 144 34 1 626 #createAt:extent: 34 2 674 1 511 674 1501 501 4288 722 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 255 0 0 0 238 2 0 0 249 1 0 0] 34 1 4416 2096 nil 27 2096 nil 27 )!
 
 resource_List_view
 	"Answer the literal data from which the 'Default view' resource can be reconstituted.
