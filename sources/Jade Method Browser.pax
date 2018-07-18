@@ -120,7 +120,7 @@ JadeBrowserPresenter subclass: #JadeMethodListPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeMethodListPresenter subclass: #JadeTreeMethodListPresenter
-	instanceVariableNames: 'treeMethodsPresenter treeMethodsMap historyEntries entriesIndex'
+	instanceVariableNames: 'treeMethodsPresenter treeMethodsMap historyEntries entriesIndex historyList historyIndex'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
