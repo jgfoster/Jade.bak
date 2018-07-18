@@ -1637,22 +1637,20 @@ methodSourcePresenter
 !
 
 methodValueChanged
-
 	inUpdate ifTrue: [^self].
-	methodSourcePresenter value = methodSource ifTrue: [
-		methodSourcePresenter view 
-			backcolor: JadeTextStyles default colorForNoEdits;
-			isModified: false;
-			yourself.
-		self updateMethodStepPoints.
-		self statusBarText: ''.
-	] ifFalse: [
-		methodSourcePresenter view 
-			backcolor: JadeTextStyles default colorForUnsavedEdits;
-			clearContainerIndicators;
-			yourself.
-	].
-!
+	self methodSourceEqual
+		ifTrue: 
+			[methodSourcePresenter view
+				backcolor: JadeTextStyles default colorForNoEdits;
+				isModified: false;
+				yourself.
+			self updateMethodStepPoints.
+			self statusBarText: '']
+		ifFalse: 
+			[methodSourcePresenter view
+				backcolor: JadeTextStyles default colorForUnsavedEdits;
+				clearContainerIndicators;
+				yourself]!
 
 onDragClassesOverDictionary: aSession 
 

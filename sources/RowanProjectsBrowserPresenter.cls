@@ -168,6 +168,36 @@ createStateEntry
 
 	^projectDictionaryTabs currentCard == projectListPresenter view!
 
+editSaveMethod
+	| stream caretPosition firstVisibleLine |
+
+	caretPosition := methodSourcePresenter view caretPosition.
+	firstVisibleLine := methodSourcePresenter view lineScroll.
+	(self isCategoriesTabSelected and: [categoryListPresenter hasSelection]) ifTrue: [
+		methodCategory := categoryListPresenter selection trimBlanks.
+	].
+
+	stream := (WriteStream on: String new)
+		nextPutAll: 'method'; tab;
+		nextPutAll: self selectedClassNameWithoutVersion; tab;
+		nextPutAll: selectedClassOop printString; tab;
+		nextPutAll: instanceClassTabs currentCard name; tab;
+		nextPutAll: methodCategory; tab; 
+		lf;
+		nextPutAll: self currentMethodSource; lf;
+		nextPut: $%; lf;
+		yourself.
+	[
+		self 
+			updateCommand: stream contents , self requestString
+			onSuccessDo: [methodSourcePresenter view isModified: false; ensureVisible].
+	] on: GsCompileError do: [:ex | 
+		self reportCompileError: ex list.
+	].
+	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
+	methodSourcePresenter view goto: caretPosition.
+!
+
 getViews
 	classHierarchyTabs := self view viewNamed: 'classHierarchyTabs'.
 	instanceClassTabs := self view viewNamed: 'instanceClassTabs'.
@@ -211,6 +241,11 @@ loadProject
 
 makeDefault
 	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
+
+methodSourceEqual
+	^methodListPresenter selectionOrNil
+		ifNil: [true]
+		ifNotNil: [:selection | methodSourcePresenter value = selection source]!
 
 newService
 	^(RowanProjectService on: gciSession) name: projectListPresenter selection name!
@@ -431,14 +466,12 @@ updatePackage
 updatePackageInfo!
 
 updatePackages
-	"assume that we are already under stonCritical semaphore protection"
-
-	|  selections |
+	| selections |
 	packageListPresenter clear.
 	selections := projectListPresenter selections isEmpty
 				ifTrue: [Array with: RowanProjectService new]
 				ifFalse: [projectListPresenter selections].
-	self updateServices: selections !
+	self updateServices: selections!
 
 updateProject
 	self updatePackages.
@@ -535,6 +568,7 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #createSchematicWiringForProjectDictionaryList!create schemantic wiring!overrides!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #createSchematicWiringForProjectList!create schemantic wiring!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #createStateEntry!accessing!public!updating! !
+!RowanProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #getViews!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #initialize!initialization!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #inspectProject!project menu handlers!public! !
@@ -542,6 +576,7 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #isProjectListTabSelected!public!testing! !
 !RowanProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
+!RowanProjectsBrowserPresenter categoriesFor: #methodSourceEqual!public!testing! !
 !RowanProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #projectChanges!project menu handlers!public! !

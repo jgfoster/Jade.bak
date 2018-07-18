@@ -85,6 +85,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
 	add: #JadeSystemBrowserPresenter -> #packageTabName;
 	add: #JadeSystemBrowserPresenter -> #queryCommand:;
@@ -1233,6 +1234,9 @@ browseMethodsAndSelect: aString type: browseType
 		selecting: aString.
 !
 
+methodSourceEqual
+	^methodSourcePresenter value = methodSource!
+
 onViewOpened 
 	super onViewOpened.
 	categoryListPresenter view contextMenu: (Menu fromStrings: self categoriesMenuStrings).
@@ -1453,6 +1457,7 @@ updateSelector
 		ifTrue: [MessageBox warning: warnings caption: 'Jade Compile Warning']! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
