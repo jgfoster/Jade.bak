@@ -116,8 +116,8 @@ fileSave
 			trigger: #'savedMethod:inClass:' 
 			with: newSelector
 			with: theClass.
+		parentPresenter updateSaveMethodOop: newOop.
 	].
-	parentPresenter updateSaveMethodOop: newOop.
 	(list := stream upToEnd subStrings: Character lf) isEmpty ifTrue: [^true].
 	warnings := list select: [:each | each beginsWith: 'WARNING:'].
 	warnings := warnings collect: [:each | each copyFrom: 10 to: each size].
