@@ -329,7 +329,6 @@ openLogin
 
 postLogin: aGciSession
 
-	versionListPresenter view disable.
 	loginListPresenter view updateAll.
 	self setWorkingDirectory.
 	model 
