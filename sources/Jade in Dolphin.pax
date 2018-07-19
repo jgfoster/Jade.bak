@@ -15,9 +15,9 @@ OopType32Array template.
 OopType64Array template.
 OopType64 template.
 OopType32 template.
-GciErrSType32 template.
-GciErrSType64 template.
-'.
+GciErrSType withAllSubclassesDo: [:each | each template].
+GciTsObjInfo template.
+GciSessionId  template.'.
 package basicScriptAt: #preuninstall put: 'JadeLoginShell removeFromDevelopmentTools.'.
 
 package methodNames

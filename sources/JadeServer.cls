@@ -307,9 +307,10 @@ _objectForOop: anInteger
 	self subclassResponsibility.!
 
 _preferences
-	"Return useful information"
+	"Return useful information to GciSession>>updatePreferencesFrom:"
 
 	| mcPlatformSupport packagePolicyEnabled stream x |
+	packagePolicyEnabled := (x := self objectInBaseNamed: #'GsPackagePolicy') notNil and: [x current enabled].
 	stream := (WriteStream on: self _string)
 		nextPutAll: System session printString; tab;
 		nextPutAll: (GsSession serialOfSession: System session) printString; tab;

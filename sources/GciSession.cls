@@ -936,12 +936,13 @@ updatePreferences
 !
 
 updatePreferencesFrom: aString
+	"See JadeServer>>_preferences for the generation of this string"
 
 	| pieces x |
 	pieces := (self decode: aString) subStrings: Character tab.
 	stoneSessionID := (pieces at: 1) asNumber.
 	stoneSerial := (pieces at: 2) asNumber.
-	isPackagePolicyEnabled := (pieces at: 3) = 'true'.
+	isPackagePolicyEnabled 			:= (pieces at: 3) = 'true'.
 	isNativeCode				 	:= (x := pieces at: 4) = 'nil' ifTrue: [nil] ifFalse: [x = 'true'].
 	isAutoMigrate					:= (x := pieces at: 5) = 'nil' ifTrue: [nil] ifFalse: [x = 'true'].
 	isAutoCommit 					:= (x := pieces at: 6) = 'nil' ifTrue: [nil] ifFalse: [x = 'true'].
