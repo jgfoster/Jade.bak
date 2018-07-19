@@ -34,6 +34,10 @@ clientDefinitionClass
 createSampleMethod
 	transport send: #createSampleMethod to: remoteService.  !
 
+displayStringFor: displayThing
+	isExtension ifTrue: [displayThing forecolor: Color darkMagenta ].
+	!
+
 hasSubs
 	^hasSubs!
 
@@ -49,6 +53,12 @@ hasSupers: anObject
 implementorsOf: aString
 
 	^methodDefinitions!
+
+isExtension
+	^isExtension!
+
+isExtension: anObject
+	isExtension := anObject!
 
 isMethodService
 
@@ -129,11 +139,14 @@ user: anObject
 !RowanMethodService categoriesFor: #className:!accessing!private! !
 !RowanMethodService categoriesFor: #clientDefinitionClass!private! !
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
+!RowanMethodService categoriesFor: #displayStringFor:!printing!public! !
 !RowanMethodService categoriesFor: #hasSubs!accessing!private! !
 !RowanMethodService categoriesFor: #hasSubs:!accessing!private! !
 !RowanMethodService categoriesFor: #hasSupers!accessing!private! !
 !RowanMethodService categoriesFor: #hasSupers:!accessing!private! !
 !RowanMethodService categoriesFor: #implementorsOf:!method accessing!public! !
+!RowanMethodService categoriesFor: #isExtension!accessing!public! !
+!RowanMethodService categoriesFor: #isExtension:!accessing!public! !
 !RowanMethodService categoriesFor: #isMethodService!public!testing! !
 !RowanMethodService categoriesFor: #meta!accessing!private! !
 !RowanMethodService categoriesFor: #meta:!accessing!private! !
