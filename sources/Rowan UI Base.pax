@@ -83,6 +83,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer64bit3x -> #sbClassComment:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
+	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
@@ -225,7 +226,7 @@ Model subclass: #BrowserUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name isDirty updates'
+	instanceVariableNames: 'transport remoteService name isDirty updates command'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -290,7 +291,7 @@ RowanService subclass: #RowanClassService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs'
+	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1220,6 +1221,12 @@ setVersion
 
 !JadeSystemBrowserPresenter methodsFor!
 
+basicRemoveMethods
+	| string |
+	string := 'removeMethods' , Character tab asString , self methodsIdentifier , Character lf asString
+				, self requestString.
+	self updateCommand: string!
+
 browseMethodsAndSelect: aString
 
 	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
@@ -1455,6 +1462,7 @@ updateSelector
 			originalSourcePresenter value: x].
 	(warnings := gsMethod warnings) notEmpty
 		ifTrue: [MessageBox warning: warnings caption: 'Jade Compile Warning']! !
+!JadeSystemBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !

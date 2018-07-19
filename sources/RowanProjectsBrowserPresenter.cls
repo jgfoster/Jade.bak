@@ -24,6 +24,12 @@ addPackageDictionaryInfoTo: aStream
 	aStream lf.
 !
 
+basicRemoveMethods
+	| services |
+	services := methodListPresenter selections.
+	services do: [:service | service source: nil].
+	self updateServices: services!
+
 checkout
 	| service branchName |
 	projectListPresenter hasSelection
@@ -169,34 +175,20 @@ createStateEntry
 	^projectDictionaryTabs currentCard == projectListPresenter view!
 
 editSaveMethod
-	| stream caretPosition firstVisibleLine |
-
+	| caretPosition firstVisibleLine service |
 	caretPosition := methodSourcePresenter view caretPosition.
 	firstVisibleLine := methodSourcePresenter view lineScroll.
-	(self isCategoriesTabSelected and: [categoryListPresenter hasSelection]) ifTrue: [
-		methodCategory := categoryListPresenter selection trimBlanks.
-	].
-
-	stream := (WriteStream on: String new)
-		nextPutAll: 'method'; tab;
-		nextPutAll: self selectedClassNameWithoutVersion; tab;
-		nextPutAll: selectedClassOop printString; tab;
-		nextPutAll: instanceClassTabs currentCard name; tab;
-		nextPutAll: methodCategory; tab; 
-		lf;
-		nextPutAll: self currentMethodSource; lf;
-		nextPut: $%; lf;
-		yourself.
-	[
-		self 
-			updateCommand: stream contents , self requestString
-			onSuccessDo: [methodSourcePresenter view isModified: false; ensureVisible].
-	] on: GsCompileError do: [:ex | 
-		self reportCompileError: ex list.
-	].
+	service := methodListPresenter selectionIfNone: [^self].
+	(self isCategoriesTabSelected and: [categoryListPresenter hasSelection])
+		ifTrue: [service category: categoryListPresenter selection trimBlanks].
+	service source: self currentMethodSource.
+	[self updateServices: (Array with: service)] on: GsCompileError
+		do: [:ex | self reportCompileError: ex list].
+	methodSourcePresenter view
+		isModified: false;
+		ensureVisible.
 	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
-	methodSourcePresenter view goto: caretPosition.
-!
+	methodSourcePresenter view goto: caretPosition!
 
 getViews
 	classHierarchyTabs := self view viewNamed: 'classHierarchyTabs'.
@@ -371,6 +363,14 @@ registerPresentersForUpdates
 	BrowserUpdate current register: categoryListPresenter with: #categoryUpdate:.
 	BrowserUpdate current register: methodListPresenter with: #classMethodsUpdate:!
 
+removeMethodServices: classService
+	| stonString stonResults |
+	classService command: #removeMethods.
+	classService methods: (methodListPresenter selections). 
+	stonString := STON toString: classService.
+	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
+	self update: classService afterStonReplication: stonResults!
+
 setClassMeta
 	| meta |
 	meta := instanceClassTabs currentCard name = 'classTab'.
@@ -400,6 +400,13 @@ textTabChanged
 
 unloadProject
 	MessageBox notify: 'This feature not yet implemented'!
+
+update: services afterStonReplication: stonResults
+	| updatedServices browserUpdate |
+	browserUpdate := BrowserUpdate current initializeUpdates.
+	updatedServices := STON fromString: stonResults.
+	updatedServices do: [:newService | services do: [:service | service replicateFrom: newService]].
+	browserUpdate updates: updatedServices!
 
 updateAndSelectA: aView
 
@@ -513,13 +520,10 @@ updateSelectionsForUpdate: update
 	update projectSelectionUpdate: projectListPresenter!
 
 updateServices: services
-	| browserUpdate stonString stonResults updatedServices |
+	| stonString stonResults |
 	stonString := STON toString: services.
 	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
-	browserUpdate := BrowserUpdate current initializeUpdates.
-	updatedServices := STON fromString: stonResults.
-	updatedServices do: [:newService | services do: [:service | service replicateFrom: newService]].
-	browserUpdate updates: updatedServices!
+	self update: services afterStonReplication: stonResults!
 
 updateTabLabel
 
@@ -554,6 +558,7 @@ writeProject
 	((RowanProjectService on: gciSession) name: projectName) write.
 	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
 !RowanProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!public!request string! !
+!RowanProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!private! !
 !RowanProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #cloneProject!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #commit!project menu handlers!public! !
@@ -588,11 +593,13 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #refresh!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
+!RowanProjectsBrowserPresenter categoriesFor: #removeMethodServices:!public!ston! !
 !RowanProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #showPackages!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #unloadProject!project menu handlers!public! !
+!RowanProjectsBrowserPresenter categoriesFor: #update:afterStonReplication:!public!ston! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateClass!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateClasses!event handlers!public!updating! !

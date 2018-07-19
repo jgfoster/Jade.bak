@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name isDirty updates'
+	instanceVariableNames: 'transport remoteService name isDirty updates command'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -45,6 +45,12 @@ classUpdate: presenter
 clientDefinitionClass
 
 	^self subclassResponsibility!
+
+command
+	^command!
+
+command: anObject
+	command := anObject!
 
 createClientFrom: anArrayOop
 	| string |
@@ -175,6 +181,8 @@ updateSuperclassSelectionFor: presenter! !
 !RowanService categoriesFor: #classNameFrom:!public! !
 !RowanService categoriesFor: #classUpdate:!public!updating! !
 !RowanService categoriesFor: #clientDefinitionClass!private! !
+!RowanService categoriesFor: #command!accessing!public! !
+!RowanService categoriesFor: #command:!accessing!public! !
 !RowanService categoriesFor: #createClientFrom:!private! !
 !RowanService categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !

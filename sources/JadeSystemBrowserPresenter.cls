@@ -2123,18 +2123,16 @@ removeMethodCategories
 !
 
 removeMethods
-
-	| stream result string |
-
+	| stream result |
 	stream := WriteStream on: String new.
-	methodListPresenter selections do: [:each | stream nextPutAll: each first; cr].
-	result := MessageBox 
-		confirm: stream contents 
-		caption: 'Remove the following method(s)?'.
+	methodListPresenter selections do: 
+			[:each |
+			stream
+				nextPutAll: each first;
+				cr].
+	result := MessageBox confirm: stream contents caption: 'Remove the following method(s)?'.
 	result ifFalse: [^self].
-	string := 'removeMethods' , Character tab asString , self methodsIdentifier , Character lf asString , self requestString.
-	self updateCommand: string.
-!
+	self basicRemoveMethods!
 
 removePriorVersions
 
