@@ -89,8 +89,11 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
 	add: #JadeSystemBrowserPresenter -> #packageTabName;
+	add: #JadeSystemBrowserPresenter -> #preRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #queryCommand:;
+	add: #JadeSystemBrowserPresenter -> #removeMethods;
 	add: #JadeSystemBrowserPresenter -> #savePackage;
+	add: #JadeSystemBrowserPresenter -> #selectorsString;
 	add: #JadeSystemBrowserPresenter -> #updateMethod;
 	add: #JadeSystemBrowserPresenter -> #updateSelector;
 	add: #JadeTextDocument -> #aboutJadeite;
@@ -286,12 +289,12 @@ RowanClassesUpdate subclass: #RowanSuperclassUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta isExtension version versions template oop allFilters filters filterType methods'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta isExtension version versions template oop allFilters filters filterType methods selectedPackageServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension'
+	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1267,6 +1270,16 @@ packageTabName
 
 	^'Packages'!
 
+preRemoveMethods
+	| stream |
+	stream := WriteStream on: String new.
+	methodListPresenter selections do: 
+			[:each |
+			stream
+				nextPutAll: each first;
+				cr].
+	^stream contents!
+
 queryCommand: aCommandQuery
 
 	| command focusView isTextEdit |
@@ -1312,6 +1325,12 @@ queryCommand: aCommandQuery
 	^super queryCommand: aCommandQuery.
 !
 
+removeMethods
+	|  result |
+	result := MessageBox confirm: self selectorsString caption: 'Remove the following method(s)?'.
+	result ifFalse: [^self].
+	self basicRemoveMethods!
+
 savePackage
 
 	| package string array dict stream |
@@ -1350,6 +1369,9 @@ savePackage
 		yourself.
 	self updateCommand: stream contents.
 !
+
+selectorsString
+	^methodListPresenter selections collect: [:each | each first]!
 
 updateMethod
 	| gsMethod isReadOnly listModel methodSourceLabel newSource warnings x |
@@ -1468,8 +1490,11 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #preRemoveMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #removeMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #selectorsString!menu handlers!private! !
 !JadeSystemBrowserPresenter categoriesFor: #updateMethod!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateSelector!public!updating! !
 

@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta isExtension version versions template oop allFilters filters filterType methods'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta isExtension version versions template oop allFilters filters filterType methods selectedPackageServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -29,12 +29,15 @@ classCreationTemplate
 	^transport send: #classCreationTemplate to: self remoteService!
 
 classMethodsUpdate: presenter
-	| visibleMethods |
+	| visibleMethods selectedPkgServiceNames |
 	visibleMethods := OrderedCollection new.
 	filters isEmpty
 		ifTrue: [visibleMethods := methods]
 		ifFalse: 
 			[visibleMethods := methods select: [:methodService | filters includes: methodService category]].
+	selectedPkgServiceNames := selectedPackageServices collect: [:pkgService | pkgService name].
+	visibleMethods
+		do: [:svc | svc inSelectedPackage: (selectedPkgServiceNames includes: svc packageName)].
 	presenter list: visibleMethods!
 
 comment
@@ -78,6 +81,14 @@ isClassService
 
 	^true!
 
+isDefined
+
+	^isExtension not!
+
+isExtension
+
+	^isExtension!
+
 meta
 	^meta!
 
@@ -96,6 +107,12 @@ replicateFrom: newService
 
 sampleClassName
 	^transport send: #sampleClassName to: remoteService.  !
+
+selectedPackageServices
+	^selectedPackageServices!
+
+selectedPackageServices: anObject
+	selectedPackageServices := anObject!
 
 subclassCreationTemplate
 	^transport send: #subclassCreationTemplate to: self remoteService!
@@ -125,12 +142,16 @@ toolTip
 !RowanClassService categoriesFor: #filters:!accessing!public! !
 !RowanClassService categoriesFor: #initialize!initialization!public! !
 !RowanClassService categoriesFor: #isClassService!public!testing! !
+!RowanClassService categoriesFor: #isDefined!public!testing! !
+!RowanClassService categoriesFor: #isExtension!public!testing! !
 !RowanClassService categoriesFor: #meta!accessing!private! !
 !RowanClassService categoriesFor: #meta:!accessing!private! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #replicateFrom:!public!updating! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
+!RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
+!RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
 !RowanClassService categoriesFor: #template!accessing!private! !
 !RowanClassService categoriesFor: #template:!accessing!private! !

@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension'
+	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -35,8 +35,10 @@ createSampleMethod
 	transport send: #createSampleMethod to: remoteService.  !
 
 displayStringFor: displayThing
-	isExtension ifTrue: [displayThing forecolor: Color darkMagenta ].
-	!
+	isExtension
+		ifTrue: 
+			[displayThing forecolor: Color darkMagenta.
+			inSelectedPackage ifFalse: [displayThing font beItalic ]]!
 
 hasSubs
 	^hasSubs!
@@ -53,6 +55,17 @@ hasSupers: anObject
 implementorsOf: aString
 
 	^methodDefinitions!
+
+initialize
+	super initialize. 
+	inSelectedPackage := true.  !
+
+inSelectedPackage
+
+	^inSelectedPackage!
+
+inSelectedPackage: anObject
+	inSelectedPackage := anObject!
 
 isExtension
 	^isExtension!
@@ -82,6 +95,20 @@ packageName
 
 packageName: anObject
 	packageName := anObject!
+
+printOn: target
+	"Append, to the <puttableStream>, target, a string whose characters are a 
+	the same as those which would result from sending a #printString
+	message to the receiver.
+	N.B. This is really intended for development use. #displayOn: and #displayString
+	are complementary methods for generating strings for presentation to an
+	end-user."
+
+	| name |
+	name := self class name.
+	target 
+		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
+		nextPutAll: name!
 
 remoteServiceName
 	^'Rowan methodServiceClass'!
@@ -139,12 +166,15 @@ user: anObject
 !RowanMethodService categoriesFor: #className:!accessing!private! !
 !RowanMethodService categoriesFor: #clientDefinitionClass!private! !
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
-!RowanMethodService categoriesFor: #displayStringFor:!printing!public! !
+!RowanMethodService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanMethodService categoriesFor: #hasSubs!accessing!private! !
 !RowanMethodService categoriesFor: #hasSubs:!accessing!private! !
 !RowanMethodService categoriesFor: #hasSupers!accessing!private! !
 !RowanMethodService categoriesFor: #hasSupers:!accessing!private! !
 !RowanMethodService categoriesFor: #implementorsOf:!method accessing!public! !
+!RowanMethodService categoriesFor: #initialize!initialization!public! !
+!RowanMethodService categoriesFor: #inSelectedPackage!public!testing! !
+!RowanMethodService categoriesFor: #inSelectedPackage:!accessing!public! !
 !RowanMethodService categoriesFor: #isExtension!accessing!public! !
 !RowanMethodService categoriesFor: #isExtension:!accessing!public! !
 !RowanMethodService categoriesFor: #isMethodService!public!testing! !
@@ -154,6 +184,7 @@ user: anObject
 !RowanMethodService categoriesFor: #methodDefinitions:!accessing!private! !
 !RowanMethodService categoriesFor: #packageName!accessing!private! !
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
+!RowanMethodService categoriesFor: #printOn:!printing!public! !
 !RowanMethodService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanMethodService categoriesFor: #removeSelector!public!remote! !
 !RowanMethodService categoriesFor: #removeSelector:class:!public!remote! !

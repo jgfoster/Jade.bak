@@ -2122,18 +2122,6 @@ removeMethodCategories
 	self updateCommand: stream contents , self requestString.
 !
 
-removeMethods
-	| stream result |
-	stream := WriteStream on: String new.
-	methodListPresenter selections do: 
-			[:each |
-			stream
-				nextPutAll: each first;
-				cr].
-	result := MessageBox confirm: stream contents caption: 'Remove the following method(s)?'.
-	result ifFalse: [^self].
-	self basicRemoveMethods!
-
 removePriorVersions
 
 	| stream |
@@ -3232,7 +3220,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #removeDictionary!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removeGlobals!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removeMethodCategories!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #removeMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removePriorVersions!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removeRepository!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #reportCompileError:!public! !

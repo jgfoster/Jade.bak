@@ -159,6 +159,20 @@ packageNameString
 
 	^transport send: #packageNameString to: remoteService  !
 
+printOn: target
+	"Append, to the <puttableStream>, target, a string whose characters are a 
+	the same as those which would result from sending a #printString
+	message to the receiver.
+	N.B. This is really intended for development use. #displayOn: and #displayString
+	are complementary methods for generating strings for presentation to an
+	end-user."
+
+	| name |
+	name := self class name.
+	target 
+		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
+		nextPutAll: name!
+
 projectPackagesUpdate: presenter
 	| newList |
 		newList := SortedCollection sortBlock: [:x :y | x name < y name].
@@ -253,6 +267,7 @@ write
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
 !RowanProjectService categoriesFor: #packageNames!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !
+!RowanProjectService categoriesFor: #printOn:!printing!public! !
 !RowanProjectService categoriesFor: #projectPackagesUpdate:!public!updating! !
 !RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #projectSelectionUpdate:!public!updating! !

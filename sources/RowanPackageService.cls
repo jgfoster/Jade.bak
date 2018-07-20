@@ -15,11 +15,15 @@ classCreationTemplate
 	^transport send: #genericClassCreationTemplate to: self remoteService!
 
 classesUpdate: presenter
-	| newList |
+	"If the selected packages have the same class defined and extended, show the defined class"
+
+	| newList defined |
 	newList := SortedCollection sortBlock: [:x :y | x name < y name].
 	newList
 		addAll: presenter list;
 		addAll: classes.
+	defined := newList select: [:svc | svc isDefined] thenCollect: [:svc | svc name].
+	newList := newList reject: [:svc | svc isExtension and: [defined includes: svc name]].
 	presenter list: newList!
 
 createPackageNamed: packageName inProject: projectName
@@ -51,6 +55,20 @@ name: packageName
 		to: remoteService
 		withAll: (Array with: packageName)!
 
+printOn: target
+	"Append, to the <puttableStream>, target, a string whose characters are a 
+	the same as those which would result from sending a #printString
+	message to the receiver.
+	N.B. This is really intended for development use. #displayOn: and #displayString
+	are complementary methods for generating strings for presentation to an
+	end-user."
+
+	| name |
+	name := self class name.
+	target 
+		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
+		nextPutAll: name!
+
 remoteServiceName
 	^'Rowan packageServiceClass'!
 
@@ -63,6 +81,7 @@ replicateFrom: newService
 !RowanPackageService categoriesFor: #genericClassCreationTemplate!public!rowan! !
 !RowanPackageService categoriesFor: #isPackageService!public!testing! !
 !RowanPackageService categoriesFor: #name:!accessing!public! !
+!RowanPackageService categoriesFor: #printOn:!printing!public! !
 !RowanPackageService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanPackageService categoriesFor: #replicateFrom:!public!updating! !
 
