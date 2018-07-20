@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType packageService meta isExtension version versions template oop allFilters filters filterType methods selectedPackageServices'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods selectedPackageServices packageName definedPackageName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -29,15 +29,14 @@ classCreationTemplate
 	^transport send: #classCreationTemplate to: self remoteService!
 
 classMethodsUpdate: presenter
-	| visibleMethods selectedPkgServiceNames |
+	| visibleMethods |
 	visibleMethods := OrderedCollection new.
 	filters isEmpty
 		ifTrue: [visibleMethods := methods]
 		ifFalse: 
 			[visibleMethods := methods select: [:methodService | filters includes: methodService category]].
-	selectedPkgServiceNames := selectedPackageServices collect: [:pkgService | pkgService name].
 	visibleMethods
-		do: [:svc | svc inSelectedPackage: (selectedPkgServiceNames includes: svc packageName)].
+		do: [:svc | svc inSelectedPackage: (self selectedPackageServiceNames includes: svc packageName)].
 	presenter list: visibleMethods!
 
 comment
@@ -48,6 +47,12 @@ comment: anObject
 
 createSampleClass
 	transport send: #createSampleClass to: remoteService.  !
+
+definedPackageName
+	^definedPackageName!
+
+definedPackageName: anObject
+	definedPackageName := anObject!
 
 displayString
 	| displayString |
@@ -95,6 +100,18 @@ meta
 meta: anObject
 	meta := anObject!
 
+packageName
+	^packageName!
+
+packageName: anObject
+	packageName := anObject!
+
+packageService
+	^packageService!
+
+packageService: anObject
+	packageService := anObject!
+
 remoteServiceName
 	^'Rowan classServiceClass'!
 
@@ -107,6 +124,9 @@ replicateFrom: newService
 
 sampleClassName
 	^transport send: #sampleClassName to: remoteService.  !
+
+selectedPackageServiceNames
+	^selectedPackageServices collect: [:pkgService | pkgService name]!
 
 selectedPackageServices
 	^selectedPackageServices!
@@ -134,6 +154,8 @@ toolTip
 !RowanClassService categoriesFor: #comment!accessing!public! !
 !RowanClassService categoriesFor: #comment:!accessing!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
+!RowanClassService categoriesFor: #definedPackageName!accessing!private! !
+!RowanClassService categoriesFor: #definedPackageName:!accessing!private! !
 !RowanClassService categoriesFor: #displayString!printing!public! !
 !RowanClassService categoriesFor: #displayStringFor:!printing!public! !
 !RowanClassService categoriesFor: #filter!accessing!private! !
@@ -146,10 +168,15 @@ toolTip
 !RowanClassService categoriesFor: #isExtension!public!testing! !
 !RowanClassService categoriesFor: #meta!accessing!private! !
 !RowanClassService categoriesFor: #meta:!accessing!private! !
+!RowanClassService categoriesFor: #packageName!accessing!private! !
+!RowanClassService categoriesFor: #packageName:!accessing!private! !
+!RowanClassService categoriesFor: #packageService!accessing!private! !
+!RowanClassService categoriesFor: #packageService:!accessing!private! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #replicateFrom:!public!updating! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
+!RowanClassService categoriesFor: #selectedPackageServiceNames!public!updating! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !

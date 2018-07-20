@@ -39,6 +39,27 @@ checkout
 	branchName := ChoicePrompter choices: service branches caption: 'Select branch to checkout:'.
 	branchName isNil ifTrue: [^false] ifFalse: [service checkout: branchName]!
 
+classesMenuStrings
+
+	false ifTrue: [
+		self browseClassReferences; fileOutClass; addSubclass; addMissingAccessors; removeClass; removePriorVersions; runClassTests.
+	].
+	^#(
+		'&Classes'
+		'&Browse References//browseClassReferences'
+		'&File Out Class//fileOutClass'
+		'Add &Subclass//addSubclass'
+		'Add &Missing Accessors//addMissingAccessors'
+		'&Remove//removeClass'
+		'Remove Prior &Versions//removePriorVersions'
+		'-'
+		'Set Compiler &Environment ...//setEnvironment'
+		'Run &Tests//runClassTests'
+		'-'
+		'Go To Defining Package//gotoClassPackage'
+	).
+!
+
 cloneProject
 	"Does a clone and 'attach'"
 	| filePath |
@@ -198,6 +219,19 @@ getViews
 	projectDictionaryTabs := self view viewNamed: 'projectDictionaryTabs'.
 	projectInfoTab := self view viewNamed: 'projectInfo'!
 
+gotoClassPackage
+	| newPackageSelection target |
+	target := classListPresenter selection definedPackageName ifNil: [classListPresenter selection packageName].
+	newPackageSelection := packageListPresenter list
+				detect: [:svc | svc name = target].
+	self selectPackage: newPackageSelection!
+
+gotoMethodPackage
+	| newPackageSelection |
+	newPackageSelection := packageListPresenter list
+				detect: [:svc | svc name = methodListPresenter selection packageName].
+	self selectPackage: newPackageSelection!
+
 initialize
 
 	super initialize.
@@ -232,6 +266,29 @@ loadProject
 
 makeDefault
 	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
+
+methodsMenuStrings
+
+	false ifTrue: [	"This helps us find senders"
+		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2; fileOutMethod; gotoMethodPackage.
+	].
+	^#(
+		'&Methods'
+		'Browse &Implementors//browseImplementors'
+		'Browse Implementors of ...//browseImplementorsOf'
+		'Browse &Senders//browseSenders'
+		'Browse Senders of ...//browseSendersOf'
+		'Browse Methods &Containing ...//browseMethodsContaining'
+		'Browse &History//browseMethodHistory'
+		'BrowseMethod &Pragmas ...//browseMethodPragmas'
+		'&File out method ...//fileOutMethod'
+		'-'
+		'&Delete Method(s)//removeMethods'
+		#('&Method Environment' '&0//setEnvironment0' '&1//setEnvironment1' '&2//setEnvironment2')
+		'Run &Tests//runMethodTests'
+		'Go To Defining Package//gotoMethodPackage'
+	).
+!
 
 methodSourceEqual
 	^methodListPresenter selectionOrNil
@@ -351,6 +408,7 @@ pushToGit
 queryCommand: aCommandQuery
 
 	| command focusView isTextEdit |
+	self rowanFixMe. "enablement of method test thingy"
 	command := aCommandQuery command.
 	focusView := View focus.
 	isTextEdit := focusView isKindOf: TextEdit.
@@ -375,6 +433,8 @@ queryCommand: aCommandQuery
 	(#(#'fileOutDictionary' ) includes: command) ifTrue: [aCommandQuery isEnabled: dictionaryListPresenter selections size = 1. ^true].
 	(#(#'setHomeDictionary') includes: command) ifTrue: [aCommandQuery isEnabled: (dictionaryListPresenter selections size = 1 and: [dictionaryListPresenter selection value not]). ^true].
 	"(#(#'runMethodTests') includes: command) ifTrue: [aCommandQuery isEnabled: (methodListPresenter selections notEmpty and: [methodListPresenter selections first at: 3]). ^true]."
+	(#(#gotoMethodPackage) includes: command) ifTrue:[aCommandQuery isEnabled: self methodListPresenter selectionOrNil notNil. ^true].
+	(#(#gotoClassPackage) includes: command) ifTrue:[aCommandQuery isEnabled: self classListPresenter selectionOrNil notNil. ^true].
 	(#(#'loadLatestVersion') includes: command) ifTrue: [
 		aCommandQuery isEnabled: (packageListPresenter selections notEmpty and: [packageListPresenter selections allSatisfy: [:each | each key beginsWith: 'ConfigurationOf']]). ^true].
 	(#(#'browseClassReferences' #'fileOutClass' #'addSubclass' #'addMissingAccessors' #'removeClass' #'removePriorVersions') includes: command) ifTrue: [
@@ -390,7 +450,6 @@ queryCommand: aCommandQuery
 	(command == #'setEnvironment1' and: [environment == 1]) ifTrue: [aCommandQuery isChecked: true. ^true].
 	(command == #'setEnvironment2' and: [environment == 2]) ifTrue: [aCommandQuery isChecked: true. ^true].
 
-	^super queryCommand: aCommandQuery.
 !
 
 refresh
@@ -415,8 +474,29 @@ removeMethodServices: classService
 	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
 	self update: classService afterStonReplication: stonResults!
 
+selectClass: classSelection
+	| newClassSelection |
+	newClassSelection := classListPresenter list detect: [:svc | svc name = classSelection name]
+				ifNone: [].
+	^newClassSelection ifNotNil: [classListPresenter selection: newClassSelection]!
+
+selectionMethod: methodSelection
+	| newMethodSelection |
+	newMethodSelection := methodListPresenter list
+				detect: [:svc | svc selector = methodSelection selector]
+				ifNone: [].
+	^newMethodSelection ifNotNil: [methodListPresenter selection: newMethodSelection]!
+
 selectorsString
 	^methodListPresenter selections collect: [:each | each selector]!
+
+selectPackage: newPackageSelection
+	| methodSelection classSelection |
+	methodSelection := methodListPresenter selectionOrNil.
+	classSelection := classListPresenter selectionOrNil.
+	packageListPresenter selection: newPackageSelection.
+	classSelection ifNotNil: [self selectClass: classSelection].
+	methodSelection ifNotNil: [self selectionMethod: methodSelection]!
 
 setClassMeta
 	| meta |
@@ -608,6 +688,7 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!public!request string! !
 !RowanProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!private! !
 !RowanProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
+!RowanProjectsBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #cloneProject!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #commit!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #createComponents!public! !
@@ -623,12 +704,15 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #createStateEntry!accessing!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #getViews!public! !
+!RowanProjectsBrowserPresenter categoriesFor: #gotoClassPackage!menu handlers!private! !
+!RowanProjectsBrowserPresenter categoriesFor: #gotoMethodPackage!menu handlers!private! !
 !RowanProjectsBrowserPresenter categoriesFor: #initialize!initialization!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #inspectProject!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
 !RowanProjectsBrowserPresenter categoriesFor: #isProjectListTabSelected!public!testing! !
 !RowanProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
+!RowanProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #methodSourceEqual!public!testing! !
 !RowanProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
@@ -643,7 +727,10 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
 !RowanProjectsBrowserPresenter categoriesFor: #removeMethodServices:!public!ston! !
+!RowanProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
+!RowanProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectorsString!private! !
+!RowanProjectsBrowserPresenter categoriesFor: #selectPackage:!private!selection! !
 !RowanProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #showPackages!project menu handlers!public! !
