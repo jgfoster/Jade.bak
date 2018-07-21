@@ -27,7 +27,7 @@ addPackageDictionaryInfoTo: aStream
 basicRemoveMethods
 	| service |
 	service := classListPresenter selectionIfNone: [^self].
-	self removeMethodServices:  (Array with: service)!
+	self removeMethodsFrom: (Array with: service)!
 
 checkout
 	| service branchName |
@@ -283,7 +283,7 @@ methodsMenuStrings
 		'BrowseMethod &Pragmas ...//browseMethodPragmas'
 		'&File out method ...//fileOutMethod'
 		'-'
-		'&Delete Method(s)//removeMethods'
+		'&Delete Method(s) ...//removeMethods'
 		#('&Method Environment' '&0//setEnvironment0' '&1//setEnvironment1' '&2//setEnvironment2')
 		'Run &Tests//runMethodTests'
 		'Go To Defining Package//gotoMethodPackage'
@@ -435,6 +435,7 @@ queryCommand: aCommandQuery
 	"(#(#'runMethodTests') includes: command) ifTrue: [aCommandQuery isEnabled: (methodListPresenter selections notEmpty and: [methodListPresenter selections first at: 3]). ^true]."
 	(#(#gotoMethodPackage) includes: command) ifTrue:[aCommandQuery isEnabled: self methodListPresenter selectionOrNil notNil. ^true].
 	(#(#gotoClassPackage) includes: command) ifTrue:[aCommandQuery isEnabled: self classListPresenter selectionOrNil notNil. ^true].
+	(#(#removeMethods) includes: command) ifTrue:[aCommandQuery isEnabled: self methodListPresenter selections notEmpty. ^true].
 	(#(#'loadLatestVersion') includes: command) ifTrue: [
 		aCommandQuery isEnabled: (packageListPresenter selections notEmpty and: [packageListPresenter selections allSatisfy: [:each | each key beginsWith: 'ConfigurationOf']]). ^true].
 	(#(#'browseClassReferences' #'fileOutClass' #'addSubclass' #'addMissingAccessors' #'removeClass' #'removePriorVersions') includes: command) ifTrue: [
@@ -466,13 +467,13 @@ registerPresentersForUpdates
 	BrowserUpdate current register: categoryListPresenter with: #categoryUpdate:.
 	BrowserUpdate current register: methodListPresenter with: #classMethodsUpdate:!
 
-removeMethodServices: classService
-	| stonString stonResults |
+removeMethodsFrom: classService
+	| stonString stonResultString |
 	classService command: #removeMethods.
-	classService methods: (methodListPresenter selections). 
+	classService methods: methodListPresenter selections.
 	stonString := STON toString: classService.
-	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: classService afterStonReplication: stonResults!
+	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
+	self update: classService afterStonReplication: stonResultString!
 
 selectClass: classSelection
 	| newClassSelection |
@@ -488,7 +489,21 @@ selectionMethod: methodSelection
 	^newMethodSelection ifNotNil: [methodListPresenter selection: newMethodSelection]!
 
 selectorsString
-	^methodListPresenter selections collect: [:each | each selector]!
+	| stream |
+	self updateMethodReferences: methodListPresenter selections.
+	stream := String new writeStream.
+	methodListPresenter selections do: 
+			[:service |
+			stream displayString.
+			service references notEmpty
+				ifTrue: 
+					[((stream
+						nextPutAll: ' references by ';
+						stream)
+						nextPutAll: service references size printString;
+						stream) nextPutAll: ' methods'].
+			stream cr].
+	^stream contents!
 
 selectPackage: newPackageSelection
 	| methodSelection classSelection |
@@ -588,6 +603,13 @@ updateCommand: aString onSuccessDo: aBlock
 			update updates: #()]
 					ensure: [selectedClassChanged := false]].
 	^nil!
+
+updateMethodReferences: services
+	| stonString stonResultString |
+	services do: [:service | service command: #allReferences].
+	stonString := STON toString: services.
+	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
+	self update: services afterStonReplication: stonResultString!
 
 updateMethodSource
 	methodListPresenter selectionIfNone: [^methodSourcePresenter value: String new].
@@ -726,10 +748,10 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #refresh!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
-!RowanProjectsBrowserPresenter categoriesFor: #removeMethodServices:!public!ston! !
+!RowanProjectsBrowserPresenter categoriesFor: #removeMethodsFrom:!public!ston! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
-!RowanProjectsBrowserPresenter categoriesFor: #selectorsString!private! !
+!RowanProjectsBrowserPresenter categoriesFor: #selectorsString!private!selection! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectPackage:!private!selection! !
 !RowanProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers!public!updating! !
@@ -742,6 +764,7 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #updateClasses!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateClassInfo!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !
+!RowanProjectsBrowserPresenter categoriesFor: #updateMethodReferences:!public!ston! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateMethodSource!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updatePackage!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updatePackageInfo!event handlers!public!updating! !

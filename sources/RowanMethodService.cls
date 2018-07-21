@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage'
+	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage references'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -34,11 +34,17 @@ clientDefinitionClass
 createSampleMethod
 	transport send: #createSampleMethod to: remoteService.  !
 
+displayOn: aStream
+	aStream
+		nextPutAll: selector;
+		nextPutAll: '>>';
+		nextPutAll: selector!
+
 displayStringFor: displayThing
 	isExtension
 		ifTrue: 
 			[displayThing forecolor: Color darkMagenta.
-			inSelectedPackage ifFalse: [displayThing font beItalic ]]!
+			inSelectedPackage ifFalse: [displayThing font beItalic; beUnderlined ]]!
 
 hasSubs
 	^hasSubs!
@@ -110,6 +116,12 @@ printOn: target
 		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
 		nextPutAll: name!
 
+references
+	^references!
+
+references: anObject
+	references := anObject!
+
 remoteServiceName
 	^'Rowan methodServiceClass'!
 
@@ -166,6 +178,7 @@ user: anObject
 !RowanMethodService categoriesFor: #className:!accessing!private! !
 !RowanMethodService categoriesFor: #clientDefinitionClass!private! !
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
+!RowanMethodService categoriesFor: #displayOn:!displaying!public! !
 !RowanMethodService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanMethodService categoriesFor: #hasSubs!accessing!private! !
 !RowanMethodService categoriesFor: #hasSubs:!accessing!private! !
@@ -185,6 +198,8 @@ user: anObject
 !RowanMethodService categoriesFor: #packageName!accessing!private! !
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
 !RowanMethodService categoriesFor: #printOn:!printing!public! !
+!RowanMethodService categoriesFor: #references!accessing!private! !
+!RowanMethodService categoriesFor: #references:!accessing!private! !
 !RowanMethodService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanMethodService categoriesFor: #removeSelector!public!remote! !
 !RowanMethodService categoriesFor: #removeSelector:class:!public!remote! !

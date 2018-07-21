@@ -294,7 +294,7 @@ RowanService subclass: #RowanClassService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage'
+	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage references'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1371,7 +1371,7 @@ savePackage
 !
 
 selectorsString
-	^methodListPresenter selections collect: [:each | each first]!
+	^(methodListPresenter selections collect: [:each | each first]) printString!
 
 updateMethod
 	| gsMethod isReadOnly listModel methodSourceLabel newSource warnings x |
