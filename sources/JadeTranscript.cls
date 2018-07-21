@@ -148,6 +148,15 @@ onCloseRequested: boolValueHolder
 	].
 !
 
+onIdleEntered
+
+	GciLibrary activeLibrary gciCallInProgress ifFalse: [
+		Cursor current ifNotNil: [
+			[Cursor current: nil] forkAt: Processor userBackgroundPriority.
+		].
+	].
+	^super onIdleEntered!
+
 onViewOpened
 
 	super onViewOpened.
@@ -184,6 +193,7 @@ updateCaption
 !JadeTranscript categoriesFor: #methodsChanged24!event handling!public! !
 !JadeTranscript categoriesFor: #methodsChangedDays!event handling!public! !
 !JadeTranscript categoriesFor: #onCloseRequested:!event handling!public! !
+!JadeTranscript categoriesFor: #onIdleEntered!event handling!public! !
 !JadeTranscript categoriesFor: #onViewOpened!public!updating! !
 !JadeTranscript categoriesFor: #resetCursor!event handling!public! !
 !JadeTranscript categoriesFor: #sleepAndCommit!event handling!public! !
