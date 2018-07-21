@@ -27,6 +27,7 @@ addPackageDictionaryInfoTo: aStream
 basicRemoveMethods
 	| service |
 	service := classListPresenter selectionIfNone: [^self].
+	self setClassMeta. 
 	self removeMethodsFrom: (Array with: service)!
 
 checkout
@@ -467,13 +468,15 @@ registerPresentersForUpdates
 	BrowserUpdate current register: categoryListPresenter with: #categoryUpdate:.
 	BrowserUpdate current register: methodListPresenter with: #classMethodsUpdate:!
 
-removeMethodsFrom: classService
+removeMethodsFrom: services
 	| stonString stonResultString |
-	classService command: #removeMethods.
-	classService methods: methodListPresenter selections.
-	stonString := STON toString: classService.
+	services do: 
+			[:classService |
+			classService command: #removeMethods.
+			classService methods: methodListPresenter selections].
+	stonString := STON toString: services.
 	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: classService afterStonReplication: stonResultString!
+	self update: services afterStonReplication: stonResultString!
 
 selectClass: classSelection
 	| newClassSelection |
@@ -543,11 +546,12 @@ unloadProject
 	MessageBox notify: 'This feature not yet implemented'!
 
 update: services afterStonReplication: stonResults
+	"assume we get back the 'same' services as we sent"
 	| updatedServices browserUpdate |
 	browserUpdate := BrowserUpdate current initializeUpdates.
 	updatedServices := STON fromString: stonResults.
 	updatedServices do: [:newService | services do: [:service | service replicateFrom: newService]].
-	browserUpdate updates: updatedServices!
+	browserUpdate updates: updatedServices.!
 
 updateAndSelectA: aView
 
@@ -747,7 +751,7 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #refresh!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
-!RowanProjectsBrowserPresenter categoriesFor: #removeMethodsFrom:!public!ston! !
+!RowanProjectsBrowserPresenter categoriesFor: #removeMethodsFrom:!public!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectorsString!private!selection! !
@@ -757,13 +761,13 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #showPackages!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #unloadProject!project menu handlers!public! !
-!RowanProjectsBrowserPresenter categoriesFor: #update:afterStonReplication:!public!ston! !
+!RowanProjectsBrowserPresenter categoriesFor: #update:afterStonReplication:!public!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateClass!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateClasses!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateClassInfo!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !
-!RowanProjectsBrowserPresenter categoriesFor: #updateMethodReferences:!public!ston! !
+!RowanProjectsBrowserPresenter categoriesFor: #updateMethodReferences:!public!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateMethodSource!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updatePackage!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updatePackageInfo!event handlers!public!updating! !
@@ -772,7 +776,7 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #updateProjectInfo!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateProjectTab!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!updating! !
-!RowanProjectsBrowserPresenter categoriesFor: #updateServices:!public!ston! !
+!RowanProjectsBrowserPresenter categoriesFor: #updateServices:!public!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateTabLabel!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #writeProject!project menu handlers!public! !
 

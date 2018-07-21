@@ -100,6 +100,12 @@ meta
 meta: anObject
 	meta := anObject!
 
+methods
+	^methods!
+
+methods: anObject
+	methods := anObject!
+
 packageName
 	^packageName!
 
@@ -168,6 +174,8 @@ toolTip
 !RowanClassService categoriesFor: #isExtension!public!testing! !
 !RowanClassService categoriesFor: #meta!accessing!private! !
 !RowanClassService categoriesFor: #meta:!accessing!private! !
+!RowanClassService categoriesFor: #methods!accessing!private! !
+!RowanClassService categoriesFor: #methods:!accessing!private! !
 !RowanClassService categoriesFor: #packageName!accessing!private! !
 !RowanClassService categoriesFor: #packageName:!accessing!private! !
 !RowanClassService categoriesFor: #packageService!accessing!private! !

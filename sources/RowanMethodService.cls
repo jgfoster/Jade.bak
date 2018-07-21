@@ -10,6 +10,10 @@ RowanMethodService comment: ''!
 !RowanMethodService categoriesForClass!Kernel-Objects! !
 !RowanMethodService methodsFor!
 
+= methodService
+	^selector = methodService selector
+		and: [className = methodService className and: [meta = methodService meta]]!
+
 basicSubSuperIcon
 	hasSupers ifTrue: [^JadeSystemBrowserPresenter overriddenIcon].
 	hasSubs ifTrue: [^RowanProjectsBrowserPresenter downArrowIcon].
@@ -45,6 +49,9 @@ displayStringFor: displayThing
 		ifTrue: 
 			[displayThing forecolor: Color darkMagenta.
 			inSelectedPackage ifFalse: [displayThing font beItalic; beUnderlined ]]!
+
+hash
+	^(selector hash bitXor: className hash) bitXor: meta hash!
 
 hasSubs
 	^hasSubs!
@@ -135,7 +142,9 @@ removeSelector: aSelector class: class
 	!
 
 replicateFrom: newService
-	^self isMethodService ifTrue: [super replicateFrom: newService]!
+	^self isMethodService
+		ifTrue: 
+			[self = newService ifTrue: [super replicateFrom: newService]]!
 
 sampleClassInstance
 
@@ -171,6 +180,7 @@ user
 
 user: anObject
 	user := anObject! !
+!RowanMethodService categoriesFor: #=!comparing!public! !
 !RowanMethodService categoriesFor: #basicSubSuperIcon!displaying!public! !
 !RowanMethodService categoriesFor: #category!accessing!private! !
 !RowanMethodService categoriesFor: #category:!accessing!private! !
@@ -180,6 +190,7 @@ user: anObject
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
 !RowanMethodService categoriesFor: #displayOn:!displaying!public! !
 !RowanMethodService categoriesFor: #displayStringFor:!displaying!public! !
+!RowanMethodService categoriesFor: #hash!comparing!public! !
 !RowanMethodService categoriesFor: #hasSubs!accessing!private! !
 !RowanMethodService categoriesFor: #hasSubs:!accessing!private! !
 !RowanMethodService categoriesFor: #hasSupers!accessing!private! !
