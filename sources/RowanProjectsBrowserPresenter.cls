@@ -491,17 +491,16 @@ selectionMethod: methodSelection
 selectorsString
 	| stream |
 	self updateMethodReferences: methodListPresenter selections.
-	stream := String new writeStream.
+	stream := String new writeStream. 
 	methodListPresenter selections do: 
 			[:service |
-			stream displayString.
+			stream nextPutAll: service displayString.
 			service references notEmpty
 				ifTrue: 
-					[((stream
-						nextPutAll: ' references by ';
-						stream)
+					[stream
+						nextPutAll: ' (referenced by ';
 						nextPutAll: service references size printString;
-						stream) nextPutAll: ' methods'].
+						nextPutAll: ' methods)'].
 			stream cr].
 	^stream contents!
 
