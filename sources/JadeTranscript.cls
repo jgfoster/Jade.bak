@@ -122,6 +122,15 @@ onCloseRequested: boolValueHolder
 	].
 !
 
+onIdleEntered
+
+	gciSession isCallInProgress ifFalse: [
+		Cursor current ifNotNil: [
+			[Cursor current ifNotNil: [Cursor current: nil]] forkAt: Processor userBackgroundPriority.
+		].
+	].
+	^super onIdleEntered!
+
 onViewOpened
 
 	super onViewOpened.
@@ -177,6 +186,7 @@ updateCaption
 !JadeTranscript categoriesFor: #hasClassSideSelected!public! !
 !JadeTranscript categoriesFor: #inspectOop!event handling!public! !
 !JadeTranscript categoriesFor: #onCloseRequested:!event handling!public! !
+!JadeTranscript categoriesFor: #onIdleEntered!public! !
 !JadeTranscript categoriesFor: #onViewOpened!public!updating! !
 !JadeTranscript categoriesFor: #queryCommand:!public!updating! !
 !JadeTranscript categoriesFor: #resetCursor!event handling!public! !
