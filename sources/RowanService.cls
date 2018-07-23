@@ -63,6 +63,10 @@ createClientFrom: anArrayOop
 dictionaryUpdate: presenter
 	!
 
+displayString
+
+	^self name!
+
 globalsUpdate: presenter!
 
 initializeRemoteService
@@ -151,6 +155,10 @@ setRemoteName
 superclassListUpdate: presenter
 	!
 
+toolTip
+	^self displayString
+!
+
 transport
 	^transport!
 
@@ -191,6 +199,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanService categoriesFor: #command:!accessing!public! !
 !RowanService categoriesFor: #createClientFrom:!private! !
 !RowanService categoriesFor: #dictionaryUpdate:!public!updating! !
+!RowanService categoriesFor: #displayString!displaying!public! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !
 !RowanService categoriesFor: #initializeRemoteService!initialization!private! !
 !RowanService categoriesFor: #inspectDefinition!public!rowan! !
@@ -216,6 +225,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanService categoriesFor: #sampleDefinitions!examples!public! !
 !RowanService categoriesFor: #setRemoteName!accessing!public! !
 !RowanService categoriesFor: #superclassListUpdate:!public!updating! !
+!RowanService categoriesFor: #toolTip!printing!public! !
 !RowanService categoriesFor: #transport!accessing!private! !
 !RowanService categoriesFor: #transport:!accessing!private! !
 !RowanService categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
