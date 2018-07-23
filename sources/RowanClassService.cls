@@ -65,12 +65,6 @@ displayStringFor: displayThing
 	isExtension ifTrue: [displayThing forecolor: Color darkMagenta ].
 	^self displayString!
 
-filter
-	^filter!
-
-filter: anObject
-	filter := anObject!
-
 filters
 	^filters!
 
@@ -111,12 +105,6 @@ packageName
 
 packageName: anObject
 	packageName := anObject!
-
-packageService
-	^packageService!
-
-packageService: anObject
-	packageService := anObject!
 
 remoteServiceName
 	^'Rowan classServiceClass'!
@@ -160,8 +148,6 @@ template: anObject
 !RowanClassService categoriesFor: #definedPackageName:!accessing!private! !
 !RowanClassService categoriesFor: #displayString!printing!public! !
 !RowanClassService categoriesFor: #displayStringFor:!printing!public! !
-!RowanClassService categoriesFor: #filter!accessing!private! !
-!RowanClassService categoriesFor: #filter:!accessing!private! !
 !RowanClassService categoriesFor: #filters!accessing!public! !
 !RowanClassService categoriesFor: #filters:!accessing!public! !
 !RowanClassService categoriesFor: #initialize!initialization!public! !
@@ -174,8 +160,6 @@ template: anObject
 !RowanClassService categoriesFor: #methods:!accessing!private! !
 !RowanClassService categoriesFor: #packageName!accessing!private! !
 !RowanClassService categoriesFor: #packageName:!accessing!private! !
-!RowanClassService categoriesFor: #packageService!accessing!private! !
-!RowanClassService categoriesFor: #packageService:!accessing!private! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #replicateFrom:!public!updating! !

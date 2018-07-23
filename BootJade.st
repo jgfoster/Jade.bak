@@ -7,7 +7,6 @@ list := #(
 	'GemStone C Interface'
 	'GemStone Objects'
 	'GemStone Session'
-	'GemStone Services'
 	'VisualWorks Component'
 	'Jade UI Base'
 	'Jade Class Browser'
@@ -61,7 +60,6 @@ RowanLoginShell show
 	yourself.
 JadeLoginShell removeFromDevelopmentTools.
 RowanLoginShell addToDevelopmentTools.
-Transcript clear.
 Cursor wait showWhile: [
 	SourceManager default compressSources.
 	(Delay forMilliseconds: 200) wait.
