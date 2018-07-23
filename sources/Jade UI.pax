@@ -91,7 +91,7 @@ Object subclass: #JadeFileIn
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #JadePreferencesPresenter
-	instanceVariableNames: 'autoCommitPresenter autoMigratePresenter codeFontPresenter defaultFontPresenter nativeCodePresenter unimplementedPresenter'
+	instanceVariableNames: 'autoCommitPresenter autoMigratePresenter codeFontPresenter debugPresenter defaultFontPresenter nativeCodePresenter unimplementedPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

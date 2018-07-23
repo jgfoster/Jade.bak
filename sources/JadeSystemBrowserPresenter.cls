@@ -2416,13 +2416,16 @@ selectClass: aString selector: methodString
 	Array with: className with: dictionaryName with: catetory with: packageName.
 "
 	| string list className isMeta array |
+	GciSession log: 'JadeSystemBrowserPresenter>>selectClass - ' , aString , ' selector: ' , methodString.
 	string := environment printString , ' findClass'.
 	string := self gciSession encode: string.
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
 		with: string.
 	string := self gciSession decode: string.
+	GciSession log: 'JadeSystemBrowserPresenter>>selectClass:selector: - string size ' , string size printString.
 	list := (string subStrings: Character lf) collect: [:each | each subStrings: Character tab].
+	GciSession log: 'JadeSystemBrowserPresenter>>selectClass:selector: - list size ' , list size printString.
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
 	className := aString.
@@ -2430,6 +2433,7 @@ selectClass: aString selector: methodString
 		className := className copyFrom: 1 to: className size - 6.
 	].
 	array := list detect: [:each | each first subStrings first = className].
+	GciSession log: 'JadeSystemBrowserPresenter>>selectClass:selector: - found match of ' , array printString.
 	self 
 		updateAfterFindClass: array
 		isMeta: isMeta 
@@ -2693,6 +2697,7 @@ updateAfterFindClass: anArray isMeta: aBoolean selector: aString
 		nextPutAll: aString; lf; 	"method names"
 		lf;		"override"
 		yourself.
+	GciSession log: 'JadeSystemBrowserPresenter>>updateAfterFindClass: ' , anArray printString , ' isMeta: ' , aBoolean printString , ' selector: ' , aString.
 	self updateCommand: stream contents.
 !
 
@@ -2755,6 +2760,7 @@ updateClassCategoryTree
 		].
 	].
 	listA := (treeModel asBag collect: [:each | each key printString]) asSortedCollection asArray.
+	GciSession log: 'JadeSystemBrowserPresenter>>updateClassCategoryTree - ' , listA printString.
 	listB := (classCategoryPresenter model asBag collect: [:each | each key printString]) asSortedCollection asArray.
 	listA = listB ifFalse: [
 		classCategoryPresenter
@@ -2875,6 +2881,7 @@ updateClassList
 	| fullList newSelections flags |
 	classListPresenter ensureVisible.
 	fullList := readStream nextLineAsList.
+	GciSession log: 'JadeSystemBrowserPresenter>>updateClassList - ' , fullList printString.
 	newSelections := readStream nextLineAsList.
 	flags := readStream nextLineAsList.
 
@@ -2917,6 +2924,7 @@ updateCommand: aString
 
 updateCommand: aString onSuccessDo: aBlock
 
+	GciSession log: 'JadeSystemBrowserPresenter>>updateCommand: ' , aString printString.
 	[
 		| time1 time2 time3 string |
 		time1 := Time millisecondsToRun: [
@@ -2925,6 +2933,7 @@ updateCommand: aString onSuccessDo: aBlock
 				serverPerform: #'systemBrowser:' 
 				with: string.
 			string := self gciSession decode: string.
+			GciSession log: 'JadeSystemBrowserPresenter>>updateCommand:  - a - ' , string printString.
 			eventCount := self gciSession eventCount.
 		].
 		time2 := Time millisecondsToRun: [
@@ -3146,6 +3155,7 @@ updatePackageDictionaryList
 
 	| next |
 	next := readStream nextLine.
+	GciSession log: 'JadeSystemBrowserPresenter>>updatePackageDictionaryList'.
 	next = 'dictionaryList' ifTrue: [^self updateDictionaryList].
 	next = 'packageList' ifTrue: [^self updatePackageList].
 	self error: 'Unexpected token'.
@@ -3167,6 +3177,7 @@ updatePackageInfo
 updatePackageList
 
 	| dictionary fullList selections old new |
+	GciSession log: 'JadeSystemBrowserPresenter>>updatePackageList'.
 	packageListPresenter ensureVisible.
 	dictionary := Dictionary new.
 	readStream nextLineAsList do: [:each | dictionary at: each put: false].

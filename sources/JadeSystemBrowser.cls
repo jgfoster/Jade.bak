@@ -249,6 +249,7 @@ saveLayoutAndContents
 
 selectClass: classString selector: methodString
 
+	GciSession log: 'JadeSystemBrowser>>selectClass - ' , classString , ' selector: ' , methodString.
 	self currentCard
 		selectClass: classString 
 		selector: methodString.

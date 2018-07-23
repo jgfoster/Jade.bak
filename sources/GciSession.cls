@@ -2,9 +2,9 @@
 
 Object subclass: #GciSession
 	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
-	classVariableNames: 'GemCursor'
+	classVariableNames: ''
 	poolDictionaries: ''
-	classInstanceVariableNames: ''!
+	classInstanceVariableNames: 'debugLog'!
 GciSession guid: (GUID fromString: '{c52a3e3c-b7f3-4c3c-ab3d-a925ecb8b114}')!
 GciSession comment: 'Permitted calls from within a non-blocking call:
 
@@ -1131,6 +1131,22 @@ withExplanation: aString doA: aBlock
 
 !GciSession class methodsFor!
 
+debug: aBoolean
+
+	debugLog notNil == aBoolean ifTrue: [^self].
+	aBoolean ifTrue: [
+		debugLog := FileStream write: 'Jade.log' mode: #append.
+		self log: 'Enabled at ' , DateAndTime now printString.
+	] ifFalse: [
+		self log: 'Disabled at ' , DateAndTime now printString.
+		debugLog close. 
+		debugLog := nil.
+	].!
+
+debugFlag
+
+	^debugLog notNil!
+
 libraryClass: libraryClass 
 stoneNRS: stoneNRS 
 gemNRS: gemNRS 
@@ -1154,6 +1170,11 @@ debugPath: debugPath
 
 !
 
+log: aString
+
+	debugLog ifNotNil: [debugLog nextPutAll: aString; cr; flush].
+!
+
 new
 
 	self error: 'use other instance creation protocol'.
@@ -1170,7 +1191,10 @@ publishedEventsOfInstances
     		yourself.
     
 ! !
+!GciSession class categoriesFor: #debug:!public! !
+!GciSession class categoriesFor: #debugFlag!public! !
 !GciSession class categoriesFor: #libraryClass:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:debugPath:!public! !
+!GciSession class categoriesFor: #log:!public! !
 !GciSession class categoriesFor: #new!public! !
 !GciSession class categoriesFor: #publishedEventsOfInstances!public! !
 

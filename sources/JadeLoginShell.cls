@@ -294,6 +294,11 @@ modified
 	self updateModel.
 	loginListPresenter view updateAll.!
 
+onCloseRequested
+
+	GciSession log: 'JadeLoginShell>>onCloseRequested at ' , DateAndTime now printString.
+	^super onCloseRequested!
+
 onViewOpened
 
 	super onViewOpened.
@@ -519,6 +524,7 @@ updateView
 !JadeLoginShell categoriesFor: #login!public! !
 !JadeLoginShell categoriesFor: #logout:!public! !
 !JadeLoginShell categoriesFor: #modified!public! !
+!JadeLoginShell categoriesFor: #onCloseRequested!public! !
 !JadeLoginShell categoriesFor: #onViewOpened!public! !
 !JadeLoginShell categoriesFor: #openGemTalkHomePage!public! !
 !JadeLoginShell categoriesFor: #openJadeHomePage!public! !
