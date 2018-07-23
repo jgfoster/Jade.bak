@@ -351,6 +351,10 @@ debugPath: debugPath
 		yourself.
 !
 
+isCallInProgress
+
+	^library gciCallInProgress!
+
 isLinkedGem
 
 	^gemNRS isEmpty.
@@ -900,6 +904,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #incrementEventCount!long running!private! !
 !GciSession categoriesFor: #indexOfClientForwarder:!public! !
 !GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:useSocket:debugPath:!private! !
+!GciSession categoriesFor: #isCallInProgress!public! !
 !GciSession categoriesFor: #isLinkedGem!public! !
 !GciSession categoriesFor: #isOopType:!public! !
 !GciSession categoriesFor: #isPackagePolicyEnabled!public! !
