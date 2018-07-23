@@ -40,7 +40,7 @@ createSampleMethod
 
 displayOn: aStream
 	aStream
-		nextPutAll: selector;
+		nextPutAll: className;
 		nextPutAll: '>>';
 		nextPutAll: selector!
 

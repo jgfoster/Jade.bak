@@ -135,11 +135,7 @@ template
 	^template!
 
 template: anObject
-	template := anObject!
-
-toolTip
-	^self displayString
-! !
+	template := anObject! !
 !RowanClassService categoriesFor: #allFilters!accessing!private! !
 !RowanClassService categoriesFor: #allFilters:!accessing!private! !
 !RowanClassService categoriesFor: #categoryUpdate:!public!updating! !
@@ -174,5 +170,4 @@ toolTip
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
 !RowanClassService categoriesFor: #template!accessing!private! !
 !RowanClassService categoriesFor: #template:!accessing!private! !
-!RowanClassService categoriesFor: #toolTip!printing!public! !
 

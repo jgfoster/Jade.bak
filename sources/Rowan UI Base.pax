@@ -8,6 +8,7 @@ package classNames
 	add: #BrowserUpdate;
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
+	add: #RowanBrowserService;
 	add: #RowanClassCategoryUpdate;
 	add: #RowanClassesUpdate;
 	add: #RowanClassHierarchyUpdate;
@@ -285,6 +286,11 @@ RowanClassesUpdate subclass: #RowanMethodsUpdate
 	classInstanceVariableNames: ''!
 RowanClassesUpdate subclass: #RowanSuperclassUpdate
 	instanceVariableNames: 'tabName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanService subclass: #RowanBrowserService
+	instanceVariableNames: 'projects'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
