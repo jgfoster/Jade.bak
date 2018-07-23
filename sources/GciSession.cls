@@ -351,6 +351,10 @@ debugPath: debugPath
 		yourself.
 !
 
+isCallInProgress
+
+	^library gciCallInProgress!
+
 isLinkedGem
 
 	^gemNRS isEmpty.
@@ -848,7 +852,7 @@ withExplanation: aString doA: aBlock
 			SessionManager inputState loopWhile: [shouldRunEventLoop].
 			shouldRunEventLoop := true.
 		] ifFalse: [
-			self class cursor showWhile: [
+			Cursor wait showWhile: [
 				SessionManager inputState loopWhile: [shouldRunEventLoop].
 				shouldRunEventLoop := true.
 			].
@@ -900,6 +904,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #incrementEventCount!long running!private! !
 !GciSession categoriesFor: #indexOfClientForwarder:!public! !
 !GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:useSocket:debugPath:!private! !
+!GciSession categoriesFor: #isCallInProgress!public! !
 !GciSession categoriesFor: #isLinkedGem!public! !
 !GciSession categoriesFor: #isOopType:!public! !
 !GciSession categoriesFor: #isPackagePolicyEnabled!public! !
@@ -956,14 +961,6 @@ withExplanation: aString doA: aBlock
 
 !GciSession class methodsFor!
 
-cursor
-
-	GemCursor isNil ifTrue: [
-		GemCursor := Cursor fromFile: 'icons\GS16.ico'.
-	].
-	^GemCursor.
-!
-
 libraryClass: libraryClass 
 stoneNRS: stoneNRS 
 gemNRS: gemNRS 
@@ -1005,7 +1002,6 @@ publishedEventsOfInstances
     		yourself.
     
 ! !
-!GciSession class categoriesFor: #cursor!public! !
 !GciSession class categoriesFor: #libraryClass:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:useSocket:debugPath:!public! !
 !GciSession class categoriesFor: #new!public! !
 !GciSession class categoriesFor: #publishedEventsOfInstances!public! !
