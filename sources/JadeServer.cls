@@ -707,7 +707,7 @@ gsString
 	stream 
 		nextPutAll: '(mcPlatformSupport := symbolList objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
 		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
-		nextPutAll: 'class := ((symbolList objectNamed: #System) myUserProfile symbolList objectNamed: #UserGlobals) at: #' , self name , ' ifAbsent: [class].'; lf;
+		"nextPutAll: 'class := ((symbolList objectNamed: #System) myUserProfile symbolList objectNamed: #UserGlobals) at: #' , self name , ' ifAbsent: [class].'; lf;"
 		nextPutAll: 'server := class new initialize; yourself.'; lf;
 		nextPutAll: self sessionStateCode; lf;
 		nextPutAll: 'server] on: (symbolList objectNamed: #Error) do: [:ex | ex return: ''ERROR: '' , (GsProcess stackReportToLevel: 100)]';
