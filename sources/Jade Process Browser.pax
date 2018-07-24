@@ -16,6 +16,8 @@ package methodNames
 	add: #JadeServer -> #_waitingProcesses;
 	add: #JadeServer -> #processes;
 	add: #JadeServer64bit33 -> #_waitingProcesses;
+	add: #JadeServer64bit3x -> #_addProcess:to:withStatus:scheduler:;
+	add: #JadeServer64bit3x -> #_addProcess2:to:withStatus:scheduler:;
 	add: #JadeTranscript -> #browseProcesses;
 	yourself.
 
@@ -94,14 +96,14 @@ processes
 	scheduler := ProcessorScheduler scheduler.
 	stream := self _writeStreamOnString
 		nextPutAll: 'highestPriority'; 			space; nextPutAll: scheduler highestPriority 			printString; tab;
-		nextPutAll: 'highIOPriority'; 			space; nextPutAll: scheduler highIOPriority 			printString; tab;
-		nextPutAll: 'lowestPriority'; 			space; nextPutAll: scheduler lowestPriority 				printString; tab;
-		nextPutAll: 'lowIOPriority'; 				space; nextPutAll: scheduler lowIOPriority 				printString; tab;
-		nextPutAll: 'systemBackgroundPriority'; 	space; nextPutAll: scheduler systemBackgroundPriority 	printString; tab;
-		nextPutAll: 'timingPriority'; 			space; nextPutAll: scheduler timingPriority 			printString; tab;
-		nextPutAll: 'userBackgroundPriority'; 		space; nextPutAll: scheduler userBackgroundPriority 		printString; tab;
+		nextPutAll: 'highIOPriority'; 				space; nextPutAll: scheduler highIOPriority 			printString; tab;
+		nextPutAll: 'lowestPriority'; 				space; nextPutAll: scheduler lowestPriority 			printString; tab;
+		nextPutAll: 'lowIOPriority'; 				space; nextPutAll: scheduler lowIOPriority 			printString; tab;
+		nextPutAll: 'systemBackgroundPriority'; 	space; nextPutAll: scheduler systemBackgroundPriority printString; tab;
+		nextPutAll: 'timingPriority'; 				space; nextPutAll: scheduler timingPriority 			printString; tab;
+		nextPutAll: 'userBackgroundPriority'; 		space; nextPutAll: scheduler userBackgroundPriority 	printString; tab;
 		nextPutAll: 'userInterruptPriority'; 		space; nextPutAll: scheduler userInterruptPriority 		printString; tab;
-		nextPutAll: 'userSchedulingPriority'; 		space; nextPutAll: scheduler userSchedulingPriority 		printString; tab;
+		nextPutAll: 'userSchedulingPriority'; 		space; nextPutAll: scheduler userSchedulingPriority 	printString; tab;
 		yourself.
 	scheduler readyProcesses 		do: [:each | self _addProcess: each to: stream withStatus: 'ready'		scheduler: scheduler].
 	scheduler suspendedProcesses 	do: [:each | self _addProcess: each to: stream withStatus: 'suspended'	scheduler: scheduler].
@@ -124,6 +126,37 @@ _waitingProcesses
 
 ! !
 !JadeServer64bit33 categoriesFor: #_waitingProcesses!private!Processes! !
+
+!JadeServer64bit3x methodsFor!
+
+_addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler
+
+	| instVarNumber modeInfo modeInfo_forked modeInfo_terminated |
+	super _addProcess: aProcess to: aStream withStatus: aString scheduler: aScheduler.
+	(instVarNumber := GsProcess instVarNames indexOf: #'modeInfo') == 0 ifTrue: [^self].
+	modeInfo := aProcess instVarAt: instVarNumber.
+	(modeInfo_forked := GsProcess _classVars at: #'ModeInfo_forked' ifAbsent: [nil]) ifNil: [^self].
+	(modeInfo_terminated := GsProcess _classVars at: #'ModeInfo_terminated' ifAbsent: [nil]) ifNil: [^self].
+	aStream
+"9"		nextPutAll: (0 < (modeInfo bitAnd: modeInfo_forked) ifTrue: ['forked'] ifFalse: ['main']); tab;
+"10"		nextPutAll: (0 < (modeInfo bitAnd: modeInfo_terminated) ifTrue: ['terminated'] ifFalse: ['']); tab;
+		yourself.
+!
+
+_addProcess2: aProcess to: aStream withStatus: aString scheduler: aScheduler
+
+	| x |
+	aStream 
+"5"		nextPutAll: ((x := aProcess stackId) == -1 	ifTrue: [''] 		ifFalse: [x printString]); tab;
+"6"		nextPutAll: ((x := aProcess waitingOn) isNil 	ifTrue: [''] 		ifFalse: [x asOop printString]); tab;
+"7"		nextPutAll: ((x := aProcess _signalTime) isNil ifTrue: [''] 		ifFalse: [(x - aScheduler _now) printString]); tab;
+"8"		nextPutAll: (aProcess isPartialContinuation	ifTrue: ['partial'] ifFalse: [aProcess isContinuation ifTrue: ['full'] ifFalse: ['']]); tab;
+"9"		"type: forked or main"
+"10"		"live or terminated"
+		yourself.
+! !
+!JadeServer64bit3x categoriesFor: #_addProcess:to:withStatus:scheduler:!private!Processes! !
+!JadeServer64bit3x categoriesFor: #_addProcess2:to:withStatus:scheduler:!private!Processes! !
 
 !JadeTranscript methodsFor!
 
