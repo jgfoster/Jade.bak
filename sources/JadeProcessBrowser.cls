@@ -22,17 +22,6 @@ createSchematicWiring
 	processesPresenter when: #'actionPerformed' send: #'inspectProcess' to: self.
 !
 
-debugProcess
-
-	| oop oopType |
-	oop := (processesPresenter selection at: 2) asNumber.
-	oopType := gciSession oopTypeWithOop: oop.
-	JadeDebugger 
-		openOn: (GsProcess session: gciSession oopType: oopType) 
-		message: 'background process'
-		terminateOnClose: false.
-!
-
 inspectProcess
 
 	| oop oopType |
@@ -122,7 +111,6 @@ update
 ! !
 !JadeProcessBrowser categoriesFor: #createComponents!private! !
 !JadeProcessBrowser categoriesFor: #createSchematicWiring!private! !
-!JadeProcessBrowser categoriesFor: #debugProcess!private! !
 !JadeProcessBrowser categoriesFor: #inspectProcess!private! !
 !JadeProcessBrowser categoriesFor: #onViewOpened!private! !
 !JadeProcessBrowser categoriesFor: #queryCommand:!private! !

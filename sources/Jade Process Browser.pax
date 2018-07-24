@@ -31,7 +31,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: 'GemStone Session';
 	add: 'Jade Transcript';
-	add: 'Jade UI';
 	add: 'Jade UI Base';
 	yourself).
 

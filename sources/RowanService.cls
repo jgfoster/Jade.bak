@@ -67,6 +67,8 @@ displayString
 
 	^self name!
 
+frameListUpdate: aPresenter!
+
 globalsUpdate: presenter!
 
 initializeRemoteService
@@ -121,6 +123,8 @@ printOn: aStream
 	super printOn: aStream. 
 	aStream nextPut: $:. 
 	aStream nextPutAll: (name ifNil: [nil printString])!
+
+processListUpdate: aPresenter!
 
 projectPackagesUpdate: aPresenter
 !
@@ -185,7 +189,11 @@ updatePackageSelectionsFor: presenter
 
 updateSelectorFor: presenter!
 
-updateSuperclassSelectionFor: presenter! !
+updateSuperclassSelectionFor: presenter!
+
+variableDataUpdate: aPresenter!
+
+variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #categoryUpdate:!public!updating! !
 !RowanService categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanService categoriesFor: #classCommentUpdate:!public!updating! !
@@ -202,6 +210,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanService categoriesFor: #createClientFrom:!private! !
 !RowanService categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanService categoriesFor: #displayString!displaying!public! !
+!RowanService categoriesFor: #frameListUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !
 !RowanService categoriesFor: #initializeRemoteService!initialization!private! !
 !RowanService categoriesFor: #inspectDefinition!public!rowan! !
@@ -218,6 +227,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanService categoriesFor: #name:!accessing!private! !
 !RowanService categoriesFor: #packagesUpdate:!public!updating! !
 !RowanService categoriesFor: #printOn:!printing!public! !
+!RowanService categoriesFor: #processListUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #projectPackagesUpdate:!public!updating! !
 !RowanService categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanService categoriesFor: #projectsUpdate:!public!updating! !
@@ -240,6 +250,8 @@ updateSuperclassSelectionFor: presenter! !
 !RowanService categoriesFor: #updatePackageSelectionsFor:!public!updating! !
 !RowanService categoriesFor: #updateSelectorFor:!public!updating! !
 !RowanService categoriesFor: #updateSuperclassSelectionFor:!public!updating! !
+!RowanService categoriesFor: #variableDataUpdate:!Debugger!public!updating! !
+!RowanService categoriesFor: #variableListUpdate:!Debugger!public!updating! !
 
 !RowanService class methodsFor!
 

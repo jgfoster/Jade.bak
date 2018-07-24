@@ -16,7 +16,6 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #GsError -> #debugError;
 	add: #GsObject -> #gsInspect;
 	add: #GsProcess -> #stepInto:;
 	add: #GsProcess -> #stepOut:;
@@ -101,15 +100,6 @@ JadeShell subclass: #JadePreferencesShell
 
 
 "Loose Methods"!
-
-!GsError methodsFor!
-
-debugError
-
-	^JadeDebugger reportError: self.
-
-! !
-!GsError categoriesFor: #debugError!public! !
 
 !GsObject methodsFor!
 

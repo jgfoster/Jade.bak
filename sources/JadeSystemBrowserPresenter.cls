@@ -2204,33 +2204,6 @@ revertNewClass
 	self updateCommand: stream contents.
 !
 
-runClassTests
-
-	| stream string list caption selection |
-	stream := (WriteStream on: String new)
-		nextPutAll: self behaviorIdentifier;
-		yourself.
-	string := self gciSession 
-		serverPerform: #'sbRunClassTests:' 
-		with: stream contents.
-	string isNil ifTrue: [self error: 'Test run did not return expected value!!'. ^self].
-	list := string subStrings: Character lf.
-	list size = 1 ifTrue: [
-		MessageBox notify: list first.
-		^self.
-	].
-	caption := list first.
-	list := list copyFrom: 2 to: list size.
-	list := list asSortedCollection.
-	selection := SUnitResultDialog showModalOn: (Array with: self gciSession with: caption with: list).
-	selection isNil ifTrue: [^self].
-	[
-		self gciSession executeString: selection.
-	] on: GsError do: [:ex | 
-		JadeDebugger openDebuggerOnException: ex.
-	].
-!
-
 runMethodTests
 
 	| result |
@@ -3227,7 +3200,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #requestStringForUpdate!public!request string! !
 !JadeSystemBrowserPresenter categoriesFor: #resetColors!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #revertNewClass!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #runClassTests!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #runMethodTests!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #selectClass:selector:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #selectedClassChanged:!public! !

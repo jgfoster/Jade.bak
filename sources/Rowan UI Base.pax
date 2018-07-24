@@ -14,6 +14,8 @@ package classNames
 	add: #RowanClassHierarchyUpdate;
 	add: #RowanClassInfoUpdate;
 	add: #RowanClassService;
+	add: #RowanDebugger;
+	add: #RowanDebuggerService;
 	add: #RowanDictionaryUpdate;
 	add: #RowanGlobalsUpdate;
 	add: #RowanKeyValuePrompter;
@@ -31,6 +33,7 @@ package classNames
 	add: #RowanPackageUpdate;
 	add: #RowanPatchBrowser;
 	add: #RowanPresenter;
+	add: #RowanProcessService;
 	add: #RowanProjectListPresenter;
 	add: #RowanProjectListShell;
 	add: #RowanProjectsBrowserPresenter;
@@ -54,6 +57,7 @@ package methodNames
 	add: #GciSession -> #postLoginAs:useSocket:;
 	add: #GciSession -> #titleBarFor:;
 	add: #GciSession -> #verifyRowanLoaded;
+	add: #GsError -> #debugError;
 	add: #GsMethod -> #methodDefinitionService;
 	add: #JadeImageStripper -> #closeLoginShells;
 	add: #JadeImageStripper -> #createVersionResource;
@@ -62,6 +66,7 @@ package methodNames
 	add: #JadeLoginShell -> #aboutJadeite;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
+	add: #JadeProcessBrowser -> #debugProcess;
 	add: #JadeServer -> #_describeMethod:;
 	add: #JadeServer -> #sbAddPackage:;
 	add: #JadeServer -> #sbChangesInPackage:;
@@ -93,6 +98,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #preRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #queryCommand:;
 	add: #JadeSystemBrowserPresenter -> #removeMethods;
+	add: #JadeSystemBrowserPresenter -> #runClassTests;
 	add: #JadeSystemBrowserPresenter -> #savePackage;
 	add: #JadeSystemBrowserPresenter -> #selectorsString;
 	add: #JadeSystemBrowserPresenter -> #updateMethod;
@@ -114,6 +120,7 @@ package methodNames
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #MethodSourcePresenter -> #fileSave;
 	add: #Object -> #rowanFixMe;
+	add: #ObjectLogBrowser -> #debug:;
 	add: #Presenter -> #updateReady:;
 	add: #Presenter -> #updateSelectionsFor:;
 	add: #Presenter -> #updateSelectionsForUpdate:;
@@ -204,11 +211,14 @@ package setPrerequisites: (IdentitySet new
 	add: 'Jade Deployment';
 	add: 'Jade Login';
 	add: 'Jade Method Browser';
+	add: 'Jade Process Browser';
 	add: 'Jade System Browser';
 	add: 'Jade Test Browser';
 	add: 'Jade Transcript';
+	add: 'Jade UI';
 	add: 'Jade UI Base';
 	add: 'Monticello';
+	add: 'Object Log Browser';
 	add: 'Rowan STON';
 	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	add: '..\Core\Contributions\ITC Gorisek\Source Tracking System';
@@ -300,6 +310,11 @@ RowanService subclass: #RowanClassService
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+RowanService subclass: #RowanDebuggerService
+	instanceVariableNames: 'processes'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
 	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage references'
 	classVariableNames: ''
@@ -307,6 +322,11 @@ RowanService subclass: #RowanMethodService
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanPackageService
 	instanceVariableNames: 'classes'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanService subclass: #RowanProcessService
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -371,6 +391,11 @@ MCVersionDialog subclass: #RowanSavePackageDialog
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeLoginShell subclass: #RowanLoginShell
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeDebugger subclass: #RowanDebugger
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -547,6 +572,15 @@ verifyRowanLoaded
 !GciSession categoriesFor: #titleBarFor:!public! !
 !GciSession categoriesFor: #verifyRowanLoaded!private! !
 
+!GsError methodsFor!
+
+debugError
+
+	^RowanDebugger reportError: self.
+
+! !
+!GsError categoriesFor: #debugError!public! !
+
 !GsMethod methodsFor!
 
 methodDefinitionService
@@ -663,6 +697,20 @@ browseSendersOf: aGsMethodOrString
 ! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
+
+!JadeProcessBrowser methodsFor!
+
+debugProcess
+
+	| oop oopType |
+	oop := (processesPresenter selection at: 2) asNumber.
+	oopType := gciSession oopTypeWithOop: oop.
+	RowanDebugger 
+		openOn: (GsProcess session: gciSession oopType: oopType) 
+		message: 'background process'
+		terminateOnClose: false.
+! !
+!JadeProcessBrowser categoriesFor: #debugProcess!private! !
 
 !JadeServer methodsFor!
 
@@ -1338,6 +1386,33 @@ removeMethods
 	result ifFalse: [^self].
 	self basicRemoveMethods!
 
+runClassTests
+
+	| stream string list caption selection |
+	stream := (WriteStream on: String new)
+		nextPutAll: self behaviorIdentifier;
+		yourself.
+	string := self gciSession 
+		serverPerform: #'sbRunClassTests:' 
+		with: stream contents.
+	string isNil ifTrue: [self error: 'Test run did not return expected value!!'. ^self].
+	list := string subStrings: Character lf.
+	list size = 1 ifTrue: [
+		MessageBox notify: list first.
+		^self.
+	].
+	caption := list first.
+	list := list copyFrom: 2 to: list size.
+	list := list asSortedCollection.
+	selection := SUnitResultDialog showModalOn: (Array with: self gciSession with: caption with: list).
+	selection isNil ifTrue: [^self].
+	[
+		self gciSession executeString: selection.
+	] on: GsError do: [:ex | 
+		RowanDebugger openDebuggerOnException: ex.
+	].
+!
+
 savePackage
 
 	| package string array dict stream |
@@ -1500,6 +1575,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #preRemoveMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removeMethods!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #runClassTests!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #selectorsString!menu handlers!private! !
 !JadeSystemBrowserPresenter categoriesFor: #updateMethod!public!updating! !
@@ -1779,6 +1855,19 @@ rowanFixMe
 	"do nothing. Used for marking to-do items 
 	during Rowan Development"! !
 !Object categoriesFor: #rowanFixMe!public!testing! !
+
+!ObjectLogBrowser methodsFor!
+
+debug: anArray
+
+	| oopType |
+	oopType := gciSession oopTypeWithOop: (anArray at: 9) asNumber.
+	RowanDebugger 
+		openOn: (GsProcess session: gciSession oopType: oopType) 
+		message: (anArray at: 8)
+		terminateOnClose: false.
+! !
+!ObjectLogBrowser categoriesFor: #debug:!public! !
 
 !Presenter methodsFor!
 

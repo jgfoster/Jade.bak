@@ -84,7 +84,14 @@ updates: aCollection
 
 !BrowserUpdate class methodsFor!
 
+clearCurrent
+"
+	BrowserUpdate clearCurrent.
+"
+	Current := nil!
+
 current
 	^Current ifNil: [Current := self new]! !
+!BrowserUpdate class categoriesFor: #clearCurrent!accessing!public! !
 !BrowserUpdate class categoriesFor: #current!accessing!public! !
 
