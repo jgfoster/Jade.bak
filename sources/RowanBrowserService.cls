@@ -11,7 +11,6 @@ RowanBrowserService comment: ''!
 !RowanBrowserService methodsFor!
 
 projectsUpdate: presenter
-	presenter list: projects.
-	presenter selection: projects first. ! !
+	presenter list: projects.! !
 !RowanBrowserService categoriesFor: #projectsUpdate:!public! !
 

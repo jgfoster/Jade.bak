@@ -194,9 +194,6 @@ editSaveMethod
 	service source: self currentMethodSource.
 	[self updateServices: (Array with: service)] on: GsCompileError
 		do: [:ex | self reportCompileError: ex list].
-	methodSourcePresenter view
-		isModified: false;
-		ensureVisible.
 	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
 	methodSourcePresenter view goto: caretPosition!
 
@@ -284,6 +281,7 @@ newService
 
 onViewOpened
 	super onViewOpened.
+	self registerPresentersForUpdates.
 	projectListPresenter view contextMenu: (Menu fromStrings: self projectMenuStrings).
 	self rowanFixMe. "We're overriding saved jade layout info. Restore it someday. "
 	self updateProjects. !
@@ -440,7 +438,8 @@ registerPresentersForUpdates
 	BrowserUpdate current register: packageListPresenter with: #projectPackagesUpdate:.
 	BrowserUpdate current register: classListPresenter with: #classesUpdate:.
 	BrowserUpdate current register: categoryListPresenter with: #categoryUpdate:.
-	BrowserUpdate current register: methodListPresenter with: #classMethodsUpdate:!
+	BrowserUpdate current register: methodListPresenter with: #classMethodsUpdate:.
+	BrowserUpdate current register: methodSourcePresenter with: #methodSourceUpdate:!
 
 removeMethodsFrom: services
 	| stonString stonResultString |
@@ -630,6 +629,7 @@ updateProject
 updateProjectInfo
 	| services array |
 	services := projectListPresenter selections.
+	self updateProjectTab.
 	services isEmpty ifTrue: [^projectInfoTab list: OrderedCollection new].
 	array := Array writeStream: 4.
 	services do: 
@@ -640,8 +640,7 @@ updateProjectInfo
 			array nextPut: (Array with: service with: 'isSkew').
 			service == services last ifFalse: [array nextPut: (Array with: RowanProjectService new with: nil)]].
 	projectInfoTab list: array contents.
-	projectInfoTab ensureVisible.
-	self updateProjectTab!
+	projectInfoTab ensureVisible.!
 
 updateProjects
 

@@ -129,6 +129,7 @@ package methodNames
 	add: #RowanCommandResult -> #dictionaryUpdate:;
 	add: #RowanCommandResult -> #globalsUpdate:;
 	add: #RowanCommandResult -> #methodFilterUpdate:;
+	add: #RowanCommandResult -> #methodSourceUpdate:;
 	add: #RowanCommandResult -> #methodsUpdate:;
 	add: #RowanCommandResult -> #packagesUpdate:;
 	add: #RowanCommandResult -> #projectPackagesUpdate:;
@@ -1097,7 +1098,7 @@ gsString
 
 		nextPutAll: '[class := symbolList objectNamed: #Object.'; lf;
 		yourself.
-	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | self addGsStringForClass: eachClass to: stream].
+	"(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | self addGsStringForClass: eachClass to: stream]."
 	stream 
 		nextPutAll: '(mcPlatformSupport := symbolList objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
 		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
@@ -1840,6 +1841,9 @@ globalsUpdate: presenter!
 methodFilterUpdate: presenter
 	!
 
+methodSourceUpdate: presenter
+	!
+
 methodsUpdate: presenter
 	!
 
@@ -1886,6 +1890,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodFilterUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #methodSourceUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #projectPackagesUpdate:!public!updating! !

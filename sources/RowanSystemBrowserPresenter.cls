@@ -131,11 +131,6 @@ onViewClosed
 	subPresenters do:[:presenter |
 		BrowserUpdate current removeEventsTriggeredFor: presenter]!
 
-onViewOpened
-	
-	super onViewOpened.
-	self registerPresentersForUpdates!
-
 packageTabName
 	^'Rowan Packages'!
 
@@ -589,7 +584,6 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #inspectPackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #labelOfClass:changedTo:!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #onViewClosed!event handlers!public! !
-!RowanSystemBrowserPresenter categoriesFor: #onViewOpened!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!private! !
 !RowanSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #possiblyShowGenericPackageClassTemplate:!public!updating! !

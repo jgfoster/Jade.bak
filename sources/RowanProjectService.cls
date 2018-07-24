@@ -175,7 +175,7 @@ printOn: target
 
 projectPackagesUpdate: presenter
 	| newList |
-		newList := SortedCollection sortBlock: [:x :y | x name < y name].
+	newList := SortedCollection sortBlock: [:x :y | x name < y name].
 	newList
 		addAll: presenter list;
 		addAll: packages.

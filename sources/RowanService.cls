@@ -102,6 +102,8 @@ isProjectService
 methodFilterUpdate: presenter
 	!
 
+methodSourceUpdate: presenter!
+
 methodsUpdate: presenter
 	!
 
@@ -210,6 +212,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanService categoriesFor: #isPackageService!public!testing! !
 !RowanService categoriesFor: #isProjectService!public!testing! !
 !RowanService categoriesFor: #methodFilterUpdate:!public!updating! !
+!RowanService categoriesFor: #methodSourceUpdate:!public!updating! !
 !RowanService categoriesFor: #methodsUpdate:!public!updating! !
 !RowanService categoriesFor: #name!accessing!private! !
 !RowanService categoriesFor: #name:!accessing!private! !

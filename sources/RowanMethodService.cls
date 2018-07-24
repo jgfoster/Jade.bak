@@ -103,6 +103,13 @@ methodDefinitions: anObject
 	methodDefinitions := anObject.
 	self trigger: #changed!
 
+methodSourceUpdate: presenter
+	presenter value: source.
+	presenter view
+		backcolor: JadeTextStyles default colorForNoEdits;
+		isModified: false;
+		ensureVisible!
+
 packageName
 	^packageName!
 
@@ -206,6 +213,7 @@ user: anObject
 !RowanMethodService categoriesFor: #meta:!accessing!private! !
 !RowanMethodService categoriesFor: #methodDefinitions!accessing!private! !
 !RowanMethodService categoriesFor: #methodDefinitions:!accessing!private! !
+!RowanMethodService categoriesFor: #methodSourceUpdate:!public!updating! !
 !RowanMethodService categoriesFor: #packageName!accessing!private! !
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
 !RowanMethodService categoriesFor: #printOn:!printing!public! !
