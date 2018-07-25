@@ -96,6 +96,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer64bit3x -> #sbClassComment:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
+	add: #JadeSystemBrowserPresenter -> #basicAddMethodCategory:;
 	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
@@ -618,7 +619,7 @@ verifyRowanLoaded
 
 debugError
 
-	^RowanDebugger reportError: self.
+	^JadeDebugger reportError: self.
 
 ! !
 !GsError categoriesFor: #debugError!public! !
@@ -747,7 +748,7 @@ debugProcess
 	| oop oopType |
 	oop := (processesPresenter selection at: 2) asNumber.
 	oopType := gciSession oopTypeWithOop: oop.
-	RowanDebugger 
+	JadeDebugger 
 		openOn: (GsProcess session: gciSession oopType: oopType) 
 		message: 'background process'
 		terminateOnClose: false.
@@ -1321,6 +1322,24 @@ setVersion
 
 !JadeSystemBrowserPresenter methodsFor!
 
+basicAddMethodCategory: string
+	| stream |
+	stream := (WriteStream on: String new)
+				nextPutAll: 'addMethodCategory';
+				tab;
+				nextPutAll: self selectedClassNameWithoutVersion;
+				tab;
+				nextPutAll: selectedClassOop printString;
+				tab;
+				nextPutAll: instanceClassTabs currentCard name;
+				tab;
+				nextPutAll: string;
+				tab;
+				lf;
+				yourself.
+	self updateCommand: stream contents , self requestString
+		onSuccessDo: [methodSourcePresenter ensureVisible]!
+
 basicRemoveMethods
 	| string |
 	string := 'removeMethods' , Character tab asString , self methodsIdentifier , Character lf asString
@@ -1451,7 +1470,7 @@ runClassTests
 	[
 		self gciSession executeString: selection.
 	] on: GsError do: [:ex | 
-		RowanDebugger openDebuggerOnException: ex.
+		JadeDebugger openDebuggerOnException: ex.
 	].
 !
 
@@ -1608,6 +1627,7 @@ updateSelector
 			originalSourcePresenter value: x].
 	(warnings := gsMethod warnings) notEmpty
 		ifTrue: [MessageBox warning: warnings caption: 'Jade Compile Warning']! !
+!JadeSystemBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
@@ -1904,7 +1924,7 @@ debug: anArray
 
 	| oopType |
 	oopType := gciSession oopTypeWithOop: (anArray at: 9) asNumber.
-	RowanDebugger 
+	JadeDebugger 
 		openOn: (GsProcess session: gciSession oopType: oopType) 
 		message: (anArray at: 8)
 		terminateOnClose: false.

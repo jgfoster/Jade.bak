@@ -164,7 +164,7 @@ template: anObject
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #replicateFrom:!public!updating! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
-!RowanClassService categoriesFor: #selectedPackageServiceNames!public!updating! !
+!RowanClassService categoriesFor: #selectedPackageServiceNames!private!selection! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !

@@ -54,6 +54,15 @@ unregister: aPresenter
 
 	self removeEventsTriggeredFor: aPresenter!
 
+update: services afterStonReplication: stonResults
+	"assume we get back the 'same' services as we sent"
+
+	| updatedServices |
+	self initializeUpdates.
+	updatedServices := STON fromString: stonResults.
+	updatedServices do: [:newService | services do: [:service | service replicateFrom: newService]].
+	self updates: updatedServices!
+
 updateReady
 	updates isEmpty ifFalse: [self trigger: #updateReady]!
 
@@ -77,6 +86,7 @@ updates: aCollection
 !BrowserUpdate categoriesFor: #performDebugUpdateSelector:presenter:!public!updating! !
 !BrowserUpdate categoriesFor: #register:with:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #unregister:!public!registeringPresenters! !
+!BrowserUpdate categoriesFor: #update:afterStonReplication:!public!updating! !
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !
 !BrowserUpdate categoriesFor: #updateReadyForPresenter:selector:!public!updating! !
 !BrowserUpdate categoriesFor: #updates!accessing!public! !

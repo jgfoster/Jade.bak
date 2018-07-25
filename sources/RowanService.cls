@@ -42,6 +42,11 @@ classNameFrom: aClassOop
 classUpdate: presenter
 	!
 
+clearCommand
+
+	command := nil. 
+	commandArgs := nil. !
+
 clientDefinitionClass
 
 	^self subclassResponsibility!
@@ -210,6 +215,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #classMethodsUpdate:!public!updating! !
 !RowanService categoriesFor: #classNameFrom:!public! !
 !RowanService categoriesFor: #classUpdate:!public!updating! !
+!RowanService categoriesFor: #clearCommand!initialization!public! !
 !RowanService categoriesFor: #clientDefinitionClass!private! !
 !RowanService categoriesFor: #command!accessing!public! !
 !RowanService categoriesFor: #command:!accessing!public! !

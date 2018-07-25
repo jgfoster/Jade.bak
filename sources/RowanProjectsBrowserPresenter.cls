@@ -14,6 +14,13 @@ addPackageDictionaryInfoTo: aStream
 
 	"projects don't write themselves to string"!
 
+basicAddMethodCategory: string
+	| service |
+	service := classListPresenter selection
+				command: #addCategory:;
+				commandArgs: (Array with: string).
+	self issueCommand: (Array with: service)!
+
 basicRemoveMethods
 	| service |
 	service := classListPresenter selectionIfNone: [^self].
@@ -21,19 +28,15 @@ basicRemoveMethods
 	self removeMethodsFrom: (Array with: service)!
 
 browseImplementorsOf: string
-	| service stonResultString stonString |
+	| service |
 	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
-	stonString := STON toString: (Array with: service).
-	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: (Array with: service) afterStonReplication: stonResultString.
+	self issueCommand: (Array with: service).
 	self openMethodListOn: service selecting: string!
 
 browseSendersOf: string
-	| service stonResultString stonString |
+	| service |
 	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
-	stonString := STON toString: (Array with: service).
-	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: (Array with: service) afterStonReplication: stonResultString.
+	self issueCommand: (Array with: service).
 	self openMethodListOn: service selecting: string!
 
 checkout
@@ -249,6 +252,13 @@ isDictionariesTabSelected
 
 	^projectDictionaryTabs currentCard name = 'dictionaryList'.
 !
+
+issueCommand: services
+	| stonString stonResultString |
+	stonString := STON toString: services.
+	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
+		ensure: [services do: [:service | service clearCommand]].
+	self update: services afterStonReplication: stonResultString!
 
 loadProject
 	| name |
@@ -470,15 +480,19 @@ registerPresentersForUpdates
 	BrowserUpdate current register: methodSourcePresenter with: #methodSourceUpdate:.
 	BrowserUpdate current register: originalSourcePresenter  with: #methodSourceUpdate:!
 
+removeMethodCategories
+	| service |
+	service := classListPresenter selection
+				command: #removeCategories:;
+				commandArgs: (Array with: categoryListPresenter selections).
+	self issueCommand: (Array with: service)!
+
 removeMethodsFrom: services
-	| stonString stonResultString |
 	services do: 
 			[:classService |
 			classService command: #removeMethods.
 			classService methods: methodListPresenter selections].
-	stonString := STON toString: services.
-	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResultString!
+	self issueCommand: services!
 
 selectClass: classSelection
 	| newClassSelection |
@@ -550,14 +564,7 @@ unloadProject
 	MessageBox notify: 'This feature not yet implemented'!
 
 update: services afterStonReplication: stonResults
-	"assume we get back the 'same' services as we sent"
-	"copied to RowanDebugger"
-
-	| updatedServices browserUpdate |
-	browserUpdate := BrowserUpdate current initializeUpdates.
-	updatedServices := STON fromString: stonResults.
-	updatedServices do: [:newService | services do: [:service | service replicateFrom: newService]].
-	browserUpdate updates: updatedServices.!
+	BrowserUpdate current update: services afterStonReplication: stonResults!
 
 updateAndSelectA: aView
 
@@ -703,7 +710,7 @@ updateSelectionsForUpdate: update
 	update projectSelectionUpdate: projectListPresenter!
 
 updateServices: services
-	"copied to RowanDebugger"
+	"Private - copied to RowanDebugger"
 
 	| stonString stonResults |
 	stonString := STON toString: services.
@@ -733,6 +740,7 @@ writeProject
 	((RowanProjectService on: gciSession) name: projectName) write.
 	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
 !RowanProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!public!request string! !
+!RowanProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers!private!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!private! !
 !RowanProjectsBrowserPresenter categoriesFor: #browseImplementorsOf:!menu handlers!public!queries! !
 !RowanProjectsBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public!queries! !
@@ -758,6 +766,7 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #initialize!initialization!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #inspectProject!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
+!RowanProjectsBrowserPresenter categoriesFor: #issueCommand:!private!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
@@ -775,7 +784,8 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #refresh!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
-!RowanProjectsBrowserPresenter categoriesFor: #removeMethodsFrom:!public!services! !
+!RowanProjectsBrowserPresenter categoriesFor: #removeMethodCategories!private!services! !
+!RowanProjectsBrowserPresenter categoriesFor: #removeMethodsFrom:!private!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectedMethodName!menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
@@ -786,14 +796,14 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #showPackages!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #unloadProject!project menu handlers!public! !
-!RowanProjectsBrowserPresenter categoriesFor: #update:afterStonReplication:!public!services! !
+!RowanProjectsBrowserPresenter categoriesFor: #update:afterStonReplication:!private!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateClass!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateClasses!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateClassInfo!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateMenuBar!menus!public! !
-!RowanProjectsBrowserPresenter categoriesFor: #updateMethodReferences:!public!services! !
+!RowanProjectsBrowserPresenter categoriesFor: #updateMethodReferences:!private!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateMethodSource!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updatePackage!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updatePackageInfo!event handlers!public!updating! !
@@ -803,7 +813,7 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #updateProjects!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateProjectTab!event handlers!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!updating! !
-!RowanProjectsBrowserPresenter categoriesFor: #updateServices:!public!services! !
+!RowanProjectsBrowserPresenter categoriesFor: #updateServices:!private!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #updateTabLabel!public!updating! !
 !RowanProjectsBrowserPresenter categoriesFor: #writeProject!project menu handlers!public! !
 
