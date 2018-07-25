@@ -126,7 +126,8 @@ labelOfClass: oldName changedTo: newName
 !
 
 onViewClosed
-	
+	"copied to RowanDebugger"
+
 	super onViewClosed.
 	subPresenters do:[:presenter |
 		BrowserUpdate current removeEventsTriggeredFor: presenter]!

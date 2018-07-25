@@ -280,6 +280,8 @@ newService
 	^(RowanProjectService on: gciSession) name: projectListPresenter selection name!
 
 onViewOpened
+	"copied to RowanDebugger"
+
 	super onViewOpened.
 	self registerPresentersForUpdates.
 	projectListPresenter view contextMenu: (Menu fromStrings: self projectMenuStrings).
@@ -433,6 +435,8 @@ registerClassData
 	"temporarily disabled"!
 
 registerPresentersForUpdates
+	"copied to RowanDebugger"
+
 	super registerPresentersForUpdates.
 	BrowserUpdate current register: projectListPresenter with: #projectsUpdate:.
 	BrowserUpdate current register: packageListPresenter with: #projectPackagesUpdate:.
@@ -517,6 +521,8 @@ unloadProject
 
 update: services afterStonReplication: stonResults
 	"assume we get back the 'same' services as we sent"
+	"copied to RowanDebugger"
+
 	| updatedServices browserUpdate |
 	browserUpdate := BrowserUpdate current initializeUpdates.
 	updatedServices := STON fromString: stonResults.
@@ -643,6 +649,7 @@ updateProjectInfo
 	projectInfoTab ensureVisible.!
 
 updateProjects
+	"copied to RowanDebugger>>updatePresenters"
 
 	self updateServices: (Array with: RowanBrowserService new)!
 
@@ -665,6 +672,8 @@ updateSelectionsForUpdate: update
 	update projectSelectionUpdate: projectListPresenter!
 
 updateServices: services
+	"copied to RowanDebugger"
+
 	| stonString stonResults |
 	stonString := STON toString: services.
 	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.

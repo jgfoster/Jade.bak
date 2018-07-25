@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanDebuggerService
-	instanceVariableNames: 'processes'
+	instanceVariableNames: 'initialProcessOop processes'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -10,14 +10,26 @@ RowanDebuggerService comment: ''!
 !RowanDebuggerService categoriesForClass!Kernel-Objects! !
 !RowanDebuggerService methodsFor!
 
-processesUpdate: presenter
+initialize: aGsProcess
 
-	presenter list: processes.!
+	initialProcessOop := aGsProcess oopType value.
+!
 
 processListUpdate: aPresenter
 
-	self halt.
-! !
-!RowanDebuggerService categoriesFor: #processesUpdate:!public! !
+	aPresenter 
+		list: processes;
+		selection: processes first;
+		yourself.! !
+!RowanDebuggerService categoriesFor: #initialize:!public! !
 !RowanDebuggerService categoriesFor: #processListUpdate:!Debugger!public!updating! !
+
+!RowanDebuggerService class methodsFor!
+
+onProcess: aGsProcess
+
+	^self basicNew
+		initialize: aGsProcess;
+		yourself! !
+!RowanDebuggerService class categoriesFor: #onProcess:!public! !
 

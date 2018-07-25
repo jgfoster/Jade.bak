@@ -17,6 +17,7 @@ package classNames
 	add: #RowanDebugger;
 	add: #RowanDebuggerService;
 	add: #RowanDictionaryUpdate;
+	add: #RowanFrameService;
 	add: #RowanGlobalsUpdate;
 	add: #RowanKeyValuePrompter;
 	add: #RowanLoginShell;
@@ -48,6 +49,7 @@ package classNames
 	add: #RowanSystemBrowser;
 	add: #RowanSystemBrowserPresenter;
 	add: #RowanTranscript;
+	add: #RowanVariableService;
 	yourself.
 
 package methodNames
@@ -311,12 +313,17 @@ RowanService subclass: #RowanClassService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanDebuggerService
-	instanceVariableNames: 'processes'
+	instanceVariableNames: 'initialProcessOop processes'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanService subclass: #RowanFrameService
+	instanceVariableNames: 'label method source stepPoint vars'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage references'
+	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -326,13 +333,18 @@ RowanService subclass: #RowanPackageService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanProcessService
-	instanceVariableNames: ''
+	instanceVariableNames: 'frames oop status'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanProjectService
 	instanceVariableNames: 'sha branch isSkew packages'
 	classVariableNames: 'DefaultProjectName'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanService subclass: #RowanVariableService
+	instanceVariableNames: 'oop key value'
+	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenterA subclass: #RowanPresenter
