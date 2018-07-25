@@ -20,6 +20,22 @@ basicRemoveMethods
 	self setClassMeta. 
 	self removeMethodsFrom: (Array with: service)!
 
+browseImplementorsOf: string
+	| service stonResultString stonString |
+	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string).
+	stonString := STON toString: (Array with: service).
+	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
+	self update: (Array with: service) afterStonReplication: stonResultString.
+	self openMethodListOn: service selecting: string!
+
+browseSendersOf: string
+	| service stonResultString stonString |
+	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string).
+	stonString := STON toString: (Array with: service).
+	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
+	self update: (Array with: service) afterStonReplication: stonResultString.
+	self openMethodListOn: service selecting: string!
+
 checkout
 	| service branchName |
 	projectListPresenter hasSelection
@@ -286,6 +302,11 @@ onViewOpened
 	self rowanFixMe. "We're overriding saved jade layout info. Restore it someday. "
 	self updateProjects. !
 
+openMethodListOn: service selecting: string
+	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
+		methods: service queryResults
+		selecting: string!
+
 projectChanges
 	| service changesString patch |
 	projectListPresenter hasSelection
@@ -439,7 +460,8 @@ registerPresentersForUpdates
 	BrowserUpdate current register: classListPresenter with: #classesUpdate:.
 	BrowserUpdate current register: categoryListPresenter with: #categoryUpdate:.
 	BrowserUpdate current register: methodListPresenter with: #classMethodsUpdate:.
-	BrowserUpdate current register: methodSourcePresenter with: #methodSourceUpdate:!
+	BrowserUpdate current register: methodSourcePresenter with: #methodSourceUpdate:.
+	BrowserUpdate current register: originalSourcePresenter  with: #methodSourceUpdate:!
 
 removeMethodsFrom: services
 	| stonString stonResultString |
@@ -456,6 +478,11 @@ selectClass: classSelection
 	newClassSelection := classListPresenter list detect: [:svc | svc name = classSelection name]
 				ifNone: [].
 	^newClassSelection ifNotNil: [classListPresenter selection: newClassSelection]!
+
+selectedMethodName
+
+	^methodListPresenter selection selector
+!
 
 selectionMethod: methodSelection
 	| newMethodSelection |
@@ -606,6 +633,7 @@ updateMethodReferences: services
 updateMethodSource
 	methodListPresenter selectionIfNone: [^methodSourcePresenter value: String new].
 	methodSourcePresenter value: methodListPresenter selection source.
+	originalSourcePresenter value: methodListPresenter selection source.
 	methodSourcePresenter ensureVisible!
 
 updatePackage
@@ -694,6 +722,8 @@ writeProject
 	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
 !RowanProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!public!request string! !
 !RowanProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!private! !
+!RowanProjectsBrowserPresenter categoriesFor: #browseImplementorsOf:!menu handlers!public!queries! !
+!RowanProjectsBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public!queries! !
 !RowanProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #cloneProject!project menu handlers!public! !
@@ -722,6 +752,7 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #methodSourceEqual!public!testing! !
 !RowanProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!overrides!public! !
+!RowanProjectsBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers!private!queries! !
 !RowanProjectsBrowserPresenter categoriesFor: #projectChanges!project menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #projectDictionaryChanged!event handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #projectLog!project menu handlers!public! !
@@ -734,6 +765,7 @@ writeProject
 !RowanProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
 !RowanProjectsBrowserPresenter categoriesFor: #removeMethodsFrom:!public!services! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
+!RowanProjectsBrowserPresenter categoriesFor: #selectedMethodName!menu handlers!public! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectorsString!private!selection! !
 !RowanProjectsBrowserPresenter categoriesFor: #selectPackage:!private!selection! !

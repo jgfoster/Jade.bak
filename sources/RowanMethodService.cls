@@ -107,8 +107,7 @@ methodSourceUpdate: presenter
 	presenter value: source.
 	presenter view
 		backcolor: JadeTextStyles default colorForNoEdits;
-		isModified: false;
-		ensureVisible!
+		isModified: false!
 
 packageName
 	^packageName!
@@ -129,6 +128,10 @@ printOn: target
 	target 
 		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
 		nextPutAll: name!
+
+projectName
+	"temporary"
+	^'Project'!
 
 references
 	^references!
@@ -217,6 +220,7 @@ user: anObject
 !RowanMethodService categoriesFor: #packageName!accessing!private! !
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
 !RowanMethodService categoriesFor: #printOn:!printing!public! !
+!RowanMethodService categoriesFor: #projectName!accessing!public! !
 !RowanMethodService categoriesFor: #references!accessing!private! !
 !RowanMethodService categoriesFor: #references:!accessing!private! !
 !RowanMethodService categoriesFor: #remoteServiceName!must not strip!public! !

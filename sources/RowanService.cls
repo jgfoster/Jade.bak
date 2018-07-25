@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name isDirty updates command'
+	instanceVariableNames: 'transport remoteService name isDirty updates command commandArgs'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -51,6 +51,12 @@ command
 
 command: anObject
 	command := anObject!
+
+commandArgs
+	^commandArgs!
+
+commandArgs: anObject
+	commandArgs := anObject!
 
 createClientFrom: anArrayOop
 	| string |
@@ -199,6 +205,8 @@ updateSuperclassSelectionFor: presenter! !
 !RowanService categoriesFor: #clientDefinitionClass!private! !
 !RowanService categoriesFor: #command!accessing!public! !
 !RowanService categoriesFor: #command:!accessing!public! !
+!RowanService categoriesFor: #commandArgs!accessing!private! !
+!RowanService categoriesFor: #commandArgs:!accessing!private! !
 !RowanService categoriesFor: #createClientFrom:!private! !
 !RowanService categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanService categoriesFor: #displayString!displaying!public! !
@@ -243,6 +251,14 @@ updateSuperclassSelectionFor: presenter! !
 
 !RowanService class methodsFor!
 
+command: symbol withArgs: array
+	| inst |
+	inst := self new.
+	inst
+		command: symbol;
+		commandArgs: array.
+	^inst!
+
 defaultIcon
 	"Answer a suitable default icon to use for this class. Not all classes use their 
 	default icon; one must define an appropriate #icon method in each class where the 
@@ -279,6 +295,7 @@ on: aSession
 
 sampleDefinitions
 	^self new sampleDefinitions! !
+!RowanService class categoriesFor: #command:withArgs:!instance creation!public! !
 !RowanService class categoriesFor: #defaultIcon!private! !
 !RowanService class categoriesFor: #defaultIconName!private! !
 !RowanService class categoriesFor: #icon!private! !
