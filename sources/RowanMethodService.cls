@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -19,8 +19,13 @@ basicSubSuperIcon
 	hasSubs ifTrue: [^RowanProjectsBrowserPresenter downArrowIcon].
 	^Icon blank!
 
+breakPoints
+
+	self rowanFixMe.
+	^#()!
+
 category
-	^category!
+	^category ifNil: ['']!
 
 category: anObject
 	category := anObject!
@@ -40,9 +45,9 @@ createSampleMethod
 
 displayOn: aStream
 	aStream
-		nextPutAll: className;
+		nextPutAll: (className ifNil: ['?']);
 		nextPutAll: '>>';
-		nextPutAll: selector!
+		nextPutAll: (selector ifNil: ['?'])!
 
 displayStringFor: displayThing
 	isExtension
@@ -89,6 +94,11 @@ isExtension: anObject
 isMethodService
 
 	^true!
+
+isReadOnly
+
+	self rowanFixMe.
+	^false!
 
 meta
 	^meta!
@@ -174,8 +184,36 @@ source
 source: anObject
 	source := anObject!
 
+stepPoints
+
+	(stepPoints notEmpty and: [stepPoints first key isInteger]) ifTrue: [
+		stepPoints := stepPoints collect: [:each | 
+			| range start char length |
+			start := each key.
+			char := source at: start.
+			length := (char isAlphaNumeric or: [char = $_])
+				ifTrue: [(source copyFrom: start + 1 to: source size) findFirst: [:eachChar | (eachChar isAlphaNumeric or: [eachChar = $_ or: [eachChar = $:]]) not]]
+				ifFalse: [2].
+			length = 0 ifTrue: [length := source size - start].
+			[
+				2 < length and: [(source at: start) = $_].
+			] whileTrue: [
+				start := start + 1.
+				length := length - 1.
+			].
+			range := Interval from: start to: start + length - 1.
+			range -> each value.
+		].
+	].
+	^stepPoints!
+
 subSuperIcon
 	^(self basicSubSuperIcon) imageIndex!
+
+unimplementedSelectors
+
+	self rowanFixMe.
+	^#()!
 
 updateSelectorFromCompiledMethod: aString
 
@@ -194,6 +232,7 @@ user: anObject
 	user := anObject! !
 !RowanMethodService categoriesFor: #=!comparing!public! !
 !RowanMethodService categoriesFor: #basicSubSuperIcon!displaying!public! !
+!RowanMethodService categoriesFor: #breakPoints!public! !
 !RowanMethodService categoriesFor: #category!accessing!private! !
 !RowanMethodService categoriesFor: #category:!accessing!private! !
 !RowanMethodService categoriesFor: #className!accessing!private! !
@@ -214,6 +253,7 @@ user: anObject
 !RowanMethodService categoriesFor: #isExtension!accessing!public! !
 !RowanMethodService categoriesFor: #isExtension:!accessing!public! !
 !RowanMethodService categoriesFor: #isMethodService!public!testing! !
+!RowanMethodService categoriesFor: #isReadOnly!public!testing! !
 !RowanMethodService categoriesFor: #meta!accessing!private! !
 !RowanMethodService categoriesFor: #meta:!accessing!private! !
 !RowanMethodService categoriesFor: #methodDefinitions!accessing!private! !
@@ -235,7 +275,9 @@ user: anObject
 !RowanMethodService categoriesFor: #selector:!accessing!private! !
 !RowanMethodService categoriesFor: #source!accessing!private! !
 !RowanMethodService categoriesFor: #source:!accessing!private! !
+!RowanMethodService categoriesFor: #stepPoints!public! !
 !RowanMethodService categoriesFor: #subSuperIcon!displaying!public! !
+!RowanMethodService categoriesFor: #unimplementedSelectors!public! !
 !RowanMethodService categoriesFor: #updateSelectorFromCompiledMethod:!private! !
 !RowanMethodService categoriesFor: #user!accessing!private! !
 !RowanMethodService categoriesFor: #user:!accessing!private! !

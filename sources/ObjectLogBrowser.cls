@@ -46,16 +46,6 @@ createSchematicWiring
 	super createSchematicWiring.
 	listPresenter	when: #'actionPerformed' send: #'open' to: self.!
 
-debug: anArray
-
-	| oopType |
-	oopType := gciSession oopTypeWithOop: (anArray at: 9) asNumber.
-	JadeDebugger 
-		openOn: (GsProcess session: gciSession oopType: oopType) 
-		message: (anArray at: 8)
-		terminateOnClose: false.
-!
-
 delete
 
 	| stream |
@@ -195,7 +185,6 @@ viewEntry: anArray
 !ObjectLogBrowser categoriesFor: #commitTransaction!public! !
 !ObjectLogBrowser categoriesFor: #createComponents!public! !
 !ObjectLogBrowser categoriesFor: #createSchematicWiring!public! !
-!ObjectLogBrowser categoriesFor: #debug:!public! !
 !ObjectLogBrowser categoriesFor: #delete!public! !
 !ObjectLogBrowser categoriesFor: #onViewOpened!public! !
 !ObjectLogBrowser categoriesFor: #open!public! !
