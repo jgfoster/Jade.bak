@@ -6,6 +6,10 @@ package paxVersion: 1;
 
 package classNames
 	add: #BrowserUpdate;
+	add: #JadeiteBasicMethodListPresenter;
+	add: #JadeiteMethodListBrowser;
+	add: #JadeiteMethodListPresenter;
+	add: #JadeiteMethodSourcePresenter;
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
 	add: #RowanBrowserService;
@@ -41,6 +45,7 @@ package classNames
 	add: #RowanProjectService;
 	add: #RowanProjectsSystemBrowser;
 	add: #RowanProjectsUpdate;
+	add: #RowanQueryService;
 	add: #RowanSavePackageDialog;
 	add: #RowanService;
 	add: #RowanServiceTest;
@@ -243,7 +248,7 @@ Model subclass: #BrowserUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name isDirty updates command'
+	instanceVariableNames: 'transport remoteService name isDirty updates command commandArgs'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -323,7 +328,7 @@ RowanService subclass: #RowanFrameService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -342,6 +347,11 @@ RowanService subclass: #RowanProjectService
 	classVariableNames: 'DefaultProjectName'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+RowanService subclass: #RowanQueryService
+	instanceVariableNames: 'queryResults'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 RowanService subclass: #RowanVariableService
 	instanceVariableNames: 'oop key value'
 	classVariableNames: ''
@@ -357,7 +367,17 @@ MethodSourcePresenter subclass: #RowanMethodSourcePresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+RowanMethodSourcePresenter subclass: #JadeiteMethodSourcePresenter
+	instanceVariableNames: 'methodService'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeMethodListPresenter subclass: #RowanMethodListPresenter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanMethodListPresenter subclass: #JadeiteMethodListPresenter
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -373,6 +393,11 @@ RowanSystemBrowserPresenter subclass: #RowanProjectsBrowserPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 MethodListPresenter subclass: #PackageMethodListPresenter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+PackageMethodListPresenter subclass: #JadeiteBasicMethodListPresenter
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -423,6 +448,11 @@ JadeShell subclass: #RowanShell
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeMethodListBrowser subclass: #RowanMethodListBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanMethodListBrowser subclass: #JadeiteMethodListBrowser
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -625,7 +655,7 @@ createVersionResource
 				at: 'FileDescription' 		put: 'IDE for GemStoneS/64 with Rowan Source Code Control';
 				at: 'FileVersion' 			put: versionString;
 				at: 'InternalName' 		put: 'Jadeite';
-				at: 'LegalCopyright' 		put: 'Copyright © GemTalk Systems 2018';
+				at: 'LegalCopyright' 		put: 'Copyright ï¿½ GemTalk Systems 2018';
 				at: 'OriginalFilename' 	put: 'Jadeite.exe';
 				at: 'ProductName' 		put: 'Jadeite';
 				at: 'ProductVersion' 		put: versionString;
