@@ -35,6 +35,7 @@ addSystemBrowserForClass: anArray
 
 addSystemBrowserWithLayoutInfo: each
 
+	GciSession log: 'JadeSystemBrowserPresenter>>addSystemBrowserWithLayoutInfo:'.
 	(JadeAutoSystemBrowserPresenter
 		createIn: cardsPresenter 
 		gciSession: gciSession)

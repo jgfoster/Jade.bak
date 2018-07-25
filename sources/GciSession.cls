@@ -1172,7 +1172,7 @@ debugPath: debugPath
 
 log: aString
 
-	debugLog ifNotNil: [debugLog nextPutAll: aString; cr; flush].
+	debugLog ifNotNil: [debugLog nextPutAll: Processor activeProcess id printString , ':' , Time millisecondClockValue printString , ':' , aString; cr; flush].
 !
 
 new
