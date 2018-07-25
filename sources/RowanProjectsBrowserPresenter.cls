@@ -22,7 +22,7 @@ basicRemoveMethods
 
 browseImplementorsOf: string
 	| service stonResultString stonString |
-	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string).
+	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
 	stonString := STON toString: (Array with: service).
 	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
 	self update: (Array with: service) afterStonReplication: stonResultString.
@@ -30,7 +30,7 @@ browseImplementorsOf: string
 
 browseSendersOf: string
 	| service stonResultString stonString |
-	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string).
+	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
 	stonString := STON toString: (Array with: service).
 	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
 	self update: (Array with: service) afterStonReplication: stonResultString.
@@ -444,6 +444,9 @@ queryCommand: aCommandQuery
 	(command == #'setEnvironment0' and: [environment == 0]) ifTrue: [aCommandQuery isChecked: true. ^true].
 	(command == #'setEnvironment1' and: [environment == 1]) ifTrue: [aCommandQuery isChecked: true. ^true].
 	(command == #'setEnvironment2' and: [environment == 2]) ifTrue: [aCommandQuery isChecked: true. ^true].
+	(self queryCommandHandlers: aCommandQuery) ifTrue: [^true].
+	(aCommandQuery canPerformAgainst: self) ifTrue: [aCommandQuery beEnabled].
+	^false	"There was no specific enablement of the command at this level"
 
 !
 

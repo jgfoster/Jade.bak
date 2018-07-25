@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName className meta user hasSupers hasSubs isExtension inSelectedPackage references'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -130,8 +130,10 @@ printOn: target
 		nextPutAll: name!
 
 projectName
-	"temporary"
-	^'Project'!
+	^projectName!
+
+projectName: anObject
+	projectName := anObject!
 
 references
 	^references!
@@ -220,7 +222,8 @@ user: anObject
 !RowanMethodService categoriesFor: #packageName!accessing!private! !
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
 !RowanMethodService categoriesFor: #printOn:!printing!public! !
-!RowanMethodService categoriesFor: #projectName!accessing!public! !
+!RowanMethodService categoriesFor: #projectName!accessing!private! !
+!RowanMethodService categoriesFor: #projectName:!accessing!private! !
 !RowanMethodService categoriesFor: #references!accessing!private! !
 !RowanMethodService categoriesFor: #references:!accessing!private! !
 !RowanMethodService categoriesFor: #remoteServiceName!must not strip!public! !
