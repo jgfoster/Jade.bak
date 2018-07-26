@@ -106,6 +106,19 @@ packageName
 packageName: anObject
 	packageName := anObject!
 
+releaseReferencedServices
+	| copy |
+	selectedPackageServices
+		ifNotNil: 
+			[copy := selectedPackageServices copy.
+			selectedPackageServices := Array new.
+			copy do: [:service | service releaseReferencedServices]].
+	methods
+		ifNotNil: 
+			[copy := methods copy.
+			methods := Array new.
+			copy do: [:service | service releaseReferencedServices]]!
+
 remoteServiceName
 	^'Rowan classServiceClass'!
 
@@ -150,7 +163,7 @@ template: anObject
 !RowanClassService categoriesFor: #displayStringFor:!printing!public! !
 !RowanClassService categoriesFor: #filters!accessing!public! !
 !RowanClassService categoriesFor: #filters:!accessing!public! !
-!RowanClassService categoriesFor: #initialize!initialization!public! !
+!RowanClassService categoriesFor: #initialize!Init / Release!public! !
 !RowanClassService categoriesFor: #isClassService!public!testing! !
 !RowanClassService categoriesFor: #isDefined!public!testing! !
 !RowanClassService categoriesFor: #isExtension!public!testing! !
@@ -160,6 +173,7 @@ template: anObject
 !RowanClassService categoriesFor: #methods:!accessing!private! !
 !RowanClassService categoriesFor: #packageName!accessing!private! !
 !RowanClassService categoriesFor: #packageName:!accessing!private! !
+!RowanClassService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #replicateFrom:!public!updating! !

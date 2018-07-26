@@ -202,7 +202,7 @@ projectsUpdate: presenter
 			proj sha: sha.
 			proj isDirty: isDirty.
 			proj isSkew: isSkew].
-	updates ifNotNil: [updates do: [:update | update projectsUpdate: presenter]]!
+	!
 
 pullFromGit
 
@@ -211,6 +211,13 @@ pullFromGit
 pushToGit
 
 	^transport send: #pushToGit to: remoteService  !
+
+releaseReferencedServices
+	| copy |
+	packages isNil ifTrue: [^self].
+	copy := packages copy.
+	packages := Array new.
+	copy do: [:service | service releaseReferencedServices]!
 
 remoteDefaultProjectName
 
@@ -274,6 +281,7 @@ write
 !RowanProjectService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanProjectService categoriesFor: #pullFromGit!public!rowan! !
 !RowanProjectService categoriesFor: #pushToGit!public!rowan! !
+!RowanProjectService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanProjectService categoriesFor: #remoteDefaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanProjectService categoriesFor: #removeProjectNamed:!public! !

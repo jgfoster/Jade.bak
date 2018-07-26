@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name isDirty updates command commandArgs'
+	instanceVariableNames: 'transport remoteService name isDirty command commandArgs'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -145,6 +145,11 @@ projectSelectionUpdate: aPresenter
 
 projectsUpdate: aPresenter!
 
+releaseReferencedServices
+	"Give the service a chance to clean up unnecessary objects after replication"
+
+	!
+
 remoteService
 	^remoteService!
 
@@ -215,7 +220,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #classMethodsUpdate:!public!updating! !
 !RowanService categoriesFor: #classNameFrom:!public! !
 !RowanService categoriesFor: #classUpdate:!public!updating! !
-!RowanService categoriesFor: #clearCommand!initialization!public! !
+!RowanService categoriesFor: #clearCommand!Init / Release!public! !
 !RowanService categoriesFor: #clientDefinitionClass!private! !
 !RowanService categoriesFor: #command!accessing!public! !
 !RowanService categoriesFor: #command:!accessing!public! !
@@ -226,7 +231,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #displayString!displaying!public! !
 !RowanService categoriesFor: #frameListUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !
-!RowanService categoriesFor: #initializeRemoteService!initialization!private! !
+!RowanService categoriesFor: #initializeRemoteService!Init / Release!private! !
 !RowanService categoriesFor: #inspectDefinition!public!rowan! !
 !RowanService categoriesFor: #isClassService!public!testing! !
 !RowanService categoriesFor: #isDirty!accessing!private! !
@@ -245,6 +250,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #projectPackagesUpdate:!public!updating! !
 !RowanService categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanService categoriesFor: #projectsUpdate:!public!updating! !
+!RowanService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanService categoriesFor: #remoteService!public! !
 !RowanService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanService categoriesFor: #removeSampleSymbolDictionary!public! !
