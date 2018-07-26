@@ -48,21 +48,9 @@ addClassHierarchyInfoTo: aStream
 !
 
 addMethodCategory
-
-	| string stream |
+	| string |
 	(string := Prompter prompt: 'New method category?') isNil ifTrue: [^self].
-	stream := (WriteStream on: String new)
-		nextPutAll: 'addMethodCategory'; tab;
-		nextPutAll: self selectedClassNameWithoutVersion; tab;
-		nextPutAll: selectedClassOop printString; tab;
-		nextPutAll: instanceClassTabs currentCard name; tab;
-		nextPutAll: string; tab; lf;
-		yourself.
-	self 
-		updateCommand: stream contents , self requestString
-		onSuccessDo: [methodSourcePresenter ensureVisible].
-
-!
+	self basicAddMethodCategory: string!
 
 addMethodInfoTo: aStream
 

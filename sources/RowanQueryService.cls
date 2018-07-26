@@ -14,7 +14,15 @@ queryResults
 	^queryResults!
 
 queryResults: anObject
-	queryResults := anObject! !
+	queryResults := anObject!
+
+releaseReferencedServices
+	| copy |
+	queryResults isNil ifTrue: [^self].
+	copy := queryResults copy.
+	queryResults := Array new.
+	copy do: [:service | service releaseReferencedServices]! !
 !RowanQueryService categoriesFor: #queryResults!accessing!private! !
 !RowanQueryService categoriesFor: #queryResults:!accessing!private! !
+!RowanQueryService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 

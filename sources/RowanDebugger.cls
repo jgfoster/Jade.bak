@@ -46,13 +46,7 @@ registerPresentersForUpdates
 !
 
 update: services afterStonReplication: stonResults
-	"copied from RowanProjectsBrowserPresenter>>update:afterStonReplication:"
-
-	| updatedServices browserUpdate |
-	browserUpdate := BrowserUpdate current initializeUpdates.
-	updatedServices := STON fromString: stonResults.
-	updatedServices do: [:newService | services do: [:service | service replicateFrom: newService]].
-	browserUpdate updates: updatedServices.!
+	BrowserUpdate current update: services afterStonReplication: stonResults!
 
 updateServices: services
 	"copied from RowanProjectsBrowserPresenter>>updateServices:"

@@ -30,6 +30,12 @@ category
 category: anObject
 	category := anObject!
 
+classMethodDisplayString
+	| stream |
+	stream := WriteStream on: String new.
+	self displayOn: stream.
+	^stream contents!
+
 className
 	^className!
 
@@ -235,6 +241,7 @@ user: anObject
 !RowanMethodService categoriesFor: #breakPoints!public! !
 !RowanMethodService categoriesFor: #category!accessing!private! !
 !RowanMethodService categoriesFor: #category:!accessing!private! !
+!RowanMethodService categoriesFor: #classMethodDisplayString!displaying!public! !
 !RowanMethodService categoriesFor: #className!accessing!private! !
 !RowanMethodService categoriesFor: #className:!accessing!private! !
 !RowanMethodService categoriesFor: #clientDefinitionClass!private! !

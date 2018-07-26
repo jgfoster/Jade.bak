@@ -27,20 +27,6 @@ initializeUpdates
 	updates := OrderedCollection new.
 	!
 
-performDebugUpdateSelector: selector presenter: presenter
-	Transcript
-		cr;
-		show: '====Begin Updates===='.
-	self updates do: 
-			[:update |
-			Transcript
-				cr;
-				show: update printString.
-			update perform: selector with: presenter].
-	^Transcript
-		cr;
-		show: '====End Updates===='!
-
 register: presenter with: selector
 	"send the update to the presenter so that when the presenter gets
 	removed, it's events go with it."
@@ -53,6 +39,16 @@ register: presenter with: selector
 unregister: aPresenter
 
 	self removeEventsTriggeredFor: aPresenter!
+
+update: services afterStonReplication: stonResults
+	"assume we get back the 'same' services as we sent"
+
+	| updatedServices |
+	self initializeUpdates.
+	updatedServices := STON fromString: stonResults.
+	updatedServices do: [:newService | services do: [:service | service replicateFrom: newService]].
+	self updates: updatedServices.
+	updatedServices do: [:service | service releaseReferencedServices]!
 
 updateReady
 	updates isEmpty ifFalse: [self trigger: #updateReady]!
@@ -74,9 +70,9 @@ updates: aCollection
 !BrowserUpdate categoriesFor: #debug:!accessing!private! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
 !BrowserUpdate categoriesFor: #initializeUpdates!initialization!public! !
-!BrowserUpdate categoriesFor: #performDebugUpdateSelector:presenter:!public!updating! !
 !BrowserUpdate categoriesFor: #register:with:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #unregister:!public!registeringPresenters! !
+!BrowserUpdate categoriesFor: #update:afterStonReplication:!public!updating! !
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !
 !BrowserUpdate categoriesFor: #updateReadyForPresenter:selector:!public!updating! !
 !BrowserUpdate categoriesFor: #updates!accessing!public! !

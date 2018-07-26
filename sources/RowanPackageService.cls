@@ -69,6 +69,13 @@ printOn: target
 		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
 		nextPutAll: name!
 
+releaseReferencedServices
+	| copy |
+	classes ifNil: [^self].
+	copy := classes copy.
+	classes := Array new.
+	copy do: [:service | service releaseReferencedServices]!
+
 remoteServiceName
 	^'Rowan packageServiceClass'!
 
@@ -82,6 +89,7 @@ replicateFrom: newService
 !RowanPackageService categoriesFor: #isPackageService!public!testing! !
 !RowanPackageService categoriesFor: #name:!accessing!public! !
 !RowanPackageService categoriesFor: #printOn:!printing!public! !
+!RowanPackageService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanPackageService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanPackageService categoriesFor: #replicateFrom:!public!updating! !
 
