@@ -59,7 +59,7 @@ displayStringFor: displayThing
 	isExtension
 		ifTrue: 
 			[displayThing forecolor: Color darkMagenta.
-			inSelectedPackage ifFalse: [displayThing font beItalic; beUnderlined ]]!
+			inSelectedPackage ifFalse: [displayThing font beUnderlined ]]!
 
 hash
 	^(selector hash bitXor: className hash) bitXor: meta hash!

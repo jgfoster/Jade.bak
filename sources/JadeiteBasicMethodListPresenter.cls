@@ -8,6 +8,17 @@ PackageMethodListPresenter subclass: #JadeiteBasicMethodListPresenter
 JadeiteBasicMethodListPresenter guid: (GUID fromString: '{a7382908-5775-44be-81de-c643c1215fb3}')!
 JadeiteBasicMethodListPresenter comment: ''!
 !JadeiteBasicMethodListPresenter categoriesForClass!Unclassified! !
+!JadeiteBasicMethodListPresenter methodsFor!
+
+selection
+	^methodListPresenter selection!
+
+selections
+
+	^methodListPresenter selections! !
+!JadeiteBasicMethodListPresenter categoriesFor: #selection!public! !
+!JadeiteBasicMethodListPresenter categoriesFor: #selections!public! !
+
 !JadeiteBasicMethodListPresenter class methodsFor!
 
 resource_Default_view

@@ -66,6 +66,8 @@ package methodNames
 	add: #GciSession -> #verifyRowanLoaded;
 	add: #GsError -> #debugError;
 	add: #GsMethod -> #methodDefinitionService;
+	add: #JadeAutoTextPresenter3 -> #defaultMethod;
+	add: #JadeAutoTextPresenter3 -> #setDefaultMethod;
 	add: #JadeImageStripper -> #closeLoginShells;
 	add: #JadeImageStripper -> #createVersionResource;
 	add: #JadeImageStripper -> #requiredClasses;
@@ -217,6 +219,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone Objects';
 	add: 'GemStone Services';
 	add: 'GemStone Session';
+	add: 'Jade Autocompletation';
 	add: 'Jade Deployment';
 	add: 'Jade Login';
 	add: 'Jade Method Browser';
@@ -380,7 +383,7 @@ JadeMethodListPresenter subclass: #RowanMethodListPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanMethodListPresenter subclass: #JadeiteMethodListPresenter
-	instanceVariableNames: ''
+	instanceVariableNames: 'textAreaTabs comparisonTab comparisonPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -390,7 +393,7 @@ JadeAutoSystemBrowserPresenter subclass: #RowanSystemBrowserPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanSystemBrowserPresenter subclass: #RowanProjectsBrowserPresenter
-	instanceVariableNames: 'projectListPresenter stonCritical projectInfoTab projectLabel projectDictionaryTabs comparisonPresenter'
+	instanceVariableNames: 'projectListPresenter stonCritical projectInfoTab projectLabel projectDictionaryTabs comparisonPresenter comparisonTab'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -630,6 +633,28 @@ debugError
 methodDefinitionService
 	^RowanMethodService on: gciSession! !
 !GsMethod categoriesFor: #methodDefinitionService!public!rowan! !
+
+!JadeAutoTextPresenter3 methodsFor!
+
+defaultMethod
+
+^'methodSelector
+	"method comment"
+
+	| temps |
+	^self yourself.
+'.
+!
+
+setDefaultMethod
+
+	view 
+		value: self defaultMethod;
+		isModified: false;
+		isReadOnly: false;
+		yourself.! !
+!JadeAutoTextPresenter3 categoriesFor: #defaultMethod!public! !
+!JadeAutoTextPresenter3 categoriesFor: #setDefaultMethod!public! !
 
 !JadeImageStripper methodsFor!
 

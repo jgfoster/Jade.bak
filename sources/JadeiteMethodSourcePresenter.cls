@@ -24,8 +24,13 @@ update
 	documentPresenter view
 		backcolor: JadeTextStyles default colorForNoEdits;
 		isEnabled: true;
-		yourself! !
+		yourself!
+
+value: string
+
+	documentPresenter value: string! !
 !JadeiteMethodSourcePresenter categoriesFor: #methodService!accessing!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #methodService:!accessing!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #update!public!updating! !
+!JadeiteMethodSourcePresenter categoriesFor: #value:!public! !
 
