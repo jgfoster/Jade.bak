@@ -26,7 +26,7 @@ shellName
 !
 
 systemBrowserPresenter
-	^RowanProjectsBrowserPresenter! !
+	^JadeiteProjectsBrowserPresenter! !
 !RowanProjectsSystemBrowser categoriesFor: #addSystemBrowserWithLayoutInfo:!public! !
 !RowanProjectsSystemBrowser categoriesFor: #layoutFilePath!public! !
 !RowanProjectsSystemBrowser categoriesFor: #shellName!overrides!private! !

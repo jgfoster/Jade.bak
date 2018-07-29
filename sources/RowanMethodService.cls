@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -16,7 +16,7 @@ RowanMethodService comment: ''!
 
 basicSubSuperIcon
 	hasSupers ifTrue: [^JadeSystemBrowserPresenter overriddenIcon].
-	hasSubs ifTrue: [^RowanProjectsBrowserPresenter downArrowIcon].
+	hasSubs ifTrue: [^JadeiteProjectsBrowserPresenter downArrowIcon].
 	^Icon blank!
 
 breakPoints
@@ -170,13 +170,19 @@ removeSelector: aSelector class: class
 	!
 
 replicateFrom: newService
-	^self isMethodService
+	^(self isMethodService and: [newService isMethodService])
 		ifTrue: 
 			[self = newService ifTrue: [super replicateFrom: newService]]!
 
 sampleClassInstance
 
 	^transport send: #sampleClassInstance to: remoteService!
+
+selectedPackageServices
+	^selectedPackageServices!
+
+selectedPackageServices: anObject
+	selectedPackageServices := anObject!
 
 selector
 	^selector!
@@ -278,6 +284,8 @@ user: anObject
 !RowanMethodService categoriesFor: #removeSelector:class:!public!remote! !
 !RowanMethodService categoriesFor: #replicateFrom:!public!updating! !
 !RowanMethodService categoriesFor: #sampleClassInstance!examples!public! !
+!RowanMethodService categoriesFor: #selectedPackageServices!accessing!private! !
+!RowanMethodService categoriesFor: #selectedPackageServices:!accessing!private! !
 !RowanMethodService categoriesFor: #selector!accessing!private! !
 !RowanMethodService categoriesFor: #selector:!accessing!private! !
 !RowanMethodService categoriesFor: #source!accessing!private! !

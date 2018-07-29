@@ -10,6 +10,7 @@ package classNames
 	add: #JadeiteMethodListBrowser;
 	add: #JadeiteMethodListPresenter;
 	add: #JadeiteMethodSourcePresenter;
+	add: #JadeiteProjectsBrowserPresenter;
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
 	add: #RowanBrowserService;
@@ -41,7 +42,6 @@ package classNames
 	add: #RowanProcessService;
 	add: #RowanProjectListPresenter;
 	add: #RowanProjectListShell;
-	add: #RowanProjectsBrowserPresenter;
 	add: #RowanProjectService;
 	add: #RowanProjectsSystemBrowser;
 	add: #RowanProjectsUpdate;
@@ -318,7 +318,7 @@ RowanService subclass: #RowanBrowserService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods selectedPackageServices packageName definedPackageName'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -333,7 +333,7 @@ RowanService subclass: #RowanFrameService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -392,7 +392,7 @@ JadeAutoSystemBrowserPresenter subclass: #RowanSystemBrowserPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanSystemBrowserPresenter subclass: #RowanProjectsBrowserPresenter
+RowanSystemBrowserPresenter subclass: #JadeiteProjectsBrowserPresenter
 	instanceVariableNames: 'projectListPresenter stonCritical projectInfoTab projectLabel projectDictionaryTabs comparisonPresenter comparisonTab'
 	classVariableNames: ''
 	poolDictionaries: ''
