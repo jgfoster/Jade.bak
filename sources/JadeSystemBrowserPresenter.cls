@@ -2156,7 +2156,8 @@ preferencesMenuStrings
 promptForSelector
 
 	| string list stream |
-	(string := Prompter prompt: 'Enter selector:') isNil ifTrue: [^nil].
+	ignoreNextSetFocusEvent := true.
+	(string := Prompter prompt: 'Enter a selector:') isNil ifTrue: [^nil].
 	((string includes: $:) and: [string includes: Character space]) ifTrue: [
 		list := string subStrings: Character space.
 		list := list select: [:each | each last = $:].
@@ -2481,6 +2482,10 @@ selectClass: aString selector: methodString
 	Array with: className with: dictionaryName with: catetory with: packageName.
 "
 	| string list className isMeta array |
+	updateProcess ifNotNil: [		"https://github.com/jgfoster/Jade/issues/109"
+		updateProcess terminate.
+		updateProcess := nil.
+	].
 	GciSession log: 'JadeSystemBrowserPresenter>>selectClass - ' , aString , ' selector: ' , methodString.
 	string := environment printString , ' findClass'.
 	string := self gciSession encode: string.
