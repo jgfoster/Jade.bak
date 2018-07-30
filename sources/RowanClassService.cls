@@ -23,10 +23,11 @@ classCreationTemplate
 classMethodsUpdate: presenter
 	| visibleMethods |
 	visibleMethods := OrderedCollection new.
-	filters isEmpty
+	(filters isEmpty or: [filterType = 'variables'])
 		ifTrue: [visibleMethods := methods]
 		ifFalse: 
-			[visibleMethods := methods select: [:methodService | filters includes: methodService category]].
+			[filterType = 'categories'
+				ifTrue: [visibleMethods := methods select: [:methodService | filters includes: methodService category]]].
 	visibleMethods
 		do: [:svc | svc inSelectedPackage: (self selectedPackageServiceNames includes: svc packageName)].
 	presenter list: visibleMethods!
@@ -71,7 +72,6 @@ filterType: anObject
 
 filterUpdate: presenter
 	| selections availableSelections |
-	Transcript cr; show: allFilters printString. 
 	presenter list = allFilters ifTrue: [^self].
 	selections := presenter selections.
 	presenter list: allFilters.

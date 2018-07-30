@@ -228,7 +228,7 @@ createSchematicWiringForMethodCategoryList
 createSchematicWiringForMethodFilterTabs
 	methodFilterTabs
 		when: #currentCardChanged
-		send: #refreshClass
+		send: #filterTabChanged
 		to: self!
 
 createSchematicWiringForMethodList
@@ -284,6 +284,13 @@ createSchematicWiringForProjectList
 		when: #'selectionChanged'		send: #'updateProject' 			to: self
 !
 
+createSchematicWiringForVariableList
+
+	variableListPresenter
+		when: #'selectionChanged'		send: #refreshClass	to: self;
+		yourself.
+!
+
 createStateEntry
 
 	^projectDictionaryTabs currentCard == projectListPresenter view!
@@ -301,6 +308,10 @@ editSaveMethod
 		do: [:ex | self reportCompileError: ex list].
 	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
 	methodSourcePresenter view goto: caretPosition!
+
+filterTabChanged
+	categoryListPresenter resetSelection.
+	self refreshClass!
 
 getViews
 	classHierarchyTabs := self view viewNamed: 'classHierarchyTabs'.
@@ -652,7 +663,9 @@ setFilterType: selection
 
 setMethodFilter
 	| filters |
-	filters := categoryListPresenter selections. 
+	self isCategoriesTabSelected
+		ifTrue: [filters := categoryListPresenter selections]
+		ifFalse: [filters := variableListPresenter selections].
 	classListPresenter list do: [:service | service filters: filters]!
 
 showComparisonTab
@@ -890,8 +903,10 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForPackageList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForProjectDictionaryList!create schemantic wiring!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForProjectList!create schemantic wiring!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForVariableList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createStateEntry!accessing!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #getViews!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassPackage!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoMethodPackage!menu handlers!private! !
@@ -914,7 +929,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #pushToGit!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refresh!project menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #refreshClass!event handlers!public!services!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #refreshClass!event handlers!public!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeComparisonTab!private!selection!text tabs! !
@@ -927,7 +942,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectPackage:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setFilterType:!event handlers!private!services! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers!public!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers!private!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #showComparisonTab!private!selection!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #showPackages!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
