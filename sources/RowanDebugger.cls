@@ -4,7 +4,7 @@ JadeDebugger subclass: #RowanDebugger
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	classInstanceVariableNames: ''!
+	classInstanceVariableNames: 'debuggerClass'!
 RowanDebugger guid: (GUID fromString: '{cae790de-8a45-49eb-813a-6cb32999cd4d}')!
 RowanDebugger comment: ''!
 !RowanDebugger categoriesForClass!Unclassified! !
@@ -61,4 +61,21 @@ updateServices: services
 !RowanDebugger categoriesFor: #registerPresentersForUpdates!public! !
 !RowanDebugger categoriesFor: #update:afterStonReplication:!public! !
 !RowanDebugger categoriesFor: #updateServices:!public! !
+
+!RowanDebugger class methodsFor!
+
+debuggerClass
+
+	^debuggerClass ifNil: [JadeDebugger]!
+
+debuggerClass: aDebugger
+"
+	RowanDebugger debuggerClass: nil.
+	RowanDebugger debuggerClass: JadeDebugger.
+	RowanDebugger debuggerClass: RowanDebugger.
+"
+	debuggerClass := aDebugger.
+! !
+!RowanDebugger class categoriesFor: #debuggerClass!public! !
+!RowanDebugger class categoriesFor: #debuggerClass:!public! !
 
