@@ -27,6 +27,32 @@ basicRemoveMethods
 	self setClassMeta. 
 	self removeMethodsFrom: (Array with: service)!
 
+browseHierarchyImplementors
+
+	self browseHierarchyImplementorsOf: self selectedMethodName.
+!
+
+browseHierarchyImplementorsOf: string
+	| service className |
+	className := (classListPresenter selectionIfNone: [^self]) name.
+	service := RowanQueryService command: #hierarchyImplementorsOf:inClass:
+				withArgs: (Array with: string asSymbol with: className).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: string!
+
+browseHierarchySenders
+
+	self browseHierarchySendersOf: self selectedMethodName.
+!
+
+browseHierarchySendersOf: string
+	| service className |
+	className := (classListPresenter selectionIfNone: [^self]) name.
+	service := RowanQueryService command: #hierarchySendersOf:inClass:
+				withArgs: (Array with: string asSymbol with: className).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: string!
+
 browseImplementorsOf: string
 	| service |
 	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
@@ -285,7 +311,7 @@ makeDefault
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
-		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2; fileOutMethod; gotoMethodPackage.
+		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseHierarchyImplementors; browseHierarchySenders; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2; fileOutMethod; gotoMethodPackage.
 	].
 	^#(
 		'&Methods'
@@ -293,6 +319,10 @@ methodsMenuStrings
 		'Browse Implementors of ...//browseImplementorsOf'
 		'Browse &Senders//browseSenders'
 		'Browse Senders of ...//browseSendersOf'
+		'-'
+		'Browse Hierarchy Implementors//browseHierarchyImplementors'
+		'Browse Hierarchy Senders//browseHierarchySenders'
+		'-'
 		'Browse Methods &Containing ...//browseMethodsContaining'
 		'Browse &History//browseMethodHistory'
 		'BrowseMethod &Pragmas ...//browseMethodPragmas'
@@ -774,6 +804,10 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!public!request string! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementors!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementorsOf:!menu handlers!public!queries! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySenders!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySendersOf:!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseImplementorsOf:!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
