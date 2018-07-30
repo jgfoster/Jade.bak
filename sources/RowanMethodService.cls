@@ -190,6 +190,10 @@ selector
 selector: anObject
 	selector := anObject!
 
+selectorsDisplayString
+
+	^className, '>>', selector!
+
 source
 	^source!
 
@@ -288,6 +292,7 @@ user: anObject
 !RowanMethodService categoriesFor: #selectedPackageServices:!accessing!private! !
 !RowanMethodService categoriesFor: #selector!accessing!private! !
 !RowanMethodService categoriesFor: #selector:!accessing!private! !
+!RowanMethodService categoriesFor: #selectorsDisplayString!displaying!public! !
 !RowanMethodService categoriesFor: #source!accessing!private! !
 !RowanMethodService categoriesFor: #source:!accessing!private! !
 !RowanMethodService categoriesFor: #stepPoints!public! !

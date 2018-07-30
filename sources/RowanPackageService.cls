@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanPackageService
-	instanceVariableNames: 'classes'
+	instanceVariableNames: 'classes defaultTemplate'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -29,6 +29,12 @@ classesUpdate: presenter
 createPackageNamed: packageName inProject: projectName
 
 	transport send: #createPackageNamed:inProject: to: remoteService withAll: (Array with: packageName with: projectName)!
+
+defaultTemplate
+	^defaultTemplate!
+
+defaultTemplate: anObject
+	defaultTemplate := anObject!
 
 displayStringFor: displayThing
 	name ifNil: [^self].
@@ -84,6 +90,8 @@ replicateFrom: newService
 !RowanPackageService categoriesFor: #classCreationTemplate!public!rowan! !
 !RowanPackageService categoriesFor: #classesUpdate:!public!updating! !
 !RowanPackageService categoriesFor: #createPackageNamed:inProject:!public!rowan! !
+!RowanPackageService categoriesFor: #defaultTemplate!accessing!private! !
+!RowanPackageService categoriesFor: #defaultTemplate:!accessing!private! !
 !RowanPackageService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanPackageService categoriesFor: #genericClassCreationTemplate!public!rowan! !
 !RowanPackageService categoriesFor: #isPackageService!public!testing! !
