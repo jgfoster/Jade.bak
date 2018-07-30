@@ -152,43 +152,84 @@ createComponents
 	comparisonPresenter := self add: DifferencesPresenter new name: 'comparisonTab'.!
 
 createSchematicWiring
-
 	super createSchematicWiring.
-	self createSchematicWiringForProjectList
-!
+	self
+		createSchematicWiringForProjectList;
+		createSchematicWiringForMethodFilterTabs!
 
 createSchematicWiringForClassList
-	classListPresenter				
-		when: #'drag:'					send: #'onDragClassList:'				to: self;
-		when: #'dragCut:'				send: #'onDragCutClassList:'			to: self;
-		when: #'dragOver:'				send: #'onDragOverClassList:'			to: self;
-		when: #'drop:'					send: #'onDropOnClassList:'			to: self;
-		when: #'keyTyped:'				send: #'delayUpdate'					to: self;
-		when: #'selectionChanging:'		send: #'aboutToChange:'				to: self;
-		when: #'selectionChanged'			send: #'selectedClassChanged:'			to: self	with: true;
-		when: #'selectionChanged'			send: #updateClass					to: self;
-
-		when: #labelOf:changedTo: 		send: #labelOfClass:changedTo:			to: self;
-		when: #aboutToEditLabel:accept: 	send: #aboutToEditClassLabel:accept:	to: self;
-		when: #labelOf:editedTo:accept: 	send: #labelOfClass:editedTo:accept:		to: self
-!
+	classListPresenter
+		when: #drag:
+			send: #onDragClassList:
+			to: self;
+		when: #dragCut:
+			send: #onDragCutClassList:
+			to: self;
+		when: #dragOver:
+			send: #onDragOverClassList:
+			to: self;
+		when: #drop:
+			send: #onDropOnClassList:
+			to: self;
+		when: #keyTyped:
+			send: #delayUpdate
+			to: self;
+		when: #selectionChanging:
+			send: #aboutToChange:
+			to: self;
+		when: #selectionChanged
+			send: #selectedClassChanged:
+			to: self
+			with: true;
+		when: #selectionChanged
+			send: #refreshClass
+			to: self;
+		when: #labelOf:changedTo:
+			send: #labelOfClass:changedTo:
+			to: self;
+		when: #aboutToEditLabel:accept:
+			send: #aboutToEditClassLabel:accept:
+			to: self;
+		when: #labelOf:editedTo:accept:
+			send: #labelOfClass:editedTo:accept:
+			to: self!
 
 createSchematicWiringForInstanceClassTabs
 	instanceClassTabs
-		when: #currentCardChanging: send: #aboutToChange: to: self;
-		when: #currentCardChanged send: #updateClass to: self!
+		when: #currentCardChanging:
+			send: #aboutToChange:
+			to: self;
+		when: #currentCardChanged
+			send: #refreshClass
+			to: self!
 
 createSchematicWiringForMethodCategoryList
-
 	categoryListPresenter
-		when: #'dragOver:'			send: #'onDragOverMethodCategory:'	to: self;
-		when: #'drop:'				send: #'onDropOnMethodCategory:'	to: self;
-		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
-		when: #'selectionChanged'		send: #'updateTabLabel'			to: self;
-		when: #'selectionChanged'		send: #updateClass				to: self;
-		yourself.
-!
+		when: #dragOver:
+			send: #onDragOverMethodCategory:
+			to: self;
+		when: #drop:
+			send: #onDropOnMethodCategory:
+			to: self;
+		when: #keyTyped:
+			send: #delayUpdate
+			to: self;
+		when: #selectionChanging:
+			send: #aboutToChange:
+			to: self;
+		when: #selectionChanged
+			send: #updateTabLabel
+			to: self;
+		when: #selectionChanged
+			send: #refreshClass
+			to: self;
+		yourself!
+
+createSchematicWiringForMethodFilterTabs
+	methodFilterTabs
+		when: #currentCardChanged
+		send: #refreshClass
+		to: self!
 
 createSchematicWiringForMethodList
 
@@ -514,6 +555,18 @@ queryCommand: aCommandQuery
 refresh
 	MessageBox notify: 'This feature not yet implemented'!
 
+refreshClass
+	| selection |
+	self setClassMeta.
+	self setMethodFilter.
+	selection := classListPresenter selectionIfNone: 
+					[categoryListPresenter clear.
+					^methodListPresenter clear].
+	selection selectedPackageServices: packageListPresenter selections.
+	self setFilterType: selection.
+	self updateServices: (Array with: selection).
+	self updateClassInfo!
+
 registerClassData
 	"temporarily disabled"!
 
@@ -523,7 +576,8 @@ registerPresentersForUpdates
 	BrowserUpdate current register: projectListPresenter with: #projectsUpdate:.
 	BrowserUpdate current register: packageListPresenter with: #projectPackagesUpdate:.
 	BrowserUpdate current register: classListPresenter with: #classesUpdate:.
-	BrowserUpdate current register: categoryListPresenter with: #categoryUpdate:.
+	BrowserUpdate current register: categoryListPresenter with: #filterUpdate:.
+	BrowserUpdate current register: variableListPresenter with: #filterUpdate:.
 	BrowserUpdate current register: methodListPresenter with: #classMethodsUpdate:.
 	BrowserUpdate current register: methodSourcePresenter with: #methodSourceUpdate:.!
 
@@ -591,6 +645,11 @@ setClassMeta
 	meta := instanceClassTabs currentCard name = 'classTab'.
 	classListPresenter list do: [:service | service meta: meta]!
 
+setFilterType: selection
+	self isCategoriesTabSelected
+		ifTrue: [selection filterType: 'categories']
+		ifFalse: [selection filterType: 'variables']!
+
 setMethodFilter
 	| filters |
 	filters := categoryListPresenter selections. 
@@ -631,17 +690,6 @@ updateAndSelectA: aView
 	self updateMenuBar.
 	aView notNil ifTrue: [aView ensureVisible].
 !
-
-updateClass
-	| selection |
-	self setClassMeta.
-	self setMethodFilter.
-	selection := classListPresenter selectionIfNone: 
-					[categoryListPresenter clear.
-					^methodListPresenter clear].
-	selection selectedPackageServices: packageListPresenter selections. 
-	self updateServices: (Array with: selection).
-	self updateClassInfo!
 
 updateClasses
 	classListPresenter clear.
@@ -836,6 +884,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForInstanceClassTabs!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForMethodCategoryList!create schemantic wiring!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForMethodFilterTabs!create schemantic wiring!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForMethodList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForPackageDictionaryTabs!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForPackageList!create schemantic wiring!public! !
@@ -865,6 +914,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #pushToGit!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refresh!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #refreshClass!event handlers!public!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeComparisonTab!private!selection!text tabs! !
@@ -875,7 +925,8 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectorsString!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectPackage:!private!selection! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers!public!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #setFilterType:!event handlers!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #showComparisonTab!private!selection!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #showPackages!project menu handlers!public! !
@@ -884,7 +935,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #unloadProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #update:afterStonReplication:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #updateClass!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateClasses!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateClassInfo!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !

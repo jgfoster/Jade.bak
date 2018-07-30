@@ -10,9 +10,6 @@ RowanService comment: ''!
 !RowanService categoriesForClass!Kernel-Objects! !
 !RowanService methodsFor!
 
-categoryUpdate: presenter
-	!
-
 classCategoryUpdate: presenter
 	!
 
@@ -77,6 +74,9 @@ dictionaryUpdate: presenter
 displayString
 
 	^self name!
+
+filterUpdate: presenter
+	!
 
 frameListUpdate: aPresenter!
 
@@ -210,7 +210,6 @@ updateSuperclassSelectionFor: presenter!
 variableDataUpdate: aPresenter!
 
 variableListUpdate: aPresenter! !
-!RowanService categoriesFor: #categoryUpdate:!public!updating! !
 !RowanService categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanService categoriesFor: #classCommentUpdate:!public!updating! !
 !RowanService categoriesFor: #classDefinitionUpdate:!public!updating! !
@@ -229,6 +228,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #createClientFrom:!private! !
 !RowanService categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanService categoriesFor: #displayString!displaying!public! !
+!RowanService categoriesFor: #filterUpdate:!public!updating! !
 !RowanService categoriesFor: #frameListUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !
 !RowanService categoriesFor: #initializeRemoteService!Init / Release!private! !

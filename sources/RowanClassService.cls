@@ -16,14 +16,6 @@ allFilters
 allFilters: anObject
 	allFilters := anObject!
 
-categoryUpdate: presenter
-	| selections  availableSelections|
-	presenter list = allFilters ifTrue:[^self].
-	selections := presenter selections. 
-	presenter list: allFilters. 
-	availableSelections := allFilters select: [:filter | selections includes: filter].
-	presenter selections: availableSelections. !
-
 classCreationTemplate
 
 	^transport send: #classCreationTemplate to: self remoteService!
@@ -70,6 +62,21 @@ filters
 
 filters: anObject
 	filters := anObject!
+
+filterType
+	^filterType!
+
+filterType: anObject
+	filterType := anObject!
+
+filterUpdate: presenter
+	| selections availableSelections |
+	Transcript cr; show: allFilters printString. 
+	presenter list = allFilters ifTrue: [^self].
+	selections := presenter selections.
+	presenter list: allFilters.
+	availableSelections := allFilters select: [:filter | selections includes: filter].
+	presenter selections: availableSelections!
 
 initialize
 	
@@ -151,7 +158,6 @@ template: anObject
 	template := anObject! !
 !RowanClassService categoriesFor: #allFilters!accessing!private! !
 !RowanClassService categoriesFor: #allFilters:!accessing!private! !
-!RowanClassService categoriesFor: #categoryUpdate:!public!updating! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #classMethodsUpdate:!public!updating! !
 !RowanClassService categoriesFor: #comment!accessing!public! !
@@ -163,6 +169,9 @@ template: anObject
 !RowanClassService categoriesFor: #displayStringFor:!printing!public! !
 !RowanClassService categoriesFor: #filters!accessing!public! !
 !RowanClassService categoriesFor: #filters:!accessing!public! !
+!RowanClassService categoriesFor: #filterType!accessing!private! !
+!RowanClassService categoriesFor: #filterType:!accessing!private! !
+!RowanClassService categoriesFor: #filterUpdate:!public!updating! !
 !RowanClassService categoriesFor: #initialize!Init / Release!public! !
 !RowanClassService categoriesFor: #isClassService!public!testing! !
 !RowanClassService categoriesFor: #isDefined!public!testing! !

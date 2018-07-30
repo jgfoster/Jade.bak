@@ -131,7 +131,6 @@ package methodNames
 	add: #MethodSourcePresenter -> #fileSave;
 	add: #Object -> #rowanFixMe;
 	add: #ObjectLogBrowser -> #debug:;
-	add: #Presenter -> #categoryUpdate:;
 	add: #Presenter -> #classCategoryUpdate:;
 	add: #Presenter -> #classCommentUpdate:;
 	add: #Presenter -> #classDefinitionUpdate:;
@@ -140,6 +139,7 @@ package methodNames
 	add: #Presenter -> #classHierarchyUpdate:;
 	add: #Presenter -> #classMethodsUpdate:;
 	add: #Presenter -> #dictionaryUpdate:;
+	add: #Presenter -> #filterUpdate:;
 	add: #Presenter -> #globalsUpdate:;
 	add: #Presenter -> #methodSourceUpdate:;
 	add: #Presenter -> #methodsUpdate:;
@@ -160,7 +160,6 @@ package methodNames
 	add: #Presenter -> #updateSelectionsForUpdate:;
 	add: #Presenter -> #updateSelectorFor:;
 	add: #Presenter -> #updateSuperclassSelectionFor:;
-	add: #RowanCommandResult -> #categoryUpdate:;
 	add: #RowanCommandResult -> #classCategoryUpdate:;
 	add: #RowanCommandResult -> #classCommentUpdate:;
 	add: #RowanCommandResult -> #classDefinitionUpdate:;
@@ -170,6 +169,7 @@ package methodNames
 	add: #RowanCommandResult -> #classMethodsUpdate:;
 	add: #RowanCommandResult -> #classUpdate:;
 	add: #RowanCommandResult -> #dictionaryUpdate:;
+	add: #RowanCommandResult -> #filterUpdate:;
 	add: #RowanCommandResult -> #globalsUpdate:;
 	add: #RowanCommandResult -> #methodFilterUpdate:;
 	add: #RowanCommandResult -> #methodSourceUpdate:;
@@ -1985,9 +1985,6 @@ debug: anArray
 
 !Presenter methodsFor!
 
-categoryUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update categoryUpdate: self]!
-
 classCategoryUpdate:  browserUpdate
 	browserUpdate updates do: [:update | update classCategoryUpdate: self]!
 
@@ -2011,6 +2008,9 @@ classMethodsUpdate:  browserUpdate
 
 dictionaryUpdate:  browserUpdate
 	browserUpdate updates do: [:update | update dictionaryUpdate: self]!
+
+filterUpdate: browserUpdate
+	browserUpdate updates do: [:update | update filterUpdate: self]!
 
 globalsUpdate:  browserUpdate
 	browserUpdate updates do: [:update | update globalsUpdate: self]!
@@ -2080,7 +2080,6 @@ updateSelectorFor: browserUpdate
 
 updateSuperclassSelectionFor: browserUpdate
 	browserUpdate updates do: [:update | update updateSuperclassSelectionFor: self]! !
-!Presenter categoriesFor: #categoryUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #classCategoryUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #classCommentUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #classDefinitionUpdate:!Jadeite!public! !
@@ -2089,6 +2088,7 @@ updateSuperclassSelectionFor: browserUpdate
 !Presenter categoriesFor: #classHierarchyUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #classMethodsUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #dictionaryUpdate:!Jadeite!public! !
+!Presenter categoriesFor: #filterUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #globalsUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #methodSourceUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #methodsUpdate:!Jadeite!public! !
@@ -2111,9 +2111,6 @@ updateSuperclassSelectionFor: browserUpdate
 !Presenter categoriesFor: #updateSuperclassSelectionFor:!Jadeite!public! !
 
 !RowanCommandResult methodsFor!
-
-categoryUpdate: presenter
-	!
 
 classCategoryUpdate: presenter
 	!
@@ -2141,6 +2138,9 @@ classUpdate: presenter
 	!
 
 dictionaryUpdate: presenter
+	!
+
+filterUpdate: presenter
 	!
 
 globalsUpdate: presenter!
@@ -2186,7 +2186,6 @@ updatePackageSelectionsFor: presenter
 updateSelectorFor: presenter!
 
 updateSuperclassSelectionFor: presenter! !
-!RowanCommandResult categoriesFor: #categoryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classCommentUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classDefinitionUpdate:!public!updating! !
@@ -2196,6 +2195,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanCommandResult categoriesFor: #classMethodsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #filterUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodFilterUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodSourceUpdate:!public!updating! !
