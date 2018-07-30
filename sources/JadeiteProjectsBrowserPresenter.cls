@@ -520,7 +520,6 @@ registerClassData
 registerPresentersForUpdates
 	"copied to RowanDebugger"
 
-	super registerPresentersForUpdates.
 	BrowserUpdate current register: projectListPresenter with: #projectsUpdate:.
 	BrowserUpdate current register: packageListPresenter with: #projectPackagesUpdate:.
 	BrowserUpdate current register: classListPresenter with: #classesUpdate:.
@@ -646,7 +645,7 @@ updateClass
 
 updateClasses
 	classListPresenter clear.
-	self updateServices: packageListPresenter selections!
+	self updateServices: packageListPresenter selections. !
 
 updateClassInfo
 	| service |
@@ -726,10 +725,6 @@ updatePackage
 updatePackageInfo
 	| service |
 	service := packageListPresenter selectionIfNone: [^self].
-	service
-		command: #defaultTemplate;
-		commandArgs: Array new.
-	self issueCommand: (Array with: service).
 	classDefinitionPresenter value: service defaultTemplate.
 	classDefinitionPresenter view
 		backcolor: Color white;

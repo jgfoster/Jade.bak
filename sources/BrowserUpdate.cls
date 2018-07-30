@@ -32,13 +32,9 @@ register: presenter with: selector
 	removed, it's events go with it."
 	self
 		when: #updateReady
-		send: #updateReadyForPresenter:selector:
-		to: self
-		withArguments: (Array with: presenter with: selector) !
-
-unregister: aPresenter
-
-	self removeEventsTriggeredFor: aPresenter!
+		send: selector
+		to: presenter
+		withArguments: (Array with: self). !
 
 update: services afterStonReplication: stonResults
 	"assume we get back the 'same' services as we sent"
@@ -52,9 +48,6 @@ update: services afterStonReplication: stonResults
 
 updateReady
 	updates isEmpty ifFalse: [self trigger: #updateReady]!
-
-updateReadyForPresenter: presenter selector: selector
-	updates do: [:update | update perform: selector with: presenter]!
 
 updates
 	^updates!
@@ -71,10 +64,8 @@ updates: aCollection
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
 !BrowserUpdate categoriesFor: #initializeUpdates!initialization!public! !
 !BrowserUpdate categoriesFor: #register:with:!public!registeringPresenters! !
-!BrowserUpdate categoriesFor: #unregister:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #update:afterStonReplication:!public!updating! !
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !
-!BrowserUpdate categoriesFor: #updateReadyForPresenter:selector:!public!updating! !
 !BrowserUpdate categoriesFor: #updates!accessing!public! !
 !BrowserUpdate categoriesFor: #updates:!accessing!public! !
 
