@@ -49,6 +49,9 @@ clientDefinitionClass
 createSampleMethod
 	transport send: #createSampleMethod to: remoteService.  !
 
+displayClassName
+	^className , (meta ifTrue: [' class'] ifFalse: [String new])!
+
 displayOn: aStream
 	aStream
 		nextPutAll: (className ifNil: ['?']);
@@ -256,6 +259,7 @@ user: anObject
 !RowanMethodService categoriesFor: #className:!accessing!private! !
 !RowanMethodService categoriesFor: #clientDefinitionClass!private! !
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
+!RowanMethodService categoriesFor: #displayClassName!displaying!public! !
 !RowanMethodService categoriesFor: #displayOn:!displaying!public! !
 !RowanMethodService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanMethodService categoriesFor: #hash!comparing!public! !
