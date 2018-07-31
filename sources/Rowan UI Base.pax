@@ -21,6 +21,7 @@ package classNames
 	add: #RowanClassService;
 	add: #RowanDebugger;
 	add: #RowanDebuggerService;
+	add: #RowanDebuggerTestCase;
 	add: #RowanDictionaryUpdate;
 	add: #RowanFrameService;
 	add: #RowanGlobalsUpdate;
@@ -469,7 +470,7 @@ JadeDebugger subclass: #RowanDebugger
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	classInstanceVariableNames: ''!
+	classInstanceVariableNames: 'debuggerClass semaphore'!
 JadeTranscript subclass: #RowanTranscript
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -512,6 +513,11 @@ RowanShell subclass: #RowanPackageShell
 	classInstanceVariableNames: ''!
 RowanShell subclass: #RowanProjectListShell
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TestCase subclass: #RowanDebuggerTestCase
+	instanceVariableNames: 'debugger gciSession process'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -651,7 +657,7 @@ verifyRowanLoaded
 
 debugError
 
-	^JadeDebugger reportError: self.
+	^RowanDebugger debuggerClass reportError: self.
 
 ! !
 !GsError categoriesFor: #debugError!public! !
@@ -802,7 +808,7 @@ debugProcess
 	| oop oopType |
 	oop := (processesPresenter selection at: 2) asNumber.
 	oopType := gciSession oopTypeWithOop: oop.
-	JadeDebugger 
+	RowanDebugger debuggerClass 
 		openOn: (GsProcess session: gciSession oopType: oopType) 
 		message: 'background process'
 		terminateOnClose: false.
@@ -1560,7 +1566,7 @@ runClassTests
 	[
 		self gciSession executeString: selection.
 	] on: GsError do: [:ex | 
-		JadeDebugger openDebuggerOnException: ex.
+		RowanDebugger debuggerClass openDebuggerOnException: ex.
 	].
 !
 
@@ -2016,7 +2022,7 @@ debug: anArray
 
 	| oopType |
 	oopType := gciSession oopTypeWithOop: (anArray at: 9) asNumber.
-	JadeDebugger 
+	RowanDebugger debuggerClass 
 		openOn: (GsProcess session: gciSession oopType: oopType) 
 		message: (anArray at: 8)
 		terminateOnClose: false.
