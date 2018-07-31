@@ -10,12 +10,24 @@ RowanVariableService comment: ''!
 !RowanVariableService categoriesForClass!Kernel-Objects! !
 !RowanVariableService methodsFor!
 
+_key
+
+	^key!
+
 key
+	"provided to match expectation of UI for JadeDebugger"
+
 	^oop printString -> key!
+
+oop
+
+	^oop!
 
 value
 
 	^value! !
+!RowanVariableService categoriesFor: #_key!public! !
 !RowanVariableService categoriesFor: #key!public! !
+!RowanVariableService categoriesFor: #oop!public! !
 !RowanVariableService categoriesFor: #value!public! !
 
