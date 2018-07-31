@@ -12,7 +12,11 @@ RowanDebuggerTestCase comment: ''!
 
 closeDebuggers
 
-	RowanDebugger allInstances do: [:each | each view close. each become: Object new].!
+	RowanDebugger allInstances do: [:each | 
+		each view close. 
+		GciSession allInstances first removeEventsTriggeredFor: each.
+		each become: Object new.
+	].!
 
 openDebuggerOn: aString
 
