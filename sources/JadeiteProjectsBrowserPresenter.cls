@@ -303,7 +303,7 @@ editSaveClass
 		commandArgs: (Array with: classDefinitionPresenter value).
 	[self issueCommand: (Array with: packageService)] on: GsCompileError
 		do: [:ex | ^self handleClassCompileError: ex].
-	classDefinitionPresenter view isModified: false!
+	classDefinitionPresenter view isModified: false.!
 
 editSaveMethod
 	| caretPosition firstVisibleLine service |
@@ -602,6 +602,14 @@ registerPresentersForUpdates
 	BrowserUpdate current register: methodListPresenter with: #classMethodsUpdate:.
 	BrowserUpdate current register: methodSourcePresenter with: #methodSourceUpdate:.!
 
+removeClass
+	| packageService |
+	packageService := packageListPresenter selection.
+	packageService
+		command: #removeClass:;
+		commandArgs: (Array with: classListPresenter selection).
+	self issueCommand: (Array with: packageService)!
+
 removeComparisonTab
 	self textTabs remove: self comparisonTab ifAbsent: []!
 
@@ -891,12 +899,12 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementors!menu handlers!public!queries! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementorsOf:!menu handlers!public!queries! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySenders!menu handlers!public!queries! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySendersOf:!menu handlers!public!queries! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseImplementorsOf:!menu handlers!public!queries! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public!queries! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public!queries! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementorsOf:!public!queries! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySenders!public!queries! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySendersOf:!public!queries! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodsContaining!public!queries! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseSendersOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #cloneProject!project menu handlers!public! !
@@ -943,6 +951,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshClass!event handlers!public!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #removeClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeComparisonTab!private!selection!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodCategories!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodsFrom:!private!services! !
