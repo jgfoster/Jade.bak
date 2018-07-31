@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods selectedPackageServices packageName definedPackageName'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -16,14 +16,6 @@ allFilters
 allFilters: anObject
 	allFilters := anObject!
 
-categoryUpdate: presenter
-	| selections  availableSelections|
-	presenter list = allFilters ifTrue:[^self].
-	selections := presenter selections. 
-	presenter list: allFilters. 
-	availableSelections := allFilters select: [:filter | selections includes: filter].
-	presenter selections: availableSelections. !
-
 classCreationTemplate
 
 	^transport send: #classCreationTemplate to: self remoteService!
@@ -31,10 +23,11 @@ classCreationTemplate
 classMethodsUpdate: presenter
 	| visibleMethods |
 	visibleMethods := OrderedCollection new.
-	filters isEmpty
+	(filters isEmpty or: [filterType = 'variables'])
 		ifTrue: [visibleMethods := methods]
 		ifFalse: 
-			[visibleMethods := methods select: [:methodService | filters includes: methodService category]].
+			[filterType = 'categories'
+				ifTrue: [visibleMethods := methods select: [:methodService | filters includes: methodService category]]].
 	visibleMethods
 		do: [:svc | svc inSelectedPackage: (self selectedPackageServiceNames includes: svc packageName)].
 	presenter list: visibleMethods!
@@ -70,6 +63,20 @@ filters
 
 filters: anObject
 	filters := anObject!
+
+filterType
+	^filterType!
+
+filterType: anObject
+	filterType := anObject!
+
+filterUpdate: presenter
+	| selections availableSelections |
+	presenter list = allFilters ifTrue: [^self].
+	selections := presenter selections.
+	presenter list: allFilters.
+	availableSelections := allFilters select: [:filter | selections includes: filter].
+	presenter selections: availableSelections!
 
 initialize
 	
@@ -151,7 +158,6 @@ template: anObject
 	template := anObject! !
 !RowanClassService categoriesFor: #allFilters!accessing!private! !
 !RowanClassService categoriesFor: #allFilters:!accessing!private! !
-!RowanClassService categoriesFor: #categoryUpdate:!public!updating! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #classMethodsUpdate:!public!updating! !
 !RowanClassService categoriesFor: #comment!accessing!public! !
@@ -163,6 +169,9 @@ template: anObject
 !RowanClassService categoriesFor: #displayStringFor:!printing!public! !
 !RowanClassService categoriesFor: #filters!accessing!public! !
 !RowanClassService categoriesFor: #filters:!accessing!public! !
+!RowanClassService categoriesFor: #filterType!accessing!private! !
+!RowanClassService categoriesFor: #filterType:!accessing!private! !
+!RowanClassService categoriesFor: #filterUpdate:!public!updating! !
 !RowanClassService categoriesFor: #initialize!Init / Release!public! !
 !RowanClassService categoriesFor: #isClassService!public!testing! !
 !RowanClassService categoriesFor: #isDefined!public!testing! !

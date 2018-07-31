@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -16,7 +16,7 @@ RowanMethodService comment: ''!
 
 basicSubSuperIcon
 	hasSupers ifTrue: [^JadeSystemBrowserPresenter overriddenIcon].
-	hasSubs ifTrue: [^RowanProjectsBrowserPresenter downArrowIcon].
+	hasSubs ifTrue: [^JadeiteProjectsBrowserPresenter downArrowIcon].
 	^Icon blank!
 
 breakPoints
@@ -49,6 +49,9 @@ clientDefinitionClass
 createSampleMethod
 	transport send: #createSampleMethod to: remoteService.  !
 
+displayClassName
+	^className , (meta ifTrue: [' class'] ifFalse: [String new])!
+
 displayOn: aStream
 	aStream
 		nextPutAll: (className ifNil: ['?']);
@@ -59,7 +62,7 @@ displayStringFor: displayThing
 	isExtension
 		ifTrue: 
 			[displayThing forecolor: Color darkMagenta.
-			inSelectedPackage ifFalse: [displayThing font beItalic; beUnderlined ]]!
+			inSelectedPackage ifFalse: [displayThing font beUnderlined ]]!
 
 hash
 	^(selector hash bitXor: className hash) bitXor: meta hash!
@@ -170,7 +173,7 @@ removeSelector: aSelector class: class
 	!
 
 replicateFrom: newService
-	^self isMethodService
+	^(self isMethodService and: [newService isMethodService])
 		ifTrue: 
 			[self = newService ifTrue: [super replicateFrom: newService]]!
 
@@ -178,11 +181,21 @@ sampleClassInstance
 
 	^transport send: #sampleClassInstance to: remoteService!
 
+selectedPackageServices
+	^selectedPackageServices!
+
+selectedPackageServices: anObject
+	selectedPackageServices := anObject!
+
 selector
 	^selector!
 
 selector: anObject
 	selector := anObject!
+
+selectorsDisplayString
+
+	^className, '>>', selector!
 
 source
 	^source!
@@ -246,6 +259,7 @@ user: anObject
 !RowanMethodService categoriesFor: #className:!accessing!private! !
 !RowanMethodService categoriesFor: #clientDefinitionClass!private! !
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
+!RowanMethodService categoriesFor: #displayClassName!displaying!public! !
 !RowanMethodService categoriesFor: #displayOn:!displaying!public! !
 !RowanMethodService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanMethodService categoriesFor: #hash!comparing!public! !
@@ -278,8 +292,11 @@ user: anObject
 !RowanMethodService categoriesFor: #removeSelector:class:!public!remote! !
 !RowanMethodService categoriesFor: #replicateFrom:!public!updating! !
 !RowanMethodService categoriesFor: #sampleClassInstance!examples!public! !
+!RowanMethodService categoriesFor: #selectedPackageServices!accessing!private! !
+!RowanMethodService categoriesFor: #selectedPackageServices:!accessing!private! !
 !RowanMethodService categoriesFor: #selector!accessing!private! !
 !RowanMethodService categoriesFor: #selector:!accessing!private! !
+!RowanMethodService categoriesFor: #selectorsDisplayString!displaying!public! !
 !RowanMethodService categoriesFor: #source!accessing!private! !
 !RowanMethodService categoriesFor: #source:!accessing!private! !
 !RowanMethodService categoriesFor: #stepPoints!public! !
