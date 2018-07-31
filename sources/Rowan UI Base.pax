@@ -76,6 +76,8 @@ package methodNames
 	add: #JadeLoginShell -> #aboutJadeite;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
+	add: #JadePresenterA -> #issueCommand:;
+	add: #JadePresenterA -> #update:afterStonReplication:;
 	add: #JadeProcessBrowser -> #debugProcess;
 	add: #JadeServer -> #_describeMethod:;
 	add: #JadeServer -> #sbAddPackage:;
@@ -342,7 +344,7 @@ RowanClassesUpdate subclass: #RowanSuperclassUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanBrowserService
-	instanceVariableNames: 'projects'
+	instanceVariableNames: 'projects removedMethods'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -797,9 +799,21 @@ browseSendersOf: aGsMethodOrString
 	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseSendersOf: aGsMethodOrString;
 		yourself.
-! !
+!
+
+issueCommand: services
+	| stonString stonResultString |
+	stonString := STON toString: services.
+	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
+		ensure: [services do: [:service | service clearCommand]].
+	self update: services afterStonReplication: stonResultString!
+
+update: services afterStonReplication: stonResults
+	BrowserUpdate current update: services afterStonReplication: stonResults! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
+!JadePresenterA categoriesFor: #issueCommand:!private!services! !
+!JadePresenterA categoriesFor: #update:afterStonReplication:!private!services! !
 
 !JadeProcessBrowser methodsFor!
 

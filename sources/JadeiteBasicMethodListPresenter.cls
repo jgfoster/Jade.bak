@@ -10,14 +10,100 @@ JadeiteBasicMethodListPresenter comment: ''!
 !JadeiteBasicMethodListPresenter categoriesForClass!Unclassified! !
 !JadeiteBasicMethodListPresenter methodsFor!
 
+basicRemoveMethods
+	| services |
+	services := methodListPresenter selections.
+	services isEmpty ifTrue:[^self].
+	self removeMethods: (Array with: services)!
+
+browseImplementorsOf: methodService
+	| service |
+	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: methodService selector).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: methodService selector!
+
+browseMethodsContaining
+
+	| string service |
+	(string := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
+	service := RowanQueryService command: #methodsContaining:
+				withArgs: (Array with: string).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: string!
+
+browseSendersOf: methodService
+	| service |
+	service := RowanQueryService command: #sendersOf: withArgs: (Array with: methodService selector).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: methodService!
+
+openMethodListOn: service selecting: string
+	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
+		methods: service queryResults
+		selecting: string!
+
+removeFromList
+	methodListPresenter list: (methodListPresenter list copyWithoutAll: methodListPresenter selections)!
+
+removeMethods
+	|  result |
+	result := MessageBox confirm: self selectorsString caption: 'Remove the following method(s)?'.
+	result ifFalse: [^self].
+	self basicRemoveMethods!
+
+removeMethods: services
+	| browserService remainingServices |
+	browserService := RowanBrowserService new.
+	browserService
+		command: #removeMethods:;
+		commandArgs: (Array with: methodListPresenter selections).
+	self issueCommand: (Array with: browserService).
+	remainingServices := Array new.
+	methodListPresenter list
+		do: [:methodService | (browserService removedMethods includes: methodService) ifFalse: [remainingServices add: methodService]].
+	methodListPresenter list: remainingServices!
+
 selection
 	^methodListPresenter selection!
 
 selections
 
-	^methodListPresenter selections! !
+	^methodListPresenter selections!
+
+selectorsString
+	| stream |
+	self updateMethodReferences: methodListPresenter selections.
+	stream := String new writeStream. 
+	methodListPresenter selections do: 
+			[:service |
+			stream nextPutAll: service selectorsDisplayString.
+			service references notEmpty
+				ifTrue: 
+					[stream
+						nextPutAll: ' (referenced by ';
+						nextPutAll: service references size printString;
+						nextPutAll: ' methods)'].
+			stream cr].
+	^stream contents!
+
+updateMethodReferences: services
+	| stonString stonResultString |
+	services do: [:service | service command: #allReferences].
+	stonString := STON toString: services.
+	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
+	self update: services afterStonReplication: stonResultString! !
+!JadeiteBasicMethodListPresenter categoriesFor: #basicRemoveMethods!private! !
+!JadeiteBasicMethodListPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
+!JadeiteBasicMethodListPresenter categoriesFor: #browseMethodsContaining!public!queries! !
+!JadeiteBasicMethodListPresenter categoriesFor: #browseSendersOf:!public!queries! !
+!JadeiteBasicMethodListPresenter categoriesFor: #openMethodListOn:selecting:!private!queries! !
+!JadeiteBasicMethodListPresenter categoriesFor: #removeFromList!menu handlers!public! !
+!JadeiteBasicMethodListPresenter categoriesFor: #removeMethods!menu handlers!public! !
+!JadeiteBasicMethodListPresenter categoriesFor: #removeMethods:!menu handlers!private! !
 !JadeiteBasicMethodListPresenter categoriesFor: #selection!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #selections!public! !
+!JadeiteBasicMethodListPresenter categoriesFor: #selectorsString!private!selection! !
+!JadeiteBasicMethodListPresenter categoriesFor: #updateMethodReferences:!private!services! !
 
 !JadeiteBasicMethodListPresenter class methodsFor!
 

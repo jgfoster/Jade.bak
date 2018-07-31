@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanBrowserService
-	instanceVariableNames: 'projects'
+	instanceVariableNames: 'projects removedMethods'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -19,7 +19,15 @@ releaseReferencedServices
 		ifNotNil: 
 			[copy := projects copy.
 			projects := Array new.
-			copy do: [:service | service releaseReferencedServices]]! !
-!RowanBrowserService categoriesFor: #projectsUpdate:!public! !
+			copy do: [:service | service releaseReferencedServices]]!
+
+removedMethods
+	^removedMethods!
+
+removedMethods: anObject
+	removedMethods := anObject! !
+!RowanBrowserService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanBrowserService categoriesFor: #releaseReferencedServices!public! !
+!RowanBrowserService categoriesFor: #removedMethods!accessing!private! !
+!RowanBrowserService categoriesFor: #removedMethods:!accessing!private! !
 
