@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name isDirty command commandArgs'
+	instanceVariableNames: 'transport remoteService name isDirty command commandArgs updateType'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -122,6 +122,9 @@ methodFilterUpdate: presenter
 
 methodSourceUpdate: presenter!
 
+methodsRemoved: presenter
+	!
+
 methodsUpdate: presenter
 	!
 
@@ -212,6 +215,12 @@ updateSelectorFor: presenter!
 
 updateSuperclassSelectionFor: presenter!
 
+updateType
+	^updateType!
+
+updateType: anObject
+	updateType := anObject!
+
 variableDataUpdate: aPresenter!
 
 variableListUpdate: aPresenter! !
@@ -247,6 +256,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #isTestCase!public!testing! !
 !RowanService categoriesFor: #methodFilterUpdate:!public!updating! !
 !RowanService categoriesFor: #methodSourceUpdate:!public!updating! !
+!RowanService categoriesFor: #methodsRemoved:!public!updating! !
 !RowanService categoriesFor: #methodsUpdate:!public!updating! !
 !RowanService categoriesFor: #name!accessing!private! !
 !RowanService categoriesFor: #name:!accessing!private! !
@@ -276,6 +286,8 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #updatePackageSelectionsFor:!public!updating! !
 !RowanService categoriesFor: #updateSelectorFor:!public!updating! !
 !RowanService categoriesFor: #updateSuperclassSelectionFor:!public!updating! !
+!RowanService categoriesFor: #updateType!accessing!private! !
+!RowanService categoriesFor: #updateType:!accessing!private! !
 !RowanService categoriesFor: #variableDataUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #variableListUpdate:!Debugger!public!updating! !
 

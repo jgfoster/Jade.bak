@@ -37,10 +37,17 @@ browseSendersOf: methodService
 	self issueCommand: (Array with: service).
 	self openMethodListOn: service selecting: methodService!
 
+onViewOpened
+	super onViewOpened.
+	self registerPresentersForUpdates!
+
 openMethodListOn: service selecting: string
 	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		methods: service queryResults
 		selecting: string!
+
+registerPresentersForUpdates
+	BrowserUpdate current register: methodListPresenter with: #methodsRemoved:!
 
 removeFromList
 	methodListPresenter list: (methodListPresenter list copyWithoutAll: methodListPresenter selections)!
@@ -58,10 +65,7 @@ removeMethods: services
 		command: #removeMethods:;
 		commandArgs: (Array with: methodListPresenter selections).
 	self issueCommand: (Array with: browserService).
-	remainingServices := Array new.
-	methodListPresenter list
-		do: [:methodService | (browserService removedMethods includes: methodService) ifFalse: [remainingServices add: methodService]].
-	methodListPresenter list: remainingServices!
+	!
 
 selection
 	^methodListPresenter selection!
@@ -96,7 +100,9 @@ updateMethodReferences: services
 !JadeiteBasicMethodListPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseMethodsContaining!public!queries! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseSendersOf:!public!queries! !
+!JadeiteBasicMethodListPresenter categoriesFor: #onViewOpened!event handlers!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #openMethodListOn:selecting:!private!queries! !
+!JadeiteBasicMethodListPresenter categoriesFor: #registerPresentersForUpdates!public!register presenters! !
 !JadeiteBasicMethodListPresenter categoriesFor: #removeFromList!menu handlers!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #removeMethods!menu handlers!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #removeMethods:!menu handlers!private! !

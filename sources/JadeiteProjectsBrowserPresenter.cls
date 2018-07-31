@@ -597,6 +597,7 @@ registerPresentersForUpdates
 	BrowserUpdate current register: categoryListPresenter with: #filterUpdate:.
 	BrowserUpdate current register: variableListPresenter with: #filterUpdate:.
 	BrowserUpdate current register: methodListPresenter with: #classMethodsUpdate:.
+	BrowserUpdate current register: methodListPresenter with: #methodsRemoved:. 
 	BrowserUpdate current register: methodSourcePresenter with: #methodSourceUpdate:.!
 
 removeClass

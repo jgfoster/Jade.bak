@@ -30,11 +30,12 @@ initializeUpdates
 register: presenter with: selector
 	"send the update to the presenter so that when the presenter gets
 	removed, it's events go with it."
+
 	self
 		when: #updateReady
-		send: selector
+		send: #update:withSelector:
 		to: presenter
-		withArguments: (Array with: self). !
+		withArguments: (Array with: self with: selector)!
 
 update: services afterStonReplication: stonResults
 	"assume we get back the 'same' services as we sent"
@@ -58,7 +59,17 @@ updates: aCollection
 
 	updates removeAll: updates.
 	updates addAll: aCollection.
-	self updateReady! !
+	self updateReady!
+
+updatesPerform: selector with: presenter
+	"the update may know which client updates 
+	it wants us to care about. Respect that."
+
+	updates do: 
+			[:update |
+			update updateType
+				ifNil: [update perform: selector with: presenter]
+				ifNotNil: [:type | type == selector ifTrue: [update perform: type with: presenter]]]! !
 !BrowserUpdate categoriesFor: #debug!accessing!private! !
 !BrowserUpdate categoriesFor: #debug:!accessing!private! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
@@ -68,6 +79,7 @@ updates: aCollection
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !
 !BrowserUpdate categoriesFor: #updates!accessing!public! !
 !BrowserUpdate categoriesFor: #updates:!accessing!public! !
+!BrowserUpdate categoriesFor: #updatesPerform:with:!public!updating! !
 
 !BrowserUpdate class methodsFor!
 

@@ -10,6 +10,13 @@ RowanBrowserService comment: ''!
 !RowanBrowserService categoriesForClass!Unclassified! !
 !RowanBrowserService methodsFor!
 
+methodsRemoved: presenter
+	| remainingServices |
+	remainingServices := OrderedCollection new.
+	presenter list
+		do: [:methodService | (removedMethods includes: methodService) ifFalse: [remainingServices add: methodService]].
+	presenter list: remainingServices!
+
 projectsUpdate: presenter
 	presenter list: projects.!
 
@@ -26,6 +33,7 @@ removedMethods
 
 removedMethods: anObject
 	removedMethods := anObject! !
+!RowanBrowserService categoriesFor: #methodsRemoved:!public!updating! !
 !RowanBrowserService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanBrowserService categoriesFor: #releaseReferencedServices!public! !
 !RowanBrowserService categoriesFor: #removedMethods!accessing!private! !
