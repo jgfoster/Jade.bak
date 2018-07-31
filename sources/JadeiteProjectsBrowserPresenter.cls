@@ -295,6 +295,16 @@ createStateEntry
 
 	^projectDictionaryTabs currentCard == projectListPresenter view!
 
+editSaveClass
+	| packageService |
+	packageService := packageListPresenter selection.
+	packageService
+		command: #compileClass:;
+		commandArgs: (Array with: classDefinitionPresenter value).
+	[self issueCommand: (Array with: packageService)] on: GsCompileError
+		do: [:ex | ^self handleClassCompileError: ex].
+	classDefinitionPresenter view isModified: false!
+
 editSaveMethod
 	| caretPosition firstVisibleLine service |
 	caretPosition := methodSourcePresenter view caretPosition.
@@ -476,15 +486,15 @@ projectMenuStrings
 		'Unload// unloadProject'
 		'-'
 		'Pull from Git ...// pullFromGit'
-		'Commit ...//commit' '-' 
+		'Commit ...//commit' 
 		'Push to Git ...// pushToGit'
 		'-'
 		'&Changes ...// projectChanges'
-		'Write ...//writeProject' '-' 
+		'Write ...//writeProject' 
 		'Checkout ...// checkout'
 		'-'
 		'Log// projectLog'
-		'&Inspect//inspectProject' '-' 
+		'&Inspect//inspectProject' 
 		'&Refresh ...// refresh'
 )!
 
@@ -905,6 +915,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForProjectList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForVariableList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createStateEntry!accessing!public!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #getViews!public! !

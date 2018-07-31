@@ -817,38 +817,6 @@ editSave
 	MessageBox notify: 'Save menu not effective for this text area tab'.
 !
 
-editSaveClass
-
-	| string stream flag |
-
-	string := classDefinitionPresenter value collect: [:each | each codePoint < 32 ifTrue: [Character space] ifFalse: [each]].
-	stream := (WriteStream on: String new)
-		nextPutAll: 'class'; tab;
-		nextPutAll: string; lf;
-		yourself.
-	flag := false.
-	[
-		self 
-			updateCommand: stream contents , self requestString
-			onSuccessDo: [
-				classDefinitionPresenter view isModified: false.
-				flag := true.
-			].
-	] on: GsCompileError do: [:ex | 
-		| offset explanation | 	
-		offset := ex list first at: 2.
-		explanation := ex list first at: 3.
-		string := classDefinitionPresenter value.
-		string := (string copyFrom: 1 to: offset - 1) , ' ' , explanation , ' ' , (string copyFrom: offset to: string size).
-		classDefinitionPresenter 
-			value: string;
-			selectionRange: (offset to: offset + explanation size + 1);
-			yourself.
-		^self.
-	].
-	flag ifTrue: [self editSaveClassA].
-!
-
 editSaveClassA
 
 	"Removed the class migration dialog and just pass default answers.
@@ -3075,7 +3043,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #editRedo!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editReplace!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editSave!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editSaveClassA!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editSaveClassComment!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !

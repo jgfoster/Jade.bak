@@ -102,6 +102,8 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeSystemBrowserPresenter -> #editSaveClass;
+	add: #JadeSystemBrowserPresenter -> #handleClassCompileError:;
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
 	add: #JadeSystemBrowserPresenter -> #packageTabName;
@@ -1412,6 +1414,42 @@ browseMethodsAndSelect: aString type: browseType
 		selecting: aString.
 !
 
+editSaveClass
+	| string stream flag |
+	string := classDefinitionPresenter value
+				collect: [:each | each codePoint < 32 ifTrue: [Character space] ifFalse: [each]].
+	stream := (WriteStream on: String new)
+				nextPutAll: 'class';
+				tab;
+				nextPutAll: string;
+				lf;
+				yourself.
+	flag := false.
+	
+	[self updateCommand: stream contents , self requestString
+		onSuccessDo: 
+			[classDefinitionPresenter view isModified: false.
+			flag := true]]
+			on: GsCompileError
+			do: 
+				[:ex |
+				string := self handleClassCompileError: ex.
+				^self].
+	flag ifTrue: [self editSaveClassA]!
+
+handleClassCompileError: ex
+	| offset string explanation |
+	offset := ex list first at: 2.
+	explanation := ex list first at: 3.
+	string := classDefinitionPresenter value.
+	string := (string copyFrom: 1 to: offset - 1) , ' ' , explanation , ' '
+				, (string copyFrom: offset to: string size).
+	classDefinitionPresenter
+		value: string;
+		selectionRange: (offset to: offset + explanation size + 1);
+		yourself.
+	^string!
+
 methodSourceEqual
 	^methodSourcePresenter value = methodSource!
 
@@ -1683,6 +1721,8 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #handleClassCompileError:!compiling!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!public! !

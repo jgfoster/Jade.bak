@@ -112,6 +112,11 @@ isProjectService
 
 	^false!
 
+isTestCase
+
+	self rowanFixMe. "need to support running tests" 
+	^false!
+
 methodFilterUpdate: presenter
 	!
 
@@ -239,6 +244,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #isMethodService!public!testing! !
 !RowanService categoriesFor: #isPackageService!public!testing! !
 !RowanService categoriesFor: #isProjectService!public!testing! !
+!RowanService categoriesFor: #isTestCase!public!testing! !
 !RowanService categoriesFor: #methodFilterUpdate:!public!updating! !
 !RowanService categoriesFor: #methodSourceUpdate:!public!updating! !
 !RowanService categoriesFor: #methodsUpdate:!public!updating! !
