@@ -20,8 +20,14 @@ oopType
 
 stack
 
-	^frames collect: [:each | each printString]! !
+	^frames collect: [:each | each printString]!
+
+stepOver: anInteger 
+
+	transport send: #'stepOver:' to: remoteService withAll: (Array with: anInteger).
+self halt.! !
 !RowanProcessService categoriesFor: #frameForLevel:!public! !
 !RowanProcessService categoriesFor: #oopType!public! !
 !RowanProcessService categoriesFor: #stack!public! !
+!RowanProcessService categoriesFor: #stepOver:!public! !
 

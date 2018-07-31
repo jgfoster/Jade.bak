@@ -147,6 +147,7 @@ package methodNames
 	add: #Presenter -> #methodSourceUpdate:;
 	add: #Presenter -> #methodsUpdate:;
 	add: #Presenter -> #packagesUpdate:;
+	add: #Presenter -> #processListUpdate:;
 	add: #Presenter -> #projectPackagesUpdate:;
 	add: #Presenter -> #projectSelectionUpdate:;
 	add: #Presenter -> #projectsUpdate:;
@@ -467,7 +468,7 @@ JadeLoginShell subclass: #RowanLoginShell
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeDebugger subclass: #RowanDebugger
-	instanceVariableNames: ''
+	instanceVariableNames: 'debuggerService'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'debuggerClass semaphore'!
@@ -2070,6 +2071,9 @@ methodsUpdate:  browserUpdate
 packagesUpdate:  browserUpdate
 	browserUpdate updates do: [:update | update packagesUpdate: self]!
 
+processListUpdate:  browserUpdate
+	browserUpdate updates do: [:update | update processListUpdate: self]!
+
 projectPackagesUpdate:  browserUpdate
 	browserUpdate updates do: [:update | update projectPackagesUpdate: self]!
 
@@ -2139,6 +2143,7 @@ updateSuperclassSelectionFor: browserUpdate
 !Presenter categoriesFor: #methodSourceUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #methodsUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #packagesUpdate:!Jadeite!public! !
+!Presenter categoriesFor: #processListUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #projectPackagesUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #projectSelectionUpdate:!Jadeite!public! !
 !Presenter categoriesFor: #projectsUpdate:!Jadeite!public! !

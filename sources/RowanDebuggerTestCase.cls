@@ -15,8 +15,16 @@ closeDebuggers
 	RowanDebugger allInstances do: [:each | 
 		each view close. 
 		GciSession allInstances first removeEventsTriggeredFor: each.
-		each become: Object new.
+		"each become: Object new."
 	].!
+
+debuggerDo: aBlock
+
+	self assert: RowanDebugger semaphore isNil.
+	RowanDebugger semaphore: Semaphore new.
+	aBlock value.
+	RowanDebugger semaphore wait.
+!
 
 openDebuggerOn: aString
 
@@ -43,8 +51,11 @@ tearDown
 
 	process ifNotNil: [process terminate. process := nil].
 	debugger ifNotNil: [debugger view close. debugger := nil].
-	RowanDebugger debuggerClass: nil.
 	self closeDebuggers.
+	RowanDebugger 
+		debuggerClass: nil;
+		semaphore: nil;
+		yourself.
 	super tearDown.
 !
 
@@ -62,6 +73,26 @@ test1
 		assert: (x := debugger variableListPresenter list first) class == RowanVariableService;		assert: x oop == 20;
 		assert: x _key == #'receiver';
 		assert: x value = 'nil';
+		debuggerDo: [debugger resumeProcess];
+		assert: (x := debugger view) class == DeafObject;
+		yourself.!
+
+test2
+	"Stepping, including in blocks"
+
+	| x |
+	self openDebuggerOn: '| x | nil halt. x := 2 + 3'.
+	self
+		assert: (x := debugger errorMessagePresenter value) = 'a Halt occurred (error 2709)';
+		assert: (x := debugger frameListPresenter list first) = 'Executed Code  @2 line 1';
+		assert: (x := debugger documentPresenter view selection) = 'halt';
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = '+ ';
+halt;
+		assert: (x := debugger variableListPresenter list size) == 1;
+		assert: (x := debugger variableListPresenter list first) class == RowanVariableService;		assert: x oop == 20;
+		assert: x _key == #'receiver';
+		assert: x value = 'nil';
 		assert: RowanDebugger semaphore isNil;
 		yourself.
 	RowanDebugger semaphore: Semaphore new.
@@ -69,8 +100,10 @@ test1
 	RowanDebugger semaphore wait.
 	self assert: (x := debugger view) class == DeafObject.! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
+!RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
 !RowanDebuggerTestCase categoriesFor: #openDebuggerOn:!public!running! !
 !RowanDebuggerTestCase categoriesFor: #setUp!public!running! !
 !RowanDebuggerTestCase categoriesFor: #tearDown!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test1!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test2!public!running! !
 
