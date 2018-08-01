@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethod'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -139,6 +139,12 @@ replicateFrom: newService
 sampleClassName
 	^transport send: #sampleClassName to: remoteService.  !
 
+selectedMethods
+	^selectedMethods!
+
+selectedMethods: anObject
+	selectedMethods := anObject!
+
 selectedPackageServiceNames
 	^selectedPackageServices collect: [:pkgService | pkgService name]!
 
@@ -187,6 +193,8 @@ template: anObject
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #replicateFrom:!public!updating! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
+!RowanClassService categoriesFor: #selectedMethods!accessing!private! !
+!RowanClassService categoriesFor: #selectedMethods:!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServiceNames!private!selection! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !

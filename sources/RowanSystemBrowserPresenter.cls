@@ -303,38 +303,8 @@ updateClassInfo
 		yourself!
 
 updateCommand: aString onSuccessDo: aBlock
-	Smalltalk at: #STONFlag ifAbsentPut: [false].	"ensure temporary flag is initialized"
-	
-	[| time1 time2 time3 string |
-	(Smalltalk at: #STONFlag)
-		ifFalse: 
-			[time1 := Time millisecondsToRun: 
-							[string := self gciSession serverPerform: #systemBrowser:
-										with: environment printString , ' ' , aString.
-							eventCount := self gciSession eventCount].
-			time2 := Time millisecondsToRun: 
-							[| responseType |
-							readStream := JadeServerReadStream on: string.
-							time3 := readStream nextLine asNumber.
-							aBlock value.
-							(responseType := readStream nextLine) = 'update' ifFalse: [^responseType].
-							self updatePresenters].
-			self
-				statusBarServerRequestText: 'server took ' , time3 printString , 'ms; ' , 'network took '
-						, (time1 - time3) printString , 'ms; '
-						, 'client took ' , time2 printString
-						, 'ms; ' , 'total of '
-						, (time1 + time2) printString , 'ms'].
-	(Smalltalk at: #STONFlag)
-		ifTrue: 
-			[| stonResults update |
-			update := BrowserUpdate current initializeUpdates.
-			stonResults := self gciSession serverPerform: #systemBrowserSTON:
-						with: environment printString , ' ' , aString.
-			update updates: (STON fromString: stonResults).
-			self updateSelectionsFor: update.
-			update updates: #()]]
-			ensure: [selectedClassChanged := false].
+	super updateCommand: aString onSuccessDo: aBlock.
+	ignoreNextSetFocusEvent := true.	"Need to stop runaway set focus events somehow. There's a better fix somewhere"
 	^nil!
 
 updateFromCommand: update
