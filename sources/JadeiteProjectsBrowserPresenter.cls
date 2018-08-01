@@ -429,11 +429,13 @@ onDropOnMethodCategory: aSession
 	| methodServices targetCategory classService |
 	methodServices := aSession dragObjects collect: [:each | each format: #method].
 	targetCategory := aSession suggestedTarget trimBlanks.
-	classService := classListPresenter selection. 
+	classService := classListPresenter selection.
+	categoryListPresenter selections: (categoryListPresenter selections copyWith: targetCategory asSymbol).
 	classService
 		command: #moveMethods:to:;
 		commandArgs: (Array with: methodServices with: targetCategory).
-	self issueCommand: (Array with: classService)!
+	self issueCommand: (Array with: classService).
+	self selectMethodsFrom: classService!
 
 onViewOpened
 	"copied to RowanDebugger"
