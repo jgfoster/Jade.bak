@@ -13,7 +13,6 @@ RowanDebuggerService comment: ''!
 initialize: aGsProcess
 
 	initialProcessOop := aGsProcess oopType value.
-	transport := aGsProcess gciSession.
 !
 
 processListUpdate: aPresenter

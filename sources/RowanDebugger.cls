@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeDebugger subclass: #RowanDebugger
-	instanceVariableNames: 'debuggerService'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'debuggerClass semaphore'!
@@ -9,9 +9,6 @@ RowanDebugger guid: (GUID fromString: '{cae790de-8a45-49eb-813a-6cb32999cd4d}')!
 RowanDebugger comment: ''!
 !RowanDebugger categoriesForClass!Unclassified! !
 !RowanDebugger methodsFor!
-
-documentPresenter
-	^documentPresenter!
 
 errorMessagePresenter
 	^errorMessagePresenter!
@@ -22,12 +19,7 @@ frameListPresenter
 getProcessList
 	"#getProcessList copied from RowanProjectsBrowserPresenter>>updatePresenters"
 
-	self updateServices: (Array with: debuggerService).!
-
-initializeProcess: aProcess message: aString terminateOnClose: aBoolean
-
-	debuggerService := RowanDebuggerService onProcess: aProcess.
-	super initializeProcess: aProcess message: aString terminateOnClose: aBoolean.!
+	self updateServices: (Array with: (RowanDebuggerService onProcess: gsProcess)).!
 
 onIdleEntered
 	"Support for automated testing so we know when UI is ready"
@@ -88,11 +80,9 @@ variableDataPresenter
 
 variableListPresenter
 	^variableListPresenter! !
-!RowanDebugger categoriesFor: #documentPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #frameListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #getProcessList!public! !
-!RowanDebugger categoriesFor: #initializeProcess:message:terminateOnClose:!public! !
 !RowanDebugger categoriesFor: #onIdleEntered!public! !
 !RowanDebugger categoriesFor: #onViewClosed!public! !
 !RowanDebugger categoriesFor: #onViewOpened!public! !
@@ -118,12 +108,6 @@ debuggerClass: aDebugger
 	debuggerClass := aDebugger.
 !
 
-debuggers
-
-	debuggers isNil ifTrue: [debuggers := WeakIdentityDictionary newWithWeakValues: 4].
-	^debuggers.
-!
-
 semaphore
 	"Support for automated testing so we know when UI is ready"
 
@@ -136,7 +120,6 @@ semaphore: aSemaphore
 ! !
 !RowanDebugger class categoriesFor: #debuggerClass!public! !
 !RowanDebugger class categoriesFor: #debuggerClass:!public! !
-!RowanDebugger class categoriesFor: #debuggers!public! !
 !RowanDebugger class categoriesFor: #semaphore!public! !
 !RowanDebugger class categoriesFor: #semaphore:!public! !
 
