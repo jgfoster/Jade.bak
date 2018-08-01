@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanBrowserService
-	instanceVariableNames: 'projects'
+	instanceVariableNames: 'projects removedMethods'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -9,6 +9,13 @@ RowanBrowserService guid: (GUID fromString: '{9c5e8a88-ca64-403c-8f81-6c70c46926
 RowanBrowserService comment: ''!
 !RowanBrowserService categoriesForClass!Unclassified! !
 !RowanBrowserService methodsFor!
+
+methodsRemoved: presenter
+	| remainingServices |
+	remainingServices := OrderedCollection new.
+	presenter list
+		do: [:methodService | (removedMethods includes: methodService) ifFalse: [remainingServices add: methodService]].
+	presenter list: remainingServices!
 
 projectsUpdate: presenter
 	presenter list: projects.!
@@ -19,7 +26,16 @@ releaseReferencedServices
 		ifNotNil: 
 			[copy := projects copy.
 			projects := Array new.
-			copy do: [:service | service releaseReferencedServices]]! !
-!RowanBrowserService categoriesFor: #projectsUpdate:!public! !
+			copy do: [:service | service releaseReferencedServices]]!
+
+removedMethods
+	^removedMethods!
+
+removedMethods: anObject
+	removedMethods := anObject! !
+!RowanBrowserService categoriesFor: #methodsRemoved:!public!updating! !
+!RowanBrowserService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanBrowserService categoriesFor: #releaseReferencedServices!public! !
+!RowanBrowserService categoriesFor: #removedMethods!accessing!private! !
+!RowanBrowserService categoriesFor: #removedMethods:!accessing!private! !
 

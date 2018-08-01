@@ -76,6 +76,8 @@ package methodNames
 	add: #JadeLoginShell -> #aboutJadeite;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
+	add: #JadePresenterA -> #issueCommand:;
+	add: #JadePresenterA -> #update:afterStonReplication:;
 	add: #JadeProcessBrowser -> #debugProcess;
 	add: #JadeServer -> #_describeMethod:;
 	add: #JadeServer -> #sbAddPackage:;
@@ -134,35 +136,10 @@ package methodNames
 	add: #MethodSourcePresenter -> #fileSave;
 	add: #Object -> #rowanFixMe;
 	add: #ObjectLogBrowser -> #debug:;
-	add: #Presenter -> #classCategoryUpdate:;
-	add: #Presenter -> #classCommentUpdate:;
-	add: #Presenter -> #classDefinitionUpdate:;
-	add: #Presenter -> #classesHierarchyUpdate:;
-	add: #Presenter -> #classesUpdate:;
-	add: #Presenter -> #classHierarchyUpdate:;
-	add: #Presenter -> #classMethodsUpdate:;
-	add: #Presenter -> #dictionaryUpdate:;
-	add: #Presenter -> #filterUpdate:;
-	add: #Presenter -> #globalsUpdate:;
-	add: #Presenter -> #methodSourceUpdate:;
-	add: #Presenter -> #methodsUpdate:;
-	add: #Presenter -> #packagesUpdate:;
-	add: #Presenter -> #projectPackagesUpdate:;
-	add: #Presenter -> #projectSelectionUpdate:;
-	add: #Presenter -> #projectsUpdate:;
-	add: #Presenter -> #superclassListUpdate:;
-	add: #Presenter -> #updateClassCategorySelectionsFor:;
-	add: #Presenter -> #updateClassHierarchySelectionFor:;
-	add: #Presenter -> #updateClassSelectionFor:;
-	add: #Presenter -> #updateDictionarySelectionsFor:;
-	add: #Presenter -> #updateMethodFilterSelectionFor:;
-	add: #Presenter -> #updateMethodSelectionFor:;
-	add: #Presenter -> #updatePackageSelectionsFor:;
+	add: #Presenter -> #update:withSelector:;
 	add: #Presenter -> #updateReady:;
 	add: #Presenter -> #updateSelectionsFor:;
 	add: #Presenter -> #updateSelectionsForUpdate:;
-	add: #Presenter -> #updateSelectorFor:;
-	add: #Presenter -> #updateSuperclassSelectionFor:;
 	add: #RowanCommandResult -> #classCategoryUpdate:;
 	add: #RowanCommandResult -> #classCommentUpdate:;
 	add: #RowanCommandResult -> #classDefinitionUpdate:;
@@ -176,6 +153,7 @@ package methodNames
 	add: #RowanCommandResult -> #globalsUpdate:;
 	add: #RowanCommandResult -> #methodFilterUpdate:;
 	add: #RowanCommandResult -> #methodSourceUpdate:;
+	add: #RowanCommandResult -> #methodsRemoved:;
 	add: #RowanCommandResult -> #methodsUpdate:;
 	add: #RowanCommandResult -> #packagesUpdate:;
 	add: #RowanCommandResult -> #projectPackagesUpdate:;
@@ -191,6 +169,7 @@ package methodNames
 	add: #RowanCommandResult -> #updatePackageSelectionsFor:;
 	add: #RowanCommandResult -> #updateSelectorFor:;
 	add: #RowanCommandResult -> #updateSuperclassSelectionFor:;
+	add: #RowanCommandResult -> #updateType;
 	add: #RowanGsMethod -> #printOn:;
 	add: #RowanMethodDefinition -> #methodDefinitionService;
 	add: 'JadeServer class' -> #gsString;
@@ -282,7 +261,7 @@ Model subclass: #BrowserUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name isDirty command commandArgs'
+	instanceVariableNames: 'transport remoteService name isDirty command commandArgs updateType'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -342,7 +321,7 @@ RowanClassesUpdate subclass: #RowanSuperclassUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanBrowserService
-	instanceVariableNames: 'projects'
+	instanceVariableNames: 'projects removedMethods'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -797,9 +776,21 @@ browseSendersOf: aGsMethodOrString
 	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseSendersOf: aGsMethodOrString;
 		yourself.
-! !
+!
+
+issueCommand: services
+	| stonString stonResultString |
+	stonString := STON toString: services.
+	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
+		ensure: [services do: [:service | service clearCommand]].
+	self update: services afterStonReplication: stonResultString!
+
+update: services afterStonReplication: stonResults
+	BrowserUpdate current update: services afterStonReplication: stonResults! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
+!JadePresenterA categoriesFor: #issueCommand:!private!services! !
+!JadePresenterA categoriesFor: #update:afterStonReplication:!private!services! !
 
 !JadeProcessBrowser methodsFor!
 
@@ -2031,77 +2022,8 @@ debug: anArray
 
 !Presenter methodsFor!
 
-classCategoryUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update classCategoryUpdate: self]!
-
-classCommentUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update classCommentUpdate: self]!
-
-classDefinitionUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update classDefinitionUpdate: self]!
-
-classesHierarchyUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update classesHierarchyUpdate: self]!
-
-classesUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update classesUpdate: self]!
-
-classHierarchyUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update classHierarchyUpdate: self]!
-
-classMethodsUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update classMethodsUpdate: self]!
-
-dictionaryUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update dictionaryUpdate: self]!
-
-filterUpdate: browserUpdate
-	browserUpdate updates do: [:update | update filterUpdate: self]!
-
-globalsUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update globalsUpdate: self]!
-
-methodSourceUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update methodSourceUpdate: self]!
-
-methodsUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update methodsUpdate: self]!
-
-packagesUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update packagesUpdate: self]!
-
-projectPackagesUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update projectPackagesUpdate: self]!
-
-projectSelectionUpdate: browserUpdate
-	browserUpdate updates do: [:update | update projectSelectionUpdate: self]!
-
-projectsUpdate: browserUpdate
-	browserUpdate updates do: [:update | update projectsUpdate: self]!
-
-superclassListUpdate:  browserUpdate
-	browserUpdate updates do: [:update | update superclassListUpdate: self]!
-
-updateClassCategorySelectionsFor:  browserUpdate
-	browserUpdate updates do: [:update | update updateClassCategorySelectionsFor: self]!
-
-updateClassHierarchySelectionFor:  browserUpdate
-	browserUpdate updates do: [:update | update updateClassHierarchySelectionFor: self]!
-
-updateClassSelectionFor:  browserUpdate
-	browserUpdate updates do: [:update | update updateClassSelectionFor: self]!
-
-updateDictionarySelectionsFor:  browserUpdate
-	browserUpdate updates do: [:update | update updateDictionarySelectionsFor: self]!
-
-updateMethodFilterSelectionFor:  browserUpdate
-	browserUpdate updates do: [:update | update updateMethodFilterSelectionFor: self]!
-
-updateMethodSelectionFor:  browserUpdate
-	browserUpdate updates do: [:update | update updateMethodSelectionFor: self]!
-
-updatePackageSelectionsFor: browserUpdate
-	browserUpdate updates do: [:update | update updatePackageSelectionsFor: self]!
+update: browserUpdate withSelector: selector
+	browserUpdate updatesPerform: selector with: self!
 
 updateReady: aBlock
 
@@ -2119,42 +2041,11 @@ updateSelectionsForUpdate: update
 
 	"do nothing for most presenters"
 
-	!
-
-updateSelectorFor: browserUpdate
-	browserUpdate updates do: [:update | update updateSelectorFor: self]!
-
-updateSuperclassSelectionFor: browserUpdate
-	browserUpdate updates do: [:update | update updateSuperclassSelectionFor: self]! !
-!Presenter categoriesFor: #classCategoryUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #classCommentUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #classDefinitionUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #classesHierarchyUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #classesUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #classHierarchyUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #classMethodsUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #dictionaryUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #filterUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #globalsUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #methodSourceUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #methodsUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #packagesUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #projectPackagesUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #projectSelectionUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #projectsUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #superclassListUpdate:!Jadeite!public! !
-!Presenter categoriesFor: #updateClassCategorySelectionsFor:!Jadeite!public! !
-!Presenter categoriesFor: #updateClassHierarchySelectionFor:!Jadeite!public! !
-!Presenter categoriesFor: #updateClassSelectionFor:!Jadeite!public! !
-!Presenter categoriesFor: #updateDictionarySelectionsFor:!Jadeite!public! !
-!Presenter categoriesFor: #updateMethodFilterSelectionFor:!Jadeite!public! !
-!Presenter categoriesFor: #updateMethodSelectionFor:!Jadeite!public! !
-!Presenter categoriesFor: #updatePackageSelectionsFor:!Jadeite!public! !
+	! !
+!Presenter categoriesFor: #update:withSelector:!Jadeite!public! !
 !Presenter categoriesFor: #updateReady:!public!rowan! !
 !Presenter categoriesFor: #updateSelectionsFor:!public!rowan! !
 !Presenter categoriesFor: #updateSelectionsForUpdate:!public!rowan! !
-!Presenter categoriesFor: #updateSelectorFor:!Jadeite!public! !
-!Presenter categoriesFor: #updateSuperclassSelectionFor:!Jadeite!public! !
 
 !RowanCommandResult methodsFor!
 
@@ -2197,6 +2088,9 @@ methodFilterUpdate: presenter
 methodSourceUpdate: presenter
 	!
 
+methodsRemoved: presenter
+!
+
 methodsUpdate: presenter
 	!
 
@@ -2231,7 +2125,12 @@ updatePackageSelectionsFor: presenter
 
 updateSelectorFor: presenter!
 
-updateSuperclassSelectionFor: presenter! !
+updateSuperclassSelectionFor: presenter!
+
+updateType
+	"old-style command results don't use updateType"
+
+	^nil! !
 !RowanCommandResult categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classCommentUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classDefinitionUpdate:!public!updating! !
@@ -2245,6 +2144,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodFilterUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodSourceUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #methodsRemoved:!public!updating! !
 !RowanCommandResult categoriesFor: #methodsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #projectPackagesUpdate:!public!updating! !
@@ -2260,6 +2160,7 @@ updateSuperclassSelectionFor: presenter! !
 !RowanCommandResult categoriesFor: #updatePackageSelectionsFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateSelectorFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateSuperclassSelectionFor:!public!updating! !
+!RowanCommandResult categoriesFor: #updateType!accessing!public! !
 
 !RowanGsMethod methodsFor!
 
