@@ -310,15 +310,15 @@ editSaveClass
 	classDefinitionPresenter view isModified: false.!
 
 editSaveMethod
-	| caretPosition firstVisibleLine service |
+	| caretPosition firstVisibleLine classService category |
 	caretPosition := methodSourcePresenter view caretPosition.
 	firstVisibleLine := methodSourcePresenter view lineScroll.
-	service := methodListPresenter selectionIfNone: [^self].
-	service selectedPackageServices: packageListPresenter selections.
-	(self isCategoriesTabSelected and: [categoryListPresenter hasSelection])
-		ifTrue: [service category: categoryListPresenter selection trimBlanks].
-	service source: self currentMethodSource.
-	[self updateServices: (Array with: service)] on: GsCompileError
+	category := (self isCategoriesTabSelected and: [categoryListPresenter hasSelection])
+		ifTrue: [categoryListPresenter selection trimBlanks].
+	classService := classListPresenter selection. 
+	classService command: #saveMethodSource:category:;
+		commandArgs: (Array with: self currentMethodSource with: category).
+	[self issueCommand: (Array with: classService) ] on: GsCompileError
 		do: [:ex | self reportCompileError: ex list].
 	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
 	methodSourcePresenter view goto: caretPosition!
@@ -404,11 +404,6 @@ methodsMenuStrings
 		'Go To Defining Package//gotoMethodPackage'
 	).
 !
-
-methodSourceEqual
-	^methodListPresenter selectionOrNil
-		ifNil: [true]
-		ifNotNil: [:selection | methodSourcePresenter value = selection source]!
 
 newService
 	^(RowanProjectService on: gciSession) name: projectListPresenter selection name!
@@ -933,7 +928,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #methodSourceEqual!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers!private!queries! !
