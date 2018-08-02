@@ -10,6 +10,10 @@ RowanDebugger comment: ''!
 !RowanDebugger categoriesForClass!Unclassified! !
 !RowanDebugger methodsFor!
 
+documentPresenter
+
+	^documentPresenter!
+
 errorMessagePresenter
 	^errorMessagePresenter!
 
@@ -64,6 +68,12 @@ registerPresentersForUpdates
 		yourself.
 !
 
+stepOver
+
+	gciSession
+		stepOver: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
+	self getProcessList!
+
 update: services afterStonReplication: stonResults
 	BrowserUpdate current update: services afterStonReplication: stonResults!
 
@@ -80,6 +90,7 @@ variableDataPresenter
 
 variableListPresenter
 	^variableListPresenter! !
+!RowanDebugger categoriesFor: #documentPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #frameListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #getProcessList!public! !
@@ -88,6 +99,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #onViewOpened!public! !
 !RowanDebugger categoriesFor: #processListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #registerPresentersForUpdates!public! !
+!RowanDebugger categoriesFor: #stepOver!public! !
 !RowanDebugger categoriesFor: #update:afterStonReplication:!public! !
 !RowanDebugger categoriesFor: #updateServices:!public! !
 !RowanDebugger categoriesFor: #variableDataPresenter!Accessing!public! !
