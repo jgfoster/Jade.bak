@@ -310,12 +310,14 @@ editSaveClass
 	classDefinitionPresenter view isModified: false.!
 
 editSaveMethod
-	| caretPosition firstVisibleLine classService category |
+	self editSaveMethod: classListPresenter selection!
+
+editSaveMethod: classService
+	| caretPosition firstVisibleLine category |
 	caretPosition := methodSourcePresenter view caretPosition.
 	firstVisibleLine := methodSourcePresenter view lineScroll.
 	category := (self isCategoriesTabSelected and: [categoryListPresenter hasSelection])
 				ifTrue: [categoryListPresenter selection trimBlanks].
-	classService := classListPresenter selection.
 	classService
 		command: #saveMethodSource:category:;
 		commandArgs: (Array with: self currentMethodSource with: category).
@@ -424,6 +426,13 @@ onDragMethod: aSession
 		defaultOperation: #copy;
 		yourself.
 !
+
+onDropOnClassList: aSession
+	| classService |
+	classService := aSession suggestedTarget.
+	self editSaveMethod: classService.
+	classListPresenter selection == classService ifFalse: [self selectClass: classService].
+	self selectMethodsFrom: classService!
 
 onDropOnMethodCategory: aSession
 	| methodServices targetCategory classService |
@@ -957,6 +966,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #createStateEntry!accessing!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #getViews!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassPackage!menu handlers!private! !
@@ -969,6 +979,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDragMethod:!drag & drop!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnClassList:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnMethodCategory:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers!private!queries! !
