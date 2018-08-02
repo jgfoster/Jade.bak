@@ -14,14 +14,20 @@ frameForLevel: anInteger
 
 	^frames at: anInteger!
 
-oopType
+oop
 
 	^oop!
+
+oopType
+
+	^OopType64 fromInteger: oop!
 
 stack
 
 	^frames collect: [:each | each printString]! !
 !RowanProcessService categoriesFor: #frameForLevel:!public! !
+!RowanProcessService categoriesFor: #oop!public! !
 !RowanProcessService categoriesFor: #oopType!public! !
 !RowanProcessService categoriesFor: #stack!public! !
+!RowanProcessService categoriesFor: #stepOver:!public! !
 

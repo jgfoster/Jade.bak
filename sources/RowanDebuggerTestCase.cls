@@ -18,16 +18,21 @@ closeDebuggers
 		each become: Object new.
 	].!
 
+debuggerDo: aBlock
+
+	self assert: RowanDebugger semaphore isNil.
+	RowanDebugger semaphore: Semaphore new.
+	aBlock value.
+	RowanDebugger semaphore wait.
+	RowanDebugger semaphore: nil.
+!
+
 openDebuggerOn: aString
 
 	self 
 		assert: RowanDebugger allInstances isEmpty;
-		assert: RowanDebugger semaphore isNil;
+		debuggerDo: [process := [gciSession executeString: aString] fork];		"Typically ~ 180ms"
 		yourself.
-	RowanDebugger semaphore: Semaphore new.
-	process := [gciSession executeString: aString] fork.
-	RowanDebugger semaphore wait.	"Typically ~ 180ms"
-	RowanDebugger semaphore: nil.
 	debugger := RowanDebugger allInstances detect: [:each | true].
 !
 
@@ -43,8 +48,9 @@ tearDown
 
 	process ifNotNil: [process terminate. process := nil].
 	debugger ifNotNil: [debugger view close. debugger := nil].
-	RowanDebugger debuggerClass: nil.
 	self closeDebuggers.
+	RowanDebugger debuggerClass: nil.
+	RowanDebugger semaphore: nil.
 	super tearDown.
 !
 
@@ -52,8 +58,8 @@ test1
 	"Basics of opening a debugger, viewing the UI, and resuming."
 
 	| x |
-	self openDebuggerOn: 'nil halt'.
-	self
+	self 
+		openDebuggerOn: 'nil halt';
 		assert: (x := debugger errorMessagePresenter value) = 'a Halt occurred (error 2709)';
 		assert: (x := debugger processListPresenter list size) == 1;
 		assert: (x := debugger frameListPresenter list size) == 2;
@@ -62,15 +68,34 @@ test1
 		assert: (x := debugger variableListPresenter list first) class == RowanVariableService;		assert: x oop == 20;
 		assert: x _key == #'receiver';
 		assert: x value = 'nil';
-		assert: RowanDebugger semaphore isNil;
+		debuggerDo: [debugger resumeProcess];
+		assert: (x := debugger view) class == DeafObject;
 		yourself.
-	RowanDebugger semaphore: Semaphore new.
-	debugger resumeProcess.
-	RowanDebugger semaphore wait.
-	self assert: (x := debugger view) class == DeafObject.! !
+!
+
+test2
+	"Stepping"
+
+	| x |
+	self 
+		openDebuggerOn: '| x | nil halt. x := 1 + 2 * 3.';
+		assert: (x := debugger errorMessagePresenter value) = 'a Halt occurred (error 2709)';
+		assert: (x := debugger frameListPresenter list first) = 'Executed Code  @2 line 1';
+		assert: (x := debugger documentPresenter view selection) = 'halt';
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = '+ ';
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = '* ';
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = ':= ';
+halt;		debuggerDo: [debugger resumeProcess];
+		assert: (x := debugger view) class == DeafObject;
+		yourself.! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
+!RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
 !RowanDebuggerTestCase categoriesFor: #openDebuggerOn:!public!running! !
 !RowanDebuggerTestCase categoriesFor: #setUp!public!running! !
 !RowanDebuggerTestCase categoriesFor: #tearDown!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test1!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test2!public!running! !
 
