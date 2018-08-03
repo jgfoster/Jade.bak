@@ -87,9 +87,8 @@ test2
 		debuggerDo: [debugger stepOver];
 		assert: (x := debugger documentPresenter view selection) = '* ';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = ':= ';
-halt;		debuggerDo: [debugger resumeProcess];
-		assert: (x := debugger view) class == DeafObject;
+		"assert: (x := debugger documentPresenter view selection) = ':= ';"	"http://kermit.gemtalksystems.com/bug?bug=47696"
+		debuggerDo: [debugger resumeProcess];
 		yourself.! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
