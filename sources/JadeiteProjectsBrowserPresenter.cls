@@ -323,6 +323,14 @@ editSaveClass
 			^self handleClassCompileError: ex].
 	classDefinitionPresenter view isModified: false!
 
+editSaveClassComment
+	| classService |
+	classService := classListPresenter selection.
+	classService
+		command: #classComment:;
+		commandArgs: (Array with: classCommentPresenter value trimBlanks).
+	self issueCommand: (Array with: classService)!
+
 editSaveMethod
 	self editSaveMethod: classListPresenter selection!
 
@@ -727,11 +735,26 @@ registerPresentersForUpdates
 	"copied to RowanDebugger"
 
 	BrowserUpdate current register: projectListPresenter selector: #projectsUpdate:.
-	BrowserUpdate current register: packageListPresenter selector: #projectPackagesUpdate:browser: browser: self.
-	BrowserUpdate current register: classListPresenter selector: #classesUpdate:browser: browser: self.
-	BrowserUpdate current register: categoryListPresenter selector: #filterUpdate:browser: browser: self.
-	BrowserUpdate current register: variableListPresenter selector: #filterUpdate:browser: browser: self.
-	BrowserUpdate current register: methodListPresenter selector: #classMethodsUpdate:browser: browser: self.
+	BrowserUpdate current
+		register: packageListPresenter
+		selector: #projectPackagesUpdate:browser:
+		browser: self.
+	BrowserUpdate current
+		register: classListPresenter
+		selector: #classesUpdate:browser:
+		browser: self.
+	BrowserUpdate current
+		register: categoryListPresenter
+		selector: #filterUpdate:browser:
+		browser: self.
+	BrowserUpdate current
+		register: variableListPresenter
+		selector: #filterUpdate:browser:
+		browser: self.
+	BrowserUpdate current
+		register: methodListPresenter
+		selector: #classMethodsUpdate:browser:
+		browser: self.
 	BrowserUpdate current register: methodListPresenter selector: #methodsRemoved:.
 	BrowserUpdate current register: methodSourcePresenter selector: #methodSourceUpdate:!
 
@@ -1101,6 +1124,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForVariableList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createStateEntry!accessing!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClassComment!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!services!updating! !
@@ -1169,7 +1193,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #updatePackages!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProject!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectInfo!event handlers!public!updating! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #updateProjects!event handlers!public!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #updateProjects!event handlers!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectTab!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateServices:!private!services! !
