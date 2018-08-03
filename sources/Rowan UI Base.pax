@@ -7,6 +7,7 @@ package paxVersion: 1;
 package classNames
 	add: #BrowserUpdate;
 	add: #JadeiteBasicMethodListPresenter;
+	add: #JadeiteFindClassDialog;
 	add: #JadeiteMethodListBrowser;
 	add: #JadeiteMethodListPresenter;
 	add: #JadeiteMethodSourcePresenter;
@@ -69,6 +70,7 @@ package methodNames
 	add: #GsMethod -> #methodDefinitionService;
 	add: #JadeAutoTextPresenter3 -> #defaultMethod;
 	add: #JadeAutoTextPresenter3 -> #setDefaultMethod;
+	add: #JadeFindClassDialog -> #allClasses;
 	add: #JadeImageStripper -> #closeLoginShells;
 	add: #JadeImageStripper -> #createVersionResource;
 	add: #JadeImageStripper -> #requiredClasses;
@@ -323,7 +325,7 @@ RowanClassesUpdate subclass: #RowanSuperclassUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanBrowserService
-	instanceVariableNames: 'projects removedMethods'
+	instanceVariableNames: 'projects removedMethods allClasses'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -438,6 +440,11 @@ KeyValuePrompter subclass: #RowanKeyValuePrompter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 MCVersionDialog subclass: #RowanSavePackageDialog
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeFindClassDialog subclass: #JadeiteFindClassDialog
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -670,6 +677,17 @@ setDefaultMethod
 		yourself.! !
 !JadeAutoTextPresenter3 categoriesFor: #defaultMethod!public! !
 !JadeAutoTextPresenter3 categoriesFor: #setDefaultMethod!public! !
+
+!JadeFindClassDialog methodsFor!
+
+allClasses
+	| browserService |
+	browserService := RowanBrowserService new.
+	browserService
+		command: #allClasses;
+		commandArgs: Array new.
+	self issueCommand: (Array with: browserService).! !
+!JadeFindClassDialog categoriesFor: #allClasses!public! !
 
 !JadeImageStripper methodsFor!
 

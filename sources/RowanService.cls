@@ -93,6 +93,10 @@ inspectDefinition
 	definition := transport send: #definition to: remoteService.
 	JadeInspector showOn: definition session: transport!
 
+isBrowserService
+
+	^false!
+
 isClassService
 
 	^false!
@@ -267,6 +271,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #initializePresenterList:!Init / Release!private! !
 !RowanService categoriesFor: #initializeRemoteService!Init / Release!public! !
 !RowanService categoriesFor: #inspectDefinition!public!rowan! !
+!RowanService categoriesFor: #isBrowserService!public!testing! !
 !RowanService categoriesFor: #isClassService!public!testing! !
 !RowanService categoriesFor: #isDirty!accessing!public! !
 !RowanService categoriesFor: #isDirty:!accessing!public! !

@@ -14,6 +14,15 @@ addPackageDictionaryInfoTo: aStream
 
 	"projects don't write themselves to string"!
 
+allClasses
+	| browserService |
+	browserService := RowanBrowserService new.
+	browserService
+		command: #allClasses;
+		commandArgs: Array new.
+	self issueCommand: (Array with: browserService).
+	^browserService allClasses!
+
 basicAddMethodCategory: string
 	| service |
 	service := classListPresenter selection
@@ -336,6 +345,16 @@ filterTabChanged
 	categoryListPresenter resetSelection.
 	self refreshClass!
 
+findClass
+	| find |
+	find := JadeiteFindClassDialog showModal: 'DefaultView' on: self allClasses.
+	find
+		ifNotNil: 
+			[self
+				updateAfterFindClass: find value
+				isMeta: nil
+				selector: String new]!
+
 getViews
 	classHierarchyTabs := self view viewNamed: 'classHierarchyTabs'.
 	instanceClassTabs := self view viewNamed: 'instanceClassTabs'.
@@ -508,6 +527,7 @@ projectMenuStrings
 	0 == 1
 		ifTrue: 
 			[self
+				findClass;
 				makeDefault;
 				cloneProject;
 				loadProject;
@@ -522,7 +542,9 @@ projectMenuStrings
 				inspectProject;
 				refresh
 				].
-	^#(	'Projects' '&MakeDefault//makeDefault' 
+	^#(	'Projects' 
+		'&Find Class.../Ctrl+Shift+F/findClass'
+		'&MakeDefault//makeDefault' 
 		'-' 
 		'Clone Git Project ...//cloneProject'
 		'Load//loadProject'
@@ -1031,6 +1053,7 @@ writeProject
 	((RowanProjectService on: gciSession) name: projectName) write.
 	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!public!request string! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #allClasses!public!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementors!menu handlers!public!queries! !
@@ -1063,6 +1086,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!services!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #getViews!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassPackage!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoMethodPackage!menu handlers!private! !
