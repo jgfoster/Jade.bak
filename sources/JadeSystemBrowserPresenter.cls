@@ -1350,7 +1350,7 @@ jadeExecuteAndDisplay: aBoolean
 		textView
 			caretPosition: selectionRange start + offset - 1;
 			replaceSelection: result;
-			selectionStart: textView caretPosition - result size length: result size.
+			selectionStart: textView caretPosition - result size length: result size.
 		^self
 	].
 !
