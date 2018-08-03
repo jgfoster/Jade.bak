@@ -704,14 +704,11 @@ registerPresentersForUpdates
 	"copied to RowanDebugger"
 
 	BrowserUpdate current register: projectListPresenter selector: #projectsUpdate:.
-	BrowserUpdate current
-		register: packageListPresenter
-		selector: #projectPackagesUpdate:browser:
-		browser: self.
-	BrowserUpdate current register: classListPresenter selector: #classesUpdate:.
-	BrowserUpdate current register: categoryListPresenter selector: #filterUpdate:.
-	BrowserUpdate current register: variableListPresenter selector: #filterUpdate:.
-	BrowserUpdate current register: methodListPresenter selector: #classMethodsUpdate:.
+	BrowserUpdate current register: packageListPresenter selector: #projectPackagesUpdate:browser: browser: self.
+	BrowserUpdate current register: classListPresenter selector: #classesUpdate:browser: browser: self.
+	BrowserUpdate current register: categoryListPresenter selector: #filterUpdate:browser: browser: self.
+	BrowserUpdate current register: variableListPresenter selector: #filterUpdate:browser: browser: self.
+	BrowserUpdate current register: methodListPresenter selector: #classMethodsUpdate:browser: browser: self.
 	BrowserUpdate current register: methodListPresenter selector: #methodsRemoved:.
 	BrowserUpdate current register: methodSourcePresenter selector: #methodSourceUpdate:!
 
@@ -1004,6 +1001,11 @@ updateServices: services
 
 updateSingleMethodSource
 	methodSourcePresenter value: methodListPresenter selections first source.
+	methodSourcePresenter view
+		backcolor: JadeTextStyles default colorForNoEdits;
+		isModified: false;
+		isReadOnly: false;
+		yourself.
 	methodSourcePresenter ensureVisible!
 
 updateTabLabel
@@ -1059,7 +1061,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #createStateEntry!accessing!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #getViews!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassPackage!menu handlers!private! !

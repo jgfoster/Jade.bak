@@ -23,13 +23,13 @@ classDefinitionUpdate: presenter
 classesHierarchyUpdate: presenter
 !
 
-classesUpdate: presenter
+classesUpdate: presenter browser: anObject
 	!
 
 classHierarchyUpdate: presenter
 	!
 
-classMethodsUpdate: presenter
+classMethodsUpdate: presenter browser: anObject
 	!
 
 classNameFrom: aClassOop
@@ -75,7 +75,7 @@ displayString
 
 	^self name!
 
-filterUpdate: presenter
+filterUpdate: presenter browser: anObject
 	!
 
 frameListUpdate: aPresenter!
@@ -213,15 +213,15 @@ updateDictionarySelectionsFor: presenter
 
 updateList: presenter whilePreservingSelections: updates
 	| replicate |
-	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
-	presenter list do: 
+	presenter list copy do: 
 			[:service |
 			replicate := updates detect: [:update | update = service]
 						ifNone: 
 							[presenter model remove: service.
 							nil].
 			replicate notNil ifTrue: [service replicateFrom: replicate]].
-	updates do: [:update | (presenter list includes: update) not ifTrue: [presenter model add: update]]!
+	updates do: [:update | (presenter list includes: update) not ifTrue: [presenter model add: update]].
+	(presenter list includes: nil) ifTrue:[self halt].!
 
 updateMethodFilterSelectionFor: presenter!
 
@@ -247,9 +247,9 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #classCommentUpdate:!public!updating! !
 !RowanService categoriesFor: #classDefinitionUpdate:!public!updating! !
 !RowanService categoriesFor: #classesHierarchyUpdate:!public!updating! !
-!RowanService categoriesFor: #classesUpdate:!public!updating! !
+!RowanService categoriesFor: #classesUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #classHierarchyUpdate:!public!updating! !
-!RowanService categoriesFor: #classMethodsUpdate:!public!updating! !
+!RowanService categoriesFor: #classMethodsUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #classNameFrom:!public! !
 !RowanService categoriesFor: #classUpdate:!public!updating! !
 !RowanService categoriesFor: #clearCommand!Init / Release!public! !
@@ -261,10 +261,10 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #createClientFrom:!public! !
 !RowanService categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanService categoriesFor: #displayString!displaying!public! !
-!RowanService categoriesFor: #filterUpdate:!public!updating! !
+!RowanService categoriesFor: #filterUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #frameListUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !
-!RowanService categoriesFor: #initializePresenterList:!private! !
+!RowanService categoriesFor: #initializePresenterList:!Init / Release!private! !
 !RowanService categoriesFor: #initializeRemoteService!Init / Release!public! !
 !RowanService categoriesFor: #inspectDefinition!public!rowan! !
 !RowanService categoriesFor: #isClassService!public!testing! !

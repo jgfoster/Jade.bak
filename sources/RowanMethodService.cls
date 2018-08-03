@@ -11,6 +11,7 @@ RowanMethodService comment: ''!
 !RowanMethodService methodsFor!
 
 = methodService
+	methodService isMethodService ifFalse:[^false].
 	^selector = methodService selector
 		and: [className = methodService className and: [meta = methodService meta]]!
 

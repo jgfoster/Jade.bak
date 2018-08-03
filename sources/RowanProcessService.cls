@@ -29,5 +29,4 @@ stack
 !RowanProcessService categoriesFor: #oop!public! !
 !RowanProcessService categoriesFor: #oopType!public! !
 !RowanProcessService categoriesFor: #stack!public! !
-!RowanProcessService categoriesFor: #stepOver:!public! !
 

@@ -24,6 +24,7 @@ methodsRemoved: presenter
 	presenter list: remainingServices!
 
 projectsUpdate: presenter
+	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
 	self updateList: presenter whilePreservingSelections: projects!
 
 releaseReferencedServices

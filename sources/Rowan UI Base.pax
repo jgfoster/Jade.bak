@@ -134,6 +134,7 @@ package methodNames
 	add: #MethodListPresenter -> #browseClass;
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #MethodSourcePresenter -> #fileSave;
+	add: #Object -> #isMethodService;
 	add: #Object -> #rowanFixMe;
 	add: #ObjectLogBrowser -> #debug:;
 	add: #Presenter -> #update:withSelector:;
@@ -145,12 +146,12 @@ package methodNames
 	add: #RowanCommandResult -> #classCommentUpdate:;
 	add: #RowanCommandResult -> #classDefinitionUpdate:;
 	add: #RowanCommandResult -> #classesHierarchyUpdate:;
-	add: #RowanCommandResult -> #classesUpdate:;
+	add: #RowanCommandResult -> #classesUpdate:browser:;
 	add: #RowanCommandResult -> #classHierarchyUpdate:;
-	add: #RowanCommandResult -> #classMethodsUpdate:;
+	add: #RowanCommandResult -> #classMethodsUpdate:browser:;
 	add: #RowanCommandResult -> #classUpdate:;
 	add: #RowanCommandResult -> #dictionaryUpdate:;
-	add: #RowanCommandResult -> #filterUpdate:;
+	add: #RowanCommandResult -> #filterUpdate:browser:;
 	add: #RowanCommandResult -> #globalsUpdate:;
 	add: #RowanCommandResult -> #methodFilterUpdate:;
 	add: #RowanCommandResult -> #methodSourceUpdate:;
@@ -2002,10 +2003,15 @@ fileSave
 
 !Object methodsFor!
 
+isMethodService
+
+	^false!
+
 rowanFixMe
 
 	"do nothing. Used for marking to-do items 
 	during Rowan Development"! !
+!Object categoriesFor: #isMethodService!public!testing! !
 !Object categoriesFor: #rowanFixMe!public!testing! !
 
 !ObjectLogBrowser methodsFor!
@@ -2067,13 +2073,13 @@ classDefinitionUpdate: presenter
 classesHierarchyUpdate: presenter
 !
 
-classesUpdate: presenter
+classesUpdate: presenter browser: anObject
 	!
 
 classHierarchyUpdate: presenter
 	!
 
-classMethodsUpdate: presenter
+classMethodsUpdate: presenter browser: anObject
 	!
 
 classUpdate: presenter
@@ -2082,7 +2088,7 @@ classUpdate: presenter
 dictionaryUpdate: presenter
 	!
 
-filterUpdate: presenter
+filterUpdate: presenter browser: anObject
 	!
 
 globalsUpdate: presenter!
@@ -2141,12 +2147,12 @@ updateType
 !RowanCommandResult categoriesFor: #classCommentUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classDefinitionUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classesHierarchyUpdate:!public!updating! !
-!RowanCommandResult categoriesFor: #classesUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classesUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #classHierarchyUpdate:!public!updating! !
-!RowanCommandResult categoriesFor: #classMethodsUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classMethodsUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #classUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
-!RowanCommandResult categoriesFor: #filterUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #filterUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodFilterUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodSourceUpdate:!public!updating! !

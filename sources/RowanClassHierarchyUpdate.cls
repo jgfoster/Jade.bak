@@ -46,8 +46,8 @@ classesHierarchyUpdate: presenter
 			yourself.
 	].!
 
-classesUpdate: presenter
-!
+classesUpdate: presenter browser: anObject
+	!
 
 updateClassHierarchySelectionFor: presenter
 	| newSelection | 
@@ -67,7 +67,7 @@ updateClassSelectionFor: presenter
 
 	! !
 !RowanClassHierarchyUpdate categoriesFor: #classesHierarchyUpdate:!public!updating! !
-!RowanClassHierarchyUpdate categoriesFor: #classesUpdate:!public!updating! !
+!RowanClassHierarchyUpdate categoriesFor: #classesUpdate:browser:!public!updating! !
 !RowanClassHierarchyUpdate categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !
 !RowanClassHierarchyUpdate categoriesFor: #updateClassSelectionFor:!public!updating! !
 

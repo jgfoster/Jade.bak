@@ -10,9 +10,9 @@ RowanProjectService comment: ''!
 !RowanProjectService categoriesForClass!Unclassified! !
 !RowanProjectService methodsFor!
 
-= anObject
+= projectService
 
-	^name = anObject name!
+	^name = projectService name!
 
 addProjectNamed: projectName
 	transport
@@ -174,6 +174,7 @@ printOn: target
 		nextPutAll: name!
 
 projectPackagesUpdate: presenter browser: browser
+	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
 	browser projectListPresenter selections
 		detect: [:projectService | projectService name = name]
 		ifNone: [^self].
