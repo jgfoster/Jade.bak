@@ -197,6 +197,10 @@ selectorsDisplayString
 
 	^className, '>>', selector!
 
+sortAspect
+
+	^selector!
+
 source
 	^source!
 
@@ -297,6 +301,7 @@ user: anObject
 !RowanMethodService categoriesFor: #selector!accessing!private! !
 !RowanMethodService categoriesFor: #selector:!accessing!private! !
 !RowanMethodService categoriesFor: #selectorsDisplayString!displaying!public! !
+!RowanMethodService categoriesFor: #sortAspect!accessing!public! !
 !RowanMethodService categoriesFor: #source!accessing!private! !
 !RowanMethodService categoriesFor: #source:!accessing!private! !
 !RowanMethodService categoriesFor: #stepPoints!public! !

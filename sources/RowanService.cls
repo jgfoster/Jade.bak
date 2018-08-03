@@ -82,6 +82,9 @@ frameListUpdate: aPresenter!
 
 globalsUpdate: presenter!
 
+initializePresenterList: presenter
+	presenter list: (SortedCollection sortBlock: [:x :y | x sortAspect < y sortAspect])!
+
 initializeRemoteService
 	remoteService := transport executeString: self remoteServiceName , ' new'!
 
@@ -145,8 +148,8 @@ printOn: aStream
 
 processListUpdate: aPresenter!
 
-projectPackagesUpdate: aPresenter
-!
+projectPackagesUpdate: aPresenter browser: anObject
+	!
 
 projectSelectionUpdate: aPresenter
 !
@@ -182,6 +185,10 @@ setRemoteName
 
 	transport send: #name: to: remoteService withAll: (Array with: name)!
 
+sortAspect
+
+	^name!
+
 superclassListUpdate: presenter
 	!
 
@@ -203,6 +210,18 @@ updateClassSelectionFor: presenter!
 
 updateDictionarySelectionsFor: presenter
 	!
+
+updateList: presenter whilePreservingSelections: updates
+	| replicate |
+	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
+	presenter list do: 
+			[:service |
+			replicate := updates detect: [:update | update = service]
+						ifNone: 
+							[presenter model remove: service.
+							nil].
+			replicate notNil ifTrue: [service replicateFrom: replicate]].
+	updates do: [:update | (presenter list includes: update) not ifTrue: [presenter model add: update]]!
 
 updateMethodFilterSelectionFor: presenter!
 
@@ -234,22 +253,23 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #classNameFrom:!public! !
 !RowanService categoriesFor: #classUpdate:!public!updating! !
 !RowanService categoriesFor: #clearCommand!Init / Release!public! !
-!RowanService categoriesFor: #clientDefinitionClass!private! !
+!RowanService categoriesFor: #clientDefinitionClass!public! !
 !RowanService categoriesFor: #command!accessing!public! !
 !RowanService categoriesFor: #command:!accessing!public! !
-!RowanService categoriesFor: #commandArgs!accessing!private! !
-!RowanService categoriesFor: #commandArgs:!accessing!private! !
-!RowanService categoriesFor: #createClientFrom:!private! !
+!RowanService categoriesFor: #commandArgs!accessing!public! !
+!RowanService categoriesFor: #commandArgs:!accessing!public! !
+!RowanService categoriesFor: #createClientFrom:!public! !
 !RowanService categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanService categoriesFor: #displayString!displaying!public! !
 !RowanService categoriesFor: #filterUpdate:!public!updating! !
 !RowanService categoriesFor: #frameListUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !
-!RowanService categoriesFor: #initializeRemoteService!Init / Release!private! !
+!RowanService categoriesFor: #initializePresenterList:!private! !
+!RowanService categoriesFor: #initializeRemoteService!Init / Release!public! !
 !RowanService categoriesFor: #inspectDefinition!public!rowan! !
 !RowanService categoriesFor: #isClassService!public!testing! !
-!RowanService categoriesFor: #isDirty!accessing!private! !
-!RowanService categoriesFor: #isDirty:!accessing!private! !
+!RowanService categoriesFor: #isDirty!accessing!public! !
+!RowanService categoriesFor: #isDirty:!accessing!public! !
 !RowanService categoriesFor: #isMethodService!public!testing! !
 !RowanService categoriesFor: #isPackageService!public!testing! !
 !RowanService categoriesFor: #isProjectService!public!testing! !
@@ -258,36 +278,38 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #methodSourceUpdate:!public!updating! !
 !RowanService categoriesFor: #methodsRemoved:!public!updating! !
 !RowanService categoriesFor: #methodsUpdate:!public!updating! !
-!RowanService categoriesFor: #name!accessing!private! !
-!RowanService categoriesFor: #name:!accessing!private! !
+!RowanService categoriesFor: #name!accessing!public! !
+!RowanService categoriesFor: #name:!accessing!public! !
 !RowanService categoriesFor: #packagesUpdate:!public!updating! !
 !RowanService categoriesFor: #printOn:!printing!public! !
 !RowanService categoriesFor: #processListUpdate:!Debugger!public!updating! !
-!RowanService categoriesFor: #projectPackagesUpdate:!public!updating! !
+!RowanService categoriesFor: #projectPackagesUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanService categoriesFor: #remoteService!public! !
 !RowanService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanService categoriesFor: #removeSampleSymbolDictionary!public! !
-!RowanService categoriesFor: #replicateFrom:!public!updating! !
+!RowanService categoriesFor: #replicateFrom:!public!replication!updating! !
 !RowanService categoriesFor: #sampleDefinitions!examples!public! !
 !RowanService categoriesFor: #setRemoteName!accessing!public! !
+!RowanService categoriesFor: #sortAspect!accessing!public! !
 !RowanService categoriesFor: #superclassListUpdate:!public!updating! !
 !RowanService categoriesFor: #toolTip!printing!public! !
-!RowanService categoriesFor: #transport!accessing!private! !
-!RowanService categoriesFor: #transport:!accessing!private! !
+!RowanService categoriesFor: #transport!accessing!public! !
+!RowanService categoriesFor: #transport:!accessing!public! !
 !RowanService categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
 !RowanService categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !
 !RowanService categoriesFor: #updateClassSelectionFor:!public!updating! !
 !RowanService categoriesFor: #updateDictionarySelectionsFor:!public!updating! !
+!RowanService categoriesFor: #updateList:whilePreservingSelections:!private! !
 !RowanService categoriesFor: #updateMethodFilterSelectionFor:!public!updating! !
 !RowanService categoriesFor: #updateMethodSelectionFor:!public!updating! !
 !RowanService categoriesFor: #updatePackageSelectionsFor:!public!updating! !
 !RowanService categoriesFor: #updateSelectorFor:!public!updating! !
 !RowanService categoriesFor: #updateSuperclassSelectionFor:!public!updating! !
-!RowanService categoriesFor: #updateType!accessing!private! !
-!RowanService categoriesFor: #updateType:!accessing!private! !
+!RowanService categoriesFor: #updateType!accessing!public! !
+!RowanService categoriesFor: #updateType:!accessing!public! !
 !RowanService categoriesFor: #variableDataUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #variableListUpdate:!Debugger!public!updating! !
 

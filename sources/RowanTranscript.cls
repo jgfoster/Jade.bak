@@ -17,14 +17,9 @@ flipSTONFlag
 !
 
 openRowanProjectsBrowser
-	
-	gciSession hasServer ifTrue: [
-		^RowanProjectsSystemBrowser showOnSession: gciSession.
-	].
-	MessageBox
-		warning: 'Cannot open Rowan Projects browser'
-		caption: 'Cannot open Rowan Projects browser'.
-! !
+	gciSession hasServer ifTrue: [^JadeiteProjectsSystemBrowser showOnSession: gciSession].
+	MessageBox warning: 'Cannot open Rowan Projects browser'
+		caption: 'Cannot open Rowan Projects browser'! !
 !RowanTranscript categoriesFor: #flipSTONFlag!public! !
 !RowanTranscript categoriesFor: #openRowanProjectsBrowser!public! !
 

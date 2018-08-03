@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanPackageService
-	instanceVariableNames: 'classes defaultTemplate'
+	instanceVariableNames: 'classes defaultTemplate projectName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -19,7 +19,9 @@ classesUpdate: presenter
 
 	| newList defined |
 	newList := SortedCollection sortBlock: [:x :y | x name < y name].
-	newList addAll: classes.
+	newList 
+		addAll: presenter list;
+		addAll: classes.
 	defined := newList select: [:svc | svc isDefined] thenCollect: [:svc | svc name].
 	newList := newList reject: [:svc | svc isExtension and: [defined includes: svc name]].
 	presenter list: newList!
@@ -73,6 +75,12 @@ printOn: target
 		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
 		nextPutAll: name!
 
+projectName
+	^projectName!
+
+projectName: anObject
+	projectName := anObject!
+
 releaseReferencedServices
 	| copy |
 	classes ifNil: [^self].
@@ -84,7 +92,8 @@ remoteServiceName
 	^'Rowan packageServiceClass'!
 
 replicateFrom: newService
-	^self isPackageService ifTrue: [super replicateFrom: newService]! !
+	^(self isPackageService and: [newService isPackageService])
+		ifTrue: [super replicateFrom: newService]! !
 !RowanPackageService categoriesFor: #classCreationTemplate!public!rowan! !
 !RowanPackageService categoriesFor: #classesUpdate:!public!updating! !
 !RowanPackageService categoriesFor: #createPackageNamed:inProject:!public!rowan! !
@@ -95,6 +104,8 @@ replicateFrom: newService
 !RowanPackageService categoriesFor: #isPackageService!public!testing! !
 !RowanPackageService categoriesFor: #name:!accessing!public! !
 !RowanPackageService categoriesFor: #printOn:!printing!public! !
+!RowanPackageService categoriesFor: #projectName!accessing!private! !
+!RowanPackageService categoriesFor: #projectName:!accessing!private! !
 !RowanPackageService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanPackageService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanPackageService categoriesFor: #replicateFrom:!public!updating! !

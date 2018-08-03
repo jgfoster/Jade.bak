@@ -10,6 +10,12 @@ RowanSystemBrowser comment: ''!
 !RowanSystemBrowser categoriesForClass!Unclassified! !
 !RowanSystemBrowser methodsFor!
 
+addSystemBrowserWithLayoutInfo: each
+	| presenter |
+	presenter := (self systemBrowserPresenter createIn: cardsPresenter gciSession: gciSession)
+				layoutInfo: each.
+	presenter projectDictionaryChanged!
+
 restoreLayoutAndContentsFromFile
 	self rowanFixMe. "Need to restore from saved state via services"
 	^false. !
@@ -21,6 +27,7 @@ shellName
 
 systemBrowserPresenter	
 	^RowanSystemBrowserPresenter! !
+!RowanSystemBrowser categoriesFor: #addSystemBrowserWithLayoutInfo:!public! !
 !RowanSystemBrowser categoriesFor: #restoreLayoutAndContentsFromFile!public! !
 !RowanSystemBrowser categoriesFor: #shellName!overrides!private! !
 !RowanSystemBrowser categoriesFor: #systemBrowserPresenter!public! !

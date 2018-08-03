@@ -56,13 +56,12 @@ processListPresenter
 registerPresentersForUpdates
 	"copied from RowanProjectsBrowserPresenter>>registerPresentersForUpdates"
 
-	BrowserUpdate current 
-		register: processListPresenter 	with: #'processListUpdate:'		;
-		"register: frameListPresenter 	with: #'frameListUpdate:'		;
+	BrowserUpdate current
+		register: processListPresenter selector: #processListUpdate:;
+		yourself
+	"register: frameListPresenter 	with: #'frameListUpdate:'		;
 		register: variableListPresenter 	with: #'variableListUpdate:'	;
-		register: variableDataPresenter 	with: #'variableDataUpdate:'	;"
-		yourself.
-!
+		register: variableDataPresenter 	with: #'variableDataUpdate:'	;"!
 
 update: services afterStonReplication: stonResults
 	BrowserUpdate current update: services afterStonReplication: stonResults!

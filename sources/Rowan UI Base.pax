@@ -11,6 +11,7 @@ package classNames
 	add: #JadeiteMethodListPresenter;
 	add: #JadeiteMethodSourcePresenter;
 	add: #JadeiteProjectsBrowserPresenter;
+	add: #JadeiteProjectsSystemBrowser;
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
 	add: #RowanBrowserService;
@@ -44,7 +45,6 @@ package classNames
 	add: #RowanProjectListPresenter;
 	add: #RowanProjectListShell;
 	add: #RowanProjectService;
-	add: #RowanProjectsSystemBrowser;
 	add: #RowanProjectsUpdate;
 	add: #RowanQueryService;
 	add: #RowanSavePackageDialog;
@@ -137,6 +137,7 @@ package methodNames
 	add: #Object -> #rowanFixMe;
 	add: #ObjectLogBrowser -> #debug:;
 	add: #Presenter -> #update:withSelector:;
+	add: #Presenter -> #update:withSelector:browser:;
 	add: #Presenter -> #updateReady:;
 	add: #Presenter -> #updateSelectionsFor:;
 	add: #Presenter -> #updateSelectionsForUpdate:;
@@ -156,7 +157,7 @@ package methodNames
 	add: #RowanCommandResult -> #methodsRemoved:;
 	add: #RowanCommandResult -> #methodsUpdate:;
 	add: #RowanCommandResult -> #packagesUpdate:;
-	add: #RowanCommandResult -> #projectPackagesUpdate:;
+	add: #RowanCommandResult -> #projectPackagesUpdate:browser:;
 	add: #RowanCommandResult -> #projectSelectionUpdate:;
 	add: #RowanCommandResult -> #projectsUpdate:;
 	add: #RowanCommandResult -> #superclassListUpdate:;
@@ -346,7 +347,7 @@ RowanService subclass: #RowanMethodService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanPackageService
-	instanceVariableNames: 'classes defaultTemplate'
+	instanceVariableNames: 'classes defaultTemplate projectName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -475,7 +476,7 @@ JadeSystemBrowser subclass: #RowanSystemBrowser
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-RowanSystemBrowser subclass: #RowanProjectsSystemBrowser
+RowanSystemBrowser subclass: #JadeiteProjectsSystemBrowser
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -2023,7 +2024,10 @@ debug: anArray
 !Presenter methodsFor!
 
 update: browserUpdate withSelector: selector
-	browserUpdate updatesPerform: selector with: self!
+	browserUpdate updatesPerform: selector presenter: self!
+
+update: browserUpdate withSelector: selector browser: browser
+	browserUpdate updatesPerform: selector presenter: self browser: browser !
 
 updateReady: aBlock
 
@@ -2043,6 +2047,7 @@ updateSelectionsForUpdate: update
 
 	! !
 !Presenter categoriesFor: #update:withSelector:!Jadeite!public! !
+!Presenter categoriesFor: #update:withSelector:browser:!Jadeite!public! !
 !Presenter categoriesFor: #updateReady:!public!rowan! !
 !Presenter categoriesFor: #updateSelectionsFor:!public!rowan! !
 !Presenter categoriesFor: #updateSelectionsForUpdate:!public!rowan! !
@@ -2096,7 +2101,8 @@ methodsUpdate: presenter
 
 packagesUpdate: presenter!
 
-projectPackagesUpdate: presenter!
+projectPackagesUpdate: presenter browser: anObject
+	!
 
 projectSelectionUpdate: aPresenter
 !
@@ -2147,7 +2153,7 @@ updateType
 !RowanCommandResult categoriesFor: #methodsRemoved:!public!updating! !
 !RowanCommandResult categoriesFor: #methodsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !
-!RowanCommandResult categoriesFor: #projectPackagesUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #projectPackagesUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #projectsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #superclassListUpdate:!public!updating! !
