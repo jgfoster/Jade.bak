@@ -70,7 +70,7 @@ package methodNames
 	add: #GsMethod -> #methodDefinitionService;
 	add: #JadeAutoTextPresenter3 -> #defaultMethod;
 	add: #JadeAutoTextPresenter3 -> #setDefaultMethod;
-	add: #JadeFindClassDialog -> #allClasses;
+	add: #JadeFindClassDialog -> #initializeAvailable;
 	add: #JadeImageStripper -> #closeLoginShells;
 	add: #JadeImageStripper -> #createVersionResource;
 	add: #JadeImageStripper -> #requiredClasses;
@@ -330,7 +330,7 @@ RowanService subclass: #RowanBrowserService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods projectName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -680,14 +680,9 @@ setDefaultMethod
 
 !JadeFindClassDialog methodsFor!
 
-allClasses
-	| browserService |
-	browserService := RowanBrowserService new.
-	browserService
-		command: #allClasses;
-		commandArgs: Array new.
-	self issueCommand: (Array with: browserService).! !
-!JadeFindClassDialog categoriesFor: #allClasses!public! !
+initializeAvailable
+	^self model value asSortedCollection! !
+!JadeFindClassDialog categoriesFor: #initializeAvailable!private! !
 
 !JadeImageStripper methodsFor!
 

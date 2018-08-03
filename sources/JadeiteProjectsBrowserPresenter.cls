@@ -348,12 +348,7 @@ filterTabChanged
 findClass
 	| find |
 	find := JadeiteFindClassDialog showModal: 'DefaultView' on: self allClasses.
-	find
-		ifNotNil: 
-			[self
-				updateAfterFindClass: find value
-				isMeta: nil
-				selector: String new]!
+	find ifNotNil: [self updateAfterFindClass: find]!
 
 getViews
 	classHierarchyTabs := self view viewNamed: 'classHierarchyTabs'.
@@ -476,6 +471,12 @@ onViewOpened
 	self registerPresentersForUpdates. 
 	projectListPresenter view contextMenu: (self projectMenu).
 	self updateProjects. !
+
+openDictionaryBrowserOn: classService
+	| shell |
+	Cursor wait showWhile: 
+			[shell := RowanSystemBrowser showOnSession: gciSession.
+			shell selectClass: classService name asString selector: String new]!
 
 openMethodListOn: service selecting: string
 	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
@@ -862,6 +863,23 @@ textTabs
 unloadProject
 	MessageBox notify: 'This feature not yet implemented'!
 
+updateAfterFindClass: classService
+	| projectService packageService updatedClassService |
+	projectService := projectListPresenter list
+				detect: [:service | service name = classService projectName]
+				ifNone: 
+					["old school"
+					^self openDictionaryBrowserOn: classService].
+	projectListPresenter selections: (Array with: projectService).
+	packageService := packageListPresenter list
+				detect: [:service | service name = classService packageName]
+				ifNone: [^self].
+	packageListPresenter selections: (Array with: packageService).
+	updatedClassService := classListPresenter list
+				detect: [:service | service name asString = classService name asString]
+				ifNone: [^self].
+	classListPresenter selections: (Array with: updatedClassService)!
+
 updateAndSelectA: aView
 
 	inUpdate ifTrue: [^self].
@@ -1101,6 +1119,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnClassList:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnMethodCategory:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!overrides!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #openDictionaryBrowserOn:!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers!private!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectChanges!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectDictionaryChanged!event handlers!public! !
@@ -1136,6 +1155,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabs!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #unloadProject!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #updateAfterFindClass:!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateClasses!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateClassInfo!event handlers!public!updating! !
