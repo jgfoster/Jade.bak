@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanPackageService
-	instanceVariableNames: 'classes defaultTemplate'
+	instanceVariableNames: 'classes defaultTemplate projectName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -10,19 +10,33 @@ RowanPackageService comment: ''!
 !RowanPackageService categoriesForClass!Kernel-Objects! !
 !RowanPackageService methodsFor!
 
+= packageService
+
+	^name = packageService name!
+
 classCreationTemplate
 
 	^transport send: #genericClassCreationTemplate to: self remoteService!
 
-classesUpdate: presenter
+classesUpdate: presenter browser: browser
 	"If the selected packages have the same class defined and extended, show the defined class"
 
-	| newList defined |
-	newList := SortedCollection sortBlock: [:x :y | x name < y name].
-	newList addAll: classes.
+	| condensedList |
+	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
+	browser packageListPresenter selections detect: [:packageService | packageService name = name]
+		ifNone: [^self].
+	condensedList := self condenseExtensions: presenter.
+	self updateList: presenter whilePreservingSelections: condensedList!
+
+condenseExtensions: presenter
+	| defined newList |
+	newList := OrderedCollection new.
+	newList
+		addAll: presenter list;
+		addAll: classes.
 	defined := newList select: [:svc | svc isDefined] thenCollect: [:svc | svc name].
 	newList := newList reject: [:svc | svc isExtension and: [defined includes: svc name]].
-	presenter list: newList!
+	^newList!
 
 createPackageNamed: packageName inProject: projectName
 
@@ -47,6 +61,9 @@ genericClassCreationTemplate
 
 	^transport send: #genericClassCreationTemplate to: remoteService 
 !
+
+hash
+	^self name hash!
 
 isPackageService
 
@@ -73,6 +90,12 @@ printOn: target
 		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
 		nextPutAll: name!
 
+projectName
+	^projectName!
+
+projectName: anObject
+	projectName := anObject!
+
 releaseReferencedServices
 	| copy |
 	classes ifNil: [^self].
@@ -84,17 +107,23 @@ remoteServiceName
 	^'Rowan packageServiceClass'!
 
 replicateFrom: newService
-	^self isPackageService ifTrue: [super replicateFrom: newService]! !
+	^(self isPackageService and: [newService isPackageService])
+		ifTrue: [super replicateFrom: newService]! !
+!RowanPackageService categoriesFor: #=!comparing!public! !
 !RowanPackageService categoriesFor: #classCreationTemplate!public!rowan! !
-!RowanPackageService categoriesFor: #classesUpdate:!public!updating! !
+!RowanPackageService categoriesFor: #classesUpdate:browser:!public!updating! !
+!RowanPackageService categoriesFor: #condenseExtensions:!private! !
 !RowanPackageService categoriesFor: #createPackageNamed:inProject:!public!rowan! !
 !RowanPackageService categoriesFor: #defaultTemplate!accessing!private! !
 !RowanPackageService categoriesFor: #defaultTemplate:!accessing!private! !
 !RowanPackageService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanPackageService categoriesFor: #genericClassCreationTemplate!public!rowan! !
+!RowanPackageService categoriesFor: #hash!comparing!public! !
 !RowanPackageService categoriesFor: #isPackageService!public!testing! !
 !RowanPackageService categoriesFor: #name:!accessing!public! !
 !RowanPackageService categoriesFor: #printOn:!printing!public! !
+!RowanPackageService categoriesFor: #projectName!accessing!private! !
+!RowanPackageService categoriesFor: #projectName:!accessing!private! !
 !RowanPackageService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanPackageService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanPackageService categoriesFor: #replicateFrom:!public!updating! !

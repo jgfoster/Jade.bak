@@ -10,6 +10,10 @@ RowanClassService comment: ''!
 !RowanClassService categoriesForClass!Kernel-Objects! !
 !RowanClassService methodsFor!
 
+= classService
+
+	^name = classService name!
+
 allFilters
 	^allFilters!
 
@@ -20,8 +24,11 @@ classCreationTemplate
 
 	^transport send: #classCreationTemplate to: self remoteService!
 
-classMethodsUpdate: presenter
+classMethodsUpdate: presenter browser: browser
 	| visibleMethods |
+	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
+	browser classListPresenter selections detect: [:classService | classService name = name]
+		ifNone: [^self].
 	visibleMethods := OrderedCollection new.
 	(filters isEmpty or: [filterType = 'variables'])
 		ifTrue: [visibleMethods := methods]
@@ -30,7 +37,7 @@ classMethodsUpdate: presenter
 				ifTrue: [visibleMethods := methods select: [:methodService | filters includes: methodService category]]].
 	visibleMethods
 		do: [:svc | svc inSelectedPackage: (self selectedPackageServiceNames includes: svc packageName)].
-	presenter list: visibleMethods!
+	self updateList: presenter whilePreservingSelections: visibleMethods!
 
 comment
 	^comment!
@@ -70,13 +77,19 @@ filterType
 filterType: anObject
 	filterType := anObject!
 
-filterUpdate: presenter
+filterUpdate: presenter browser: browser
 	| selections availableSelections |
+	presenter list isEmpty ifTrue: [presenter list: SortedCollection new].
+	browser classListPresenter selections detect: [:classService | classService name = name]
+		ifNone: [^self].
 	presenter list = allFilters ifTrue: [^self].
 	selections := presenter selections.
 	presenter list: allFilters.
 	availableSelections := allFilters select: [:filter | selections includes: filter].
 	presenter selections: availableSelections!
+
+hash
+	^self name hash!
 
 initialize
 	
@@ -162,10 +175,11 @@ template
 
 template: anObject
 	template := anObject! !
+!RowanClassService categoriesFor: #=!comparing!public! !
 !RowanClassService categoriesFor: #allFilters!accessing!private! !
 !RowanClassService categoriesFor: #allFilters:!accessing!private! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
-!RowanClassService categoriesFor: #classMethodsUpdate:!public!updating! !
+!RowanClassService categoriesFor: #classMethodsUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #comment!accessing!public! !
 !RowanClassService categoriesFor: #comment:!accessing!public! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
@@ -177,7 +191,8 @@ template: anObject
 !RowanClassService categoriesFor: #filters:!accessing!public! !
 !RowanClassService categoriesFor: #filterType!accessing!private! !
 !RowanClassService categoriesFor: #filterType:!accessing!private! !
-!RowanClassService categoriesFor: #filterUpdate:!public!updating! !
+!RowanClassService categoriesFor: #filterUpdate:browser:!public!updating! !
+!RowanClassService categoriesFor: #hash!comparing!public! !
 !RowanClassService categoriesFor: #initialize!Init / Release!public! !
 !RowanClassService categoriesFor: #isClassService!public!testing! !
 !RowanClassService categoriesFor: #isDefined!public!testing! !

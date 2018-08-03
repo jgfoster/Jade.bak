@@ -10,6 +10,12 @@ RowanBrowserService comment: ''!
 !RowanBrowserService categoriesForClass!Unclassified! !
 !RowanBrowserService methodsFor!
 
+= projectService
+	^name = projectService name!
+
+hash
+	^name hash!
+
 methodsRemoved: presenter
 	| remainingServices |
 	remainingServices := OrderedCollection new.
@@ -18,7 +24,8 @@ methodsRemoved: presenter
 	presenter list: remainingServices!
 
 projectsUpdate: presenter
-	presenter list: projects.!
+	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
+	self updateList: presenter whilePreservingSelections: projects!
 
 releaseReferencedServices
 	| copy |
@@ -32,10 +39,16 @@ removedMethods
 	^removedMethods!
 
 removedMethods: anObject
-	removedMethods := anObject! !
+	removedMethods := anObject!
+
+replicateFrom: newService
+	"browser services don't need replication"! !
+!RowanBrowserService categoriesFor: #=!comparing!public! !
+!RowanBrowserService categoriesFor: #hash!comparing!public! !
 !RowanBrowserService categoriesFor: #methodsRemoved:!public!updating! !
 !RowanBrowserService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanBrowserService categoriesFor: #releaseReferencedServices!public! !
 !RowanBrowserService categoriesFor: #removedMethods!accessing!private! !
 !RowanBrowserService categoriesFor: #removedMethods:!accessing!private! !
+!RowanBrowserService categoriesFor: #replicateFrom:!public!replication!updating! !
 

@@ -173,21 +173,24 @@ possiblyShowGenericPackageClassTemplate: newDef
 			newClassDef := packageService genericClassCreationTemplate].
 	^newClassDef!
 
+projectDictionaryChanged
+!
+
 registerPresentersForUpdates
-	BrowserUpdate current register: dictionaryListPresenter with: #dictionaryUpdate:.
-	BrowserUpdate current register: globalsPresenter with: #globalsUpdate:.
-	BrowserUpdate current register: packageListPresenter with: #packagesUpdate:.
-	BrowserUpdate current register: classCategoryPresenter with: #classCategoryUpdate:.
-	BrowserUpdate current register: classListPresenter with: #classesUpdate:.
-	BrowserUpdate current register: classDefinitionPresenter with: #classDefinitionUpdate:.
-	BrowserUpdate current register: classCommentPresenter with: #classCommentUpdate:.
-	BrowserUpdate current register: classHierarchyPresenter with: #classHierarchyUpdate:.
-	BrowserUpdate current register: superclassListPresenter with: #superclassListUpdate:.
-	BrowserUpdate current register: methodListPresenter with: #methodsUpdate:.
-	BrowserUpdate current register: methodSourcePresenter with: #updateSelectorFor:.!
+	BrowserUpdate current register: dictionaryListPresenter selector: #dictionaryUpdate:.
+	BrowserUpdate current register: globalsPresenter selector: #globalsUpdate:.
+	BrowserUpdate current register: packageListPresenter selector: #packagesUpdate:.
+	BrowserUpdate current register: classCategoryPresenter selector: #classCategoryUpdate:.
+	BrowserUpdate current register: classListPresenter selector: #classesUpdate:.
+	BrowserUpdate current register: classDefinitionPresenter selector: #classDefinitionUpdate:.
+	BrowserUpdate current register: classCommentPresenter selector: #classCommentUpdate:.
+	BrowserUpdate current register: classHierarchyPresenter selector: #classHierarchyUpdate:.
+	BrowserUpdate current register: superclassListPresenter selector: #superclassListUpdate:.
+	BrowserUpdate current register: methodListPresenter selector: #methodsUpdate:.
+	BrowserUpdate current register: methodSourcePresenter selector: #updateSelectorFor:!
 
 registerTabPresentersForUpdates
-	BrowserUpdate current register: self methodFilterListPresenter with: #methodFilterUpdate:!
+	BrowserUpdate current register: self methodFilterListPresenter selector: #methodFilterUpdate:!
 
 resetClassDefinitionPresenter
 	classDefinitionPresenter view
@@ -558,6 +561,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!private! !
 !RowanSystemBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #possiblyShowGenericPackageClassTemplate:!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #projectDictionaryChanged!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #registerTabPresentersForUpdates!event handlers!initialization!public!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #resetClassDefinitionPresenter!private!updating! !

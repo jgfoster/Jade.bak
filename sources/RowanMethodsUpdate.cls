@@ -10,7 +10,8 @@ RowanMethodsUpdate comment: ''!
 !RowanMethodsUpdate categoriesForClass!Unclassified! !
 !RowanMethodsUpdate methodsFor!
 
-classesUpdate: presenter!
+classesUpdate: presenter browser: anObject
+	!
 
 inheritedClass
 	^inheritedClass!
@@ -100,7 +101,7 @@ updateMethodSelectionFor: presenter
 	| selections |
 	selections := presenter list select: [:item | selectedSelectors includes: item first asSymbol].
 	presenter selections: selections! !
-!RowanMethodsUpdate categoriesFor: #classesUpdate:!public!updating! !
+!RowanMethodsUpdate categoriesFor: #classesUpdate:browser:!public!updating! !
 !RowanMethodsUpdate categoriesFor: #inheritedClass!accessing!public! !
 !RowanMethodsUpdate categoriesFor: #inheritedClass:!accessing!public! !
 !RowanMethodsUpdate categoriesFor: #inheritedClasses!accessing!public! !

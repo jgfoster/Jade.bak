@@ -47,7 +47,7 @@ openMethodListOn: service selecting: string
 		selecting: string!
 
 registerPresentersForUpdates
-	BrowserUpdate current register: methodListPresenter with: #methodsRemoved:!
+	BrowserUpdate current register: methodListPresenter selector: #methodsRemoved:!
 
 removeFromList
 	methodListPresenter list: (methodListPresenter list copyWithoutAll: methodListPresenter selections)!

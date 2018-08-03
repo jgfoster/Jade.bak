@@ -27,7 +27,7 @@ initializeUpdates
 	updates := OrderedCollection new.
 	!
 
-register: presenter with: selector
+register: presenter selector: selector
 	"send the update to the presenter so that when the presenter gets
 	removed, it's events go with it."
 
@@ -36,6 +36,19 @@ register: presenter with: selector
 		send: #update:withSelector:
 		to: presenter
 		withArguments: (Array with: self with: selector)!
+
+register: presenter selector: selector browser: browser
+	"send the update to the presenter so that when the presenter gets
+	removed, it's events go with it."
+
+	self
+		when: #updateReady
+		send: #update:withSelector:browser:
+		to: presenter
+		withArguments: (Array
+				with: self
+				with: selector
+				with: browser)!
 
 update: services afterStonReplication: stonResults
 	"assume we get back the 'same' services as we sent"
@@ -61,7 +74,7 @@ updates: aCollection
 	updates addAll: aCollection.
 	self updateReady!
 
-updatesPerform: selector with: presenter
+updatesPerform: selector presenter: presenter
 	"the update may know which client updates 
 	it wants us to care about. Respect that."
 
@@ -69,17 +82,29 @@ updatesPerform: selector with: presenter
 			[:update |
 			update updateType
 				ifNil: [update perform: selector with: presenter]
-				ifNotNil: [:type | type == selector ifTrue: [update perform: type with: presenter]]]! !
+				ifNotNil: [:type | type == selector ifTrue: [update perform: type with: presenter]]]!
+
+updatesPerform: selector presenter: presenter browser: browser
+	"the update may know which client updates 
+	it wants us to care about. Respect that."
+
+	updates do: 
+			[:update |
+			update updateType
+				ifNil: [update perform: selector with: presenter with: browser]
+				ifNotNil: [:type | type == selector ifTrue: [update perform: type with: presenter with: browser]]]! !
 !BrowserUpdate categoriesFor: #debug!accessing!private! !
 !BrowserUpdate categoriesFor: #debug:!accessing!private! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
 !BrowserUpdate categoriesFor: #initializeUpdates!initialization!public! !
-!BrowserUpdate categoriesFor: #register:with:!public!registeringPresenters! !
+!BrowserUpdate categoriesFor: #register:selector:!public!registeringPresenters! !
+!BrowserUpdate categoriesFor: #register:selector:browser:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #update:afterStonReplication:!public!updating! !
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !
 !BrowserUpdate categoriesFor: #updates!accessing!public! !
 !BrowserUpdate categoriesFor: #updates:!accessing!public! !
-!BrowserUpdate categoriesFor: #updatesPerform:with:!public!updating! !
+!BrowserUpdate categoriesFor: #updatesPerform:presenter:!public!updating! !
+!BrowserUpdate categoriesFor: #updatesPerform:presenter:browser:!public!updating! !
 
 !BrowserUpdate class methodsFor!
 

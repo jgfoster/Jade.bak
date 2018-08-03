@@ -10,9 +10,9 @@ RowanProjectService comment: ''!
 !RowanProjectService categoriesForClass!Unclassified! !
 !RowanProjectService methodsFor!
 
-= anObject
+= projectService
 
-	^name = anObject name!
+	^name = projectService name!
 
 addProjectNamed: projectName
 	transport
@@ -173,13 +173,12 @@ printOn: target
 		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
 		nextPutAll: name!
 
-projectPackagesUpdate: presenter
-	| newList |
-	newList := SortedCollection sortBlock: [:x :y | x name < y name].
-	newList
-		addAll: presenter list;
-		addAll: packages.
-	presenter list: newList!
+projectPackagesUpdate: presenter browser: browser
+	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
+	browser projectListPresenter selections
+		detect: [:projectService | projectService name = name]
+		ifNone: [^self].
+	self updateList: presenter whilePreservingSelections: packages!
 
 projects
 	| oops services |
@@ -275,7 +274,7 @@ write
 !RowanProjectService categoriesFor: #packageNames!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !
 !RowanProjectService categoriesFor: #printOn:!printing!public! !
-!RowanProjectService categoriesFor: #projectPackagesUpdate:!public!updating! !
+!RowanProjectService categoriesFor: #projectPackagesUpdate:browser:!public!updating! !
 !RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanProjectService categoriesFor: #projectsUpdate:!public!updating! !

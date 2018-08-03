@@ -10,14 +10,13 @@ RowanClassesUpdate comment: ''!
 !RowanClassesUpdate categoriesForClass!Unclassified! !
 !RowanClassesUpdate methodsFor!
 
-classesUpdate: presenter
-
+classesUpdate: presenter browser: anObject
 	presenter list: classNames!
 
 updateClassSelectionFor: presenter
 	| symbols |
 	symbols := selectionNames collect:[:name | name asSymbol].
 	presenter selections: symbols! !
-!RowanClassesUpdate categoriesFor: #classesUpdate:!public!updating! !
+!RowanClassesUpdate categoriesFor: #classesUpdate:browser:!public!updating! !
 !RowanClassesUpdate categoriesFor: #updateClassSelectionFor:!public!updating! !
 

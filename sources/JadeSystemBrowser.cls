@@ -57,7 +57,6 @@ closeRequested: anAssociation
 !
 
 commitTransaction
-
 	gciSession commit ifTrue: [
 		Sound informationBeep.
 		self update.
