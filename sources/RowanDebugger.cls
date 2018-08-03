@@ -14,10 +14,10 @@ documentPresenter
 
 	^documentPresenter!
 
-errorMessagePresenter
+errorMessagePresenter
 	^errorMessagePresenter!
 
-frameListPresenter
+frameListPresenter
 	^frameListPresenter!
 
 getProcessList
@@ -54,7 +54,7 @@ onViewOpened
 		yourself.
 !
 
-processListPresenter
+processListPresenter
 	^processListPresenter!
 
 registerPresentersForUpdates
@@ -84,10 +84,10 @@ updateServices: services
 	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
 	self update: services afterStonReplication: stonResults!
 
-variableDataPresenter
+variableDataPresenter
 	^variableDataPresenter!
 
-variableListPresenter
+variableListPresenter
 	^variableListPresenter! !
 !RowanDebugger categoriesFor: #documentPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
