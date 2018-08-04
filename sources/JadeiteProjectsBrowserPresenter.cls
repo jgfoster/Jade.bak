@@ -572,6 +572,15 @@ projectMenuStrings
 		'&Refresh ...//refresh'
 )!
 
+projectTabLabel
+	^(projectListPresenter selectionIfNone: [])
+		ifNil: ['Projects']
+		ifNotNil: 
+			[:projectService |
+			packageListPresenter selectionOrNil
+				ifNil: [projectService name]
+				ifNotNil: [:packageService | packageService name]]!
+
 pullFromGit
 	| service |
 	projectListPresenter hasSelection
@@ -768,9 +777,6 @@ removeClass
 		commandArgs: (Array with: selection).
 	self issueCommand: (Array with: packageService)!
 
-removeComparisonTab
-	self textTabs remove: self comparisonTab ifAbsent: []!
-
 removeMethodCategories
 	| service |
 	service := classListPresenter selection
@@ -861,11 +867,6 @@ setMethodFilter
 		ifFalse: [filters := variableListPresenter selections].
 	classListPresenter list do: [:service | service filters: filters]!
 
-showComparisonTab
-	self textTabs add: self comparisonTab.
-	methodSourcePresenter setDefaultMethod.
-	comparisonPresenter ensureVisible!
-
 showPackages
 	| service |
 	projectListPresenter selection isNil
@@ -874,6 +875,21 @@ showPackages
 			^false].
 	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
 	MessageBox notify: service packageNameString!
+
+showSuperClassComparison
+	| methodService |
+	methodService := methodListPresenter selection.
+	methodService hasSupers
+		ifTrue: 
+			[comparisonPresenter
+				beforeTitle: methodService classMethodDisplayString;
+				afterTitle: methodService superDisplayString;
+				compare: methodService source with: methodService superSource]
+		ifFalse: 
+			[comparisonPresenter
+				beforeTitle: methodService classMethodDisplayString;
+				afterTitle: 'No super implementation';
+				compare: methodService source with: String new]!
 
 textTabChanged
 	methodSourcePresenter view cancelCallTip.
@@ -975,17 +991,18 @@ updateMethodReferences: services
 
 updateMethodSource
 	methodListPresenter selections isEmpty ifTrue: [^methodSourcePresenter setDefaultMethod].
-	self removeComparisonTab.
-	methodListPresenter selections size = 1 ifTrue: [^self updateSingleMethodSource].
-	self updateMultiMethodComparison!
+	self updateSingleMethodSource.
+	methodListPresenter selections size > 1 ifTrue:[
+		self updateMultiMethodComparison] 
+	ifFalse:[
+		self showSuperClassComparison].!
 
 updateMultiMethodComparison
 	comparisonPresenter
 		beforeTitle: (methodListPresenter selections at: 1) classMethodDisplayString;
 		afterTitle: (methodListPresenter selections at: 2) classMethodDisplayString;
 		compare: (methodListPresenter selections at: 1) source
-			with: (methodListPresenter selections at: 2) source.
-	self showComparisonTab!
+			with: (methodListPresenter selections at: 2) source.!
 
 updatePackage
 	self updateClasses.
@@ -994,6 +1011,7 @@ updatePackage
 updatePackageInfo
 	| service |
 	service := packageListPresenter selectionIfNone: [^self].
+	self updateProjectTab.
 	classDefinitionPresenter value: service defaultTemplate.
 	classDefinitionPresenter view
 		backcolor: Color white;
@@ -1038,9 +1056,7 @@ updateProjects
 
 updateProjectTab
 	| projectTabLabel |
-	projectTabLabel := (projectListPresenter selectionIfNone: [])
-				ifNil: ['Projects']
-				ifNotNil: [:sel | sel name].
+	projectTabLabel := self projectTabLabel.
 	self view arrangement: projectTabLabel.
 	self parentPresenter view updateTabs!
 
@@ -1152,6 +1168,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectMenu!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectMenuCommands!menus!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectMenuStrings!menus!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #projectTabLabel!displaying!event handlers!private!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pullFromGit!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pushToGit!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #queryCommand:!menu handlers!overrides!public! !
@@ -1160,7 +1177,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeClass!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #removeComparisonTab!private!selection!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodCategories!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethods:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
@@ -1174,8 +1190,8 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #setDefaultProjectTablLabel:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setFilterType:!event handlers!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers!private!services!updating! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #showComparisonTab!private!selection!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #showPackages!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #showSuperClassComparison!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabs!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #unloadProject!project menu handlers!public! !
@@ -1186,7 +1202,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateMenuBar!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateMethodReferences:!private!services! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #updateMethodSource!event handlers!public!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #updateMethodSource!event handlers!public!text tabs!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateMultiMethodComparison!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updatePackage!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updatePackageInfo!event handlers!public!updating! !
@@ -1194,7 +1210,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProject!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectInfo!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjects!event handlers!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectTab!event handlers!public!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectTab!event handlers!private!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateServices:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateSingleMethodSource!private!text tabs! !

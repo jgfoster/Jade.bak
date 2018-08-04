@@ -50,7 +50,6 @@ textTabs
 
 updateMethodSource
 	methodListPresenter selections isEmpty ifTrue: [^methodSourcePresenter value: String new].
-	self removeComparisonTab.
 	methodListPresenter selections size = 1 ifTrue:[^self updateSingleMethodSource].	
 	self updateMultiMethodComparison
 	!
@@ -60,8 +59,7 @@ updateMultiMethodComparison
 		beforeTitle: (methodListPresenter selections at: 1) classMethodDisplayString;
 		afterTitle: (methodListPresenter selections at: 2) classMethodDisplayString;
 		compare: (methodListPresenter selections at: 1) source
-			with: (methodListPresenter selections at: 2) source.
-	self showComparisonTab!
+			with: (methodListPresenter selections at: 2) source.!
 
 updateSingleMethodSource
 	methodSourcePresenter value: methodListPresenter selection source.
