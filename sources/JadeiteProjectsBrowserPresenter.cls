@@ -341,7 +341,8 @@ editSaveMethod: classService
 	caretPosition := methodSourcePresenter view caretPosition.
 	firstVisibleLine := methodSourcePresenter view lineScroll.
 	category := (self isCategoriesTabSelected and: [categoryListPresenter hasSelection])
-				ifTrue: [categoryListPresenter selection trimBlanks].
+				ifTrue: [categoryListPresenter selection trimBlanks]
+				ifFalse: [methodListPresenter selectionOrNil ifNotNil: [:methodService | methodService category]].
 	classService
 		command: #saveMethodSource:category:;
 		commandArgs: (Array with: self currentMethodSource with: category).
