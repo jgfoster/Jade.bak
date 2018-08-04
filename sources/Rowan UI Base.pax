@@ -15,6 +15,7 @@ package classNames
 	add: #JadeiteProjectsSystemBrowser;
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
+	add: #RowanAnsweringService;
 	add: #RowanBrowserService;
 	add: #RowanClassCategoryUpdate;
 	add: #RowanClassesUpdate;
@@ -112,6 +113,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
 	add: #JadeSystemBrowserPresenter -> #packageTabName;
+	add: #JadeSystemBrowserPresenter -> #postOkToChangeEvent;
 	add: #JadeSystemBrowserPresenter -> #preRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #queryCommand:;
 	add: #JadeSystemBrowserPresenter -> #removeMethods;
@@ -321,6 +323,11 @@ RowanClassesUpdate subclass: #RowanMethodsUpdate
 	classInstanceVariableNames: ''!
 RowanClassesUpdate subclass: #RowanSuperclassUpdate
 	instanceVariableNames: 'tabName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+RowanService subclass: #RowanAnsweringService
+	instanceVariableNames: 'answer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -798,10 +805,10 @@ issueCommand: services
 	stonString := STON toString: services.
 	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
 		ensure: [services do: [:service | service clearCommand]].
-	self update: services afterStonReplication: stonResultString!
+	^self update: services afterStonReplication: stonResultString.!
 
 update: services afterStonReplication: stonResults
-	BrowserUpdate current update: services afterStonReplication: stonResults! !
+	^BrowserUpdate current update: services afterStonReplication: stonResults! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
 !JadePresenterA categoriesFor: #issueCommand:!private!services! !
@@ -1488,6 +1495,9 @@ packageTabName
 
 	^'Packages'!
 
+postOkToChangeEvent
+!
+
 preRemoveMethods
 	| stream |
 	stream := WriteStream on: String new.
@@ -1738,6 +1748,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #postOkToChangeEvent!event handlers!private! !
 !JadeSystemBrowserPresenter categoriesFor: #preRemoveMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removeMethods!menu handlers!public! !
