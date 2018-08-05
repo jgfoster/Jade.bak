@@ -16,6 +16,8 @@ RowanBrowserService comment: ''!
 allClasses
 	^allClasses!
 
+classHierarchyUpdate: presenter browser: browser!
+
 hash
 	^name hash!
 
@@ -57,6 +59,7 @@ replicateFrom: newService
 	self isBrowserService ifTrue: [super replicateFrom: newService]! !
 !RowanBrowserService categoriesFor: #=!comparing!public! !
 !RowanBrowserService categoriesFor: #allClasses!accessing!private! !
+!RowanBrowserService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanBrowserService categoriesFor: #hash!comparing!public! !
 !RowanBrowserService categoriesFor: #isBrowserService!public!testing! !
 !RowanBrowserService categoriesFor: #methodsRemoved:!public!updating! !

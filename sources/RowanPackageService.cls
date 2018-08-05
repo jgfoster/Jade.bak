@@ -22,6 +22,7 @@ classesUpdate: presenter browser: browser
 	"If the selected packages have the same class defined and extended, show the defined class"
 
 	| condensedList |
+	browser isClassListTabSelected ifFalse: [^self].
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
 	browser packageListPresenter selections detect: [:packageService | packageService name = name]
 		ifNone: [^self].

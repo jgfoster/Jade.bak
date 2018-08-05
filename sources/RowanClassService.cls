@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods projectName'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods projectName hierarchyServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -14,6 +14,15 @@ RowanClassService comment: ''!
 
 	^name = classService name!
 
+addHierarchyService: service to: treeModel withParent: parentService
+	treeModel add: service asChildOf: parentService.
+	(hierarchyServices at: service ifAbsent: [^self]) do: 
+			[:classService |
+			self
+				addHierarchyService: classService
+				to: treeModel
+				withParent: service]!
+
 allFilters
 	^allFilters!
 
@@ -23,6 +32,20 @@ allFilters: anObject
 classCreationTemplate
 
 	^transport send: #classCreationTemplate to: self remoteService!
+
+classHierarchyUpdate: presenter browser: browser
+	| treeModel |
+	browser isClassListTabSelected ifTrue: [^self].
+	treeModel := TreeModel new
+				searchPolicy: SearchPolicy equality;
+				reset.
+	(hierarchyServices at: #nil) do: 
+			[:classService |
+			self
+				addHierarchyService: classService
+				to: treeModel
+				withParent: nil].
+	browser classHierarchyPresenter model: treeModel!
 
 classMethodsUpdate: presenter browser: browser
 	| visibleMethods |
@@ -179,9 +202,11 @@ template
 template: anObject
 	template := anObject! !
 !RowanClassService categoriesFor: #=!comparing!public! !
+!RowanClassService categoriesFor: #addHierarchyService:to:withParent:!private!updating! !
 !RowanClassService categoriesFor: #allFilters!accessing!private! !
 !RowanClassService categoriesFor: #allFilters:!accessing!private! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
+!RowanClassService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #classMethodsUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #comment!accessing!public! !
 !RowanClassService categoriesFor: #comment:!accessing!public! !

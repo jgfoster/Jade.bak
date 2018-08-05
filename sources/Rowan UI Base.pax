@@ -108,6 +108,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeSystemBrowserPresenter -> #createSchematicWiringForClassHierarchyTabs;
 	add: #JadeSystemBrowserPresenter -> #editSaveClass;
 	add: #JadeSystemBrowserPresenter -> #handleClassCompileError:;
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
@@ -152,6 +153,7 @@ package methodNames
 	add: #RowanCommandResult -> #classesHierarchyUpdate:;
 	add: #RowanCommandResult -> #classesUpdate:browser:;
 	add: #RowanCommandResult -> #classHierarchyUpdate:;
+	add: #RowanCommandResult -> #classHierarchyUpdate:browser:;
 	add: #RowanCommandResult -> #classMethodsUpdate:browser:;
 	add: #RowanCommandResult -> #classUpdate:;
 	add: #RowanCommandResult -> #dictionaryUpdate:;
@@ -192,7 +194,6 @@ package methodNames
 	add: 'STON class' -> #put:asJsonOnStreamPretty:;
 	add: 'STON class' -> #put:onStream:;
 	add: 'STON class' -> #put:onStreamPretty:;
-	add: 'STON class' -> #reader;
 	add: 'STON class' -> #toJsonString:;
 	add: 'STON class' -> #toJsonStringPretty:;
 	add: 'STON class' -> #toString:;
@@ -337,7 +338,7 @@ RowanService subclass: #RowanBrowserService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods projectName'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods projectName hierarchyServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -811,8 +812,8 @@ update: services afterStonReplication: stonResults
 	^BrowserUpdate current update: services afterStonReplication: stonResults! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
-!JadePresenterA categoriesFor: #issueCommand:!private!services! !
-!JadePresenterA categoriesFor: #update:afterStonReplication:!private!services! !
+!JadePresenterA categoriesFor: #issueCommand:!Jadeite!private! !
+!JadePresenterA categoriesFor: #update:afterStonReplication:!Jadeite!private! !
 
 !JadeProcessBrowser methodsFor!
 
@@ -1433,6 +1434,16 @@ browseMethodsAndSelect: aString type: browseType
 		selecting: aString.
 !
 
+createSchematicWiringForClassHierarchyTabs
+	classHierarchyTabs
+		when: #currentCardChanging:
+			send: #aboutToChange:
+			to: self;
+		when: #currentCardChanged
+			send: #updateAndSelect:
+			to: self
+			with: classDefinitionPresenter!
+
 editSaveClass
 	| string stream flag |
 	string := classDefinitionPresenter value
@@ -1743,6 +1754,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #handleClassCompileError:!compiling!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
@@ -2103,6 +2115,9 @@ classesUpdate: presenter browser: anObject
 classHierarchyUpdate: presenter
 	!
 
+classHierarchyUpdate: presenter browser: browser
+!
+
 classMethodsUpdate: presenter browser: anObject
 	!
 
@@ -2173,6 +2188,7 @@ updateType
 !RowanCommandResult categoriesFor: #classesHierarchyUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classesUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #classHierarchyUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #classMethodsUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #classUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #dictionaryUpdate:!public!updating! !
@@ -2255,9 +2271,6 @@ put: object onStreamPretty: stream
 		prettyPrint: true;
 		nextPut: object!
 
-reader
-	^STONReader new!
-
 toJsonString: object
 	^String streamContents: [:stream | self put: object asJsonOnStream: stream]!
 
@@ -2281,7 +2294,6 @@ writer
 !STON class categoriesFor: #put:asJsonOnStreamPretty:!public! !
 !STON class categoriesFor: #put:onStream:!public! !
 !STON class categoriesFor: #put:onStreamPretty:!public! !
-!STON class categoriesFor: #reader!public! !
 !STON class categoriesFor: #toJsonString:!public! !
 !STON class categoriesFor: #toJsonStringPretty:!public! !
 !STON class categoriesFor: #toString:!public! !
