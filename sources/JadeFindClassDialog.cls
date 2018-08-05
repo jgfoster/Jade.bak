@@ -31,12 +31,10 @@ ok
 !
 
 onViewOpened
-
 	super onViewOpened.
-	availableClasses := self model value asSortedCollection.
+	availableClasses := self initializeAvailable.
 	self model value: nil.
-	nameEntryPresenter value: '*'.
-!
+	nameEntryPresenter value: '*'!
 
 updateClassList 
 

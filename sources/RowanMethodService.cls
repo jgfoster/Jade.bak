@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -234,6 +234,18 @@ stepPoints
 subSuperIcon
 	^(self basicSubSuperIcon) imageIndex!
 
+superDisplayString
+	^superDisplayString!
+
+superDisplayString: anObject
+	superDisplayString := anObject!
+
+superSource
+	^superSource!
+
+superSource: anObject
+	superSource := anObject!
+
 unimplementedSelectors
 
 	self rowanFixMe.
@@ -307,6 +319,10 @@ user: anObject
 !RowanMethodService categoriesFor: #source:!accessing!private! !
 !RowanMethodService categoriesFor: #stepPoints!public! !
 !RowanMethodService categoriesFor: #subSuperIcon!displaying!public! !
+!RowanMethodService categoriesFor: #superDisplayString!accessing!private! !
+!RowanMethodService categoriesFor: #superDisplayString:!accessing!private! !
+!RowanMethodService categoriesFor: #superSource!accessing!private! !
+!RowanMethodService categoriesFor: #superSource:!accessing!private! !
 !RowanMethodService categoriesFor: #unimplementedSelectors!public! !
 !RowanMethodService categoriesFor: #updateSelectorFromCompiledMethod:!private! !
 !RowanMethodService categoriesFor: #user!accessing!private! !

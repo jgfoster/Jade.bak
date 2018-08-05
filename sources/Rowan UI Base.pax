@@ -7,6 +7,7 @@ package paxVersion: 1;
 package classNames
 	add: #BrowserUpdate;
 	add: #JadeiteBasicMethodListPresenter;
+	add: #JadeiteFindClassDialog;
 	add: #JadeiteMethodListBrowser;
 	add: #JadeiteMethodListPresenter;
 	add: #JadeiteMethodSourcePresenter;
@@ -14,6 +15,7 @@ package classNames
 	add: #JadeiteProjectsSystemBrowser;
 	add: #PackageMethodListPresenter;
 	add: #Rowan;
+	add: #RowanAnsweringService;
 	add: #RowanBrowserService;
 	add: #RowanClassCategoryUpdate;
 	add: #RowanClassesUpdate;
@@ -69,6 +71,7 @@ package methodNames
 	add: #GsMethod -> #methodDefinitionService;
 	add: #JadeAutoTextPresenter3 -> #defaultMethod;
 	add: #JadeAutoTextPresenter3 -> #setDefaultMethod;
+	add: #JadeFindClassDialog -> #initializeAvailable;
 	add: #JadeImageStripper -> #closeLoginShells;
 	add: #JadeImageStripper -> #createVersionResource;
 	add: #JadeImageStripper -> #requiredClasses;
@@ -110,6 +113,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
 	add: #JadeSystemBrowserPresenter -> #packageTabName;
+	add: #JadeSystemBrowserPresenter -> #postOkToChangeEvent;
 	add: #JadeSystemBrowserPresenter -> #preRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #queryCommand:;
 	add: #JadeSystemBrowserPresenter -> #removeMethods;
@@ -322,13 +326,18 @@ RowanClassesUpdate subclass: #RowanSuperclassUpdate
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+RowanService subclass: #RowanAnsweringService
+	instanceVariableNames: 'answer'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 RowanService subclass: #RowanBrowserService
-	instanceVariableNames: 'projects removedMethods'
+	instanceVariableNames: 'projects removedMethods allClasses'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods projectName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -343,7 +352,7 @@ RowanService subclass: #RowanFrameService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -438,6 +447,11 @@ KeyValuePrompter subclass: #RowanKeyValuePrompter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 MCVersionDialog subclass: #RowanSavePackageDialog
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeFindClassDialog subclass: #JadeiteFindClassDialog
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -671,6 +685,12 @@ setDefaultMethod
 !JadeAutoTextPresenter3 categoriesFor: #defaultMethod!public! !
 !JadeAutoTextPresenter3 categoriesFor: #setDefaultMethod!public! !
 
+!JadeFindClassDialog methodsFor!
+
+initializeAvailable
+	^self model value asSortedCollection! !
+!JadeFindClassDialog categoriesFor: #initializeAvailable!private! !
+
 !JadeImageStripper methodsFor!
 
 closeLoginShells
@@ -785,10 +805,10 @@ issueCommand: services
 	stonString := STON toString: services.
 	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
 		ensure: [services do: [:service | service clearCommand]].
-	self update: services afterStonReplication: stonResultString!
+	^self update: services afterStonReplication: stonResultString.!
 
 update: services afterStonReplication: stonResults
-	BrowserUpdate current update: services afterStonReplication: stonResults! !
+	^BrowserUpdate current update: services afterStonReplication: stonResults! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
 !JadePresenterA categoriesFor: #issueCommand:!private!services! !
@@ -1475,6 +1495,9 @@ packageTabName
 
 	^'Packages'!
 
+postOkToChangeEvent
+!
+
 preRemoveMethods
 	| stream |
 	stream := WriteStream on: String new.
@@ -1725,6 +1748,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #postOkToChangeEvent!event handlers!private! !
 !JadeSystemBrowserPresenter categoriesFor: #preRemoveMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #queryCommand:!event handlers!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removeMethods!menu handlers!public! !

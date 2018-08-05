@@ -17,7 +17,8 @@ addSystemBrowserWithLayoutInfo: each
 	| presenter |
 	self rowanFixMe. "ignore layout info. Roll our own later"
 	presenter := (self systemBrowserPresenter createIn: cardsPresenter gciSession: gciSession).
-	presenter updateTabLabel
+	presenter updateTabLabel.
+	presenter ensureVisible.
 	
 !
 

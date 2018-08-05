@@ -58,7 +58,8 @@ update: services afterStonReplication: stonResults
 	updatedServices := STON fromString: stonResults.
 	updatedServices do: [:newService | services do: [:service | service replicateFrom: newService]].
 	self updates: updatedServices.
-	updatedServices do: [:service | service releaseReferencedServices]!
+	updatedServices do: [:service | service releaseReferencedServices].
+	^updatedServices!
 
 updateReady
 	updates isEmpty ifFalse: [self trigger: #updateReady]!

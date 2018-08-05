@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanBrowserService
-	instanceVariableNames: 'projects removedMethods'
+	instanceVariableNames: 'projects removedMethods allClasses'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -13,8 +13,15 @@ RowanBrowserService comment: ''!
 = projectService
 	^name = projectService name!
 
+allClasses
+	^allClasses!
+
 hash
 	^name hash!
+
+isBrowserService
+
+	^true!
 
 methodsRemoved: presenter
 	| remainingServices |
@@ -22,6 +29,11 @@ methodsRemoved: presenter
 	presenter list
 		do: [:methodService | (removedMethods includes: methodService) ifFalse: [remainingServices add: methodService]].
 	presenter list: remainingServices!
+
+name
+	"browser services aren't named, but (for convenience) can respond"
+
+	^nil!
 
 projectsUpdate: presenter
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
@@ -42,10 +54,13 @@ removedMethods: anObject
 	removedMethods := anObject!
 
 replicateFrom: newService
-	"browser services don't need replication"! !
+	self isBrowserService ifTrue: [super replicateFrom: newService]! !
 !RowanBrowserService categoriesFor: #=!comparing!public! !
+!RowanBrowserService categoriesFor: #allClasses!accessing!private! !
 !RowanBrowserService categoriesFor: #hash!comparing!public! !
+!RowanBrowserService categoriesFor: #isBrowserService!public!testing! !
 !RowanBrowserService categoriesFor: #methodsRemoved:!public!updating! !
+!RowanBrowserService categoriesFor: #name!accessing!public! !
 !RowanBrowserService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanBrowserService categoriesFor: #releaseReferencedServices!public! !
 !RowanBrowserService categoriesFor: #removedMethods!accessing!private! !
