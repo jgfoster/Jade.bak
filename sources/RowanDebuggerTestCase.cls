@@ -78,18 +78,46 @@ test2
 
 	| x |
 	self 
-		openDebuggerOn: '| x | nil halt. x := 1 + 2 * 3.';
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 + 2 * 3.
+1 == 1 ifTrue: [x := 1].
+1 to: 1 by: 1 do: [:i | x := i ].
+[x := 2] value.
+x yourself';
 		assert: (x := debugger errorMessagePresenter value) = 'a Halt occurred (error 2709)';
-		assert: (x := debugger frameListPresenter list first) = 'Executed Code  @2 line 1';
+		assert: (x := debugger frameListPresenter list first) = 'Executed Code  @2 line 2';
 		assert: (x := debugger documentPresenter view selection) = 'halt';
 		debuggerDo: [debugger stepOver];
 		assert: (x := debugger documentPresenter view selection) = '+ ';
 		debuggerDo: [debugger stepOver];
 		assert: (x := debugger documentPresenter view selection) = '* ';
 		debuggerDo: [debugger stepOver];
-		"assert: (x := debugger documentPresenter view selection) = ':= ';"	"http://kermit.gemtalksystems.com/bug?bug=47696"
+		assert: (x := debugger documentPresenter view selection) = ':=';
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = '==';
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = 'ifTrue:';
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = ':=';
+		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = 'to:';
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = ':=';
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = 'to:';
+		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = 'value';
+		debuggerDo: [debugger stepInto];
+		assert: (x := debugger documentPresenter view selection) = ':=';
+		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepOver];
+		assert: (x := debugger documentPresenter view selection) = 'yourself';
 		debuggerDo: [debugger resumeProcess];
-		yourself.! !
+		yourself.
+	x yourself.! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
 !RowanDebuggerTestCase categoriesFor: #openDebuggerOn:!public!running! !
