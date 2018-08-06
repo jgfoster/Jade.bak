@@ -27,6 +27,14 @@ initializeUpdates
 	updates := OrderedCollection new.
 	!
 
+performUpdate: updateBlock with: selector
+	updates do: 
+			[:update |
+			update updateType
+				ifNil: [updateBlock value: update]
+				ifNotNil: [:type | type == selector ifTrue: [updateBlock value: update]].
+			]!
+
 register: presenter selector: selector
 	"send the update to the presenter so that when the presenter gets
 	removed, it's events go with it."
@@ -58,7 +66,6 @@ update: services afterStonReplication: stonResults
 	updatedServices := STON fromString: stonResults.
 	updatedServices do: [:newService | services do: [:service | service replicateFrom: newService]].
 	self updates: updatedServices.
-	updatedServices do: [:service | service releaseReferencedServices].
 	^updatedServices!
 
 updateReady
@@ -79,25 +86,27 @@ updatesPerform: selector presenter: presenter
 	"the update may know which client updates 
 	it wants us to care about. Respect that."
 
-	updates do: 
-			[:update |
-			update updateType
-				ifNil: [update perform: selector with: presenter]
-				ifNotNil: [:type | type == selector ifTrue: [update perform: type with: presenter]]]!
+	| updateBlock |
+	updateBlock := [:update | update perform: selector with: presenter].
+	self performUpdate: updateBlock with: selector!
 
 updatesPerform: selector presenter: presenter browser: browser
 	"the update may know which client updates 
 	it wants us to care about. Respect that."
 
-	updates do: 
+	| updateBlock |
+	updateBlock := 
 			[:update |
-			update updateType
-				ifNil: [update perform: selector with: presenter with: browser]
-				ifNotNil: [:type | type == selector ifTrue: [update perform: type with: presenter with: browser]]]! !
+			update
+				perform: selector
+				with: presenter
+				with: browser].
+	self performUpdate: updateBlock with: selector! !
 !BrowserUpdate categoriesFor: #debug!accessing!private! !
 !BrowserUpdate categoriesFor: #debug:!accessing!private! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
 !BrowserUpdate categoriesFor: #initializeUpdates!initialization!public! !
+!BrowserUpdate categoriesFor: #performUpdate:with:!private!updating! !
 !BrowserUpdate categoriesFor: #register:selector:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #register:selector:browser:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #update:afterStonReplication:!public!updating! !

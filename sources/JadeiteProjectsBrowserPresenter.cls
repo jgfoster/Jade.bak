@@ -178,6 +178,8 @@ createSchematicWiringForClassHierarchy
 		when: #'dragCut:'			send: #'onDragCutClassHierarchy:'	to: self;
 		when: #'dragOver:'			send: #'onDragOverClassHierarchy:'	to: self;
 		when: #'drop:'				send: #'onDropOnClassHierarchy:'	to: self;
+		when: #selectionChanging:		send: #aboutToChange:			to: self;
+		when: #'selectionChanging:'	send: #'releasedReferencedServices:'	to: self;
 		when: #selectionChanged		send: #refreshClass				to: self!
 
 createSchematicWiringForClassHierarchyTabs
@@ -208,6 +210,9 @@ createSchematicWiringForClassList
 			to: self;
 		when: #selectionChanging:
 			send: #aboutToChange:
+			to: self;
+		when: #selectionChanging:
+			send: #releasedReferencedServices:
 			to: self;
 		when: #selectionChanged
 			send: #selectedClassChanged:
@@ -287,6 +292,7 @@ createSchematicWiringForPackageList
 		when: #'drop:'				send: #'onDropOnPackageList:'		to: self;
 		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
 		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
+		when: #'selectionChanging:'	send: #'releasedReferencedServices:'	to: self;
 		when: #'selectionChanged'		send: #'updatePackage' 			to: self;
 		yourself.
 !
@@ -310,6 +316,7 @@ createSchematicWiringForProjectList
 		when: #'drop:'				send: #'onDropOnPackageList:'		to: self;
 		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
 		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
+		when: #'selectionChanging:'	send: #'releasedReferencedServices:'	to: self;
 		when: #'selectionChanged' 		send: #'ensureVisible'				to: projectListPresenter;
 		when: #'selectionChanged'		send: #'updateProject' 			to: self
 !
@@ -794,6 +801,9 @@ refresh
 
 refreshClass
 	| selection presenter |
+	inUpdate ifTrue: [^self].
+	
+	[inUpdate := true.
 	self setClassMeta.
 	self setMethodFilter.
 	presenter := self isClassListTabSelected
@@ -804,9 +814,9 @@ refreshClass
 					^methodListPresenter clear].
 	selection selectedPackageServices: packageListPresenter selections.
 	self setFilterType: selection.
-	selection hierarchyServices: nil.
 	self updateServices: (Array with: selection).
-	self updateClassInfo!
+	self updateClassInfo]
+			ensure: [inUpdate := false]!
 
 refreshClassListOrHierarchy
 	self isClassListTabSelected ifTrue: [self updateClasses] ifFalse: [self updateHierarchy]!
@@ -844,6 +854,10 @@ registerPresentersForUpdates
 		browser: self.
 	BrowserUpdate current register: methodListPresenter selector: #methodsRemoved:.
 	BrowserUpdate current register: methodSourcePresenter selector: #methodSourceUpdate:!
+
+releasedReferencedServices: selectionChangingEvent
+	selectionChangingEvent window presenter selectionOrNil
+		ifNotNil: [:service | service releaseReferencedServices]!
 
 removeClass
 	| packageService selection |
@@ -1044,7 +1058,7 @@ updateHierarchy
 	service := classListPresenter selectionOrNil
 				ifNil: [^classHierarchyPresenter model: TreeModel new]
 				ifNotNil: [:classService | classService command: #classHierarchy].
-	[self issueCommand: (Array with: service)] ensure: [service hierarchyServices: nil]!
+	self issueCommand: (Array with: service)!
 
 updateMenuBar
 
@@ -1268,6 +1282,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshClassListOrHierarchy!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #releasedReferencedServices:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodCategories!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethods:!private!services! !

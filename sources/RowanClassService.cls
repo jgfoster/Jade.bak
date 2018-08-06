@@ -54,13 +54,29 @@ classHierarchyUpdate: presenter browser: browser
 !
 
 classMethodsUpdate: presenter browser: browser
-	| visibleMethods classPresenter |
+	| visibleMethods classPresenter selections |
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
-	classPresenter := browser isClassListTabSelected
-				ifTrue: [browser classListPresenter]
-				ifFalse: [browser classHierarchyPresenter].
-	classPresenter selections detect: [:classService | classService name = name]
-		ifNone: [^self].
+	classPresenter := self classOrHierarchyPresenter: browser.
+	classPresenter selections detect: [:classService | classService name = name] ifNone: [^self].
+	visibleMethods := self computeVisibleMethods.
+	selections := presenter selections collect: [:methodService | methodService selector].
+	presenter list: visibleMethods.
+	presenter
+		selections: (visibleMethods select: [:methodService | selections includes: methodService selector]).!
+
+classOrHierarchyPresenter: browser
+	^browser isClassListTabSelected
+		ifTrue: [browser classListPresenter]
+		ifFalse: [browser classHierarchyPresenter]!
+
+comment
+	^comment!
+
+comment: anObject
+	comment := anObject!
+
+computeVisibleMethods
+	| visibleMethods |
 	visibleMethods := OrderedCollection new.
 	(filters isEmpty or: [filterType = 'variables'])
 		ifTrue: [visibleMethods := methods]
@@ -69,13 +85,7 @@ classMethodsUpdate: presenter browser: browser
 				ifTrue: [visibleMethods := methods select: [:methodService | filters includes: methodService category]]].
 	visibleMethods
 		do: [:svc | svc inSelectedPackage: (self selectedPackageServiceNames includes: svc packageName)].
-	self updateList: presenter whilePreservingSelections: visibleMethods!
-
-comment
-	^comment!
-
-comment: anObject
-	comment := anObject!
+	^visibleMethods!
 
 createSampleClass
 	transport send: #createSampleClass to: remoteService.  !
@@ -117,9 +127,7 @@ filterType: anObject
 filterUpdate: presenter browser: browser
 	| selections availableSelections classPresenter |
 	presenter list isEmpty ifTrue: [presenter list: SortedCollection new].
-	classPresenter := browser isClassListTabSelected
-				ifTrue: [browser classListPresenter]
-				ifFalse: [browser classHierarchyPresenter ].
+	classPresenter := self classOrHierarchyPresenter: browser.
 	classPresenter selections detect: [:classService | classService name = name] ifNone: [^self].
 	presenter list = allFilters ifTrue: [^self].
 	selections := presenter selections.
@@ -183,7 +191,7 @@ releaseReferencedServices
 			copy do: [:service | service releaseReferencedServices]].
 	methods
 		ifNotNil: 
-			[copy := methods copy.
+			[copy := methods copy. 
 			methods := Array new.
 			copy do: [:service | service releaseReferencedServices]]!
 
@@ -244,8 +252,10 @@ template: anObject
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #classMethodsUpdate:browser:!public!updating! !
+!RowanClassService categoriesFor: #classOrHierarchyPresenter:!private!updating! !
 !RowanClassService categoriesFor: #comment!accessing!public! !
 !RowanClassService categoriesFor: #comment:!accessing!public! !
+!RowanClassService categoriesFor: #computeVisibleMethods!private!updating! !
 !RowanClassService categoriesFor: #createSampleClass!public! !
 !RowanClassService categoriesFor: #definedPackageName!accessing!private! !
 !RowanClassService categoriesFor: #definedPackageName:!accessing!private! !
