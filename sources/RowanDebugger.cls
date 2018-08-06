@@ -14,10 +14,10 @@ documentPresenter
 
 	^documentPresenter!
 
-errorMessagePresenter
+errorMessagePresenter
 	^errorMessagePresenter!
 
-frameListPresenter
+frameListPresenter
 	^frameListPresenter!
 
 getProcessList
@@ -54,7 +54,7 @@ onViewOpened
 		yourself.
 !
 
-processListPresenter
+processListPresenter
 	^processListPresenter!
 
 registerPresentersForUpdates
@@ -67,11 +67,48 @@ registerPresentersForUpdates
 		register: variableListPresenter 	with: #'variableListUpdate:'	;
 		register: variableDataPresenter 	with: #'variableDataUpdate:'	;"!
 
+selectedFrame 
+
+	| index breaks source |
+	(index := frameListPresenter selectionByIndex) = 0 ifTrue: [^self].
+	index := index + frameListOffset.
+	(frame := gsProcess frameForLevel: index) isNil ifTrue: [^self].
+	frame stepPoint ifNil: [RowanDebuggerStepPointError signal].		"see comment in  RowanFrameService>>initializeProcess:level:organizer:"
+	source := frame source.
+	breaks := frame breaks collect: [:each | frame offsets at: each].
+	breaks := breaks collect: [:each | ((source copyFrom: 1 to: each) select: [:char | char = Character lf]) size + 1].
+	breaks := breaks asSet asSortedCollection asArray.
+	variableListPresenter list: frame vars.
+	codePane 
+		gsMethod: frame gsMethod;
+		showStepPoint: frame stepPoint;
+		yourself.
+	"breaks do: [:each | 
+		documentPresenter view 
+			addMarkerType: #'breakpoint' 
+			at: each.
+	]."
+!
+
+stepInto
+
+	gciSession
+		stepInto: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
+	[
+		self getProcessList.
+	] on: RowanDebuggerStepPointError do: [:ex | 
+		self stepInto.
+	].!
+
 stepOver
 
 	gciSession
 		stepOver: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
-	self getProcessList!
+	[
+		self getProcessList.
+	] on: RowanDebuggerStepPointError do: [:ex | 
+		self stepInto.
+	].!
 
 update: services afterStonReplication: stonResults
 	BrowserUpdate current update: services afterStonReplication: stonResults!
@@ -84,10 +121,10 @@ updateServices: services
 	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
 	self update: services afterStonReplication: stonResults!
 
-variableDataPresenter
+variableDataPresenter
 	^variableDataPresenter!
 
-variableListPresenter
+variableListPresenter
 	^variableListPresenter! !
 !RowanDebugger categoriesFor: #documentPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
@@ -98,6 +135,8 @@ variableListPresenter
 !RowanDebugger categoriesFor: #onViewOpened!public! !
 !RowanDebugger categoriesFor: #processListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #registerPresentersForUpdates!public! !
+!RowanDebugger categoriesFor: #selectedFrame!public! !
+!RowanDebugger categoriesFor: #stepInto!public! !
 !RowanDebugger categoriesFor: #stepOver!public! !
 !RowanDebugger categoriesFor: #update:afterStonReplication:!public! !
 !RowanDebugger categoriesFor: #updateServices:!public! !

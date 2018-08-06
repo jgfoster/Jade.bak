@@ -1,1 +1,6 @@
-text eol=crlf
+text  eol=crlf
+*.cls eol=crlf
+*.gs  eol=crlf
+*.pac eol=crlf
+*.pax eol=crlf
+*.stb binary
