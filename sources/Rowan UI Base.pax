@@ -335,7 +335,7 @@ RowanService subclass: #RowanAnsweringService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanBrowserService
-	instanceVariableNames: 'projects removedMethods allClasses'
+	instanceVariableNames: 'projects removedMethods allClasses hierarchyServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

@@ -287,9 +287,7 @@ createSchematicWiringForPackageList
 		when: #'drop:'				send: #'onDropOnPackageList:'		to: self;
 		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
 		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
-		"when: #'selectionChanged' 		send: #'list:' 					to: globalsPresenter 	with: #();"
 		when: #'selectionChanged'		send: #'updatePackage' 			to: self;
-		"when: #'selectionChanged'		send: #'updateAndSelect:'			to: self			with: packageInfoTab;"
 		yourself.
 !
 
@@ -1042,11 +1040,9 @@ updateCommand: aString onSuccessDo: aBlock
 	^nil!
 
 updateHierarchy
-	| browserService service |
+	| service |
 	service := classListPresenter selectionOrNil
-				ifNil: 
-					[browserService := RowanBrowserService new.
-					browserService command: #defaultClassHierarchy]
+				ifNil: [^classHierarchyPresenter model: TreeModel new]
 				ifNotNil: [:classService | classService command: #classHierarchy].
 	[self issueCommand: (Array with: service)] ensure: [service hierarchyServices: nil]!
 
@@ -1092,8 +1088,10 @@ updateMultiMethodComparison
 			with: (methodListPresenter selections at: 2) source.!
 
 updatePackage
-	self updateClasses.
-	self updatePackageInfo.!
+	self isClassListTabSelected
+		ifTrue: [self updateClasses]
+		ifFalse: [classHierarchyPresenter model: TreeModel new].
+	self updatePackageInfo!
 
 updatePackageInfo
 	| service |

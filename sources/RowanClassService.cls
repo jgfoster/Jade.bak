@@ -54,12 +54,12 @@ classHierarchyUpdate: presenter browser: browser
 !
 
 classMethodsUpdate: presenter browser: browser
-	| visibleMethods selectedPresenter |
+	| visibleMethods classPresenter |
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
-	selectedPresenter := browser isClassListTabSelected
+	classPresenter := browser isClassListTabSelected
 				ifTrue: [browser classListPresenter]
 				ifFalse: [browser classHierarchyPresenter].
-	selectedPresenter selections detect: [:classService | classService name = name asString]
+	classPresenter selections detect: [:classService | classService name = name]
 		ifNone: [^self].
 	visibleMethods := OrderedCollection new.
 	(filters isEmpty or: [filterType = 'variables'])
@@ -115,10 +115,12 @@ filterType: anObject
 	filterType := anObject!
 
 filterUpdate: presenter browser: browser
-	| selections availableSelections |
+	| selections availableSelections classPresenter |
 	presenter list isEmpty ifTrue: [presenter list: SortedCollection new].
-	browser classListPresenter selections detect: [:classService | classService name = name]
-		ifNone: [^self].
+	classPresenter := browser isClassListTabSelected
+				ifTrue: [browser classListPresenter]
+				ifFalse: [browser classHierarchyPresenter ].
+	classPresenter selections detect: [:classService | classService name = name] ifNone: [^self].
 	presenter list = allFilters ifTrue: [^self].
 	selections := presenter selections.
 	presenter list: allFilters.
