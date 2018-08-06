@@ -172,6 +172,14 @@ createSchematicWiring
 		createSchematicWiringForMethodFilterTabs;
 		createSchematicWiringForClassHierarchyTabs!
 
+createSchematicWiringForClassHierarchy
+	classHierarchyPresenter
+		when: #'drag:'				send: #'onDragClassHierarchy:'		to: self;
+		when: #'dragCut:'			send: #'onDragCutClassHierarchy:'	to: self;
+		when: #'dragOver:'			send: #'onDragOverClassHierarchy:'	to: self;
+		when: #'drop:'				send: #'onDropOnClassHierarchy:'	to: self;
+		when: #selectionChanged		send: #refreshClass				to: self!
+
 createSchematicWiringForClassHierarchyTabs
 	classHierarchyTabs
 		when: #currentCardChanging:
@@ -787,14 +795,18 @@ refresh
 	MessageBox notify: 'This feature not yet implemented'!
 
 refreshClass
-	| selection |
+	| selection presenter |
 	self setClassMeta.
 	self setMethodFilter.
-	selection := classListPresenter selectionIfNone: 
+	presenter := self isClassListTabSelected
+				ifTrue: [classListPresenter]
+				ifFalse: [classHierarchyPresenter].
+	selection := presenter selectionIfNone: 
 					[categoryListPresenter clear.
 					^methodListPresenter clear].
 	selection selectedPackageServices: packageListPresenter selections.
 	self setFilterType: selection.
+	selection hierarchyServices: nil.
 	self updateServices: (Array with: selection).
 	self updateClassInfo!
 
@@ -1204,6 +1216,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #comparisonTab!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createComponents!initialization!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchy!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForInstanceClassTabs!create schemantic wiring!public! !

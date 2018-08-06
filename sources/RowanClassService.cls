@@ -33,7 +33,8 @@ classCreationTemplate
 	^transport send: #classCreationTemplate to: self remoteService!
 
 classHierarchyUpdate: presenter browser: browser
-	| treeModel |
+	| treeModel selection |
+	hierarchyServices ifNil:[^self]. 
 	browser isClassListTabSelected ifTrue: [^self].
 	treeModel := TreeModel new
 				searchPolicy: SearchPolicy equality;
@@ -46,12 +47,19 @@ classHierarchyUpdate: presenter browser: browser
 				withParent: nil].
 	presenter model: treeModel.
 	presenter view expandAll. 
-	presenter selection: (treeModel asBag detect: [:svc | svc name = name asSymbol]). !
+	selection := (treeModel asBag detect: [:svc | svc name = name asSymbol]). 
+	selection hierarchyServices: nil. 
+	hierarchyServices := nil. 
+	presenter selection: selection
+!
 
 classMethodsUpdate: presenter browser: browser
-	| visibleMethods |
+	| visibleMethods selectedPresenter |
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
-	browser classListPresenter selections detect: [:classService | classService name = name]
+	selectedPresenter := browser isClassListTabSelected
+				ifTrue: [browser classListPresenter]
+				ifFalse: [browser classHierarchyPresenter].
+	selectedPresenter selections detect: [:classService | classService name = name asString]
 		ifNone: [^self].
 	visibleMethods := OrderedCollection new.
 	(filters isEmpty or: [filterType = 'variables'])
@@ -88,6 +96,11 @@ displayString
 displayStringFor: displayThing
 	isExtension ifTrue: [displayThing forecolor: Color darkMagenta ].
 	^self displayString!
+
+excludedInstVars
+
+	^#( 'hierarchyServices' )
+!
 
 filters
 	^filters!
@@ -200,6 +213,20 @@ selectedPackageServices
 selectedPackageServices: anObject
 	selectedPackageServices := anObject!
 
+stonOn: stonWriter
+	| instanceVariableNames |
+	(instanceVariableNames := self class allInstVarNames reject: [:iv | self excludedInstVars includes: iv]) isEmpty
+		ifTrue: [stonWriter writeObject: self do: [stonWriter encodeMap: #()]]
+		ifFalse: 
+			[stonWriter writeObject: self
+				streamMap: 
+					[:dictionary |
+					instanceVariableNames do: 
+							[:each |
+							(self instVarAt: (instanceVariableNames indexOf: each))
+								ifNotNil: [:value | dictionary at: each asSymbol put: value]
+								ifNil: [self stonShouldWriteNilInstVars ifTrue: [dictionary at: each asSymbol put: nil]]]]]!
+
 subclassCreationTemplate
 	^transport send: #subclassCreationTemplate to: self remoteService!
 
@@ -222,6 +249,7 @@ template: anObject
 !RowanClassService categoriesFor: #definedPackageName:!accessing!private! !
 !RowanClassService categoriesFor: #displayString!printing!public! !
 !RowanClassService categoriesFor: #displayStringFor:!printing!public! !
+!RowanClassService categoriesFor: #excludedInstVars!public!ston! !
 !RowanClassService categoriesFor: #filters!accessing!public! !
 !RowanClassService categoriesFor: #filters:!accessing!public! !
 !RowanClassService categoriesFor: #filterType!accessing!private! !
@@ -251,6 +279,7 @@ template: anObject
 !RowanClassService categoriesFor: #selectedPackageServiceNames!private!selection! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
+!RowanClassService categoriesFor: #stonOn:!public!ston! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
 !RowanClassService categoriesFor: #template!accessing!private! !
 !RowanClassService categoriesFor: #template:!accessing!private! !
