@@ -10,6 +10,31 @@ RowanDebugger comment: ''!
 !RowanDebugger categoriesForClass!Unclassified! !
 !RowanDebugger methodsFor!
 
+browseClass
+
+	| method |
+	method := frame gsMethod.
+	(RowanSystemBrowser showOnSession: self gciSession)
+		selectClass: method className asString
+		selector: method selector asString.
+!
+
+browseImplementors
+
+	self halt.
+!
+
+browseSenders
+
+	self halt.
+!
+
+createSchematicWiring
+
+	super createSchematicWiring.
+	frameListPresenter when: #actionPerformed send: #browseClass to: self.
+!
+
 documentPresenter
 
 	^documentPresenter!
@@ -28,11 +53,18 @@ getProcessList
 onIdleEntered
 	"Support for automated testing so we know when UI is ready"
 
-	gciSession isCallInProgress ifFalse: [
-		self class semaphore ifNotNil: [:semaphore | 
+	| cachedSession |
+	cachedSession := gciSession.
+	[
+		[
+			(Delay forMilliseconds: 10) wait.
+			cachedSession isCallInProgress.
+		] whileTrue: [].
+		RowanDebugger semaphore ifNotNil: [:semaphore | 
 			semaphore signal.
+			SessionManager inputState prod.
 		].
-	].!
+	] forkAt: Processor userBackgroundPriority.!
 
 onViewClosed
 	"copied from RowanSystemBrowserPresenter>>onViewClosed"
@@ -42,7 +74,12 @@ onViewClosed
 		BrowserUpdate current removeEventsTriggeredFor: presenter.
 	].
 	"Allow test to know when view is closed"
-	self class semaphore ifNotNil: [:value | [value signal] forkAt: Processor userBackgroundPriority].!
+	self class semaphore ifNotNil: [:value | 
+		[
+			value signal.
+			SessionManager inputState prod.
+		] forkAt: Processor userBackgroundPriority
+	].!
 
 onViewOpened
 	"copied from RowanProjectsBrowserPresenter>>onViewOpened"
@@ -100,6 +137,16 @@ stepInto
 		self stepInto.
 	].!
 
+stepOut
+
+	gciSession
+		stepOut: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
+	[
+		self getProcessList.
+	] on: RowanDebuggerStepPointError do: [:ex | 
+		self stepInto.
+	].!
+
 stepOver
 
 	gciSession
@@ -126,6 +173,10 @@ variableDataPresenter
 
 variableListPresenter
 	^variableListPresenter! !
+!RowanDebugger categoriesFor: #browseClass!public! !
+!RowanDebugger categoriesFor: #browseImplementors!public! !
+!RowanDebugger categoriesFor: #browseSenders!public! !
+!RowanDebugger categoriesFor: #createSchematicWiring!public! !
 !RowanDebugger categoriesFor: #documentPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #frameListPresenter!Accessing!public! !
@@ -137,6 +188,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #registerPresentersForUpdates!public! !
 !RowanDebugger categoriesFor: #selectedFrame!public! !
 !RowanDebugger categoriesFor: #stepInto!public! !
+!RowanDebugger categoriesFor: #stepOut!public! !
 !RowanDebugger categoriesFor: #stepOver!public! !
 !RowanDebugger categoriesFor: #update:afterStonReplication:!public! !
 !RowanDebugger categoriesFor: #updateServices:!public! !

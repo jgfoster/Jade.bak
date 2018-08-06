@@ -217,6 +217,10 @@ showPackageChanges
 			^self]. 
 	RowanPatchBrowser showOn: patch name: packageListPresenter selections first key!
 
+updateAfterFindClass: anArray isMeta: aBoolean selector: aString
+
+	super updateAfterFindClass: anArray isMeta: aBoolean selector: aString.!
+
 updateClassHierarchyFrom: update
 
 	| list paths treeModel x y currentSelection newSelection flags |
@@ -566,6 +570,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #registerTabPresentersForUpdates!event handlers!initialization!public!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #resetClassDefinitionPresenter!private!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #showPackageChanges!menu handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #updateAfterFindClass:isMeta:selector:!public! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassHierarchyFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateClassInfo!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !
