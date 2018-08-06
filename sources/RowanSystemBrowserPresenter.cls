@@ -88,6 +88,9 @@ compareAncestor
 	RowanPatchBrowser showOn: patch name: packageListPresenter selections first key
 !
 
+createSchematicWiringForClassHierarchyTabs
+	"no op for Rowan browser"!
+
 deletePackage
 	| packageName |
 	packageListPresenter selections isEmpty ifTrue:[^MessageBox notify: 'No package selected'].
@@ -557,6 +560,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #classService!private!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #compareAncestor!menu handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!public! !
 !RowanSystemBrowserPresenter categoriesFor: #deletePackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #getViews!public! !
 !RowanSystemBrowserPresenter categoriesFor: #inspectPackage!menu handlers!public! !
