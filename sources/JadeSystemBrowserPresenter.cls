@@ -464,9 +464,8 @@ createComponents
 !
 
 createSchematicWiring
-
 	super createSchematicWiring.
-	self 
+	self
 		getViews;
 		createSchematicWiringForClassList;
 		createSchematicWiringForClassHierarchy;
@@ -484,11 +483,23 @@ createSchematicWiring
 		createSchematicWiringForOverrideList;
 		createSchematicWiringForInstanceClassTabs;
 		yourself.
-	textAreaTabs			when: #'currentCardChanged'	send: #'textTabChanged'		to: self.
-	classHierarchyTabs		when: #'currentCardChanging:'	send: #'aboutToChange:'		to: self;	when: #'currentCardChanged'	send: #'updateAndSelect:'	to: self	with: classDefinitionPresenter.
-	methodFilterTabs		when: #'currentCardChanging:'	send: #'aboutToChange:'		to: self;	when: #'currentCardChanged'	send: #'updateAndSelect:'	to: self	with: classDefinitionPresenter.
-	globalsPresenter		when: #'actionPerformed'		send: #'inspectGlobal'			to: self.
-!
+	textAreaTabs
+		when: #currentCardChanged
+		send: #textTabChanged
+		to: self.
+	self createSchematicWiringForClassHierarchyTabs.
+	methodFilterTabs
+		when: #currentCardChanging:
+			send: #aboutToChange:
+			to: self;
+		when: #currentCardChanged
+			send: #updateAndSelect:
+			to: self
+			with: classDefinitionPresenter.
+	globalsPresenter
+		when: #actionPerformed
+		send: #inspectGlobal
+		to: self!
 
 createSchematicWiringForClassCategoryList
 

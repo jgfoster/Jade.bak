@@ -29,6 +29,9 @@ classesUpdate: presenter browser: anObject
 classHierarchyUpdate: presenter
 	!
 
+classHierarchyUpdate: presenter browser: browser
+!
+
 classMethodsUpdate: presenter browser: anObject
 	!
 
@@ -81,6 +84,10 @@ filterUpdate: presenter browser: anObject
 frameListUpdate: aPresenter!
 
 globalsUpdate: presenter!
+
+initialize
+
+	commandArgs := Array new. !
 
 initializePresenterList: presenter
 	presenter list: (SortedCollection sortBlock: [:x :y | x sortAspect < y sortAspect])!
@@ -253,6 +260,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #classesHierarchyUpdate:!public!updating! !
 !RowanService categoriesFor: #classesUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #classHierarchyUpdate:!public!updating! !
+!RowanService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #classMethodsUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #classNameFrom:!public! !
 !RowanService categoriesFor: #classUpdate:!public!updating! !
@@ -268,6 +276,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #filterUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #frameListUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !
+!RowanService categoriesFor: #initialize!Init / Release!public! !
 !RowanService categoriesFor: #initializePresenterList:!Init / Release!private! !
 !RowanService categoriesFor: #initializeRemoteService!Init / Release!public! !
 !RowanService categoriesFor: #inspectDefinition!public!rowan! !
