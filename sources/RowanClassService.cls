@@ -291,7 +291,7 @@ template: anObject
 !RowanClassService categoriesFor: #selectedPackageServiceNames!private!selection! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
-!RowanClassService categoriesFor: #stonOn:!public!ston! !
+!RowanClassService categoriesFor: #stonOn:!must not strip!public!ston! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
 !RowanClassService categoriesFor: #template!accessing!private! !
 !RowanClassService categoriesFor: #template:!accessing!private! !

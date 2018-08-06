@@ -118,5 +118,5 @@ stonOn: stonWriter
 !RowanBrowserService categoriesFor: #removedMethods!accessing!private! !
 !RowanBrowserService categoriesFor: #removedMethods:!accessing!private! !
 !RowanBrowserService categoriesFor: #replicateFrom:!public!replication!updating! !
-!RowanBrowserService categoriesFor: #stonOn:!public!ston! !
+!RowanBrowserService categoriesFor: #stonOn:!must not strip!public!ston! !
 

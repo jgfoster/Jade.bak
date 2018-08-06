@@ -200,6 +200,10 @@ sortAspect
 
 	^name!
 
+stonOn: anObject
+
+	^super stonOn: anObject   "Dolphin strips out the #stonOn: in Object. try to save it"!
+
 superclassListUpdate: presenter
 	!
 
@@ -308,6 +312,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #sampleDefinitions!examples!public! !
 !RowanService categoriesFor: #setRemoteName!accessing!public! !
 !RowanService categoriesFor: #sortAspect!accessing!public! !
+!RowanService categoriesFor: #stonOn:!must not strip!public! !
 !RowanService categoriesFor: #superclassListUpdate:!public!updating! !
 !RowanService categoriesFor: #toolTip!printing!public! !
 !RowanService categoriesFor: #transport!accessing!public! !
