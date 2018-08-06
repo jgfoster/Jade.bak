@@ -139,7 +139,10 @@ package methodNames
 	add: #MethodListPresenter -> #browseClass;
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #MethodSourcePresenter -> #fileSave;
+	add: #Object -> #isClassService;
 	add: #Object -> #isMethodService;
+	add: #Object -> #isPackageService;
+	add: #Object -> #isProjectService;
 	add: #Object -> #rowanFixMe;
 	add: #ObjectLogBrowser -> #debug:;
 	add: #Presenter -> #update:withSelector:;
@@ -2039,7 +2042,19 @@ fileSave
 
 !Object methodsFor!
 
+isClassService
+
+	^false!
+
 isMethodService
+
+	^false!
+
+isPackageService
+
+	^false!
+
+isProjectService
 
 	^false!
 
@@ -2047,7 +2062,10 @@ rowanFixMe
 
 	"do nothing. Used for marking to-do items 
 	during Rowan Development"! !
+!Object categoriesFor: #isClassService!public!testing! !
 !Object categoriesFor: #isMethodService!public!testing! !
+!Object categoriesFor: #isPackageService!public!testing! !
+!Object categoriesFor: #isProjectService!public!testing! !
 !Object categoriesFor: #rowanFixMe!public!testing! !
 
 !ObjectLogBrowser methodsFor!

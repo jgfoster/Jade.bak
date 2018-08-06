@@ -11,8 +11,7 @@ RowanClassService comment: ''!
 !RowanClassService methodsFor!
 
 = classService
-
-	^name = classService name!
+	^classService isClassService ifTrue: [name = classService name] ifFalse: [^false]!
 
 addHierarchyService: service to: treeModel withParent: parentService
 	treeModel add: service asChildOf: parentService.
@@ -45,7 +44,9 @@ classHierarchyUpdate: presenter browser: browser
 				addHierarchyService: classService
 				to: treeModel
 				withParent: nil].
-	browser classHierarchyPresenter model: treeModel!
+	presenter model: treeModel.
+	presenter view expandAll. 
+	presenter selection: (treeModel asBag detect: [:svc | svc name = name asSymbol]). !
 
 classMethodsUpdate: presenter browser: browser
 	| visibleMethods |
@@ -113,6 +114,12 @@ filterUpdate: presenter browser: browser
 
 hash
 	^self name hash!
+
+hierarchyServices
+	^hierarchyServices!
+
+hierarchyServices: anObject
+	hierarchyServices := anObject!
 
 initialize
 	
@@ -221,6 +228,8 @@ template: anObject
 !RowanClassService categoriesFor: #filterType:!accessing!private! !
 !RowanClassService categoriesFor: #filterUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #hash!comparing!public! !
+!RowanClassService categoriesFor: #hierarchyServices!accessing!private! !
+!RowanClassService categoriesFor: #hierarchyServices:!accessing!private! !
 !RowanClassService categoriesFor: #initialize!Init / Release!public! !
 !RowanClassService categoriesFor: #isClassService!public!testing! !
 !RowanClassService categoriesFor: #isDefined!public!testing! !
