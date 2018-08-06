@@ -24,6 +24,7 @@ package classNames
 	add: #RowanClassService;
 	add: #RowanDebugger;
 	add: #RowanDebuggerService;
+	add: #RowanDebuggerStepPointError;
 	add: #RowanDebuggerTestCase;
 	add: #RowanDictionaryUpdate;
 	add: #RowanFrameService;
@@ -260,6 +261,11 @@ package!
 "Class Definitions"!
 
 Object subclass: #Rowan
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Error subclass: #RowanDebuggerStepPointError
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''

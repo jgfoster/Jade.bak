@@ -218,7 +218,7 @@ stepPoints
 			length := (char isAlphaNumeric or: [char = $_])
 				ifTrue: [(source copyFrom: start + 1 to: source size) findFirst: [:eachChar | (eachChar isAlphaNumeric or: [eachChar = $_ or: [eachChar = $:]]) not]]
 				ifFalse: [2].
-			length = 0 ifTrue: [length := source size - start].
+			length = 0 ifTrue: [length := source size - start + 1].
 			[
 				2 < length and: [(source at: start) = $_].
 			] whileTrue: [
