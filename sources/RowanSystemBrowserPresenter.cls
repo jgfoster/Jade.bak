@@ -89,7 +89,18 @@ compareAncestor
 !
 
 createSchematicWiringForClassHierarchyTabs
-	"no op for Rowan browser"!
+	classHierarchyTabs
+		when: #currentCardChanging:
+			send: #aboutToChange:
+			to: self;
+		when: #currentCardChanged
+			send: #selectedClassChanged:
+			to: self
+			with: true;
+		when: #currentCardChanged
+			send: #updateAndSelect:
+			to: self
+			with: classDefinitionPresenter!
 
 deletePackage
 	| packageName |
@@ -560,7 +571,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #classService!private!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #compareAncestor!menu handlers!public! !
-!RowanSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!public! !
+!RowanSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!public! !
 !RowanSystemBrowserPresenter categoriesFor: #deletePackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #getViews!public! !
 !RowanSystemBrowserPresenter categoriesFor: #inspectPackage!menu handlers!public! !

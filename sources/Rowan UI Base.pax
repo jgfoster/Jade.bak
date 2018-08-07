@@ -113,6 +113,8 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeSystemBrowserPresenter -> #createSchematicWiring;
+	add: #JadeSystemBrowserPresenter -> #createSchematicWiringForClassHierarchyTabs;
 	add: #JadeSystemBrowserPresenter -> #editSaveClass;
 	add: #JadeSystemBrowserPresenter -> #handleClassCompileError:;
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
@@ -1447,6 +1449,47 @@ browseMethodsAndSelect: aString type: browseType
 		selecting: aString.
 !
 
+createSchematicWiring
+	super createSchematicWiring.
+	self
+		getViews;
+		createSchematicWiringForClassList;
+		createSchematicWiringForClassHierarchy;
+		createSchematicWiringForClassHierarchyTabs;
+		createSchematicWiringForMethodList;
+		createSchematicWiringForDictionaryList;
+		createSchematicWiringForPackageList;
+		createSchematicWiringForPackageDictionaryTabs;
+		createSchematicWiringForPragmaList;
+		createSchematicWiringForMethodSource;
+		createSchematicWiringForClassDefinition;
+		createSchematicWiringForMethodCategoryList;
+		createSchematicWiringForVariableList;
+		createSchematicWiringForClassCategoryList;
+		createSchematicWiringForSuperClassList;
+		createSchematicWiringForOverrideList;
+		createSchematicWiringForInstanceClassTabs;
+		yourself.
+	textAreaTabs
+		when: #currentCardChanged
+		send: #textTabChanged
+		to: self.
+	methodFilterTabs
+		when: #currentCardChanging:
+			send: #aboutToChange:
+			to: self;
+		when: #currentCardChanged
+			send: #updateAndSelect:
+			to: self
+			with: classDefinitionPresenter.
+	globalsPresenter
+		when: #actionPerformed
+		send: #inspectGlobal
+		to: self!
+
+createSchematicWiringForClassHierarchyTabs
+	!
+
 editSaveClass
 	| string stream flag |
 	string := classDefinitionPresenter value
@@ -1757,6 +1800,8 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #handleClassCompileError:!compiling!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !

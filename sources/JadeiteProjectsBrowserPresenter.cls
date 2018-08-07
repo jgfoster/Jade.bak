@@ -41,7 +41,8 @@ basicAddMethodCategory: string
 	service := classListPresenter selection
 				command: #addCategory:;
 				commandArgs: (Array with: string).
-	self issueCommand: (Array with: service)!
+	self issueCommand: (Array with: service).
+	categoryListPresenter selection: string asSymbol. !
 
 basicRemoveMethods
 	| service |
@@ -169,8 +170,7 @@ createSchematicWiring
 	super createSchematicWiring.
 	self
 		createSchematicWiringForProjectList;
-		createSchematicWiringForMethodFilterTabs;
-		createSchematicWiringForClassHierarchyTabs!
+		createSchematicWiringForMethodFilterTabs!
 
 createSchematicWiringForClassHierarchy
 	classHierarchyPresenter
@@ -242,25 +242,13 @@ createSchematicWiringForInstanceClassTabs
 
 createSchematicWiringForMethodCategoryList
 	categoryListPresenter
-		when: #dragOver:
-			send: #onDragOverMethodCategory:
-			to: self;
-		when: #drop:
-			send: #onDropOnMethodCategory:
-			to: self;
-		when: #keyTyped:
-			send: #delayUpdate
-			to: self;
-		when: #selectionChanging:
-			send: #aboutToChange:
-			to: self;
-		when: #selectionChanged
-			send: #updateTabLabel
-			to: self;
-		when: #selectionChanged
-			send: #refreshClass
-			to: self;
-		yourself!
+		when: #dragOver: send: #onDragOverMethodCategory: to: self;
+		when: #drop: send: #onDropOnMethodCategory: to: self;
+		when: #keyTyped: send: #delayUpdate to: self;
+		when: #selectionChanging: send: #aboutToChange: to: self;
+		when: #selectionChanged send: #updateTabLabel to: self;
+		when: #selectionChanged send: #refreshClass to: self;
+		when: #selectionChanged send: #selectMethodSourceTab to: self !
 
 createSchematicWiringForMethodFilterTabs
 	methodFilterTabs
@@ -324,8 +312,8 @@ createSchematicWiringForProjectList
 createSchematicWiringForVariableList
 
 	variableListPresenter
-		when: #'selectionChanged'		send: #refreshClass	to: self;
-		yourself.
+		when: #selectionChanged send: #refreshClass	to: self;
+		when: #selectionChanged send: #selectMethodSourceTab to: self 
 !
 
 createStateEntry
@@ -376,7 +364,14 @@ editSaveMethod: classService
 
 filterTabChanged
 	categoryListPresenter resetSelection.
-	self refreshClass!
+	variableListPresenter resetSelection.
+	self refreshClass.
+	self isCategoriesTabSelected
+		ifTrue: 
+			[^methodListPresenter selectionOrNil
+				ifNil: [methodListPresenter selectionOrNil ifNotNil: [self selectMethodSourceTab]]
+				ifNotNil: [:methodService | self selectCategoryFrom: methodService]].
+	methodListPresenter selectionOrNil ifNotNil: [self selectMethodSourceTab]!
 
 findClass
 	| find |
@@ -886,6 +881,10 @@ removeMethods: services
 savePackage
 	MessageBox notify: 'This feature is not yet available'!
 
+selectCategoryFrom: methodService
+	^categoryListPresenter selectionOrNil = methodService category
+		ifFalse: [categoryListPresenter selection: methodService category]!
+
 selectClass: classSelection
 	| newClassSelection |
 	newClassSelection := classListPresenter list detect: [:svc | svc name = classSelection name]
@@ -914,6 +913,18 @@ selectMethodsFrom: classService
 						ifNone: [].
 			selection ifNotNil: [:sel | selections add: sel]].
 	methodListPresenter selections: selections!
+
+selectMethodSourceTab
+	| methodSourceTab selection |
+	methodSourceTab := self view viewNamed: 'methodSource'.
+	methodListPresenter selectionOrNil ifNotNil: [^methodSourceTab ensureVisible].
+	selection := self isCategoriesTabSelected
+				ifTrue: [categoryListPresenter selectionOrNil]
+				ifFalse: [variableListPresenter selectionOrNil].
+	selection
+		ifNotNil: 
+			[methodSourceTab ensureVisible.
+			methodListPresenter ifNil: [methodSourcePresenter setDefaultMethod]]!
 
 selectorsString
 	| stream |
@@ -1279,7 +1290,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #queryCommand:!menu handlers!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refresh!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshClass!event handlers!public!services! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #refreshClassListOrHierarchy!public!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #refreshClassListOrHierarchy!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #releasedReferencedServices:!event handlers!public! !
@@ -1287,10 +1298,12 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodCategories!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethods:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoryFrom:!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectedMethodName!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectMethodsFrom:!private!selection! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #selectMethodSourceTab!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectorsString!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectPackage:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers!private! !
