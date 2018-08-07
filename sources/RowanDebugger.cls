@@ -10,6 +10,40 @@ RowanDebugger comment: ''!
 !RowanDebugger categoriesForClass!Unclassified! !
 !RowanDebugger methodsFor!
 
+browseFrameMethod
+
+	| method |
+	method := frame gsMethod.
+	(RowanSystemBrowser showOnSession: self gciSession)
+		selectClass: method className asString
+		selector: method selector asString.
+!
+
+browseImplementors
+
+	self halt.
+!
+
+browseObjectClass
+
+	| variable |
+	variable := variableListPresenter selection.
+	(RowanSystemBrowser showOnSession: self gciSession)
+		selectClass: variable className asString
+		selector: ''.
+!
+
+browseSenders
+
+	self halt.
+!
+
+createSchematicWiring
+
+	super createSchematicWiring.
+	frameListPresenter when: #actionPerformed send: #browseClass to: self.
+!
+
 documentPresenter
 
 	^documentPresenter!
@@ -28,21 +62,35 @@ getProcessList
 onIdleEntered
 	"Support for automated testing so we know when UI is ready"
 
-	gciSession isCallInProgress ifFalse: [
-		self class semaphore ifNotNil: [:semaphore | 
+	| cachedSession |
+	cachedSession := gciSession.
+	[
+		[
+			(Delay forMilliseconds: 10) wait.
+			cachedSession isCallInProgress.
+		] whileTrue: [].
+		RowanDebugger semaphore ifNotNil: [:semaphore | 
 			semaphore signal.
+			SessionManager inputState prod.
 		].
-	].!
+	] forkAt: Processor userBackgroundPriority.
+	super onIdleEntered.!
 
 onViewClosed
 	"copied from RowanSystemBrowserPresenter>>onViewClosed"
 
+	processList := processListPresenter list collect: [:each | GsProcess session: gciSession oopType: each oopType].
 	super onViewClosed.
 	subPresenters do: [:presenter |
 		BrowserUpdate current removeEventsTriggeredFor: presenter.
 	].
 	"Allow test to know when view is closed"
-	self class semaphore ifNotNil: [:value | [value signal] forkAt: Processor userBackgroundPriority].!
+	self class semaphore ifNotNil: [:value | 
+		[
+			value signal.
+			SessionManager inputState prod.
+		] forkAt: Processor userBackgroundPriority
+	].!
 
 onViewOpened
 	"copied from RowanProjectsBrowserPresenter>>onViewOpened"
@@ -57,15 +105,35 @@ onViewOpened
 processListPresenter
 	^processListPresenter!
 
+queryCommand: query
+
+	processList := processListPresenter list collect: [:each | GsProcess session: gciSession oopType: each oopType].
+	(#(#'resumeProcess' #'runToCursor' #'stepInto' #'stepOut' #'stepOver') includes: query commandSymbol) ifTrue: [
+		query isEnabled: processListPresenter selectionByIndex == 1.
+		^true
+	].
+	(#(#'terminateProcess') includes: query commandSymbol) ifTrue: [
+		query isEnabled: (processList notEmpty and: [processList first ~~ gsProcess]).
+		^true
+	].
+	(#(#'implement') includes: query commandSymbol) ifTrue: [
+		query isEnabled: false. "frameListPresenter model first subStrings first = 'MessageNotUnderstood'."
+		^true
+	].
+	(#(#'browseObjectClass') includes: query commandSymbol) ifTrue: [
+		query isEnabled: variableListPresenter hasSelection.
+		^true
+	].
+	^super queryCommand: query
+!
+
 registerPresentersForUpdates
 	"copied from RowanProjectsBrowserPresenter>>registerPresentersForUpdates"
 
 	BrowserUpdate current
-		register: processListPresenter selector: #processListUpdate:;
-		yourself
-	"register: frameListPresenter 	with: #'frameListUpdate:'		;
-		register: variableListPresenter 	with: #'variableListUpdate:'	;
-		register: variableDataPresenter 	with: #'variableDataUpdate:'	;"!
+		register: processListPresenter 
+		selector: #processListUpdate:
+!
 
 selectedFrame 
 
@@ -88,12 +156,22 @@ selectedFrame
 			addMarkerType: #'breakpoint' 
 			at: each.
 	]."
-!
+	(self view viewNamed: 'toolbar') update.!
 
 stepInto
 
 	gciSession
 		stepInto: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
+	[
+		self getProcessList.
+	] on: RowanDebuggerStepPointError do: [:ex | 
+		self stepInto.
+	].!
+
+stepOut
+
+	gciSession
+		stepOut: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
 	[
 		self getProcessList.
 	] on: RowanDebuggerStepPointError do: [:ex | 
@@ -126,6 +204,11 @@ variableDataPresenter
 
 variableListPresenter
 	^variableListPresenter! !
+!RowanDebugger categoriesFor: #browseFrameMethod!public! !
+!RowanDebugger categoriesFor: #browseImplementors!public! !
+!RowanDebugger categoriesFor: #browseObjectClass!public! !
+!RowanDebugger categoriesFor: #browseSenders!public! !
+!RowanDebugger categoriesFor: #createSchematicWiring!public! !
 !RowanDebugger categoriesFor: #documentPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #frameListPresenter!Accessing!public! !
@@ -134,9 +217,11 @@ variableListPresenter
 !RowanDebugger categoriesFor: #onViewClosed!public! !
 !RowanDebugger categoriesFor: #onViewOpened!public! !
 !RowanDebugger categoriesFor: #processListPresenter!Accessing!public! !
+!RowanDebugger categoriesFor: #queryCommand:!public! !
 !RowanDebugger categoriesFor: #registerPresentersForUpdates!public! !
 !RowanDebugger categoriesFor: #selectedFrame!public! !
 !RowanDebugger categoriesFor: #stepInto!public! !
+!RowanDebugger categoriesFor: #stepOut!public! !
 !RowanDebugger categoriesFor: #stepOver!public! !
 !RowanDebugger categoriesFor: #update:afterStonReplication:!public! !
 !RowanDebugger categoriesFor: #updateServices:!public! !
