@@ -17,7 +17,7 @@ canSetBreakpoints
 
 clearBreakAtStepPoint: anInteger
 
-	gsMethod clearBreakAtStepPoint: anInteger.
+	gsMethod clearBreakAtStepPoint: anInteger session: gciSession.
 	self updateMethodStepPoints.
 !
 
@@ -215,7 +215,7 @@ onViewOpened
 
 setBreakAtStepPoint: anInteger
 
-	gsMethod setBreakAtStepPoint: anInteger.
+	gsMethod setBreakAtStepPoint: anInteger session: gciSession.
 	self updateMethodStepPoints.
 !
 

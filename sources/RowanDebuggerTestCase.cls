@@ -12,11 +12,15 @@ RowanDebuggerTestCase comment: ''!
 
 closeDebuggers
 
-	RowanDebugger allInstances do: [:each | 
-		each view close. 
+	| list |
+	list := RowanMethodListBrowser allInstances ,  RowanSystemBrowser allInstances , RowanDebugger allInstances.
+	list do: [:each | 
+		[each view close] fork.	"A debugger wants to terminate the current process!!"
+		Processor yield.
 		GciSession allInstances first removeEventsTriggeredFor: each.
-		each become: Object new.
-	].!
+		"[each become: Object new] forkAt: Processor userBackgroundPriority."
+	].
+!
 
 debuggerDo: aBlock
 
@@ -26,6 +30,10 @@ debuggerDo: aBlock
 	RowanDebugger semaphore wait.
 	RowanDebugger semaphore: nil.
 !
+
+methodListBrowser
+
+	^RowanMethodListBrowser allInstances detect: [:each | true] ifNone: [nil]!
 
 openDebuggerOn: aString
 
@@ -42,12 +50,24 @@ setUp
 	self closeDebuggers.
 	RowanDebugger debuggerClass: RowanDebugger.
 	gciSession := GciSession allInstances detect: [:each | true] ifNone: [nil].
-	self assert: (gciSession notNil and: [gciSession isValidSession]).!
+	self 
+		assert: (gciSession notNil and: [gciSession isValidSession]);
+		assert: RowanSystemBrowser allInstances isEmpty;
+		assert: RowanMethodListBrowser allInstances isEmpty;
+		yourself.!
+
+systemBrowser
+
+	^RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil]!
 
 tearDown
 
 	process ifNotNil: [process terminate. process := nil].
-	debugger ifNotNil: [debugger view close. debugger := nil].
+	debugger ifNotNil: [
+		[debugger view close] fork. 	"The debugger wants to terminate the current process!!"
+		Processor yield. 
+		debugger := nil.
+	].
 	self closeDebuggers.
 	RowanDebugger debuggerClass: nil.
 	RowanDebugger semaphore: nil.
@@ -122,66 +142,127 @@ x yourself';
 test3
 	"browse stack class"
 
-	[
-		| browser x |
-		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
-		self 
-			assert: browser isNil;
-			openDebuggerOn: '| x | 
-	nil halt.
-	x := 1 -> 2.
-	x yourself';
-			debuggerDo: [debugger stepOver];
-			assert: (x := debugger documentPresenter view selection) = '->';
-			debuggerDo: [debugger stepInto];
-			debuggerDo: [debugger browseFrameMethod];
-			yourself.
-		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
-		self
-			assert: browser notNil;
-			assert: browser currentCard selectedClasses = #('Object');
-			assert: browser currentCard selectedMethodName = '->';
-			debuggerDo: [debugger resumeProcess];
-			yourself.
-		x yourself.
-	] ensure: [
-		RowanSystemBrowser allInstances do: [:each | each view close].
-	].!
+	| browser |
+	self 
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 -> 2.
+x yourself';
+		debuggerDo: [debugger stepOver];
+		assert: debugger documentPresenter view selection equals: '->';
+		debuggerDo: [debugger stepInto];
+		debuggerDo: [debugger browseFrameMethod];
+		assert: (browser := self systemBrowser) notNil;
+		assert: browser currentCard selectedClasses = #('Object');
+		assert: browser currentCard selectedMethodName = '->';
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
 
 test4
 	"browse variable class"
 
-	[
-		| browser |
-		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
-		self 
-			assert: browser isNil;
-			openDebuggerOn: '| x | 
-	nil halt.
-	x := 1 -> 2.
-	x yourself';
-			debuggerDo: [debugger stepOver];
-			debuggerDo: [debugger stepOver];
-			debuggerDo: [debugger stepOver];
-			assert: (debugger variableListPresenter selectionByIndex: 2) notNil;
-			debuggerDo: [debugger browseObjectClass];
-			yourself.
-		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
-		self
-			assert: browser notNil;
-			assert: browser currentCard selectedClasses = #('Association');
-			debuggerDo: [debugger resumeProcess];
-			yourself.
-	] ensure: [
-		RowanSystemBrowser allInstances do: [:each | each view close].
-	].! !
+	| browser |
+	self 
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 -> 2.
+x yourself';
+		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepOver];
+		assert: (debugger variableListPresenter selectionByIndex: 2) notNil;
+		debuggerDo: [debugger browseObjectClass];
+		assert: (browser := self systemBrowser) notNil;
+		assert: browser currentCard selectedClasses = #('Association');
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
+
+test5
+	"browse implementors"
+
+	| browser list |
+	self 
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 -> 2.
+x yourself';
+		debuggerDo: [debugger stepOver];
+		assert: debugger documentPresenter view selection equals: '->';
+		debuggerDo: [debugger stepInto];
+
+		debuggerDo: [debugger browseImplementors];
+		assert: (browser := self methodListBrowser) notNil;		assert: (list := browser primaryPresenter methodListPresenter primaryPresenter list) notEmpty;
+		assert: list size < 10;
+
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
+
+test6
+	"browse senders"
+
+	| browser list |
+	self 
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 -> 2.
+x yourself';
+		debuggerDo: [debugger stepOver];
+		assert: debugger documentPresenter view selection equals: '->';
+		debuggerDo: [debugger stepInto];
+
+		debuggerDo: [debugger browseSenders];
+		assert: (browser := self methodListBrowser) notNil;
+		assert: (list := browser primaryPresenter methodListPresenter primaryPresenter list) notEmpty;
+		assert: list size > 10;
+
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
+
+test7
+	"set/clear breakpoints"
+
+	| indicator |
+	self 
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 -> 2.
+x yourself';
+		assert: (indicator := debugger methodSourcePresenter documentPresenter view indicators at: 2) notNil;
+		assert: indicator range = (12 to: 15);
+		assert: indicator styleName = 8;
+		assert: indicator tag = 'step point #2';
+
+		debuggerDo: [debugger methodSourcePresenter setBreakAtStepPoint: 2];
+		assert: (indicator := debugger methodSourcePresenter documentPresenter view indicators at: 2) notNil;
+		assert: indicator range = (12 to: 15);
+		assert: indicator styleName = 9;
+		assert: indicator tag = 'Break at step point #2';
+
+		debuggerDo: [debugger methodSourcePresenter clearBreakAtStepPoint: 2];
+		assert: (indicator := debugger methodSourcePresenter documentPresenter view indicators at: 2) notNil;
+		assert: indicator range = (12 to: 15);
+		assert: indicator styleName = 8;
+		assert: indicator tag = 'step point #2';
+
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
+!RowanDebuggerTestCase categoriesFor: #methodListBrowser!public!running! !
 !RowanDebuggerTestCase categoriesFor: #openDebuggerOn:!public!running! !
 !RowanDebuggerTestCase categoriesFor: #setUp!public!running! !
+!RowanDebuggerTestCase categoriesFor: #systemBrowser!public!running! !
 !RowanDebuggerTestCase categoriesFor: #tearDown!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test1!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test2!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test3!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test4!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test5!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test6!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test7!public!running! !
 

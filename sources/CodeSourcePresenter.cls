@@ -46,7 +46,7 @@ clearBreakAtStepPoint: anInteger
 
 	| method |
 	(method := self trigger: #'needMethod') isNil ifTrue: [^self].
-	method clearBreakAtStepPoint: anInteger.
+	method clearBreakAtStepPoint: anInteger session: gciSession.
 !
 
 clearSelection
@@ -350,6 +350,14 @@ setBreakAtStepPoint: anInteger
 	self trigger: #'breaksChanged'.
 !
 
+setBreakAtStepPoint: anInteger session: aGciSession
+
+	| method |
+	(method := self trigger: #'needMethod') isNil ifTrue: [^self].
+	method setBreakAtStepPoint: anInteger session: gciSession.
+	self trigger: #'breaksChanged'.
+!
+
 setCaretToEndOfSelection
 
 	| textView |
@@ -488,6 +496,7 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #selectionChanging:!public! !
 !CodeSourcePresenter categoriesFor: #selectLfIfEndingOnCr!edit!private! !
 !CodeSourcePresenter categoriesFor: #setBreakAtStepPoint:!Breakpoints!public! !
+!CodeSourcePresenter categoriesFor: #setBreakAtStepPoint:session:!public! !
 !CodeSourcePresenter categoriesFor: #setCaretToEndOfSelection!Jade!private! !
 !CodeSourcePresenter categoriesFor: #setDocumentPresenterWith:!public! !
 !CodeSourcePresenter categoriesFor: #setFont!private! !

@@ -40,6 +40,15 @@ clearBreakAtStepPoint: anInteger
 	breakPoints := breakPoints copyWithout: anInteger.
 !
 
+clearBreakAtStepPoint: anInteger session: aGciSession
+
+	gciSession
+		serverPerform: #'clearBreakAtStepPoint:inMethod:'
+		with: anInteger
+		with: oopType.
+	breakPoints := breakPoints copyWithout: anInteger.
+!
+
 hash
 
 	^self name hash.
@@ -125,7 +134,7 @@ selector
 	^name asSymbol
 !
 
-setBreakAtStepPoint: anInteger
+setBreakAtStepPoint: anInteger session: aGciSession
 
 	gciSession
 		serverPerform: #'setBreakAtStepPoint:inMethod:'
@@ -159,13 +168,14 @@ warnings
 !GsMethod categoriesFor: #breakPoints!accessing!public! !
 !GsMethod categoriesFor: #category!accessing!public! !
 !GsMethod categoriesFor: #clearBreakAtStepPoint:!accessing!public! !
+!GsMethod categoriesFor: #clearBreakAtStepPoint:session:!accessing!public! !
 !GsMethod categoriesFor: #hash!public! !
 !GsMethod categoriesFor: #initialize:session:!public! !
 !GsMethod categoriesFor: #isReadOnly!accessing!public! !
 !GsMethod categoriesFor: #originalSource!accessing!public! !
 !GsMethod categoriesFor: #printOn:!public! !
 !GsMethod categoriesFor: #selector!public! !
-!GsMethod categoriesFor: #setBreakAtStepPoint:!accessing!public! !
+!GsMethod categoriesFor: #setBreakAtStepPoint:session:!public! !
 !GsMethod categoriesFor: #source!accessing!public! !
 !GsMethod categoriesFor: #stepPoints!accessing!public! !
 !GsMethod categoriesFor: #unimplementedSelectors!accessing!public! !
