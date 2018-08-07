@@ -463,44 +463,6 @@ createComponents
 	variableListPresenter		:= self add: ListPresenter		new 		name: 'variableList'.
 !
 
-createSchematicWiring
-	super createSchematicWiring.
-	self
-		getViews;
-		createSchematicWiringForClassList;
-		createSchematicWiringForClassHierarchy;
-		createSchematicWiringForMethodList;
-		createSchematicWiringForDictionaryList;
-		createSchematicWiringForPackageList;
-		createSchematicWiringForPackageDictionaryTabs;
-		createSchematicWiringForPragmaList;
-		createSchematicWiringForMethodSource;
-		createSchematicWiringForClassDefinition;
-		createSchematicWiringForMethodCategoryList;
-		createSchematicWiringForVariableList;
-		createSchematicWiringForClassCategoryList;
-		createSchematicWiringForSuperClassList;
-		createSchematicWiringForOverrideList;
-		createSchematicWiringForInstanceClassTabs;
-		yourself.
-	textAreaTabs
-		when: #currentCardChanged
-		send: #textTabChanged
-		to: self.
-"self createSchematicWiringForClassHierarchyTabs."
-	methodFilterTabs
-		when: #currentCardChanging:
-			send: #aboutToChange:
-			to: self;
-		when: #currentCardChanged
-			send: #updateAndSelect:
-			to: self
-			with: classDefinitionPresenter.
-	globalsPresenter
-		when: #actionPerformed
-		send: #inspectGlobal
-		to: self!
-
 createSchematicWiringForClassCategoryList
 
 	classCategoryPresenter		
@@ -3026,7 +2988,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #compareAncestor!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #contextObject!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createComponents!overrides!public! !
-!JadeSystemBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassCategoryList!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassDefinition!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchy!create schemantic wiring!public! !

@@ -169,8 +169,7 @@ createSchematicWiring
 	super createSchematicWiring.
 	self
 		createSchematicWiringForProjectList;
-		createSchematicWiringForMethodFilterTabs;
-		createSchematicWiringForClassHierarchyTabs!
+		createSchematicWiringForMethodFilterTabs!
 
 createSchematicWiringForClassHierarchy
 	classHierarchyPresenter
