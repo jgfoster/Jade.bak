@@ -74,7 +74,7 @@ test1
 !
 
 test2
-	"Stepping"
+	"Stepping (note that 3.2.15 has some odd behaviors)"
 
 	| x |
 	self 
@@ -113,11 +113,68 @@ x yourself';
 		debuggerDo: [debugger stepInto];
 		assert: (x := debugger documentPresenter view selection) = ':=';
 		debuggerDo: [debugger stepOver];
-		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepOut];
 		assert: (x := debugger documentPresenter view selection) = 'yourself';
 		debuggerDo: [debugger resumeProcess];
 		yourself.
-	x yourself.! !
+	x yourself.!
+
+test3
+	"browse stack class"
+
+	[
+		| browser x |
+		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
+		self 
+			assert: browser isNil;
+			openDebuggerOn: '| x | 
+	nil halt.
+	x := 1 -> 2.
+	x yourself';
+			debuggerDo: [debugger stepOver];
+			assert: (x := debugger documentPresenter view selection) = '->';
+			debuggerDo: [debugger stepInto];
+			debuggerDo: [debugger browseFrameMethod];
+			yourself.
+		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
+		self
+			assert: browser notNil;
+			assert: browser currentCard selectedClasses = #('Object');
+			assert: browser currentCard selectedMethodName = '->';
+			debuggerDo: [debugger resumeProcess];
+			yourself.
+		x yourself.
+	] ensure: [
+		RowanSystemBrowser allInstances do: [:each | each view close].
+	].!
+
+test4
+	"browse variable class"
+
+	[
+		| browser |
+		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
+		self 
+			assert: browser isNil;
+			openDebuggerOn: '| x | 
+	nil halt.
+	x := 1 -> 2.
+	x yourself';
+			debuggerDo: [debugger stepOver];
+			debuggerDo: [debugger stepOver];
+			debuggerDo: [debugger stepOver];
+			assert: (debugger variableListPresenter selectionByIndex: 2) notNil;
+			debuggerDo: [debugger browseObjectClass];
+			yourself.
+		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
+		self
+			assert: browser notNil;
+			assert: browser currentCard selectedClasses = #('Association');
+			debuggerDo: [debugger resumeProcess];
+			yourself.
+	] ensure: [
+		RowanSystemBrowser allInstances do: [:each | each view close].
+	].! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
 !RowanDebuggerTestCase categoriesFor: #openDebuggerOn:!public!running! !
@@ -125,4 +182,6 @@ x yourself';
 !RowanDebuggerTestCase categoriesFor: #tearDown!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test1!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test2!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test3!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test4!public!running! !
 

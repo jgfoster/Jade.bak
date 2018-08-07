@@ -487,7 +487,7 @@ createSchematicWiring
 		when: #currentCardChanged
 		send: #textTabChanged
 		to: self.
-	self createSchematicWiringForClassHierarchyTabs.
+"self createSchematicWiringForClassHierarchyTabs."
 	methodFilterTabs
 		when: #currentCardChanging:
 			send: #aboutToChange:
@@ -2008,6 +2008,7 @@ preferencesMenuStrings
 promptForSelector
 
 	| string list stream |
+	ignoreNextSetFocusEvent := true.
 	(string := Prompter prompt: 'Enter selector:') isNil ifTrue: [^nil].
 	((string includes: $:) and: [string includes: Character space]) ifTrue: [
 		list := string subStrings: Character space.
@@ -2187,6 +2188,10 @@ selectClass: aString selector: methodString
 	Array with: className with: dictionaryName with: category with: packageName.
 "
 	| string list className isMeta array |
+	updateProcess ifNotNil: [		"https://github.com/jgfoster/Jade/issues/109"
+		updateProcess terminate.
+		updateProcess := nil.
+	].
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
 		with: environment printString , ' findClass'.
