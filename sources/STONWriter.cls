@@ -120,7 +120,7 @@ newlineIndent
 			level timesRepeat: [writeStream tab]]!
 
 nextPut: anObject
-	anObject stonOn: self!
+	anObject stonOn: self !
 
 on: aWriteStream
 	writeStream := aWriteStream!

@@ -3,6 +3,9 @@ package := Package name: 'Rowan STON'.
 package paxVersion: 1;
 	basicComment: ''.
 
+package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiA0IEYPEQAEAAAASmFkZUltYWdlU3RyaXBwZXIAAAAAAAAAAFIAAAAAAAAAmgAAAFIAAAAQ
+AAAARG9scGhpbiBNVlAgQmFzZVIAAAAVAAAAUnVudGltZVNlc3Npb25NYW5hZ2Vy778lAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=').
 
 package classNames
 	add: #STON;
@@ -64,6 +67,8 @@ package globalAliases: (Set new
 
 package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: 'Jade Deployment';
 	yourself).
 
 package!
@@ -134,7 +139,7 @@ stonContainSubObjects
 stonOn: stonWriter
 	stonWriter writeBoolean: self! !
 !Boolean categoriesFor: #stonContainSubObjects!public!ston! !
-!Boolean categoriesFor: #stonOn:!public!ston! !
+!Boolean categoriesFor: #stonOn:!must not strip!public!ston! !
 
 !ByteArray methodsFor!
 
@@ -184,7 +189,7 @@ fromSton: stonReader
 stonOn: stonWriter
 	stonWriter writeObject: self listSingleton: self asString
 ! !
-!Character categoriesFor: #stonOn:!public! !
+!Character categoriesFor: #stonOn:!must not strip!public! !
 
 !Character class methodsFor!
 
@@ -287,7 +292,7 @@ fromSton: stonReader
 
 stonOn: stonWriter
 	stonWriter writeInteger: self! !
-!Integer categoriesFor: #stonOn:!public!ston! !
+!Integer categoriesFor: #stonOn:!must not strip!public!ston! !
 
 !Number methodsFor!
 
@@ -297,7 +302,7 @@ stonContainSubObjects
 stonOn: stonWriter
 	stonWriter writeFloat: self asFloat! !
 !Number categoriesFor: #stonContainSubObjects!public!ston! !
-!Number categoriesFor: #stonOn:!public!ston! !
+!Number categoriesFor: #stonOn:!must not strip!public!ston! !
 
 !Object methodsFor!
 
@@ -328,8 +333,6 @@ stonOn: stonWriter
 	Override to customize and add a matching #fromSton: (see implementors)."
 
 	self class isVariable 
-		ifTrue: [
-			self subclassResponsibility ]
 		ifFalse: [
 			stonWriter writeObject: self ]
 !
@@ -397,13 +400,13 @@ stonOn: stonWriter
 
 	stonWriter writeString: self! !
 !String categoriesFor: #stonContainSubObjects!public!ston! !
-!String categoriesFor: #stonOn:!public!ston! !
+!String categoriesFor: #stonOn:!must not strip!public!ston! !
 
 !Symbol methodsFor!
 
 stonOn: stonWriter
 	stonWriter writeSymbol: self! !
-!Symbol categoriesFor: #stonOn:!public!ston! !
+!Symbol categoriesFor: #stonOn:!must not strip!public!ston! !
 
 !Time methodsFor!
 
@@ -427,7 +430,7 @@ fromSton: stonReader
 
 stonOn: stonWriter
 	stonWriter writeNull! !
-!UndefinedObject categoriesFor: #stonOn:!public! !
+!UndefinedObject categoriesFor: #stonOn:!must not strip!public! !
 
 "End of package definition"!
 

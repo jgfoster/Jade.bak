@@ -3888,20 +3888,6 @@ systemBrowserSTON: aString
 	^self copy systemBrowserSTONA: aString.
 !
 
-systemBrowserSTONA: aString
-
-	| time |
-	time := self millisecondsElapsedTime: [
-		selections := Dictionary new.
-		readStream := ReadStream on: aString.
-		writeStream := WriteStream on: String new.
-		writeStream lf.
-		self environment: (readStream upTo: Character space) asNumber.
-		self systemBrowserCommand.
-	].
-	^STON toString: RowanCommandResult results
-!
-
 systemBrowserUpdate
 
 	writeStream nextPutAll: 'update'; lf.
@@ -4278,7 +4264,6 @@ writeList: aList
 !JadeServer categoriesFor: #systemBrowserA:!public!System Browser! !
 !JadeServer categoriesFor: #systemBrowserCommand!public!System Browser! !
 !JadeServer categoriesFor: #systemBrowserSTON:!public!System Browser! !
-!JadeServer categoriesFor: #systemBrowserSTONA:!public!System Browser! !
 !JadeServer categoriesFor: #systemBrowserUpdate!public!System Browser! !
 !JadeServer categoriesFor: #systemConfigAsDictionary!public!Transcript! !
 !JadeServer categoriesFor: #terminate:!Processes!public! !
