@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -14,6 +14,12 @@ RowanMethodService comment: ''!
 	methodService isMethodService ifFalse:[^false].
 	^selector = methodService selector
 		and: [className = methodService className and: [meta = methodService meta]]!
+
+accessedInstVars
+	^accessedInstVars!
+
+accessedInstVars: anObject
+	accessedInstVars := anObject!
 
 basicSubSuperIcon
 	hasSupers ifTrue: [^JadeSystemBrowserPresenter overriddenIcon].
@@ -267,6 +273,8 @@ user
 user: anObject
 	user := anObject! !
 !RowanMethodService categoriesFor: #=!comparing!public! !
+!RowanMethodService categoriesFor: #accessedInstVars!accessing!private! !
+!RowanMethodService categoriesFor: #accessedInstVars:!accessing!private! !
 !RowanMethodService categoriesFor: #basicSubSuperIcon!displaying!public! !
 !RowanMethodService categoriesFor: #breakPoints!public! !
 !RowanMethodService categoriesFor: #category!accessing!private! !

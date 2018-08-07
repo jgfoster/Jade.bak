@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop allFilters filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods projectName hierarchyServices'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods projectName hierarchyServices variables categories'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -11,7 +11,7 @@ RowanClassService comment: ''!
 !RowanClassService methodsFor!
 
 = classService
-	^classService isClassService ifTrue: [name = classService name] ifFalse: [^false]!
+	^classService isClassService ifTrue: [name asString = classService name asString] ifFalse: [^false]!
 
 addHierarchyService: service to: treeModel withParent: parentService
 	treeModel add: service asChildOf: parentService.
@@ -22,11 +22,8 @@ addHierarchyService: service to: treeModel withParent: parentService
 				to: treeModel
 				withParent: service]!
 
-allFilters
-	^allFilters!
-
-allFilters: anObject
-	allFilters := anObject!
+categories
+	^categories!
 
 classCreationTemplate
 
@@ -54,15 +51,11 @@ classHierarchyUpdate: presenter browser: browser
 !
 
 classMethodsUpdate: presenter browser: browser
-	| visibleMethods classPresenter selections |
+	| classPresenter |
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
 	classPresenter := self classOrHierarchyPresenter: browser.
 	classPresenter selections detect: [:classService | classService name = name] ifNone: [^self].
-	visibleMethods := self computeVisibleMethods.
-	selections := presenter selections collect: [:methodService | methodService selector].
-	presenter list: visibleMethods.
-	presenter
-		selections: (visibleMethods select: [:methodService | selections includes: methodService selector]).!
+	self displayMethodsOn: presenter!
 
 classOrHierarchyPresenter: browser
 	^browser isClassListTabSelected
@@ -77,12 +70,13 @@ comment: anObject
 
 computeVisibleMethods
 	| visibleMethods |
-	visibleMethods := OrderedCollection new.
-	(filters isEmpty or: [filterType = 'variables'])
-		ifTrue: [visibleMethods := methods]
-		ifFalse: 
-			[filterType = 'categories'
-				ifTrue: [visibleMethods := methods select: [:methodService | filters includes: methodService category]]].
+	filterType isNil ifTrue: [visibleMethods := methods].
+	filterType = 'variables'
+		ifTrue: 
+			[visibleMethods := methods
+						select: [:methodService | (filters intersection: methodService accessedInstVars) notEmpty]].
+	filterType = 'categories'
+		ifTrue: [visibleMethods := methods select: [:methodService | filters includes: methodService category]].
 	visibleMethods
 		do: [:svc | svc inSelectedPackage: (self selectedPackageServiceNames includes: svc packageName)].
 	^visibleMethods!
@@ -95,6 +89,14 @@ definedPackageName
 
 definedPackageName: anObject
 	definedPackageName := anObject!
+
+displayMethodsOn: presenter
+	| selections visibleMethods |
+	visibleMethods := self computeVisibleMethods.
+	selections := presenter selections collect: [:methodService | methodService selector].
+	presenter list: visibleMethods.
+	presenter
+		selections: (visibleMethods select: [:methodService | selections includes: methodService selector])!
 
 displayString
 	| displayString |
@@ -125,15 +127,17 @@ filterType: anObject
 	filterType := anObject!
 
 filterUpdate: presenter browser: browser
-	| selections availableSelections classPresenter |
+	| classPresenter |
 	presenter list isEmpty ifTrue: [presenter list: SortedCollection new].
 	classPresenter := self classOrHierarchyPresenter: browser.
 	classPresenter selections detect: [:classService | classService name = name] ifNone: [^self].
-	presenter list = allFilters ifTrue: [^self].
-	selections := presenter selections.
-	presenter list: allFilters.
-	availableSelections := allFilters select: [:filter | selections includes: filter].
-	presenter selections: availableSelections!
+	browser isCategoriesTabSelected
+		ifTrue: 
+			[presenter list = categories ifTrue: [^self].
+			self updateCategories: presenter]
+		ifFalse: 
+			[presenter list = variables ifTrue: [^self].
+			self updateVariables: presenter]!
 
 hash
 	^self name hash!
@@ -244,11 +248,27 @@ template
 	^template!
 
 template: anObject
-	template := anObject! !
+	template := anObject!
+
+updateCategories: presenter
+	| selections availableSelections |
+	selections := presenter selections.
+	presenter list: categories.
+	availableSelections := categories select: [:filter | selections includes: filter].
+	presenter selections: availableSelections!
+
+updateVariables: presenter
+	| selections availableSelections |
+	selections := presenter selections.
+	presenter list: variables.
+	availableSelections := variables select: [:filter | selections includes: filter].
+	presenter selections: availableSelections!
+
+variables
+	^variables! !
 !RowanClassService categoriesFor: #=!comparing!public! !
 !RowanClassService categoriesFor: #addHierarchyService:to:withParent:!private!updating! !
-!RowanClassService categoriesFor: #allFilters!accessing!private! !
-!RowanClassService categoriesFor: #allFilters:!accessing!private! !
+!RowanClassService categoriesFor: #categories!accessing!private! !
 !RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #classMethodsUpdate:browser:!public!updating! !
@@ -259,6 +279,7 @@ template: anObject
 !RowanClassService categoriesFor: #createSampleClass!public! !
 !RowanClassService categoriesFor: #definedPackageName!accessing!private! !
 !RowanClassService categoriesFor: #definedPackageName:!accessing!private! !
+!RowanClassService categoriesFor: #displayMethodsOn:!public!updating! !
 !RowanClassService categoriesFor: #displayString!printing!public! !
 !RowanClassService categoriesFor: #displayStringFor:!printing!public! !
 !RowanClassService categoriesFor: #excludedInstVars!public!ston! !
@@ -295,4 +316,7 @@ template: anObject
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
 !RowanClassService categoriesFor: #template!accessing!private! !
 !RowanClassService categoriesFor: #template:!accessing!private! !
+!RowanClassService categoriesFor: #updateCategories:!private!updating! !
+!RowanClassService categoriesFor: #updateVariables:!private!updating! !
+!RowanClassService categoriesFor: #variables!accessing!private! !
 
