@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanVariableService
-	instanceVariableNames: 'oop key value'
+	instanceVariableNames: 'oop key value className'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -13,6 +13,10 @@ RowanVariableService comment: ''!
 _key
 
 	^key!
+
+className
+
+	^className!
 
 key
 	"provided to match expectation of UI for JadeDebugger"
@@ -27,6 +31,7 @@ value
 
 	^value! !
 !RowanVariableService categoriesFor: #_key!public! !
+!RowanVariableService categoriesFor: #className!public! !
 !RowanVariableService categoriesFor: #key!public! !
 !RowanVariableService categoriesFor: #oop!public! !
 !RowanVariableService categoriesFor: #value!public! !

@@ -353,7 +353,7 @@ debugPath: debugPath
 
 isCallInProgress
 
-	^library gciCallInProgress!
+	^library notNil and: [library gciCallInProgress]!
 
 isLinkedGem
 

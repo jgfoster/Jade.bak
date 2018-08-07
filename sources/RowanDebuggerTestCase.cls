@@ -134,7 +134,7 @@ test3
 			debuggerDo: [debugger stepOver];
 			assert: (x := debugger documentPresenter view selection) = '->';
 			debuggerDo: [debugger stepInto];
-			debuggerDo: [debugger browseClass];
+			debuggerDo: [debugger browseFrameMethod];
 			yourself.
 		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
 		self
@@ -146,6 +146,33 @@ test3
 		x yourself.
 	] ensure: [
 		RowanSystemBrowser allInstances do: [:each | each view close].
+	].!
+
+test4
+	"browse variable class"
+
+	[
+		| browser |
+		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
+		self 
+			assert: browser isNil;
+			openDebuggerOn: '| x | 
+	nil halt.
+	x := 1 -> 2.
+	x yourself';
+			debuggerDo: [debugger stepOver];
+			debuggerDo: [debugger stepOver];
+			debuggerDo: [debugger stepOver];
+			assert: (debugger variableListPresenter selectionByIndex: 2) notNil;
+			debuggerDo: [debugger browseObjectClass];
+			yourself.
+		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
+		self
+			assert: browser notNil;
+			assert: browser currentCard selectedClasses = #('Association');
+			yourself.
+	] ensure: [
+		RowanSystemBrowser allInstances do: [:each | each view close].
 	].! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
@@ -155,4 +182,5 @@ test3
 !RowanDebuggerTestCase categoriesFor: #test1!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test2!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test3!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test4!public!running! !
 

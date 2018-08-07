@@ -386,7 +386,7 @@ RowanService subclass: #RowanQueryService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanVariableService
-	instanceVariableNames: 'oop key value'
+	instanceVariableNames: 'oop key value className'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
