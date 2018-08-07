@@ -170,6 +170,7 @@ test4
 		self
 			assert: browser notNil;
 			assert: browser currentCard selectedClasses = #('Association');
+			debuggerDo: [debugger resumeProcess];
 			yourself.
 	] ensure: [
 		RowanSystemBrowser allInstances do: [:each | each view close].
