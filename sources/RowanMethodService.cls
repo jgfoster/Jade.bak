@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -28,8 +28,7 @@ basicSubSuperIcon
 
 breakPoints
 
-	self rowanFixMe.
-	^#()!
+	^breakPoints!
 
 category
 	^category ifNil: ['']!
@@ -49,9 +48,30 @@ className
 className: anObject
 	className := anObject!
 
+clearBreakAtStepPoint: anInteger session: aGciSession 
+
+	| service stonString stonResults |
+	aGciSession
+		serverPerform: #'clearBreakAtStepPoint:inMethod:'
+		with: anInteger
+		with: self oopType.
+	service := self class new copyBasicsFrom: self; yourself.		"No need to send everything to the server (in fact, it results in an error!!)"
+	stonString := STON toString: (Array with: service).
+	stonResults := aGciSession serverPerform: #updateFromSton: with: stonString.
+	BrowserUpdate current update: (Array with: self) afterStonReplication: stonResults.
+!
+
 clientDefinitionClass
 
 	^RowanMethodDefinition!
+
+copyBasicsFrom: oldService
+
+	name 	:= oldService name.
+	oop 		:= oldService oop.
+	selector 	:= oldService selector.
+	className := oldService className.
+	meta 	:= oldService meta.!
 
 createSampleMethod
 	transport send: #createSampleMethod to: remoteService.  !
@@ -135,6 +155,14 @@ methodSourceUpdate: presenter
 		backcolor: JadeTextStyles default colorForNoEdits;
 		isModified: false!
 
+oop
+
+	^oop!
+
+oopType
+
+	^OopType64 fromInteger: oop!
+
 packageName
 	^packageName!
 
@@ -203,6 +231,19 @@ selector: anObject
 selectorsDisplayString
 
 	^className, '>>', selector!
+
+setBreakAtStepPoint: anInteger session: aGciSession
+
+	| service stonString stonResults |
+	aGciSession
+		serverPerform: #'setBreakAtStepPoint:inMethod:'
+		with: anInteger
+		with: self oopType.
+	service := self class new copyBasicsFrom: self; yourself.		"No need to send everything to the server (in fact, it results in an error!!)"
+	stonString := STON toString: (Array with: service).
+	stonResults := aGciSession serverPerform: #updateFromSton: with: stonString.
+	BrowserUpdate current update: (Array with: self) afterStonReplication: stonResults.
+!
 
 sortAspect
 
@@ -282,7 +323,9 @@ user: anObject
 !RowanMethodService categoriesFor: #classMethodDisplayString!displaying!public! !
 !RowanMethodService categoriesFor: #className!accessing!private! !
 !RowanMethodService categoriesFor: #className:!accessing!private! !
+!RowanMethodService categoriesFor: #clearBreakAtStepPoint:session:!public! !
 !RowanMethodService categoriesFor: #clientDefinitionClass!private! !
+!RowanMethodService categoriesFor: #copyBasicsFrom:!public!updating! !
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
 !RowanMethodService categoriesFor: #displayClassName!displaying!public! !
 !RowanMethodService categoriesFor: #displayOn:!displaying!public! !
@@ -305,6 +348,8 @@ user: anObject
 !RowanMethodService categoriesFor: #methodDefinitions!accessing!private! !
 !RowanMethodService categoriesFor: #methodDefinitions:!accessing!private! !
 !RowanMethodService categoriesFor: #methodSourceUpdate:!public!updating! !
+!RowanMethodService categoriesFor: #oop!public! !
+!RowanMethodService categoriesFor: #oopType!public! !
 !RowanMethodService categoriesFor: #packageName!accessing!private! !
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
 !RowanMethodService categoriesFor: #printOn:!printing!public! !
@@ -322,6 +367,7 @@ user: anObject
 !RowanMethodService categoriesFor: #selector!accessing!private! !
 !RowanMethodService categoriesFor: #selector:!accessing!private! !
 !RowanMethodService categoriesFor: #selectorsDisplayString!displaying!public! !
+!RowanMethodService categoriesFor: #setBreakAtStepPoint:session:!public! !
 !RowanMethodService categoriesFor: #sortAspect!accessing!public! !
 !RowanMethodService categoriesFor: #source!accessing!private! !
 !RowanMethodService categoriesFor: #source:!accessing!private! !

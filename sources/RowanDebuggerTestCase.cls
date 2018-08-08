@@ -12,11 +12,20 @@ RowanDebuggerTestCase comment: ''!
 
 closeDebuggers
 
-	RowanDebugger allInstances do: [:each | 
-		each view close. 
+	| list semaphore |
+	list := RowanMethodListBrowser allInstances , RowanSystemBrowser allInstances , RowanDebugger allInstances.
+	semaphore := Semaphore new.
+	list do: [:each | 
+		[
+			each view close. 
+			semaphore signal.
+			SessionManager inputState prod.
+		] fork.	"A debugger wants to terminate the current process!!"
+		semaphore wait.
 		GciSession allInstances first removeEventsTriggeredFor: each.
-		each become: Object new.
-	].!
+		debugger == each ifTrue: [debugger := nil].
+	].
+!
 
 debuggerDo: aBlock
 
@@ -26,6 +35,10 @@ debuggerDo: aBlock
 	RowanDebugger semaphore wait.
 	RowanDebugger semaphore: nil.
 !
+
+methodListBrowser
+
+	^RowanMethodListBrowser allInstances detect: [:each | true] ifNone: [nil]!
 
 openDebuggerOn: aString
 
@@ -38,16 +51,27 @@ openDebuggerOn: aString
 
 setUp
 
+	| list1 list2 |
 	super setUp.
 	self closeDebuggers.
 	RowanDebugger debuggerClass: RowanDebugger.
 	gciSession := GciSession allInstances detect: [:each | true] ifNone: [nil].
-	self assert: (gciSession notNil and: [gciSession isValidSession]).!
+	list1 := RowanSystemBrowser allInstances.
+	list2 := RowanMethodListBrowser allInstances.
+	self 
+		assert: (gciSession notNil and: [gciSession isValidSession]);
+		assert: list1 isEmpty;
+		assert: list2 isEmpty;
+		yourself.
+!
+
+systemBrowser
+
+	^RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil]!
 
 tearDown
 
 	process ifNotNil: [process terminate. process := nil].
-	debugger ifNotNil: [debugger view close. debugger := nil].
 	self closeDebuggers.
 	RowanDebugger debuggerClass: nil.
 	RowanDebugger semaphore: nil.
@@ -76,7 +100,6 @@ test1
 test2
 	"Stepping (note that 3.2.15 has some odd behaviors)"
 
-	| x |
 	self 
 		openDebuggerOn: '| x | 
 nil halt.
@@ -85,103 +108,164 @@ x := 1 + 2 * 3.
 1 to: 1 by: 1 do: [:i | x := i ].
 [x := 2] value.
 x yourself';
-		assert: (x := debugger errorMessagePresenter value) = 'a Halt occurred (error 2709)';
-		assert: (x := debugger frameListPresenter list first) = 'Executed Code  @2 line 2';
-		assert: (x := debugger documentPresenter view selection) = 'halt';
+		assert: (debugger errorMessagePresenter value) equals: 'a Halt occurred (error 2709)';
+		assert: (debugger frameListPresenter list first) equals: 'Executed Code  @2 line 2';
+		assert: (debugger documentPresenter view selection) equals: 'halt';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = '+ ';
+		assert: (debugger documentPresenter view selection) equals: '+ ';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = '* ';
+		assert: (debugger documentPresenter view selection) equals: '* ';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = ':=';
+		assert: (debugger documentPresenter view selection) equals: ':=';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = '==';
+		assert: (debugger documentPresenter view selection) equals: '==';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = 'ifTrue:';
+		assert: (debugger documentPresenter view selection) equals: 'ifTrue:';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = ':=';
-		debuggerDo: [debugger stepOver];
-		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = 'to:';
-		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = ':=';
-		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = 'to:';
+		assert: (debugger documentPresenter view selection) = ':=';
 		debuggerDo: [debugger stepOver];
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = 'value';
+		assert: (debugger documentPresenter view selection) = 'to:';
+		debuggerDo: [debugger stepOver];
+		assert: (debugger documentPresenter view selection) = ':=';
+		debuggerDo: [debugger stepOver];
+		assert: (debugger documentPresenter view selection) equals: 'to:';
+		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepOver];
+		assert: (debugger documentPresenter view selection) equals: 'value';
 		debuggerDo: [debugger stepInto];
-		assert: (x := debugger documentPresenter view selection) = ':=';
+		assert: (debugger documentPresenter view selection) equals: ':=';
 		debuggerDo: [debugger stepOver];
 		debuggerDo: [debugger stepOut];
-		assert: (x := debugger documentPresenter view selection) = 'yourself';
+		assert: (debugger documentPresenter view selection) equals: 'yourself';
 		debuggerDo: [debugger resumeProcess];
 		yourself.
-	x yourself.!
+!
 
 test3
 	"browse stack class"
 
-	[
-		| browser x |
-		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
-		self 
-			assert: browser isNil;
-			openDebuggerOn: '| x | 
-	nil halt.
-	x := 1 -> 2.
-	x yourself';
-			debuggerDo: [debugger stepOver];
-			assert: (x := debugger documentPresenter view selection) = '->';
-			debuggerDo: [debugger stepInto];
-			debuggerDo: [debugger browseFrameMethod];
-			yourself.
-		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
-		self
-			assert: browser notNil;
-			assert: browser currentCard selectedClasses = #('Object');
-			assert: browser currentCard selectedMethodName = '->';
-			debuggerDo: [debugger resumeProcess];
-			yourself.
-		x yourself.
-	] ensure: [
-		RowanSystemBrowser allInstances do: [:each | each view close].
-	].!
+	| browser |
+	self 
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 -> 2.
+x yourself';
+		debuggerDo: [debugger stepOver];
+		assert: debugger documentPresenter view selection equals: '->';
+		debuggerDo: [debugger stepInto];
+		debuggerDo: [debugger browseFrameMethod];
+		assert: (browser := self systemBrowser) notNil;
+		assert: browser currentCard selectedClasses = #('Object');
+		assert: browser currentCard selectedMethodName = '->';
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
 
 test4
 	"browse variable class"
 
-	[
-		| browser |
-		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
-		self 
-			assert: browser isNil;
-			openDebuggerOn: '| x | 
-	nil halt.
-	x := 1 -> 2.
-	x yourself';
-			debuggerDo: [debugger stepOver];
-			debuggerDo: [debugger stepOver];
-			debuggerDo: [debugger stepOver];
-			assert: (debugger variableListPresenter selectionByIndex: 2) notNil;
-			debuggerDo: [debugger browseObjectClass];
-			yourself.
-		browser := RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil].
-		self
-			assert: browser notNil;
-			assert: browser currentCard selectedClasses = #('Association');
-			debuggerDo: [debugger resumeProcess];
-			yourself.
-	] ensure: [
-		RowanSystemBrowser allInstances do: [:each | each view close].
-	].! !
+	| browser |
+	self 
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 -> 2.
+x yourself';
+		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepOver];
+		assert: (debugger variableListPresenter selectionByIndex: 2) notNil;
+		debuggerDo: [debugger browseObjectClass];
+		assert: (browser := self systemBrowser) notNil;
+		assert: browser currentCard selectedClasses = #('Association');
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
+
+test5
+	"browse implementors"
+
+	| browser list |
+	self 
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 -> 2.
+x yourself';
+		debuggerDo: [debugger stepOver];
+		assert: debugger documentPresenter view selection equals: '->';
+		debuggerDo: [debugger stepInto];
+
+		debuggerDo: [debugger browseImplementors];
+		assert: (browser := self methodListBrowser) notNil;		assert: (list := browser primaryPresenter methodListPresenter primaryPresenter list) notEmpty;
+		assert: list size < 10;
+
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
+
+test6
+	"browse senders"
+
+	| browser list |
+	self 
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 -> 2.
+x yourself';
+		debuggerDo: [debugger stepOver];
+		assert: debugger documentPresenter view selection equals: '->';
+		debuggerDo: [debugger stepInto];
+
+		debuggerDo: [debugger browseSenders];
+		assert: (browser := self methodListBrowser) notNil;
+		assert: (list := browser primaryPresenter methodListPresenter primaryPresenter list) notEmpty;
+		assert: list size > 10;
+
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
+
+test7
+	"set/clear breakpoints"
+
+	| indicator |
+	self 
+		openDebuggerOn: '| x | 
+nil halt.
+x := 1 -> 2.
+x yourself';
+		assert: (indicator := debugger methodSourcePresenter documentPresenter view indicators at: 2) notNil;
+		assert: indicator range = (12 to: 15);
+		assert: indicator styleName = 8;
+		assert: indicator tag = 'step point #2';
+
+		debuggerDo: [debugger methodSourcePresenter setBreakAtStepPoint: 2];
+		assert: (indicator := debugger methodSourcePresenter documentPresenter view indicators at: 2) notNil;
+		assert: indicator range = (12 to: 15);
+		assert: indicator styleName = 9;
+		assert: indicator tag = 'Break at step point #2';
+
+		debuggerDo: [debugger methodSourcePresenter clearBreakAtStepPoint: 2];
+		assert: (indicator := debugger methodSourcePresenter documentPresenter view indicators at: 2) notNil;
+		assert: indicator range = (12 to: 15);
+		assert: indicator styleName = 8;
+		assert: indicator tag = 'step point #2';
+
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
+!RowanDebuggerTestCase categoriesFor: #methodListBrowser!public!running! !
 !RowanDebuggerTestCase categoriesFor: #openDebuggerOn:!public!running! !
 !RowanDebuggerTestCase categoriesFor: #setUp!public!running! !
+!RowanDebuggerTestCase categoriesFor: #systemBrowser!public!running! !
 !RowanDebuggerTestCase categoriesFor: #tearDown!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test1!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test2!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test3!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test4!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test5!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test6!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test7!public!running! !
 

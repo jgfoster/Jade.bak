@@ -104,7 +104,7 @@ inspectVariable
 
 onViewClosed
 
-	processList ifNotNil: [
+	(processList notNil and: [processList notEmpty]) ifTrue: [
 		gsProcess := processList first.
 		self class debuggers removeKey: gsProcess oopType asInteger ifAbsent: [].
 		(terminateOnClose and: [answer isNil]) ifTrue: [
