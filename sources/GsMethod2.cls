@@ -50,6 +50,14 @@ clearBreakAtStepPoint: anInteger
 		with: anInteger.
 !
 
+clearBreakAtStepPoint: anInteger session: aGciSession
+
+	gciSession
+		send: #'clearBreakAtStepPoint:'
+		to: oopType	
+		with: anInteger.
+!
+
 gsClass 
 	^gsClass!
 
@@ -77,11 +85,11 @@ printOn: aStream
 	super printOn: aStream.
 !
 
-setBreakAtStepPoint: anInteger
+setBreakAtStepPoint: anInteger session: aGciSession
 
 	gciSession
 		send: #'setBreakAtStepPoint:'
-		to: oopType	
+		to: oopType
 		with: anInteger.
 ! !
 !GsMethod2 categoriesFor: #<=!public! !
@@ -89,9 +97,10 @@ setBreakAtStepPoint: anInteger
 !GsMethod2 categoriesFor: #category!public! !
 !GsMethod2 categoriesFor: #classCategory!public! !
 !GsMethod2 categoriesFor: #clearBreakAtStepPoint:!Breakpoints!public! !
+!GsMethod2 categoriesFor: #clearBreakAtStepPoint:session:!Breakpoints!public! !
 !GsMethod2 categoriesFor: #gsClass!public! !
 !GsMethod2 categoriesFor: #initialize:!public! !
 !GsMethod2 categoriesFor: #isTestCase!public! !
 !GsMethod2 categoriesFor: #printOn:!public! !
-!GsMethod2 categoriesFor: #setBreakAtStepPoint:!Breakpoints!public! !
+!GsMethod2 categoriesFor: #setBreakAtStepPoint:session:!public! !
 

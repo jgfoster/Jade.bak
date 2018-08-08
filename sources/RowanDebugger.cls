@@ -21,7 +21,9 @@ browseFrameMethod
 
 browseImplementors
 
-	self halt.
+	^(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+		browseImplementorsOf: frame gsMethod selector;
+		yourself.
 !
 
 browseObjectClass
@@ -35,7 +37,9 @@ browseObjectClass
 
 browseSenders
 
-	self halt.
+	^(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+		browseSendersOf: frame gsMethod selector;
+		yourself.
 !
 
 createSchematicWiring
@@ -58,6 +62,10 @@ getProcessList
 	"#getProcessList copied from RowanProjectsBrowserPresenter>>updatePresenters"
 
 	self updateServices: (Array with: (RowanDebuggerService onProcess: gsProcess)).!
+
+methodSourcePresenter
+
+	^codePane!
 
 onIdleEntered
 	"Support for automated testing so we know when UI is ready"
@@ -213,6 +221,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #frameListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #getProcessList!public! !
+!RowanDebugger categoriesFor: #methodSourcePresenter!public! !
 !RowanDebugger categoriesFor: #onIdleEntered!public! !
 !RowanDebugger categoriesFor: #onViewClosed!public! !
 !RowanDebugger categoriesFor: #onViewOpened!public! !
