@@ -12,13 +12,18 @@ RowanDebuggerTestCase comment: ''!
 
 closeDebuggers
 
-	| list |
-	list := RowanMethodListBrowser allInstances ,  RowanSystemBrowser allInstances , RowanDebugger allInstances.
+	| list semaphore |
+	list := RowanMethodListBrowser allInstances , RowanSystemBrowser allInstances , RowanDebugger allInstances.
+	semaphore := Semaphore new.
 	list do: [:each | 
-		[each view close] fork.	"A debugger wants to terminate the current process!!"
-		Processor yield.
+		[
+			each view close. 
+			semaphore signal.
+			SessionManager inputState prod.
+		] fork.	"A debugger wants to terminate the current process!!"
+		semaphore wait.
 		GciSession allInstances first removeEventsTriggeredFor: each.
-		"[each become: Object new] forkAt: Processor userBackgroundPriority."
+		debugger == each ifTrue: [debugger := nil].
 	].
 !
 
@@ -46,15 +51,19 @@ openDebuggerOn: aString
 
 setUp
 
+	| list1 list2 |
 	super setUp.
 	self closeDebuggers.
 	RowanDebugger debuggerClass: RowanDebugger.
 	gciSession := GciSession allInstances detect: [:each | true] ifNone: [nil].
+	list1 := RowanSystemBrowser allInstances.
+	list2 := RowanMethodListBrowser allInstances.
 	self 
 		assert: (gciSession notNil and: [gciSession isValidSession]);
-		assert: RowanSystemBrowser allInstances isEmpty;
-		assert: RowanMethodListBrowser allInstances isEmpty;
-		yourself.!
+		assert: list1 isEmpty;
+		assert: list2 isEmpty;
+		yourself.
+!
 
 systemBrowser
 
@@ -63,11 +72,6 @@ systemBrowser
 tearDown
 
 	process ifNotNil: [process terminate. process := nil].
-	debugger ifNotNil: [
-		[debugger view close] fork. 	"The debugger wants to terminate the current process!!"
-		Processor yield. 
-		debugger := nil.
-	].
 	self closeDebuggers.
 	RowanDebugger debuggerClass: nil.
 	RowanDebugger semaphore: nil.
@@ -96,7 +100,6 @@ test1
 test2
 	"Stepping (note that 3.2.15 has some odd behaviors)"
 
-	| x |
 	self 
 		openDebuggerOn: '| x | 
 nil halt.
@@ -105,39 +108,39 @@ x := 1 + 2 * 3.
 1 to: 1 by: 1 do: [:i | x := i ].
 [x := 2] value.
 x yourself';
-		assert: (x := debugger errorMessagePresenter value) = 'a Halt occurred (error 2709)';
-		assert: (x := debugger frameListPresenter list first) = 'Executed Code  @2 line 2';
-		assert: (x := debugger documentPresenter view selection) = 'halt';
+		assert: (debugger errorMessagePresenter value) equals: 'a Halt occurred (error 2709)';
+		assert: (debugger frameListPresenter list first) equals: 'Executed Code  @2 line 2';
+		assert: (debugger documentPresenter view selection) equals: 'halt';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = '+ ';
+		assert: (debugger documentPresenter view selection) equals: '+ ';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = '* ';
+		assert: (debugger documentPresenter view selection) equals: '* ';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = ':=';
+		assert: (debugger documentPresenter view selection) equals: ':=';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = '==';
+		assert: (debugger documentPresenter view selection) equals: '==';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = 'ifTrue:';
+		assert: (debugger documentPresenter view selection) equals: 'ifTrue:';
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = ':=';
-		debuggerDo: [debugger stepOver];
-		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = 'to:';
-		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = ':=';
-		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = 'to:';
+		assert: (debugger documentPresenter view selection) = ':=';
 		debuggerDo: [debugger stepOver];
 		debuggerDo: [debugger stepOver];
-		assert: (x := debugger documentPresenter view selection) = 'value';
+		assert: (debugger documentPresenter view selection) = 'to:';
+		debuggerDo: [debugger stepOver];
+		assert: (debugger documentPresenter view selection) = ':=';
+		debuggerDo: [debugger stepOver];
+		assert: (debugger documentPresenter view selection) equals: 'to:';
+		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepOver];
+		assert: (debugger documentPresenter view selection) equals: 'value';
 		debuggerDo: [debugger stepInto];
-		assert: (x := debugger documentPresenter view selection) = ':=';
+		assert: (debugger documentPresenter view selection) equals: ':=';
 		debuggerDo: [debugger stepOver];
 		debuggerDo: [debugger stepOut];
-		assert: (x := debugger documentPresenter view selection) = 'yourself';
+		assert: (debugger documentPresenter view selection) equals: 'yourself';
 		debuggerDo: [debugger resumeProcess];
 		yourself.
-	x yourself.!
+!
 
 test3
 	"browse stack class"
