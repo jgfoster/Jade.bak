@@ -610,18 +610,17 @@ titleBarFor: aString
 		nextPutAll: 'Jadeite version [';
 		nextPutAll: JadeSessionManager shortVersion;
 		nextPutAll: '] ' ;
-		print: gciSessionId;
+		nextPutAll: gciSessionId printString;
 		nextPutAll: ' (';
-		nextPutAll: userID;
+		nextPutAll: userID printString;
 		nextPutAll: ') - ';
-		nextPutAll: aString;
+		nextPutAll: aString printString;
 		nextPutAll: ' on ';
-		nextPutAll: stoneName;
+		nextPutAll: stoneName printString;
 		nextPutAll: ' session ';
 		print: stoneSessionID;
 		nextPutAll: ' on ';
-		nextPutAll: stoneHost;
-		yourself.
+		nextPutAll: stoneHost printString.
 	self isRemoteGem ifTrue: [
 		list := gemNRS subStrings: $#.
 		netPort := ((list at: 2) subStrings: $:) at: 2.
@@ -629,8 +628,7 @@ titleBarFor: aString
 		gemHost := ((list at: 1) subStrings: $@) at: 2.
 		stream
 			nextPutAll: ' with remote gem on ';
-			nextPutAll: gemHost;
-			yourself.
+			nextPutAll: gemHost.
 	] ifFalse: [
 		stream nextPutAll: ' with linked gem'. 
 	].
