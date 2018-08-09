@@ -184,7 +184,6 @@ removeSampleSymbolDictionary
 	transport send: #removeSampleSymbolDictionary to: remoteService!
 
 replicateFrom: newService
-	newService isClassService ifFalse: [^self].
 	newService name = name
 		ifTrue: 
 			[1 to: self class instSize do: [:index | self instVarAt: index put: (newService instVarAt: index)]]!

@@ -213,7 +213,7 @@ removeSelector: selector
 	transport send: #removeSelector: to: remoteService withAll: (Array with: selector)!
 
 replicateFrom: newService
-	self isClassService ifTrue: [^super replicateFrom: newService]!
+	newService isClassService ifTrue: [^super replicateFrom: newService]!
 
 sampleClassName
 	^transport send: #sampleClassName to: remoteService.  !
@@ -313,7 +313,7 @@ variables
 !RowanClassService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
-!RowanClassService categoriesFor: #replicateFrom:!public!updating! !
+!RowanClassService categoriesFor: #replicateFrom:!public!replication!updating! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 !RowanClassService categoriesFor: #selectedMethods!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServiceNames!private!selection! !
