@@ -185,7 +185,7 @@ packageName: anObject
 	packageName := anObject!
 
 prepareForReplication
-	methods := nil.
+	self shouldClearMethods ifTrue: [methods := nil].
 	hierarchyServices := nil.
 	selectedMethods := nil.
 	selectedPackageServices do: [:packageService | packageService prepareForReplication]!
@@ -234,6 +234,10 @@ selectedPackageServices
 
 selectedPackageServices: anObject
 	selectedPackageServices := anObject!
+
+shouldClearMethods
+
+	^(#(#removeMethods) includes: command) not!
 
 stonOn: stonWriter
 	| instanceVariableNames |
@@ -320,6 +324,7 @@ variables
 !RowanClassService categoriesFor: #selectedPackageServiceNames!private!selection! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
+!RowanClassService categoriesFor: #shouldClearMethods!public!replication! !
 !RowanClassService categoriesFor: #stonOn:!must not strip!public!ston! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
 !RowanClassService categoriesFor: #template!accessing!private! !
