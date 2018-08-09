@@ -44,7 +44,7 @@ classHierarchyUpdate: presenter browser: browser
 				withParent: nil].
 	presenter model: treeModel.
 	presenter view expandAll. 
-	selection := (treeModel asBag detect: [:svc | svc name = name asSymbol]). 
+	selection := (treeModel asBag detect: [:svc | svc name = name]). 
 	selection hierarchyServices: nil. 
 	hierarchyServices := nil. 
 	presenter selection: selection
@@ -55,6 +55,7 @@ classMethodsUpdate: presenter browser: browser
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
 	classPresenter := self classOrHierarchyPresenter: browser.
 	classPresenter selections detect: [:classService | classService name = name] ifNone: [^self].
+	filters isEmpty ifTrue:[filterType := nil].
 	self displayMethodsOn: presenter!
 
 classOrHierarchyPresenter: browser
@@ -183,6 +184,11 @@ packageName
 packageName: anObject
 	packageName := anObject!
 
+prepareForReplication
+
+	self releaseReferencedServices
+	!
+
 projectName
 	^projectName!
 
@@ -213,10 +219,11 @@ sampleClassName
 	^transport send: #sampleClassName to: remoteService.  !
 
 selectedMethods
-	^selectedMethods!
+	"To avoid setting STON class>>allowComplexKeyMap: (which appears to slow down ston replication)
+	just store the selector"
 
-selectedMethods: anObject
-	selectedMethods := anObject!
+	^selectedMethods
+		collect: [:selector | methods detect: [:methodService | methodService selector == selector]]!
 
 selectedPackageServiceNames
 	^selectedPackageServices collect: [:pkgService | pkgService name]!
@@ -301,6 +308,7 @@ variables
 !RowanClassService categoriesFor: #methods:!accessing!private! !
 !RowanClassService categoriesFor: #packageName!accessing!private! !
 !RowanClassService categoriesFor: #packageName:!accessing!private! !
+!RowanClassService categoriesFor: #prepareForReplication!public!replication! !
 !RowanClassService categoriesFor: #projectName!accessing!private! !
 !RowanClassService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
@@ -308,7 +316,6 @@ variables
 !RowanClassService categoriesFor: #replicateFrom:!public!updating! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 !RowanClassService categoriesFor: #selectedMethods!accessing!private! !
-!RowanClassService categoriesFor: #selectedMethods:!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServiceNames!private!selection! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
@@ -319,4 +326,12 @@ variables
 !RowanClassService categoriesFor: #updateCategories:!private!updating! !
 !RowanClassService categoriesFor: #updateVariables:!private!updating! !
 !RowanClassService categoriesFor: #variables!accessing!private! !
+
+!RowanClassService class methodsFor!
+
+named: theName
+	| inst |
+	inst := self new name: theName.
+	^inst! !
+!RowanClassService class categoriesFor: #named:!instance creation!public! !
 

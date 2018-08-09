@@ -18,6 +18,10 @@ classCreationTemplate
 
 	^transport send: #genericClassCreationTemplate to: self remoteService!
 
+classes: anArray
+
+	classes := anArray!
+
 classesUpdate: presenter browser: browser
 	"If the selected packages have the same class defined and extended, show the defined class"
 
@@ -112,6 +116,7 @@ replicateFrom: newService
 		ifTrue: [super replicateFrom: newService]! !
 !RowanPackageService categoriesFor: #=!comparing!public! !
 !RowanPackageService categoriesFor: #classCreationTemplate!public!rowan! !
+!RowanPackageService categoriesFor: #classes:!public!updating! !
 !RowanPackageService categoriesFor: #classesUpdate:browser:!public!updating! !
 !RowanPackageService categoriesFor: #condenseExtensions:!private! !
 !RowanPackageService categoriesFor: #createPackageNamed:inProject:!public!rowan! !

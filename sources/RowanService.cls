@@ -146,10 +146,11 @@ name
 	^name!
 
 name: aString
-	name := aString.
-	transport send: #name: to: remoteService withAll: (Array with: aString)!
+	name := aString.!
 
 packagesUpdate: presenter!
+
+prepareForReplication!
 
 printOn: aStream
 
@@ -183,6 +184,7 @@ removeSampleSymbolDictionary
 	transport send: #removeSampleSymbolDictionary to: remoteService!
 
 replicateFrom: newService
+	newService isClassService ifFalse: [^self].
 	newService name = name
 		ifTrue: 
 			[1 to: self class instSize do: [:index | self instVarAt: index put: (newService instVarAt: index)]]!
@@ -235,8 +237,7 @@ updateList: presenter whilePreservingSelections: updates
 							[presenter model remove: service.
 							nil].
 			replicate notNil ifTrue: [service replicateFrom: replicate]].
-	updates do: [:update | (presenter list includes: update) not ifTrue: [presenter model add: update]].
-	(presenter list includes: nil) ifTrue:[self halt].!
+	updates do: [:update | (presenter list includes: update) not ifTrue: [presenter model add: update]].!
 
 updateMethodFilterSelectionFor: presenter!
 
@@ -299,6 +300,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #name!accessing!public! !
 !RowanService categoriesFor: #name:!accessing!public! !
 !RowanService categoriesFor: #packagesUpdate:!public!updating! !
+!RowanService categoriesFor: #prepareForReplication!public!replication! !
 !RowanService categoriesFor: #printOn:!printing!public! !
 !RowanService categoriesFor: #processListUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #projectPackagesUpdate:browser:!public!updating! !
@@ -360,12 +362,6 @@ icon
 
 	^##(self) defaultIcon!
 
-named: projectName
-	| inst |
-	inst := self new name: projectName.
-	inst setRemoteName.
-	^inst!
-
 new
 	^super new initialize!
 
@@ -382,7 +378,6 @@ sampleDefinitions
 !RowanService class categoriesFor: #defaultIcon!private! !
 !RowanService class categoriesFor: #defaultIconName!private! !
 !RowanService class categoriesFor: #icon!private! !
-!RowanService class categoriesFor: #named:!instance creation!public! !
 !RowanService class categoriesFor: #new!initialization!public! !
 !RowanService class categoriesFor: #on:!initialization!public! !
 !RowanService class categoriesFor: #sampleDefinitions!examples!public! !

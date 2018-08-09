@@ -353,7 +353,7 @@ RowanService subclass: #RowanFrameService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -803,6 +803,7 @@ browseSendersOf: aGsMethodOrString
 
 issueCommand: services
 	| stonString stonResultString |
+	services do:[:service | service prepareForReplication].
 	stonString := STON toString: services.
 	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
 		ensure: [services do: [:service | service clearCommand]].

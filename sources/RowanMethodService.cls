@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

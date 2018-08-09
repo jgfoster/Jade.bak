@@ -268,8 +268,12 @@ createSchematicWiringForMethodCategoryList
 createSchematicWiringForMethodFilterTabs
 	methodFilterTabs
 		when: #currentCardChanged
-		send: #filterTabChanged
-		to: self!
+			send: #filterTabChanged
+			to: self;
+		when: #currentCardChanged
+			send: #refreshMethodsOn:
+			to: self
+			with: methodListPresenter!
 
 createSchematicWiringForMethodList
 
@@ -833,8 +837,18 @@ refreshClass
 			ensure: [inUpdate := false]!
 
 refreshClassListOrHierarchy
-	classListPresenter selectionOrNil = classHierarchyPresenter selectionOrNil ifTrue: [^self].
-	self isClassListTabSelected ifTrue: [self updateClasses] ifFalse: [self updateHierarchy]!
+	| newSelection listSelection hierarchySelection |
+	self isClassListTabSelected
+		ifTrue: 
+			[listSelection := classListPresenter selectionOrNil.
+			hierarchySelection := classHierarchyPresenter selectionOrNil.
+			listSelection = hierarchySelection ifTrue: [^self].
+			(hierarchySelection isNil or: [listSelection isNil]) ifTrue: [^self updateClasses].
+			self updateClasses.  
+			newSelection := classListPresenter list detect: [:service | hierarchySelection name = service name]
+						ifNone: [^classListPresenter resetSelection].
+			classListPresenter selection: newSelection]
+		ifFalse: [self updateHierarchy.]!
 
 refreshMethodsOn: presenter
 	| classService |
@@ -1147,7 +1161,9 @@ updateMultiMethodComparison
 
 updatePackage
 	self isClassListTabSelected
-		ifTrue: [self updateClasses]
+		ifTrue: 
+			[classListPresenter model: ListModel new.
+			self updateClasses]
 		ifFalse: [classHierarchyPresenter model: TreeModel new].
 	self updatePackageInfo!
 
