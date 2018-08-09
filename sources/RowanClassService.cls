@@ -185,9 +185,10 @@ packageName: anObject
 	packageName := anObject!
 
 prepareForReplication
-
-	self releaseReferencedServices
-	!
+	methods := nil.
+	hierarchyServices := nil.
+	selectedMethods := nil.
+	selectedPackageServices do: [:packageService | packageService prepareForReplication]!
 
 projectName
 	^projectName!

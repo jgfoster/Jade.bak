@@ -852,7 +852,7 @@ refreshClassListOrHierarchy
 
 refreshMethodsOn: presenter
 	| classService |
-	classService := classListPresenter selection.
+	classService := classListPresenter selectionOrNil ifNil:[^self].
 	self isCategoriesTabSelected
 		ifTrue: [classService filters: categoryListPresenter selections]
 		ifFalse: [classService filters: variableListPresenter selections].
@@ -1232,6 +1232,7 @@ updateServices: services
 	"Private - copied to RowanDebugger"
 
 	| stonString stonResults |
+	services do:[:service | service prepareForReplication].
 	stonString := STON toString: services.
 	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
 	self update: services afterStonReplication: stonResults!

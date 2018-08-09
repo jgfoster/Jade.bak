@@ -81,6 +81,10 @@ name: packageName
 		to: remoteService
 		withAll: (Array with: packageName)!
 
+prepareForReplication
+
+	classes := nil. !
+
 printOn: target
 	"Append, to the <puttableStream>, target, a string whose characters are a 
 	the same as those which would result from sending a #printString
@@ -127,6 +131,7 @@ replicateFrom: newService
 !RowanPackageService categoriesFor: #hash!comparing!public! !
 !RowanPackageService categoriesFor: #isPackageService!public!testing! !
 !RowanPackageService categoriesFor: #name:!accessing!public! !
+!RowanPackageService categoriesFor: #prepareForReplication!public!replication! !
 !RowanPackageService categoriesFor: #printOn:!printing!public! !
 !RowanPackageService categoriesFor: #projectName!accessing!private! !
 !RowanPackageService categoriesFor: #projectName:!accessing!private! !
