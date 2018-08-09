@@ -14,8 +14,11 @@ doNothing: anObject
 
 	"as the name implies"!
 
+prepareForReplication!
+
 updateSelector
 	^#doNothing:! !
 !RowanCommandResult categoriesFor: #doNothing:!private! !
+!RowanCommandResult categoriesFor: #prepareForReplication!public!replication! !
 !RowanCommandResult categoriesFor: #updateSelector!public! !
 
