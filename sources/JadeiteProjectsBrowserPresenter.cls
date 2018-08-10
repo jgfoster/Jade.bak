@@ -698,30 +698,37 @@ projectTabLabel
 	^cardNumber printString , ' ' , label!
 
 pullFromGit
-	| service |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
+	| projectServices ws |
+	projectServices := projectListPresenter selections.
+	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
+	ws := WriteStream on: String new.
+	projectServices do: 
+			[:service |
+			ws
+				nextPutAll: service name;
+				space].
 	(MessageBox
-		confirm: 'It is recommended that you commit changes before doing a pull from git. Proceed?')
-			ifTrue: 
-				[service := self newService.
-				service pullFromGit]
-			ifFalse: [^false]!
+		confirm: 'It is recommended that you commit changes before doing a pulling projects - ' , ws contents
+				, ' -  from git. Really proceed?')
+			ifFalse: [^self].
+	projectServices do: [:service | service command: #pushToGit].
+	self issueCommand: projectServices!
 
 pushToGit
-	| service |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
+	| projectServices ws |
+	projectServices := projectListPresenter selections.
+	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
+	ws := WriteStream on: String new.
+	projectServices do: 
+			[:service |
+			ws
+				nextPutAll: service name;
+				space].
 	(MessageBox
-		confirm: 'This will push committed changes from the local repository to the remote server. Proceed?')
-			ifTrue: 
-				[service := self newService.
-				service pushToGit]
-			ifFalse: [^false]!
+		confirm: 'Push projects - ' , ws contents , '- from the local repository to the remote server?')
+			ifFalse: [^self].
+	projectServices do: [:service | service command: #pushToGit].
+	self issueCommand: projectServices!
 
 queryCommand: aCommandQuery
 	| command focusView isTextEdit |
@@ -1295,13 +1302,19 @@ updateTabLabel
 	self parentPresenter view updateTabs!
 
 writeProject
-	| projectName projectService |
-	projectName := projectListPresenter selection name.
-	(MessageBox confirm: 'Write project ' , projectName , ' to disk without committing?')
+	| projectName projectServices ws |
+	projectServices := projectListPresenter selections.
+	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
+	ws := WriteStream on: String new.
+	projectServices do: 
+			[:service |
+			ws
+				nextPutAll: service name;
+				space].
+	(MessageBox confirm: 'Write projects - ' , ws contents , ' to disk without committing?')
 		ifFalse: [^false].
-	projectService := RowanProjectService new name: projectName.
-	projectService command: #write.
-	self issueCommand: (Array with: projectService).
+	projectServices do: [:service | service command: #write].
+	self issueCommand: projectServices.
 	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!private! !
