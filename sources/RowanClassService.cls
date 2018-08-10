@@ -202,7 +202,7 @@ releaseReferencedServices
 			copy do: [:service | service releaseReferencedServices]].
 	methods
 		ifNotNil: 
-			[copy := methods copy. 
+			[copy := methods copy.
 			methods := Array new.
 			copy do: [:service | service releaseReferencedServices]]!
 

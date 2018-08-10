@@ -453,6 +453,11 @@ isDictionariesTabSelected
 	^projectDictionaryTabs currentCard name = 'dictionaryList'.
 !
 
+issueCommand: services
+	inUpdate ifTrue: [^self].
+	inUpdate := true.
+	[^super issueCommand: services] ensure: [inUpdate := false]!
+
 loadProject
 	| name |
 	name := projectListPresenter selection
@@ -819,9 +824,7 @@ refresh
 
 refreshClass
 	| selection presenter |
-	inUpdate ifTrue: [^self].
-	
-	[inUpdate := true.
+	inUpdate ifTrue:[^self].
 	self setClassMeta.
 	self setMethodFilter.
 	presenter := self isClassListTabSelected
@@ -833,8 +836,7 @@ refreshClass
 	selection selectedPackageServices: packageListPresenter selections.
 	self setFilterType: selection.
 	self updateServices: (Array with: selection).
-	self updateClassInfo]
-			ensure: [inUpdate := false]!
+	self updateClassInfo!
 
 refreshClassListOrHierarchy
 	| newSelection listSelection hierarchySelection |
@@ -1232,10 +1234,14 @@ updateServices: services
 	"Private - copied to RowanDebugger"
 
 	| stonString stonResults |
-	services do:[:service | service prepareForReplication].
+	inUpdate ifTrue:[^self].
+	
+	[inUpdate := true.
+	services do: [:service | service prepareForReplication].
 	stonString := STON toString: services.
 	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResults!
+	self update: services afterStonReplication: stonResults]
+			ensure: [inUpdate := false]!
 
 updateSingleMethodSource
 	methodSourcePresenter value: methodListPresenter selections first source.
@@ -1315,6 +1321,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #initialize!initialization!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #inspectProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #issueCommand:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
