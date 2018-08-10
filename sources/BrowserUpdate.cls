@@ -65,15 +65,6 @@ update: services afterStonReplication: stonResults
 	self initializeUpdates.
 	updatedServices := STON fromString: stonResults.
 	updatedServices do: [:newService | services do: [:service | service replicateFrom: newService]].
-	updatedServices do: 
-			[:service |
-			service isClassService
-				ifTrue: 
-					[Transcript
-						cr;
-						show: service name;
-						show: ' - methods: ';
-						show: service methods size printString]].
 	self updates: updatedServices.
 	updatedServices do: [:service | service releaseReferencedServices].
 	^updatedServices!

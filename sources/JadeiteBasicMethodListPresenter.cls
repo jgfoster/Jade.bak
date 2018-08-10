@@ -16,7 +16,24 @@ basicRemoveMethods
 	services isEmpty ifTrue:[^self].
 	self removeMethods: (Array with: services)!
 
-browseImplementorsOf: methodService
+browseClass
+
+	| selection browserClass |
+	selection := methodListPresenter selection.
+	browserClass := Smalltalk at: #RowanSystemBrowser.		"Avoid circular dependencies on load order"
+	(browserClass showOnSession: self gciSession)
+		selectClass: selection className asString
+		selector: selection selector.!
+
+browseImplementorsOf
+
+	self withSelectorDo: 
+			[:aSelector |
+			| methodService |
+			methodService := RowanMethodService new selector: aSelector.
+			self browseImplementorsOf: methodService]!
+
+browseImplementorsOf: methodService 
 	| service |
 	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: methodService selector).
 	self issueCommand: (Array with: service).
@@ -31,11 +48,18 @@ browseMethodsContaining
 	self issueCommand: (Array with: service).
 	self openMethodListOn: service selecting: string!
 
+browseSendersOf
+	self withSelectorDo: 
+			[:aSelector |
+			| methodService |
+			methodService := RowanMethodService new selector: aSelector.
+			self browseSendersOf: methodService]!
+
 browseSendersOf: methodService
 	| service |
 	service := RowanQueryService command: #sendersOf: withArgs: (Array with: methodService selector).
 	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: methodService!
+	self openMethodListOn: service selecting: methodService selector!
 
 onViewOpened
 	super onViewOpened.
@@ -97,8 +121,11 @@ updateMethodReferences: services
 	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
 	self update: services afterStonReplication: stonResultString! !
 !JadeiteBasicMethodListPresenter categoriesFor: #basicRemoveMethods!private! !
+!JadeiteBasicMethodListPresenter categoriesFor: #browseClass!public! !
+!JadeiteBasicMethodListPresenter categoriesFor: #browseImplementorsOf!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseMethodsContaining!public!queries! !
+!JadeiteBasicMethodListPresenter categoriesFor: #browseSendersOf!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseSendersOf:!public!queries! !
 !JadeiteBasicMethodListPresenter categoriesFor: #onViewOpened!event handlers!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #openMethodListOn:selecting:!private!queries! !

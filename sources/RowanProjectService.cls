@@ -245,11 +245,7 @@ sha
 	^sha!
 
 sha: anObject
-	sha := anObject!
-
-write
-
-	^transport send: #write to: remoteService  ! !
+	sha := anObject! !
 !RowanProjectService categoriesFor: #=!comparing!public! !
 !RowanProjectService categoriesFor: #addProjectNamed:!public! !
 !RowanProjectService categoriesFor: #basicName:!accessing!public! !
@@ -289,7 +285,6 @@ write
 !RowanProjectService categoriesFor: #sampleProjectName!public! !
 !RowanProjectService categoriesFor: #sha!accessing!public! !
 !RowanProjectService categoriesFor: #sha:!accessing!public! !
-!RowanProjectService categoriesFor: #write!public!rowan! !
 
 !RowanProjectService class methodsFor!
 

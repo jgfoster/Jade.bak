@@ -529,7 +529,7 @@ onDropOnMethodCategory: aSession
 	methodServices := aSession dragObjects collect: [:each | each format: #method].
 	targetCategory := aSession suggestedTarget trimBlanks.
 	classService := classListPresenter selection.
-	categoryListPresenter selections: (categoryListPresenter selections copyWith: targetCategory asSymbol).
+	categoryListPresenter selections: (categoryListPresenter selections copyWith: targetCategory).
 	classService
 		command: #moveMethods:to:;
 		commandArgs: (Array with: methodServices with: targetCategory).
@@ -1268,11 +1268,13 @@ updateTabLabel
 	self parentPresenter view updateTabs!
 
 writeProject
-	| projectName |
+	| projectName projectService |
 	projectName := projectListPresenter selection name.
 	(MessageBox confirm: 'Write project ' , projectName , ' to disk without committing?')
 		ifFalse: [^false].
-	((RowanProjectService on: gciSession) name: projectName) write.
+	projectService := RowanProjectService new name: projectName.
+	projectService command: #write.
+	self issueCommand: (Array with: projectService).
 	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!private! !
