@@ -42,7 +42,7 @@ basicAddMethodCategory: string
 				command: #addCategory:;
 				commandArgs: (Array with: string).
 	self issueCommand: (Array with: service).
-	categoryListPresenter selection: string asSymbol. !
+	categoryListPresenter selection: string. !
 
 basicRemoveMethods
 	| service |
@@ -458,6 +458,25 @@ issueCommand: services
 	inUpdate := true.
 	[^super issueCommand: services] ensure: [inUpdate := false]!
 
+jadeMenuStrings
+
+	false ifTrue: [
+		self abortTransaction; commitTransaction; newWorkspace; openSystemBrowser; refreshFromServer; exit.
+	]. 
+	^#(
+		'&Jade'
+		'&Abort Transaction//abortTransaction'
+		'&CommitTransaction//commitTransaction'
+		'-'
+		'&New Workspace/Ctrl+N/newWorkspace'
+		'&Open System Browser/Ctrl+B/openSystemBrowser'
+		'-'
+		'&Refresh/Ctrl+R/refreshFromServer'
+		'-'
+		'E&xit/Shift+F4/exit'
+	).
+!
+
 loadProject
 	| name |
 	name := projectListPresenter selection
@@ -852,6 +871,14 @@ refreshClassListOrHierarchy
 			classListPresenter selection: newSelection]
 		ifFalse: [self updateHierarchy.]!
 
+refreshFromServer
+	| services |
+	services := OrderedCollection with: RowanBrowserService new.
+	projectListPresenter selections isEmpty ifFalse: [services addAll: projectListPresenter selections].
+	packageListPresenter selections isEmpty ifFalse: [services addAll: packageListPresenter selections].
+	classListPresenter selectionOrNil ifNotNil: [:classService | services add: classService].
+	self updateServices: services!
+
 refreshMethodsOn: presenter
 	| classService |
 	classService := classListPresenter selectionOrNil ifNil:[^self].
@@ -1122,7 +1149,7 @@ updateHierarchy
 
 updateMenuBar
 
-	| shellView menuBar dictsPkgsMenu methodFilterMenu textAreaMenu |
+	| shellView menuBar methodFilterMenu textAreaMenu |
 	methodFilterMenu := Menu fromStrings: (self isCategoriesTabSelected ifTrue: [self categoriesMenuStrings] ifFalse: [self variablesMenuStrings]).
 	textAreaMenu := Menu fromStrings: (self isGlobalsTabSelected ifTrue: [self globalsMenuStrings] ifFalse: [self editMenuStrings]).
 	shellView := self parentPresenter parentPresenter view.
@@ -1279,7 +1306,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #allClasses!public!services! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #allClasses!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public!queries! !
@@ -1314,7 +1341,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClassComment!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers!private! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!services!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #getViews!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gitCommit!project menu handlers!public! !
@@ -1324,6 +1351,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #inspectProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #issueCommand:!private!services! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
@@ -1349,8 +1377,9 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #pushToGit!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #queryCommand:!menu handlers!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refresh!project menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #refreshClass!event handlers!public!services! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #refreshClass!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshClassListOrHierarchy!event handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #refreshFromServer!menu handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshMethodsOn:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !

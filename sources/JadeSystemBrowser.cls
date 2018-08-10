@@ -11,7 +11,6 @@ JadeSystemBrowser comment: ''!
 !JadeSystemBrowser methodsFor!
 
 abortTransaction
-
 	self isOkayToChange ifTrue: [
 		gciSession abort.
 		self update.

@@ -1346,7 +1346,7 @@ jadeMenuStrings
 		'&Abort Transaction//abortTransaction'
 		'&CommitTransaction//commitTransaction'
 		'-'
-		'&New Worspace/Ctrl+N/newWorkspace'
+		'&New Workspace/Ctrl+N/newWorkspace'
 		'&Open System Browser/Ctrl+B/openSystemBrowser'
 		'-'
 		'&Rename Selection/F2/rename'
