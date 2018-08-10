@@ -14,14 +14,21 @@ browseProjects
 	self list: (RowanProjectService on: gciSession) projects!
 
 checkout
-	| service branchName |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
-	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
-	branchName := ChoicePrompter choices: service branches caption: 'Select branch to checkout:'.
-	branchName isNil ifTrue: [^false] ifFalse: [service checkout: branchName]!
+	| service branchName branchString query |
+	service := projectListPresenter selectionOrNil ifNil: [^MessageBox notify: 'No project selected'].
+	query := RowanQueryService new
+				command: #projectBranches:;
+				commandArgs: (Array with: service name).
+	branchString := (self issueCommand: (Array with: query)) first answer.
+	branchString := branchString subStrings asOrderedCollection
+				remove: '*';
+				yourself.
+	branchName := ChoicePrompter choices: branchString caption: 'Select branch to checkout:'.
+	branchName isNil ifTrue: [^self].
+	service
+		command: #checkout;
+		commandArgs: (Array with: branchName).
+	self issueCommand: (Array with: service)!
 
 cloneProject
 	"Does a clone and 'attach'"
@@ -38,21 +45,23 @@ cloneProject
 
 commit
 	| projectName message service promptResult |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
+	projectListPresenter hasSelection ifFalse: [MessageBox notify: 'No project selected'].
+	projectListPresenter selections size > 1
+		ifTrue: [MessageBox notify: 'Only one project may be committed'].
 	projectName := projectListPresenter selection name.
 	message := String new asValue.
 	promptResult := StsMultilinePrompter
 				on: message
-				prompt: 'Enter commit message. (This will do a GemStone commit after the git commit as well)'
+				prompt: 'Enter Git commit message. (Note - This will NOT do a GemStone commit)'
 				caption: 'Committing Project ' , projectName.
 	promptResult isNil ifTrue: [^self].
 	message value isEmpty
-		ifTrue: [^MessageBox notify: 'Commit message must not be empty. Commit to local repository not done.'].
-	service := (RowanProjectService on: gciSession) name: projectName.
-	service commitWithMessage: message value asString.
+		ifTrue: [^MessageBox notify: 'Commit message must not be empty. Commit to local repository NOT done.'].
+	service := projectListPresenter selection.
+	service
+		command: #commitWithMessage:;
+		commandArgs: (Array with: message value asString).
+	self issueCommand: (Array with: service).
 	MessageBox notify: 'Project ' , projectName , ' committed to local repository!!'!
 
 createComponents
@@ -141,30 +150,37 @@ projectLog
 	MessageBox notify: service log!
 
 pullFromGit
-	| service |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
+	| projectServices ws |
+	projectServices := projectListPresenter selections.
+	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
+	ws := WriteStream on: String new.
+	projectServices do: 
+			[:service |
+			ws
+				nextPutAll: service name;
+				space].
 	(MessageBox
-		confirm: 'It is recommended that you commit changes before doing a pull from git. Proceed?')
-			ifTrue: 
-				[service := self newService.
-				service pullFromGit]
-			ifFalse: [^false]!
+		confirm: 'It is recommended that you commit changes before doing a pulling projects - ' , ws contents
+				, ' -  from git. Really proceed?')
+			ifFalse: [^self].
+	projectServices do: [:service | service command: #pushToGit].
+	self issueCommand: projectServices!
 
 pushToGit
-	| service |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
+	| projectServices ws |
+	projectServices := projectListPresenter selections.
+	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
+	ws := WriteStream on: String new.
+	projectServices do: 
+			[:service |
+			ws
+				nextPutAll: service name;
+				space].
 	(MessageBox
-		confirm: 'This will push committed changes from the local repository to the remote server. Proceed?')
-			ifTrue: 
-				[service := self newService.
-				service pushToGit]
-			ifFalse: [^false]!
+		confirm: 'Push projects - ' , ws contents , '- from the local repository to the remote server?')
+			ifFalse: [^self].
+	projectServices do: [:service | service command: #pushToGit].
+	self issueCommand: projectServices!
 
 showPackages
 	| service |
@@ -179,12 +195,20 @@ unloadProject
 	MessageBox notify: 'This feature not yet implemented'!
 
 writeProject
-	| projectName |
-	projectName := projectListPresenter selection name.
-	(MessageBox confirm: 'Write project ' , projectName , ' to disk without committing?')
+	| projectServices ws |
+	projectServices := projectListPresenter selections.
+	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
+	ws := WriteStream on: String new.
+	projectServices do: 
+			[:service |
+			ws
+				nextPutAll: service name;
+				space].
+	(MessageBox confirm: 'Write projects - ' , ws contents , '- to disk without committing?')
 		ifFalse: [^false].
-	((RowanProjectService on: gciSession) name: projectName) write.
-	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
+	projectServices do: [:service | service command: #write].
+	self issueCommand: projectServices.
+	MessageBox notify: 'Projects ' ,  ws contents  , ' written to disk'! !
 !RowanProjectListPresenter categoriesFor: #browseProjects!public! !
 !RowanProjectListPresenter categoriesFor: #checkout!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #cloneProject!project menu handlers!public! !

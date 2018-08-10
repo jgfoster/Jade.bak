@@ -111,14 +111,21 @@ browseSendersOf: string
 	self openMethodListOn: service selecting: string!
 
 checkout
-	| service branchName |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
-	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
-	branchName := ChoicePrompter choices: service branches caption: 'Select branch to checkout:'.
-	branchName isNil ifTrue: [^false] ifFalse: [service checkout: branchName]!
+	| service branchName branchString query |
+	service := projectListPresenter selectionOrNil ifNil: [^MessageBox notify: 'No project selected'].
+	query := RowanQueryService new
+				command: #projectBranches:;
+				commandArgs: (Array with: service name).
+	branchString := (self issueCommand: (Array with: query)) first answer.
+	branchString := branchString subStrings asOrderedCollection
+				remove: '*';
+				yourself.
+	branchName := ChoicePrompter choices: branchString caption: 'Select branch to checkout:'.
+	branchName isNil ifTrue: [^self].
+	service
+		command: #checkout;
+		commandArgs: (Array with: branchName).
+	self issueCommand: (Array with: service)!
 
 classesMenuStrings
 
@@ -1302,7 +1309,7 @@ updateTabLabel
 	self parentPresenter view updateTabs!
 
 writeProject
-	| projectName projectServices ws |
+	| projectServices ws |
 	projectServices := projectListPresenter selections.
 	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
 	ws := WriteStream on: String new.
@@ -1311,11 +1318,11 @@ writeProject
 			ws
 				nextPutAll: service name;
 				space].
-	(MessageBox confirm: 'Write projects - ' , ws contents , ' to disk without committing?')
+	(MessageBox confirm: 'Write projects - ' , ws contents , '- to disk without committing?')
 		ifFalse: [^false].
 	projectServices do: [:service | service command: #write].
 	self issueCommand: projectServices.
-	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
+	MessageBox notify: 'Projects ' ,  ws contents  , ' written to disk'! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !

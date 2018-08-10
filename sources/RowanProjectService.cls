@@ -30,13 +30,6 @@ branch
 branch: anObject
 	branch := anObject!
 
-branches
-	| branchesString |
-	branchesString := transport send: #branches to: remoteService.
-	^branchesString subStrings asOrderedCollection
-		remove: '*';
-		yourself!
-
 changes
 	| stream patch readStream string  |
 	self packageNames do: 
@@ -251,7 +244,6 @@ sha: anObject
 !RowanProjectService categoriesFor: #basicName:!accessing!public! !
 !RowanProjectService categoriesFor: #branch!accessing!public! !
 !RowanProjectService categoriesFor: #branch:!accessing!public! !
-!RowanProjectService categoriesFor: #branches!public!rowan! !
 !RowanProjectService categoriesFor: #changes!public!rowan! !
 !RowanProjectService categoriesFor: #checkout:!public!rowan! !
 !RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
