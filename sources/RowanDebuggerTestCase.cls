@@ -259,6 +259,17 @@ x yourself';
 
 		debuggerDo: [debugger resumeProcess];
 		yourself.
+!
+
+test8
+	"https://github.com/ericwinger/Jade/issues/20"
+
+	self 
+		assert: RowanDebugger allInstances isEmpty;
+		debuggerDo: [process := [gciSession debugString: '#(abc def) do:[:symbol | symbol size]' fromContext: nil environment: 0] fork];		"Typically ~ 180ms"
+		yourself.
+	debugger := RowanDebugger allInstances detect: [:each | true].
+	self debuggerDo: [debugger resumeProcess].
 ! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
@@ -274,4 +285,5 @@ x yourself';
 !RowanDebuggerTestCase categoriesFor: #test5!public!running!tests! !
 !RowanDebuggerTestCase categoriesFor: #test6!public!running!tests! !
 !RowanDebuggerTestCase categoriesFor: #test7!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test8!public!running!tests! !
 
