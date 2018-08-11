@@ -833,7 +833,7 @@ withExplanation: aString do: aBlock
 withExplanation: aString doA: aBlock
 	"Here we manage the UI feedback"
 
-	| result haveResult shouldRunEventLoop dialog proc |
+	| result haveResult shouldRunEventLoop dialog |
 	shouldRunEventLoop := true.
 	haveResult := false.
 	[
@@ -843,7 +843,7 @@ withExplanation: aString doA: aBlock
 		SessionManager inputState prod.
 	] newProcess name: 'GciSession>>withExplanation:doA: - 1'; resume.
 	[
-		proc := [
+		[
 			(Delay forSeconds: 1) wait.
 			shouldRunEventLoop := false.
 			SessionManager inputState prod.

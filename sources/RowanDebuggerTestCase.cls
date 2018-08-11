@@ -17,9 +17,15 @@ closeDebuggers
 	semaphore := Semaphore new.
 	list do: [:each | 
 		[
-			each view close. 
-			semaphore signal.
-			SessionManager inputState prod.
+			[
+				each view close. 
+				semaphore signal.
+				SessionManager inputState prod.
+			] on: ProcessTermination do: [:ex | 
+				semaphore signal.
+				SessionManager inputState prod.
+				ex pass.
+			].
 		] fork.	"A debugger wants to terminate the current process!!"
 		semaphore wait.
 		GciSession allInstances first removeEventsTriggeredFor: each.
@@ -253,6 +259,17 @@ x yourself';
 
 		debuggerDo: [debugger resumeProcess];
 		yourself.
+!
+
+test8
+	"https://github.com/ericwinger/Jade/issues/20"
+
+	self 
+		assert: RowanDebugger allInstances isEmpty;
+		debuggerDo: [process := [gciSession debugString: '#(abc def) do:[:symbol | symbol size]' fromContext: nil environment: 0] fork];		"Typically ~ 180ms"
+		yourself.
+	debugger := RowanDebugger allInstances detect: [:each | true].
+	self debuggerDo: [debugger resumeProcess].
 ! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
@@ -261,11 +278,12 @@ x yourself';
 !RowanDebuggerTestCase categoriesFor: #setUp!public!running! !
 !RowanDebuggerTestCase categoriesFor: #systemBrowser!public!running! !
 !RowanDebuggerTestCase categoriesFor: #tearDown!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test1!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test2!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test3!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test4!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test5!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test6!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test7!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test1!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test2!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test3!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test4!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test5!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test6!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test7!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test8!public!running!tests! !
 
