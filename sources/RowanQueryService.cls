@@ -10,6 +10,9 @@ RowanQueryService comment: ''!
 !RowanQueryService categoriesForClass!Unclassified! !
 !RowanQueryService methodsFor!
 
+answer
+	^queryResults	!
+
 queryResults
 	^queryResults!
 
@@ -18,6 +21,7 @@ queryResults: anObject
 
 releaseReferencedServices
 	"don't release the services until the gui has used them"! !
+!RowanQueryService categoriesFor: #answer!accessing!private! !
 !RowanQueryService categoriesFor: #queryResults!accessing!private! !
 !RowanQueryService categoriesFor: #queryResults:!accessing!private! !
 !RowanQueryService categoriesFor: #releaseReferencedServices!Init / Release!public! !

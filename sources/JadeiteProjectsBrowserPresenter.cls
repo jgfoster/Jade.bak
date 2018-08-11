@@ -111,14 +111,21 @@ browseSendersOf: string
 	self openMethodListOn: service selecting: string!
 
 checkout
-	| service branchName |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
-	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
-	branchName := ChoicePrompter choices: service branches caption: 'Select branch to checkout:'.
-	branchName isNil ifTrue: [^false] ifFalse: [service checkout: branchName]!
+	| service branchName branchString query |
+	service := projectListPresenter selectionOrNil ifNil: [^MessageBox notify: 'No project selected'].
+	query := RowanQueryService new
+				command: #projectBranches:;
+				commandArgs: (Array with: service name).
+	branchString := (self issueCommand: (Array with: query)) first answer.
+	branchString := branchString subStrings asOrderedCollection
+				remove: '*';
+				yourself.
+	branchName := ChoicePrompter choices: branchString caption: 'Select branch to checkout:'.
+	branchName isNil ifTrue: [^self].
+	service
+		command: #checkout;
+		commandArgs: (Array with: branchName).
+	self issueCommand: (Array with: service)!
 
 classesMenuStrings
 
@@ -698,30 +705,37 @@ projectTabLabel
 	^cardNumber printString , ' ' , label!
 
 pullFromGit
-	| service |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
+	| projectServices ws |
+	projectServices := projectListPresenter selections.
+	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
+	ws := WriteStream on: String new.
+	projectServices do: 
+			[:service |
+			ws
+				nextPutAll: service name;
+				space].
 	(MessageBox
-		confirm: 'It is recommended that you commit changes before doing a pull from git. Proceed?')
-			ifTrue: 
-				[service := self newService.
-				service pullFromGit]
-			ifFalse: [^false]!
+		confirm: 'It is recommended that you commit changes before doing a pulling projects - ' , ws contents
+				, ' -  from git. Really proceed?')
+			ifFalse: [^self].
+	projectServices do: [:service | service command: #pushToGit].
+	self issueCommand: projectServices!
 
 pushToGit
-	| service |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
+	| projectServices ws |
+	projectServices := projectListPresenter selections.
+	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
+	ws := WriteStream on: String new.
+	projectServices do: 
+			[:service |
+			ws
+				nextPutAll: service name;
+				space].
 	(MessageBox
-		confirm: 'This will push committed changes from the local repository to the remote server. Proceed?')
-			ifTrue: 
-				[service := self newService.
-				service pushToGit]
-			ifFalse: [^false]!
+		confirm: 'Push projects - ' , ws contents , '- from the local repository to the remote server?')
+			ifFalse: [^self].
+	projectServices do: [:service | service command: #pushToGit].
+	self issueCommand: projectServices!
 
 queryCommand: aCommandQuery
 	| command focusView isTextEdit |
@@ -1295,14 +1309,20 @@ updateTabLabel
 	self parentPresenter view updateTabs!
 
 writeProject
-	| projectName projectService |
-	projectName := projectListPresenter selection name.
-	(MessageBox confirm: 'Write project ' , projectName , ' to disk without committing?')
+	| projectServices ws |
+	projectServices := projectListPresenter selections.
+	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
+	ws := WriteStream on: String new.
+	projectServices do: 
+			[:service |
+			ws
+				nextPutAll: service name;
+				space].
+	(MessageBox confirm: 'Write projects - ' , ws contents , '- to disk without committing?')
 		ifFalse: [^false].
-	projectService := RowanProjectService new name: projectName.
-	projectService command: #write.
-	self issueCommand: (Array with: projectService).
-	MessageBox notify: 'Project ' , projectName , ' written to disk'! !
+	projectServices do: [:service | service command: #write].
+	self issueCommand: projectServices.
+	MessageBox notify: 'Projects ' ,  ws contents  , ' written to disk'! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
