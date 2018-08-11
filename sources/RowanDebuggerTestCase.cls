@@ -17,9 +17,15 @@ closeDebuggers
 	semaphore := Semaphore new.
 	list do: [:each | 
 		[
-			each view close. 
-			semaphore signal.
-			SessionManager inputState prod.
+			[
+				each view close. 
+				semaphore signal.
+				SessionManager inputState prod.
+			] on: ProcessTermination do: [:ex | 
+				semaphore signal.
+				SessionManager inputState prod.
+				ex pass.
+			].
 		] fork.	"A debugger wants to terminate the current process!!"
 		semaphore wait.
 		GciSession allInstances first removeEventsTriggeredFor: each.
@@ -261,11 +267,11 @@ x yourself';
 !RowanDebuggerTestCase categoriesFor: #setUp!public!running! !
 !RowanDebuggerTestCase categoriesFor: #systemBrowser!public!running! !
 !RowanDebuggerTestCase categoriesFor: #tearDown!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test1!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test2!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test3!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test4!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test5!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test6!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test7!public!running! !
+!RowanDebuggerTestCase categoriesFor: #test1!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test2!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test3!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test4!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test5!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test6!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #test7!public!running!tests! !
 
