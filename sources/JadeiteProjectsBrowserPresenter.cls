@@ -125,7 +125,8 @@ checkout
 	service
 		command: #checkout;
 		commandArgs: (Array with: branchName).
-	self issueCommand: (Array with: service)!
+	self issueCommand: (Array with: service).
+	self refreshFromServer. !
 
 classesMenuStrings
 
@@ -412,7 +413,6 @@ getViews
 
 gitCommit
 	| projectName message service promptResult |
-	projectListPresenter hasSelection ifFalse: [MessageBox notify: 'No project selected'].
 	projectListPresenter selections size > 1
 		ifTrue: [MessageBox notify: 'Only one project may be committed'].
 	projectName := projectListPresenter selection name.
@@ -429,7 +429,8 @@ gitCommit
 		command: #commitWithMessage:;
 		commandArgs: (Array with: message value asString).
 	self issueCommand: (Array with: service).
-	MessageBox notify: 'Project ' , projectName , ' committed to local repository!!'!
+	MessageBox notify: 'Project ' , projectName , ' committed to local repository!!'.
+	self refreshFromServer. !
 
 gotoClassPackage
 	| newPackageSelection target |
@@ -450,10 +451,7 @@ initialize
 	stonCritical := Semaphore forMutualExclusion.!
 
 inspectProject
-
-	| service |
-	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
-	service inspectDefinition.!
+	projectListPresenter selection inspect!
 
 isDictionariesTabSelected
 
@@ -485,15 +483,14 @@ jadeMenuStrings
 !
 
 loadProject
-	| name |
-	name := projectListPresenter selection
-				ifNil: 
-					[MessageBox notify: 'No project selected'.
-					^false]
-				ifNotNil: [:sel | sel name].
-	(MessageBox confirm: 'Really load project ' , name , '? This will destroy any changes you may have.')
-		ifFalse: [^false].
-	(RowanProjectService on: gciSession) loadProjectNamed: name!
+	| selection |
+	selection := projectListPresenter selection.
+	(MessageBox
+		confirm: 'Really load project ' , selection name , '? This will destroy any changes you may have.')
+			ifFalse: [^false].
+	selection command: #reloadProject.
+	self issueCommand: (Array with: selection).
+	self refreshFromServer. !
 
 makeDefault
 	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
@@ -670,7 +667,7 @@ projectMenuStrings
 				].
 	^#(	'Projects' 
 		'&Find Class.../Ctrl+Shift+F/findClass'
-		'&MakeDefault//makeDefault' 
+		'&Make Default//makeDefault' 
 		'-' 
 		'Clone Git Project ...//cloneProject'
 		'Load//loadProject'
@@ -707,7 +704,6 @@ projectTabLabel
 pullFromGit
 	| projectServices ws |
 	projectServices := projectListPresenter selections.
-	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
 	ws := WriteStream on: String new.
 	projectServices do: 
 			[:service |
@@ -724,7 +720,6 @@ pullFromGit
 pushToGit
 	| projectServices ws |
 	projectServices := projectListPresenter selections.
-	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
 	ws := WriteStream on: String new.
 	projectServices do: 
 			[:service |
@@ -852,8 +847,12 @@ queryCommand: aCommandQuery
 	(aCommandQuery canPerformAgainst: self) ifTrue: [aCommandQuery beEnabled].
 	^false	"There was no specific enablement of the command at this level"!
 
-refresh
-	MessageBox notify: 'This feature not yet implemented'!
+redrawAllViews
+	"for now, just update a few views. Not sure if there's a better way to do this."
+	projectListPresenter view invalidate.
+	packageListPresenter view invalidate.
+	classListPresenter view invalidate.
+	projectInfoTab view invalidate!
 
 refreshClass
 	| selection presenter |
@@ -891,7 +890,8 @@ refreshFromServer
 	projectListPresenter selections isEmpty ifFalse: [services addAll: projectListPresenter selections].
 	packageListPresenter selections isEmpty ifFalse: [services addAll: packageListPresenter selections].
 	classListPresenter selectionOrNil ifNotNil: [:classService | services add: classService].
-	self updateServices: services!
+	self updateServices: services.
+	self redrawAllViews!
 
 refreshMethodsOn: presenter
 	| classService |
@@ -1311,7 +1311,6 @@ updateTabLabel
 writeProject
 	| projectServices ws |
 	projectServices := projectListPresenter selections.
-	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
 	ws := WriteStream on: String new.
 	projectServices do: 
 			[:service |
@@ -1322,7 +1321,8 @@ writeProject
 		ifFalse: [^false].
 	projectServices do: [:service | service command: #write].
 	self issueCommand: projectServices.
-	MessageBox notify: 'Projects ' ,  ws contents  , ' written to disk'! !
+	MessageBox notify: 'Projects ' ,  ws contents  , ' written to disk'.
+	self refreshFromServer. ! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
@@ -1396,7 +1396,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #pullFromGit!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pushToGit!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #queryCommand:!menu handlers!overrides!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #refresh!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #redrawAllViews!displaying!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshClass!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshClassListOrHierarchy!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshFromServer!menu handlers!public!updating! !

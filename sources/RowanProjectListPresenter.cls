@@ -70,9 +70,7 @@ createComponents
 
 inspectProject
 
-	| service |
-	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
-	service inspectDefinition.!
+	projectListPresenter selectionOrNil inspect!
 
 list: aList
 	projectListPresenter list: aList!
