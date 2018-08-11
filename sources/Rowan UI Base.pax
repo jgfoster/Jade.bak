@@ -591,7 +591,7 @@ postLoginAs: aString useSocket: aBoolean
 	self verifyRowanLoaded ifFalse: [^MessageBox notify: 'Rowan not loaded or $ROWAN_PROJECTS_HOME not set. Logging out.' "log out in RowinLoginShell>>postLogin:"].
 	"self initializeServer."
 	server := self executeString: '| server | 
-			server := JadeServer64bit32 new initialize; yourself.
+			server := (Rowan jadeServerClassNamed: #JadeServer64bit32) new initialize; yourself.
 			System _sessionStateAt: 3 put: server.
 			^server'.
 	aBoolean ifTrue: [self attemptSocket].
