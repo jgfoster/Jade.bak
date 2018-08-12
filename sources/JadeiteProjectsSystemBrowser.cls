@@ -28,7 +28,7 @@ layoutFilePath
 
 shellName
 
-	^'Jadeite Projects Browser'.
+	^'Projects Browser'.
 !
 
 systemBrowserPresenter

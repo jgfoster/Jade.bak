@@ -66,6 +66,8 @@ package classNames
 
 package methodNames
 	add: #CodeSourcePresenter -> #browseSelectedClass;
+	add: #GciSession -> #computeGemHost;
+	add: #GciSession -> #computeStoneHost;
 	add: #GciSession -> #hasServer;
 	add: #GciSession -> #initializeServer;
 	add: #GciSession -> #postLoginAs:useSocket:;
@@ -547,6 +549,21 @@ browseSelectedClass
 
 !GciSession methodsFor!
 
+computeGemHost
+	| list |
+	list := gemNRS subStrings: $#.
+	netPort := ((list at: 2) subStrings: $:) at: 2.
+	netTask := ((list at: 3) subStrings: $!!) at: 2.
+	gemHost := ((list at: 1) subStrings: $@) at: 2!
+
+computeStoneHost
+	| list |
+	list := stoneNRS subStrings: $!!.
+	stoneName := list at: 3.
+	list := (list at: 2) subStrings: $#.
+	list := (list at: 1) subStrings: $@.
+	stoneHost := list at: 2.!
+
 hasServer
 
 	^server notNil.
@@ -597,43 +614,27 @@ postLoginAs: aString useSocket: aBoolean
 	aBoolean ifTrue: [self attemptSocket].
 	self setInitials: aString	"This gets back the session and serial number"!
 
-titleBarFor: aString
-"'Jade ' , gciSession gciSessionID printString , ' (' , gciSession userID , ') - "
-	| stream list |
-	list := stoneNRS subStrings: $!!.
-	stoneName := list at: 3.
-	list := (list at: 2) subStrings: $#.
-	list := (list at: 1) subStrings: $@.
-	stoneHost := list at: 2.
+titleBarFor: windowName
+	| stream |
+	self computeStoneHost.
 	stream := WriteStream on: String new.
-	stream 
-		nextPutAll: 'Jadeite version [';
-		nextPutAll: JadeSessionManager shortVersion;
-		nextPutAll: '] ' ;
-		nextPutAll: gciSessionId printString;
-		nextPutAll: ' (';
-		nextPutAll: userID printString;
-		nextPutAll: ') - ';
-		nextPutAll: aString printString;
+	stream
+		nextPutAll: windowName;
+		nextPutAll: ' for ';
+		nextPutAll: userID;
 		nextPutAll: ' on ';
-		nextPutAll: stoneName printString;
-		nextPutAll: ' session ';
+		nextPutAll: stoneName asString;
+		nextPutAll: ' [';
 		print: stoneSessionID;
-		nextPutAll: ' on ';
-		nextPutAll: stoneHost printString.
-	self isRemoteGem ifTrue: [
-		list := gemNRS subStrings: $#.
-		netPort := ((list at: 2) subStrings: $:) at: 2.
-		netTask := ((list at: 3) subStrings: $!!) at: 2.
-		gemHost := ((list at: 1) subStrings: $@) at: 2.
-		stream
-			nextPutAll: ' with remote gem on ';
-			nextPutAll: gemHost.
-	] ifFalse: [
-		stream nextPutAll: ' with linked gem'. 
-	].
-	^stream contents.
-!
+		nextPutAll: ']'.
+	self isRemoteGem
+		ifTrue: 
+			[self computeGemHost.
+			stream
+				nextPutAll: ' with remote gem on ';
+				nextPutAll: gemHost asString]
+		ifFalse: [stream nextPutAll: ' with linked gem'].
+	^stream contents!
 
 verifyRowanLoaded
 	"The global Rowan indicates the Rowan packages are loaded. 
@@ -641,10 +642,12 @@ verifyRowanLoaded
 
 	^self
 		executeString: '(System myUserProfile objectNamed: ''Rowan'') notNil and:[(System gemEnvironmentVariable: ''ROWAN_PROJECTS_HOME'') notNil] '! !
+!GciSession categoriesFor: #computeGemHost!public!title bar! !
+!GciSession categoriesFor: #computeStoneHost!public!title bar! !
 !GciSession categoriesFor: #hasServer!public! !
 !GciSession categoriesFor: #initializeServer!private! !
 !GciSession categoriesFor: #postLoginAs:useSocket:!private! !
-!GciSession categoriesFor: #titleBarFor:!public! !
+!GciSession categoriesFor: #titleBarFor:!public!title bar! !
 !GciSession categoriesFor: #verifyRowanLoaded!private! !
 
 !GsError methodsFor!

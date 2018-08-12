@@ -22,7 +22,7 @@ restoreLayoutAndContentsFromFile
 
 shellName
 
-	^'Rowan System Browser'.
+	^'Dictionaries Browser'.
 !
 
 systemBrowserPresenter	
