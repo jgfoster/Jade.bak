@@ -1545,7 +1545,6 @@ onViewOpened
 		isBackgroundDwellEnabled: true;
 		isBraceHighlightingEnabled: true;
 		yourself.
-	packageListPresenter view contextMenu: (Menu fromStrings: self pkgsMenuStrings).
 	variableListPresenter view contextMenu: (Menu fromStrings: self variablesMenuStrings).
 	self setSearchPolicy.
 	!

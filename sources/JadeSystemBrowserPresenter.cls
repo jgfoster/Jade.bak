@@ -2691,24 +2691,26 @@ updateDictionaryList
 !
 
 updateMenuBar
-
-	| shellView menuBar dictsPkgsMenu methodFilterMenu textAreaMenu |
-	dictsPkgsMenu := Menu fromStrings: (self isDictionariesTabSelected ifTrue: [self dictsMenuStrings] ifFalse: [self pkgsMenuStrings]).
-	methodFilterMenu := Menu fromStrings: (self isCategoriesTabSelected ifTrue: [self categoriesMenuStrings] ifFalse: [self variablesMenuStrings]).
-	textAreaMenu := Menu fromStrings: (self isGlobalsTabSelected ifTrue: [self globalsMenuStrings] ifFalse: [self editMenuStrings]).
+	| shellView menuBar dictionaryMenu methodFilterMenu textAreaMenu |
+	dictionaryMenu := Menu fromStrings: self dictsMenuStrings.
+	methodFilterMenu := Menu fromStrings: (self isCategoriesTabSelected
+						ifTrue: [self categoriesMenuStrings]
+						ifFalse: [self variablesMenuStrings]).
+	textAreaMenu := Menu fromStrings: (self isGlobalsTabSelected
+						ifTrue: [self globalsMenuStrings]
+						ifFalse: [self editMenuStrings]).
 	shellView := self parentPresenter parentPresenter view.
 	menuBar := shellView menuBar
-		clear;
-		addItem: (Menu fromStrings: self jadeMenuStrings);
-		addItem: dictsPkgsMenu;
-		addItem: (Menu fromStrings: self classesMenuStrings);
-		addItem: methodFilterMenu;
-		addItem: (Menu fromStrings: self methodsMenuStrings);
-		addItem: textAreaMenu;
-		addItem: (Menu fromStrings: self preferencesMenuStrings);
-		yourself.
-	shellView menuBar: menuBar.
-!
+				clear;
+				addItem: (Menu fromStrings: self jadeMenuStrings);
+				addItem: dictionaryMenu;
+				addItem: (Menu fromStrings: self classesMenuStrings);
+				addItem: methodFilterMenu;
+				addItem: (Menu fromStrings: self methodsMenuStrings);
+				addItem: textAreaMenu;
+				addItem: (Menu fromStrings: self preferencesMenuStrings);
+				yourself.
+	shellView menuBar: menuBar!
 
 updateMethodFilter
 
