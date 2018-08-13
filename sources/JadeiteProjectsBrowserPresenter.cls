@@ -549,6 +549,7 @@ onViewOpened
 	super onViewOpened.
 	self registerPresentersForUpdates. 
 	projectListPresenter view contextMenu: (self projectMenu).
+	packageListPresenter view contextMenu: (Menu fromStrings: self pkgsMenuStrings).
 	self updateProjects. !
 
 openDictionaryBrowserOn: classService
@@ -1143,6 +1144,7 @@ updateMenuBar
 		clear;
 		addItem: (Menu fromStrings: self jadeMenuStrings);
 		addItem: self projectMenu;
+		addItem: (Menu fromStrings: self pkgsMenuStrings);
 		addItem: (Menu fromStrings: self classesMenuStrings);
 		addItem: methodFilterMenu;
 		addItem: (Menu fromStrings: self methodsMenuStrings);

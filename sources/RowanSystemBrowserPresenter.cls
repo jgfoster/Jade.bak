@@ -125,9 +125,6 @@ onViewClosed
 	subPresenters do:[:presenter |
 		BrowserUpdate current removeEventsTriggeredFor: presenter]!
 
-packageTabName
-	^'Rowan Packages'!
-
 projectDictionaryChanged
 !
 
@@ -487,7 +484,6 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #getViews!public! !
 !RowanSystemBrowserPresenter categoriesFor: #labelOfClass:changedTo:!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #onViewClosed!event handlers!public! !
-!RowanSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!private! !
 !RowanSystemBrowserPresenter categoriesFor: #projectDictionaryChanged!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!rowan! !
 !RowanSystemBrowserPresenter categoriesFor: #registerTabPresentersForUpdates!event handlers!initialization!public!rowan! !
