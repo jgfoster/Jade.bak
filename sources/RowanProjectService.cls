@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanProjectService
-	instanceVariableNames: 'sha branch isSkew packages'
+	instanceVariableNames: 'sha branch isSkew packages changes'
 	classVariableNames: 'DefaultProjectName'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -30,29 +30,16 @@ branch
 branch: anObject
 	branch := anObject!
 
-changes
-	| stream patch readStream string  |
-	self packageNames do: 
-			[:packageName |
-			stream := (WriteStream on: String new)
-						nextPutAll: 'changesInPackage';
-						tab;
-						nextPutAll: packageName;
-						tab;
-						nextPutAll: name;
-						tab;
-						lf.
-			string := transport
-				serverPerform: #'systemBrowser:' 
-				with: 0 printString , ' ' , stream contents. "0 = environment"
-			readStream := JadeServerReadStream on: string.
-			readStream nextLine. "ignore time and errors (at my own peril)"
-			readStream nextLine."ignore unexpected response check (also at my own peril)"
-			patch isNil ifTrue:[
-				patch := RowanPatch fromString: readStream upToEnd session: transport]
-			ifFalse:[ patch operations addAll: (RowanPatch fromString: readStream upToEnd session: transport) operations]
-			].
-	^patch!
+changesUsing: presenter
+	| operations session |
+	command := #changes.
+	presenter issueCommand: (Array with: self).
+	changes isEmpty ifTrue: [^MessageBox notify: 'No changes!!'].
+	session := presenter gciSession.
+	operations := OrderedCollection new.
+	changes
+		do: [:changeString | operations addAll: (RowanPatch fromString: changeString session: session) operations].
+	RowanPatchBrowser showOn: (RowanPatch operations: operations session: session) name: name!
 
 checkout: branchName
 	transport
@@ -167,7 +154,7 @@ printOn: target
 		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
 		nextPutAll: name!
 
-projectLogFrom: presenter
+projectLogUsing: presenter
 	| workspace projectName queryService |
 	projectName := self name.
 	queryService := RowanQueryService command: #projectLog: withArgs: (Array with: projectName).
@@ -249,7 +236,7 @@ sha: anObject
 !RowanProjectService categoriesFor: #basicName:!accessing!public! !
 !RowanProjectService categoriesFor: #branch!accessing!public! !
 !RowanProjectService categoriesFor: #branch:!accessing!public! !
-!RowanProjectService categoriesFor: #changes!public!rowan! !
+!RowanProjectService categoriesFor: #changesUsing:!presenter support!public! !
 !RowanProjectService categoriesFor: #checkout:!public!rowan! !
 !RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
 !RowanProjectService categoriesFor: #defaultProjectName!accessing!public! !
@@ -261,13 +248,13 @@ sha: anObject
 !RowanProjectService categoriesFor: #isProjectService!public!testing! !
 !RowanProjectService categoriesFor: #isSkew!accessing!private! !
 !RowanProjectService categoriesFor: #isSkew:!accessing!private! !
-!RowanProjectService categoriesFor: #loadProjectFrom:!project menu handlers!public! !
+!RowanProjectService categoriesFor: #loadProjectFrom:!presenter support!public! !
 !RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
 !RowanProjectService categoriesFor: #packageNames!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !
 !RowanProjectService categoriesFor: #printOn:!printing!public! !
-!RowanProjectService categoriesFor: #projectLogFrom:!presenter support!public! !
+!RowanProjectService categoriesFor: #projectLogUsing:!presenter support!public! !
 !RowanProjectService categoriesFor: #projectPackagesUpdate:browser:!public!updating! !
 !RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #projectSelectionUpdate:!public!updating! !

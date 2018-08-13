@@ -604,14 +604,7 @@ postOkToChangeEvent
 		isModified: false!
 
 projectChanges
-	| service changesString patch |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
-	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
-	patch := service changes.
-	RowanPatchBrowser showOn: patch name: projectListPresenter selection name!
+	projectListPresenter selection changesUsing: self!
 
 projectDictionaryChanged
 	| listModel |
@@ -629,7 +622,7 @@ projectListPresenter
 	^projectListPresenter!
 
 projectLog
-	projectListPresenter selection projectLogFrom: self!
+	projectListPresenter selection projectLogUsing: self!
 
 projectMenu
 	^Menu fromStrings: self projectMenuStrings!

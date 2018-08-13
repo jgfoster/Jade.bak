@@ -123,20 +123,13 @@ primaryPresenter
 	^projectListPresenter!
 
 projectChanges
-	| service patch |
-	projectListPresenter hasSelection
-		ifFalse: 
-			[MessageBox notify: 'No project selected'.
-			^false].
-	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
-	patch := service changes.
-	RowanPatchBrowser showOn: patch name: projectListPresenter selection name!
+	projectListPresenter selection changesUsing: self!
 
 projectListPresenter
 	^projectListPresenter!
 
 projectLog
-	projectListPresenter selection projectLogFrom: self!
+	projectListPresenter selection projectLogUsing: self!
 
 pullFromGit
 	| projectServices ws |
