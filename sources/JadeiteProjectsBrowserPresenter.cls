@@ -111,22 +111,8 @@ browseSendersOf: string
 	self openMethodListOn: service selecting: string!
 
 checkout
-	| service branchName branchString query |
-	service := projectListPresenter selectionOrNil ifNil: [^MessageBox notify: 'No project selected'].
-	query := RowanQueryService new
-				command: #projectBranches:;
-				commandArgs: (Array with: service name).
-	branchString := (self issueCommand: (Array with: query)) first answer.
-	branchString := branchString subStrings asOrderedCollection
-				remove: '*';
-				yourself.
-	branchName := ChoicePrompter choices: branchString caption: 'Select branch to checkout:'.
-	branchName isNil ifTrue: [^self].
-	service
-		command: #checkout;
-		commandArgs: (Array with: branchName).
-	self issueCommand: (Array with: service).
-	self refreshFromServer. !
+	projectListPresenter selection checkoutUsing: self.
+	self refreshFromServer!
 
 classesMenuStrings
 
@@ -488,7 +474,8 @@ loadProject
 	(MessageBox
 		confirm: 'Really load project ' , selection name , '? This will destroy any changes you may have.')
 			ifFalse: [^false].
-	selection loadProjectFrom: self!
+	selection loadProjectFrom: self.
+	self refreshFromServer!
 
 makeDefault
 	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!

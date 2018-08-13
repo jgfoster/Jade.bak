@@ -47,6 +47,22 @@ checkout: branchName
 		to: remoteService
 		withAll: (Array with: branchName)!
 
+checkoutUsing: presenter
+	| branchString query branchName |
+	query := RowanQueryService new
+				command: #projectBranches:;
+				commandArgs: (Array with: self name).
+	branchString := (presenter issueCommand: (Array with: query)) first answer.
+	branchString := branchString subStrings asOrderedCollection
+				remove: '*';
+				yourself.
+	branchName := ChoicePrompter choices: branchString caption: 'Select branch to checkout:'.
+	branchName isNil ifTrue: [^self].
+	self
+		command: #checkout:;
+		commandArgs: (Array with: branchName).
+	presenter issueCommand: (Array with: self).!
+
 commitWithMessage: message
 
 	transport send: #commitWithMessage: to: remoteService withAll: (Array with: message)  !
@@ -105,8 +121,7 @@ isSkew: anObject
 
 loadProjectFrom: presenter
 	self command: #reloadProject.
-	presenter issueCommand: (Array with: self).
-	presenter refreshFromServer!
+	presenter issueCommand: (Array with: self).!
 
 loadProjectNamed: aString
 	
@@ -238,6 +253,7 @@ sha: anObject
 !RowanProjectService categoriesFor: #branch:!accessing!public! !
 !RowanProjectService categoriesFor: #changesUsing:!presenter support!public! !
 !RowanProjectService categoriesFor: #checkout:!public!rowan! !
+!RowanProjectService categoriesFor: #checkoutUsing:!presenter support!public! !
 !RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
 !RowanProjectService categoriesFor: #defaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #defaultProjectName:!accessing!public! !
