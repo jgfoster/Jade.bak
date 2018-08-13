@@ -488,9 +488,7 @@ loadProject
 	(MessageBox
 		confirm: 'Really load project ' , selection name , '? This will destroy any changes you may have.')
 			ifFalse: [^false].
-	selection command: #reloadProject.
-	self issueCommand: (Array with: selection).
-	self refreshFromServer. !
+	selection loadProjectFrom: self!
 
 makeDefault
 	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
@@ -631,13 +629,7 @@ projectListPresenter
 	^projectListPresenter!
 
 projectLog
-	| service |
-	projectListPresenter selection isNil
-		ifTrue: 
-			[MessageBox notify: 'No project selected'.
-			^false].
-	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
-	MessageBox notify: service log!
+	projectListPresenter selection projectLogFrom: self!
 
 projectMenu
 	^Menu fromStrings: self projectMenuStrings!
@@ -714,7 +706,7 @@ pullFromGit
 		confirm: 'It is recommended that you commit changes before doing a pulling projects - ' , ws contents
 				, ' -  from git. Really proceed?')
 			ifFalse: [^self].
-	projectServices do: [:service | service command: #pushToGit].
+	projectServices do: [:service | service command: #pullFromGit].
 	self issueCommand: projectServices!
 
 pushToGit

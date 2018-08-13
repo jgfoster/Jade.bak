@@ -76,15 +76,12 @@ list: aList
 	projectListPresenter list: aList!
 
 loadProject
-	| name |
-	name := projectListPresenter selection
-				ifNil: 
-					[MessageBox notify: 'No project selected'.
-					^false]
-				ifNotNil: [:sel | sel name].
-	(MessageBox confirm: 'Really load project ' , name , '? This will destroy any changes you may have.')
-		ifFalse: [^false].
-	(RowanProjectService on: gciSession) loadProjectNamed: name!
+	| selection |
+	selection := projectListPresenter selection.
+	(MessageBox
+		confirm: 'Really load project ' , selection name , '? This will destroy any changes you may have.')
+			ifFalse: [^false].
+	selection loadProjectFrom: self!
 
 makeDefault
 	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
@@ -126,7 +123,7 @@ primaryPresenter
 	^projectListPresenter!
 
 projectChanges
-	| service changesString patch |
+	| service patch |
 	projectListPresenter hasSelection
 		ifFalse: 
 			[MessageBox notify: 'No project selected'.
@@ -139,13 +136,7 @@ projectListPresenter
 	^projectListPresenter!
 
 projectLog
-	| service |
-	projectListPresenter selection isNil
-		ifTrue: 
-			[MessageBox notify: 'No project selected'.
-			^false].
-	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
-	MessageBox notify: service log!
+	projectListPresenter selection projectLogFrom: self!
 
 pullFromGit
 	| projectServices ws |
@@ -179,15 +170,6 @@ pushToGit
 			ifFalse: [^self].
 	projectServices do: [:service | service command: #pushToGit].
 	self issueCommand: projectServices!
-
-showPackages
-	| service |
-	projectListPresenter selection isNil
-		ifTrue: 
-			[MessageBox notify: 'No project selected'.
-			^false].
-	service := (RowanProjectService on: gciSession) name: projectListPresenter selection name.
-	MessageBox notify: service packageNameString!
 
 unloadProject
 	MessageBox notify: 'This feature not yet implemented'!
@@ -224,7 +206,6 @@ writeProject
 !RowanProjectListPresenter categoriesFor: #projectLog!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #pullFromGit!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #pushToGit!project menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #showPackages!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #unloadProject!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #writeProject!project menu handlers!public! !
 

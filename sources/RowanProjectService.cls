@@ -116,6 +116,11 @@ isSkew
 isSkew: anObject
 	isSkew := anObject!
 
+loadProjectFrom: presenter
+	self command: #reloadProject.
+	presenter issueCommand: (Array with: self).
+	presenter refreshFromServer!
+
 loadProjectNamed: aString
 	
 	transport
@@ -123,10 +128,6 @@ loadProjectNamed: aString
 		to: remoteService
 		withAll: (Array with: aString).
 	self class defaultProjectName: aString!
-
-log
-
-	^transport send: #log to: remoteService  !
 
 newGitProject: url root: rootPath useSsh: aBoolean
 	
@@ -166,6 +167,18 @@ printOn: target
 		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
 		nextPutAll: name!
 
+projectLogFrom: presenter
+	| workspace projectName queryService |
+	projectName := self name.
+	queryService := RowanQueryService command: #projectLog: withArgs: (Array with: projectName).
+	presenter issueCommand: (Array with: queryService).
+	workspace := SmalltalkWorkspace create: View defaultView.
+	workspace textStyles: Array new.
+	workspace topShell caption: (presenter gciSession titleBarFor: projectName , ' Project Log').
+	workspace
+		text: queryService queryResults;
+		showShell!
+
 projectPackagesUpdate: presenter browser: browser
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
 	browser projectListPresenter selections
@@ -195,14 +208,6 @@ projectsUpdate: presenter
 			proj isDirty: isDirty.
 			proj isSkew: isSkew].
 	!
-
-pullFromGit
-
-	^transport send: #pullFromGit to: remoteService  !
-
-pushToGit
-
-	^transport send: #pushToGit to: remoteService  !
 
 releaseReferencedServices
 	| copy |
@@ -256,18 +261,17 @@ sha: anObject
 !RowanProjectService categoriesFor: #isProjectService!public!testing! !
 !RowanProjectService categoriesFor: #isSkew!accessing!private! !
 !RowanProjectService categoriesFor: #isSkew:!accessing!private! !
+!RowanProjectService categoriesFor: #loadProjectFrom:!project menu handlers!public! !
 !RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
-!RowanProjectService categoriesFor: #log!public!rowan! !
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
 !RowanProjectService categoriesFor: #packageNames!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !
 !RowanProjectService categoriesFor: #printOn:!printing!public! !
+!RowanProjectService categoriesFor: #projectLogFrom:!presenter support!public! !
 !RowanProjectService categoriesFor: #projectPackagesUpdate:browser:!public!updating! !
 !RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanProjectService categoriesFor: #projectsUpdate:!public!updating! !
-!RowanProjectService categoriesFor: #pullFromGit!public!rowan! !
-!RowanProjectService categoriesFor: #pushToGit!public!rowan! !
 !RowanProjectService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanProjectService categoriesFor: #remoteDefaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #remoteServiceName!must not strip!public! !
