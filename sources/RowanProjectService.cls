@@ -39,7 +39,7 @@ changesUsing: presenter
 	operations := OrderedCollection new.
 	changes
 		do: [:changeString | operations addAll: (RowanPatch fromString: changeString session: session) operations].
-	RowanPatchBrowser showOn: (RowanPatch operations: operations session: session) name: name!
+	RowanPatchBrowser showOn: (RowanPatch new operations: operations; session: session) name: name!
 
 checkout: branchName
 	transport

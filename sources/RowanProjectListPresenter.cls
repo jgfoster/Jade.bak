@@ -54,10 +54,6 @@ createComponents
 	super createComponents.
 	projectListPresenter := self add: ListPresenter new name: 'projectList'!
 
-inspectProject
-
-	projectListPresenter selectionOrNil inspect!
-
 list: aList
 	projectListPresenter list: aList!
 
@@ -173,7 +169,6 @@ writeProject
 !RowanProjectListPresenter categoriesFor: #cloneProject!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #commit!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #createComponents!public! !
-!RowanProjectListPresenter categoriesFor: #inspectProject!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #list:!public! !
 !RowanProjectListPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #makeDefault!project menu handlers!public! !

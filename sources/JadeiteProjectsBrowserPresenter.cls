@@ -436,9 +436,6 @@ initialize
 	super initialize.
 	stonCritical := Semaphore forMutualExclusion.!
 
-inspectProject
-	projectListPresenter selection inspect!
-
 isDictionariesTabSelected
 
 	^projectDictionaryTabs currentCard name = 'dictionaryList'.
@@ -635,7 +632,6 @@ projectMenuStrings
 				writeProject;
 				checkout;
 				projectLog;
-				inspectProject;
 				refresh
 				].
 	^#(	'Projects' 
@@ -655,7 +651,6 @@ projectMenuStrings
 		'Checkout ...//checkout'
 		'-'
 		'Log//projectLog'
-		'&Inspect//inspectProject' 
 		'&Refresh ...//refresh'
 )!
 
@@ -1342,7 +1337,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassPackage!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoMethodPackage!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #initialize!initialization!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #inspectProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #issueCommand:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !

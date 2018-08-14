@@ -191,6 +191,8 @@ package methodNames
 	add: #RowanCommandResult -> #updateType;
 	add: #RowanGsMethod -> #printOn:;
 	add: #RowanMethodDefinition -> #methodDefinitionService;
+	add: #RowanPatch -> #operations:;
+	add: #RowanPatch -> #session:;
 	add: 'JadeServer class' -> #gsString;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
 	add: 'JadeSessionManager class' -> #getUrl;
@@ -608,7 +610,8 @@ postLoginAs: aString useSocket: aBoolean
 	self verifyRowanLoaded ifFalse: [^MessageBox notify: 'Rowan not loaded or $ROWAN_PROJECTS_HOME not set. Logging out.' "log out in RowinLoginShell>>postLogin:"].
 	"self initializeServer."
 	server := self executeString: '| server | 
-			server := (Rowan jadeServerClassNamed: #JadeServer64bit32) new initialize; yourself.
+			"server := (Rowan jadeServerClassNamed: #JadeServer64bit32) new initialize; yourself." "restore for non-SystemUser support"
+			server := JadeServer64bit32 new initialize; yourself.
 			System _sessionStateAt: 3 put: server.
 			^server'.
 	aBoolean ifTrue: [self attemptSocket].
@@ -2296,6 +2299,18 @@ printOn: aStream
 methodDefinitionService
 	^methodDefinitionService ifNil: [methodDefinitionService := RowanMethodService on: gciSession]! !
 !RowanMethodDefinition categoriesFor: #methodDefinitionService!public!services! !
+
+!RowanPatch methodsFor!
+
+operations: aCollection 
+
+	operations := aCollection!
+
+session: aCollection 
+
+	gciSession := aCollection! !
+!RowanPatch categoriesFor: #operations:!public! !
+!RowanPatch categoriesFor: #session:!public! !
 
 "End of package definition"!
 
