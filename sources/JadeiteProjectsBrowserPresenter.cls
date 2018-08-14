@@ -154,6 +154,12 @@ comparisonTab
 			[comparisonTab := self textTabs
 						detect: [:each | (each class canUnderstand: #text) ifTrue: [each text = 'Comparison'] ifFalse: [each = 'Comparison']]]!
 
+compilationWarningFrom: methodServices
+
+	methodServices do:[:methodService | 
+		methodService compilationWarnings ifNotNil:[:warning | ^warning]].
+	^nil!
+
 createComponents
 	super createComponents.
 	projectListPresenter := self add: ListPresenter new name: 'projectList'.
@@ -371,7 +377,8 @@ editSaveMethod: classService
 		do: [:ex | ^self reportCompileError: ex list].
 	self selectMethodsFrom: classService.
 	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
-	methodSourcePresenter view goto: caretPosition!
+	methodSourcePresenter view goto: caretPosition.
+	(self compilationWarningFrom: classService selectedMethods) ifNotNil: [:warning | MessageBox notify: warning]!
 
 filterTabChanged
 	self populateFilterList. 
@@ -651,7 +658,7 @@ projectMenuStrings
 		'Checkout ...//checkout'
 		'-'
 		'Log//projectLog'
-		'&Refresh ...//refresh'
+		'&Refresh//refreshFromServer'
 )!
 
 projectTabLabel
@@ -873,6 +880,8 @@ refreshMethodsOn: presenter
 			[self isCategoriesTabSelected
 				ifTrue: [classService filterType: 'categories']
 				ifFalse: [classService filterType: 'variables']].
+	classService methods isNil ifTrue:[ "if we got an error recently, could be nil"
+		self updateServices: (Array with: classService)]. 
 	classService displayMethodsOn: presenter!
 
 registerClassData
@@ -1254,7 +1263,7 @@ updateServices: services
 			ensure: [inUpdate := false]!
 
 updateSingleMethodSource
-	methodSourcePresenter value: methodListPresenter selections first source.
+	methodSourcePresenter value: methodListPresenter selection source.
 	methodSourcePresenter view
 		backcolor: JadeTextStyles default colorForNoEdits;
 		isModified: false;
@@ -1311,6 +1320,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #cloneProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #comparisonTab!private!text tabs! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #compilationWarningFrom:!menu handlers!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createComponents!initialization!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchy!create schemantic wiring!public! !

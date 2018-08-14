@@ -357,7 +357,7 @@ RowanService subclass: #RowanFrameService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop compilationWarnings'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -624,11 +624,11 @@ titleBarFor: windowName
 	stream
 		nextPutAll: windowName;
 		nextPutAll: ' for ';
-		nextPutAll: userID;
+		nextPutAll: userID asString;
 		nextPutAll: ' on ';
 		nextPutAll: stoneName asString;
 		nextPutAll: ' [';
-		print: stoneSessionID;
+		print: gciSessionId;
 		nextPutAll: ']'.
 	self isRemoteGem
 		ifTrue: 

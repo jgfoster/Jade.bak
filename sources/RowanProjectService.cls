@@ -141,6 +141,24 @@ newGitProject: url root: rootPath useSsh: aBoolean
 				with: rootPath
 				with: aBoolean)!
 
+newTextView
+	| edit |
+	Shell create view
+		layoutManager: BorderLayout new;
+		hasMaximize: false;
+		hasMinimize: false;
+		extent: 800 @ 900;
+		caption: 'About';
+		addSubView: (edit := RichTextEdit new);
+		show.
+	edit
+		arrangement: #center;
+		isReadOnly: true;
+		canVScroll: false;
+		font: (Font name: 'Arial' pointSize: 10);
+		alignment: #center.
+	^edit!
+
 packageNames
 	| arrayOop names size |
 	self rowanFixMe.	"slow slow slow"
@@ -170,16 +188,13 @@ printOn: target
 		nextPutAll: name!
 
 projectLogUsing: presenter
-	| workspace projectName queryService |
+	| textEdit projectName queryService |
 	projectName := self name.
 	queryService := RowanQueryService command: #projectLog: withArgs: (Array with: projectName).
 	presenter issueCommand: (Array with: queryService).
-	workspace := SmalltalkWorkspace create: View defaultView.
-	workspace textStyles: Array new.
-	workspace topShell caption: (presenter gciSession titleBarFor: projectName , ' Project Log').
-	workspace
-		text: queryService queryResults;
-		showShell!
+	textEdit := self newTextView.
+	textEdit topShell caption: (presenter gciSession titleBarFor: projectName , ' Project Log').
+	textEdit text: queryService queryResults!
 
 projectPackagesUpdate: presenter browser: browser
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
@@ -267,6 +282,7 @@ sha: anObject
 !RowanProjectService categoriesFor: #loadProjectFrom:!presenter support!public! !
 !RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
 !RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
+!RowanProjectService categoriesFor: #newTextView!displaying!private! !
 !RowanProjectService categoriesFor: #packageNames!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !
 !RowanProjectService categoriesFor: #printOn:!printing!public! !

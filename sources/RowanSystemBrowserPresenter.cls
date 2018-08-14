@@ -245,9 +245,10 @@ updateClassInfo
 		yourself!
 
 updateCommand: aString onSuccessDo: aBlock
-	super updateCommand: aString onSuccessDo: aBlock.
+	| responseType |
+	responseType := super updateCommand: aString onSuccessDo: aBlock.
 	ignoreNextSetFocusEvent := true.	"Need to stop runaway set focus events somehow. There's a better fix somewhere"
-	^nil!
+	^responseType!
 
 updateFromCommand: update
 	| index newClassDefinition |

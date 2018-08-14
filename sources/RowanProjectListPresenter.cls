@@ -116,7 +116,6 @@ projectLog
 pullFromGit
 	| projectServices ws |
 	projectServices := projectListPresenter selections.
-	projectServices isEmpty ifTrue: [^MessageBox notify: 'No project selected'].
 	ws := WriteStream on: String new.
 	projectServices do: 
 			[:service |
@@ -127,7 +126,7 @@ pullFromGit
 		confirm: 'It is recommended that you commit changes before doing a pulling projects - ' , ws contents
 				, ' -  from git. Really proceed?')
 			ifFalse: [^self].
-	projectServices do: [:service | service command: #pushToGit].
+	projectServices do: [:service | service command: #pullFromGit].
 	self issueCommand: projectServices!
 
 pushToGit

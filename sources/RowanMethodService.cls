@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop compilationWarnings'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -64,6 +64,9 @@ clearBreakAtStepPoint: anInteger session: aGciSession
 clientDefinitionClass
 
 	^RowanMethodDefinition!
+
+compilationWarnings
+	^compilationWarnings!
 
 copyBasicsFrom: oldService
 
@@ -325,6 +328,7 @@ user: anObject
 !RowanMethodService categoriesFor: #className:!accessing!private! !
 !RowanMethodService categoriesFor: #clearBreakAtStepPoint:session:!public! !
 !RowanMethodService categoriesFor: #clientDefinitionClass!private! !
+!RowanMethodService categoriesFor: #compilationWarnings!accessing!private! !
 !RowanMethodService categoriesFor: #copyBasicsFrom:!public!updating! !
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
 !RowanMethodService categoriesFor: #displayClassName!displaying!public! !

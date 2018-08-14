@@ -220,11 +220,9 @@ sampleClassName
 	^transport send: #sampleClassName to: remoteService.  !
 
 selectedMethods
-	"To avoid setting STON class>>allowComplexKeyMap: (which appears to slow down ston replication)
-	just store the selector"
 
 	^selectedMethods
-		collect: [:selector | methods detect: [:methodService | methodService selector == selector]]!
+		!
 
 selectedPackageServiceNames
 	^selectedPackageServices collect: [:pkgService | pkgService name]!
@@ -321,7 +319,7 @@ variables
 !RowanClassService categoriesFor: #replicateFrom:!public!replication!updating! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 !RowanClassService categoriesFor: #selectedMethods!accessing!private! !
-!RowanClassService categoriesFor: #selectedPackageServiceNames!private!selection! !
+!RowanClassService categoriesFor: #selectedPackageServiceNames!private!updating! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
 !RowanClassService categoriesFor: #shouldClearMethods!public!replication! !
