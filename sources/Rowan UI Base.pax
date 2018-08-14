@@ -746,6 +746,8 @@ requiredClasses
 		addAll: StToken withAllSubclasses;
 		add: ScintillaIndicator;
 		add: WaitOnGemStoneDialog;
+		addAll: RowanService withAllSubclasses;
+		addAll: RowanCommandResult withAllSubclasses;
 		yourself!
 
 requiredPackageNames
