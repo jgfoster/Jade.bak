@@ -135,6 +135,10 @@ classesMenuStrings
 	).
 !
 
+clearFilterLists
+	categoryListPresenter list: ListModel new.
+	variableListPresenter list: ListModel new!
+
 cloneProject
 	"Does a clone and 'attach'"
 	| filePath |
@@ -361,15 +365,14 @@ editSaveClassComment
 	self issueCommand: (Array with: classService)!
 
 editSaveMethod
-	self editSaveMethod: classListPresenter selection!
+	self editSaveMethod: classListPresenter selection.
+	self redrawAllViews!
 
 editSaveMethod: classService
 	| caretPosition firstVisibleLine category |
 	caretPosition := methodSourcePresenter view caretPosition.
 	firstVisibleLine := methodSourcePresenter view lineScroll.
-	category := (self isCategoriesTabSelected and: [categoryListPresenter hasSelection])
-				ifTrue: [categoryListPresenter selection trimBlanks]
-				ifFalse: [methodListPresenter selectionOrNil ifNotNil: [:methodService | methodService category]].
+	category := self targetCategory.
 	classService
 		command: #saveMethodSource:category:;
 		commandArgs: (Array with: self currentMethodSource with: category).
@@ -378,10 +381,15 @@ editSaveMethod: classService
 	self selectMethodsFrom: classService.
 	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
 	methodSourcePresenter view goto: caretPosition.
-	(self compilationWarningFrom: classService selectedMethods) ifNotNil: [:warning | MessageBox notify: warning]!
+	(self compilationWarningFrom: classService selectedMethods)
+		ifNotNil: [:warning | MessageBox notify: warning]!
 
 filterTabChanged
-	self populateFilterList. 
+	self isClassSelected
+		ifFalse: 
+			[self clearFilterLists.
+			^self].
+	self populateFilterList.
 	self isCategoriesTabSelected
 		ifTrue: 
 			[^methodListPresenter selectionOrNil
@@ -442,6 +450,11 @@ initialize
 
 	super initialize.
 	stonCritical := Semaphore forMutualExclusion.!
+
+isClassSelected
+
+	^classListPresenter selectionOrNil isNil not
+!
 
 isDictionariesTabSelected
 
@@ -959,6 +972,9 @@ selectClass: classSelection
 				ifNone: [].
 	^newClassSelection ifNotNil: [classListPresenter selection: newClassSelection]!
 
+selectedMethodCategory
+	^methodListPresenter selectionOrNil ifNotNil: [:methodService | methodService category]!
+
 selectedMethodName
 
 	^methodListPresenter selection selector
@@ -1055,6 +1071,12 @@ showSuperClassComparison
 				beforeTitle: methodService classMethodDisplayString;
 				afterTitle: 'No super implementation';
 				compare: methodService source with: String new]!
+
+targetCategory
+	self isVariablesTabSelected ifTrue: [^self selectedMethodCategory].
+	categoryListPresenter hasSelection ifFalse: [^self selectedMethodCategory].
+	categoryListPresenter selections size > 1 ifTrue: [^self selectedMethodCategory].
+	^categoryListPresenter selection trimBlanks!
 
 textTabChanged
 	methodSourcePresenter view cancelCallTip.
@@ -1305,8 +1327,8 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #allClasses!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers!private!services! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers support!private!services! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementors!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementorsOf:!public!queries! !
@@ -1318,9 +1340,10 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseSendersOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #clearFilterLists!event handlers support!private!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #cloneProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #comparisonTab!private!text tabs! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #compilationWarningFrom:!menu handlers!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #compilationWarningFrom:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createComponents!initialization!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchy!create schemantic wiring!public! !
@@ -1339,14 +1362,15 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClassComment!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #getViews!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gitCommit!project menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassPackage!menu handlers!private! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #gotoMethodPackage!menu handlers!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassPackage!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #gotoMethodPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #initialize!initialization!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #isClassSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #issueCommand:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
@@ -1358,10 +1382,10 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnClassList:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnMethodCategory:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!overrides!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #openDictionaryBrowserOn:!menu handlers!private! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers!private!queries! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #openDictionaryBrowserOn:!menu handlers support!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers support!private!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #populateFilterList!event handlers!private!services!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #populateFilterList!event handlers support!private!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #postOkToChangeEvent!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectChanges!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectDictionaryChanged!event handlers!public! !
@@ -1388,21 +1412,23 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoryFrom:!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #selectedMethodCategory!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectedMethodName!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectMethodsFrom:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectMethodSourceTab!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectorsString!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectPackage:!private!selection! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setDefaultProjectTablLabel!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setDefaultProjectTablLabel:!event handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #setFilterType:!event handlers!private!services! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers!private!services!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #setFilterType:!event handlers support!private!services! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers support!private!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #showSuperClassComparison!private!text tabs! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #targetCategory!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabs!private!text tabs! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #unloadPackage!menu handlers!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #unloadPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #unloadProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateAfterFindClass:!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
@@ -1420,7 +1446,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProject!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectInfo!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjects!event handlers!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectTab!event handlers!private!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectTab!event handlers support!private!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateServices:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateSingleMethodSource!private!text tabs! !

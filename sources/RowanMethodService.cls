@@ -153,12 +153,15 @@ methodDefinitions: anObject
 	self trigger: #changed!
 
 methodSourceUpdate: presenter browser: browser
-	browser methodListPresenter selection = self
+	| selection |
+	selection := browser methodListPresenter selectionOrNil.
+	selection ifNil: [^self].
+	selection = self
 		ifTrue: 
 			[presenter value: source.
-					presenter view
-						backcolor: JadeTextStyles default colorForNoEdits;
-						isModified: false]!
+			presenter view
+				backcolor: JadeTextStyles default colorForNoEdits;
+				isModified: false]!
 
 oop
 
