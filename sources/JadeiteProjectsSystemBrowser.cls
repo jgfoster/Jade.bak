@@ -10,6 +10,10 @@ JadeiteProjectsSystemBrowser comment: ''!
 !JadeiteProjectsSystemBrowser categoriesForClass!Unclassified! !
 !JadeiteProjectsSystemBrowser methodsFor!
 
+abortTransaction
+	super abortTransaction.
+	self currentCard refreshFromServer!
+
 addSystemBrowser
 	self addSystemBrowserWithLayoutInfo: nil!
 
@@ -22,6 +26,10 @@ addSystemBrowserWithLayoutInfo: each
 	
 !
 
+commitTransaction
+	super commitTransaction.
+	self currentCard refreshFromServer!
+
 layoutFilePath
 
 	^SessionManager current imageBase , 'Rowan System Browser Layout.stb'!
@@ -33,8 +41,10 @@ shellName
 
 systemBrowserPresenter
 	^JadeiteProjectsBrowserPresenter! !
+!JadeiteProjectsSystemBrowser categoriesFor: #abortTransaction!public! !
 !JadeiteProjectsSystemBrowser categoriesFor: #addSystemBrowser!layout!public! !
 !JadeiteProjectsSystemBrowser categoriesFor: #addSystemBrowserWithLayoutInfo:!layout!public! !
+!JadeiteProjectsSystemBrowser categoriesFor: #commitTransaction!public! !
 !JadeiteProjectsSystemBrowser categoriesFor: #layoutFilePath!layout!public! !
 !JadeiteProjectsSystemBrowser categoriesFor: #shellName!overrides!private! !
 !JadeiteProjectsSystemBrowser categoriesFor: #systemBrowserPresenter!public! !
