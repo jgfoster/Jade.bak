@@ -16,21 +16,27 @@ closeDebuggers
 	list := RowanMethodListBrowser allInstances , RowanSystemBrowser allInstances , RowanDebugger allInstances.
 	semaphore := Semaphore new.
 	list do: [:each | 
+		gciSession removeEventsTriggeredFor: each.
 		[
 			[
 				each view close. 
+				each become: Object new.
 				semaphore signal.
 				SessionManager inputState prod.
-			] on: ProcessTermination do: [:ex | 
-				semaphore signal.
-				SessionManager inputState prod.
+			] on: ProcessTermination do: [:ex | 	"A debugger wants to terminate the current process!!"
+				[
+					each become: Object new.
+					semaphore signal.
+					SessionManager inputState prod.
+				] forkAt: Processor userBackgroundPriority.
 				ex pass.
 			].
-		] fork.	"A debugger wants to terminate the current process!!"
+		] fork.
 		semaphore wait.
-		GciSession allInstances first removeEventsTriggeredFor: each.
 		debugger == each ifTrue: [debugger := nil].
 	].
+	list := RowanMethodListBrowser allInstances , RowanSystemBrowser allInstances , RowanDebugger allInstances.
+	self assert: list isEmpty.
 !
 
 debuggerDo: aBlock
@@ -42,17 +48,27 @@ debuggerDo: aBlock
 	RowanDebugger semaphore: nil.
 !
 
+getDebugger
+
+	100 timesRepeat: [
+		debugger := RowanDebugger allInstances detect: [:each | true] ifNone: [nil].
+		(debugger notNil and: [debugger documentPresenter view selection notEmpty]) ifTrue: [^self].
+		(Delay forMilliseconds: 10) wait.
+	].
+!
+
 methodListBrowser
 
-	^RowanMethodListBrowser allInstances detect: [:each | true] ifNone: [nil]!
+	^RowanMethodListBrowser allInstances detect: [:each | true] ifNone: [nil]
+!
 
 openDebuggerOn: aString
 
 	self 
 		assert: RowanDebugger allInstances isEmpty;
 		debuggerDo: [process := [gciSession executeString: aString] fork];		"Typically ~ 180ms"
+		getDebugger;
 		yourself.
-	debugger := RowanDebugger allInstances detect: [:each | true].
 !
 
 setUp
@@ -61,11 +77,11 @@ setUp
 	super setUp.
 	self closeDebuggers.
 	RowanDebugger debuggerClass: RowanDebugger.
-	gciSession := GciSession allInstances detect: [:each | true] ifNone: [nil].
+	gciSession := GciSession allInstances detect: [:each | each isValidSession] ifNone: [nil].
 	list1 := RowanSystemBrowser allInstances.
 	list2 := RowanMethodListBrowser allInstances.
 	self 
-		assert: (gciSession notNil and: [gciSession isValidSession]);
+		assert: gciSession notNil;
 		assert: list1 isEmpty;
 		assert: list2 isEmpty;
 		yourself.
@@ -73,7 +89,8 @@ setUp
 
 systemBrowser
 
-	^RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil]!
+	^RowanSystemBrowser allInstances detect: [:each | true] ifNone: [nil]
+!
 
 tearDown
 
@@ -213,11 +230,18 @@ test6
 	"browse senders"
 
 	| browser list |
+	[
+		500 timesRepeat: [
+			(Delay forMilliseconds: 10) wait.
+			SessionManager inputState prod.
+		].
+	] forkAt: Processor userBackgroundPriority.
 	self 
 		openDebuggerOn: '| x | 
 nil halt.
 x := 1 -> 2.
 x yourself';
+		assert: debugger documentPresenter view selection equals: 'halt';
 		debuggerDo: [debugger stepOver];
 		assert: debugger documentPresenter view selection equals: '->';
 		debuggerDo: [debugger stepInto];
@@ -266,13 +290,14 @@ test8
 
 	self 
 		assert: RowanDebugger allInstances isEmpty;
-		debuggerDo: [process := [gciSession debugString: '#(abc def) do:[:symbol | symbol size]' fromContext: nil environment: 0] fork];		"Typically ~ 180ms"
+		debuggerDo: [process := [gciSession debugString: '#(abc def) do:[:symbol | symbol size]' fromContext: nil environment: 0] fork];
+		getDebugger;
 		yourself.
-	debugger := RowanDebugger allInstances detect: [:each | true].
 	self debuggerDo: [debugger resumeProcess].
 ! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
+!RowanDebuggerTestCase categoriesFor: #getDebugger!public!running! !
 !RowanDebuggerTestCase categoriesFor: #methodListBrowser!public!running! !
 !RowanDebuggerTestCase categoriesFor: #openDebuggerOn:!public!running! !
 !RowanDebuggerTestCase categoriesFor: #setUp!public!running! !
