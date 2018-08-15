@@ -1189,11 +1189,11 @@ updateMethodReferences: services
 
 updateMethodSource
 	methodListPresenter selections isEmpty ifTrue: [^methodSourcePresenter setDefaultMethod].
-	self updateSingleMethodSource.
-	methodListPresenter selections size > 1 ifTrue:[
-		self updateMultiMethodComparison] 
-	ifFalse:[
-		self showSuperClassComparison].!
+	methodListPresenter selections size > 1
+		ifTrue: [self updateMultiMethodComparison]
+		ifFalse: 
+			[self showSuperClassComparison.
+			self updateSingleMethodSource]!
 
 updateMultiMethodComparison
 	comparisonPresenter
