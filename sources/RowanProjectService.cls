@@ -154,7 +154,7 @@ newTextView
 	edit
 		arrangement: #center;
 		isReadOnly: true;
-		canVScroll: false;
+		canVScroll: true;
 		font: (Font name: 'Arial' pointSize: 10);
 		alignment: #center.
 	^edit!
