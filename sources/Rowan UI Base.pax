@@ -171,7 +171,7 @@ package methodNames
 	add: #RowanCommandResult -> #filterUpdate:browser:;
 	add: #RowanCommandResult -> #globalsUpdate:;
 	add: #RowanCommandResult -> #methodFilterUpdate:;
-	add: #RowanCommandResult -> #methodSourceUpdate:;
+	add: #RowanCommandResult -> #methodSourceUpdate:browser:;
 	add: #RowanCommandResult -> #methodsRemoved:;
 	add: #RowanCommandResult -> #methodsUpdate:;
 	add: #RowanCommandResult -> #packagesUpdate:;
@@ -2203,7 +2203,7 @@ globalsUpdate: presenter!
 methodFilterUpdate: presenter
 	!
 
-methodSourceUpdate: presenter
+methodSourceUpdate: presenter browser: anObject
 	!
 
 methodsRemoved: presenter
@@ -2263,7 +2263,7 @@ updateType
 !RowanCommandResult categoriesFor: #filterUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #globalsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #methodFilterUpdate:!public!updating! !
-!RowanCommandResult categoriesFor: #methodSourceUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #methodSourceUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #methodsRemoved:!public!updating! !
 !RowanCommandResult categoriesFor: #methodsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !

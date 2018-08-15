@@ -916,7 +916,7 @@ registerPresentersForUpdates
 		selector: #classMethodsUpdate:browser:
 		browser: self.
 	BrowserUpdate current register: methodListPresenter selector: #methodsRemoved:.
-	BrowserUpdate current register: methodSourcePresenter selector: #methodSourceUpdate:!
+	BrowserUpdate current register: methodSourcePresenter selector: #methodSourceUpdate:browser: browser: self. !
 
 releasedReferencedServices: selectionChangingEvent
 	selectionChangingEvent window presenter selectionOrNil

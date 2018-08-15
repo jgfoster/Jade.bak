@@ -134,7 +134,8 @@ isTestCase
 methodFilterUpdate: presenter
 	!
 
-methodSourceUpdate: presenter!
+methodSourceUpdate: presenter browser: anObject
+	!
 
 methodsRemoved: presenter
 	!
@@ -293,7 +294,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #isProjectService!public!testing! !
 !RowanService categoriesFor: #isTestCase!public!testing! !
 !RowanService categoriesFor: #methodFilterUpdate:!public!updating! !
-!RowanService categoriesFor: #methodSourceUpdate:!public!updating! !
+!RowanService categoriesFor: #methodSourceUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #methodsRemoved:!public!updating! !
 !RowanService categoriesFor: #methodsUpdate:!public!updating! !
 !RowanService categoriesFor: #name!accessing!public! !
