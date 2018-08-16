@@ -150,7 +150,8 @@ cloneProject
 	(RowanProjectService on: gciSession) 
 		newGitProject: filePath key
 		root: filePath value
-		useSsh: true!
+		useSsh: true.
+	self refreshFromServer. !
 
 comparisonTab
 	^comparisonTab

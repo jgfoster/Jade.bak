@@ -26,6 +26,9 @@ openWindow: aBlock
 			count > 10 ifTrue: [^presenter]].
 	^presenter!
 
+packageListPresenter
+	^browser currentCard packageListPresenter!
+
 projectList
 	^self projectListPresenter list!
 
@@ -37,13 +40,21 @@ rowanProjectNames
 
 	^#('Cypress' 'Rowan' 'STON' 'Tonel')!
 
-select: presenter elementsNamed: anArray
+selectElementsNamed: anArray in: presenter
 	anArray do: 
 			[:name |
 			| service |
-			service := presenter list detect: [:service | service name = name]
+			service := presenter list detect: [:svc | svc name = name]
 						ifNone: [self error: 'List element ' , name , ' not found'].
-			presenter selections: (presenter selections asOrderedCollection add: service; yourself)]!
+			presenter selections: (presenter selections asOrderedCollection
+						add: service;
+						yourself)]!
+
+serviceNamed: name in: presenter
+	| service |
+	service := presenter list detect: [:service | service name = name] ifNone: [].
+	self denyIsNil: service.
+	^service!
 
 setUp
 	super setUp.
@@ -60,20 +71,32 @@ test_openProjectsBrowser
 	self
 		denyIsNil: (self projectList detect: [:projectService | projectService name = 'Rowan'] ifNone: [])!
 
+test_selectMultiplePackages
+	self openProjectsBrowser.
+	self assert: self packageListPresenter list isEmpty.
+	self selectElementsNamed: #('Rowan') in: self projectListPresenter.
+	self deny: self packageListPresenter list isEmpty.
+	self serviceNamed: 'Rowan-Services-Core' in: self packageListPresenter.
+	self serviceNamed: 'Rowan-JadeServer' in: self packageListPresenter.
+	self selectElementsNamed: #('Rowan-Services-Core' 'Rowan-JadeServer') in: self packageListPresenter!
+
 test_selectMultipleProjects
 	self openProjectsBrowser.
 	self assert: self projectListPresenter selections isEmpty.
-	self select: self projectListPresenter elementsNamed: self rowanProjectNames.
+	self selectElementsNamed: self rowanProjectNames in: self projectListPresenter.
 	self assert: self projectListPresenter selections size = 4! !
 !JadeiteTestCase categoriesFor: #openProjectsBrowser!private!private project support! !
 !JadeiteTestCase categoriesFor: #openWindow:!private! !
+!JadeiteTestCase categoriesFor: #packageListPresenter!private!private presenters!private project support! !
 !JadeiteTestCase categoriesFor: #projectList!private!private project support! !
-!JadeiteTestCase categoriesFor: #projectListPresenter!private!private project support! !
+!JadeiteTestCase categoriesFor: #projectListPresenter!private!private presenters!private project support! !
 !JadeiteTestCase categoriesFor: #rowanProjectNames!private!private project support! !
-!JadeiteTestCase categoriesFor: #select:elementsNamed:!private!private project support! !
+!JadeiteTestCase categoriesFor: #selectElementsNamed:in:!private! !
+!JadeiteTestCase categoriesFor: #serviceNamed:in:!private! !
 !JadeiteTestCase categoriesFor: #setUp!private! !
 !JadeiteTestCase categoriesFor: #tearDown!private! !
 !JadeiteTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
+!JadeiteTestCase categoriesFor: #test_selectMultiplePackages!public!test! !
 !JadeiteTestCase categoriesFor: #test_selectMultipleProjects!public!test! !
 
 !JadeiteTestCase class methodsFor!
