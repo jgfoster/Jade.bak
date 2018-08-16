@@ -14,6 +14,13 @@ RowanProjectService comment: ''!
 
 	^name = projectService name!
 
+addPackageNamed: newPackageName using: presenter
+	self
+		command: #addPackageNamed:;
+		commandArgs: (Array with: newPackageName).
+	presenter issueCommand: (Array with: self).
+	presenter refreshFromServer!
+
 addProjectNamed: projectName
 	transport
 		send: #createProjectNamed:in:
@@ -262,6 +269,7 @@ sha
 sha: anObject
 	sha := anObject! !
 !RowanProjectService categoriesFor: #=!comparing!public! !
+!RowanProjectService categoriesFor: #addPackageNamed:using:!presenter support!public! !
 !RowanProjectService categoriesFor: #addProjectNamed:!public! !
 !RowanProjectService categoriesFor: #basicName:!accessing!public! !
 !RowanProjectService categoriesFor: #branch!accessing!public! !

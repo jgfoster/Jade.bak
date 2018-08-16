@@ -11,7 +11,10 @@ JadeiteProjectsBrowserPresenter comment: 'In packages pane, show projects & pack
 !JadeiteProjectsBrowserPresenter methodsFor!
 
 addPackage
-	MessageBox notify: 'This feature is not yet available'!
+	| projectService newPackageName |
+	(newPackageName := Prompter prompt: 'Enter new package name:') isNil ifTrue: [^self].
+	projectService := projectListPresenter selection.
+	projectService addPackageNamed: newPackageName using: self!
 
 addPackageDictionaryInfoTo: aStream
 
