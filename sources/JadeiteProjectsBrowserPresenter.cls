@@ -646,7 +646,7 @@ projectMenuStrings
 				loadProject;
 				unloadProject;
 				pullFromGit;
-				commit;
+				gitCommit;
 				pushToGit;
 				projectChanges;
 				writeProject;
