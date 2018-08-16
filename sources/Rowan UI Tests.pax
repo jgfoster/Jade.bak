@@ -1,0 +1,80 @@
+| package |
+package := Package name: 'Rowan UI Tests'.
+package paxVersion: 1;
+	basicComment: ''.
+
+
+package classNames
+	add: #JadeiteTestCase;
+	add: #JadeiteTestResource;
+	yourself.
+
+package methodNames
+	add: #TestSuite -> #run;
+	add: 'TestResource class' -> #signalInitializationError;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: 'GemStone Session';
+	add: 'Rowan UI Base';
+	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+TestCase subclass: #JadeiteTestCase
+	instanceVariableNames: 'session browser transcript'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TestResource subclass: #JadeiteTestResource
+	instanceVariableNames: 'session transcript'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!TestResource class methodsFor!
+
+signalInitializationError
+
+	"TestSuite>>run: in the SUnit pacakge sends this method
+	to the class, but implements it on the instance. That appears
+	to be a bug. Redirect the error send to the instance side."
+
+	^self current signalInitializationError! !
+!TestResource class categoriesFor: #signalInitializationError!error handling!public! !
+
+!TestSuite methodsFor!
+
+run
+	"There appears to be a bug in the SUnit framework. If a resource is unavailable
+	it throws an initializaion error but does NOT reset the resource. Therefore the
+	current class variable doesn't get a chance to re-initialize itself. 
+
+	Changed so that the ensure: block is run if an initialization error occurs."
+
+	| result |
+	result := TestResult new.
+	
+	[self resources do: [:res | res isAvailable ifFalse: [^res signalInitializationError]].
+	self run: result]
+			ensure: [self resources do: [:each | each reset]].
+	^result! !
+!TestSuite categoriesFor: #run!public!Running! !
+
+"End of package definition"!
+
