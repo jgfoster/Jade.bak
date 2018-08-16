@@ -198,10 +198,10 @@ projectLogUsing: presenter
 
 projectPackagesUpdate: presenter browser: browser
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
-	browser projectListPresenter selections
-		detect: [:projectService | projectService name = name]
+	browser projectListPresenter selections detect: [:projectService | projectService name = name]
 		ifNone: [^self].
-	self updateList: presenter whilePreservingSelections: packages!
+	self updateList: presenter whilePreservingSelections: packages.
+	browser isClassSelected ifFalse: [self emptyFilterListsIn: browser]!
 
 projects
 	| oops services |

@@ -31,7 +31,8 @@ classesUpdate: presenter browser: browser
 	browser packageListPresenter selections detect: [:packageService | packageService name = name]
 		ifNone: [^self].
 	condensedList := self condenseExtensions: presenter.
-	self updateList: presenter whilePreservingSelections: condensedList!
+	self updateList: presenter whilePreservingSelections: condensedList.
+	browser isClassSelected ifFalse: [self emptyFilterListsIn: browser]!
 
 condenseExtensions: presenter
 	| defined newList |

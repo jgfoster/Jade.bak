@@ -78,6 +78,10 @@ displayString
 
 	^self name!
 
+emptyFilterListsIn: browser
+	self initializePresenterList: browser categoryListPresenter.
+	self initializePresenterList: browser variableListPresenter!
+
 filterUpdate: presenter browser: anObject
 	!
 
@@ -278,6 +282,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #createClientFrom:!public! !
 !RowanService categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanService categoriesFor: #displayString!displaying!public! !
+!RowanService categoriesFor: #emptyFilterListsIn:!Init / Release!private! !
 !RowanService categoriesFor: #filterUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #frameListUpdate:!Debugger!public!updating! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !
