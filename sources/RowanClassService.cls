@@ -316,13 +316,13 @@ variables
 !RowanClassService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
-!RowanClassService categoriesFor: #replicateFrom:!public!replication!updating! !
+!RowanClassService categoriesFor: #replicateFrom:!public!replication! !
 !RowanClassService categoriesFor: #sampleClassName!public! !
 !RowanClassService categoriesFor: #selectedMethods!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServiceNames!private!updating! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
-!RowanClassService categoriesFor: #shouldClearMethods!public!replication! !
+!RowanClassService categoriesFor: #shouldClearMethods!public!replication!testing! !
 !RowanClassService categoriesFor: #stonOn:!must not strip!public!ston! !
 !RowanClassService categoriesFor: #subclassCreationTemplate!public! !
 !RowanClassService categoriesFor: #template!accessing!private! !

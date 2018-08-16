@@ -363,7 +363,8 @@ editSaveClassComment
 	classService
 		command: #classComment:;
 		commandArgs: (Array with: classCommentPresenter value trimBlanks).
-	self issueCommand: (Array with: classService)!
+	self issueCommand: (Array with: classService).
+	classCommentPresenter ensureVisible. !
 
 editSaveMethod
 	self editSaveMethod: classListPresenter selection.
@@ -1194,7 +1195,8 @@ updateMethodSource
 		ifTrue: [self updateMultiMethodComparison]
 		ifFalse: 
 			[self showSuperClassComparison.
-			self updateSingleMethodSource]!
+			self updateSingleMethodSource].
+	!
 
 updateMultiMethodComparison
 	comparisonPresenter
@@ -1292,7 +1294,7 @@ updateSingleMethodSource
 		isModified: false;
 		isReadOnly: false;
 		yourself.
-	methodSourcePresenter ensureVisible!
+	methodSourcePresenter ensureVisible. !
 
 updateTabLabel
 	| cardNumber newLabel |
