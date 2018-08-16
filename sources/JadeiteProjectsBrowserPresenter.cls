@@ -120,16 +120,14 @@ checkout
 classesMenuStrings
 
 	false ifTrue: [
-		self browseClassReferences; fileOutClass; addSubclass; addMissingAccessors; removeClass; removePriorVersions; runClassTests.
+		self browseClassReferences; fileOutClass; addSubclass; removeClass; removePriorVersions; runClassTests.
 	].
 	^#(
 		'&Classes'
 		'&Browse References//browseClassReferences'
 		'&File Out Class//fileOutClass'
 		'Add &Subclass//addSubclass'
-		'Add &Missing Accessors//addMissingAccessors'
 		'&Remove//removeClass'
-		'Remove Prior &Versions//removePriorVersions'
 		'-'
 		'Set Compiler &Environment ...//setEnvironment'
 		'Run &Tests//runClassTests'
