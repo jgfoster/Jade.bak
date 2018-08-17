@@ -70,17 +70,15 @@ methodSourcePresenter
 onIdleEntered
 	"Support for automated testing so we know when UI is ready"
 
-	| cachedSession |
+	| cachedClass cachedSession |
+	cachedClass := self class.
 	cachedSession := gciSession.
 	[
 		[
 			(Delay forMilliseconds: 10) wait.
 			cachedSession isCallInProgress.
 		] whileTrue: [].
-		RowanDebugger semaphore ifNotNil: [:semaphore | 
-			semaphore signal.
-			SessionManager inputState prod.
-		].
+		cachedClass signalSemaphore.
 	] forkAt: Processor userBackgroundPriority.
 	super onIdleEntered.!
 
@@ -93,12 +91,8 @@ onViewClosed
 		BrowserUpdate current removeEventsTriggeredFor: presenter.
 	].
 	"Allow test to know when view is closed"
-	self class semaphore ifNotNil: [:value | 
-		[
-			value signal.
-			SessionManager inputState prod.
-		] forkAt: Processor userBackgroundPriority
-	].!
+	self class signalSemaphore.
+!
 
 onViewOpened
 	"copied from RowanProjectsBrowserPresenter>>onViewOpened"
@@ -239,6 +233,16 @@ variableListPresenter
 
 !RowanDebugger class methodsFor!
 
+aboutToShowErrorShellOn: gsError
+
+	[
+		^self openDebuggerOnException: gsError
+	] on: Error do: [:ex | 
+		ex debugger view close.
+		MessageBox warning: ex description.
+		Processor activeProcess terminate. 
+	]!
+
 debuggerClass
 
 	^debuggerClass ifNil: [JadeDebugger]!
@@ -261,9 +265,20 @@ semaphore: aSemaphore
 	"Support for automated testing so we know when UI is ready"
 
 	semaphore := aSemaphore.
-! !
+!
+
+signalSemaphore
+
+	self semaphore ifNotNil: [:value | 
+		[
+			value signal.
+			SessionManager inputState prod.
+		] forkAt: Processor userBackgroundPriority.
+	].! !
+!RowanDebugger class categoriesFor: #aboutToShowErrorShellOn:!public! !
 !RowanDebugger class categoriesFor: #debuggerClass!public! !
 !RowanDebugger class categoriesFor: #debuggerClass:!public! !
 !RowanDebugger class categoriesFor: #semaphore!public! !
 !RowanDebugger class categoriesFor: #semaphore:!public! !
+!RowanDebugger class categoriesFor: #signalSemaphore!public! !
 

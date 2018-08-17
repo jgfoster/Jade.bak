@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Error subclass: #GsError
-	instanceVariableNames: 'gciErrSType gsProcess'
+	instanceVariableNames: 'gciErrSType gsProcess debugger'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -9,6 +9,12 @@ GsError guid: (GUID fromString: '{7299eb14-ee00-4bec-8a87-e9ec616fab36}')!
 GsError comment: ''!
 !GsError categoriesForClass!Unclassified! !
 !GsError methodsFor!
+
+debugger
+	^debugger!
+
+debugger: anObject
+	debugger := anObject!
 
 defaultAction
 
@@ -108,6 +114,8 @@ terminateProcess
 	self gciSession terminate: self errorReport contextOop.
 	self error: 'We should never get here!!'.
 ! !
+!GsError categoriesFor: #debugger!accessing!public! !
+!GsError categoriesFor: #debugger:!accessing!public! !
 !GsError categoriesFor: #defaultAction!public! !
 !GsError categoriesFor: #errorReport!public! !
 !GsError categoriesFor: #gatherData!public! !

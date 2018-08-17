@@ -5,8 +5,10 @@ package paxVersion: 1;
 
 
 package classNames
+	add: #JadeiteAbstractTestCase;
 	add: #JadeiteProjectBrowserTestCase;
 	add: #JadeiteTestResource;
+	add: #RowanDebuggerTestCase;
 	yourself.
 
 package methodNames
@@ -30,8 +32,18 @@ package!
 
 "Class Definitions"!
 
-TestCase subclass: #JadeiteProjectBrowserTestCase
-	instanceVariableNames: 'session browser transcript'
+TestCase subclass: #JadeiteAbstractTestCase
+	instanceVariableNames: 'session transcript'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
+	instanceVariableNames: 'browser'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeiteAbstractTestCase subclass: #RowanDebuggerTestCase
+	instanceVariableNames: 'debugger gciSession process'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
