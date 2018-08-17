@@ -166,6 +166,25 @@ compilationWarningFrom: methodServices
 		methodService compilationWarnings ifNotNil:[:warning | ^warning]].
 	^nil!
 
+confirmCategoryRemoval: selections
+	| ws verbiage |
+	ws := WriteStream on: String new.
+	verbiage := categoryListPresenter selections size = 1 ifTrue: ['category'] ifFalse: ['categories'].
+	ws
+		nextPutAll: 'Really delete method ';
+		nextPutAll: verbiage;
+		space.
+	selections do: 
+			[:category |
+			ws
+				nextPutAll: category;
+				space].
+	ws
+		nextPutAll: 'and ';
+		nextPutAll: methodListPresenter list size printString;
+		nextPutAll: ' methods?'.
+	^(MessageBox confirm: ws contents) == true!
+
 createComponents
 	super createComponents.
 	projectListPresenter := self add: ListPresenter new name: 'projectList'.
@@ -950,7 +969,10 @@ removeClass
 	self issueCommand: (Array with: packageService)!
 
 removeMethodCategories
-	| service |
+	| service selections |
+	selections := categoryListPresenter selections.
+	selections isEmpty ifTrue: [^MessageBox notify: 'No categories selected'].
+	(self confirmCategoryRemoval: selections) ifFalse: [^self].
 	service := classListPresenter selection
 				command: #removeCategories:;
 				commandArgs: (Array with: categoryListPresenter selections).
@@ -1349,6 +1371,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #cloneProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #comparisonTab!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #compilationWarningFrom:!menu handlers support!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #confirmCategoryRemoval:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createComponents!initialization!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchy!create schemantic wiring!public! !
@@ -1412,7 +1435,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #releasedReferencedServices:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeClass!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodCategories!private!services! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodCategories!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethods:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoryFrom:!public!selection! !
