@@ -21,6 +21,46 @@ accessedInstVars
 accessedInstVars: anObject
 	accessedInstVars := anObject!
 
+addBreakPointMenuAt: stepPoint to: aMenu presenter: anObject
+	| desc args menuCommand |
+	(self breakPoints includes: stepPoint)
+		ifTrue: 
+			[args := Array with: stepPoint with: 'clear'.
+			desc := 'Clear break at step point ' , stepPoint printString]
+		ifFalse: 
+			[args := Array with: stepPoint with: 'set'.
+			desc := 'Break at step point ' , stepPoint printString].
+	menuCommand := MessageSend
+				receiver: self
+				selector: #breakAt:operation:
+				arguments: args.
+	aMenu
+		addSeparator;
+		addCommand: menuCommand description: desc;
+		yourself.
+	^menuCommand!
+
+appendToSourceMenu: aMenu presenter: methodSourcePresenter
+	| stepPoint menuCommand messageSelector |
+	stepPoint := self stepPointFromCursorIn: methodSourcePresenter.
+	stepPoint isNil ifTrue: [^self].
+	menuCommand := self
+				addBreakPointMenuAt: stepPoint
+				to: aMenu
+				presenter: methodSourcePresenter.
+	messageSelector := (stepPoints at: stepPoint) value.
+	messageSelector isEmpty ifTrue: [^self].
+	menuCommand := MessageSend
+				receiver: methodSourcePresenter parentPresenter
+				selector: #browseImplementorsOf:
+				argument: messageSelector.
+	aMenu addCommand: menuCommand description: 'Browse Implementors of ' , messageSelector printString.
+	menuCommand := MessageSend
+				receiver: methodSourcePresenter parentPresenter
+				selector: #browseSendersOf:
+				argument: messageSelector.
+	aMenu addCommand: menuCommand description: 'Browse Senders of ' , messageSelector printString!
+
 basicSubSuperIcon
 	hasSupers ifTrue: [^JadeSystemBrowserPresenter overriddenIcon].
 	hasSubs ifTrue: [^JadeiteProjectsBrowserPresenter downArrowIcon].
@@ -263,6 +303,19 @@ source
 source: anObject
 	source := anObject!
 
+stepPointFromCursorIn: methodSourcePresenter
+	| charIndex |
+	charIndex := methodSourcePresenter view
+				charNearestPosition: methodSourcePresenter view cursorPosition.
+	self stepPoints size to: 1
+		by: -1
+		do: 
+			[:index |
+			| range |
+			range := (self stepPoints at: index) key.
+			(charIndex between: range start and: range stop) ifTrue: [^index]].
+	^nil!
+
 stepPoints
 
 	(stepPoints notEmpty and: [stepPoints first key isInteger]) ifTrue: [
@@ -324,6 +377,8 @@ user: anObject
 !RowanMethodService categoriesFor: #=!comparing!public! !
 !RowanMethodService categoriesFor: #accessedInstVars!accessing!private! !
 !RowanMethodService categoriesFor: #accessedInstVars:!accessing!private! !
+!RowanMethodService categoriesFor: #addBreakPointMenuAt:to:presenter:!presenter support!private! !
+!RowanMethodService categoriesFor: #appendToSourceMenu:presenter:!presenter support!public! !
 !RowanMethodService categoriesFor: #basicSubSuperIcon!displaying!public! !
 !RowanMethodService categoriesFor: #breakPoints!public! !
 !RowanMethodService categoriesFor: #category!accessing!private! !
@@ -380,6 +435,7 @@ user: anObject
 !RowanMethodService categoriesFor: #sortAspect!accessing!public! !
 !RowanMethodService categoriesFor: #source!accessing!private! !
 !RowanMethodService categoriesFor: #source:!accessing!private! !
+!RowanMethodService categoriesFor: #stepPointFromCursorIn:!presenter support!private! !
 !RowanMethodService categoriesFor: #stepPoints!public! !
 !RowanMethodService categoriesFor: #subSuperIcon!displaying!public! !
 !RowanMethodService categoriesFor: #superDisplayString!accessing!private! !

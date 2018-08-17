@@ -147,6 +147,7 @@ package methodNames
 	add: #MethodListPresenter -> #browseClass;
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #MethodSourcePresenter -> #fileSave;
+	add: #MethodSourcePresenter -> #methodMenuBreak:;
 	add: #Object -> #isClassService;
 	add: #Object -> #isMethodService;
 	add: #Object -> #isPackageService;
@@ -2087,8 +2088,16 @@ fileSave
 		selectionStart: index 
 		length: b size.
 	^false.
-! !
+!
+
+methodMenuBreak: aMenu
+	| selection |
+	documentPresenter view isModified ifTrue: [^self].
+	selection := parentPresenter methodListPresenter selection.
+	selection ifNil: [^self].
+	selection appendToSourceMenu: aMenu presenter: documentPresenter view ! !
 !MethodSourcePresenter categoriesFor: #fileSave!public! !
+!MethodSourcePresenter categoriesFor: #methodMenuBreak:!Jade!public! !
 
 !Object methodsFor!
 

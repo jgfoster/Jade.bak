@@ -522,6 +522,13 @@ loadProject
 makeDefault
 	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
 
+methodMenuBreak: aMenu
+	| selection |
+	methodSourcePresenter view isModified ifTrue: [^self].
+	selection := methodListPresenter selectionOrNil.
+	selection ifNil: [^self].
+	selection appendToSourceMenu: aMenu presenter: methodSourcePresenter!
+
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
@@ -1412,6 +1419,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDragMethod:!drag & drop!public! !

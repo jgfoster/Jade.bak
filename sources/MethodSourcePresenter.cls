@@ -82,7 +82,6 @@ editMenuStrings
 !
 
 gsMethod: aGsMethod
-
 	gsMethod := aGsMethod.
 	self update.!
 
@@ -136,44 +135,6 @@ methodMenu: aMenu
 	self methodMenuBreak: aMenu.
 !
 
-methodMenuBreak: aMenu
-
-	| desc command message selector stepPoint |
-	documentPresenter view isModified ifTrue: [^self].
-	stepPoint := self stepPointAt: documentPresenter view cursorPosition.
-	stepPoint isNil ifTrue: [^self].
-	(gsMethod breakPoints includes: stepPoint) ifTrue: [
-		selector := #'clearBreakAtStepPoint:'.
-		desc := 'Clear break at step point ' , stepPoint printString.
-	] ifFalse: [
-		selector := #'setBreakAtStepPoint:'.
-		desc := 'Break at step point ' , stepPoint printString.
-	].
-	command := MessageSend 
-		receiver: self 
-		selector: selector 
-		arguments: (Array with: stepPoint).
-	aMenu 
-		addSeparator;
-		addCommand: command description: desc;
-		yourself.
-	(message := (gsMethod stepPoints at: stepPoint) value) isEmpty ifTrue: [^self].
-	command := MessageSend
-		receiver: self 
-		selector: #'browseImplementorsOf:' 
-		argument: message.
-	aMenu
-		addCommand: command
-		description: 'Browse Implementors of #' , message printString.
-	command := MessageSend
-		receiver: self 
-		selector: #'browseSendersOf:' 
-		argument: message.
-	aMenu
-		addCommand: command
-		description: 'Browse Senders of #' , message printString.
-!
-
 methodSource
 
 	^documentPresenter value.
@@ -204,7 +165,6 @@ newSelector
 !
 
 onViewOpened
-
 	super onViewOpened.
 	documentPresenter view contextMenu: (Menu fromStrings: self editMenuStrings).
 	self 
@@ -331,7 +291,6 @@ updateMethodStepPoints
 !MethodSourcePresenter categoriesFor: #isOkayToChange!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodDoubleClicked:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodMenu:!Jade!private! !
-!MethodSourcePresenter categoriesFor: #methodMenuBreak:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodSource!public! !
 !MethodSourcePresenter categoriesFor: #newSelector!public! !
 !MethodSourcePresenter categoriesFor: #onViewOpened!public! !

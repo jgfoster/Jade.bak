@@ -1491,44 +1491,6 @@ methodMenu: aMenu
 	self methodMenuBreak: aMenu.
 !
 
-methodMenuBreak: aMenu
-
-	| stepPoint args desc command message |
-	methodSourcePresenter view isModified ifTrue: [^self].
-	stepPoint := self stepPointAt: methodSourcePresenter view cursorPosition.
-	stepPoint isNil ifTrue: [^self].
-	(breakPoints includes: stepPoint) ifTrue: [
-		args := Array with: stepPoint with: 'clear'.
-		desc := 'Clear break at step point ' , stepPoint printString.
-	] ifFalse: [
-		args := Array with: stepPoint with: 'set'.
-		desc := 'Break at step point ' , stepPoint printString.
-	].
-	command := MessageSend 
-		receiver: self 
-		selector: #'breakAt:operation:' 
-		arguments: args.
-	aMenu 
-		addSeparator;
-		addCommand: command description: desc;
-		yourself.
-	(message := (stepPoints at: stepPoint) value) isEmpty ifTrue: [^self].
-	command := MessageSend
-		receiver: self 
-		selector: #'browseImplementorsOf:' 
-		argument: message.
-	aMenu
-		addCommand: command
-		description: 'Browse Implementors of #' , message printString.
-	command := MessageSend
-		receiver: self 
-		selector: #'browseSendersOf:' 
-		argument: message.
-	aMenu
-		addCommand: command
-		description: 'Browse Senders of #' , message printString.
-!
-
 methodsIdentifier
 
 	| stream |
@@ -3081,7 +3043,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #methodHoverStart:!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodMenu:!event handlers!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #methodMenuBreak:!event handlers!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodsIdentifier!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourcePresenter!public!updating! !
