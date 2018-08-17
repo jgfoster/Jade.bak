@@ -113,6 +113,19 @@ browseSendersOf: string
 	self issueCommand: (Array with: service).
 	self openMethodListOn: service selecting: string!
 
+categoriesMenuStrings
+
+	false ifTrue: [
+		self addMethodCategory; renameMethodCategory; removeMethodCategories.
+	].
+	^#(
+		'&Categories'
+		'&Add//addMethodCategory'
+		'&Rename//renameMethodCategory'
+		'&Remove//removeMethodCategories'
+	).
+!
+
 checkout
 	projectListPresenter selection checkoutUsing: self.
 	self refreshFromServer!
@@ -470,6 +483,14 @@ gotoMethodPackage
 	newPackageSelection := packageListPresenter list
 				detect: [:svc | svc name = methodListPresenter selection packageName].
 	self selectPackage: newPackageSelection!
+
+hasCategorySelected
+
+	^categoryListPresenter selections notEmpty!
+
+hasExactlyOneCategorySelected
+
+	^categoryListPresenter selections size = 1!
 
 initialize
 
@@ -856,6 +877,14 @@ queryCommand: aCommandQuery
 		ifTrue: 
 			[aCommandQuery isEnabled: self hasCommandHistoryForward.
 			^true].
+	command == #renameMethodCategory
+		ifTrue: 
+			[aCommandQuery isEnabled: self hasExactlyOneCategorySelected.
+			^true].
+	command == #removeMethodCategories
+		ifTrue: 
+			[aCommandQuery isEnabled: self hasCategorySelected .
+			^true].
 	
 	(command == #setEnvironment0 and: [environment == 0]) ifTrue: [aCommandQuery isChecked: true.^true].
 	(command == #setEnvironment1 and: [environment == 1]) ifTrue: [aCommandQuery isChecked: true.^true].
@@ -995,6 +1024,18 @@ removeMethods: services
 			classService command: #removeMethods.
 			classService methods: methodListPresenter selections].
 	self issueCommand: services!
+
+renameMethodCategory
+	| new service old |
+	old := categoryListPresenter selection.
+	(new := Prompter prompt: 'New method category?') isNil ifTrue: [^self].
+	(categoryListPresenter list includes: new)
+		ifTrue: [^MessageBox notify: 'category ' , new , ' already exists'].
+	service := classListPresenter selection
+				command: #renameCategoryFrom:to:;
+				commandArgs: (Array with: old with: new).
+	self issueCommand: (Array with: service).
+	categoryListPresenter selection: new!
 
 savePackage
 	MessageBox notify: 'This feature is not yet available'!
@@ -1369,7 +1410,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #allClasses!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers support!private!services! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementors!menu handlers!public!queries! !
@@ -1380,6 +1421,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseSendersOf:!public!queries! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #clearFilterLists!event handlers support!private!updating! !
@@ -1412,6 +1454,8 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #gitCommit!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoMethodPackage!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #hasCategorySelected!public!testing! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #hasExactlyOneCategorySelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #initialize!initialization!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isClassSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
@@ -1441,7 +1485,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectTabLabel!displaying!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pullFromGit!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pushToGit!project menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #queryCommand:!menu handlers!overrides!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #queryCommand:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #redrawAllViews!displaying!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshClass!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshClassListOrHierarchy!event handlers!public! !
@@ -1453,6 +1497,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodCategories!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethods:!private!services! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #renameMethodCategory!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoryFrom:!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
