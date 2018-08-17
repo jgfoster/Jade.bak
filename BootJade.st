@@ -26,6 +26,7 @@ list := #(
 	'Jade in Dolphin'
 	'Jade Tests'
 	'Rowan UI Base'
+	'Rowan UI Tests'
 ).
 (Delay forMilliseconds: 200) wait.
 ProgressDialog showModalWhile: [:progress |

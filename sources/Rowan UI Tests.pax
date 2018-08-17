@@ -10,7 +10,6 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #TestSuite -> #run;
 	add: 'TestResource class' -> #signalInitializationError;
 	yourself.
 
@@ -50,31 +49,13 @@ TestResource subclass: #JadeiteTestResource
 !TestResource class methodsFor!
 
 signalInitializationError
-
 	"TestSuite>>run: in the SUnit pacakge sends this method
 	to the class, but implements it on the instance. That appears
-	to be a bug. Redirect the error send to the instance side."
+	to be a bug."
 
-	^self current signalInitializationError! !
+	self reset.
+	^TestResult signalErrorWith: 'Resource ' , self name , ' could not be initialized'! !
 !TestResource class categoriesFor: #signalInitializationError!error handling!public! !
-
-!TestSuite methodsFor!
-
-run
-	"There appears to be a bug in the SUnit framework. If a resource is unavailable
-	it throws an initializaion error but does NOT reset the resource. Therefore the
-	current class variable doesn't get a chance to re-initialize itself. 
-
-	Changed so that the ensure: block is run if an initialization error occurs."
-
-	| result |
-	result := TestResult new.
-	
-	[self resources do: [:res | res isAvailable ifFalse: [^res signalInitializationError]].
-	self run: result]
-			ensure: [self resources do: [:each | each reset]].
-	^result! !
-!TestSuite categoriesFor: #run!public!Running! !
 
 "End of package definition"!
 
