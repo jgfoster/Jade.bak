@@ -293,6 +293,20 @@ test8
 		getDebugger;
 		yourself.
 	self debuggerDo: [debugger resumeProcess].
+!
+
+testErrorInPrintString
+	"https://github.com/ericwinger/Jade/issues/49"
+
+	self 
+		openDebuggerOn: '(ScaledDecimal _basicNew instVarAt: 1 put: 1; instVarAt: 2 put: nil; printString)';
+		assert: debugger errorMessagePresenter value equals: 'a MessageNotUnderstood occurred (error 2010), a UndefinedObject does not understand  #''_generality''';
+		assert: (debugger frameListPresenter list at: 3) equals: 'ScaledDecimal >> asString @22 line 15';
+		assert: (debugger frameListPresenter selectionByIndex: 3) notNil;
+		assert: debugger variableListPresenter list first value equals: '(ScaledDecimal printString error: a MessageNotUnderstood occurred (error 2010), a UndefinedObject does not understand  #''_generality'')';
+		debuggerDo: [[debugger _terminateProcess] fork];
+		assert: debugger view class == DeafObject;
+		yourself.
 ! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
@@ -310,4 +324,5 @@ test8
 !RowanDebuggerTestCase categoriesFor: #test6!public!running!tests! !
 !RowanDebuggerTestCase categoriesFor: #test7!public!running!tests! !
 !RowanDebuggerTestCase categoriesFor: #test8!public!running!tests! !
+!RowanDebuggerTestCase categoriesFor: #testErrorInPrintString!public! !
 
