@@ -149,6 +149,12 @@ classesMenuStrings
 	).
 !
 
+cleanupComparisonBrowser
+	comparisonPresenter
+		beforeTitle: String new;
+		afterTitle: String new;
+		compare: String new with: String new!
+
 clearFilterLists
 	categoryListPresenter list: ListModel new.
 	variableListPresenter list: ListModel new!
@@ -660,7 +666,7 @@ postOkToChangeEvent
 	classDefinitionPresenter view
 		backcolor: Color white;
 		isModified: false.
-	self statusBarText: String new!
+	self sundryCleanup.!
 
 projectChanges
 	projectListPresenter selection changesUsing: self!
@@ -877,14 +883,12 @@ queryCommand: aCommandQuery
 		ifTrue: 
 			[aCommandQuery isEnabled: self hasCommandHistoryForward.
 			^true].
-	command == #renameMethodCategory
-		ifTrue: 
-			[aCommandQuery isEnabled: self hasExactlyOneCategorySelected.
-			^true].
-	command == #removeMethodCategories
-		ifTrue: 
-			[aCommandQuery isEnabled: self hasCategorySelected .
-			^true].
+	command == #renameMethodCategory ifTrue: [aCommandQuery isEnabled: self hasExactlyOneCategorySelected.^true].
+	command == #removeMethodCategories ifTrue:  [aCommandQuery isEnabled: self hasCategorySelected .^true].
+
+	command == #cloneProject ifTrue:[aCommandQuery isEnabled: true. ^true].
+	command == #refreshFromServer ifTrue:[aCommandQuery isEnabled: true. ^true].
+	command == #findClass ifTrue:[aCommandQuery isEnabled: true. ^true].
 	
 	(command == #setEnvironment0 and: [environment == 0]) ifTrue: [aCommandQuery isChecked: true.^true].
 	(command == #setEnvironment1 and: [environment == 1]) ifTrue: [aCommandQuery isChecked: true.^true].
@@ -1150,6 +1154,10 @@ showSuperClassComparison
 				afterTitle: 'No super implementation';
 				compare: methodService source with: String new]!
 
+sundryCleanup
+	self statusBarText: String new.
+	self cleanupComparisonBrowser!
+
 targetCategory
 	self isVariablesTabSelected ifTrue: [^self selectedMethodCategory].
 	categoryListPresenter hasSelection ifFalse: [^self selectedMethodCategory].
@@ -1212,9 +1220,7 @@ updateClassInfo
 		backcolor: Color white;
 		isModified: false.
 	classDefinitionPresenter ensureVisible.
-	self statusBarText: String new. 
-	
-	!
+	self sundryCleanup!
 
 updateCommand: aString onSuccessDo: aBlock
 
@@ -1267,13 +1273,13 @@ updateMethodReferences: services
 	self update: services afterStonReplication: stonResultString!
 
 updateMethodSource
+	self sundryCleanup.
 	methodListPresenter selections isEmpty ifTrue: [^methodSourcePresenter setDefaultMethod].
 	methodListPresenter selections size > 1
 		ifTrue: [self updateMultiMethodComparison]
 		ifFalse: 
 			[self showSuperClassComparison.
 			self updateSingleMethodSource].
-	self statusBarText: String new
 	!
 
 updateMultiMethodComparison
@@ -1308,12 +1314,12 @@ updatePackages
 				ifTrue: [Array with: RowanProjectService new]
 				ifFalse: [projectListPresenter selections].
 	self updateServices: selections.
-	self statusBarText: String new. !
+	self sundryCleanup!
 
 updateProject
 	self updatePackages.
 	self updateProjectInfo.
-	self statusBarText: String new. !
+	self sundryCleanup!
 
 updateProjectInfo
 	| services array |
@@ -1424,12 +1430,13 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #cleanupComparisonBrowser!initialize/release!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #clearFilterLists!event handlers support!private!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #cloneProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #comparisonTab!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #compilationWarningFrom:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #confirmCategoryRemoval:!menu handlers support!private! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #createComponents!initialization!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #createComponents!initialize/release!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchy!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!overrides!public! !
@@ -1456,7 +1463,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoMethodPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #hasCategorySelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #hasExactlyOneCategorySelected!public!testing! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #initialize!initialization!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #initialize!initialize/release!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isClassSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #issueCommand:!private!services! !
@@ -1492,7 +1499,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshFromServer!event handlers!menu handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshMethodsOn:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialize/release!public!register presenters! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #releasedReferencedServices:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodCategories!menu handlers!public! !
@@ -1514,6 +1521,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #setFilterType:!event handlers support!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers support!private!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #showSuperClassComparison!private!text tabs! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #sundryCleanup!initialize/release!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #targetCategory!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabs!private!text tabs! !
