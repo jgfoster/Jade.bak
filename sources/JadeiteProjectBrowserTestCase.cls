@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-TestCase subclass: #JadeiteProjectBrowserTestCase
-	instanceVariableNames: 'session browser transcript'
+JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
+	instanceVariableNames: 'browser'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -61,8 +61,6 @@ serviceNamed: name in: presenter
 
 setUp
 	super setUp.
-	session := JadeiteTestResource current session.
-	transcript := JadeiteTestResource current transcript.
 	self openProjectsBrowser.!
 
 tearDown

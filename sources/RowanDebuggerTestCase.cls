@@ -1,6 +1,6 @@
 "Filed out from Dolphin Smalltalk 7"!
 
-TestCase subclass: #RowanDebuggerTestCase
+JadeiteAbstractTestCase subclass: #RowanDebuggerTestCase
 	instanceVariableNames: 'debugger gciSession process'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -16,7 +16,7 @@ closeDebuggers
 	list := RowanMethodListBrowser allInstances , RowanSystemBrowser allInstances , RowanDebugger allInstances.
 	semaphore := Semaphore new.
 	list do: [:each | 
-		gciSession removeEventsTriggeredFor: each.
+		session removeEventsTriggeredFor: each.
 		[
 			[
 				each view close. 
@@ -66,7 +66,7 @@ openDebuggerOn: aString
 
 	self 
 		assert: RowanDebugger allInstances isEmpty;
-		debuggerDo: [process := [gciSession executeString: aString] fork];		"Typically ~ 180ms"
+		debuggerDo: [process := [session executeString: aString] fork];		"Typically ~ 180ms"
 		getDebugger;
 		yourself.
 !
@@ -77,11 +77,10 @@ setUp
 	super setUp.
 	self closeDebuggers.
 	RowanDebugger debuggerClass: RowanDebugger.
-	gciSession := GciSession allInstances detect: [:each | each isValidSession] ifNone: [nil].
 	list1 := RowanSystemBrowser allInstances.
 	list2 := RowanMethodListBrowser allInstances.
 	self 
-		assert: gciSession notNil;
+		assert: session notNil;
 		assert: list1 isEmpty;
 		assert: list2 isEmpty;
 		yourself.
@@ -290,7 +289,7 @@ test8
 
 	self 
 		assert: RowanDebugger allInstances isEmpty;
-		debuggerDo: [process := [gciSession debugString: '#(abc def) do:[:symbol | symbol size]' fromContext: nil environment: 0] fork];
+		debuggerDo: [process := [session debugString: '#(abc def) do:[:symbol | symbol size]' fromContext: nil environment: 0] fork];
 		getDebugger;
 		yourself.
 	self debuggerDo: [debugger resumeProcess].
