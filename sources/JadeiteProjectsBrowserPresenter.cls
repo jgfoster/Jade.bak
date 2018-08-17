@@ -911,6 +911,7 @@ registerPresentersForUpdates
 		register: packageListPresenter
 		selector: #projectPackagesUpdate:browser:
 		browser: self.
+	BrowserUpdate current register: classListPresenter selector: #removedClass:.
 	BrowserUpdate current
 		register: classListPresenter
 		selector: #classesUpdate:browser:

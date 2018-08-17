@@ -209,6 +209,12 @@ releaseReferencedServices
 remoteServiceName
 	^'Rowan classServiceClass'!
 
+removedClass: presenter
+	| removal |
+	updateType == #removedClass: ifFalse: [^self].
+	removal := presenter list detect:[:classService | classService name = name] ifNone:[^self ].
+	presenter model remove: removal. !
+
 removeSelector: selector
 
 	transport send: #removeSelector: to: remoteService withAll: (Array with: selector)!
@@ -315,6 +321,7 @@ variables
 !RowanClassService categoriesFor: #projectName!accessing!private! !
 !RowanClassService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
+!RowanClassService categoriesFor: #removedClass:!public!updating! !
 !RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #replicateFrom:!public!replication! !
 !RowanClassService categoriesFor: #sampleClassName!public! !

@@ -178,6 +178,7 @@ package methodNames
 	add: #RowanCommandResult -> #projectPackagesUpdate:browser:;
 	add: #RowanCommandResult -> #projectSelectionUpdate:;
 	add: #RowanCommandResult -> #projectsUpdate:;
+	add: #RowanCommandResult -> #removedClass:;
 	add: #RowanCommandResult -> #superclassListUpdate:;
 	add: #RowanCommandResult -> #updateClassCategorySelectionsFor:;
 	add: #RowanCommandResult -> #updateClassHierarchySelectionFor:;
@@ -2223,6 +2224,9 @@ projectSelectionUpdate: aPresenter
 projectsUpdate: aPresenter
 !
 
+removedClass: aPresenter
+!
+
 superclassListUpdate: presenter
 	!
 
@@ -2270,6 +2274,7 @@ updateType
 !RowanCommandResult categoriesFor: #projectPackagesUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #projectsUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #removedClass:!public!updating! !
 !RowanCommandResult categoriesFor: #superclassListUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !

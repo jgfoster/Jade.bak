@@ -184,6 +184,8 @@ remoteService
 remoteServiceName
 	self subclassResponsibility!
 
+removedClass: aPresenter!
+
 removeSampleSymbolDictionary
 
 	transport send: #removeSampleSymbolDictionary to: remoteService!
@@ -314,6 +316,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanService categoriesFor: #remoteService!public! !
 !RowanService categoriesFor: #remoteServiceName!must not strip!public! !
+!RowanService categoriesFor: #removedClass:!public!updating! !
 !RowanService categoriesFor: #removeSampleSymbolDictionary!public! !
 !RowanService categoriesFor: #replicateFrom:!public!replication!updating! !
 !RowanService categoriesFor: #sampleDefinitions!examples!public! !
