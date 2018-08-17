@@ -360,7 +360,17 @@ initializeServer
 "
 	GciSession allInstances first initializeServer.
 "
+	| jadeServerClassOop |
 	library ifNil: [^self].
+	jadeServerClassOop := library session: gciSessionId resolveSymbol: library jadeServerClass name.
+	jadeServerClassOop isOopIllegal ifFalse: [
+		| version |
+		server := self send: #'new' to: jadeServerClassOop.
+		self send: #'initialize' to: server.
+		version := self send: #'version' to: server.
+		version = self jadeSessionManagerClass version ifTrue: [^self].
+		(MessageBox confirm: 'Use built-in JadeServer version ' , version , '?') ifTrue: [^self].
+	].
 	[
 		| string |
 		string := library encode: library jadeServerClass gsString.

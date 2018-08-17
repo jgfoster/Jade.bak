@@ -45,6 +45,7 @@ version
 getVersion
 
 	| string |
+	File workingDirectory: SessionManager current imageBase.
 	string := [SessionManager current class git: 'describe'] on: ExternalProcessExecuteError do: [:ex | ^'?<' , ex description , '>?'].
 	^(ReadStream on: string) nextLine
 !
@@ -67,7 +68,7 @@ version
 
 	^Version notNil 
 		ifTrue: [Version]
-		ifFalse: ['(Development)'].
+		ifFalse: ['Development'].
 ! !
 !JadeSessionManager class categoriesFor: #getVersion!public! !
 !JadeSessionManager class categoriesFor: #mainShellClass!public! !

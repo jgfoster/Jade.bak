@@ -106,6 +106,12 @@ gciReleaseOops: args _: numArgs
 	^self invalidCall
 !
 
+gciResolveSymbol: aString _: symbolList
+
+	<cdecl: OopType32 GciResolveSymbol lpstr OopType32>
+	^self invalidCall
+!
+
 oopAsciiNul
 
 	^OopType32 fromInteger: 14.!
@@ -264,6 +270,7 @@ specialFromOop: anOop
 !Gcilw6x categoriesFor: #gciNewString:!private! !
 !Gcilw6x categoriesFor: #gciOopToChr:!private! !
 !Gcilw6x categoriesFor: #gciReleaseOops:_:!private! !
+!Gcilw6x categoriesFor: #gciResolveSymbol:_:!private! !
 !Gcilw6x categoriesFor: #oopAsciiNul!public!Reserved OOPs! !
 !Gcilw6x categoriesFor: #oopAt:!public! !
 !Gcilw6x categoriesFor: #oopClassArray!public! !

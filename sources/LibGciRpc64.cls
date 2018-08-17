@@ -198,6 +198,12 @@ gciReleaseOops: args _: numArgs
 	^self invalidCall
 !
 
+gciResolveSymbol: aString _: symbolList
+
+	<cdecl: OopType64 GciResolveSymbol lpstr OopType64>
+	^self invalidCall
+!
+
 oopAsciiNul
 
 	^OopType64 fromInteger: 28. "16r1C"
@@ -400,6 +406,7 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #gciNewString:!private! !
 !LibGciRpc64 categoriesFor: #gciOopToChr:!private! !
 !LibGciRpc64 categoriesFor: #gciReleaseOops:_:!private! !
+!LibGciRpc64 categoriesFor: #gciResolveSymbol:_:!private! !
 !LibGciRpc64 categoriesFor: #oopAsciiNul!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopAt:!private! !
 !LibGciRpc64 categoriesFor: #oopClassArray!public!Reserved OOPs! !

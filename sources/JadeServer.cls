@@ -170,6 +170,16 @@ _gsPackagePolicyClass
 	^self objectInBaseNamed: #'GsPackagePolicy'.
 !
 
+_initializeMoticello
+
+	| mcPlatformSupport |
+	(mcPlatformSupport := self objectNamed: #'MCPlatformSupport') notNil ifTrue: [
+		mcPlatformSupport 
+			autoCommit: false; 
+			autoMigrate: false.
+	]
+!
+
 _inspectDictionary: aDictionary on: aStream
 
 	| keys keyDict |
@@ -352,6 +362,11 @@ _registerOBNotificationsForPlatform: platform clientForwarder: clientForwarder
 		yourself.
 !
 
+_setSessionState
+
+	System _sessionStateAt: 3 put: self.
+!
+
 _string
 
 	^String new!
@@ -448,6 +463,8 @@ initialize
 	self 
 		_installTranscript;
 		_registerOBNotifications;
+		_initializeMoticello;
+		_setSessionState;
 		yourself.!
 
 makeListener
@@ -584,6 +601,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #_gemLogPath!private!Transcript! !
 !JadeServer categoriesFor: #_gsPackagePolicy!private! !
 !JadeServer categoriesFor: #_gsPackagePolicyClass!private! !
+!JadeServer categoriesFor: #_initializeMoticello!public! !
 !JadeServer categoriesFor: #_inspectDictionary:on:!private! !
 !JadeServer categoriesFor: #_inspectNamedInstanceVariablesOf:on:!private! !
 !JadeServer categoriesFor: #_installTranscript!private!Transcript! !
@@ -603,6 +621,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #_refreshSymbolList!private! !
 !JadeServer categoriesFor: #_registerOBNotifications!private! !
 !JadeServer categoriesFor: #_registerOBNotificationsForPlatform:clientForwarder:!private! !
+!JadeServer categoriesFor: #_setSessionState!public! !
 !JadeServer categoriesFor: #_string!private! !
 !JadeServer categoriesFor: #_writeStreamOnString!private! !
 !JadeServer categoriesFor: #abort!public! !
@@ -652,6 +671,17 @@ addGsStringForClass: aClass to: aStream
 			nextPutAll: (string copyFrom: 2 to: string size - 1);
 			lf; nextPut: $%; lf.
 	].
+	aClass == JadeServer ifTrue: [
+		| string |
+		string := 'version
+
+	^' , self jadeSessionManagerClass getVersion printString.
+		string := string reject: [:char | char == Character cr].
+		string := string printString.
+		aStream 
+			nextPutAll: (string copyFrom: 2 to: string size - 1);
+			lf; nextPut: $%; lf.
+	].
 	aStream nextPutAll: '''.
 [readStream atEnd not] whileTrue: [
 	| line |
@@ -694,7 +724,7 @@ gsString
 	| stream |
 	SessionManager current isRuntime ifTrue: [^gsString].
 	(stream := WriteStream on: String new)
-		nextPutAll: '| class mcPlatformSupport methodClass readStream result server source symbolList writeStream |'; lf;
+		nextPutAll: '| class methodClass readStream result server source symbolList writeStream |'; lf;
 		nextPutAll: 'methodClass := ';
 		nextPutAll: self gsMethodClassName;
 		nextPut: $.; lf;
@@ -705,12 +735,8 @@ gsString
 		yourself.
 	(self withAllSuperclasses remove: Object; yourself) reverseDo: [:eachClass | self addGsStringForClass: eachClass to: stream].
 	stream 
-		nextPutAll: '(mcPlatformSupport := symbolList objectNamed: #''MCPlatformSupport'') notNil ifTrue: ['; lf;
-		nextPutAll: '	mcPlatformSupport autoCommit: false; autoMigrate: false].'; lf;
-		"nextPutAll: 'class := ((symbolList objectNamed: #System) myUserProfile symbolList objectNamed: #UserGlobals) at: #' , self name , ' ifAbsent: [class].'; lf;"
-		nextPutAll: 'server := class new initialize; yourself.'; lf;
-		nextPutAll: self sessionStateCode; lf;
-		nextPutAll: 'server] on: (symbolList objectNamed: #Error) do: [:ex | ex return: ''ERROR: '' , (GsProcess stackReportToLevel: 100)]';
+		nextPutAll: 'class new initialize'; lf;
+		nextPutAll: '] on: (symbolList objectNamed: #Error) do: [:ex | ex return: ''ERROR: '' , (GsProcess stackReportToLevel: 100)]';
 		yourself.
 	gsString := stream contents.
 	^gsString.

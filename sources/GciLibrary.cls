@@ -260,6 +260,11 @@ session: session releaseOops: oopList
 	self subclassResponsibility.
 !
 
+session: session resolveSymbol: aString
+
+	self subclassResponsibility.
+!
+
 session: anInteger send: aString to: anOopType with: anArray 
 
 	self subclassResponsibility.
@@ -324,6 +329,7 @@ version
 !GciLibrary categoriesFor: #session:oopForInteger:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #session:oopForString:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #session:releaseOops:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #session:resolveSymbol:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #session:send:to:with:!public!Reserved OOPs!subclassResponsibility! !
 !GciLibrary categoriesFor: #softBreakSession:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #version!public!subclassResponsibility! !

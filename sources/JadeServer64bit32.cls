@@ -17,8 +17,15 @@ _gsPackagePolicy
 	class isNil ifTrue: [^nil].
 	class enabled ifFalse: [^nil].
 	^class current
+!
+
+_setSessionState
+	"Avoid deprecated method and still use 'Topaz session state' (since we know Topaz isn't running!!)"
+
+	System __sessionStateAt: 3 put: self.
 ! !
 !JadeServer64bit32 categoriesFor: #_gsPackagePolicy!private! !
+!JadeServer64bit32 categoriesFor: #_setSessionState!public! !
 
 !JadeServer64bit32 class methodsFor!
 

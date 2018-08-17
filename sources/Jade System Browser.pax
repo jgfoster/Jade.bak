@@ -59,6 +59,7 @@ package methodNames
 	add: #JadeServer -> #sbCopyMethodsFor:;
 	add: #JadeServer -> #sbFileOutClass:;
 	add: #JadeServer -> #sbFileOutDictionary:;
+	add: #JadeServer -> #sbFileOutJadeServer:;
 	add: #JadeServer -> #sbFileOutMethod:;
 	add: #JadeServer -> #sbFindClass;
 	add: #JadeServer -> #sbFindClassPackageMap;
@@ -259,7 +260,7 @@ _systemBrowserCommand
 	| list command |
 	list := self _nextLineAsList asOrderedCollection.
 	command := list removeFirst.
-	command = 'addDictionary'				ifTrue: [^self sbAddDictionary: list].
+	command = 'addDictionary'			ifTrue: [^self sbAddDictionary: list].
 	command = 'addMethodCategory' 		ifTrue: [^self sbAddMethodCategory: list].
 	command = 'addMissingAccessors'		ifTrue: [^self sbAddMissingAccessors: list].
 	command = 'addPackage' 				ifTrue: [^self sbAddPackage: list].
@@ -267,7 +268,7 @@ _systemBrowserCommand
 
 	command = 'break' 					ifTrue: [^self sbBreak: list].
 	command = 'browseClassReferences'		ifTrue: [^self sbBrowseClassReferences: list].
-	command = 'browseGlobalReferences'		ifTrue: [^self sbBrowseGlobalReferences: list].
+	command = 'browseGlobalReferences'	ifTrue: [^self sbBrowseGlobalReferences: list].
 	command = 'browseImplementors'		ifTrue: [^self sbBrowseImplementors: list].
 	command = 'browseMethodHistory'		ifTrue: [^self sbBrowseMethodHistory: list].
 	command = 'browseMethodsContaining'	ifTrue: [^self sbBrowseMethodsContaining: list].
@@ -278,22 +279,22 @@ _systemBrowserCommand
 	command = 'changesInPackage'			ifTrue: [^self sbChangesInPackage: list].
 	command = 'checkUniqueClassName'		ifTrue: [^self sbCheckUniqueClassName: list].
 	command = 'class' 					ifTrue: [^self sbClass: list].
-	command = 'classCategory'				ifTrue: [^self sbClassCategory: list].
+	command = 'classCategory'			ifTrue: [^self sbClassCategory: list].
 	command = 'classComment'			ifTrue: [^self sbClassComment: list].
 	command = 'classesToDictionary'		ifTrue: [^self sbClassesToDictionary: list].
 	command = 'comparePackages'			ifTrue: [^self sbComparePackages: list].
 
 	command = 'fileOutClass'				ifTrue: [^self sbFileOutClass: list].
 	command = 'fileOutDictionary'			ifTrue: [^self sbFileOutDictionary: list].
+	command = 'fileOutJadeServer'			ifTrue: [^self sbFileOutJadeServer: list].
 	command = 'fileOutMethod'			ifTrue: [^self sbFileOutMethod: list].
 	command = 'findClass' 				ifTrue: [^self sbFindClass].
 	command = 'findSelectors'				ifTrue: [^self sbFindSelectors: list].
 
-
-	command = 'listMethodPragmas'			ifTrue: [^self sbListMethodPragmas: list].
+	command = 'listMethodPragmas'		ifTrue: [^self sbListMethodPragmas: list].
 	command = 'loadLatestVersion'			ifTrue: [^self sbLoadLatestVersionOfConfiguration: list].
 
-	command = 'method' 					ifTrue: [^self sbSaveMethod: list].
+	command = 'method' 				ifTrue: [^self sbSaveMethod: list].
 	command = 'methodCategory'			ifTrue: [^self sbMethodCategory: list].
 	command = 'methodClass'				ifTrue: [^self sbMethodClass: list].
 
@@ -302,7 +303,7 @@ _systemBrowserCommand
 	command = 'postSaveClass'			ifTrue: [^self sbPostSaveClass: list].
 
 	command = 'removeClasses'			ifTrue: [^self sbRemoveClasses].
-	command = 'removeDictionaries'			ifTrue: [^self sbRemoveDictionaries: list].
+	command = 'removeDictionaries'		ifTrue: [^self sbRemoveDictionaries: list].
 	command = 'removeGlobals'			ifTrue: [^self sbRemoveGlobals].
 	command = 'removeMethodCategories' 	ifTrue: [^self sbRemoveMethodCategories: list].
 	command = 'removeMethods'			ifTrue: [^self sbRemoveMethods: list].
@@ -311,11 +312,11 @@ _systemBrowserCommand
 	command = 'revertClass'				ifTrue: [^self sbRevertClass].
 
 	command = 'savePackage'				ifTrue: [^self sbSavePackage: list].
-	command = 'setHomeDictionary'			ifTrue: [^self sbSetHomeDictionary: list].
+	command = 'setHomeDictionary'		ifTrue: [^self sbSetHomeDictionary: list].
 
 	command = 'uniqueVersionName'		ifTrue: [^self sbUniqueVersionName: list].
 	command = 'unloadPackage'			ifTrue: [^self sbUnloadPackage: list].
-	command = 'update' 					ifTrue: [^self systemBrowserUpdate].
+	command = 'update' 				ifTrue: [^self systemBrowserUpdate].
 
 	self error: 'Unknown command: ' , command printString.
 !
@@ -776,6 +777,24 @@ names := userProfile symbolList names.
 ].
 ' , '%
 '.
+	self classOrganizer
+		fileOutClassesAndMethodsInDictionary: dictionary
+		on: writeStream.
+!
+
+sbFileOutJadeServer: anOrderedCollection
+
+	| class dictionary |
+	dictionary := SymbolDictionary new
+		name: #'Globals';
+		yourself.
+	class := self class.
+	[
+		class ~~ Object
+	] whileTrue: [
+		dictionary at: class name put: class.
+		class := class superclass.
+	].
 	self classOrganizer
 		fileOutClassesAndMethodsInDictionary: dictionary
 		on: writeStream.
@@ -1835,6 +1854,7 @@ writeList: aList
 !JadeServer categoriesFor: #sbCopyMethodsFor:!private!System Browser! !
 !JadeServer categoriesFor: #sbFileOutClass:!private!System Browser! !
 !JadeServer categoriesFor: #sbFileOutDictionary:!private!System Browser! !
+!JadeServer categoriesFor: #sbFileOutJadeServer:!private!System Browser! !
 !JadeServer categoriesFor: #sbFileOutMethod:!private!System Browser! !
 !JadeServer categoriesFor: #sbFindClass!private!System Browser! !
 !JadeServer categoriesFor: #sbFindClassPackageMap!private!System Browser! !

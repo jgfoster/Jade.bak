@@ -29,6 +29,12 @@ package classNames
 	add: #JadeSessionManager;
 	yourself.
 
+package methodNames
+	add: #GciSession -> #jadeSessionManagerClass;
+	add: #JadeTranscript -> #jadeSessionManagerClass;
+	add: 'JadeServer class' -> #jadeSessionManagerClass;
+	yourself.
+
 package binaryGlobalNames: (Set new
 	yourself).
 
@@ -43,6 +49,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone C Interface';
 	add: 'GemStone Session';
 	add: 'Jade Login';
+	add: 'Jade Transcript';
 	add: '..\Core\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper';
 	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	yourself).
@@ -66,6 +73,27 @@ RuntimeSessionManager subclass: #JadeSessionManager
 
 
 "Loose Methods"!
+
+!GciSession methodsFor!
+
+jadeSessionManagerClass
+
+	^JadeSessionManager! !
+!GciSession categoriesFor: #jadeSessionManagerClass!public! !
+
+!JadeServer class methodsFor!
+
+jadeSessionManagerClass
+
+	^JadeSessionManager! !
+!JadeServer class categoriesFor: #jadeSessionManagerClass!public! !
+
+!JadeTranscript methodsFor!
+
+jadeSessionManagerClass
+
+	^JadeSessionManager! !
+!JadeTranscript categoriesFor: #jadeSessionManagerClass!public! !
 
 "End of package definition"!
 

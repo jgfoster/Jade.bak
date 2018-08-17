@@ -360,6 +360,10 @@ gciReleaseOops: args _: numArgs
 
 	self subclassResponsibility!
 
+gciResolveSymbol: aString _: symbolList
+
+	self subclassResponsibility!
+
 gciSetNet: stoneName _: hostUserID _: hostPassword _: gemService
 
 	<cdecl: void GciSetNet lpstr lpstr lpstr lpstr>
@@ -597,6 +601,14 @@ session: anInteger releaseOops: anArray
 	].
 !
 
+session: anInteger resolveSymbol: aString
+
+	self critical: [
+		self gciSetSessionId: anInteger.
+		^self gciResolveSymbol: aString _: self oopNil.
+	].
+!
+
 session: anInteger send: aString to: anOopType with: anArray 
 
 	self critical: [
@@ -708,6 +720,7 @@ version
 !GciSingleThreadedLibrary categoriesFor: #gciOopToChr:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciPollForSignal!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciReleaseOops:_:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciResolveSymbol:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciSetNet:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciSetNet__:_:_:_:_:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciSetSessionId:!private! !
@@ -732,6 +745,7 @@ version
 !GciSingleThreadedLibrary categoriesFor: #session:oopForInteger:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:oopForString:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:releaseOops:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #session:resolveSymbol:!public!subclassResponsibility! !
 !GciSingleThreadedLibrary categoriesFor: #session:send:to:with:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:valueOfOop:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #signalIfError!private! !
