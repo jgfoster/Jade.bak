@@ -370,11 +370,14 @@ editSaveClass
 		commandArgs: (Array with: classDefinitionPresenter value).
 	visibleClasses := classListPresenter list.
 	classListPresenter clear.
-	[self issueCommand: (Array with: packageService)] on: GsCompileError
+	[self issueCommand: (Array with: packageService)] on: Error
 		do: 
-			[:ex |
+			[:ex | 
 			classListPresenter list: visibleClasses.
-			^self handleClassCompileError: ex].
+			(ex isKindOf: GsCompileError) ifTrue:[
+				self handleClassCompileError: ex]
+			ifFalse:[
+				self statusBarText: 'ERROR: ', ex messageText ]].
 	classDefinitionPresenter view isModified: false!
 
 editSaveClassComment
@@ -404,7 +407,7 @@ editSaveMethod: classService
 	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
 	methodSourcePresenter view goto: caretPosition.
 	(self compilationWarningFrom: classService selectedMethods)
-		ifNotNil: [:warning | MessageBox notify: warning]!
+		ifNotNil: [:warning | self statusBarText: warning]!
 
 filterTabChanged
 	self isClassSelected
@@ -628,7 +631,8 @@ postOkToChangeEvent
 	classDefinitionPresenter value: service template.
 	classDefinitionPresenter view
 		backcolor: Color white;
-		isModified: false!
+		isModified: false.
+	self statusBarText: String new!
 
 projectChanges
 	projectListPresenter selection changesUsing: self!
@@ -1144,7 +1148,7 @@ updateAndSelectA: aView
 !
 
 updateClasses
-	self updateServices: packageListPresenter selections. !
+	self updateServices: packageListPresenter selections.!
 
 updateClassInfo
 	| service |
@@ -1160,6 +1164,7 @@ updateClassInfo
 		backcolor: Color white;
 		isModified: false.
 	classDefinitionPresenter ensureVisible.
+	self statusBarText: String new. 
 	
 	!
 
@@ -1220,6 +1225,7 @@ updateMethodSource
 		ifFalse: 
 			[self showSuperClassComparison.
 			self updateSingleMethodSource].
+	self statusBarText: String new
 	!
 
 updateMultiMethodComparison
@@ -1253,11 +1259,13 @@ updatePackages
 	selections := projectListPresenter selections isEmpty
 				ifTrue: [Array with: RowanProjectService new]
 				ifFalse: [projectListPresenter selections].
-	self updateServices: selections!
+	self updateServices: selections.
+	self statusBarText: String new. !
 
 updateProject
 	self updatePackages.
-	self updateProjectInfo!
+	self updateProjectInfo.
+	self statusBarText: String new. !
 
 updateProjectInfo
 	| services array |
@@ -1280,7 +1288,7 @@ updateProjects
 	browserService := RowanBrowserService new.
 	browserService
 		command: #updateProjects.
-	self issueCommand: (Array with: browserService)!
+	self issueCommand: (Array with: browserService).!
 
 updateProjectTab
 	| projectTabLabel |
@@ -1429,7 +1437,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #redrawAllViews!displaying!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshClass!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshClassListOrHierarchy!event handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #refreshFromServer!menu handlers!public!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #refreshFromServer!event handlers!menu handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #refreshMethodsOn:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerClassData!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!register presenters! !
