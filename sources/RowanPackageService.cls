@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanPackageService
-	instanceVariableNames: 'classes defaultTemplate projectName'
+	instanceVariableNames: 'classes defaultTemplate projectName classCompilationFailures'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
