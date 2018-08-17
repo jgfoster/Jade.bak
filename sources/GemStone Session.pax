@@ -120,7 +120,7 @@ Object subclass: #JadeServer
 	poolDictionaries: ''
 	classInstanceVariableNames: 'gsString'!
 Error subclass: #GsError
-	instanceVariableNames: 'gciErrSType gsProcess'
+	instanceVariableNames: 'gciErrSType gsProcess debugger'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

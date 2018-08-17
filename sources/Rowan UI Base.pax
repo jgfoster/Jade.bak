@@ -28,7 +28,6 @@ package classNames
 	add: #RowanDebugger;
 	add: #RowanDebuggerService;
 	add: #RowanDebuggerStepPointError;
-	add: #RowanDebuggerTestCase;
 	add: #RowanDictionaryUpdate;
 	add: #RowanFrameService;
 	add: #RowanGlobalsUpdate;
@@ -515,11 +514,6 @@ RowanShell subclass: #RowanPackageShell
 	classInstanceVariableNames: ''!
 RowanShell subclass: #RowanProjectListShell
 	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-TestCase subclass: #RowanDebuggerTestCase
-	instanceVariableNames: 'debugger gciSession process'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
