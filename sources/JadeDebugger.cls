@@ -326,11 +326,6 @@ update
 		self stack: stack.
 	].!
 
-updateCaption
-
-	self caption: (gciSession titleBarFor: 'Debugger').
-!
-
 updateSaveMethodOop: anInteger
 	"do nothing"
 ! !
@@ -363,7 +358,6 @@ updateSaveMethodOop: anInteger
 !JadeDebugger categoriesFor: #stepOver!public! !
 !JadeDebugger categoriesFor: #terminateProcess!public! !
 !JadeDebugger categoriesFor: #update!public! !
-!JadeDebugger categoriesFor: #updateCaption!public! !
 !JadeDebugger categoriesFor: #updateSaveMethodOop:!public! !
 
 !JadeDebugger class methodsFor!
