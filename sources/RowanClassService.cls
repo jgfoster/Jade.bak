@@ -152,7 +152,8 @@ hierarchyServices: anObject
 initialize
 	
 	super initialize. 
-	filters := Array new. !
+	filters := Array new. 
+	selectedPackageServices := Array new. "method list browser will not have packages to select"!
 
 isClassService
 

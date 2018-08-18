@@ -25,7 +25,6 @@ presenterClass
 !
 
 shellName
-
 	^'Method List Browser'.
 !
 

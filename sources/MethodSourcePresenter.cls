@@ -101,17 +101,6 @@ hoverStart: aPoint
 		at: charIndex.
 !
 
-isOkayToChange
-
-	documentPresenter isModified ifTrue: [
-		documentPresenter ensureVisible.
-		gciSession isValidSession
-			ifTrue: [(MessageBox confirm: 'Stay on unsaved method?' caption: 'Method has unsaved changes!!') ifTrue: [^false]]
-			ifFalse: [(MessageBox confirm: 'Copy changes to Clipboard?' caption: 'Method has unsaved changes!!') ifTrue: [documentPresenter selectAll; copySelection]].
-		documentPresenter isModified: false.
-	].
-	^true!
-
 methodDoubleClicked: anObject
 
 	| range string |
@@ -288,7 +277,6 @@ updateMethodStepPoints
 !MethodSourcePresenter categoriesFor: #gsMethod:!public! !
 !MethodSourcePresenter categoriesFor: #hoverEnd:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #hoverStart:!Jade!private! !
-!MethodSourcePresenter categoriesFor: #isOkayToChange!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodDoubleClicked:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodMenu:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodSource!public! !

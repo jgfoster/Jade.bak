@@ -629,32 +629,6 @@ createSchematicWiringForVariableList
 		yourself.
 !
 
-currentMethodSource
-
-	| source fromStream writeStream |
-	fromStream := ReadStream on: methodSourcePresenter value.
-	writeStream := WriteStream on: String new.
-	[
-		fromStream atEnd not.
-	] whileTrue: [
-		| char |
-		(char := fromStream next) == Character cr ifTrue: [
-			fromStream peek ~~ Character lf ifTrue: [
-				writeStream nextPut: Character lf.
-			].
-		] ifFalse: [
-			writeStream nextPut: char.
-		].
-	].
-	source := writeStream contents.
-	[
-		source last codePoint <= 32.
-	] whileTrue: [
-		source := source copyFrom: 1 to: source size - 1.
-	].
-	^source.
-!
-
 currentSelectionOrLine
 
 	View focus hasSelection ifFalse: [View focus selectCurrentLine].
@@ -2967,7 +2941,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForPragmaList!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForSuperClassList!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForVariableList!create schemantic wiring!public! !
-!JadeSystemBrowserPresenter categoriesFor: #currentMethodSource!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #currentSelectionOrLine!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #defaultFileExtension!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #delayUpdate!public!updating! !
@@ -3090,7 +3063,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #removeMethodCategories!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removePriorVersions!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #removeRepository!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #reportCompileError:!public! !
+!JadeSystemBrowserPresenter categoriesFor: #reportCompileError:!menu handlers support!public! !
 !JadeSystemBrowserPresenter categoriesFor: #requestString!public!request string! !
 !JadeSystemBrowserPresenter categoriesFor: #requestStringForUpdate!public!request string! !
 !JadeSystemBrowserPresenter categoriesFor: #resetColors!menu handlers!public! !

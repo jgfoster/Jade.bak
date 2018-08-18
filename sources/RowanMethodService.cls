@@ -194,14 +194,15 @@ methodDefinitions: anObject
 
 methodSourceUpdate: presenter browser: browser
 	| selection |
-	selection := browser methodListPresenter selectionOrNil.
+	selection := browser methodListSelection.
 	selection ifNil: [^self].
 	selection = self
 		ifTrue: 
-			[presenter value: source.
-			presenter view
-				backcolor: JadeTextStyles default colorForNoEdits;
-				isModified: false]!
+			[presenter view isModified
+				ifTrue:[presenter view backcolor: Color red faded faded]
+				ifFalse: 
+					[presenter value: source.
+					browser displayNoMods: presenter]]!
 
 oop
 

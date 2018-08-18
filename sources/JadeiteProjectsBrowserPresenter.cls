@@ -179,12 +179,6 @@ comparisonTab
 			[comparisonTab := self textTabs
 						detect: [:each | (each class canUnderstand: #text) ifTrue: [each text = 'Comparison'] ifFalse: [each = 'Comparison']]]!
 
-compilationWarningFrom: methodServices
-
-	methodServices do:[:methodService | 
-		methodService compilationWarnings ifNotNil:[:warning | ^warning]].
-	^nil!
-
 confirmCategoryRemoval: selections
 	| ws verbiage |
 	ws := WriteStream on: String new.
@@ -413,20 +407,14 @@ editSaveMethod
 	self redrawAllViews!
 
 editSaveMethod: classService
-	| caretPosition firstVisibleLine category |
-	caretPosition := methodSourcePresenter view caretPosition.
-	firstVisibleLine := methodSourcePresenter view lineScroll.
-	category := self targetCategory.
-	classService
-		command: #saveMethodSource:category:;
-		commandArgs: (Array with: self currentMethodSource with: category).
-	[self issueCommand: (Array with: classService)] on: GsCompileError
-		do: [:ex | ^self reportCompileError: ex list].
-	self selectMethodsFrom: classService.
-	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
-	methodSourcePresenter view goto: caretPosition.
-	(self compilationWarningFrom: classService selectedMethods)
-		ifNotNil: [:warning | self statusBarText: warning]!
+	self
+		editSaveMethod: classService
+		in: methodSourcePresenter
+		category: self targetCategory.
+	classService selectedMethods
+		ifNotNil: 
+			["there will be no method selected on a compiler error"
+			self selectMethodsFrom: classService]!
 
 filterTabChanged
 	self isClassSelected
@@ -513,6 +501,22 @@ isDictionariesTabSelected
 	^projectDictionaryTabs currentCard name = 'dictionaryList'.
 !
 
+isOkayToChange
+	
+	methodSourcePresenter view isModified ifTrue: [
+		(self isOkayToChangeSource: methodSourcePresenter) ifFalse:[^false]
+	].
+	classDefinitionPresenter view isModified ifTrue: [
+		classDefinitionPresenter ensureVisible.
+		gciSession isValidSession
+			ifTrue: [ (MessageBox confirm: 'Stay on unsaved class definition?' caption: 'Class has unsaved changes!!') ifTrue: [^false]]
+			ifFalse: [(MessageBox confirm: 'Copy changes to Clipboard?' caption: 'Class has unsaved changes!!') ifTrue: [classDefinitionPresenter selectAll; copySelection]].
+		classDefinitionPresenter view isModified: false.
+	].
+	self postOkToChangeEvent. 
+	^true.
+!
+
 issueCommand: services
 	inUpdate ifTrue: [^self].
 	inUpdate := true.
@@ -548,6 +552,10 @@ loadProject
 
 makeDefault
 	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
+
+methodListSelection
+
+	^methodListPresenter selectionOrNil!
 
 methodMenuBreak: aMenu
 	| selection |
@@ -1275,6 +1283,7 @@ updateMethodReferences: services
 updateMethodSource
 	self sundryCleanup.
 	methodListPresenter selections isEmpty ifTrue: [^methodSourcePresenter setDefaultMethod].
+	self updateServices: methodListPresenter selections. 
 	methodListPresenter selections size > 1
 		ifTrue: [self updateMultiMethodComparison]
 		ifFalse: 
@@ -1375,12 +1384,8 @@ updateServices: services
 
 updateSingleMethodSource
 	methodSourcePresenter value: methodListPresenter selection source.
-	methodSourcePresenter view
-		backcolor: JadeTextStyles default colorForNoEdits;
-		isModified: false;
-		isReadOnly: false;
-		yourself.
-	methodSourcePresenter ensureVisible. !
+	methodSourcePresenter ensureVisible. 
+	self displayNoMods: methodSourcePresenter. !
 
 updateTabLabel
 	| cardNumber newLabel |
@@ -1434,7 +1439,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #clearFilterLists!event handlers support!private!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #cloneProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #comparisonTab!private!text tabs! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #compilationWarningFrom:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #confirmCategoryRemoval:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createComponents!initialize/release!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
@@ -1466,10 +1470,12 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #initialize!initialize/release!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isClassSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #issueCommand:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
@@ -1536,7 +1542,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateMenuBar!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateMethodReferences:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateMethodSource!event handlers!public!text tabs!updating! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #updateMultiMethodComparison!private!text tabs! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #updateMultiMethodComparison!event handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updatePackage!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updatePackageInfo!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updatePackages!event handlers!public!updating! !
@@ -1546,7 +1552,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectTab!event handlers support!private!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateServices:!private!services! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #updateSingleMethodSource!private!text tabs! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #updateSingleMethodSource!event handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateTabLabel!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #writeProject!project menu handlers!public! !
 

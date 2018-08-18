@@ -84,7 +84,13 @@ package methodNames
 	add: #JadeLoginShell -> #aboutJadeite;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
+	add: #JadePresenterA -> #compilationWarningFrom:;
+	add: #JadePresenterA -> #currentMethodSourceFrom:;
+	add: #JadePresenterA -> #displayNoMods:;
+	add: #JadePresenterA -> #editSaveMethod:in:category:;
+	add: #JadePresenterA -> #isOkayToChangeSource:;
 	add: #JadePresenterA -> #issueCommand:;
+	add: #JadePresenterA -> #reportCompileError:in:;
 	add: #JadePresenterA -> #update:afterStonReplication:;
 	add: #JadeProcessBrowser -> #debugProcess;
 	add: #JadeServer -> #_describeMethod:;
@@ -116,6 +122,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiring;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiringForClassHierarchyTabs;
+	add: #JadeSystemBrowserPresenter -> #currentMethodSource;
 	add: #JadeSystemBrowserPresenter -> #editSaveClass;
 	add: #JadeSystemBrowserPresenter -> #handleClassCompileError:;
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
@@ -146,6 +153,7 @@ package methodNames
 	add: #MethodListPresenter -> #browseClass;
 	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #MethodSourcePresenter -> #fileSave;
+	add: #MethodSourcePresenter -> #isOkayToChange;
 	add: #MethodSourcePresenter -> #methodMenuBreak:;
 	add: #Object -> #isClassService;
 	add: #Object -> #isMethodService;
@@ -802,6 +810,76 @@ browseSendersOf: aGsMethodOrString
 		yourself.
 !
 
+compilationWarningFrom: methodServices
+
+	methodServices do:[:methodService | 
+		methodService compilationWarnings ifNotNil:[:warning | ^warning]].
+	^nil!
+
+currentMethodSourceFrom: sourceString
+
+	| source fromStream writeStream |
+	fromStream := ReadStream on: sourceString.
+	writeStream := WriteStream on: String new.
+	[
+		fromStream atEnd not.
+	] whileTrue: [
+		| char |
+		(char := fromStream next) == Character cr ifTrue: [
+			fromStream peek ~~ Character lf ifTrue: [
+				writeStream nextPut: Character lf.
+			].
+		] ifFalse: [
+			writeStream nextPut: char.
+		].
+	].
+	source := writeStream contents.
+	[
+		source last codePoint <= 32.
+	] whileTrue: [
+		source := source copyFrom: 1 to: source size - 1.
+	].
+	^source.
+!
+
+displayNoMods: sourcePresenter
+	sourcePresenter view
+		backcolor: JadeTextStyles default colorForNoEdits;
+		isModified: false;
+		isReadOnly: false.!
+
+editSaveMethod: classService in: methodSourcePresenter category: category
+	| caretPosition firstVisibleLine methodSource |
+	caretPosition := methodSourcePresenter view caretPosition.
+	firstVisibleLine := methodSourcePresenter view lineScroll.
+	methodSource := self currentMethodSourceFrom: methodSourcePresenter value.
+	classService
+		command: #saveMethodSource:category:;
+		commandArgs: (Array with: methodSource with: category).
+	[self issueCommand: (Array with: classService)] on: GsCompileError
+		do: [:ex | ^self reportCompileError: ex list in: methodSourcePresenter].
+	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
+	methodSourcePresenter view goto: caretPosition.
+	methodSourcePresenter value: methodSource.
+	self displayNoMods: methodSourcePresenter.
+	(self compilationWarningFrom: classService selectedMethods)
+		ifNotNil: [:warning | self statusBarText: warning]!
+
+isOkayToChangeSource: methodSourcePresenter
+	methodSourcePresenter ensureVisible.
+	gciSession isValidSession
+		ifTrue: 
+			[(MessageBox confirm: 'Stay on unsaved method?' caption: 'Method has unsaved changes!!')
+				ifTrue: [^false]]
+		ifFalse: 
+			[(MessageBox confirm: 'Copy changes to Clipboard?' caption: 'Method has unsaved changes!!')
+				ifTrue: 
+					[methodSourcePresenter
+						selectAll;
+						copySelection]].
+	methodSourcePresenter view isModified: false.
+	^true!
+
 issueCommand: services
 	| stonString stonResultString |
 	services do:[:service | service prepareForReplication].
@@ -810,12 +888,44 @@ issueCommand: services
 		ensure: [services do: [:service | service clearCommand]].
 	^self update: services afterStonReplication: stonResultString.!
 
+reportCompileError: anArrayOfArray in: methodSourcePresenter
+
+	| source position stream string indicators |
+	indicators := OrderedCollection new.
+	methodSourcePresenter view clearContainerIndicators.
+	source := (self currentMethodSourceFrom: methodSourcePresenter value) , Character lf asString.
+	position := methodSourcePresenter view caretPosition.
+	methodSourcePresenter value: source.
+	methodSourcePresenter view caretPosition: position.
+	stream := WriteStream on: String new.
+	anArrayOfArray do: [:eachArray | 
+		| start |
+		start := eachArray at: 2.
+		string := eachArray at: 3.
+		stream nextPutAll: string , '; '.
+		indicators add: (ScintillaIndicator
+			styleName: 10 
+			range: (start to: (start + 10 min: source size)) 
+			tag: string).
+	].
+	methodSourcePresenter view backcolor: JadeTextStyles default colorForCompileError.
+	methodSourcePresenter view indicators: indicators.
+	string := stream contents.
+	self statusBarText: (string copyFrom: 1 to: string size - 2).
+!
+
 update: services afterStonReplication: stonResults
 	^BrowserUpdate current update: services afterStonReplication: stonResults! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
-!JadePresenterA categoriesFor: #issueCommand:!Jadeite!private! !
-!JadePresenterA categoriesFor: #update:afterStonReplication:!Jadeite!private! !
+!JadePresenterA categoriesFor: #compilationWarningFrom:!Jadeite!public! !
+!JadePresenterA categoriesFor: #currentMethodSourceFrom:!Jadeite!public! !
+!JadePresenterA categoriesFor: #displayNoMods:!displaying!public! !
+!JadePresenterA categoriesFor: #editSaveMethod:in:category:!Jadeite!public! !
+!JadePresenterA categoriesFor: #isOkayToChangeSource:!Jadeite!public! !
+!JadePresenterA categoriesFor: #issueCommand:!Jadeite!public! !
+!JadePresenterA categoriesFor: #reportCompileError:in:!Jadeite!public! !
+!JadePresenterA categoriesFor: #update:afterStonReplication:!Jadeite!public! !
 
 !JadeProcessBrowser methodsFor!
 
@@ -1492,6 +1602,9 @@ createSchematicWiring
 createSchematicWiringForClassHierarchyTabs
 	!
 
+currentMethodSource
+	^self currentMethodSourceFrom: methodSourcePresenter value!
+
 editSaveClass
 	| string stream flag |
 	string := classDefinitionPresenter value
@@ -1803,6 +1916,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!public! !
+!JadeSystemBrowserPresenter categoriesFor: #currentMethodSource!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #handleClassCompileError:!compiling!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
@@ -2084,6 +2198,9 @@ fileSave
 	^false.
 !
 
+isOkayToChange
+	^self isOkayToChangeSource: documentPresenter!
+
 methodMenuBreak: aMenu
 	| selection |
 	documentPresenter view isModified ifTrue: [^self].
@@ -2091,6 +2208,7 @@ methodMenuBreak: aMenu
 	selection ifNil: [^self].
 	selection appendToSourceMenu: aMenu presenter: documentPresenter view ! !
 !MethodSourcePresenter categoriesFor: #fileSave!public! !
+!MethodSourcePresenter categoriesFor: #isOkayToChange!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodMenuBreak:!Jade!public! !
 
 !Object methodsFor!
