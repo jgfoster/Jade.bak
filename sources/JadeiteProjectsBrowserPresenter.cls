@@ -1288,8 +1288,7 @@ updateMethodSource
 		ifTrue: [self updateMultiMethodComparison]
 		ifFalse: 
 			[self showSuperClassComparison.
-			self updateSingleMethodSource].
-	!
+			self updateSingleMethodSource].!
 
 updateMultiMethodComparison
 	comparisonPresenter
@@ -1384,6 +1383,7 @@ updateServices: services
 
 updateSingleMethodSource
 	methodSourcePresenter value: methodListPresenter selection source.
+	self refreshBreakPointsIn: methodSourcePresenter.
 	methodSourcePresenter ensureVisible. 
 	self displayNoMods: methodSourcePresenter. !
 

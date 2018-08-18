@@ -90,6 +90,9 @@ registerPresentersForUpdates
 		browser: self!
 
 update
+	^self updateMethodSource!
+
+updateMethodSource
 	methodService isNil ifTrue: [^self setDefaultMethod].
 	documentPresenter
 		value: methodService source;
@@ -97,7 +100,8 @@ update
 	documentPresenter view
 		backcolor: JadeTextStyles default colorForNoEdits;
 		isEnabled: true;
-		yourself!
+		yourself.
+	self refreshBreakPointsIn: documentPresenter!
 
 value: string
 
@@ -113,5 +117,6 @@ value: string
 !JadeiteMethodSourcePresenter categoriesFor: #openMethodListOn:selecting:!menu handlers!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #registerPresentersForUpdates!public!register presenters! !
 !JadeiteMethodSourcePresenter categoriesFor: #update!public!updating! !
+!JadeiteMethodSourcePresenter categoriesFor: #updateMethodSource!public!updating! !
 !JadeiteMethodSourcePresenter categoriesFor: #value:!public! !
 

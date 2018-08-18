@@ -21,29 +21,28 @@ accessedInstVars
 accessedInstVars: anObject
 	accessedInstVars := anObject!
 
-addBreakPointMenuAt: stepPoint to: aMenu presenter: anObject
+addBreakPointMenuAt: stepPoint to: aMenu presenter: presenter
 	| desc args menuCommand |
+	args := Array with: stepPoint with: presenter parentPresenter.
 	(self breakPoints includes: stepPoint)
 		ifTrue: 
-			[args := Array with: stepPoint with: 'clear'.
+			[command := #clearBreakPointAt:in:.
 			desc := 'Clear break at step point ' , stepPoint printString]
 		ifFalse: 
-			[args := Array with: stepPoint with: 'set'.
+			[command := #setBreakPointAt:in:.
 			desc := 'Break at step point ' , stepPoint printString].
 	menuCommand := MessageSend
-				receiver: self
-				selector: #breakAt:operation:
+				receiver: presenter parentPresenter
+				selector: command
 				arguments: args.
-	aMenu
-		addSeparator;
-		addCommand: menuCommand description: desc;
-		yourself.
+	aMenu addCommand: menuCommand description: desc.
 	^menuCommand!
 
 appendToSourceMenu: aMenu presenter: methodSourcePresenter
 	| stepPoint menuCommand messageSelector |
 	stepPoint := self stepPointFromCursorIn: methodSourcePresenter.
 	stepPoint isNil ifTrue: [^self].
+	aMenu addSeparator.
 	menuCommand := self
 				addBreakPointMenuAt: stepPoint
 				to: aMenu
@@ -217,6 +216,11 @@ packageName
 
 packageName: anObject
 	packageName := anObject!
+
+prepareForReplication
+
+	stepPoints := Array new. 
+	breakPoints := Array new. !
 
 printOn: target
 	"Append, to the <puttableStream>, target, a string whose characters are a 
@@ -417,6 +421,7 @@ user: anObject
 !RowanMethodService categoriesFor: #oopType!public! !
 !RowanMethodService categoriesFor: #packageName!accessing!private! !
 !RowanMethodService categoriesFor: #packageName:!accessing!private! !
+!RowanMethodService categoriesFor: #prepareForReplication!public!replication! !
 !RowanMethodService categoriesFor: #printOn:!printing!public! !
 !RowanMethodService categoriesFor: #projectName!accessing!private! !
 !RowanMethodService categoriesFor: #projectName:!accessing!private! !

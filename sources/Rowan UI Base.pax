@@ -85,13 +85,17 @@ package methodNames
 	add: #JadeLoginShell -> #aboutJadeite;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
+	add: #JadePresenterA -> #clearBreakPointAt:in:;
 	add: #JadePresenterA -> #compilationWarningFrom:;
 	add: #JadePresenterA -> #currentMethodSourceFrom:;
 	add: #JadePresenterA -> #displayNoMods:;
 	add: #JadePresenterA -> #editSaveMethod:in:category:;
 	add: #JadePresenterA -> #isOkayToChangeSource:;
 	add: #JadePresenterA -> #issueCommand:;
+	add: #JadePresenterA -> #methodListSelection;
+	add: #JadePresenterA -> #refreshBreakPointsIn:;
 	add: #JadePresenterA -> #reportCompileError:in:;
+	add: #JadePresenterA -> #setBreakPointAt:in:;
 	add: #JadePresenterA -> #update:afterStonReplication:;
 	add: #JadeProcessBrowser -> #debugProcess;
 	add: #JadeServer -> #_describeMethod:;
@@ -820,6 +824,15 @@ browseSendersOf: aGsMethodOrString
 		yourself.
 !
 
+clearBreakPointAt: stepPoint in: browser
+	| selection |
+	selection := self methodListSelection.
+	selection
+		command: #clearBreakAt:;
+		commandArgs: (Array with: stepPoint).
+	self issueCommand: (Array with: selection).
+	browser updateMethodSource. !
+
 compilationWarningFrom: methodServices
 
 	methodServices do:[:methodService | 
@@ -898,6 +911,30 @@ issueCommand: services
 		ensure: [services do: [:service | service clearCommand]].
 	^self update: services afterStonReplication: stonResultString.!
 
+methodListSelection
+	
+	self subclassResponsibility!
+
+refreshBreakPointsIn: methodSourcePresenter
+	| indicators selection |
+	selection := self methodListSelection.
+	methodSourcePresenter view clearContainerIndicators.
+	indicators := OrderedCollection new.
+	1 to: selection stepPoints size
+		do: 
+			[:stepPoint |
+			| range string styleName |
+			range := (selection stepPoints at: stepPoint) key.
+			styleName := (selection breakPoints includes: stepPoint) ifTrue: [9] ifFalse: [8].
+			string := ((selection breakPoints includes: stepPoint) ifTrue: ['Break at '] ifFalse: [''])
+						, 'step point #' , stepPoint printString.
+			indicators add: (ScintillaIndicator
+						styleName: styleName
+						range: range
+						tag: string)].
+	methodSourcePresenter view indicators: indicators.
+	methodSourcePresenter view update. !
+
 reportCompileError: anArrayOfArray in: methodSourcePresenter
 
 	| source position stream string indicators |
@@ -924,17 +961,30 @@ reportCompileError: anArrayOfArray in: methodSourcePresenter
 	self statusBarText: (string copyFrom: 1 to: string size - 2).
 !
 
+setBreakPointAt: stepPoint in: browser
+	| selection |
+	selection := self methodListSelection.
+	selection
+		command: #setBreakAt:;
+		commandArgs: (Array with: stepPoint).
+	self issueCommand: (Array with: selection).
+	browser updateMethodSource. !
+
 update: services afterStonReplication: stonResults
 	^BrowserUpdate current update: services afterStonReplication: stonResults! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
+!JadePresenterA categoriesFor: #clearBreakPointAt:in:!Jadeite!public! !
 !JadePresenterA categoriesFor: #compilationWarningFrom:!Jadeite!public! !
 !JadePresenterA categoriesFor: #currentMethodSourceFrom:!Jadeite!public! !
 !JadePresenterA categoriesFor: #displayNoMods:!displaying!public! !
 !JadePresenterA categoriesFor: #editSaveMethod:in:category:!Jadeite!public! !
 !JadePresenterA categoriesFor: #isOkayToChangeSource:!Jadeite!public! !
 !JadePresenterA categoriesFor: #issueCommand:!Jadeite!public! !
+!JadePresenterA categoriesFor: #methodListSelection!Jadeite!public! !
+!JadePresenterA categoriesFor: #refreshBreakPointsIn:!Jadeite!public! !
 !JadePresenterA categoriesFor: #reportCompileError:in:!Jadeite!public! !
+!JadePresenterA categoriesFor: #setBreakPointAt:in:!Jadeite!public! !
 !JadePresenterA categoriesFor: #update:afterStonReplication:!Jadeite!public! !
 
 !JadeProcessBrowser methodsFor!
