@@ -155,7 +155,12 @@ name: aString
 
 packagesUpdate: presenter!
 
-prepareForReplication!
+prepareForReplication
+	"only ston replicate what is absolutely necessary. Each
+	service knows how to do that. Make this method prepares
+	each command arg as well"
+
+	commandArgs ifNotNil: [commandArgs do: [:arg | arg prepareForReplication]]!
 
 printOn: aStream
 

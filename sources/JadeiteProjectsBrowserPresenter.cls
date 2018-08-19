@@ -126,6 +126,9 @@ categoriesMenuStrings
 	).
 !
 
+categoryListPresenter
+	^categoryListPresenter!
+
 checkout
 	projectListPresenter selection checkoutUsing: self.
 	self refreshFromServer!
@@ -160,18 +163,8 @@ clearFilterLists
 	variableListPresenter list: ListModel new!
 
 cloneProject
-	"Does a clone and 'attach'"
-	| filePath |
-	filePath := RowanKeyValuePrompter
-				on: 'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston' -> '$ROWAN_PROJECTS_HOME'
-				prompt: 'Please select location of the code repository to clone:'
-				caption: 'Clone Git Repository'.
-	filePath isNil ifTrue: [^false].
-	(RowanProjectService on: gciSession) 
-		newGitProject: filePath key
-		root: filePath value
-		useSsh: true.
-	self refreshFromServer. !
+	super cloneProject.
+	self refreshFromServer!
 
 comparisonTab
 	^comparisonTab
@@ -552,6 +545,9 @@ loadProject
 
 makeDefault
 	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
+
+methodListPresenter
+	^methodListPresenter!
 
 methodListSelection
 
@@ -1021,14 +1017,11 @@ removeClass
 	self issueCommand: (Array with: packageService)!
 
 removeMethodCategories
-	| service selections |
+	| selections |
 	selections := categoryListPresenter selections.
 	selections isEmpty ifTrue: [^MessageBox notify: 'No categories selected'].
 	(self confirmCategoryRemoval: selections) ifFalse: [^self].
-	service := classListPresenter selection
-				command: #removeCategories:;
-				commandArgs: (Array with: categoryListPresenter selections).
-	self issueCommand: (Array with: service)!
+	self basicRemoveMethodCategories!
 
 removeMethods: services
 	services do: 
@@ -1433,6 +1426,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseSendersOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #cleanupComparisonBrowser!initialize/release!private! !
@@ -1475,6 +1469,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !

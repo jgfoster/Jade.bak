@@ -65,6 +65,7 @@ package classNames
 
 package methodNames
 	add: #CodeSourcePresenter -> #browseSelectedClass;
+	add: #Collection -> #prepareForReplication;
 	add: #GciSession -> #computeGemHost;
 	add: #GciSession -> #computeStoneHost;
 	add: #GciSession -> #hasServer;
@@ -83,9 +84,11 @@ package methodNames
 	add: #JadeImageStripper -> #requiredClasses;
 	add: #JadeImageStripper -> #requiredPackageNames;
 	add: #JadeLoginShell -> #aboutJadeite;
+	add: #JadePresenterA -> #basicCloneProject:root:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadePresenterA -> #clearBreakPointAt:in:;
+	add: #JadePresenterA -> #cloneProject;
 	add: #JadePresenterA -> #compilationWarningFrom:;
 	add: #JadePresenterA -> #currentMethodSourceFrom:;
 	add: #JadePresenterA -> #displayNoMods:;
@@ -164,6 +167,7 @@ package methodNames
 	add: #Object -> #isMethodService;
 	add: #Object -> #isPackageService;
 	add: #Object -> #isProjectService;
+	add: #Object -> #prepareForReplication;
 	add: #Object -> #rowanFixMe;
 	add: #ObjectLogBrowser -> #debug:;
 	add: #Presenter -> #update:withSelector:;
@@ -558,6 +562,12 @@ browseSelectedClass
 		ifFalse: [parent addSystemBrowserForClass: assoc value]! !
 !CodeSourcePresenter categoriesFor: #browseSelectedClass!public! !
 
+!Collection methodsFor!
+
+prepareForReplication
+	self do: [:element | element prepareForReplication]! !
+!Collection categoriesFor: #prepareForReplication!Jadeite!public! !
+
 !GciSession methodsFor!
 
 computeGemHost
@@ -806,6 +816,17 @@ aboutJadeite
 
 !JadePresenterA methodsFor!
 
+basicCloneProject: path root: root
+	| service |
+	service := RowanProjectService new.
+	service
+		command: #newGitProject:root:useSsh:;
+		commandArgs: (Array
+					with: path
+					with: root
+					with: true).
+	self issueCommand: (Array with: service)!
+
 browseImplementorsOf: aGsMethodOrString
 	
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
@@ -832,6 +853,17 @@ clearBreakPointAt: stepPoint in: browser
 		commandArgs: (Array with: stepPoint).
 	self issueCommand: (Array with: selection).
 	browser updateMethodSource. !
+
+cloneProject
+	"Does a clone and 'attach'"
+
+	| filePath |
+	filePath := RowanKeyValuePrompter
+				on: 'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston' -> '$ROWAN_PROJECTS_HOME'
+				prompt: 'Please select location of the code repository to clone:'
+				caption: 'Clone Git Repository'.
+	filePath isNil ifTrue: [^false].
+	self basicCloneProject: filePath key root: filePath value!
 
 compilationWarningFrom: methodServices
 
@@ -972,9 +1004,11 @@ setBreakPointAt: stepPoint in: browser
 
 update: services afterStonReplication: stonResults
 	^BrowserUpdate current update: services afterStonReplication: stonResults! !
+!JadePresenterA categoriesFor: #basicCloneProject:root:!Jadeite!public! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
 !JadePresenterA categoriesFor: #clearBreakPointAt:in:!Jadeite!public! !
+!JadePresenterA categoriesFor: #cloneProject!Jadeite!public! !
 !JadePresenterA categoriesFor: #compilationWarningFrom:!Jadeite!public! !
 !JadePresenterA categoriesFor: #currentMethodSourceFrom:!Jadeite!public! !
 !JadePresenterA categoriesFor: #displayNoMods:!displaying!public! !
@@ -2289,6 +2323,10 @@ isProjectService
 
 	^false!
 
+prepareForReplication
+
+	!
+
 rowanFixMe
 
 	"do nothing. Used for marking to-do items 
@@ -2297,6 +2335,7 @@ rowanFixMe
 !Object categoriesFor: #isMethodService!public!testing! !
 !Object categoriesFor: #isPackageService!public!testing! !
 !Object categoriesFor: #isProjectService!public!testing! !
+!Object categoriesFor: #prepareForReplication!Jadeite!public! !
 !Object categoriesFor: #rowanFixMe!public!testing! !
 
 !ObjectLogBrowser methodsFor!

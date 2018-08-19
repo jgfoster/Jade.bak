@@ -138,16 +138,6 @@ loadProjectNamed: aString
 		withAll: (Array with: aString).
 	self class defaultProjectName: aString!
 
-newGitProject: url root: rootPath useSsh: aBoolean
-	
-	transport
-		send: #newGitProject:root:useSsh:
-		to: remoteService
-		withAll: (Array
-				with: url
-				with: rootPath
-				with: aBoolean)!
-
 newTextView
 	| edit |
 	Shell create view
@@ -289,7 +279,6 @@ sha: anObject
 !RowanProjectService categoriesFor: #isSkew:!accessing!private! !
 !RowanProjectService categoriesFor: #loadProjectFrom:!presenter support!public! !
 !RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
-!RowanProjectService categoriesFor: #newGitProject:root:useSsh:!public!rowan! !
 !RowanProjectService categoriesFor: #newTextView!displaying!private! !
 !RowanProjectService categoriesFor: #packageNames!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !

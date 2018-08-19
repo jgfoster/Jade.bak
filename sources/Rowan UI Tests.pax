@@ -12,6 +12,8 @@ package classNames
 	yourself.
 
 package methodNames
+	add: #JadeiteProjectsBrowserPresenter -> #basicRemoveMethodCategories;
+	add: #RowanMethodService -> #name;
 	add: 'TestResource class' -> #signalInitializationError;
 	yourself.
 
@@ -57,6 +59,22 @@ TestResource subclass: #JadeiteTestResource
 
 
 "Loose Methods"!
+
+!JadeiteProjectsBrowserPresenter methodsFor!
+
+basicRemoveMethodCategories
+	| service |
+	service := classListPresenter selection
+				command: #removeCategories:;
+				commandArgs: (Array with: categoryListPresenter selections).
+	self issueCommand: (Array with: service)! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethodCategories!menu handlers support!private! !
+
+!RowanMethodService methodsFor!
+
+name
+	^selector asString! !
+!RowanMethodService categoriesFor: #name!accessing!public! !
 
 !TestResource class methodsFor!
 
