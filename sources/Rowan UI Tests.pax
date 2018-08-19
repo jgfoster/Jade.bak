@@ -43,7 +43,7 @@ JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeiteAbstractTestCase subclass: #RowanDebuggerTestCase
-	instanceVariableNames: 'debugger gciSession process'
+	instanceVariableNames: 'debugger process'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

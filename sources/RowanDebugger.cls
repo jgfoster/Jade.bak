@@ -137,6 +137,28 @@ registerPresentersForUpdates
 		selector: #processListUpdate:
 !
 
+saveMethod
+
+	| result string |
+	string := self getDocumentData reject: [:each | each == Character cr].	frame saveMethod: string session: gciSession.
+	result := gciSession
+		serverPerform: #'compile:frame:process:' 
+		with: (self getDocumentData reject: [:each | each == Character cr])
+		with: frameListPresenter selectionByIndex + frameListOffset
+		with: gsProcess.
+	(result isKindOf: Boolean) ifTrue: [
+		result ifTrue: [
+			documentPresenter isModified: false.
+			gsProcess trimStackToLevel: frameListPresenter selectionByIndex + frameListOffset.
+			^self update.
+		] ifFalse: [
+			MessageBox notify: 'New method has different selector so will not be on stack!!'.
+			^self selectedFrame.
+		].
+	].
+	MessageBox notify: result.
+!
+
 selectedFrame 
 
 	| index breaks source |
@@ -222,6 +244,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #processListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #queryCommand:!public! !
 !RowanDebugger categoriesFor: #registerPresentersForUpdates!public! !
+!RowanDebugger categoriesFor: #saveMethod!public! !
 !RowanDebugger categoriesFor: #selectedFrame!public! !
 !RowanDebugger categoriesFor: #stepInto!public! !
 !RowanDebugger categoriesFor: #stepOut!public! !
@@ -235,9 +258,10 @@ variableListPresenter
 
 aboutToShowErrorShellOn: gsError
 
+	self semaphore ifNil: [^self].
 	[
 		^self openDebuggerOnException: gsError
-	] on: Error do: [:ex | 
+	] on: GsError do: [:ex | 
 		ex debugger view close.
 		MessageBox warning: ex description.
 		Processor activeProcess terminate. 
