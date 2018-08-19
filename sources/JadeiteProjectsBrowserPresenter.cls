@@ -86,12 +86,6 @@ browseHierarchySendersOf: string
 	self issueCommand: (Array with: service).
 	self openMethodListOn: service selecting: string!
 
-browseImplementorsOf: string
-	| service |
-	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string!
-
 browseMethodHistory
 
 	MessageBox warning: 'Method history is not available yet'. !
@@ -106,12 +100,6 @@ browseMethodsContaining
 	self openMethodListOn: service selecting: string
 	
 !
-
-browseSendersOf: string
-	| service |
-	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string!
 
 categoriesMenuStrings
 
@@ -637,11 +625,6 @@ openDictionaryBrowserOn: classService
 	Cursor wait showWhile: 
 			[shell := RowanSystemBrowser showOnSession: gciSession.
 			shell selectClass: classService name asString selector: String new]!
-
-openMethodListOn: service selecting: string
-	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		methods: service queryResults
-		selecting: string!
 
 pkgsMenuStrings
 	0 == 1
@@ -1421,10 +1404,8 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementorsOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySenders!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySendersOf:!public!queries! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public!queries! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseSendersOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
@@ -1479,7 +1460,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnMethodCategory:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #openDictionaryBrowserOn:!menu handlers support!private! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers support!private!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #populateFilterList!event handlers support!private!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #postOkToChangeEvent!event handlers!public! !

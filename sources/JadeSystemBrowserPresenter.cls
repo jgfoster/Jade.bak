@@ -237,14 +237,6 @@ browseImplementorsOf
 	self browseImplementorsOf: selector.
 !
 
-browseImplementorsOf: aString
-
-	| string |
-	string := 'browseImplementors' , Character tab asString , aString , Character lf asString.
-	(self updateCommand: string) = 'browseImplementors' ifFalse: [self error: 'unexpected response'].
-	^self browseMethodsAndSelect: aString type: #definitions.
-!
-
 browseMethodHistory
 
 	| string |
@@ -302,14 +294,6 @@ browseSendersOf
 	| string |
 	(string := self promptForSelector) isNil ifTrue: [^self].
 	self browseSendersOf: string.
-!
-
-browseSendersOf: aString
-
-	| string |
-	string := 'browseSenders' , Character tab asString , aString , Character lf asString.
-	(self updateCommand: string) = 'browseSenders' ifFalse: [self error: 'unexpected response'].
-	self browseMethodsAndSelect: aString type: #references.
 !
 
 buildHistoryMenuNamed: aString from: startIndex to: endIndex by: increment
@@ -2905,14 +2889,12 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseGlobalReferences!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementors!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodPragmas!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSelectedClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSenders!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #buildHistoryMenuNamed:from:to:by:!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !

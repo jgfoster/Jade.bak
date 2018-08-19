@@ -126,8 +126,10 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
 	add: #JadeSystemBrowserPresenter -> #basicAddMethodCategory:;
 	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
+	add: #JadeSystemBrowserPresenter -> #browseImplementorsOf:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeSystemBrowserPresenter -> #browseSendersOf:;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiring;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiringForClassHierarchyTabs;
 	add: #JadeSystemBrowserPresenter -> #currentMethodSource;
@@ -135,6 +137,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #handleClassCompileError:;
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
+	add: #JadeSystemBrowserPresenter -> #openMethodListOn:selecting:;
 	add: #JadeSystemBrowserPresenter -> #packageTabName;
 	add: #JadeSystemBrowserPresenter -> #postOkToChangeEvent;
 	add: #JadeSystemBrowserPresenter -> #preRemoveMethods;
@@ -1641,6 +1644,12 @@ basicRemoveMethods
 				, self requestString.
 	self updateCommand: string!
 
+browseImplementorsOf: string
+	| service |
+	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: string!
+
 browseMethodsAndSelect: aString
 
 	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
@@ -1654,6 +1663,12 @@ browseMethodsAndSelect: aString type: browseType
 		browseMethodsFromString: readStream upToEnd methodName: aString type: browseType;
 		selecting: aString.
 !
+
+browseSendersOf: string
+	| service |
+	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: string!
 
 createSchematicWiring
 	super createSchematicWiring.
@@ -1755,6 +1770,11 @@ onViewOpened
 	variableListPresenter view contextMenu: (Menu fromStrings: self variablesMenuStrings).
 	self setSearchPolicy.
 	!
+
+openMethodListOn: service selecting: string
+	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
+		methods: service queryResults
+		selecting: string!
 
 packageTabName
 
@@ -2006,8 +2026,10 @@ updateSelector
 		ifTrue: [MessageBox warning: warnings caption: 'Jade Compile Warning']! !
 !JadeSystemBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #currentMethodSource!menu handlers!public! !
@@ -2015,6 +2037,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #handleClassCompileError:!compiling!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers support!private!queries! !
 !JadeSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #postOkToChangeEvent!event handlers!private! !
 !JadeSystemBrowserPresenter categoriesFor: #preRemoveMethods!menu handlers!public! !
