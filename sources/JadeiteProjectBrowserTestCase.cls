@@ -29,6 +29,9 @@ ensureRowanSample1Attached
 methodListPresenter
 	^self projectsPresenter methodListPresenter!
 
+methodSourcePresenter
+	^self projectsPresenter methodSourcePresenter!
+
 openProjectsBrowser
 	browser := self openWindow: [transcript openJadeiteProjectsBrowser]!
 
@@ -68,6 +71,15 @@ rowanProjectsHome
 rowanSample1Path
 	^'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston'!
 
+saveSampleMethod
+
+	| source |
+	source := 'sampleMethod   ^123'. 
+	self methodSourcePresenter value: source. 
+	self projectsPresenter editSaveMethod: self classListPresenter selection. 
+
+	!
+
 selectCategoriesNamed: categories
 	categories do: 
 			[:category |
@@ -78,15 +90,6 @@ selectCategoriesNamed: categories
 			self categoryListPresenter selections: (self categoryListPresenter selections asOrderedCollection
 						add: service;
 						yourself)]!
-
-selectFooMethod
-
-	"big assumption - #foo will always be in RowanSample1 project"
-	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
-	self selectServicesNamed: #('RowanSample1-Core') in: self packageListPresenter.
-	self selectServicesNamed: #('RowanSample1') in: self classListPresenter.
-	self selectCategoriesNamed: #('accessing').
-	self selectServicesNamed: #('foo') in: self methodListPresenter!
 
 selectRowanSample1Class
 	"big assumption - RowanSample1 class will allways be in RowanSample1 project"
@@ -112,7 +115,9 @@ serviceNamed: name in: presenter
 
 setUp
 	super setUp.
-	self openProjectsBrowser.!
+	self openProjectsBrowser.
+	self abortTransaction.  "ensure we don't have unsaved changes in the images"
+!
 
 tearDown
 	super tearDown.
@@ -150,7 +155,13 @@ test_packagesShownInMultipleProjects
 test_saveMethod
 	self rowanFixMe. "incomplete test"
 	self ensureRowanSample1Attached.
-	self selectFooMethod!
+	self selectRowanSample1Class.
+	self deny: (self categoryListPresenter list includes: 'test_saveMethod'). 
+	self projectsPresenter basicAddMethodCategory: 'test_saveMethod'.
+	self saveSampleMethod. 
+	self selectServicesNamed: 'sampleMethod' in: self methodListPresenter.
+	
+	!
 
 test_selectMultiplePackages
 	self assert: self packageListPresenter list isEmpty.
@@ -172,6 +183,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #classListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #methodListPresenter!presenter!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #methodSourcePresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #openProjectsBrowser!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #openWindow:!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #packageListPresenter!presenter!private! !
@@ -181,8 +193,8 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectsHome!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanSample1Path!constants!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectCategoriesNamed:!private!selection! !
-!JadeiteProjectBrowserTestCase categoriesFor: #selectFooMethod!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectRowanSample1Class!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectServicesNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #serviceNamed:in:!private!selection! !
