@@ -120,8 +120,9 @@ tearDown
 	browser ifNotNil: [browser destroy]!
 
 test_addRemoveCategory
-	"This test will fail if RowanSample1 project has not been cloned in ROWAN_PROJECTS_HOME"
+	"This test will fail if RowanSample1 project has not been cloned in ROWAN_PROJECTS_HOME."
 
+	self rowanFixMe. "Ideally, get RowanSample1 project from git hub automatically" 
 	self ensureRowanSample1Attached.
 	self selectRowanSample1Class.
 	self deny: (self categoryListPresenter list includes: 'jadeite test').
