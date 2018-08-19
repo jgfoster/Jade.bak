@@ -362,14 +362,18 @@ initializeServer
 "
 	| jadeServerClassOop |
 	library ifNil: [^self].
-	jadeServerClassOop := library session: gciSessionId resolveSymbol: library jadeServerClass name.
-	jadeServerClassOop isOopIllegal ifFalse: [
-		| version |
-		server := self send: #'new' to: jadeServerClassOop.
-		self send: #'initialize' to: server.
-		version := self send: #'version' to: server.
-		version = self jadeSessionManagerClass version ifTrue: [^self].
-		(MessageBox confirm: 'Use built-in JadeServer version ' , version , '?') ifTrue: [^self].
+	[
+		jadeServerClassOop := library session: gciSessionId resolveSymbol: library jadeServerClass name.
+		jadeServerClassOop isOopIllegal ifFalse: [
+			| version |
+			server := self send: #'new' to: jadeServerClassOop.
+			self send: #'initialize' to: server.
+			version := self send: #'version' to: server.
+			version = self jadeSessionManagerClass version ifTrue: [^self].
+			(MessageBox confirm: 'Use built-in JadeServer version ' , version , '?') ifTrue: [^self].
+		].
+	] on: Error do: [:ex | 
+		MessageBox notify: 'Unable to use built-in JadeServer because ' , ex description.
 	].
 	[
 		| string |

@@ -70,12 +70,13 @@ describeErrorNumber
 
 fileOutJadeServer
 
-	| path string file index |
+	| path string file index version |
+	version := self gciSession serverPerform: #'version'.
 	path := FileSaveDialog new
 		caption: 'File Out JadeServer';
 		fileTypes: self fileTypes;
 		defaultExtension: self defaultFileExtension;
-		value: gciSession _library jadeServerClass name , '-' , self jadeSessionManagerClass version , '.gs';
+		value: gciSession _library jadeServerClass name , '-' , version , '.gs';
 		overwritePrompt;
 		showModal.
 	path isNil ifTrue: [^self].
