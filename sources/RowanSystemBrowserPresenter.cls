@@ -118,6 +118,13 @@ labelOfClass: oldName changedTo: newName
 
 !
 
+methodMenuBreak: aMenu
+	| selection |
+	methodSourcePresenter view isModified ifTrue: [^self].
+	selection := methodListPresenter selectionOrNil.
+	selection ifNil: [^self].
+	selection appendToSourceMenu: aMenu presenter: methodSourcePresenter!
+
 onViewClosed
 	"copied to RowanDebugger"
 
@@ -394,6 +401,21 @@ updateMethodFrom: update
 	].
 	!
 
+updateMethodReferences: displayArrays
+	| services className |
+	className := classListPresenter selection.
+	services := displayArrays collect: 
+					[:displayArray |
+					RowanMethodService new
+						selector: displayArray first asSymbol;
+						className: className asSymbol].
+	services do: 
+			[:service |
+			service meta: self isClassSideSelected.
+			service command: #allReferences].
+	self basicUpdateServices: services.
+	^services!
+
 updateMethodsFrom: update
 	| fullList selections |
 	fullList := update methods collect: 
@@ -484,6 +506,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #createSchematicWiringForPackageDictionaryTabs!create schemantic wiring!public! !
 !RowanSystemBrowserPresenter categoriesFor: #getViews!public! !
 !RowanSystemBrowserPresenter categoriesFor: #labelOfClass:changedTo:!event handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #methodMenuBreak:!menus!public! !
 !RowanSystemBrowserPresenter categoriesFor: #onViewClosed!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #projectDictionaryChanged!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!rowan! !
@@ -498,6 +521,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFilter!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFilterFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFrom:!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #updateMethodReferences:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodsFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateOverrideListFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updatePresenters!public!updating! !

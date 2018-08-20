@@ -234,11 +234,16 @@ printOn: target
 	are complementary methods for generating strings for presentation to an
 	end-user."
 
-	| name |
-	name := self class name.
+	| serviceClassName |
+	serviceClassName := self class name.
 	target 
-		nextPutAll: (name first isVowel ifTrue: ['an '] ifFalse: ['a ']);
-		nextPutAll: name!
+		nextPutAll: (serviceClassName first isVowel ifTrue: ['an '] ifFalse: ['a ']);
+		nextPutAll: serviceClassName;
+		nextPut: $(;
+		nextPutAll: className; 
+		nextPutAll: '>>';
+		nextPutAll: selector asString;
+		nextPut: $). !
 
 projectName
 	^projectName!

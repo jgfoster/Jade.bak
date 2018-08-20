@@ -1459,28 +1459,6 @@ methodsIdentifier
 	^stream contents.
 !
 
-methodsMenuStrings
-
-	false ifTrue: [	"This helps us find senders"
-		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2; fileOutMethod.
-	].
-	^#(
-		'&Methods'
-		'Browse &Implementors//browseImplementors'
-		'Browse Implementors of ...//browseImplementorsOf'
-		'Browse &Senders//browseSenders'
-		'Browse Senders of ...//browseSendersOf'
-		'Browse Methods &Containing ...//browseMethodsContaining'
-		'Browse &History//browseMethodHistory'
-		'BrowseMethod &Pragmas ...//browseMethodPragmas'
-		'&File out method ...//fileOutMethod'
-		'-'
-		'&Delete Method(s)//removeMethods'
-		#('&Method Environment' '&0//setEnvironment0' '&1//setEnvironment1' '&2//setEnvironment2')
-		'Run &Tests//runMethodTests'
-	).
-!
-
 methodSourcePresenter
 
 	^methodSourcePresenter.
@@ -2969,17 +2947,17 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #initialize!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #insertDictionary!public! !
 !JadeSystemBrowserPresenter categoriesFor: #inspectGlobal!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isCategoriesTabSelected!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #isCategoriesTabSelected!public!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassListTabSelected!public!request string! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassSelectedInEditor!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassSideSelected!accessing!public!request string! !
-!JadeSystemBrowserPresenter categoriesFor: #isDictionariesTabSelected!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isGlobalsTabSelected!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isPackageListTabSelected!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isPragmasTabSelected!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
+!JadeSystemBrowserPresenter categoriesFor: #isGlobalsTabSelected!public!testing! !
+!JadeSystemBrowserPresenter categoriesFor: #isOkayToChange!public!testing! !
+!JadeSystemBrowserPresenter categoriesFor: #isPackageListTabSelected!public!testing! !
+!JadeSystemBrowserPresenter categoriesFor: #isPragmasTabSelected!public!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #isTreeModel:equivalentTo:!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isVariablesTabSelected!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #isVariablesTabSelected!public!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeDebug!menu handlers!private! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeDisplay!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeExecute!menu handlers!public! !
@@ -2999,7 +2977,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodMenu:!event handlers!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodsIdentifier!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourcePresenter!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #methodValueChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onDragClassesOverDictionary:!drag & drop!public! !

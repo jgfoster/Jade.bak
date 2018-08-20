@@ -212,43 +212,19 @@ createSchematicWiringForClassHierarchyTabs
 
 createSchematicWiringForClassList
 	classListPresenter
-		when: #drag:
-			send: #onDragClassList:
-			to: self;
-		when: #dragCut:
-			send: #onDragCutClassList:
-			to: self;
-		when: #dragOver:
-			send: #onDragOverClassList:
-			to: self;
-		when: #drop:
-			send: #onDropOnClassList:
-			to: self;
-		when: #keyTyped:
-			send: #delayUpdate
-			to: self;
-		when: #selectionChanging:
-			send: #aboutToChange:
-			to: self;
-		when: #selectionChanging:
-			send: #releasedReferencedServices:
-			to: self;
-		when: #selectionChanged
-			send: #selectedClassChanged:
-			to: self
-			with: true;
-		when: #selectionChanged
-			send: #refreshClass
-			to: self;
-		when: #labelOf:changedTo:
-			send: #labelOfClass:changedTo:
-			to: self;
-		when: #aboutToEditLabel:accept:
-			send: #aboutToEditClassLabel:accept:
-			to: self;
-		when: #labelOf:editedTo:accept:
-			send: #labelOfClass:editedTo:accept:
-			to: self!
+		when: #drag: 			send: #onDragClassList: 			to: self;
+		when: #dragCut: 		send: #onDragCutClassList: 		to: self;
+		when: #dragOver: 		send: #onDragOverClassList: 		to: self;
+		when: #drop: 			send: #onDropOnClassList: 		to: self;
+		when: #keyTyped: 		send: #delayUpdate 				to: self;
+		when: #selectionChanging: send: #aboutToChange: 			to: self;
+		when: #selectionChanging: send: #releasedReferencedServices: 	to: self;
+		when: #selectionChanged 	send: #selectedClassChanged: 		to: self with: true;
+		when: #selectionChanged 	send: #refreshClass 				to: self;
+		when: #labelOf:changedTo: send: #labelOfClass:changedTo: 	to: self;
+		when: #aboutToEditLabel:accept: send: #aboutToEditClassLabel:accept: 	to: self;
+		when: #labelOf:editedTo:accept: send: #labelOfClass:editedTo:accept: 	to: self;
+		when: #keyTyped: 		send: #selectServiceStartingWith: 			to: classListPresenter!
 
 createSchematicWiringForInstanceClassTabs
 	instanceClassTabs
@@ -295,15 +271,13 @@ createSchematicWiringForMethodFilterTabs
 			with: methodListPresenter!
 
 createSchematicWiringForMethodList
-
-	methodListPresenter			
-		when: #'drag:'				send: #'onDragMethod:'			to: self;
-		when: #'dragCut:'			send: #'onDragCutMethod:'			to: self;
-		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
-		when: #'selectionChanged'		send: #updateMethodSource		to: self;
-		yourself.
-!
+	methodListPresenter
+		when: #drag: 			send: #onDragMethod: 			to: self; 
+		when: #dragCut: 		send: #onDragCutMethod: 			to: self; 
+		when: #keyTyped: 		send: #delayUpdate 				to: self; 
+		when: #selectionChanging: send: #aboutToChange:			to: self; 
+		when: #keyTyped: 		send: #selectServiceStartingWith: 	to: methodListPresenter; 
+		when: #selectionChanged 	send: #updateMethodSource 		to: self!
 
 createSchematicWiringForPackageDictionaryTabs
 
@@ -320,7 +294,7 @@ createSchematicWiringForPackageList
 		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
 		when: #'selectionChanging:'	send: #'releasedReferencedServices:'	to: self;
 		when: #'selectionChanged'		send: #'updatePackage' 			to: self;
-		yourself.
+		when: #keyTyped: 			send: #selectServiceStartingWith: 	to: packageListPresenter
 !
 
 createSchematicWiringForProjectDictionaryList
@@ -541,13 +515,6 @@ methodListSelection
 
 	^methodListPresenter selectionOrNil!
 
-methodMenuBreak: aMenu
-	| selection |
-	methodSourcePresenter view isModified ifTrue: [^self].
-	selection := methodListPresenter selectionOrNil.
-	selection ifNil: [^self].
-	selection appendToSourceMenu: aMenu presenter: methodSourcePresenter!
-
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
@@ -611,6 +578,10 @@ onDropOnMethodCategory: aSession
 		commandArgs: (Array with: methodServices with: targetCategory).
 	self issueCommand: (Array with: classService).
 	self selectMethodsFrom: classService!
+
+onSetFocus: aView stack: aString
+
+	"no need for constant trips to the server"!
 
 onViewOpened
 	"copied to RowanDebugger"
@@ -1076,22 +1047,6 @@ selectMethodSourceTab
 			[methodSourceTab ensureVisible.
 			methodListPresenter selectionOrNil ifNil: [methodSourcePresenter setDefaultMethod]]!
 
-selectorsString
-	| stream |
-	self updateMethodReferences: methodListPresenter selections.
-	stream := String new writeStream. 
-	methodListPresenter selections do: 
-			[:service |
-			stream nextPutAll: service selectorsDisplayString.
-			service references notEmpty
-				ifTrue: 
-					[stream
-						nextPutAll: ' (referenced by ';
-						nextPutAll: service references size printString;
-						nextPutAll: ' methods)'].
-			stream cr].
-	^stream contents!
-
 selectPackage: newPackageSelection
 	| methodSelection classSelection |
 	methodSelection := methodListPresenter selectionOrNil.
@@ -1250,11 +1205,9 @@ updateMenuBar
 !
 
 updateMethodReferences: services
-	| stonString stonResultString |
 	services do: [:service | service command: #allReferences].
-	stonString := STON toString: services.
-	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResultString!
+	self updateServices: services.
+	^services!
 
 updateMethodSource
 	self sundryCleanup.
@@ -1345,17 +1298,9 @@ updateSelectionsForUpdate: update
 	update projectSelectionUpdate: projectListPresenter!
 
 updateServices: services
-	"Private - copied to RowanDebugger"
-
-	| stonString stonResults |
-	inUpdate ifTrue:[^self].
-	
-	[inUpdate := true.
-	services do: [:service | service prepareForReplication].
-	stonString := STON toString: services.
-	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResults]
-			ensure: [inUpdate := false]!
+	inUpdate ifTrue: [^self].
+	inUpdate := true.
+	[self basicUpdateServices: services] ensure: [inUpdate := false]!
 
 updateSingleMethodSource
 	methodSourcePresenter value: methodListPresenter selection source.
@@ -1452,12 +1397,12 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDragMethod:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnClassList:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnMethodCategory:!drag & drop!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #onSetFocus:stack:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #openDictionaryBrowserOn:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
@@ -1494,7 +1439,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectMethodsFrom:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectMethodSourceTab!public!selection! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #selectorsString!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectPackage:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setDefaultProjectTablLabel!event handlers!public! !
