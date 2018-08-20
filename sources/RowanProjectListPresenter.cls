@@ -16,19 +16,6 @@ browseProjects
 checkout
 	projectListPresenter selection checkoutUsing: self.!
 
-cloneProject
-	"Does a clone and 'attach'"
-	| filePath |
-	filePath := RowanKeyValuePrompter
-				on: 'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston' -> '$ROWAN_PROJECTS_HOME'
-				prompt: 'Please select location of the code repository to clone:'
-				caption: 'Clone Git Repository'.
-	filePath isNil ifTrue: [^false].
-	(RowanProjectService on: gciSession) 
-		newGitProject: filePath key
-		root: filePath value
-		useSsh: true!
-
 commit
 	| projectName message service promptResult |
 	projectListPresenter hasSelection ifFalse: [MessageBox notify: 'No project selected'].
@@ -165,7 +152,6 @@ writeProject
 	MessageBox notify: 'Projects ' ,  ws contents  , ' written to disk'! !
 !RowanProjectListPresenter categoriesFor: #browseProjects!public! !
 !RowanProjectListPresenter categoriesFor: #checkout!project menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #cloneProject!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #commit!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #createComponents!public! !
 !RowanProjectListPresenter categoriesFor: #list:!public! !

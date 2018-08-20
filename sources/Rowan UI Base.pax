@@ -65,6 +65,7 @@ package classNames
 
 package methodNames
 	add: #CodeSourcePresenter -> #browseSelectedClass;
+	add: #Collection -> #prepareForReplication;
 	add: #GciSession -> #computeGemHost;
 	add: #GciSession -> #computeStoneHost;
 	add: #GciSession -> #hasServer;
@@ -83,9 +84,11 @@ package methodNames
 	add: #JadeImageStripper -> #requiredClasses;
 	add: #JadeImageStripper -> #requiredPackageNames;
 	add: #JadeLoginShell -> #aboutJadeite;
+	add: #JadePresenterA -> #basicCloneProject:root:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadePresenterA -> #clearBreakPointAt:in:;
+	add: #JadePresenterA -> #cloneProject;
 	add: #JadePresenterA -> #compilationWarningFrom:;
 	add: #JadePresenterA -> #currentMethodSourceFrom:;
 	add: #JadePresenterA -> #displayNoMods:;
@@ -123,8 +126,10 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
 	add: #JadeSystemBrowserPresenter -> #basicAddMethodCategory:;
 	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
+	add: #JadeSystemBrowserPresenter -> #browseImplementorsOf:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeSystemBrowserPresenter -> #browseSendersOf:;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiring;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiringForClassHierarchyTabs;
 	add: #JadeSystemBrowserPresenter -> #currentMethodSource;
@@ -132,6 +137,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #handleClassCompileError:;
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
+	add: #JadeSystemBrowserPresenter -> #openMethodListOn:selecting:;
 	add: #JadeSystemBrowserPresenter -> #packageTabName;
 	add: #JadeSystemBrowserPresenter -> #postOkToChangeEvent;
 	add: #JadeSystemBrowserPresenter -> #preRemoveMethods;
@@ -164,6 +170,7 @@ package methodNames
 	add: #Object -> #isMethodService;
 	add: #Object -> #isPackageService;
 	add: #Object -> #isProjectService;
+	add: #Object -> #prepareForReplication;
 	add: #Object -> #rowanFixMe;
 	add: #ObjectLogBrowser -> #debug:;
 	add: #Presenter -> #update:withSelector:;
@@ -187,6 +194,7 @@ package methodNames
 	add: #RowanCommandResult -> #methodSourceUpdate:browser:;
 	add: #RowanCommandResult -> #methodsRemoved:;
 	add: #RowanCommandResult -> #methodsUpdate:;
+	add: #RowanCommandResult -> #methodUpdate:;
 	add: #RowanCommandResult -> #packagesUpdate:;
 	add: #RowanCommandResult -> #projectPackagesUpdate:browser:;
 	add: #RowanCommandResult -> #projectSelectionUpdate:;
@@ -558,6 +566,12 @@ browseSelectedClass
 		ifFalse: [parent addSystemBrowserForClass: assoc value]! !
 !CodeSourcePresenter categoriesFor: #browseSelectedClass!public! !
 
+!Collection methodsFor!
+
+prepareForReplication
+	self do: [:element | element prepareForReplication]! !
+!Collection categoriesFor: #prepareForReplication!Jadeite!public! !
+
 !GciSession methodsFor!
 
 computeGemHost
@@ -806,6 +820,17 @@ aboutJadeite
 
 !JadePresenterA methodsFor!
 
+basicCloneProject: path root: root
+	| service |
+	service := RowanProjectService new.
+	service
+		command: #newGitProject:root:useSsh:;
+		commandArgs: (Array
+					with: path
+					with: root
+					with: true).
+	self issueCommand: (Array with: service)!
+
 browseImplementorsOf: aGsMethodOrString
 	
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
@@ -832,6 +857,17 @@ clearBreakPointAt: stepPoint in: browser
 		commandArgs: (Array with: stepPoint).
 	self issueCommand: (Array with: selection).
 	browser updateMethodSource. !
+
+cloneProject
+	"Does a clone and 'attach'"
+
+	| filePath |
+	filePath := RowanKeyValuePrompter
+				on: 'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston' -> '$ROWAN_PROJECTS_HOME'
+				prompt: 'Please select location of the code repository to clone:'
+				caption: 'Clone Git Repository'.
+	filePath isNil ifTrue: [^false].
+	self basicCloneProject: filePath key root: filePath value!
 
 compilationWarningFrom: methodServices
 
@@ -972,9 +1008,11 @@ setBreakPointAt: stepPoint in: browser
 
 update: services afterStonReplication: stonResults
 	^BrowserUpdate current update: services afterStonReplication: stonResults! !
+!JadePresenterA categoriesFor: #basicCloneProject:root:!Jadeite!public! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
 !JadePresenterA categoriesFor: #clearBreakPointAt:in:!Jadeite!public! !
+!JadePresenterA categoriesFor: #cloneProject!Jadeite!public! !
 !JadePresenterA categoriesFor: #compilationWarningFrom:!Jadeite!public! !
 !JadePresenterA categoriesFor: #currentMethodSourceFrom:!Jadeite!public! !
 !JadePresenterA categoriesFor: #displayNoMods:!displaying!public! !
@@ -1607,6 +1645,12 @@ basicRemoveMethods
 				, self requestString.
 	self updateCommand: string!
 
+browseImplementorsOf: string
+	| service |
+	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: string!
+
 browseMethodsAndSelect: aString
 
 	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
@@ -1620,6 +1664,12 @@ browseMethodsAndSelect: aString type: browseType
 		browseMethodsFromString: readStream upToEnd methodName: aString type: browseType;
 		selecting: aString.
 !
+
+browseSendersOf: string
+	| service |
+	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: string!
 
 createSchematicWiring
 	super createSchematicWiring.
@@ -1721,6 +1771,11 @@ onViewOpened
 	variableListPresenter view contextMenu: (Menu fromStrings: self variablesMenuStrings).
 	self setSearchPolicy.
 	!
+
+openMethodListOn: service selecting: string
+	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
+		methods: service queryResults
+		selecting: string!
 
 packageTabName
 
@@ -1972,8 +2027,10 @@ updateSelector
 		ifTrue: [MessageBox warning: warnings caption: 'Jade Compile Warning']! !
 !JadeSystemBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!public! !
 !JadeSystemBrowserPresenter categoriesFor: #currentMethodSource!menu handlers!public! !
@@ -1981,6 +2038,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #handleClassCompileError:!compiling!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
+!JadeSystemBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers support!private!queries! !
 !JadeSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #postOkToChangeEvent!event handlers!private! !
 !JadeSystemBrowserPresenter categoriesFor: #preRemoveMethods!menu handlers!public! !
@@ -2289,6 +2347,10 @@ isProjectService
 
 	^false!
 
+prepareForReplication
+
+	!
+
 rowanFixMe
 
 	"do nothing. Used for marking to-do items 
@@ -2297,6 +2359,7 @@ rowanFixMe
 !Object categoriesFor: #isMethodService!public!testing! !
 !Object categoriesFor: #isPackageService!public!testing! !
 !Object categoriesFor: #isProjectService!public!testing! !
+!Object categoriesFor: #prepareForReplication!Jadeite!public! !
 !Object categoriesFor: #rowanFixMe!public!testing! !
 
 !ObjectLogBrowser methodsFor!
@@ -2393,6 +2456,9 @@ methodsRemoved: presenter
 methodsUpdate: presenter
 	!
 
+methodUpdate: presenter
+	!
+
 packagesUpdate: presenter!
 
 projectPackagesUpdate: presenter browser: anObject
@@ -2450,6 +2516,7 @@ updateType
 !RowanCommandResult categoriesFor: #methodSourceUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #methodsRemoved:!public!updating! !
 !RowanCommandResult categoriesFor: #methodsUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #methodUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #packagesUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #projectPackagesUpdate:browser:!public!updating! !
 !RowanCommandResult categoriesFor: #projectSelectionUpdate:!public!updating! !

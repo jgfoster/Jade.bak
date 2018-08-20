@@ -86,12 +86,6 @@ browseHierarchySendersOf: string
 	self issueCommand: (Array with: service).
 	self openMethodListOn: service selecting: string!
 
-browseImplementorsOf: string
-	| service |
-	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string!
-
 browseMethodHistory
 
 	MessageBox warning: 'Method history is not available yet'. !
@@ -107,12 +101,6 @@ browseMethodsContaining
 	
 !
 
-browseSendersOf: string
-	| service |
-	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string!
-
 categoriesMenuStrings
 
 	false ifTrue: [
@@ -125,6 +113,9 @@ categoriesMenuStrings
 		'&Remove//removeMethodCategories'
 	).
 !
+
+categoryListPresenter
+	^categoryListPresenter!
 
 checkout
 	projectListPresenter selection checkoutUsing: self.
@@ -160,18 +151,8 @@ clearFilterLists
 	variableListPresenter list: ListModel new!
 
 cloneProject
-	"Does a clone and 'attach'"
-	| filePath |
-	filePath := RowanKeyValuePrompter
-				on: 'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston' -> '$ROWAN_PROJECTS_HOME'
-				prompt: 'Please select location of the code repository to clone:'
-				caption: 'Clone Git Repository'.
-	filePath isNil ifTrue: [^false].
-	(RowanProjectService on: gciSession) 
-		newGitProject: filePath key
-		root: filePath value
-		useSsh: true.
-	self refreshFromServer. !
+	super cloneProject.
+	self refreshFromServer!
 
 comparisonTab
 	^comparisonTab
@@ -553,6 +534,9 @@ loadProject
 makeDefault
 	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
 
+methodListPresenter
+	^methodListPresenter!
+
 methodListSelection
 
 	^methodListPresenter selectionOrNil!
@@ -641,11 +625,6 @@ openDictionaryBrowserOn: classService
 	Cursor wait showWhile: 
 			[shell := RowanSystemBrowser showOnSession: gciSession.
 			shell selectClass: classService name asString selector: String new]!
-
-openMethodListOn: service selecting: string
-	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		methods: service queryResults
-		selecting: string!
 
 pkgsMenuStrings
 	0 == 1
@@ -1021,14 +1000,11 @@ removeClass
 	self issueCommand: (Array with: packageService)!
 
 removeMethodCategories
-	| service selections |
+	| selections |
 	selections := categoryListPresenter selections.
 	selections isEmpty ifTrue: [^MessageBox notify: 'No categories selected'].
 	(self confirmCategoryRemoval: selections) ifFalse: [^self].
-	service := classListPresenter selection
-				command: #removeCategories:;
-				commandArgs: (Array with: categoryListPresenter selections).
-	self issueCommand: (Array with: service)!
+	self basicRemoveMethodCategories!
 
 removeMethods: services
 	services do: 
@@ -1428,11 +1404,10 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementorsOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySenders!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySendersOf:!public!queries! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public!queries! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseSendersOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #cleanupComparisonBrowser!initialize/release!private! !
@@ -1475,6 +1450,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
@@ -1484,7 +1460,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnMethodCategory:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #openDictionaryBrowserOn:!menu handlers support!private! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers support!private!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #populateFilterList!event handlers support!private!services!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #postOkToChangeEvent!event handlers!public! !

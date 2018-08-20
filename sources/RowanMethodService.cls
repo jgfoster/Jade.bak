@@ -203,6 +203,10 @@ methodSourceUpdate: presenter browser: browser
 					[presenter value: source.
 					browser displayNoMods: presenter]]!
 
+methodUpdate: presenter
+	presenter list
+		do: [:methodService | methodService = self ifTrue: [methodService replicateFrom: self]]!
+
 oop
 
 	^oop!
@@ -417,6 +421,7 @@ user: anObject
 !RowanMethodService categoriesFor: #methodDefinitions!accessing!private! !
 !RowanMethodService categoriesFor: #methodDefinitions:!accessing!private! !
 !RowanMethodService categoriesFor: #methodSourceUpdate:browser:!public!updating! !
+!RowanMethodService categoriesFor: #methodUpdate:!public!updating! !
 !RowanMethodService categoriesFor: #oop!public! !
 !RowanMethodService categoriesFor: #oopType!public! !
 !RowanMethodService categoriesFor: #packageName!accessing!private! !

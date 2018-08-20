@@ -147,6 +147,9 @@ methodsRemoved: presenter
 methodsUpdate: presenter
 	!
 
+methodUpdate: presenter
+	!
+
 name
 	^name!
 
@@ -155,7 +158,12 @@ name: aString
 
 packagesUpdate: presenter!
 
-prepareForReplication!
+prepareForReplication
+	"only ston replicate what is absolutely necessary. Each
+	service knows how to do that. Make this method prepares
+	each command arg as well"
+
+	commandArgs ifNotNil: [commandArgs do: [:arg | arg prepareForReplication]]!
 
 printOn: aStream
 
@@ -191,7 +199,7 @@ removeSampleSymbolDictionary
 	transport send: #removeSampleSymbolDictionary to: remoteService!
 
 replicateFrom: newService
-	newService name = name
+	newService name = self name
 		ifTrue: 
 			[1 to: self class instSize do: [:index | self instVarAt: index put: (newService instVarAt: index)]]!
 
@@ -304,6 +312,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #methodSourceUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #methodsRemoved:!public!updating! !
 !RowanService categoriesFor: #methodsUpdate:!public!updating! !
+!RowanService categoriesFor: #methodUpdate:!public!updating! !
 !RowanService categoriesFor: #name!accessing!public! !
 !RowanService categoriesFor: #name:!accessing!public! !
 !RowanService categoriesFor: #packagesUpdate:!public!updating! !

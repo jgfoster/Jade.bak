@@ -186,9 +186,12 @@ packageName: anObject
 	packageName := anObject!
 
 prepareForReplication
+	super prepareForReplication.
 	self shouldClearMethods ifTrue: [methods := nil].
 	hierarchyServices := nil.
 	selectedMethods := nil.
+	methods ifNotNil: [methods do: [:methodService | methodService prepareForReplication]].
+	selectedMethods ifNotNil: [selectedMethods do: [:methodService | methodService prepareForReplication]].
 	selectedPackageServices do: [:packageService | packageService prepareForReplication]!
 
 projectName
