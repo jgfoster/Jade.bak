@@ -1798,7 +1798,6 @@ methodsMenuStrings
 		'Browse &Senders//browseSenders'
 		'Browse Senders of ...//browseSendersOf'
 		'Browse Methods &Containing ...//browseMethodsContaining'
-		'Browse &History//browseMethodHistory'
 		'BrowseMethod &Pragmas ...//browseMethodPragmas'
 		'&File out method ...//fileOutMethod'
 		'-'
