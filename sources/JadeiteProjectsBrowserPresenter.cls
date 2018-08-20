@@ -1076,22 +1076,6 @@ selectMethodSourceTab
 			[methodSourceTab ensureVisible.
 			methodListPresenter selectionOrNil ifNil: [methodSourcePresenter setDefaultMethod]]!
 
-selectorsString
-	| stream |
-	self updateMethodReferences: methodListPresenter selections.
-	stream := String new writeStream. 
-	methodListPresenter selections do: 
-			[:service |
-			stream nextPutAll: service selectorsDisplayString.
-			service references notEmpty
-				ifTrue: 
-					[stream
-						nextPutAll: ' (referenced by ';
-						nextPutAll: service references size printString;
-						nextPutAll: ' methods)'].
-			stream cr].
-	^stream contents!
-
 selectPackage: newPackageSelection
 	| methodSelection classSelection |
 	methodSelection := methodListPresenter selectionOrNil.
@@ -1250,11 +1234,9 @@ updateMenuBar
 !
 
 updateMethodReferences: services
-	| stonString stonResultString |
 	services do: [:service | service command: #allReferences].
-	stonString := STON toString: services.
-	stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResultString!
+	self updateServices: services.
+	^services!
 
 updateMethodSource
 	self sundryCleanup.
@@ -1345,17 +1327,9 @@ updateSelectionsForUpdate: update
 	update projectSelectionUpdate: projectListPresenter!
 
 updateServices: services
-	"Private - copied to RowanDebugger"
-
-	| stonString stonResults |
-	inUpdate ifTrue:[^self].
-	
-	[inUpdate := true.
-	services do: [:service | service prepareForReplication].
-	stonString := STON toString: services.
-	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResults]
-			ensure: [inUpdate := false]!
+	inUpdate ifTrue: [^self].
+	inUpdate := true.
+	[self basicUpdateServices: services] ensure: [inUpdate := false]!
 
 updateSingleMethodSource
 	methodSourcePresenter value: methodListPresenter selection source.
@@ -1494,7 +1468,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectMethodsFrom:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectMethodSourceTab!public!selection! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #selectorsString!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectPackage:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setDefaultProjectTablLabel!event handlers!public! !

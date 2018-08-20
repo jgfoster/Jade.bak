@@ -1459,28 +1459,6 @@ methodsIdentifier
 	^stream contents.
 !
 
-methodsMenuStrings
-
-	false ifTrue: [	"This helps us find senders"
-		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2; fileOutMethod.
-	].
-	^#(
-		'&Methods'
-		'Browse &Implementors//browseImplementors'
-		'Browse Implementors of ...//browseImplementorsOf'
-		'Browse &Senders//browseSenders'
-		'Browse Senders of ...//browseSendersOf'
-		'Browse Methods &Containing ...//browseMethodsContaining'
-		'Browse &History//browseMethodHistory'
-		'BrowseMethod &Pragmas ...//browseMethodPragmas'
-		'&File out method ...//fileOutMethod'
-		'-'
-		'&Delete Method(s)//removeMethods'
-		#('&Method Environment' '&0//setEnvironment0' '&1//setEnvironment1' '&2//setEnvironment2')
-		'Run &Tests//runMethodTests'
-	).
-!
-
 methodSourcePresenter
 
 	^methodSourcePresenter.
@@ -2999,7 +2977,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodMenu:!event handlers!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodsIdentifier!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourcePresenter!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #methodValueChanged!event handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onDragClassesOverDictionary:!drag & drop!public! !

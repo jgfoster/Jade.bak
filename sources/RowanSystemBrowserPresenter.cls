@@ -394,6 +394,21 @@ updateMethodFrom: update
 	].
 	!
 
+updateMethodReferences: displayArrays
+	| services className |
+	className := classListPresenter selection.
+	services := displayArrays collect: 
+					[:displayArray |
+					RowanMethodService new
+						selector: displayArray first asSymbol;
+						className: className asSymbol].
+	services do: 
+			[:service |
+			service meta: self isClassSideSelected.
+			service command: #allReferences].
+	self basicUpdateServices: services.
+	^services!
+
 updateMethodsFrom: update
 	| fullList selections |
 	fullList := update methods collect: 
@@ -498,6 +513,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFilter!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFilterFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFrom:!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #updateMethodReferences:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodsFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateOverrideListFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updatePresenters!public!updating! !

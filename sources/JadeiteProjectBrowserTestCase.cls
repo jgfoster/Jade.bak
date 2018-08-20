@@ -159,7 +159,8 @@ test_saveMethod
 	self deny: (self categoryListPresenter list includes: 'test_saveMethod'). 
 	self projectsPresenter basicAddMethodCategory: 'test_saveMethod'.
 	self saveSampleMethod. 
-	self selectServicesNamed: 'sampleMethod' in: self methodListPresenter.
+	self selectServicesNamed: (Array with: 'sampleMethod') in: self methodListPresenter.
+	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123
 	
 	!
 

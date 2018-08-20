@@ -85,6 +85,7 @@ package methodNames
 	add: #JadeImageStripper -> #requiredPackageNames;
 	add: #JadeLoginShell -> #aboutJadeite;
 	add: #JadePresenterA -> #basicCloneProject:root:;
+	add: #JadePresenterA -> #basicUpdateServices:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadePresenterA -> #clearBreakPointAt:in:;
@@ -97,9 +98,11 @@ package methodNames
 	add: #JadePresenterA -> #issueCommand:;
 	add: #JadePresenterA -> #methodListSelection;
 	add: #JadePresenterA -> #refreshBreakPointsIn:;
+	add: #JadePresenterA -> #removeSelectorsStringUsing:;
 	add: #JadePresenterA -> #reportCompileError:in:;
 	add: #JadePresenterA -> #setBreakPointAt:in:;
 	add: #JadePresenterA -> #update:afterStonReplication:;
+	add: #JadePresenterA -> #updateMethodReferences:;
 	add: #JadeProcessBrowser -> #debugProcess;
 	add: #JadeServer -> #_describeMethod:;
 	add: #JadeServer -> #sbAddPackage:;
@@ -135,6 +138,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #currentMethodSource;
 	add: #JadeSystemBrowserPresenter -> #editSaveClass;
 	add: #JadeSystemBrowserPresenter -> #handleClassCompileError:;
+	add: #JadeSystemBrowserPresenter -> #methodsMenuStrings;
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
 	add: #JadeSystemBrowserPresenter -> #openMethodListOn:selecting:;
@@ -831,6 +835,13 @@ basicCloneProject: path root: root
 					with: true).
 	self issueCommand: (Array with: service)!
 
+basicUpdateServices: services
+	| stonString stonResults |
+	services do: [:service | service prepareForReplication].
+	stonString := STON toString: services.
+	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
+	self update: services afterStonReplication: stonResults!
+
 browseImplementorsOf: aGsMethodOrString
 	
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
@@ -971,6 +982,22 @@ refreshBreakPointsIn: methodSourcePresenter
 	methodSourcePresenter view indicators: indicators.
 	methodSourcePresenter view update. !
 
+removeSelectorsStringUsing: methodListPresenter
+	| stream methodServices |
+	methodServices := self updateMethodReferences: methodListPresenter selections.
+	stream := String new writeStream. 
+	methodServices do: 
+			[:service |
+			stream nextPutAll: service selectorsDisplayString.
+			service references notEmpty
+				ifTrue: 
+					[stream
+						nextPutAll: ' (referenced by ';
+						nextPutAll: service references size printString;
+						nextPutAll: ' methods)'].
+			stream cr].
+	^stream contents!
+
 reportCompileError: anArrayOfArray in: methodSourcePresenter
 
 	| source position stream string indicators |
@@ -1007,8 +1034,14 @@ setBreakPointAt: stepPoint in: browser
 	browser updateMethodSource. !
 
 update: services afterStonReplication: stonResults
-	^BrowserUpdate current update: services afterStonReplication: stonResults! !
+	^BrowserUpdate current update: services afterStonReplication: stonResults!
+
+updateMethodReferences: services
+	services do: [:service | service command: #allReferences].
+	self basicUpdateServices: services.
+	^services! !
 !JadePresenterA categoriesFor: #basicCloneProject:root:!Jadeite!public! !
+!JadePresenterA categoriesFor: #basicUpdateServices:!Jadeite!public! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
 !JadePresenterA categoriesFor: #clearBreakPointAt:in:!Jadeite!public! !
@@ -1021,9 +1054,11 @@ update: services afterStonReplication: stonResults
 !JadePresenterA categoriesFor: #issueCommand:!Jadeite!public! !
 !JadePresenterA categoriesFor: #methodListSelection!Jadeite!public! !
 !JadePresenterA categoriesFor: #refreshBreakPointsIn:!Jadeite!public! !
+!JadePresenterA categoriesFor: #removeSelectorsStringUsing:!Jadeite!public! !
 !JadePresenterA categoriesFor: #reportCompileError:in:!Jadeite!public! !
 !JadePresenterA categoriesFor: #setBreakPointAt:in:!Jadeite!public! !
 !JadePresenterA categoriesFor: #update:afterStonReplication:!Jadeite!public! !
+!JadePresenterA categoriesFor: #updateMethodReferences:!Jadeite!public! !
 
 !JadeProcessBrowser methodsFor!
 
@@ -1751,6 +1786,28 @@ handleClassCompileError: ex
 		yourself.
 	^string!
 
+methodsMenuStrings
+
+	false ifTrue: [	"This helps us find senders"
+		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2; fileOutMethod.
+	].
+	^#(
+		'&Methods'
+		'Browse &Implementors//browseImplementors'
+		'Browse Implementors of ...//browseImplementorsOf'
+		'Browse &Senders//browseSenders'
+		'Browse Senders of ...//browseSendersOf'
+		'Browse Methods &Containing ...//browseMethodsContaining'
+		'Browse &History//browseMethodHistory'
+		'BrowseMethod &Pragmas ...//browseMethodPragmas'
+		'&File out method ...//fileOutMethod'
+		'-'
+		'&Remove Method(s) ...//removeMethods'
+		#('&Method Environment' '&0//setEnvironment0' '&1//setEnvironment1' '&2//setEnvironment2')
+		'Run &Tests//runMethodTests'
+	).
+!
+
 methodSourceEqual
 	^methodSourcePresenter value = methodSource!
 
@@ -1840,8 +1897,9 @@ queryCommand: aCommandQuery
 !
 
 removeMethods
-	|  result |
-	result := MessageBox confirm: self selectorsString caption: 'Remove the following method(s)?'.
+	| result confirmationString |
+	confirmationString := self removeSelectorsStringUsing: self methodListPresenter.
+	result := MessageBox confirm: confirmationString caption: 'Remove the following method(s)?'.
 	result ifFalse: [^self].
 	self basicRemoveMethods!
 
@@ -2036,6 +2094,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #currentMethodSource!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #handleClassCompileError:!compiling!public! !
+!JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers support!private!queries! !
