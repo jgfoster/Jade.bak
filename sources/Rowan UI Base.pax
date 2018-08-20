@@ -2287,12 +2287,14 @@ initialize: aStream
 !MCPatchBrowser methodsFor!
 
 browseChangedThing
-	| selection  shell |
+	| selection shell classService |
 	selection := operationListPresenter selectionOrNil.
 	selection isNil ifTrue: [^MessageBox notify: 'Nothing to browse'].
-	selection isRemoval ifTrue:[^MessageBox notify: 'Cannot browse a removed item'].
-	shell := RowanSystemBrowser showOnSession: self gciSession.
-	shell selectClass: selection className selector: selection selector asSymbol!
+	selection isRemoval ifTrue: [^MessageBox notify: 'Cannot browse a removed item'].
+	shell := JadeiteProjectsSystemBrowser showOnSession: gciSession.
+	classService := RowanClassService named: selection className.
+	shell currentCard updateServices: (Array with: classService).
+	shell currentCard updateAfterFindClass: classService!
 
 operationSelected
 
