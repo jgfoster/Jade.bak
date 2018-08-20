@@ -585,6 +585,7 @@ onViewOpened
 	self registerPresentersForUpdates. 
 	projectListPresenter view contextMenu: (self projectMenu).
 	packageListPresenter view contextMenu: (Menu fromStrings: self pkgsMenuStrings).
+	self updateMenuBar.
 	self updateProjects. !
 
 openDictionaryBrowserOn: classService
