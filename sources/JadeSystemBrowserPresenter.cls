@@ -2947,17 +2947,17 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #initialize!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #insertDictionary!public! !
 !JadeSystemBrowserPresenter categoriesFor: #inspectGlobal!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isCategoriesTabSelected!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #isCategoriesTabSelected!public!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassListTabSelected!public!request string! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassSelectedInEditor!public! !
 !JadeSystemBrowserPresenter categoriesFor: #isClassSideSelected!accessing!public!request string! !
-!JadeSystemBrowserPresenter categoriesFor: #isDictionariesTabSelected!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isGlobalsTabSelected!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isPackageListTabSelected!event handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isPragmasTabSelected!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
+!JadeSystemBrowserPresenter categoriesFor: #isGlobalsTabSelected!public!testing! !
+!JadeSystemBrowserPresenter categoriesFor: #isOkayToChange!public!testing! !
+!JadeSystemBrowserPresenter categoriesFor: #isPackageListTabSelected!public!testing! !
+!JadeSystemBrowserPresenter categoriesFor: #isPragmasTabSelected!public!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #isTreeModel:equivalentTo:!public! !
-!JadeSystemBrowserPresenter categoriesFor: #isVariablesTabSelected!event handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #isVariablesTabSelected!public!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeDebug!menu handlers!private! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeDisplay!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #jadeExecute!menu handlers!public! !

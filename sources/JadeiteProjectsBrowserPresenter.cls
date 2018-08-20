@@ -212,43 +212,19 @@ createSchematicWiringForClassHierarchyTabs
 
 createSchematicWiringForClassList
 	classListPresenter
-		when: #drag:
-			send: #onDragClassList:
-			to: self;
-		when: #dragCut:
-			send: #onDragCutClassList:
-			to: self;
-		when: #dragOver:
-			send: #onDragOverClassList:
-			to: self;
-		when: #drop:
-			send: #onDropOnClassList:
-			to: self;
-		when: #keyTyped:
-			send: #delayUpdate
-			to: self;
-		when: #selectionChanging:
-			send: #aboutToChange:
-			to: self;
-		when: #selectionChanging:
-			send: #releasedReferencedServices:
-			to: self;
-		when: #selectionChanged
-			send: #selectedClassChanged:
-			to: self
-			with: true;
-		when: #selectionChanged
-			send: #refreshClass
-			to: self;
-		when: #labelOf:changedTo:
-			send: #labelOfClass:changedTo:
-			to: self;
-		when: #aboutToEditLabel:accept:
-			send: #aboutToEditClassLabel:accept:
-			to: self;
-		when: #labelOf:editedTo:accept:
-			send: #labelOfClass:editedTo:accept:
-			to: self!
+		when: #drag: 			send: #onDragClassList: 			to: self;
+		when: #dragCut: 		send: #onDragCutClassList: 		to: self;
+		when: #dragOver: 		send: #onDragOverClassList: 		to: self;
+		when: #drop: 			send: #onDropOnClassList: 		to: self;
+		when: #keyTyped: 		send: #delayUpdate 				to: self;
+		when: #selectionChanging: send: #aboutToChange: 			to: self;
+		when: #selectionChanging: send: #releasedReferencedServices: 	to: self;
+		when: #selectionChanged 	send: #selectedClassChanged: 		to: self with: true;
+		when: #selectionChanged 	send: #refreshClass 				to: self;
+		when: #labelOf:changedTo: send: #labelOfClass:changedTo: 	to: self;
+		when: #aboutToEditLabel:accept: send: #aboutToEditClassLabel:accept: 	to: self;
+		when: #labelOf:editedTo:accept: send: #labelOfClass:editedTo:accept: 	to: self;
+		when: #keyTyped: 		send: #selectServiceStartingWith: 			to: classListPresenter!
 
 createSchematicWiringForInstanceClassTabs
 	instanceClassTabs
@@ -295,15 +271,13 @@ createSchematicWiringForMethodFilterTabs
 			with: methodListPresenter!
 
 createSchematicWiringForMethodList
-
-	methodListPresenter			
-		when: #'drag:'				send: #'onDragMethod:'			to: self;
-		when: #'dragCut:'			send: #'onDragCutMethod:'			to: self;
-		when: #'keyTyped:'			send: #'delayUpdate'				to: self;
-		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
-		when: #'selectionChanged'		send: #updateMethodSource		to: self;
-		yourself.
-!
+	methodListPresenter
+		when: #drag: 			send: #onDragMethod: 			to: self; 
+		when: #dragCut: 		send: #onDragCutMethod: 			to: self; 
+		when: #keyTyped: 		send: #delayUpdate 				to: self; 
+		when: #selectionChanging: send: #aboutToChange:			to: self; 
+		when: #keyTyped: 		send: #selectServiceStartingWith: 	to: methodListPresenter; 
+		when: #selectionChanged 	send: #updateMethodSource 		to: self!
 
 createSchematicWiringForPackageDictionaryTabs
 
@@ -320,7 +294,7 @@ createSchematicWiringForPackageList
 		when: #'selectionChanging:'	send: #'aboutToChange:'			to: self;
 		when: #'selectionChanging:'	send: #'releasedReferencedServices:'	to: self;
 		when: #'selectionChanged'		send: #'updatePackage' 			to: self;
-		yourself.
+		when: #keyTyped: 			send: #selectServiceStartingWith: 	to: packageListPresenter
 !
 
 createSchematicWiringForProjectDictionaryList
@@ -604,6 +578,10 @@ onDropOnMethodCategory: aSession
 		commandArgs: (Array with: methodServices with: targetCategory).
 	self issueCommand: (Array with: classService).
 	self selectMethodsFrom: classService!
+
+onSetFocus: aView stack: aString
+
+	"no need for constant trips to the server"!
 
 onViewOpened
 	"copied to RowanDebugger"
@@ -1424,6 +1402,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDragMethod:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnClassList:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnMethodCategory:!drag & drop!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #onSetFocus:stack:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!overrides!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #openDictionaryBrowserOn:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !

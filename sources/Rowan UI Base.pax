@@ -162,6 +162,7 @@ package methodNames
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:type:;
 	add: #JadeTreeMethodListPresenter -> #onDropMethodsTree:;
+	add: #ListPresenter -> #selectServiceStartingWith:;
 	add: #MCClassDefinition -> #initialize:;
 	add: #MCPatchBrowser -> #browseChangedThing;
 	add: #MCPatchBrowser -> #operationSelected;
@@ -2238,6 +2239,24 @@ onDropMethodsTree: aDragDropSession
 !JadeTreeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #onDropMethodsTree:!public! !
+
+!ListPresenter methodsFor!
+
+selectServiceStartingWith: aKeyPressEvent
+	| nearestElement character index next |
+	Transcript cr.
+	character := Character codePoint: aKeyPressEvent code.
+	self selection name first = character
+		ifTrue: 
+			[index := self list indexOf: self selection.
+			next := self list at: (index + 1 min: self list size).
+			next name first = character
+				ifTrue: 
+					[self selection: next.
+					^self]].
+	nearestElement := self list detect: [:service | service name first = character] ifNone: [].
+	nearestElement ifNotNil: [self selection: nearestElement]! !
+!ListPresenter categoriesFor: #selectServiceStartingWith:!Jadeite!public! !
 
 !MCClassDefinition methodsFor!
 
