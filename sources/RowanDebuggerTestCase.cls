@@ -43,7 +43,10 @@ debuggerDo: aBlock
 
 	self assert: RowanDebugger semaphore isNil.
 	RowanDebugger semaphore: Semaphore new.
+Transcript show: '
+debuggerDo: - 1'.
 	aBlock value.
+Transcript show: ' - 2'.
 	RowanDebugger semaphore wait.
 	RowanDebugger semaphore: nil.
 !
@@ -312,22 +315,14 @@ testErrorInPrintString
 testSaveMethod
 	"https://github.com/ericwinger/Jade/issues/62"
 
-	| string view |
-	string := '
-| class result string |
-string := ''foo
-
-	self halt''.
-class := Object subclass: ''MyNewClass'' instVarNames: #() inDictionary: SymbolDictionary new.
-result := class compileMethod: string dictionaries: #() category: ''other''.
-UserGlobals at: #''James1'' put: class.
-UserGlobals at: #''James2'' put: class new foo'.
+	| number view |
+	number := Time millisecondClockValue.
 	self 
-		openDebuggerOn: string;
+		openDebuggerOn: 'RowanFrameService new testMethod';
 		assert: (view := debugger documentPresenter view) notNil;
 		assert: (view selection) equals: 'halt';
-		assert: (view selectionRange: (7 to: 15)) selection equals: 'self halt';
-		assert: (view replaceSelection: '^42') notNil;
+		assert: (view selectionRange: (26 to: 99)) selection first equals: $^;
+		assert: (view replaceSelection: '^' , number printString) notNil;
 		assert: debugger saveMethod notNil;
 		halt;
 		yourself.! !

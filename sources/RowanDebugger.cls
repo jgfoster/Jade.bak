@@ -61,7 +61,17 @@ frameListPresenter
 getProcessList
 	"#getProcessList copied from RowanProjectsBrowserPresenter>>updatePresenters"
 
+Transcript show: '
+getProcessList '.
 	self updateServices: (Array with: (RowanDebuggerService onProcess: gsProcess)).!
+
+issueCommand: services
+	| stonString stonResultString |
+	services do:[:service | service prepareForReplication].
+	stonString := STON toString: services.
+	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
+		ensure: [services do: [:service | service clearCommand]].
+	^self update: services afterStonReplication: stonResultString.!
 
 methodSourcePresenter
 
@@ -97,6 +107,8 @@ onViewClosed
 onViewOpened
 	"copied from RowanProjectsBrowserPresenter>>onViewOpened"
 
+Transcript show: '
+RowanDebugger>>onViewOpened '.
 	super onViewOpened.
 	self 
 		registerPresentersForUpdates;
@@ -139,9 +151,21 @@ registerPresentersForUpdates
 
 saveMethod
 
-	| result string |
-	string := self getDocumentData reject: [:each | each == Character cr].	frame saveMethod: string session: gciSession.
-	result := gciSession
+	| classService result string |
+	string := self getDocumentData reject: [:each | each == Character cr].	classService := RowanClassService new
+		name: frame method className;
+		meta: frame method meta;
+		yourself.
+	classService
+		command: #saveMethodSource:category:;
+		commandArgs: (Array with: string with: frame method category).
+self halt.
+	[self issueCommand: (Array with: classService)] on: GsCompileError
+		do: [:ex | ^self reportCompileError: ex list in: nil].
+	(self compilationWarningFrom: classService selectedMethods)
+		ifNotNil: [:warning | self statusBarText: warning]
+"
+self halt.	result := gciSession
 		serverPerform: #'compile:frame:process:' 
 		with: (self getDocumentData reject: [:each | each == Character cr])
 		with: frameListPresenter selectionByIndex + frameListOffset
@@ -157,7 +181,7 @@ saveMethod
 		].
 	].
 	MessageBox notify: result.
-!
+"!
 
 selectedFrame 
 
@@ -237,6 +261,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #frameListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #getProcessList!public! !
+!RowanDebugger categoriesFor: #issueCommand:!public! !
 !RowanDebugger categoriesFor: #methodSourcePresenter!public! !
 !RowanDebugger categoriesFor: #onIdleEntered!public! !
 !RowanDebugger categoriesFor: #onViewClosed!public! !
@@ -260,6 +285,8 @@ aboutToShowErrorShellOn: gsError
 
 	self semaphore ifNil: [^self].
 	[
+Transcript show: '
+aboutToShowErrorShellOn: '.
 		^self openDebuggerOnException: gsError
 	] on: GsError do: [:ex | 
 		ex debugger view close.
