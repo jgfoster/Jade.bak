@@ -541,13 +541,6 @@ methodListSelection
 
 	^methodListPresenter selectionOrNil!
 
-methodMenuBreak: aMenu
-	| selection |
-	methodSourcePresenter view isModified ifTrue: [^self].
-	selection := methodListPresenter selectionOrNil.
-	selection ifNil: [^self].
-	selection appendToSourceMenu: aMenu presenter: methodSourcePresenter!
-
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
@@ -1426,7 +1419,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDragMethod:!drag & drop!public! !
