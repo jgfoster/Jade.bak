@@ -263,15 +263,6 @@ browseMethodPragmas
 	self browseMethodsAndSelect: keyword.
 !
 
-browseMethodsContaining
-
-	| searchString commandString |
-	(searchString := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
-	commandString := 'browseMethodsContaining' , Character tab asString , searchString , Character lf asString.
-	(self updateCommand: commandString) = 'browseMethodsContaining' ifFalse: [self error: 'unexpected response'].
-	self browseMethodsAndSelect: searchString.
-!
-
 browseSelectedClass
 
 	| range string list assoc |
@@ -2869,7 +2860,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodPragmas!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSelectedClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSenders!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf!menu handlers!public! !

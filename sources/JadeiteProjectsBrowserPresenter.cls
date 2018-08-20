@@ -90,17 +90,6 @@ browseMethodHistory
 
 	MessageBox warning: 'Method history is not available yet'. !
 
-browseMethodsContaining
-
-	| string service |
-	(string := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
-	service := RowanQueryService command: #methodsContaining:
-				withArgs: (Array with: string).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string
-	
-!
-
 categoriesMenuStrings
 
 	false ifTrue: [
@@ -1350,7 +1339,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySenders!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySendersOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !

@@ -132,6 +132,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #browseImplementorsOf:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeSystemBrowserPresenter -> #browseMethodsContaining;
 	add: #JadeSystemBrowserPresenter -> #browseSendersOf:;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiring;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiringForClassHierarchyTabs;
@@ -1701,6 +1702,16 @@ browseMethodsAndSelect: aString type: browseType
 		selecting: aString.
 !
 
+browseMethodsContaining
+
+	| string service |
+	(string := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
+	service := RowanQueryService command: #methodsContaining:
+				withArgs: (Array with: string).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: string
+	!
+
 browseSendersOf: string
 	| service |
 	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
@@ -2088,6 +2099,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!public! !
