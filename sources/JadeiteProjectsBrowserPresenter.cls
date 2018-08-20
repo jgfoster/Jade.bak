@@ -616,12 +616,14 @@ populateFilterList
 
 postOkToChangeEvent
 	| service |
-	service := classListPresenter selectionOrNil ifNil: [^self].
+	service := self isClassListTabSelected
+				ifTrue: [classListPresenter selectionIfNone: [^self]]
+				ifFalse: [classHierarchyPresenter selectionIfNone: [^self]].
 	classDefinitionPresenter value: service template.
 	classDefinitionPresenter view
 		backcolor: Color white;
 		isModified: false.
-	self sundryCleanup.!
+	self sundryCleanup!
 
 projectChanges
 	projectListPresenter selection changesUsing: self!
@@ -1144,7 +1146,9 @@ updateClasses
 
 updateClassInfo
 	| service |
-	service := classListPresenter selectionIfNone: [^self].
+	service := self isClassListTabSelected
+				ifTrue: [classListPresenter selectionIfNone: [^self]]
+				ifFalse: [classHierarchyPresenter selectionIfNone: [^self]].
 	classCommentPresenter value: service comment.
 	classDefinitionPresenter view isModified
 		ifTrue: 
