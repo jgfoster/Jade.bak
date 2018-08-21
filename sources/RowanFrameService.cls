@@ -30,6 +30,10 @@ indexOfSubCollection: aString
 method
 	^method!
 
+offsets
+
+	^method stepPoints collect: [:each | each key start]!
+
 printOn: aStream
 
 	aStream nextPutAll: (label ifNil: ['?'])
@@ -49,6 +53,7 @@ vars
 !RowanFrameService categoriesFor: #gsMethod!public! !
 !RowanFrameService categoriesFor: #indexOfSubCollection:!public! !
 !RowanFrameService categoriesFor: #method!public! !
+!RowanFrameService categoriesFor: #offsets!public! !
 !RowanFrameService categoriesFor: #printOn:!public! !
 !RowanFrameService categoriesFor: #source!public! !
 !RowanFrameService categoriesFor: #stepPoint!public! !

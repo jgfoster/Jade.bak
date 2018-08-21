@@ -295,6 +295,17 @@ test8
 	self debuggerDo: [debugger resumeProcess].
 !
 
+testBug74
+	"Open debugger on method with breakpoint"
+
+	session executeString: '(Repository compiledMethodAt: #pageSize) setBreakAtStepPoint: 2'.
+	self 
+		openDebuggerOn: 'SystemRepository pageSize';
+		assert: debugger documentPresenter view selection equals: 'zeroArgPrim:50';
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
+
 testContextMenu
 	"https://github.com/ericwinger/Jade/issues/68"
 
@@ -370,6 +381,7 @@ testSaveMethod
 !RowanDebuggerTestCase categoriesFor: #test6!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #test7!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #test8!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #testBug74!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testContextMenu!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testErrorInPrintString!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testSaveMethod!public!tests! !
