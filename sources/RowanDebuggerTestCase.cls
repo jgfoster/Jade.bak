@@ -43,10 +43,7 @@ debuggerDo: aBlock
 
 	self assert: RowanDebugger semaphore isNil.
 	RowanDebugger semaphore: Semaphore new.
-Transcript show: '
-debuggerDo: - 1'.
 	aBlock value.
-Transcript show: ' - 2'.
 	RowanDebugger semaphore wait.
 	RowanDebugger semaphore: nil.
 !
@@ -298,6 +295,37 @@ test8
 	self debuggerDo: [debugger resumeProcess].
 !
 
+testContextMenu
+	"https://github.com/ericwinger/Jade/issues/68"
+
+	| error menu time view |
+	self openDebuggerOn: 'nil halt'.
+	view := debugger documentPresenter view.
+	menu := view queryContextMenu.
+	[
+		[menu isRealized] whileFalse: [(Delay forMilliseconds: 20) wait].
+		view parentView
+			postMessage: 	16r100 "WM_KEYDOWN" 	wParam: 27 "VK_ESCAPE" lParam: 0;
+			postMessage: 	16r101 "WM_KEYUP" 		wParam: 27 "VK_ESCAPE" lParam: 0;
+			yourself.
+	] fork.
+	view
+		postMessage: 16r204 "WM_RBUTTONDOWN" 	wParam: 0 lParam: 7078207;
+		postMessage: 16r205 "WM_RBUTTONUP" 		wParam: 0 lParam: 7078207;
+		yourself.
+	time := Time millisecondClockValue + 1000.
+	[
+		SessionManager current inputState loopWhile: [Time millisecondClockValue < time].
+	] on: Error do: [:ex | 
+		error := ex.
+		ex return.
+	].
+	self 
+		assert: error isNil;
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
+
 testErrorInPrintString
 	"https://github.com/ericwinger/Jade/issues/49"
 
@@ -342,6 +370,7 @@ testSaveMethod
 !RowanDebuggerTestCase categoriesFor: #test6!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #test7!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #test8!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #testContextMenu!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testErrorInPrintString!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testSaveMethod!public!tests! !
 

@@ -61,8 +61,6 @@ frameListPresenter
 getProcessList
 	"#getProcessList copied from RowanProjectsBrowserPresenter>>updatePresenters"
 
-Transcript show: '
-getProcessList '.
 	self updateServices: (Array with: (RowanDebuggerService onProcess: gsProcess)).!
 
 issueCommand: services
@@ -107,8 +105,6 @@ onViewClosed
 onViewOpened
 	"copied from RowanProjectsBrowserPresenter>>onViewOpened"
 
-Transcript show: '
-RowanDebugger>>onViewOpened '.
 	super onViewOpened.
 	self 
 		registerPresentersForUpdates;
