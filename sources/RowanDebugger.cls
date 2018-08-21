@@ -66,10 +66,42 @@ browseSenders
 		yourself.
 !
 
+compilationWarningFrom: methodServices
+
+	methodServices do:[:methodService | 
+		methodService compilationWarnings ifNotNil:[:warning | ^warning]].
+	^nil!
+
 createSchematicWiring
 
 	super createSchematicWiring.
 	frameListPresenter when: #actionPerformed send: #browseClass to: self.
+!
+
+currentMethodSourceFrom: sourceString
+
+	| source fromStream writeStream |
+	fromStream := ReadStream on: sourceString.
+	writeStream := WriteStream on: String new.
+	[
+		fromStream atEnd not.
+	] whileTrue: [
+		| char |
+		(char := fromStream next) == Character cr ifTrue: [
+			fromStream peek ~~ Character lf ifTrue: [
+				writeStream nextPut: Character lf.
+			].
+		] ifFalse: [
+			writeStream nextPut: char.
+		].
+	].
+	source := writeStream contents.
+	[
+		source last codePoint <= 32.
+	] whileTrue: [
+		source := source copyFrom: 1 to: source size - 1.
+	].
+	^source.
 !
 
 documentPresenter
@@ -178,41 +210,50 @@ registerPresentersForUpdates
 		selector: #processListUpdate:
 !
 
-saveMethod
+reportCompileError: anArrayOfArray in: methodSourcePresenter
 
-	| classService result string |
+	| source position stream string indicators |
+	indicators := OrderedCollection new.
+	methodSourcePresenter view clearContainerIndicators.
+	source := (self currentMethodSourceFrom: methodSourcePresenter value) , Character lf asString.
+	position := methodSourcePresenter view caretPosition.
+	methodSourcePresenter value: source.
+	methodSourcePresenter view caretPosition: position.
+	stream := WriteStream on: String new.
+	anArrayOfArray do: [:eachArray | 
+		| start |
+		start := eachArray at: 2.
+		string := eachArray at: 3.
+		stream nextPutAll: string , '; '.
+		indicators add: (ScintillaIndicator
+			styleName: 10 
+			range: (start to: (start + 10 min: source size)) 
+			tag: string).
+	].
+	methodSourcePresenter view backcolor: JadeTextStyles default colorForCompileError.
+	methodSourcePresenter view indicators: indicators.
+	string := stream contents.
+	self statusBarText: (string copyFrom: 1 to: string size - 2).!
+
+saveMethod
+	| classService string |
 	string := self getDocumentData reject: [:each | each == Character cr].
 	classService := RowanClassService new
-		name: frame method className;
-		meta: frame method meta;
-		yourself.
+				name: frame method className;
+				meta: frame method meta;
+				yourself.
 	classService
 		command: #saveMethodSource:category:;
 		commandArgs: (Array with: string with: frame method category).
-self error: 'waiting on answer in https://github.com/ericwinger/Jade/issues/62'.
 	[self issueCommand: (Array with: classService)] on: GsCompileError
 		do: [:ex | ^self reportCompileError: ex list in: nil].
 	(self compilationWarningFrom: classService selectedMethods)
-		ifNotNil: [:warning | self statusBarText: warning]
-"
-self halt.
-	result := gciSession
-		serverPerform: #'compile:frame:process:' 
-		with: (self getDocumentData reject: [:each | each == Character cr])
-		with: frameListPresenter selectionByIndex + frameListOffset
-		with: gsProcess.
-	(result isKindOf: Boolean) ifTrue: [
-		result ifTrue: [
-			documentPresenter isModified: false.
-			gsProcess trimStackToLevel: frameListPresenter selectionByIndex + frameListOffset.
-			^self update.
-		] ifFalse: [
-			MessageBox notify: 'New method has different selector so will not be on stack!!'.
-			^self selectedFrame.
-		].
-	].
-	MessageBox notify: result.
-"!
+		ifNotNil: [:warning |MessageBox notify: warning].
+	documentPresenter isModified: false.
+	(gsProcess gsProcessForSession: gciSession)
+		trimStackToLevel: frameListPresenter selectionByIndex + frameListOffset.
+	^self update
+!
 
 selectedFrame 
 
@@ -298,7 +339,9 @@ variableListPresenter
 !RowanDebugger categoriesFor: #browseImplementors!public! !
 !RowanDebugger categoriesFor: #browseObjectClass!public! !
 !RowanDebugger categoriesFor: #browseSenders!public! !
+!RowanDebugger categoriesFor: #compilationWarningFrom:!compiling!public! !
 !RowanDebugger categoriesFor: #createSchematicWiring!public! !
+!RowanDebugger categoriesFor: #currentMethodSourceFrom:!compiling!public! !
 !RowanDebugger categoriesFor: #documentPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #frameListPresenter!Accessing!public! !
@@ -312,7 +355,8 @@ variableListPresenter
 !RowanDebugger categoriesFor: #processListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #queryCommand:!public! !
 !RowanDebugger categoriesFor: #registerPresentersForUpdates!public! !
-!RowanDebugger categoriesFor: #saveMethod!public! !
+!RowanDebugger categoriesFor: #reportCompileError:in:!compiling!public! !
+!RowanDebugger categoriesFor: #saveMethod!compiling!public! !
 !RowanDebugger categoriesFor: #selectedFrame!public! !
 !RowanDebugger categoriesFor: #stepInto!public! !
 !RowanDebugger categoriesFor: #stepOut!public! !
