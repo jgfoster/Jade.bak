@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeiteAbstractTestCase subclass: #RowanDebuggerTestCase
-	instanceVariableNames: 'debugger process'
+	instanceVariableNames: 'debugger gsProcess process'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -94,10 +94,29 @@ systemBrowser
 tearDown
 
 	process ifNotNil: [process terminate. process := nil].
-	self closeDebuggers.
+	self 
+		terminateGsProcess;
+		closeDebuggers;
+		yourself.
 	RowanDebugger debuggerClass: nil.
 	RowanDebugger semaphore: nil.
 	super tearDown.
+	(Delay forMilliseconds: 50) wait.!
+
+terminateGsProcess
+
+	| string |
+	gsProcess ifNil: [^self].
+	string := '
+| gsProcess |
+gsProcess := Object _objectForOop: ' ,gsProcess printString , '.
+gsProcess ifNotNil: [gsProcess terminate. (Delay forMilliseconds: 10) wait].
+Processor allProcesses includes: gsProcess'.
+	gsProcess := nil.
+	5 timesRepeat: [
+		(debugger gciSession executeString: string) ifFalse: [^self].
+	].
+	self assert: false.
 !
 
 test1
@@ -310,11 +329,13 @@ testBug82
 	"Terminate a process other than the primary one"
 
 	| confirmProcess |
-	session executeString: '[(Delay forSeconds: 9999) wait] fork'.
+	gsProcess := session executeString: '[(Delay forSeconds: 9999) wait] fork asOop'.
 	self 
 		openDebuggerOn: 'nil halt';
+		assert: debugger _processList size equals: 2;
 		assert: debugger processListPresenter list size equals: 2;
 		assert: (debugger processListPresenter selectionByIndex: 2) notNil;
+		assert: (debugger _processList at: 2) oopType value equals: gsProcess;
 		yourself.
 	confirmProcess := [
 		[
@@ -330,6 +351,7 @@ testBug82
 	[
 		self
 			assert: debugger terminateProcess notNil;
+			assert: debugger _processList size equals: 1;
 			assert: debugger processListPresenter list size equals: 1;
 			debuggerDo: [debugger resumeProcess];
 			yourself.
@@ -404,6 +426,7 @@ testSaveMethod
 !RowanDebuggerTestCase categoriesFor: #setUp!public!running! !
 !RowanDebuggerTestCase categoriesFor: #systemBrowser!public! !
 !RowanDebuggerTestCase categoriesFor: #tearDown!public!running! !
+!RowanDebuggerTestCase categoriesFor: #terminateGsProcess!public!running! !
 !RowanDebuggerTestCase categoriesFor: #test1!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #test2!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #test3!public!tests! !

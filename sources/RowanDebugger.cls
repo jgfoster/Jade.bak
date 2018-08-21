@@ -10,9 +10,22 @@ RowanDebugger comment: ''!
 !RowanDebugger categoriesForClass!Unclassified! !
 !RowanDebugger methodsFor!
 
-_terminateProcess: aRowanProcessService
+_processList
 
-	gciSession terminate: aRowanProcessService oopType.
+	^processList!
+
+_terminateProcess: aGsProcess
+
+	| string |
+	string := '
+| gsProcess |
+gsProcess := Object _objectForOop: ' , aGsProcess oopType value printString , '.
+gsProcess ifNotNil: [gsProcess terminate. (Delay forMilliseconds: 10) wait].
+Processor allProcesses includes: gsProcess'.
+	5 timesRepeat: [
+		(gciSession executeString: string) ifFalse: [^self].
+	].
+	self error: 'terminate process failed'.
 !
 
 basicSelectedFrame
@@ -319,6 +332,7 @@ variableDataPresenter
 
 variableListPresenter
 	^variableListPresenter! !
+!RowanDebugger categoriesFor: #_processList!public! !
 !RowanDebugger categoriesFor: #_terminateProcess:!public! !
 !RowanDebugger categoriesFor: #basicSelectedFrame!public! !
 !RowanDebugger categoriesFor: #browseFrameMethod!public! !

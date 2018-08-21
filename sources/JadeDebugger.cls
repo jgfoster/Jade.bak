@@ -12,11 +12,14 @@ JadeDebugger comment: ''!
 
 _terminateProcess
 
+	| cachedGsProcess |
+	cachedGsProcess := gsProcess.
 	self clearUI.
-	(processList size == 1 or: [gsProcess == processList first]) ifTrue: [self view close. ^self].
-	processList := processList copyWithout: gsProcess.
+	(processList size == 1 or: [gsProcess oopType = processList first oopType]) ifTrue: [self view close. ^self].
+	processList copy do: [:each | each oopType = gsProcess oopType ifTrue: [processList remove: each]].
+	processListPresenter list: processList.
 	[
-		self _terminateProcess: gsProcess.
+		self _terminateProcess: cachedGsProcess.
 	] on: TerminateProcess do: [:ex | 
 		ex return: nil.
 	].
