@@ -24,13 +24,6 @@ createSchematicWiring
 	textEditPresenter 		when: #valueChanged send: #textEntry to: self.
 !
 
-doCopy
-
-	stackPresenter view 
-		selectAll;
-		copySelection.
-!
-
 doDebug
 
 	self return: #debug.
@@ -90,7 +83,6 @@ textEntry
 ! !
 !JadeErrorShell categoriesFor: #createComponents!public! !
 !JadeErrorShell categoriesFor: #createSchematicWiring!public! !
-!JadeErrorShell categoriesFor: #doCopy!public! !
 !JadeErrorShell categoriesFor: #doDebug!public! !
 !JadeErrorShell categoriesFor: #doResume!public! !
 !JadeErrorShell categoriesFor: #doTerminate!public! !

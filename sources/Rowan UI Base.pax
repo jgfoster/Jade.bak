@@ -78,6 +78,7 @@ package methodNames
 	add: #JadeAutoTextPresenter3 -> #defaultMethod;
 	add: #JadeAutoTextPresenter3 -> #setDefaultMethod;
 	add: #JadeDebugger -> #updateCaption;
+	add: #JadeErrorShell -> #doCopy;
 	add: #JadeFindClassDialog -> #initializeAvailable;
 	add: #JadeImageStripper -> #closeLoginShells;
 	add: #JadeImageStripper -> #createVersionResource;
@@ -684,7 +685,6 @@ verifyRowanLoaded
 !GsError methodsFor!
 
 debugError
-
 	^RowanDebugger debuggerClass reportError: self.
 
 ! !
@@ -726,6 +726,17 @@ updateCaption
 				ifTrue: ['New Jadeite Debugger']
 				ifFalse: ['Jade Debugger']))! !
 !JadeDebugger categoriesFor: #updateCaption!public! !
+
+!JadeErrorShell methodsFor!
+
+doCopy
+	| copyStream |
+	copyStream := WriteStream on: String new. 
+	copyStream nextPutAll: caption;
+		cr; 
+		nextPutAll: stackPresenter value.
+	copyStream contents copyToClipboard.! !
+!JadeErrorShell categoriesFor: #doCopy!public! !
 
 !JadeFindClassDialog methodsFor!
 

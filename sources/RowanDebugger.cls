@@ -235,7 +235,6 @@ variableListPresenter
 !RowanDebugger class methodsFor!
 
 aboutToShowErrorShellOn: gsError
-
 	[
 		^self openDebuggerOnException: gsError
 	] on: Error do: [:ex | 
