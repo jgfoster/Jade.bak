@@ -10,6 +10,12 @@ RowanDebugger comment: ''!
 !RowanDebugger categoriesForClass!Unclassified! !
 !RowanDebugger methodsFor!
 
+basicSelectedFrame
+	| index |
+	(index := frameListPresenter selectionByIndex) = 0 ifTrue: [^nil].
+	index := index + frameListOffset.
+	^gsProcess frameForLevel: index!
+
 browseFrameMethod
 
 	| method |
@@ -62,6 +68,15 @@ getProcessList
 	"#getProcessList copied from RowanProjectsBrowserPresenter>>updatePresenters"
 
 	self updateServices: (Array with: (RowanDebuggerService onProcess: gsProcess)).!
+
+methodListSelection
+	"really a selection from the frame list"
+
+	| methodService |
+	methodService := self basicSelectedFrame gsMethod.
+	methodService command: nil.
+	self updateServices: (Array with: methodService).
+	^methodService!
 
 methodSourcePresenter
 
@@ -193,6 +208,10 @@ stepOver
 update: services afterStonReplication: stonResults
 	BrowserUpdate current update: services afterStonReplication: stonResults!
 
+updateMethodSource
+
+	self selectedFrame!
+
 updateServices: services
 	"copied from RowanProjectsBrowserPresenter>>updateServices:"
 
@@ -207,6 +226,7 @@ variableDataPresenter
 
 variableListPresenter
 	^variableListPresenter! !
+!RowanDebugger categoriesFor: #basicSelectedFrame!public! !
 !RowanDebugger categoriesFor: #browseFrameMethod!public! !
 !RowanDebugger categoriesFor: #browseImplementors!public! !
 !RowanDebugger categoriesFor: #browseObjectClass!public! !
@@ -216,6 +236,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #frameListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #getProcessList!public! !
+!RowanDebugger categoriesFor: #methodListSelection!Accessing!public! !
 !RowanDebugger categoriesFor: #methodSourcePresenter!public! !
 !RowanDebugger categoriesFor: #onIdleEntered!public! !
 !RowanDebugger categoriesFor: #onViewClosed!public! !
@@ -228,6 +249,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #stepOut!public! !
 !RowanDebugger categoriesFor: #stepOver!public! !
 !RowanDebugger categoriesFor: #update:afterStonReplication:!public! !
+!RowanDebugger categoriesFor: #updateMethodSource!public! !
 !RowanDebugger categoriesFor: #updateServices:!public! !
 !RowanDebugger categoriesFor: #variableDataPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #variableListPresenter!Accessing!public! !
