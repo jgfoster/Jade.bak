@@ -10,6 +10,11 @@ RowanDebugger comment: ''!
 !RowanDebugger categoriesForClass!Unclassified! !
 !RowanDebugger methodsFor!
 
+_terminateProcess: aRowanProcessService
+
+	gciSession terminate: aRowanProcessService oopType.
+!
+
 basicSelectedFrame
 	| index |
 	(index := frameListPresenter selectionByIndex) = 0 ifTrue: [^nil].
@@ -69,6 +74,15 @@ getProcessList
 
 	self updateServices: (Array with: (RowanDebuggerService onProcess: gsProcess)).!
 
+
+issueCommand: services
+	| stonString stonResultString |
+	services do:[:service | service prepareForReplication].
+	stonString := STON toString: services.
+	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
+		ensure: [services do: [:service | service clearCommand]].
+	^self update: services afterStonReplication: stonResultString.!
+
 methodListSelection
 	"really a selection from the frame list"
 
@@ -77,6 +91,7 @@ methodListSelection
 	methodService command: nil.
 	self updateServices: (Array with: methodService).
 	^methodService!
+
 
 methodSourcePresenter
 
@@ -152,6 +167,42 @@ registerPresentersForUpdates
 		selector: #processListUpdate:
 !
 
+saveMethod
+
+	| classService result string |
+	string := self getDocumentData reject: [:each | each == Character cr].
+	classService := RowanClassService new
+		name: frame method className;
+		meta: frame method meta;
+		yourself.
+	classService
+		command: #saveMethodSource:category:;
+		commandArgs: (Array with: string with: frame method category).
+self error: 'waiting on answer in https://github.com/ericwinger/Jade/issues/62'.
+	[self issueCommand: (Array with: classService)] on: GsCompileError
+		do: [:ex | ^self reportCompileError: ex list in: nil].
+	(self compilationWarningFrom: classService selectedMethods)
+		ifNotNil: [:warning | self statusBarText: warning]
+"
+self halt.
+	result := gciSession
+		serverPerform: #'compile:frame:process:' 
+		with: (self getDocumentData reject: [:each | each == Character cr])
+		with: frameListPresenter selectionByIndex + frameListOffset
+		with: gsProcess.
+	(result isKindOf: Boolean) ifTrue: [
+		result ifTrue: [
+			documentPresenter isModified: false.
+			gsProcess trimStackToLevel: frameListPresenter selectionByIndex + frameListOffset.
+			^self update.
+		] ifFalse: [
+			MessageBox notify: 'New method has different selector so will not be on stack!!'.
+			^self selectedFrame.
+		].
+	].
+	MessageBox notify: result.
+"!
+
 selectedFrame 
 
 	| index breaks source |
@@ -178,7 +229,8 @@ selectedFrame
 stepInto
 
 	gciSession
-		stepInto: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
+		stepInto: (GsProcess session: gciSession oopType: gsProcess oopType)
+		inFrame: frameListPresenter selectionByIndex + frameListOffset.
 	[
 		self getProcessList.
 	] on: RowanDebuggerStepPointError do: [:ex | 
@@ -188,7 +240,8 @@ stepInto
 stepOut
 
 	gciSession
-		stepOut: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
+		stepOut: (GsProcess session: gciSession oopType: gsProcess oopType)
+		inFrame: frameListPresenter selectionByIndex + frameListOffset.
 	[
 		self getProcessList.
 	] on: RowanDebuggerStepPointError do: [:ex | 
@@ -198,7 +251,8 @@ stepOut
 stepOver
 
 	gciSession
-		stepOver: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
+		stepOver: (GsProcess session: gciSession oopType: gsProcess oopType)
+		inFrame: frameListPresenter selectionByIndex + frameListOffset.
 	[
 		self getProcessList.
 	] on: RowanDebuggerStepPointError do: [:ex | 
@@ -226,6 +280,8 @@ variableDataPresenter
 
 variableListPresenter
 	^variableListPresenter! !
+
+!RowanDebugger categoriesFor: #_terminateProcess:!public! !
 !RowanDebugger categoriesFor: #basicSelectedFrame!public! !
 !RowanDebugger categoriesFor: #browseFrameMethod!public! !
 !RowanDebugger categoriesFor: #browseImplementors!public! !
@@ -236,6 +292,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #frameListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #getProcessList!public! !
+!RowanDebugger categoriesFor: #issueCommand:!public! !
 !RowanDebugger categoriesFor: #methodListSelection!Accessing!public! !
 !RowanDebugger categoriesFor: #methodSourcePresenter!public! !
 !RowanDebugger categoriesFor: #onIdleEntered!public! !
@@ -244,6 +301,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #processListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #queryCommand:!public! !
 !RowanDebugger categoriesFor: #registerPresentersForUpdates!public! !
+!RowanDebugger categoriesFor: #saveMethod!public! !
 !RowanDebugger categoriesFor: #selectedFrame!public! !
 !RowanDebugger categoriesFor: #stepInto!public! !
 !RowanDebugger categoriesFor: #stepOut!public! !
@@ -257,9 +315,10 @@ variableListPresenter
 !RowanDebugger class methodsFor!
 
 aboutToShowErrorShellOn: gsError
+	self semaphore ifNil: [^self].
 	[
 		^self openDebuggerOnException: gsError
-	] on: Error do: [:ex | 
+	] on: GsError do: [:ex | 
 		ex debugger view close.
 		MessageBox warning: ex description.
 		Processor activeProcess terminate. 

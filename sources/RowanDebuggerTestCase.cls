@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeiteAbstractTestCase subclass: #RowanDebuggerTestCase
-	instanceVariableNames: 'debugger gciSession process'
+	instanceVariableNames: 'debugger process'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -295,6 +295,79 @@ test8
 	self debuggerDo: [debugger resumeProcess].
 !
 
+testBug74
+	"Open debugger on method with breakpoint"
+
+	session executeString: '(Repository compiledMethodAt: #pageSize) setBreakAtStepPoint: 2'.
+	self 
+		openDebuggerOn: 'SystemRepository pageSize';
+		assert: debugger documentPresenter view selection equals: 'zeroArgPrim:50';
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
+
+testBug82
+	"Terminate a process other than the primary one"
+
+	| confirmProcess |
+	session executeString: '[(Delay forSeconds: 9999) wait] fork'.
+	self 
+		openDebuggerOn: 'nil halt';
+		assert: debugger processListPresenter list size equals: 2;
+		assert: (debugger processListPresenter selectionByIndex: 2) notNil;
+		yourself.
+	confirmProcess := [
+		[
+			((View active printString subStrings: $') at: 2) = 'GemStone/S Process Termi...'.
+		] whileFalse: [
+			(Delay forMilliseconds: 100) wait.
+		].
+		View active
+			postMessage: 	16r100 "WM_KEYDOWN" 	wParam: 13 "VK_RETURN" lParam: 0;
+			postMessage: 	16r101 "WM_KEYUP" 		wParam: 13 "VK_RETURN" lParam: 0;
+			yourself.
+	] fork.
+	[
+		self
+			assert: debugger terminateProcess notNil;
+			assert: debugger processListPresenter list size equals: 1;
+			debuggerDo: [debugger resumeProcess];
+			yourself.
+	] ensure: [
+		confirmProcess terminate.
+	].!
+
+testContextMenu
+	"https://github.com/ericwinger/Jade/issues/68"
+
+	| error menu time view |
+	self openDebuggerOn: 'nil halt'.
+	view := debugger documentPresenter view.
+	menu := view queryContextMenu.
+	[
+		[menu isRealized] whileFalse: [(Delay forMilliseconds: 20) wait].
+		view parentView
+			postMessage: 	16r100 "WM_KEYDOWN" 	wParam: 27 "VK_ESCAPE" lParam: 0;
+			postMessage: 	16r101 "WM_KEYUP" 		wParam: 27 "VK_ESCAPE" lParam: 0;
+			yourself.
+	] fork.
+	view
+		postMessage: 16r204 "WM_RBUTTONDOWN" 	wParam: 0 lParam: 7078207;
+		postMessage: 16r205 "WM_RBUTTONUP" 		wParam: 0 lParam: 7078207;
+		yourself.
+	time := Time millisecondClockValue + 1000.
+	[
+		SessionManager current inputState loopWhile: [Time millisecondClockValue < time].
+	] on: Error do: [:ex | 
+		error := ex.
+		ex return.
+	].
+	self 
+		assert: error isNil;
+		debuggerDo: [debugger resumeProcess];
+		yourself.
+!
+
 testErrorInPrintString
 	"https://github.com/ericwinger/Jade/issues/49"
 
@@ -307,22 +380,41 @@ testErrorInPrintString
 		debuggerDo: [[debugger _terminateProcess] fork];
 		assert: debugger view class == DeafObject;
 		yourself.
-! !
-!RowanDebuggerTestCase categoriesFor: #closeDebuggers!public!running! !
-!RowanDebuggerTestCase categoriesFor: #debuggerDo:!public!running! !
-!RowanDebuggerTestCase categoriesFor: #getDebugger!public!running! !
-!RowanDebuggerTestCase categoriesFor: #methodListBrowser!public!running! !
-!RowanDebuggerTestCase categoriesFor: #openDebuggerOn:!public!running! !
+!
+
+testSaveMethod
+	"https://github.com/ericwinger/Jade/issues/62"
+
+	| number view |
+	number := Time millisecondClockValue.
+	self 
+		openDebuggerOn: 'RowanFrameService new testMethod';
+		assert: (view := debugger documentPresenter view) notNil;
+		assert: (view selection) equals: 'halt';
+		assert: (view selectionRange: (26 to: 99)) selection first equals: $^;
+		assert: (view replaceSelection: '^' , number printString) notNil;
+		assert: debugger saveMethod notNil;
+		halt;
+		yourself.! !
+!RowanDebuggerTestCase categoriesFor: #closeDebuggers!public! !
+!RowanDebuggerTestCase categoriesFor: #debuggerDo:!public! !
+!RowanDebuggerTestCase categoriesFor: #getDebugger!public! !
+!RowanDebuggerTestCase categoriesFor: #methodListBrowser!public! !
+!RowanDebuggerTestCase categoriesFor: #openDebuggerOn:!public! !
 !RowanDebuggerTestCase categoriesFor: #setUp!public!running! !
-!RowanDebuggerTestCase categoriesFor: #systemBrowser!public!running! !
+!RowanDebuggerTestCase categoriesFor: #systemBrowser!public! !
 !RowanDebuggerTestCase categoriesFor: #tearDown!public!running! !
-!RowanDebuggerTestCase categoriesFor: #test1!public!running!tests! !
-!RowanDebuggerTestCase categoriesFor: #test2!public!running!tests! !
-!RowanDebuggerTestCase categoriesFor: #test3!public!running!tests! !
-!RowanDebuggerTestCase categoriesFor: #test4!public!running!tests! !
-!RowanDebuggerTestCase categoriesFor: #test5!public!running!tests! !
-!RowanDebuggerTestCase categoriesFor: #test6!public!running!tests! !
-!RowanDebuggerTestCase categoriesFor: #test7!public!running!tests! !
-!RowanDebuggerTestCase categoriesFor: #test8!public!running!tests! !
-!RowanDebuggerTestCase categoriesFor: #testErrorInPrintString!public! !
+!RowanDebuggerTestCase categoriesFor: #test1!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #test2!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #test3!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #test4!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #test5!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #test6!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #test7!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #test8!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #testBug74!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #testBug82!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #testContextMenu!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #testErrorInPrintString!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #testSaveMethod!public!tests! !
 
