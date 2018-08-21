@@ -404,10 +404,10 @@ logout
 	self trigger: #'logoutPending'.
 	library ifNotNil: [
 		library logoutSession: gciSessionId.
-		library := nil.
 	].
 	self trigger: #'logout'.
 	gciSessionId := nil.
+	library := nil.
 !
 
 logoutRequested
