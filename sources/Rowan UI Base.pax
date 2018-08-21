@@ -2327,9 +2327,15 @@ browseChangedThing
 	selection := operationListPresenter selectionOrNil.
 	selection isNil ifTrue: [^MessageBox notify: 'Nothing to browse'].
 	selection isRemoval ifTrue: [^MessageBox notify: 'Cannot browse a removed item'].
+	
+	[classService := RowanClassService named: selection className.
 	shell := JadeiteProjectsSystemBrowser showOnSession: gciSession.
-	classService := RowanClassService named: selection className.
-	shell currentCard updateServices: (Array with: classService).
+	shell currentCard updateServices: (Array with: classService)]
+			on: Error
+			do: 
+				[:ex |
+				shell destroy.
+				MessageBox notify: 'The change you have selected cannot be browsed'].
 	shell currentCard updateAfterFindClass: classService!
 
 operationSelected
