@@ -245,7 +245,7 @@ aboutToShowErrorShellOn: gsError
 
 debuggerClass
 
-	^debuggerClass ifNil: [JadeDebugger]!
+	^debuggerClass ifNil: [RowanDebugger]!
 
 debuggerClass: aDebugger
 "
