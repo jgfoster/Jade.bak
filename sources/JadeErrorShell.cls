@@ -24,13 +24,6 @@ createSchematicWiring
 	textEditPresenter 		when: #valueChanged send: #textEntry to: self.
 !
 
-doCopy
-
-	stackPresenter view 
-		selectAll;
-		copySelection.
-!
-
 doDebug
 
 	self return: #debug.
@@ -45,28 +38,6 @@ doTerminate
 
 	self return: #terminate.
 !
-
-onViewOpened
-
-	| gsError gsProcess message detail stack stream |
-	gsError := self model value.
-	super onViewOpened.
-	Sound warningBeep.
-	gsProcess := gsError gsProcess.
-	message := gsError errorReport message.
-	stack := gsProcess stack.
-	isResumable := gsError isResumableInGem.
-	detail := message.
-	message := message notEmpty
-		ifTrue: [(message subStrings: Character lf) first]
-		ifFalse: [''].
-	message := message copyFrom: 1 to: (message size min: 100).
-	self caption: message.
-	messagePresenter value: detail replaceLfWithCrLf.
-	stream := WriteStream on: String new.
-	stack do: [:each | stream nextPutAll: each; cr].
-	stackPresenter value: stream contents.
-	self model: #'terminate'.		"If window is closed without any buttons pressed!!"!
 
 queryCommand: query
 
@@ -90,11 +61,9 @@ textEntry
 ! !
 !JadeErrorShell categoriesFor: #createComponents!public! !
 !JadeErrorShell categoriesFor: #createSchematicWiring!public! !
-!JadeErrorShell categoriesFor: #doCopy!public! !
 !JadeErrorShell categoriesFor: #doDebug!public! !
 !JadeErrorShell categoriesFor: #doResume!public! !
 !JadeErrorShell categoriesFor: #doTerminate!public! !
-!JadeErrorShell categoriesFor: #onViewOpened!public! !
 !JadeErrorShell categoriesFor: #queryCommand:!public! !
 !JadeErrorShell categoriesFor: #return:!public! !
 !JadeErrorShell categoriesFor: #textEntry!public! !
