@@ -90,17 +90,6 @@ browseMethodHistory
 
 	MessageBox warning: 'Method history is not available yet'. !
 
-browseMethodsContaining
-
-	| string service |
-	(string := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
-	service := RowanQueryService command: #methodsContaining:
-				withArgs: (Array with: string).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string
-	
-!
-
 categoriesMenuStrings
 
 	false ifTrue: [
@@ -515,6 +504,13 @@ methodListSelection
 
 	^methodListPresenter selectionOrNil!
 
+methodMenuBreak: aMenu
+	| selection |
+	methodSourcePresenter view isModified ifTrue: [^self].
+	selection := methodListPresenter selectionOrNil.
+	selection ifNil: [^self].
+	selection appendToSourceMenu: aMenu presenter: methodSourcePresenter!
+
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
@@ -589,6 +585,7 @@ onViewOpened
 	self registerPresentersForUpdates. 
 	projectListPresenter view contextMenu: (self projectMenu).
 	packageListPresenter view contextMenu: (Menu fromStrings: self pkgsMenuStrings).
+	self updateMenuBar.
 	self updateProjects. !
 
 openDictionaryBrowserOn: classService
@@ -619,12 +616,14 @@ populateFilterList
 
 postOkToChangeEvent
 	| service |
-	service := classListPresenter selectionOrNil ifNil: [^self].
+	service := self isClassListTabSelected
+				ifTrue: [classListPresenter selectionIfNone: [^self]]
+				ifFalse: [classHierarchyPresenter selectionIfNone: [^self]].
 	classDefinitionPresenter value: service template.
 	classDefinitionPresenter view
 		backcolor: Color white;
 		isModified: false.
-	self sundryCleanup.!
+	self sundryCleanup!
 
 projectChanges
 	projectListPresenter selection changesUsing: self!
@@ -1147,7 +1146,9 @@ updateClasses
 
 updateClassInfo
 	| service |
-	service := classListPresenter selectionIfNone: [^self].
+	service := self isClassListTabSelected
+				ifTrue: [classListPresenter selectionIfNone: [^self]]
+				ifFalse: [classHierarchyPresenter selectionIfNone: [^self]].
 	classCommentPresenter value: service comment.
 	classDefinitionPresenter view isModified
 		ifTrue: 
@@ -1350,7 +1351,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySenders!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySendersOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
@@ -1397,6 +1397,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDragMethod:!drag & drop!public! !

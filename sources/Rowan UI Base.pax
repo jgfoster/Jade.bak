@@ -132,6 +132,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #browseImplementorsOf:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
+	add: #JadeSystemBrowserPresenter -> #browseMethodsContaining;
 	add: #JadeSystemBrowserPresenter -> #browseSendersOf:;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiring;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiringForClassHierarchyTabs;
@@ -1701,6 +1702,16 @@ browseMethodsAndSelect: aString type: browseType
 		selecting: aString.
 !
 
+browseMethodsContaining
+
+	| string service |
+	(string := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
+	service := RowanQueryService command: #methodsContaining:
+				withArgs: (Array with: string).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: string
+	!
+
 browseSendersOf: string
 	| service |
 	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
@@ -1798,8 +1809,8 @@ methodsMenuStrings
 		'Browse Implementors of ...//browseImplementorsOf'
 		'Browse &Senders//browseSenders'
 		'Browse Senders of ...//browseSendersOf'
+		'-'
 		'Browse Methods &Containing ...//browseMethodsContaining'
-		'BrowseMethod &Pragmas ...//browseMethodPragmas'
 		'&File out method ...//fileOutMethod'
 		'-'
 		'&Remove Method(s) ...//removeMethods'
@@ -2088,6 +2099,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!public! !
@@ -2275,12 +2287,14 @@ initialize: aStream
 !MCPatchBrowser methodsFor!
 
 browseChangedThing
-	| selection  shell |
+	| selection shell classService |
 	selection := operationListPresenter selectionOrNil.
 	selection isNil ifTrue: [^MessageBox notify: 'Nothing to browse'].
-	selection isRemoval ifTrue:[^MessageBox notify: 'Cannot browse a removed item'].
-	shell := RowanSystemBrowser showOnSession: self gciSession.
-	shell selectClass: selection className selector: selection selector asSymbol!
+	selection isRemoval ifTrue: [^MessageBox notify: 'Cannot browse a removed item'].
+	shell := JadeiteProjectsSystemBrowser showOnSession: gciSession.
+	classService := RowanClassService named: selection className.
+	shell currentCard updateServices: (Array with: classService).
+	shell currentCard updateAfterFindClass: classService!
 
 operationSelected
 

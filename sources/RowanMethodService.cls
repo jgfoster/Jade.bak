@@ -109,7 +109,6 @@ compilationWarnings
 
 copyBasicsFrom: oldService
 
-	name 	:= oldService name.
 	oop 		:= oldService oop.
 	selector 	:= oldService selector.
 	className := oldService className.

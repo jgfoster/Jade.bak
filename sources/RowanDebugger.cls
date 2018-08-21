@@ -239,6 +239,7 @@ updateServices: services
 	"copied from RowanProjectsBrowserPresenter>>updateServices:"
 
 	| stonString stonResults |
+	services do: [:service | service prepareForReplication].
 	stonString := STON toString: services.
 	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
 	self update: services afterStonReplication: stonResults!
