@@ -290,7 +290,6 @@ variableListPresenter
 !RowanDebugger class methodsFor!
 
 aboutToShowErrorShellOn: gsError
-
 	self semaphore ifNil: [^self].
 	[
 		^self openDebuggerOnException: gsError
