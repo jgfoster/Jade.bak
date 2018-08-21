@@ -306,6 +306,37 @@ testBug74
 		yourself.
 !
 
+testBug82
+	"Terminate a process other than the primary one"
+
+	| confirmProcess |
+	session executeString: '[(Delay forSeconds: 9999) wait] fork'.
+	self 
+		openDebuggerOn: 'nil halt';
+		assert: debugger processListPresenter list size equals: 2;
+		assert: (debugger processListPresenter selectionByIndex: 2) notNil;
+		yourself.
+	confirmProcess := [
+		[
+			((View active printString subStrings: $') at: 2) = 'GemStone/S Process Termi...'.
+		] whileFalse: [
+			(Delay forMilliseconds: 100) wait.
+		].
+		View active
+			postMessage: 	16r100 "WM_KEYDOWN" 	wParam: 13 "VK_RETURN" lParam: 0;
+			postMessage: 	16r101 "WM_KEYUP" 		wParam: 13 "VK_RETURN" lParam: 0;
+			yourself.
+	] fork.
+	[
+		self
+			assert: debugger terminateProcess notNil;
+			assert: debugger processListPresenter list size equals: 1;
+			debuggerDo: [debugger resumeProcess];
+			yourself.
+	] ensure: [
+		confirmProcess terminate.
+	].!
+
 testContextMenu
 	"https://github.com/ericwinger/Jade/issues/68"
 
@@ -382,6 +413,7 @@ testSaveMethod
 !RowanDebuggerTestCase categoriesFor: #test7!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #test8!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testBug74!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #testBug82!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testContextMenu!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testErrorInPrintString!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testSaveMethod!public!tests! !

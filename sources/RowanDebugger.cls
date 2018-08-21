@@ -10,6 +10,11 @@ RowanDebugger comment: ''!
 !RowanDebugger categoriesForClass!Unclassified! !
 !RowanDebugger methodsFor!
 
+_terminateProcess: aRowanProcessService
+
+	gciSession terminate: aRowanProcessService oopType.
+!
+
 browseFrameMethod
 
 	| method |
@@ -249,6 +254,7 @@ variableDataPresenter
 
 variableListPresenter
 	^variableListPresenter! !
+!RowanDebugger categoriesFor: #_terminateProcess:!public! !
 !RowanDebugger categoriesFor: #browseFrameMethod!public! !
 !RowanDebugger categoriesFor: #browseImplementors!public! !
 !RowanDebugger categoriesFor: #browseObjectClass!public! !
