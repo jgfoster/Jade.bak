@@ -153,7 +153,8 @@ registerPresentersForUpdates
 saveMethod
 
 	| classService result string |
-	string := self getDocumentData reject: [:each | each == Character cr].	classService := RowanClassService new
+	string := self getDocumentData reject: [:each | each == Character cr].
+	classService := RowanClassService new
 		name: frame method className;
 		meta: frame method meta;
 		yourself.
@@ -166,7 +167,8 @@ self halt.
 	(self compilationWarningFrom: classService selectedMethods)
 		ifNotNil: [:warning | self statusBarText: warning]
 "
-self halt.	result := gciSession
+self halt.
+	result := gciSession
 		serverPerform: #'compile:frame:process:' 
 		with: (self getDocumentData reject: [:each | each == Character cr])
 		with: frameListPresenter selectionByIndex + frameListOffset
@@ -210,7 +212,8 @@ selectedFrame
 stepInto
 
 	gciSession
-		stepInto: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
+		stepInto: (GsProcess session: gciSession oopType: gsProcess oopType)
+		inFrame: frameListPresenter selectionByIndex + frameListOffset.
 	[
 		self getProcessList.
 	] on: RowanDebuggerStepPointError do: [:ex | 
@@ -220,7 +223,8 @@ stepInto
 stepOut
 
 	gciSession
-		stepOut: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
+		stepOut: (GsProcess session: gciSession oopType: gsProcess oopType)
+		inFrame: frameListPresenter selectionByIndex + frameListOffset.
 	[
 		self getProcessList.
 	] on: RowanDebuggerStepPointError do: [:ex | 
@@ -230,7 +234,8 @@ stepOut
 stepOver
 
 	gciSession
-		stepOver: (GsProcess session: gciSession oopType: gsProcess oopType)		inFrame: frameListPresenter selectionByIndex + frameListOffset.
+		stepOver: (GsProcess session: gciSession oopType: gsProcess oopType)
+		inFrame: frameListPresenter selectionByIndex + frameListOffset.
 	[
 		self getProcessList.
 	] on: RowanDebuggerStepPointError do: [:ex | 
@@ -285,11 +290,7 @@ variableListPresenter
 !RowanDebugger class methodsFor!
 
 aboutToShowErrorShellOn: gsError
-
-	self semaphore ifNil: [^self].
 	[
-Transcript show: '
-aboutToShowErrorShellOn: '.
 		^self openDebuggerOnException: gsError
 	] on: GsError do: [:ex | 
 		ex debugger view close.
