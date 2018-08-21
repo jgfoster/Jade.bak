@@ -383,7 +383,7 @@ RowanService subclass: #RowanDebuggerService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanFrameService
-	instanceVariableNames: 'label method source stepPoint vars'
+	instanceVariableNames: 'label method stepPoint vars'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

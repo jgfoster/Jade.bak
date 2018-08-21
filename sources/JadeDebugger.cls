@@ -16,12 +16,17 @@ _terminateProcess
 	(processList size == 1 or: [gsProcess == processList first]) ifTrue: [self view close. ^self].
 	processList := processList copyWithout: gsProcess.
 	[
-		gsProcess terminate.
+		self _terminateProcess: gsProcess.
 	] on: TerminateProcess do: [:ex | 
 		ex return: nil.
 	].
 	gsProcess := processList first.
 	self update.!
+
+_terminateProcess: aGsProcess
+
+	aGsProcess terminate.
+!
 
 answer
 		"It is likely that the debugger was opened by some UI command that changed the cursor to a wait cursor.
@@ -318,7 +323,7 @@ stepOver
 
 terminateProcess
 
-	(MessageBox confirm: 'Terminate process?') ifFalse: [^self].
+	(MessageBox confirm: 'Terminate process?' caption: 'GemStone/S Process Termination') ifFalse: [^self].
 	self _terminateProcess.!
 
 update
@@ -341,6 +346,7 @@ updateSaveMethodOop: anInteger
 	"do nothing"
 ! !
 !JadeDebugger categoriesFor: #_terminateProcess!public! !
+!JadeDebugger categoriesFor: #_terminateProcess:!public! !
 !JadeDebugger categoriesFor: #answer!public! !
 !JadeDebugger categoriesFor: #clearUI!public! !
 !JadeDebugger categoriesFor: #codeSourcePresenterClass!private! !
