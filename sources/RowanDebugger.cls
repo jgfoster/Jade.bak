@@ -87,7 +87,6 @@ getProcessList
 
 	self updateServices: (Array with: (RowanDebuggerService onProcess: gsProcess)).!
 
-
 issueCommand: services
 	| stonString stonResultString |
 	services do:[:service | service prepareForReplication].
@@ -104,7 +103,6 @@ methodListSelection
 	methodService command: nil.
 	self updateServices: (Array with: methodService).
 	^methodService!
-
 
 methodSourcePresenter
 

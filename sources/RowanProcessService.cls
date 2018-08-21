@@ -22,11 +22,23 @@ oopType
 
 	^OopType64 fromInteger: oop!
 
+printOn: aStream
+
+	aStream
+		nextPutAll: 'GsProcess(';
+		print: oop;
+		nextPutAll: ') with ';
+		print: frames size;
+		nextPutAll: ' frames';
+		yourself.
+!
+
 stack
 
 	^frames collect: [:each | each printString]! !
 !RowanProcessService categoriesFor: #frameForLevel:!public! !
 !RowanProcessService categoriesFor: #oop!public! !
 !RowanProcessService categoriesFor: #oopType!public! !
+!RowanProcessService categoriesFor: #printOn:!public! !
 !RowanProcessService categoriesFor: #stack!public! !
 
