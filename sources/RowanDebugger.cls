@@ -161,7 +161,7 @@ saveMethod
 	classService
 		command: #saveMethodSource:category:;
 		commandArgs: (Array with: string with: frame method category).
-self halt.
+self error: 'waiting on answer in https://github.com/ericwinger/Jade/issues/62'.
 	[self issueCommand: (Array with: classService)] on: GsCompileError
 		do: [:ex | ^self reportCompileError: ex list in: nil].
 	(self compilationWarningFrom: classService selectedMethods)
@@ -290,6 +290,8 @@ variableListPresenter
 !RowanDebugger class methodsFor!
 
 aboutToShowErrorShellOn: gsError
+
+	self semaphore ifNil: [^self].
 	[
 		^self openDebuggerOnException: gsError
 	] on: GsError do: [:ex | 
