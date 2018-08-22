@@ -325,6 +325,27 @@ testBug74
 		yourself.
 !
 
+testBug77
+
+	| string view |
+	string := '"
+2 + 3
+x
+"
+| x |
+x := 4 + 8.
+x halt.
+'.
+	self 
+		openDebuggerOn: string;
+		assert: (view := debugger documentPresenter view) class equals: ScintillaView;
+		assert: (view selectionRange: (3 to: 7)) notNil;
+		"debuggerDo: [debugger jadeDisplay];
+		assert: view selection equals: ' 5';
+		halt;"
+		yourself.
+!
+
 testBug82
 	"Terminate a process other than the primary one"
 
@@ -451,6 +472,7 @@ testSaveMethod
 !RowanDebuggerTestCase categoriesFor: #test7!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #test8!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testBug74!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #testBug77!public! !
 !RowanDebuggerTestCase categoriesFor: #testBug82!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testContextMenu!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testErrorInPrintString!public!tests! !
