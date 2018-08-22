@@ -21,7 +21,12 @@ package classNames
 	add: #JadeToolsToolBarPresenter;
 	add: #JadeValueDialog;
 	add: #JadeWorkspace;
+	add: #ShortcutMenuStatus;
 	add: #ToolbarA;
+	yourself.
+
+package methodNames
+	add: #ScintillaView -> #trackContextMenu:;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -56,6 +61,11 @@ Object subclass: #JadeTextStyles
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'default'!
+Notification subclass: #ShortcutMenuStatus
+	instanceVariableNames: ''
+	classVariableNames: 'Status'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 Presenter subclass: #JadePresenter
 	instanceVariableNames: 'gciSession'
 	classVariableNames: ''
@@ -126,6 +136,25 @@ Toolbar subclass: #ToolbarA
 
 
 "Loose Methods"!
+
+!ScintillaView methodsFor!
+
+trackContextMenu: aPointEvent
+	"Private - Shows and tracks a context menu for the receiver from the mouse position in
+	aPointEvent. Answer nil if the receiver does not have a contextMenu to show, or a Boolean if
+	it has."
+
+	^self queryContextMenu 
+		ifNotNil: 
+			[:menu | 
+			| pos |
+			pos := aPointEvent position.
+			pos = (-1 @ -1) ifTrue: [pos := self positionForKeyboardContextMenu].
+			ShortcutMenuStatus start.
+			menu showIn: self position: pos.
+			ShortcutMenuStatus stop.
+			true]! !
+!ScintillaView categoriesFor: #trackContextMenu:!menus!private! !
 
 "End of package definition"!
 
