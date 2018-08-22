@@ -421,14 +421,17 @@ testSaveMethod
 
 	| number view |
 	number := Time millisecondClockValue.
+	session executeString: '(RowanFrameService compiledMethodAt: #testMethod) setBreakAtStepPoint: 1'.
 	self 
 		openDebuggerOn: 'RowanFrameService new testMethod';
 		assert: (view := debugger documentPresenter view) notNil;
-		assert: (view selection) equals: 'halt';
-		assert: (view selectionRange: (26 to: 99)) selection first equals: $^;
+		assert: (view selection) equals: 'testMethod';
+		assert: (view selectionRange: (14 to: 99)) selection first equals: $^;
 		assert: (view replaceSelection: '^' , number printString) notNil;
 		assert: debugger saveMethod notNil;
-		halt;
+		assert: (view selection) equals: 'testMethod';
+		debuggerDo: [debugger resumeProcess];
+		assert: (session executeString: 'RowanFrameService new testMethod') equals: number;
 		yourself.! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public! !

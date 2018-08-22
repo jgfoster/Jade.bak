@@ -252,7 +252,7 @@ saveMethod
 	documentPresenter isModified: false.
 	(gsProcess gsProcessForSession: gciSession)
 		trimStackToLevel: frameListPresenter selectionByIndex + frameListOffset.
-	^self update
+	self getProcessList.
 !
 
 selectedFrame 
