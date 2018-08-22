@@ -31,6 +31,9 @@ createSchematicWiring
 getViews 
 	textAreaTabs := parentPresenter view viewNamed: 'textAreaTabs'!
 
+methodListSelection
+	^methodListPresenter selectionOrNil!
+
 methods: services selecting: string
 	services isEmpty ifTrue: [^self].
 	methodListPresenter
@@ -75,6 +78,7 @@ updateSource
 !JadeiteMethodListPresenter categoriesFor: #createComponents!public! !
 !JadeiteMethodListPresenter categoriesFor: #createSchematicWiring!public! !
 !JadeiteMethodListPresenter categoriesFor: #getViews!public! !
+!JadeiteMethodListPresenter categoriesFor: #methodListSelection!public! !
 !JadeiteMethodListPresenter categoriesFor: #methods:selecting:!public! !
 !JadeiteMethodListPresenter categoriesFor: #removeComparisonTab!private!selection!text tabs! !
 !JadeiteMethodListPresenter categoriesFor: #showComparisonTab!private!selection!text tabs! !
