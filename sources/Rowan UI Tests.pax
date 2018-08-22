@@ -27,6 +27,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: 'GemStone Session';
+	add: 'Jade UI Base';
 	add: 'Rowan UI Base';
 	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
 	yourself).

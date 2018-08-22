@@ -361,25 +361,36 @@ testBug82
 
 testContextMenu
 	"https://github.com/ericwinger/Jade/issues/68"
-
-	| error menu time view |
+ 
+	| error time view |
+	ShortcutMenuStatus reset.
 	self openDebuggerOn: 'nil halt'.
 	view := debugger documentPresenter view.
-	menu := view queryContextMenu.
 	[
-		[menu isRealized] whileFalse: [(Delay forMilliseconds: 20) wait].
-		view parentView
-			postMessage: 	16r100 "WM_KEYDOWN" 	wParam: 27 "VK_ESCAPE" lParam: 0;
-			postMessage: 	16r101 "WM_KEYUP" 		wParam: 27 "VK_ESCAPE" lParam: 0;
-			yourself.
+		| counter |
+		counter := 0.
+		[ShortcutMenuStatus status isNil] whileTrue: [(Delay forMilliseconds: 10) wait].
+		self assert: ShortcutMenuStatus isOpen.
+		[
+			counter := counter + 1.
+			(Delay forMilliseconds: 100) wait.
+			ShortcutMenuStatus isOpen and: [counter <= 10].
+		] whileTrue: [
+			view
+				postMessage: 	16r100 "WM_KEYDOWN" 	wParam: 27 "VK_ESCAPE" lParam: 0;
+				postMessage: 	16r101 "WM_KEYUP" 		wParam: 27 "VK_ESCAPE" lParam: 0;
+				yourself.
+		].
+		Transcript show: '
+testContextMenu - counter = ' , counter printString.
 	] fork.
 	view
-		postMessage: 16r204 "WM_RBUTTONDOWN" 	wParam: 0 lParam: 7078207;
-		postMessage: 16r205 "WM_RBUTTONUP" 		wParam: 0 lParam: 7078207;
+		postMessage: 16r204 "WM_RBUTTONDOWN" 	wParam: 0 lParam: 16r12C0064;		" (300 @ 100) "
+		postMessage: 16r205 "WM_RBUTTONUP" 		wParam: 0 lParam: 16r12C0064;	
 		yourself.
-	time := Time millisecondClockValue + 1000.
+	time := Time millisecondClockValue + 2000.
 	[
-		SessionManager current inputState loopWhile: [Time millisecondClockValue < time].
+		SessionManager current inputState loopWhile: [ShortcutMenuStatus isClosed not and: [Time millisecondClockValue < time]].
 	] on: Error do: [:ex | 
 		error := ex.
 		ex return.
@@ -400,7 +411,8 @@ testErrorInPrintString
 		assert: (debugger frameListPresenter selectionByIndex: 3) notNil;
 		assert: debugger variableListPresenter list first value equals: '(ScaledDecimal printString error: a MessageNotUnderstood occurred (error 2010), a UndefinedObject does not understand  #''_generality'')';
 		debuggerDo: [[debugger _terminateProcess] fork];
-		assert: debugger view class == DeafObject;
+		assert: (Delay forMilliseconds: 50) wait notNil;
+		assert: (debugger isNil or: [debugger view class == DeafObject]);
 		yourself.
 !
 
