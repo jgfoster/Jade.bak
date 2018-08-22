@@ -325,6 +325,27 @@ testBug74
 		yourself.
 !
 
+testBug77
+
+	| string view |
+	string := '"
+2 + 3
+x
+"
+| x |
+x := 4 + 8.
+x halt.
+'.
+	self 
+		openDebuggerOn: string;
+		assert: (view := debugger documentPresenter view) class equals: ScintillaView;
+		assert: (view selectionRange: (3 to: 7)) notNil;
+		"debuggerDo: [debugger jadeDisplay];
+		assert: view selection equals: ' 5';
+		halt;"
+		yourself.
+!
+
 testBug82
 	"Terminate a process other than the primary one"
 
@@ -361,25 +382,36 @@ testBug82
 
 testContextMenu
 	"https://github.com/ericwinger/Jade/issues/68"
-
-	| error menu time view |
+ 
+	| error time view |
+	ShortcutMenuStatus reset.
 	self openDebuggerOn: 'nil halt'.
 	view := debugger documentPresenter view.
-	menu := view queryContextMenu.
 	[
-		[menu isRealized] whileFalse: [(Delay forMilliseconds: 20) wait].
-		view parentView
-			postMessage: 	16r100 "WM_KEYDOWN" 	wParam: 27 "VK_ESCAPE" lParam: 0;
-			postMessage: 	16r101 "WM_KEYUP" 		wParam: 27 "VK_ESCAPE" lParam: 0;
-			yourself.
+		| counter |
+		counter := 0.
+		[ShortcutMenuStatus status isNil] whileTrue: [(Delay forMilliseconds: 10) wait].
+		self assert: ShortcutMenuStatus isOpen.
+		[
+			counter := counter + 1.
+			(Delay forMilliseconds: 100) wait.
+			ShortcutMenuStatus isOpen and: [counter <= 10].
+		] whileTrue: [
+			view
+				postMessage: 	16r100 "WM_KEYDOWN" 	wParam: 27 "VK_ESCAPE" lParam: 0;
+				postMessage: 	16r101 "WM_KEYUP" 		wParam: 27 "VK_ESCAPE" lParam: 0;
+				yourself.
+		].
+		Transcript show: '
+testContextMenu - counter = ' , counter printString.
 	] fork.
 	view
-		postMessage: 16r204 "WM_RBUTTONDOWN" 	wParam: 0 lParam: 7078207;
-		postMessage: 16r205 "WM_RBUTTONUP" 		wParam: 0 lParam: 7078207;
+		postMessage: 16r204 "WM_RBUTTONDOWN" 	wParam: 0 lParam: 16r12C0064;		" (300 @ 100) "
+		postMessage: 16r205 "WM_RBUTTONUP" 		wParam: 0 lParam: 16r12C0064;	
 		yourself.
-	time := Time millisecondClockValue + 1000.
+	time := Time millisecondClockValue + 2000.
 	[
-		SessionManager current inputState loopWhile: [Time millisecondClockValue < time].
+		SessionManager current inputState loopWhile: [ShortcutMenuStatus isClosed not and: [Time millisecondClockValue < time]].
 	] on: Error do: [:ex | 
 		error := ex.
 		ex return.
@@ -400,7 +432,8 @@ testErrorInPrintString
 		assert: (debugger frameListPresenter selectionByIndex: 3) notNil;
 		assert: debugger variableListPresenter list first value equals: '(ScaledDecimal printString error: a MessageNotUnderstood occurred (error 2010), a UndefinedObject does not understand  #''_generality'')';
 		debuggerDo: [[debugger _terminateProcess] fork];
-		assert: debugger view class == DeafObject;
+		assert: (Delay forMilliseconds: 50) wait notNil;
+		assert: (debugger isNil or: [debugger view class == DeafObject]);
 		yourself.
 !
 
@@ -409,14 +442,17 @@ testSaveMethod
 
 	| number view |
 	number := Time millisecondClockValue.
+	session executeString: '(RowanFrameService compiledMethodAt: #testMethod) setBreakAtStepPoint: 1'.
 	self 
 		openDebuggerOn: 'RowanFrameService new testMethod';
 		assert: (view := debugger documentPresenter view) notNil;
-		assert: (view selection) equals: 'halt';
-		assert: (view selectionRange: (26 to: 99)) selection first equals: $^;
+		assert: (view selection) equals: 'testMethod';
+		assert: (view selectionRange: (14 to: 99)) selection first equals: $^;
 		assert: (view replaceSelection: '^' , number printString) notNil;
 		assert: debugger saveMethod notNil;
-		halt;
+		assert: (view selection) equals: 'testMethod';
+		debuggerDo: [debugger resumeProcess];
+		assert: (session executeString: 'RowanFrameService new testMethod') equals: number;
 		yourself.! !
 !RowanDebuggerTestCase categoriesFor: #closeDebuggers!public! !
 !RowanDebuggerTestCase categoriesFor: #debuggerDo:!public! !
@@ -436,6 +472,7 @@ testSaveMethod
 !RowanDebuggerTestCase categoriesFor: #test7!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #test8!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testBug74!public!tests! !
+!RowanDebuggerTestCase categoriesFor: #testBug77!public! !
 !RowanDebuggerTestCase categoriesFor: #testBug82!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testContextMenu!public!tests! !
 !RowanDebuggerTestCase categoriesFor: #testErrorInPrintString!public!tests! !

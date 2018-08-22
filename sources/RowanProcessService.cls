@@ -30,9 +30,7 @@ printOn: aStream
 	aStream
 		nextPutAll: 'GsProcess(';
 		print: oop;
-		nextPutAll: ') with ';
-		print: frames size;
-		nextPutAll: ' frames';
+		nextPutAll: ')';
 		yourself.
 !
 
