@@ -151,17 +151,6 @@ environment: anInteger
 	environment := anInteger.
 !
 
-executeSelectionOrLine
-
-	[
-		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: model environment: environment).
-	] on: GsCompileError do: [:ex | 
-		^false -> ex list.
-	].
-	self error: 'How did we get here?'.
-	^false -> #(nil).
-!
-
 fileSave
 		"Private - Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"
 
@@ -474,7 +463,6 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #editReplace!edit!private! !
 !CodeSourcePresenter categoriesFor: #editSelectAll!edit!private! !
 !CodeSourcePresenter categoriesFor: #environment:!public! !
-!CodeSourcePresenter categoriesFor: #executeSelectionOrLine!Jade!private! !
 !CodeSourcePresenter categoriesFor: #fileSave!private! !
 !CodeSourcePresenter categoriesFor: #findClassList!public! !
 !CodeSourcePresenter categoriesFor: #handleInvalidSession!public! !

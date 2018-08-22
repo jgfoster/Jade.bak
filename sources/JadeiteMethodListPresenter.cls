@@ -16,6 +16,9 @@ comparisonTab
 			[comparisonTab := self textTabs
 						detect: [:each | (each class canUnderstand: #text) ifTrue: [each text = 'Comparison'] ifFalse: [each = 'Comparison']]]!
 
+contextObject
+	^nil!
+
 createComponents
 	methodListPresenter := self add: JadeiteBasicMethodListPresenter new name: 'methodList'.
 	methodSourcePresenter := (self add: JadeiteMethodSourcePresenter new name: 'methodSource')
@@ -75,6 +78,7 @@ updateSource
 	methodSourcePresenter methodService: selection. 
 	methodSourcePresenter update. ! !
 !JadeiteMethodListPresenter categoriesFor: #comparisonTab!private!selection!text tabs! !
+!JadeiteMethodListPresenter categoriesFor: #contextObject!public! !
 !JadeiteMethodListPresenter categoriesFor: #createComponents!public! !
 !JadeiteMethodListPresenter categoriesFor: #createSchematicWiring!public! !
 !JadeiteMethodListPresenter categoriesFor: #getViews!public! !

@@ -18,16 +18,10 @@ browseSelectedClass
 	shell selectClass:string selector: String new.
 	!
 
-updateMethodBreakPoints
-
-	self rowanFixMe.
-	!
-
 updateMethodStepPoints
 
 	self rowanFixMe.
 	! !
 !RowanMethodSourcePresenter categoriesFor: #browseSelectedClass!public! !
-!RowanMethodSourcePresenter categoriesFor: #updateMethodBreakPoints!public! !
 !RowanMethodSourcePresenter categoriesFor: #updateMethodStepPoints!public! !
 

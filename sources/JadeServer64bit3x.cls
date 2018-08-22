@@ -52,7 +52,6 @@ describeMethod: aMethod
 	^super describeMethod: aMethod!
 
 executeString: aString fromContext: anObject environment: anInteger
-
 	[
 		^super executeString: aString fromContext: anObject environment: anInteger.
 	] on: CompileWarning do: [:ex | 

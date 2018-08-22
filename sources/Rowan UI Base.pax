@@ -65,6 +65,7 @@ package classNames
 
 package methodNames
 	add: #CodeSourcePresenter -> #browseSelectedClass;
+	add: #CodeSourcePresenter -> #executeSelectionOrLine;
 	add: #Collection -> #prepareForReplication;
 	add: #GciSession -> #computeGemHost;
 	add: #GciSession -> #computeStoneHost;
@@ -572,8 +573,20 @@ browseSelectedClass
 		ifTrue: 
 			[shell := RowanSystemBrowser showOnSession: gciSession.
 			shell selectClass: string selector: String new]
-		ifFalse: [parent addSystemBrowserForClass: assoc value]! !
+		ifFalse: [parent addSystemBrowserForClass: assoc value]!
+
+executeSelectionOrLine
+
+	[
+		^true -> (gciSession executeString: self currentSelectionOrLine fromContext: self parentPresenter contextObject environment: environment).
+	] on: GsCompileError do: [:ex | 
+		^false -> ex list.
+	].
+	self error: 'How did we get here?'.
+	^false -> #(nil).
+! !
 !CodeSourcePresenter categoriesFor: #browseSelectedClass!public! !
+!CodeSourcePresenter categoriesFor: #executeSelectionOrLine!Jade!private! !
 
 !Collection methodsFor!
 
