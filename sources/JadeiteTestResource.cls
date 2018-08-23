@@ -11,7 +11,9 @@ JadeiteTestResource comment: ''!
 !JadeiteTestResource methodsFor!
 
 isAvailable
-	^session notNil and: [transcript notNil]!
+	session ifNil:[^false]. 
+	transcript ifNil:[^false].
+	^session executeString: '(System myUserProfile resolveSymbol: #', JadeiteProjectBrowserTestCase sampleClass, ') notNil'!
 
 session
 
@@ -33,6 +35,15 @@ transcript
 !JadeiteTestResource class methodsFor!
 
 isAvailable
-	^self current isAvailable! !
+	^self current isAvailable!
+
+signalInitializationError
+	"TestSuite>>run: in the SUnit pacakge sends this method
+	to the class, but implements it on the instance. That appears
+	to be a bug."
+
+	self reset.
+	^TestResult signalErrorWith: 'Resource ' , self name , ' could not be initialized'! !
 !JadeiteTestResource class categoriesFor: #isAvailable!public! !
+!JadeiteTestResource class categoriesFor: #signalInitializationError!error handling!public! !
 

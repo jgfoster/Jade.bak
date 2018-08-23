@@ -13,7 +13,7 @@ RowanDebuggerTestCase comment: ''!
 closeDebuggers
 
 	| list semaphore |
-	list := RowanMethodListBrowser allInstances , RowanSystemBrowser allInstances , RowanDebugger allInstances.
+	list := JadeiteMethodListBrowser allInstances , RowanSystemBrowser allInstances , RowanDebugger allInstances.
 	semaphore := Semaphore new.
 	list do: [:each | 
 		session removeEventsTriggeredFor: each.
@@ -35,7 +35,7 @@ closeDebuggers
 		semaphore wait.
 		debugger == each ifTrue: [debugger := nil].
 	].
-	list := RowanMethodListBrowser allInstances , RowanSystemBrowser allInstances , RowanDebugger allInstances.
+	list := JadeiteMethodListBrowser allInstances , RowanSystemBrowser allInstances , RowanDebugger allInstances.
 	self assert: list isEmpty.
 !
 
@@ -59,7 +59,7 @@ getDebugger
 
 methodListBrowser
 
-	^RowanMethodListBrowser allInstances detect: [:each | true] ifNone: [nil]
+	^JadeiteMethodListBrowser allInstances detect: [:each | true] ifNone: [nil]
 !
 
 openDebuggerOn: aString

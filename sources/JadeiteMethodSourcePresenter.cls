@@ -12,7 +12,7 @@ JadeiteMethodSourcePresenter comment: ''!
 
 browseImplementorsOf: string
 	| service |
-	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
+	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
 	self issueCommand: (Array with: service).
 	self openMethodListOn: service selecting: string!
 

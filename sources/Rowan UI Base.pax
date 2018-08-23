@@ -75,7 +75,7 @@ package methodNames
 	add: #GciSession -> #titleBarFor:;
 	add: #GciSession -> #verifyRowanLoaded;
 	add: #GsError -> #debugError;
-	add: #GsMethod -> #methodDefinitionService;
+	add: #GsMethod -> #methodService;
 	add: #JadeAutoTextPresenter3 -> #defaultMethod;
 	add: #JadeAutoTextPresenter3 -> #setDefaultMethod;
 	add: #JadeDebugger -> #updateCaption;
@@ -222,7 +222,7 @@ package methodNames
 	add: #RowanCommandResult -> #updateSuperclassSelectionFor:;
 	add: #RowanCommandResult -> #updateType;
 	add: #RowanGsMethod -> #printOn:;
-	add: #RowanMethodDefinition -> #methodDefinitionService;
+	add: #RowanMethodDefinition -> #methodService;
 	add: #RowanPatch -> #operations:;
 	add: #RowanPatch -> #session:;
 	add: 'JadeServer class' -> #gsString;
@@ -707,9 +707,9 @@ debugError
 
 !GsMethod methodsFor!
 
-methodDefinitionService
+methodService
 	^RowanMethodService on: gciSession! !
-!GsMethod categoriesFor: #methodDefinitionService!public!rowan! !
+!GsMethod categoriesFor: #methodService!public!rowan! !
 
 !JadeAutoTextPresenter3 methodsFor!
 
@@ -897,7 +897,7 @@ browseImplementorsOf: aGsMethodOrString
 	
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
 
-	^(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	^(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseImplementorsOf: aGsMethodOrString;
 		yourself.
 !
@@ -1739,14 +1739,14 @@ browseImplementorsOf: string
 
 browseMethodsAndSelect: aString
 
-	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseMethodsFromString: readStream upToEnd methodName: aString;
 		selecting: aString.
 !
 
 browseMethodsAndSelect: aString type: browseType
 
-	(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseMethodsFromString: readStream upToEnd methodName: aString type: browseType;
 		selecting: aString.
 !
@@ -2700,9 +2700,9 @@ printOn: aStream
 
 !RowanMethodDefinition methodsFor!
 
-methodDefinitionService
+methodService
 	^methodDefinitionService ifNil: [methodDefinitionService := RowanMethodService on: gciSession]! !
-!RowanMethodDefinition categoriesFor: #methodDefinitionService!public!services! !
+!RowanMethodDefinition categoriesFor: #methodService!public!services! !
 
 !RowanPatch methodsFor!
 

@@ -19,8 +19,7 @@ GciSoftBreak'!
 !GciSession categoriesForClass!Unclassified! !
 !GciSession methodsFor!
 
-_executeString: aString fromContextOop: anOopType environment: anInteger
-	^library 
+_executeString: aString fromContextOop: anOopType environment: anInteger	^library 
 		session: gciSessionId
 		execute: (aString copyWithout: Character cr)
 		context: anOopType
@@ -498,7 +497,6 @@ send: aSymbol to: anObject
 send: aSymbol to: anObject withAll: anArray
 
 	| stream |
-
 	stream := WriteStream on: String new.
 	stream 
 		nextPutAll: (anObject == server ifTrue: ['jadeServer'] ifFalse: [anObject printString]); cr;
@@ -603,7 +601,6 @@ serverPerform: aSymbol with: arg1 with: arg2 with: arg3 with: arg4
 !
 
 serverPerform: aSymbol withArguments: anArray
-
 	| answer |
 	server isNil ifTrue: [
 		MessageBox notify: 'Unable to perform action due to server initialization failure.'.

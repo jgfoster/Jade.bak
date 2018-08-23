@@ -44,11 +44,14 @@ browseFrameMethod
 !
 
 browseImplementors
-
-	^(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		browseImplementorsOf: frame gsMethod selector;
-		yourself.
-!
+	| service string |
+	string := frame gsMethod selector.
+	service := RowanQueryService command: #implementorsOf:
+				withArgs: (Array with: frame gsMethod selector).
+	self issueCommand: (Array with: service).
+	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
+		methods: service queryResults
+		selecting: string!
 
 browseObjectClass
 
@@ -60,11 +63,13 @@ browseObjectClass
 !
 
 browseSenders
-
-	^(RowanMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		browseSendersOf: frame gsMethod selector;
-		yourself.
-!
+	| service string |
+	string := frame gsMethod selector.
+	service := RowanQueryService command: #sendersOf: withArgs: (Array with: frame gsMethod selector).
+	self issueCommand: (Array with: service).
+	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
+		methods: service queryResults
+		selecting: string!
 
 compilationWarningFrom: methodServices
 

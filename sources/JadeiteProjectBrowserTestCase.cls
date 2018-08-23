@@ -96,7 +96,7 @@ selectRowanSample1Class
 
 	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
 	self selectServicesNamed: #('RowanSample1-Core') in: self packageListPresenter.
-	self selectServicesNamed: #('RowanSample1') in: self classListPresenter!
+	self selectServicesNamed: (Array with: self class sampleClass) in: self classListPresenter!
 
 selectServicesNamed: anArray in: presenter
 	anArray do: 
@@ -212,6 +212,10 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase class methodsFor!
 
 resources
-	^IdentitySet with: JadeiteTestResource! !
+	^IdentitySet with: JadeiteTestResource!
+
+sampleClass
+	^'RowanSample1'! !
 !JadeiteProjectBrowserTestCase class categoriesFor: #resources!public! !
+!JadeiteProjectBrowserTestCase class categoriesFor: #sampleClass!public! !
 

@@ -90,6 +90,14 @@ browseMethodHistory
 
 	MessageBox warning: 'Method history is not available yet'. !
 
+browseSelectedClass
+	| range className classService |
+	range := methodSourcePresenter view selectionRange.
+	className := methodSourcePresenter value copyFrom: range start to: range stop.
+	classService := RowanClassService named: className.
+	self updateService: classService.
+	self updateAfterFindClass: classService!
+
 categoriesMenuStrings
 
 	false ifTrue: [
@@ -1298,6 +1306,10 @@ updateSelectionsForUpdate: update
 	update updateMethodSelectionFor: self methodListPresenter.
 	update projectSelectionUpdate: projectListPresenter!
 
+updateService: service
+
+	^self updateServices: (Array with: service) !
+
 updateServices: services
 	inUpdate ifTrue: [^self].
 	inUpdate := true.
@@ -1351,6 +1363,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySenders!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySendersOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseSelectedClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
@@ -1471,6 +1484,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjects!event handlers!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectTab!event handlers support!private!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #updateService:!public!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateServices:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateSingleMethodSource!event handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateTabLabel!public!updating! !
