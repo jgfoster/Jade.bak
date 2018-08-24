@@ -21,7 +21,7 @@ isSampleClassPresentIn: aSession
 			on: Error
 			do: [:ex | false]!
 
-needsNewResource
+resourceHasValidSession
 	^(GciSession allInstances includes: session) and: [session isValidSession]!
 
 session
@@ -38,7 +38,7 @@ transcript
 	^transcript! !
 !JadeiteTestResource categoriesFor: #isAvailable!public!testing! !
 !JadeiteTestResource categoriesFor: #isSampleClassPresentIn:!public!testing! !
-!JadeiteTestResource categoriesFor: #needsNewResource!public!testing! !
+!JadeiteTestResource categoriesFor: #resourceHasValidSession!public!testing! !
 !JadeiteTestResource categoriesFor: #session!accessing!public! !
 !JadeiteTestResource categoriesFor: #setUp!public! !
 !JadeiteTestResource categoriesFor: #transcript!accessing!public! !
@@ -46,7 +46,8 @@ transcript
 !JadeiteTestResource class methodsFor!
 
 current
-	(current isNil or: [current needsNewResource]) ifFalse: [current := self new].
+	current ifNil: [current := self new].
+	current resourceHasValidSession ifFalse: [current := self new].
 	^current!
 
 isAvailable

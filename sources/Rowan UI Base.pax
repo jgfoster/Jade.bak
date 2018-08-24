@@ -1919,13 +1919,13 @@ basicRemoveMethods
 	self updateCommand: string!
 
 browseClassReferences
-	self browseClassReferences: (classListPresenter selectionIfNone: [^self])!
+	^self browseClassReferences: (classListPresenter selectionIfNone: [^self])!
 
 browseClassReferences: className
 	| service |
 	service := RowanQueryService command: #browseClassReferences: withArgs: (Array with: className).
 	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: className!
+	^self openMethodListOn: service selecting: className!
 
 browseImplementorsOf: string
 	| service |
@@ -2086,9 +2086,11 @@ onViewOpened
 	!
 
 openMethodListOn: service selecting: string
-	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	| shell |
+	(shell := JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		methods: service queryResults
-		selecting: string!
+		selecting: string.
+	^shell!
 
 packageTabName
 

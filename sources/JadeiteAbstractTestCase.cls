@@ -10,6 +10,22 @@ JadeiteAbstractTestCase comment: ''!
 !JadeiteAbstractTestCase categoriesForClass!Unclassified! !
 !JadeiteAbstractTestCase methodsFor!
 
+abortTransaction
+	transcript abortTransaction!
+
+openWindow: aBlock
+	"evaluate a block which is expected to return an object that responds to #view.
+	Wait until the view affirms it is open before continuing"
+
+	| presenter count |
+	presenter := aBlock value.
+	count := 0.
+	[presenter view isOpen] whileFalse: 
+			[(Delay forMilliseconds: 50) wait.
+			count := count + 1.
+			count > 10 ifTrue: [^presenter]].
+	^presenter!
+
 setUp
 	super setUp.
 	session := JadeiteTestResource current session.
@@ -19,6 +35,8 @@ setUp
 tearDown
 	super tearDown.
 ! !
+!JadeiteAbstractTestCase categoriesFor: #abortTransaction!private!setup teardown! !
+!JadeiteAbstractTestCase categoriesFor: #openWindow:!browser test support!private! !
 !JadeiteAbstractTestCase categoriesFor: #setUp!private! !
 !JadeiteAbstractTestCase categoriesFor: #tearDown!private! !
 

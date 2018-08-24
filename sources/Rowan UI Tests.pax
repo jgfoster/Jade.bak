@@ -6,6 +6,7 @@ package paxVersion: 1;
 
 package classNames
 	add: #JadeiteAbstractTestCase;
+	add: #JadeiteDictionaryBrowserTestCase;
 	add: #JadeiteInspectorTestCase;
 	add: #JadeiteProjectBrowserTestCase;
 	add: #JadeiteTestResource;
@@ -42,6 +43,11 @@ package!
 
 TestCase subclass: #JadeiteAbstractTestCase
 	instanceVariableNames: 'session transcript'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeiteAbstractTestCase subclass: #JadeiteDictionaryBrowserTestCase
+	instanceVariableNames: 'dictionaryBrowser'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
