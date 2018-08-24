@@ -13,14 +13,6 @@ JadeiteTestResource comment: ''!
 isAvailable
 	^session notNil and: [transcript notNil]!
 
-isSampleClassPresentIn: aSession
-	^
-	[aSession
-		executeString: '(System myUserProfile resolveSymbol: #' , JadeiteProjectBrowserTestCase sampleClass
-				, ') notNil']
-			on: Error
-			do: [:ex | false]!
-
 resourceHasValidSession
 	^(GciSession allInstances includes: session) and: [session isValidSession]!
 
@@ -37,7 +29,6 @@ transcript
 
 	^transcript! !
 !JadeiteTestResource categoriesFor: #isAvailable!public!testing! !
-!JadeiteTestResource categoriesFor: #isSampleClassPresentIn:!public!testing! !
 !JadeiteTestResource categoriesFor: #resourceHasValidSession!public!testing! !
 !JadeiteTestResource categoriesFor: #session!accessing!public! !
 !JadeiteTestResource categoriesFor: #setUp!public! !

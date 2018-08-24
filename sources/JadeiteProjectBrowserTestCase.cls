@@ -85,11 +85,11 @@ selectServicesNamed: anArray in: presenter
 	presenter resetSelection.
 	anArray do: 
 			[:name |
-			| string |
-			string := presenter list detect: [:model | model = name]
+			| service |
+			service := presenter list detect: [:svc | svc name = name]
 						ifNone: [self error: 'List element ' , name , ' not found'].
 			presenter selections: (presenter selections asOrderedCollection
-						add: string;
+						add: service;
 						yourself)]!
 
 serviceNamed: name in: presenter
@@ -117,14 +117,6 @@ test_addRemoveCategory
 	self assert: self categoryListPresenter selection = 'jadeite test'.
 	self projectsPresenter basicRemoveMethodCategories.
 	self deny: (self categoryListPresenter list includes: 'jadeite test')!
-
-test_browseReferencesInDictionaryBrowser
-	self rowanFixMe. "finish test"
-	self openDictionaryBrowser.
-	self selectServicesNamed: (Array with: 'Globals') in: dictionaryBrowser projectListPresenter .
-	self selectServicesNamed: #('RowanSample1-Core') in: dictionaryBrowser packageListPresenter.
-	self selectServicesNamed: (Array with: 'Date') in: dictionaryBrowser classListPresenter.
-	!
 
 test_markDirty
 	| nonDefaultService |
@@ -203,7 +195,6 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_browseReferencesInDictionaryBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !
