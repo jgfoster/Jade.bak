@@ -94,11 +94,13 @@ package methodNames
 	add: #JadePresenterA -> #clearBreakPointAt:in:;
 	add: #JadePresenterA -> #cloneProject;
 	add: #JadePresenterA -> #compilationWarningFrom:;
+	add: #JadePresenterA -> #confirmReloadProjects:;
 	add: #JadePresenterA -> #currentMethodSourceFrom:;
 	add: #JadePresenterA -> #displayNoMods:;
 	add: #JadePresenterA -> #editSaveMethod:in:category:;
 	add: #JadePresenterA -> #isOkayToChangeSource:;
 	add: #JadePresenterA -> #issueCommand:;
+	add: #JadePresenterA -> #loadProjectsFrom:;
 	add: #JadePresenterA -> #methodListSelection;
 	add: #JadePresenterA -> #refreshBreakPointsIn:;
 	add: #JadePresenterA -> #removeSelectorsStringUsing:;
@@ -937,6 +939,22 @@ compilationWarningFrom: methodServices
 		methodService compilationWarnings ifNotNil:[:warning | ^warning]].
 	^nil!
 
+confirmReloadProjects: selections
+	| ws |
+	ws := String new writeStream.
+	selections do: 
+			[:projectService |
+			ws
+				cr;
+				print: projectService name].
+	ws
+		nextPut: $?;
+		cr.
+	(MessageBox
+		confirm: 'Really load project(s) ' , ws contents , 'This will destroy any changes you may have.')
+			ifFalse: [^false].
+	^true!
+
 currentMethodSourceFrom: sourceString
 
 	| source fromStream writeStream |
@@ -1008,6 +1026,12 @@ issueCommand: services
 	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
 		ensure: [services do: [:service | service clearCommand]].
 	^self update: services afterStonReplication: stonResultString.!
+
+loadProjectsFrom: browser
+	| selections |
+	selections := browser projectListPresenter selections.
+	(self confirmReloadProjects: selections)
+		ifTrue: [RowanBrowserService new reloadProjects: selections presenter: self]!
 
 methodListSelection
 	
@@ -1098,11 +1122,13 @@ updateMethodReferences: services
 !JadePresenterA categoriesFor: #clearBreakPointAt:in:!Jadeite!public! !
 !JadePresenterA categoriesFor: #cloneProject!Jadeite!public! !
 !JadePresenterA categoriesFor: #compilationWarningFrom:!Jadeite!public! !
+!JadePresenterA categoriesFor: #confirmReloadProjects:!Jadeite!public! !
 !JadePresenterA categoriesFor: #currentMethodSourceFrom:!Jadeite!public! !
 !JadePresenterA categoriesFor: #displayNoMods:!displaying!public! !
 !JadePresenterA categoriesFor: #editSaveMethod:in:category:!Jadeite!public! !
 !JadePresenterA categoriesFor: #isOkayToChangeSource:!Jadeite!public! !
 !JadePresenterA categoriesFor: #issueCommand:!Jadeite!public! !
+!JadePresenterA categoriesFor: #loadProjectsFrom:!Jadeite!public! !
 !JadePresenterA categoriesFor: #methodListSelection!Jadeite!public! !
 !JadePresenterA categoriesFor: #refreshBreakPointsIn:!Jadeite!public! !
 !JadePresenterA categoriesFor: #removeSelectorsStringUsing:!Jadeite!public! !

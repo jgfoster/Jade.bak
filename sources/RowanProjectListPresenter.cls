@@ -44,13 +44,8 @@ createComponents
 list: aList
 	projectListPresenter list: aList!
 
-loadProject
-	| selection |
-	selection := projectListPresenter selection.
-	(MessageBox
-		confirm: 'Really load project ' , selection name , '? This will destroy any changes you may have.')
-			ifFalse: [^false].
-	selection loadProjectFrom: self!
+loadProjects
+	self loadProjectsFrom: self!
 
 makeDefault
 	"the server is the gold copy"
@@ -160,7 +155,7 @@ writeProject
 !RowanProjectListPresenter categoriesFor: #commit!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #createComponents!public! !
 !RowanProjectListPresenter categoriesFor: #list:!public! !
-!RowanProjectListPresenter categoriesFor: #loadProject!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #loadProjects!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #makeDefault!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #newService!private!project menu handlers! !
 !RowanProjectListPresenter categoriesFor: #openChangesShell:!private!project menu handlers! !

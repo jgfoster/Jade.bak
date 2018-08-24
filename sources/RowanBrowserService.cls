@@ -86,6 +86,12 @@ releaseReferencedServices
 			projects := Array new.
 			copy do: [:service | service releaseReferencedServices]]!
 
+reloadProjects: selections presenter: presenter
+	self
+		command: #reloadProjects:;
+		commandArgs: (Array with: selections).
+	presenter issueCommand: (Array with: self)!
+
 removedMethods
 	^removedMethods!
 
@@ -120,6 +126,7 @@ stonOn: stonWriter
 !RowanBrowserService categoriesFor: #prepareForReplication!public!replication! !
 !RowanBrowserService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanBrowserService categoriesFor: #releaseReferencedServices!public! !
+!RowanBrowserService categoriesFor: #reloadProjects:presenter:!Jadeite!public! !
 !RowanBrowserService categoriesFor: #removedMethods!accessing!private! !
 !RowanBrowserService categoriesFor: #removedMethods:!accessing!private! !
 !RowanBrowserService categoriesFor: #replicateFrom:!public!replication!updating! !

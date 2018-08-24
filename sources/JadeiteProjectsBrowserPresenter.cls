@@ -493,13 +493,8 @@ jadeMenuStrings
 	).
 !
 
-loadProject
-	| selection |
-	selection := projectListPresenter selection.
-	(MessageBox
-		confirm: 'Really load project ' , selection name , '? This will destroy any changes you may have.')
-			ifFalse: [^false].
-	selection loadProjectFrom: self.
+loadProjects
+	self loadProjectsFrom: self. 
 	self refreshFromServer!
 
 makeDefault
@@ -667,14 +662,14 @@ projectMenuCommands
 	^self projectMenu items collect: [:item | item command]!
 
 projectMenuStrings
-	self rowanFixMe. "this really is a cumbersome way to build a menu."
+	self rowanFixMe.	"this really is a cumbersome way to build a menu."
 	0 == 1
 		ifTrue: 
 			[self
 				findClass;
 				makeDefault;
 				cloneProject;
-				loadProject;
+				loadProjects;
 				unloadProject;
 				pullFromGit;
 				gitCommit;
@@ -683,27 +678,8 @@ projectMenuStrings
 				writeProject;
 				checkout;
 				projectLog;
-				refresh
-				].
-	^#(	'Projects' 
-		'&Find Class.../Ctrl+Shift+F/findClass'
-		'&Make Default//makeDefault' 
-		'-' 
-		'Clone Git Project ...//cloneProject'
-		'Load//loadProject'
-		'Unload//unloadProject'
-		'-'
-		'Pull from Git ...//pullFromGit'
-		'Commit ...//gitCommit' 
-		'Push to Git ...//pushToGit'
-		'-'
-		'&Changes ...//projectChanges'
-		'Write ...//writeProject' 
-		'Checkout ...//checkout'
-		'-'
-		'Log//projectLog'
-		'&Refresh//refreshFromServer'
-)!
+				refresh].
+	^#('Projects' '&Find Class.../Ctrl+Shift+F/findClass' '&Make Default//makeDefault' '-' 'Clone Git Project ...//cloneProject' 'Load//loadProjects' 'Unload//unloadProject' '-' 'Pull from Git ...//pullFromGit' 'Commit ...//gitCommit' 'Push to Git ...//pushToGit' '-' '&Changes ...//projectChanges' 'Write ...//writeProject' 'Checkout ...//checkout' '-' 'Log//projectLog' '&Refresh//refreshFromServer')!
 
 projectTabLabel
 	"Selections get mixed up switching between system presenters unless the tabs
@@ -1412,7 +1388,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #issueCommand:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #loadProject!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #loadProjects!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
