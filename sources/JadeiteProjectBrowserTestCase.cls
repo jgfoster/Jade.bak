@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
-	instanceVariableNames: 'browser'
+	instanceVariableNames: 'projectsBrowser dictionaryBrowser'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -11,8 +11,7 @@ JadeiteProjectBrowserTestCase comment: 'General Jadeite tests. Assumes a logged 
 !JadeiteProjectBrowserTestCase methodsFor!
 
 abortTransaction
-
-	browser abortTransaction!
+	projectsBrowser abortTransaction!
 
 categoryListPresenter
 	^self projectsPresenter categoryListPresenter!
@@ -32,8 +31,11 @@ methodListPresenter
 methodSourcePresenter
 	^self projectsPresenter methodSourcePresenter!
 
+openDictionaryBrowser
+	dictionaryBrowser := self openWindow: [transcript openDictionaryBrowser]!
+
 openProjectsBrowser
-	browser := self openWindow: [transcript openJadeiteProjectsBrowser]!
+	projectsBrowser := self openWindow: [transcript openJadeiteProjectsBrowser]!
 
 openWindow: aBlock
 	"evaluate a block which is expected to return an object that responds to #view.
@@ -58,7 +60,7 @@ projectListPresenter
 	^self projectsPresenter projectListPresenter!
 
 projectsPresenter
-	^browser currentCard!
+	^projectsBrowser currentCard!
 
 rowanProjectNames
 	"this may change"
@@ -122,12 +124,24 @@ setUp
 
 tearDown
 	super tearDown.
-	self abortTransaction. 
-	browser ifNotNil: [browser destroy]!
+	self abortTransaction.
+	projectsBrowser ifNotNil: [projectsBrowser destroy]!
 
 test_addRemoveCategory
 
 	self selectRowanSample1Class.
+	self deny: (self categoryListPresenter list includes: 'jadeite test').
+	self projectsPresenter basicAddMethodCategory: 'jadeite test'.
+	self assert: (self categoryListPresenter list includes: 'jadeite test').
+	self assert: self categoryListPresenter selection = 'jadeite test'.
+	self projectsPresenter basicRemoveMethodCategories.
+	self deny: (self categoryListPresenter list includes: 'jadeite test')!
+
+test_browseReferencesInDictionaryBrowser
+	self rowanFixMe. "finish test"self halt. 
+	self selectServicesNamed: (Array with: 'Globals') in: self projectListPresenter.
+	self selectServicesNamed: #('RowanSample1-Core') in: self packageListPresenter.
+	self selectServicesNamed: (Array with: self class sampleClass) in: self classListPresenter.
 	self deny: (self categoryListPresenter list includes: 'jadeite test').
 	self projectsPresenter basicAddMethodCategory: 'jadeite test'.
 	self assert: (self categoryListPresenter list includes: 'jadeite test').
@@ -152,7 +166,8 @@ test_markDirty
 
 test_openProjectsBrowser
 	"project browser opened in setup"
-	self assert: browser class equals: JadeiteProjectsSystemBrowser.
+
+	self assert: projectsBrowser class equals: JadeiteProjectsSystemBrowser.
 	self
 		denyIsNil: (self projectList detect: [:projectService | projectService name = 'Rowan'] ifNone: [])!
 
@@ -196,6 +211,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #methodListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #methodSourcePresenter!presenter!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #openDictionaryBrowser!dictionary support!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #openProjectsBrowser!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #openWindow:!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #packageListPresenter!presenter!private! !
@@ -213,6 +229,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_browseReferencesInDictionaryBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !

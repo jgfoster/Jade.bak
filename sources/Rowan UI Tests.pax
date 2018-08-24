@@ -6,6 +6,7 @@ package paxVersion: 1;
 
 package classNames
 	add: #JadeiteAbstractTestCase;
+	add: #JadeiteInspectorTestCase;
 	add: #JadeiteProjectBrowserTestCase;
 	add: #JadeiteTestResource;
 	add: #RowanDebuggerTestCase;
@@ -13,6 +14,8 @@ package classNames
 
 package methodNames
 	add: #JadeiteProjectsBrowserPresenter -> #basicRemoveMethodCategories;
+	add: #JadePresenter -> #update:afterStonReplication:;
+	add: #JadeTextDocument -> #openDictionaryBrowser;
 	add: #RowanMethodService -> #name;
 	add: 'TestResource class' -> #signalInitializationError;
 	yourself.
@@ -42,8 +45,13 @@ TestCase subclass: #JadeiteAbstractTestCase
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadeiteAbstractTestCase subclass: #JadeiteInspectorTestCase
+	instanceVariableNames: 'inspector'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
-	instanceVariableNames: 'browser'
+	instanceVariableNames: 'projectsBrowser dictionaryBrowser'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -72,6 +80,18 @@ basicRemoveMethodCategories
 				commandArgs: (Array with: categoryListPresenter selections).
 	self issueCommand: (Array with: service)! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethodCategories!menu handlers support!private! !
+
+!JadePresenter methodsFor!
+
+update: services afterStonReplication: stonResults
+	^BrowserUpdate current update: services afterStonReplication: stonResults! !
+!JadePresenter categoriesFor: #update:afterStonReplication:!Jadeite!public! !
+
+!JadeTextDocument methodsFor!
+
+openDictionaryBrowser
+	gciSession hasServer ifTrue: [^RowanSystemBrowser showOnSession: gciSession]! !
+!JadeTextDocument categoriesFor: #openDictionaryBrowser!Jade!private! !
 
 !RowanMethodService methodsFor!
 
