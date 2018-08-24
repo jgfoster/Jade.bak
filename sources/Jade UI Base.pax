@@ -41,7 +41,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
-	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
@@ -112,7 +111,7 @@ TextDocument subclass: #JadeTextDocument
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeTextDocument subclass: #JadeInspector
-	instanceVariableNames: 'instVarListPresenter'
+	instanceVariableNames: 'instVarListPresenter className'
 	classVariableNames: 'DefaultInspectorClass'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

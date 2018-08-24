@@ -86,7 +86,15 @@ package methodNames
 	add: #JadeImageStripper -> #createVersionResource;
 	add: #JadeImageStripper -> #requiredClasses;
 	add: #JadeImageStripper -> #requiredPackageNames;
+	add: #JadeInspector -> #displayObject;
+	add: #JadeInspector -> #onViewOpened;
+	add: #JadeInspector -> #setDocumentPresenterLabel;
+	add: #JadeInspector -> #setLastGsShape:;
+	add: #JadeInspector -> #shellName;
+	add: #JadeInspector -> #shellNameExtraInfo;
+	add: #JadeInspector -> #updateCaption;
 	add: #JadeLoginShell -> #aboutJadeite;
+	add: #JadeNavigationInspector -> #setNewInspectedObject;
 	add: #JadePresenterA -> #basicCloneProject:root:;
 	add: #JadePresenterA -> #basicUpdateServices:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
@@ -229,6 +237,9 @@ package methodNames
 	add: #RowanMethodDefinition -> #methodService;
 	add: #RowanPatch -> #operations:;
 	add: #RowanPatch -> #session:;
+	add: 'JadeInspector class' -> #resource_Default_view;
+	add: 'JadeInspector class' -> #resource_Special_view;
+	add: 'JadeNavigationInspector class' -> #resource_Default_view;
 	add: 'JadeServer class' -> #gsString;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
 	add: 'JadeSessionManager class' -> #getUrl;
@@ -271,6 +282,7 @@ package setPrerequisites: (IdentitySet new
 	add: 'GemStone Session';
 	add: 'Jade Autocompletation';
 	add: 'Jade Deployment';
+	add: 'Jade Inspector';
 	add: 'Jade Login';
 	add: 'Jade Method Browser';
 	add: 'Jade Process Browser';
@@ -869,6 +881,133 @@ requiredPackageNames
 !JadeImageStripper categoriesFor: #requiredClasses!public! !
 !JadeImageStripper categoriesFor: #requiredPackageNames!public! !
 
+!JadeInspector methodsFor!
+
+displayObject
+	| result stream theClassName oop size instVarNames |
+	(model isKindOf: ExternalInteger)
+		ifFalse: 
+			[className := model class name.
+			documentPresenter value: model. 
+			^self].
+	result := gciSession serverPerform: #inspect: with: model.
+	(result isKindOf: ByteArray) ifTrue: [result := result asString].
+	(result isKindOf: String)
+		ifFalse: 
+			[self error: 'Result of #inspect: on ' , model printString , ' should be a String but is '
+						, model class name].
+	stream := ReadStream on: result.
+	theClassName := stream upTo: Character tab.
+	self setLastGsShape: theClassName.
+	oop := stream nextLine.
+	size := stream nextLine asNumber.
+	instVarNames := OrderedCollection with: '-.asOop' -> oop.
+	size timesRepeat: 
+			[| name |
+			name := '-' , (stream upTo: Character tab).
+			oop := stream upTo: Character lf.
+			instVarNames add: name -> (gciSession oopTypeWithOop: oop asNumber)].
+	instVarNames addFirst: 'self' -> stream upToEnd.
+	instVarListPresenter
+		list: instVarNames;
+		selection: instVarNames first;
+		yourself.
+	className := theClassName!
+
+onViewOpened
+	super onViewOpened.
+	self displayObject.
+	self updateCaption!
+
+setDocumentPresenterLabel
+	(model isKindOf: String) ifTrue: [
+		documentPresenter value: model.
+		self view caption: 'String (' , model size printString , ' characters)'.
+		^self.
+	].
+	(model isKindOf: ByteArray) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: model class name , ' (' , model size printString , ' bytes)'.
+		^self.
+	].
+	(model isKindOf: Integer) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Integer'.
+		^self.
+	].
+	model isNil ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'UndefinedObject'.
+		^self.
+	].
+	(model isKindOf: Boolean) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Boolean'.
+		^self.
+	]. 
+	(model isKindOf: Character) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Character'.
+		^self.
+	]. 
+	(model isKindOf: Float) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Float'.
+		^self.
+	].
+	(model isKindOf: Fraction) ifTrue: [
+		documentPresenter value: model printString.
+		self view caption: 'Fraction'.
+		^self.
+	].
+!
+
+setLastGsShape: name
+	codePane setDocumentPresenterWith: (self registry getClass: name)!
+
+shellName
+	className ifNil: [^String new	"not available yet"].
+	^'Inspector on ' , className , self shellNameExtraInfo!
+
+shellNameExtraInfo
+	(model isKindOf: String) ifTrue: [^' (' , model size printString , ' characters)'].
+	(model isKindOf: ByteArray) ifTrue: [^' (' , model size printString , ' bytes)'].
+	^String new!
+
+updateCaption
+	self caption: (gciSession titleBarFor: self shellName).! !
+!JadeInspector categoriesFor: #displayObject!accessing!private! !
+!JadeInspector categoriesFor: #onViewOpened!event handling!private! !
+!JadeInspector categoriesFor: #setDocumentPresenterLabel!displaying!private! !
+!JadeInspector categoriesFor: #setLastGsShape:!accessing!private! !
+!JadeInspector categoriesFor: #shellName!displaying!private! !
+!JadeInspector categoriesFor: #shellNameExtraInfo!displaying!private! !
+!JadeInspector categoriesFor: #updateCaption!displaying!private! !
+
+!JadeInspector class methodsFor!
+
+resource_Default_view
+	"Answer the literal data from which the 'Default view' resource can be reconstituted.
+	DO NOT EDIT OR RECATEGORIZE THIS METHOD.
+
+	If you wish to modify this resource evaluate:
+	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Default_view)
+	"
+
+	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ShellView) 34 27 nil nil 8 #(13565952 65536) 416 nil 524550 ##(Smalltalk.ColorRef) 8 4278190080 328198 ##(Smalltalk.Point) 1201 901 551 nil nil nil 416 788230 ##(Smalltalk.BorderLayout) 1 1 410 ##(Smalltalk.ContainerView) 34 15 nil 416 34 2 8 1140850688 131073 576 nil 721158 ##(Smalltalk.SystemColor) 31 nil 7 nil nil nil 576 1180166 ##(Smalltalk.ProportionalLayout) 170 176 8 #() false 170 192 720 nil 983302 ##(Smalltalk.MessageSequence) 138 144 34 1 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 514 1 1 514 1169 49 576 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 72 2 0 0 24 0 0 0] 34 1 410 ##(Smalltalk.Toolbar) 34 25 nil 576 34 2 8 1409288972 131137 960 nil 466 8 4278190080 nil 519 nil 263174 ##(Smalltalk.Font) nil true 459014 ##(Smalltalk.LOGFONT) 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 65 114 105 97 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 514 193 193 nil 960 466 1040 8 4294905811 170 192 720 170 192 34 2 31587 1115910 ##(Smalltalk.ToolbarIconButton) 31587 nil 960 1 1180998 4 ##(Smalltalk.CommandDescription) #openNavigationInspector 8 'Open Navigation Inspector' 1 1 263494 3 ##(Smalltalk.Icon) nil true 1572870 ##(Smalltalk.ImageRelativeFileLocator) 8 'BasicInspector.ico' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy) 8 'dolphindr7.dll' nil 395334 3 ##(Smalltalk.Bitmap) nil true nil nil nil nil 3 514 33 33 1 34 1 1248 170 176 34 2 1456 1 nil 1 nil 514 33 33 514 45 45 nil 656198 1 ##(Smalltalk.FlowLayout) 1 1 1 754 138 144 34 2 818 #createAt:extent: 34 2 514 1 1 514 1169 49 960 818 #updateSizePosted 720 960 898 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 72 2 0 0 24 0 0 0] 8 #() 514 193 193 nil 27 1776 nil 27 nil nil nil 410 ##(Smalltalk.ContainerView) 34 15 nil 416 34 2 8 1140850688 131073 1792 nil nil nil 7 nil nil nil 1792 674 170 176 720 false 170 192 34 4 410 ##(Smalltalk.ReferenceView) 34 14 nil 1792 34 2 8 1140850688 131073 1920 nil 466 8 4278190080 nil 7 nil nil nil 1920 1180166 ##(Smalltalk.ResourceIdentifier) ##(Smalltalk.CodeSourcePresenter) #resource_Default_view nil 754 138 144 34 1 818 #createAt:extent: 34 2 514 589 1 514 581 735 1920 898 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 38 1 0 0 0 0 0 0 72 2 0 0 111 1 0 0] 720 1776 nil 27 8 'codePane' 410 ##(Smalltalk.ListBox) 34 17 nil 1792 34 2 8 1144062209 1025 2208 590662 2 ##(Smalltalk.ListModel) 138 144 720 nil 1310726 ##(Smalltalk.IdentitySearchPolicy) 466 8 4278190080 nil 7 nil nil nil 2208 nil 8 4294904115 459270 ##(Smalltalk.Message) #key 8 #() 720 false 754 138 144 34 2 818 #createAt:extent: 34 2 514 1 1 514 579 735 2208 818 #horizontalExtent: 8 #(0) 2208 898 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 33 1 0 0 111 1 0 0] 8 #() 1776 nil 27 8 'instVarList' nil 754 138 144 34 1 818 #createAt:extent: 34 2 514 1 49 514 1169 735 1792 898 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 24 0 0 0 72 2 0 0 135 1 0 0] 34 3 2208 410 ##(Smalltalk.Splitter) 34 12 nil 1792 34 2 8 1140850688 1 2816 nil 466 8 4278190080 nil 519 nil nil nil 2816 754 138 144 34 1 818 #createAt:extent: 34 2 514 579 1 514 11 735 2816 898 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 33 1 0 0 0 0 0 0 38 1 0 0 111 1 0 0] 8 #() 1776 nil 27 1920 1776 nil 27 170 192 720 nil 461638 4 ##(Smalltalk.MenuBar) nil true 34 4 265030 4 ##(Smalltalk.Menu) nil true 34 7 984134 2 ##(Smalltalk.CommandMenuItem) 1 1266 #fileNew 8 '&New Workspace' 9373 1 nil nil nil 3186 1 1266 #fileOpen 8 '&Open Workspace...' 9375 1 nil nil nil 3186 1 1266 #fileSave 8 '&Save' 9383 1 nil nil nil 3186 1 1266 #fileSaveAs 8 'Save &As...' 1 1 nil nil nil 3186 1 1266 #fileRevert 8 '&Revert' 1025 1 nil nil nil 983366 1 ##(Smalltalk.DividerMenuItem) 4097 3186 1 1266 #exit 8 'E&xit Jade' 17639 1 nil nil nil 8 '&File' nil 1 nil nil 31539 nil nil 3138 nil true 34 15 3186 1 1266 #undo 8 '&Undo' 9397 1 nil nil nil 3186 1 1266 #redo 8 'R&edo' 9395 1 nil nil nil 3442 4097 3186 1 1266 #editCut 8 'Cu&t' 9393 1 nil nil nil 3186 1 1266 #editCopy 8 '&Copy' 9351 1 nil nil nil 3186 1 1266 #editPaste 8 '&Paste' 9389 1 nil nil nil 3186 1 1266 #editSelectAll 8 'Select &All' 9347 1 nil nil nil 3186 1 1266 #editDelete 8 '&Delete' 1629 1 nil nil nil 3442 4097 3186 1 1266 #editFind 8 '&Find...' 9357 1 nil nil nil 3186 1 1266 #editFindNext 8 'Find &Next' 9359 1 nil nil nil 3186 1 1266 #editReplace 8 '&Replace...' 9361 1 nil nil nil 3442 4097 3186 1 1266 #addQuotesToSelection 8 'Add &Quotes' 1 1 nil nil nil 3186 1 1266 #removeQuotesFromSelection 8 'Re&move Quotes' 1 1 nil nil nil 8 '&Edit' nil 1 nil nil 31565 nil nil 3138 nil true 34 9 3186 1 1266 #abortTransaction 8 '&Abort Transaction' 1 1 nil nil nil 3186 1 1266 #commitTransaction 8 '&Commit Transaction' 1 1 nil nil nil 3442 4097 3186 1 1266 #jadeInspect 8 '&Inspect' 9379 1 nil nil nil 3186 1 1266 #jadeDisplay 8 '&Display' 9353 1 nil nil nil 3186 1 1266 #jadeExecute 8 '&Execute' 9355 1 nil nil nil 3186 1 1266 #fileIn 8 'Fi&le In' 1 1 nil nil nil 3442 4097 3186 1 1266 #jadeBrowseClasses 8 '&Browse Classes' 9349 1 nil nil nil 8 '&Jade' nil 1 nil nil 31581 nil nil 3138 nil true 34 1 3186 1 1266 #aboutJadeite 8 '&About Jade' 1 1 nil nil nil 8 '&Help' nil 1 nil nil 31585 nil nil 8 '' nil 1 nil nil nil nil nil nil nil nil 1 nil nil nil nil 1 nil nil 754 138 144 34 3 818 #createAt:extent: 34 2 514 7679 21 514 1201 901 416 818 #text: 34 1 8 'Jade Object Inspector' 416 818 #updateMenuBar 720 416 898 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 14 0 0 10 0 0 0 87 17 0 0 204 1 0 0] 34 2 576 1792 1776 nil 27 )!
+
+resource_Special_view
+	"Answer the literal data from which the 'Special view' resource can be reconstituted.
+	DO NOT EDIT OR RECATEGORIZE THIS METHOD.
+
+	If you wish to modify this resource evaluate:
+	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Special_view)
+	"
+
+	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ShellView) 34 27 nil nil 8 #(13565952 65536) 416 nil 524550 ##(Smalltalk.ColorRef) 8 4278190080 328198 ##(Smalltalk.Point) 1201 901 551 nil nil nil 416 1180166 ##(Smalltalk.ProportionalLayout) 170 176 8 #() false 170 192 34 2 410 ##(Smalltalk.MultilineTextEdit) 34 16 nil 416 34 2 8 1143017796 1025 640 nil 466 8 4278190080 nil 7 nil nil nil 640 nil 8 4294905285 852486 ##(Smalltalk.NullConverter) nil nil 11 983302 ##(Smalltalk.MessageSequence) 138 144 34 1 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 514 1 1 514 1169 783 640 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 72 2 0 0 135 1 0 0] 8 #() 514 193 193 nil 27 8 'document' nil 461638 4 ##(Smalltalk.MenuBar) nil true 34 4 265030 4 ##(Smalltalk.Menu) nil true 34 7 984134 2 ##(Smalltalk.CommandMenuItem) 1 1180998 4 ##(Smalltalk.CommandDescription) #fileNew 8 '&New Workspace' 9373 1 nil nil nil 1122 1 1154 #fileOpen 8 '&Open Workspace...' 9375 1 nil nil nil 1122 1 1154 #fileSave 8 '&Save' 9383 1 nil nil nil 1122 1 1154 #fileSaveAs 8 'Save &As...' 1 1 nil nil nil 1122 1 1154 #fileRevert 8 '&Revert' 1025 1 nil nil nil 983366 1 ##(Smalltalk.DividerMenuItem) 4097 1122 1 1154 #exit 8 'E&xit Jade' 17639 1 nil nil nil 8 '&File' nil 1 nil nil 30927 nil nil 1074 nil true 34 15 1122 1 1154 #undo 8 '&Undo' 9397 1 nil nil nil 1122 1 1154 #redo 8 'R&edo' 9395 1 nil nil nil 1394 4097 1122 1 1154 #editCut 8 'Cu&t' 9393 1 nil nil nil 1122 1 1154 #editCopy 8 '&Copy' 9351 1 nil nil nil 1122 1 1154 #editPaste 8 '&Paste' 9389 1 nil nil nil 1122 1 1154 #editSelectAll 8 'Select &All' 9347 1 nil nil nil 1122 1 1154 #editDelete 8 '&Delete' 1629 1 nil nil nil 1394 4097 1122 1 1154 #editFind 8 '&Find...' 9357 1 nil nil nil 1122 1 1154 #editFindNext 8 'Find &Next' 9359 1 nil nil nil 1122 1 1154 #editReplace 8 '&Replace...' 9361 1 nil nil nil 1394 4097 1122 1 1154 #addQuotesToSelection 8 'Add &Quotes' 1 1 nil nil nil 1122 1 1154 #removeQuotesFromSelection 8 'Re&move Quotes' 1 1 nil nil nil 8 '&Edit' nil 1 nil nil 30953 nil nil 1074 nil true 34 9 1122 1 1154 #abortTransaction 8 '&Abort Transaction' 1 1 nil nil nil 1122 1 1154 #commitTransaction 8 '&Commit Transaction' 1 1 nil nil nil 1394 4097 1122 1 1154 #jadeInspect 8 '&Inspect' 9379 1 nil nil nil 1122 1 1154 #jadeDisplay 8 '&Display' 9353 1 nil nil nil 1122 1 1154 #jadeExecute 8 '&Execute' 9355 1 nil nil nil 1122 1 1154 #fileIn 8 'Fi&le In' 1 1 nil nil nil 1394 4097 1122 1 1154 #jadeBrowseClasses 8 '&Browse Classes' 9349 1 nil nil nil 8 '&Jade' nil 1 nil nil 30969 nil nil 1074 nil true 34 1 1122 1 1154 #aboutJadeite 8 '&About Jade' 1 1 nil nil nil 8 '&Help' nil 1 nil nil 30973 nil nil 8 '' nil 1 nil nil nil nil nil nil nil nil 1 nil nil nil nil 1 nil nil 786 138 144 34 3 850 #createAt:extent: 34 2 514 7679 21 514 1201 901 416 850 #text: 34 1 8 'Jade Object Inspector' 416 850 #updateMenuBar 592 416 930 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 14 0 0 10 0 0 0 87 17 0 0 204 1 0 0] 34 1 640 992 nil 27 )! !
+!JadeInspector class categoriesFor: #resource_Default_view!public!resources-views! !
+!JadeInspector class categoriesFor: #resource_Special_view!public!resources-views! !
+
 !JadeLoginShell methodsFor!
 
 aboutJadeite
@@ -876,6 +1015,29 @@ aboutJadeite
 
 	self class aboutJadeite! !
 !JadeLoginShell categoriesFor: #aboutJadeite!public! !
+
+!JadeNavigationInspector methodsFor!
+
+setNewInspectedObject
+
+	self model: (self gciSession oopTypeWithOop: (oopsCollection at: objectIndex)).
+	self displayObject.
+	self updateCaption. 
+! !
+!JadeNavigationInspector categoriesFor: #setNewInspectedObject!public! !
+
+!JadeNavigationInspector class methodsFor!
+
+resource_Default_view
+	"Answer the literal data from which the 'Default view' resource can be reconstituted.
+	DO NOT EDIT OR RECATEGORIZE THIS METHOD.
+
+	If you wish to modify this resource evaluate:
+	ViewComposer openOn: (ResourceIdentifier class: self selector: #resource_Default_view)
+	"
+
+	^#(#'!!STL' 4 788558 10 ##(Smalltalk.STBViewProxy) ##(Smalltalk.ShellView) 34 27 nil nil 8 #(13565952 65536) 416 nil 524550 ##(Smalltalk.ColorRef) 8 4278190080 328198 ##(Smalltalk.Point) 1201 901 551 nil nil nil 416 788230 ##(Smalltalk.BorderLayout) 1 1 410 ##(Smalltalk.ContainerView) 34 15 nil 416 34 2 8 1140850688 131073 576 nil 721158 ##(Smalltalk.SystemColor) 31 nil 7 nil nil nil 576 1180166 ##(Smalltalk.ProportionalLayout) 170 176 8 #() false 170 192 720 nil 983302 ##(Smalltalk.MessageSequence) 138 144 34 1 721670 ##(Smalltalk.MessageSend) #createAt:extent: 34 2 514 1 1 514 1169 49 576 983302 ##(Smalltalk.WINDOWPLACEMENT) 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 72 2 0 0 24 0 0 0] 34 1 410 ##(Smalltalk.Toolbar) 34 25 nil 576 34 2 8 1409288972 131137 960 nil 466 8 4278190080 nil 519 nil 263174 ##(Smalltalk.Font) nil true 459014 ##(Smalltalk.LOGFONT) 8 #[243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 3 2 1 34 65 114 105 97 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 514 193 193 nil 960 466 1040 8 4294905811 170 192 720 170 192 34 8 33243 1115910 ##(Smalltalk.ToolbarIconButton) 33243 nil 960 1 1180998 4 ##(Smalltalk.CommandDescription) #openNavigationInspector 8 'Open Navigation Inspector' 1 1 263494 3 ##(Smalltalk.Icon) nil true 1572870 ##(Smalltalk.ImageRelativeFileLocator) 8 'BasicInspector.ico' 2032142 ##(Smalltalk.STBExternalResourceLibraryProxy) 8 'dolphindr7.dll' nil 395334 3 ##(Smalltalk.Bitmap) nil true nil nil nil nil 3 514 33 33 1 33237 1234 33237 nil 960 1 1266 #getPreviousObject 8 'Previous Object' 1 1 1314 nil true 1360 8 'HistoryBack.ico' 1408 1442 nil true nil nil nil nil 3 514 33 33 1 33239 1234 33239 nil 960 1 1266 #getNextObject 8 'Next Object' 1 1 1314 nil true 1360 8 'HistoryForward.ico' 1408 1442 nil true nil nil nil nil 3 514 33 33 1 33241 1234 33241 nil 960 1 1266 #removeObject 8 'Remove Object' 1 1 1314 nil true 1360 8 'False.ico' 1408 1442 nil true nil nil nil nil 3 514 33 33 1 34 6 1488 1600 1050118 ##(Smalltalk.ToolbarSeparator) nil nil 960 3 nil 1 1712 1842 nil nil 960 3 nil 1 1248 170 176 34 8 1680 3 1792 5 1456 7 1568 1 nil 1 nil 514 33 33 514 45 45 nil 656198 1 ##(Smalltalk.FlowLayout) 1 1 1 754 138 144 34 2 818 #createAt:extent: 34 2 514 1 1 514 1169 49 960 818 #updateSizePosted 720 960 898 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 72 2 0 0 24 0 0 0] 8 #() 514 193 193 nil 27 2160 nil 27 nil nil nil 410 ##(Smalltalk.ContainerView) 34 15 nil 416 34 2 8 1140850688 131073 2176 nil 642 31 nil 7 nil nil nil 2176 674 170 176 720 false 170 192 34 4 410 ##(Smalltalk.ReferenceView) 34 14 nil 2176 34 2 8 1140850688 131073 2320 nil 466 8 4278190080 nil 7 nil nil nil 2320 1180166 ##(Smalltalk.ResourceIdentifier) ##(Smalltalk.CodeSourcePresenter) #resource_Default_view nil 754 138 144 34 1 818 #createAt:extent: 34 2 514 589 1 514 581 735 2320 898 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 38 1 0 0 0 0 0 0 72 2 0 0 111 1 0 0] 720 2160 nil 27 8 'codePane' 410 ##(Smalltalk.ListBox) 34 17 nil 2176 34 2 8 1144062209 1025 2608 590662 2 ##(Smalltalk.ListModel) 138 144 720 nil 1310726 ##(Smalltalk.IdentitySearchPolicy) 466 8 4278190080 nil 7 nil nil nil 2608 nil 8 4294904115 459270 ##(Smalltalk.Message) #key 8 #() 720 false 754 138 144 34 2 818 #createAt:extent: 34 2 514 1 1 514 579 735 2608 818 #horizontalExtent: 8 #(0) 2608 898 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 33 1 0 0 111 1 0 0] 8 #() 2160 nil 27 8 'instVarList' nil 754 138 144 34 1 818 #createAt:extent: 34 2 514 1 49 514 1169 735 2176 898 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 24 0 0 0 72 2 0 0 135 1 0 0] 34 3 2608 410 ##(Smalltalk.Splitter) 34 12 nil 2176 34 2 8 1140850688 1 3216 nil 466 8 4278190080 nil 519 nil nil nil 3216 754 138 144 34 1 818 #createAt:extent: 34 2 514 579 1 514 11 735 3216 898 8 #[44 0 0 0 0 0 0 0 1 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 33 1 0 0 0 0 0 0 38 1 0 0 111 1 0 0] 8 #() 2160 nil 27 2320 2160 nil 27 170 192 720 nil 461638 4 ##(Smalltalk.MenuBar) nil true 34 4 265030 4 ##(Smalltalk.Menu) nil true 34 7 984134 2 ##(Smalltalk.CommandMenuItem) 1 1266 #fileNew 8 '&New Workspace' 9373 1 nil nil nil 3586 1 1266 #fileOpen 8 '&Open Workspace...' 9375 1 nil nil nil 3586 1 1266 #fileSave 8 '&Save' 9383 1 nil nil nil 3586 1 1266 #fileSaveAs 8 'Save &As...' 1 1 nil nil nil 3586 1 1266 #fileRevert 8 '&Revert' 1025 1 nil nil nil 983366 1 ##(Smalltalk.DividerMenuItem) 4097 3586 1 1266 #exit 8 'E&xit Jade' 17639 1 nil nil nil 8 '&File' nil 1 nil nil 33189 nil nil 3538 nil true 34 15 3586 1 1266 #undo 8 '&Undo' 9397 1 nil nil nil 3586 1 1266 #redo 8 'R&edo' 9395 1 nil nil nil 3842 4097 3586 1 1266 #editCut 8 'Cu&t' 9393 1 nil nil nil 3586 1 1266 #editCopy 8 '&Copy' 9351 1 nil nil nil 3586 1 1266 #editPaste 8 '&Paste' 9389 1 nil nil nil 3586 1 1266 #editSelectAll 8 'Select &All' 9347 1 nil nil nil 3586 1 1266 #editDelete 8 '&Delete' 1629 1 nil nil nil 3842 4097 3586 1 1266 #editFind 8 '&Find...' 9357 1 nil nil nil 3586 1 1266 #editFindNext 8 'Find &Next' 9359 1 nil nil nil 3586 1 1266 #editReplace 8 '&Replace...' 9361 1 nil nil nil 3842 4097 3586 1 1266 #addQuotesToSelection 8 'Add &Quotes' 1 1 nil nil nil 3586 1 1266 #removeQuotesFromSelection 8 'Re&move Quotes' 1 1 nil nil nil 8 '&Edit' nil 1 nil nil 33215 nil nil 3538 nil true 34 9 3586 1 1266 #abortTransaction 8 '&Abort Transaction' 1 1 nil nil nil 3586 1 1266 #commitTransaction 8 '&Commit Transaction' 1 1 nil nil nil 3842 4097 3586 1 1266 #jadeInspect 8 '&Inspect' 9379 1 nil nil nil 3586 1 1266 #jadeDisplay 8 '&Display' 9353 1 nil nil nil 3586 1 1266 #jadeExecute 8 '&Execute' 9355 1 nil nil nil 3586 1 1266 #fileIn 8 'Fi&le In' 1 1 nil nil nil 3842 4097 3586 1 1266 #jadeBrowseClasses 8 '&Browse Classes' 9349 1 nil nil nil 8 '&Jade' nil 1 nil nil 33231 nil nil 3538 nil true 34 1 3586 1 1266 #aboutJadeite 8 '&About Jade' 1 1 nil nil nil 8 '&Help' nil 1 nil nil 33235 nil nil 8 '' nil 1 nil nil nil nil nil nil nil nil 1 nil nil nil nil 1 nil nil 754 138 144 34 3 818 #createAt:extent: 34 2 514 7679 21 514 1201 901 416 818 #text: 34 1 8 'Jade Object Navigation Inspector' 416 818 #updateMenuBar 720 416 898 8 #[44 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 14 0 0 10 0 0 0 87 17 0 0 204 1 0 0] 34 2 576 2176 2160 nil 27 )! !
+!JadeNavigationInspector class categoriesFor: #resource_Default_view!public!resources-views! !
 
 !JadePresenterA methodsFor!
 
