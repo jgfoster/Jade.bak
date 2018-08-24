@@ -100,10 +100,6 @@ clearBreakAtStepPoint: anInteger session: aGciSession
 	BrowserUpdate current update: (Array with: self) afterStonReplication: stonResults.
 !
 
-clientDefinitionClass
-
-	^RowanMethodDefinition!
-
 compilationWarnings
 	^compilationWarnings!
 
@@ -400,7 +396,6 @@ user: anObject
 !RowanMethodService categoriesFor: #className!accessing!private! !
 !RowanMethodService categoriesFor: #className:!accessing!private! !
 !RowanMethodService categoriesFor: #clearBreakAtStepPoint:session:!public! !
-!RowanMethodService categoriesFor: #clientDefinitionClass!private! !
 !RowanMethodService categoriesFor: #compilationWarnings!accessing!private! !
 !RowanMethodService categoriesFor: #copyBasicsFrom:!public!updating! !
 !RowanMethodService categoriesFor: #createSampleMethod!examples!public! !

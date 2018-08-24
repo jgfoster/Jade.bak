@@ -134,6 +134,8 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
 	add: #JadeSystemBrowserPresenter -> #basicAddMethodCategory:;
 	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
+	add: #JadeSystemBrowserPresenter -> #browseClassReferences;
+	add: #JadeSystemBrowserPresenter -> #browseClassReferences:;
 	add: #JadeSystemBrowserPresenter -> #browseImplementorsOf:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
@@ -1757,6 +1759,15 @@ basicRemoveMethods
 				, self requestString.
 	self updateCommand: string!
 
+browseClassReferences
+	self browseClassReferences: (classListPresenter selectionIfNone: [^self])!
+
+browseClassReferences: className
+	| service |
+	service := RowanQueryService command: #browseClassReferences: withArgs: (Array with: className).
+	self issueCommand: (Array with: service).
+	self openMethodListOn: service selecting: className!
+
 browseImplementorsOf: string
 	| service |
 	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
@@ -2171,6 +2182,8 @@ updateSelector
 		ifTrue: [MessageBox warning: warnings caption: 'Jade Compile Warning']! !
 !JadeSystemBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseClassReferences:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !

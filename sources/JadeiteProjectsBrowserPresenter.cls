@@ -54,11 +54,7 @@ basicRemoveMethods
 	self removeMethods: (Array with: service)!
 
 browseClassReferences
-	| service className |
-	className := (classListPresenter selectionIfNone: [^self]) name.
-	service := RowanQueryService command: #browseClassReferences: withArgs: (Array with: className).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: className!
+	self browseClassReferences: (classListPresenter selectionIfNone: [^self]) name!
 
 browseHierarchyImplementors
 
@@ -1339,7 +1335,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #allClasses!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers support!private! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public!queries! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementors!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementorsOf:!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchySenders!public!queries! !

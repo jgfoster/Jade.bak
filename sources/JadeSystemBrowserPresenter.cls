@@ -190,13 +190,6 @@ breakAt: anInteger operation: aString
 	self updateCommand: stream contents , self requestString.
 !
 
-browseClassReferences
-
-	| string |
-	string := 'browseClassReferences' , Character tab asString , self behaviorIdentifier , Character lf asString.
-	(string := self updateCommand: string) = 'browseClassReferences' ifFalse: [self error: 'Unrecognized response'].
-	self browseMethodsAndSelect: selectedClassName.!
-
 browseGlobalReferences
 
 	| string |
@@ -2854,7 +2847,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #behaviorIdentifier!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #breakAt:operation:!event handlers!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseGlobalReferences!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementors!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf!menu handlers!public! !
