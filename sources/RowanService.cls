@@ -246,12 +246,9 @@ updateList: presenter whilePreservingSelections: updates
 	| replicate |
 	presenter list copy do: 
 			[:service |
-			replicate := updates detect: [:update | update = service]
-						ifNone: 
-							[presenter model remove: service.
-							nil].
+			replicate := updates detect: [:update | update = service] ifNone: [nil].
 			replicate notNil ifTrue: [service replicateFrom: replicate]].
-	updates do: [:update | (presenter list includes: update) not ifTrue: [presenter model add: update]].!
+	updates do: [:update | (presenter list includes: update) not ifTrue: [presenter model add: update]]!
 
 updateMethodFilterSelectionFor: presenter!
 
