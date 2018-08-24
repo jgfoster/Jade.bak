@@ -53,7 +53,12 @@ loadProject
 	selection loadProjectFrom: self!
 
 makeDefault
-	(RowanProjectService on: gciSession) defaultProjectName: projectListPresenter selection name!
+	"the server is the gold copy"
+	| projectService |
+	projectService := projectListPresenter selection.
+	projectService command: #setDefaultProject.
+	self issueCommand: (Array with: projectService).
+	RowanProjectService defaultProjectName: projectService name!
 
 newService
 	^(RowanProjectService on: gciSession) name: projectListPresenter selection name!

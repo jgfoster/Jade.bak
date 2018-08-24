@@ -99,6 +99,7 @@ selectRowanSample1Class
 	self selectServicesNamed: (Array with: self class sampleClass) in: self classListPresenter!
 
 selectServicesNamed: anArray in: presenter
+	presenter resetSelection.
 	anArray do: 
 			[:name |
 			| service |
@@ -125,10 +126,7 @@ tearDown
 	browser ifNotNil: [browser destroy]!
 
 test_addRemoveCategory
-	"This test will fail if RowanSample1 project has not been cloned in ROWAN_PROJECTS_HOME."
 
-	self rowanFixMe. "Ideally, get RowanSample1 project from git hub automatically" 
-	self ensureRowanSample1Attached.
 	self selectRowanSample1Class.
 	self deny: (self categoryListPresenter list includes: 'jadeite test').
 	self projectsPresenter basicAddMethodCategory: 'jadeite test'.
@@ -136,6 +134,21 @@ test_addRemoveCategory
 	self assert: self categoryListPresenter selection = 'jadeite test'.
 	self projectsPresenter basicRemoveMethodCategories.
 	self deny: (self categoryListPresenter list includes: 'jadeite test')!
+
+test_markDirty
+	| nonDefaultService |
+	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
+	self projectsPresenter makeDefault.
+	self assert: self projectListPresenter selection displayName = 'RowanSample1*'.
+	nonDefaultService := self projectListPresenter list
+				detect: [:projectService | projectService name = 'Rowan'].
+	self assert: nonDefaultService displayName = 'Rowan'.
+	self assert: self projectListPresenter selection displayName = 'RowanSample1*'.
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self projectsPresenter makeDefault.
+	nonDefaultService := self projectListPresenter list
+				detect: [:projectService | projectService name = 'RowanSample1'].
+	self assert: self projectListPresenter selection displayName = 'Rowan*'!
 
 test_openProjectsBrowser
 	"project browser opened in setup"
@@ -153,8 +166,6 @@ test_packagesShownInMultipleProjects
 	self denyIsNil: (self serviceNamed: 'JadeServer' in: self classListPresenter)!
 
 test_saveMethod
-	self rowanFixMe. "incomplete test"
-	self ensureRowanSample1Attached.
 	self selectRowanSample1Class.
 	self deny: (self categoryListPresenter list includes: 'test_saveMethod'). 
 	self projectsPresenter basicAddMethodCategory: 'test_saveMethod'.
@@ -202,6 +213,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethod!public!test! !

@@ -11,23 +11,32 @@ JadeiteTestResource comment: ''!
 !JadeiteTestResource methodsFor!
 
 isAvailable
-	session ifNil:[^false]. 
-	transcript ifNil:[^false].
-	^session executeString: '(System myUserProfile resolveSymbol: #', JadeiteProjectBrowserTestCase sampleClass, ') notNil'!
+	^session notNil and: [transcript notNil]!
+
+isSampleClassPresentIn: aSession
+	^
+	[aSession
+		executeString: '(System myUserProfile resolveSymbol: #' , JadeiteProjectBrowserTestCase sampleClass
+				, ') notNil']
+			on: Error
+			do: [:ex | false]!
 
 session
 
 	^session!
 
-setUp 
+setUp
 	super setUp.
-	session := GciSession allInstances detect: [:each | each isValidSession] ifNone: [].
-	transcript := RowanTranscript allInstances detect: [:tran | tran gciSession == session] ifNone:[]. !
+	session := GciSession allInstances
+				detect: [:each | each isValidSession and: [self isSampleClassPresentIn: each]]
+				ifNone: [].
+	transcript := RowanTranscript allInstances detect: [:tran | tran gciSession == session] ifNone: []!
 
 transcript
 
 	^transcript! !
 !JadeiteTestResource categoriesFor: #isAvailable!public!testing! !
+!JadeiteTestResource categoriesFor: #isSampleClassPresentIn:!public!testing! !
 !JadeiteTestResource categoriesFor: #session!accessing!public! !
 !JadeiteTestResource categoriesFor: #setUp!public! !
 !JadeiteTestResource categoriesFor: #transcript!accessing!public! !

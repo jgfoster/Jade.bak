@@ -77,15 +77,6 @@ commitWithMessage: message
 defaultProjectName
 	^self class defaultProjectName!
 
-defaultProjectName: aString
-	"The server is the gold copy"
-
-	transport
-		send: #defaultProjectName:
-		to: remoteService
-		withAll: (Array with: aString).
-	self class defaultProjectName: aString!
-
 displayName
 	"display with dirty indication * and/or default indication (default)"
 
@@ -129,14 +120,6 @@ isSkew: anObject
 loadProjectFrom: presenter
 	self command: #reloadProject.
 	presenter issueCommand: (Array with: self).!
-
-loadProjectNamed: aString
-	
-	transport
-		send: #loadProjectNamed:
-		to: remoteService
-		withAll: (Array with: aString).
-	self class defaultProjectName: aString!
 
 newTextView
 	| edit |
@@ -255,8 +238,7 @@ sha: anObject
 !RowanProjectService categoriesFor: #checkoutUsing:!presenter support!public! !
 !RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
 !RowanProjectService categoriesFor: #defaultProjectName!accessing!public! !
-!RowanProjectService categoriesFor: #defaultProjectName:!accessing!public! !
-!RowanProjectService categoriesFor: #displayName!accessing!public! !
+!RowanProjectService categoriesFor: #displayName!accessing!displaying!public! !
 !RowanProjectService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanProjectService categoriesFor: #hash!comparing!public! !
 !RowanProjectService categoriesFor: #isLoaded!public!testing! !
@@ -264,7 +246,6 @@ sha: anObject
 !RowanProjectService categoriesFor: #isSkew!accessing!private! !
 !RowanProjectService categoriesFor: #isSkew:!accessing!private! !
 !RowanProjectService categoriesFor: #loadProjectFrom:!presenter support!public! !
-!RowanProjectService categoriesFor: #loadProjectNamed:!public!rowan! !
 !RowanProjectService categoriesFor: #newTextView!displaying!private! !
 !RowanProjectService categoriesFor: #packageNames!public!rowan! !
 !RowanProjectService categoriesFor: #packageNameString!public!rowan! !
