@@ -168,6 +168,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #updateMethod;
 	add: #JadeSystemBrowserPresenter -> #updateSelector;
 	add: #JadeTextDocument -> #aboutJadeite;
+	add: #JadeTextDocument -> #onPromptToSaveChanges:;
 	add: #JadeToolsToolBarPresenter -> #browseClasses;
 	add: #JadeTranscript -> #methodsChanged24;
 	add: #JadeTranscript -> #methodsChangedDays;
@@ -2370,8 +2371,16 @@ updateSelector
 !JadeTextDocument methodsFor!
 
 aboutJadeite
-	JadeLoginShell aboutJadeite! !
+	JadeLoginShell aboutJadeite!
+
+onPromptToSaveChanges: aBooleanValue
+	"we were calling #getDocumentData essentially to test for nil. 
+	That uses #asString which some objects don't understand - like booleans."
+
+	documentPresenter value ifNil: [self isModified: false].
+	^super onPromptToSaveChanges: aBooleanValue! !
 !JadeTextDocument categoriesFor: #aboutJadeite!private! !
+!JadeTextDocument categoriesFor: #onPromptToSaveChanges:!private! !
 
 !JadeToolsToolBarPresenter methodsFor!
 

@@ -21,15 +21,16 @@ isSampleClassPresentIn: aSession
 			on: Error
 			do: [:ex | false]!
 
+needsNewResource
+	^(GciSession allInstances includes: session) and: [session isValidSession]!
+
 session
 
 	^session!
 
 setUp
 	super setUp.
-	session := GciSession allInstances
-				detect: [:each | each isValidSession and: [self isSampleClassPresentIn: each]]
-				ifNone: [].
+	session := GciSession allInstances detect: [:each | each isValidSession] ifNone: [].
 	transcript := RowanTranscript allInstances detect: [:tran | tran gciSession == session] ifNone: []!
 
 transcript
@@ -37,11 +38,16 @@ transcript
 	^transcript! !
 !JadeiteTestResource categoriesFor: #isAvailable!public!testing! !
 !JadeiteTestResource categoriesFor: #isSampleClassPresentIn:!public!testing! !
+!JadeiteTestResource categoriesFor: #needsNewResource!public!testing! !
 !JadeiteTestResource categoriesFor: #session!accessing!public! !
 !JadeiteTestResource categoriesFor: #setUp!public! !
 !JadeiteTestResource categoriesFor: #transcript!accessing!public! !
 
 !JadeiteTestResource class methodsFor!
+
+current
+	(current isNil or: [current needsNewResource]) ifFalse: [current := self new].
+	^current!
 
 isAvailable
 	^self current isAvailable!
@@ -53,6 +59,7 @@ signalInitializationError
 
 	self reset.
 	^TestResult signalErrorWith: 'Resource ' , self name , ' could not be initialized'! !
+!JadeiteTestResource class categoriesFor: #current!Accessing!public! !
 !JadeiteTestResource class categoriesFor: #isAvailable!public! !
 !JadeiteTestResource class categoriesFor: #signalInitializationError!error handling!public! !
 

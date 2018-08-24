@@ -294,14 +294,6 @@ onCloseRequested: boolValueHolder
 	].
 "!
 
-onPromptToSaveChanges: aBooleanValue 
-
-	self getDocumentData isEmpty ifTrue: [
-		self isModified: false.
-	].
-	^super onPromptToSaveChanges: aBooleanValue.
-!
-
 onViewClosed
 
 	gciSession notNil ifTrue: [
@@ -479,7 +471,6 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #jadeExecuteAndDisplay:result:!Jade!private! !
 !JadeTextDocument categoriesFor: #logoutRequested:!private! !
 !JadeTextDocument categoriesFor: #onCloseRequested:!private! !
-!JadeTextDocument categoriesFor: #onPromptToSaveChanges:!private! !
 !JadeTextDocument categoriesFor: #onViewClosed!private! !
 !JadeTextDocument categoriesFor: #onViewOpened!private! !
 !JadeTextDocument categoriesFor: #print!private! !
