@@ -47,6 +47,10 @@ model: anObject
 	codePane model: anObject.
 !
 
+saveDocument
+	self halt. 
+	documentPresenter value!
+
 selectedInstVar
 
 	| string |
@@ -78,6 +82,7 @@ selectedInstVar
 !JadeInspector categoriesFor: #inspectInstVar!accessing!private! !
 !JadeInspector categoriesFor: #isModified!private! !
 !JadeInspector categoriesFor: #model:!private! !
+!JadeInspector categoriesFor: #saveDocument!menu handlers!public! !
 !JadeInspector categoriesFor: #selectedInstVar!accessing!private! !
 
 !JadeInspector class methodsFor!
