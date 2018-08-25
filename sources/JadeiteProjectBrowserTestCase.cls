@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
-	instanceVariableNames: 'projectsBrowser dictionaryBrowser'
+	instanceVariableNames: 'projectsBrowser dictionaryBrowser transcriptWritesWereEnabled'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -20,7 +20,22 @@ ensureRowanSample1Attached
 	| sample1Path root |
 	sample1Path := self rowanSample1Path.
 	root := self rowanProjectsHome.
-	self projectsPresenter basicCloneProject: sample1Path root: root!
+	self projectsPresenter basicCloneProject: sample1Path root: root.
+	self projectsPresenter refreshFromServer.!
+
+ensureRowanSample1Available
+
+	self ensureRowanSample1Attached.
+	self ensureRowanSample1Loaded. 
+	!
+
+ensureRowanSample1Loaded
+	| selections |
+	self selectServicesNamed: (Array with: 'RowanSample1')
+		in: self projectsPresenter projectListPresenter.
+	selections := self projectsPresenter projectListPresenter selections.
+	RowanBrowserService new reloadProjects: selections presenter: self projectsPresenter.
+	self projectsPresenter refreshFromServer!
 
 methodListPresenter
 	^self projectsPresenter methodListPresenter!
@@ -39,6 +54,11 @@ projectList
 
 projectListPresenter
 	^self projectsPresenter projectListPresenter!
+
+projectNamed: aString
+	^self projectsPresenter projectListPresenter list
+		detect: [:projectService | projectService name = 'RowanSample1']
+		ifNone: []!
 
 projectsPresenter
 	^projectsBrowser currentCard!
@@ -100,16 +120,19 @@ serviceNamed: name in: presenter
 setUp
 	super setUp.
 	self openProjectsBrowser.
-	self abortTransaction.  "ensure we don't have unsaved changes in the images"
-!
+	self abortTransaction.	"ensure we don't have unsaved changes in the images"
+	(transcriptWritesWereEnabled := transcript isTranscriptInstalled)
+		ifTrue: [transcript flipTranscript]	"turn off gemstone transcript writes for performance"!
 
 tearDown
 	super tearDown.
 	self abortTransaction.
-	projectsBrowser ifNotNil: [projectsBrowser destroy].!
+	projectsBrowser ifNotNil: [projectsBrowser destroy].
+	transcriptWritesWereEnabled ifTrue: [transcript flipTranscript]!
 
 test_addRemoveCategory
 
+	self ensureRowanSample1Available.
 	self selectRowanSample1Class.
 	self deny: (self categoryListPresenter list includes: 'jadeite test').
 	self projectsPresenter basicAddMethodCategory: 'jadeite test'.
@@ -149,15 +172,30 @@ test_packagesShownInMultipleProjects
 	self selectServicesNamed: #('Rowan-JadeServer') in: self packageListPresenter.
 	self denyIsNil: (self serviceNamed: 'JadeServer' in: self classListPresenter)!
 
+test_projectRemoved
+	"Gracefully remove a project from the project list if it was 
+	removed behind the tool's back"
+
+	| sampleProject |
+	self ensureRowanSample1Attached.
+	self projectsPresenter refreshFromServer.
+	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
+	sampleProject := self projectNamed: 'RowanSample1'.
+	self denyIsNil: sampleProject.
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	session executeString: 'Rowan projectTools delete deleteProjectNamed: ''RowanSample1'''.	"delete project behind tool's back"
+	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.	"expect project to disappear but not walkback"
+	sampleProject := self projectNamed: 'RowanSample1'.
+	self assertIsNil: sampleProject!
+
 test_saveMethod
+	self ensureRowanSample1Available.
 	self selectRowanSample1Class.
-	self deny: (self categoryListPresenter list includes: 'test_saveMethod'). 
-	self projectsPresenter basicAddMethodCategory: 'test_saveMethod'.
-	self saveSampleMethod. 
+	(self categoryListPresenter list includes: 'test_saveMethod')
+		ifFalse: [self projectsPresenter basicAddMethodCategory: 'test_saveMethod'].
+	self saveSampleMethod.
 	self selectServicesNamed: (Array with: 'sampleMethod') in: self methodListPresenter.
-	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123
-	
-	!
+	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123!
 
 test_selectMultiplePackages
 	self assert: self packageListPresenter list isEmpty.
@@ -177,12 +215,15 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #categoryListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #classListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !
+!JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Available!private!project support! !
+!JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Loaded!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #methodListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #methodSourcePresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #openProjectsBrowser!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #packageListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectList!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectListPresenter!presenter!private!project support! !
+!JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!selection!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectsPresenter!presenter!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectsHome!constants!private! !
@@ -198,6 +239,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_projectRemoved!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultiplePackages!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultipleProjects!public!test! !

@@ -172,6 +172,7 @@ package methodNames
 	add: #JadeTextDocument -> #aboutJadeite;
 	add: #JadeTextDocument -> #issueCommand:;
 	add: #JadeTextDocument -> #onPromptToSaveChanges:;
+	add: #JadeTextDocument -> #openDictionaryBrowser;
 	add: #JadeTextDocument -> #update:afterStonReplication:;
 	add: #JadeTextDocument -> #updateServices:;
 	add: #JadeToolsToolBarPresenter -> #browseClasses;
@@ -226,6 +227,7 @@ package methodNames
 	add: #RowanCommandResult -> #projectSelectionUpdate:;
 	add: #RowanCommandResult -> #projectsUpdate:;
 	add: #RowanCommandResult -> #removedClass:;
+	add: #RowanCommandResult -> #removedProject:;
 	add: #RowanCommandResult -> #superclassListUpdate:;
 	add: #RowanCommandResult -> #updateClassCategorySelectionsFor:;
 	add: #RowanCommandResult -> #updateClassHierarchySelectionFor:;
@@ -2404,6 +2406,9 @@ onPromptToSaveChanges: aBooleanValue
 	documentPresenter value ifNil: [self isModified: false].
 	^super onPromptToSaveChanges: aBooleanValue!
 
+openDictionaryBrowser
+	gciSession hasServer ifTrue: [^RowanSystemBrowser showOnSession: gciSession]!
+
 update: services afterStonReplication: stonResults
 	BrowserUpdate current update: services afterStonReplication: stonResults!
 
@@ -2418,6 +2423,7 @@ updateServices: services
 !JadeTextDocument categoriesFor: #aboutJadeite!private! !
 !JadeTextDocument categoriesFor: #issueCommand:!public!services! !
 !JadeTextDocument categoriesFor: #onPromptToSaveChanges:!private! !
+!JadeTextDocument categoriesFor: #openDictionaryBrowser!Jade!private! !
 !JadeTextDocument categoriesFor: #update:afterStonReplication:!public!services! !
 !JadeTextDocument categoriesFor: #updateServices:!public!services! !
 
@@ -2857,6 +2863,9 @@ projectsUpdate: aPresenter
 removedClass: aPresenter
 !
 
+removedProject: presenter
+	!
+
 superclassListUpdate: presenter
 	!
 
@@ -2906,6 +2915,7 @@ updateType
 !RowanCommandResult categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #projectsUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #removedClass:!public!updating! !
+!RowanCommandResult categoriesFor: #removedProject:!public!updating! !
 !RowanCommandResult categoriesFor: #superclassListUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !

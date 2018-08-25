@@ -14,9 +14,6 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #JadeiteProjectsBrowserPresenter -> #basicRemoveMethodCategories;
-	add: #JadeTextDocument -> #openDictionaryBrowser;
-	add: #RowanMethodService -> #name;
 	add: 'TestResource class' -> #signalInitializationError;
 	yourself.
 
@@ -56,7 +53,7 @@ JadeiteAbstractTestCase subclass: #JadeiteInspectorTestCase
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
-	instanceVariableNames: 'projectsBrowser dictionaryBrowser'
+	instanceVariableNames: 'projectsBrowser dictionaryBrowser transcriptWritesWereEnabled'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -75,28 +72,6 @@ TestResource subclass: #JadeiteTestResource
 
 
 "Loose Methods"!
-
-!JadeiteProjectsBrowserPresenter methodsFor!
-
-basicRemoveMethodCategories
-	| service |
-	service := classListPresenter selection
-				command: #removeCategories:;
-				commandArgs: (Array with: categoryListPresenter selections).
-	self issueCommand: (Array with: service)! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethodCategories!menu handlers support!private! !
-
-!JadeTextDocument methodsFor!
-
-openDictionaryBrowser
-	gciSession hasServer ifTrue: [^RowanSystemBrowser showOnSession: gciSession]! !
-!JadeTextDocument categoriesFor: #openDictionaryBrowser!Jade!private! !
-
-!RowanMethodService methodsFor!
-
-name
-	^selector asString! !
-!RowanMethodService categoriesFor: #name!accessing!public! !
 
 !TestResource class methodsFor!
 

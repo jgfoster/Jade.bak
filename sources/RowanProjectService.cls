@@ -209,6 +209,12 @@ remoteDefaultProjectName
 remoteServiceName
 	^'Rowan projectServiceClass'!
 
+removedProject: presenter
+	| removedProject |
+	updateType == #removedProject: ifFalse:[^self].
+	removedProject := presenter list detect: [:projectService | projectService name = name] ifNone: [].
+	removedProject ifNotNil: [presenter model remove: removedProject]!
+
 removeProjectNamed: projectName
 
 	transport send: #removeProjectNamed: to: remoteService withAll: (Array with: projectName)!
@@ -257,6 +263,7 @@ sha: anObject
 !RowanProjectService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanProjectService categoriesFor: #remoteDefaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #remoteServiceName!must not strip!public! !
+!RowanProjectService categoriesFor: #removedProject:!public!updating! !
 !RowanProjectService categoriesFor: #removeProjectNamed:!public! !
 !RowanProjectService categoriesFor: #removeSampleProject!public! !
 !RowanProjectService categoriesFor: #replicateFrom:!public!updating! !

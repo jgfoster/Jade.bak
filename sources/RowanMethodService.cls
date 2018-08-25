@@ -202,6 +202,9 @@ methodUpdate: presenter
 	presenter list
 		do: [:methodService | methodService = self ifTrue: [methodService replicateFrom: self]]!
 
+name
+	^selector asString!
+
 oop
 
 	^oop!
@@ -421,6 +424,7 @@ user: anObject
 !RowanMethodService categoriesFor: #methodDefinitions:!accessing!private! !
 !RowanMethodService categoriesFor: #methodSourceUpdate:browser:!public!updating! !
 !RowanMethodService categoriesFor: #methodUpdate:!public!updating! !
+!RowanMethodService categoriesFor: #name!accessing!public! !
 !RowanMethodService categoriesFor: #oop!public! !
 !RowanMethodService categoriesFor: #oopType!public! !
 !RowanMethodService categoriesFor: #packageName!accessing!private! !

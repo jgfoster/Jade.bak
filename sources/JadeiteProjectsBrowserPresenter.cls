@@ -47,6 +47,13 @@ basicAddMethodCategory: string
 	self issueCommand: (Array with: service).
 	categoryListPresenter selection: string. !
 
+basicRemoveMethodCategories
+	| service |
+	service := classListPresenter selection
+				command: #removeCategories:;
+				commandArgs: (Array with: categoryListPresenter selections).
+	self issueCommand: (Array with: service)!
+
 basicRemoveMethods
 	| service |
 	service := classListPresenter selectionIfNone: [^self].
@@ -645,6 +652,9 @@ projectDictionaryChanged
 	listModel remove: globalsLabel ifAbsent: [].
 	listModel remove: packageLabel ifAbsent: []!
 
+projectInfoTab
+	^projectInfoTab!
+
 projectListPresenter
 	^projectListPresenter!
 
@@ -913,6 +923,7 @@ registerPresentersForUpdates
 	"copied to RowanDebugger"
 
 	BrowserUpdate current register: projectListPresenter selector: #projectsUpdate:.
+	BrowserUpdate current register: projectListPresenter selector: #removedProject:.
 	BrowserUpdate current
 		register: packageListPresenter
 		selector: #projectPackagesUpdate:browser:
@@ -1334,6 +1345,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #allClasses!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers support!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethodCategories!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementors!menu handlers!public!queries! !
@@ -1402,6 +1414,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #postOkToChangeEvent!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectChanges!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectDictionaryChanged!event handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #projectInfoTab!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectLog!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectMenu!menus!public! !
