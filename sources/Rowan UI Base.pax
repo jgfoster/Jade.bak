@@ -88,6 +88,7 @@ package methodNames
 	add: #JadeImageStripper -> #requiredPackageNames;
 	add: #JadeInspector -> #displayObject;
 	add: #JadeInspector -> #onViewOpened;
+	add: #JadeInspector -> #saveDocument;
 	add: #JadeInspector -> #setDocumentPresenterLabel;
 	add: #JadeInspector -> #setLastGsShape:;
 	add: #JadeInspector -> #shellName;
@@ -918,6 +919,10 @@ onViewOpened
 	self displayObject.
 	self updateCaption!
 
+saveDocument
+	self rowanFixMe. "this would be very handy"
+	MessageBox notify: 'This feature not yet implemented'!
+
 setDocumentPresenterLabel
 	(model isKindOf: String) ifTrue: [
 		documentPresenter value: model.
@@ -977,6 +982,7 @@ updateCaption
 	self caption: (gciSession titleBarFor: self shellName).! !
 !JadeInspector categoriesFor: #displayObject!accessing!private! !
 !JadeInspector categoriesFor: #onViewOpened!event handling!private! !
+!JadeInspector categoriesFor: #saveDocument!menu handlers!public! !
 !JadeInspector categoriesFor: #setDocumentPresenterLabel!displaying!private! !
 !JadeInspector categoriesFor: #setLastGsShape:!accessing!private! !
 !JadeInspector categoriesFor: #shellName!displaying!private! !
