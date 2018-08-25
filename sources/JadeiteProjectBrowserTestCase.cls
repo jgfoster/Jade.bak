@@ -223,7 +223,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #packageListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectList!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectListPresenter!presenter!private!project support! !
-!JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!selection!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectsPresenter!presenter!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectsHome!constants!private! !
