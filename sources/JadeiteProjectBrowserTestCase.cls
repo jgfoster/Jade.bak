@@ -16,6 +16,10 @@ categoryListPresenter
 classListPresenter
 	^self projectsPresenter classListPresenter!
 
+disableTranscriptWrites
+	(transcriptWritesWereEnabled := transcript isTranscriptInstalled)
+		ifTrue: [transcript flipTranscript]	"turn off gemstone transcript writes for performance"!
+
 ensureRowanSample1Attached
 	| sample1Path root |
 	sample1Path := self rowanSample1Path.
@@ -119,10 +123,9 @@ serviceNamed: name in: presenter
 
 setUp
 	super setUp.
+	self disableTranscriptWrites.	"turn off gemstone transcript writes for performance"
 	self openProjectsBrowser.
-	self abortTransaction.	"ensure we don't have unsaved changes in the images"
-	(transcriptWritesWereEnabled := transcript isTranscriptInstalled)
-		ifTrue: [transcript flipTranscript]	"turn off gemstone transcript writes for performance"!
+	self abortTransaction.	"ensure we don't have unsaved changes in the images"!
 
 tearDown
 	super tearDown.
@@ -214,6 +217,7 @@ waitForPresenter: presenter
 	[presenter list isEmpty] whileTrue: [(Delay forMilliseconds: 50) wait]! !
 !JadeiteProjectBrowserTestCase categoriesFor: #categoryListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #classListPresenter!presenter!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #disableTranscriptWrites!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Available!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Loaded!private!project support! !
