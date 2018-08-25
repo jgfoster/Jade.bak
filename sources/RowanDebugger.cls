@@ -124,14 +124,6 @@ getProcessList
 
 	self updateServices: (Array with: (RowanDebuggerService onProcess: gsProcess)).!
 
-issueCommand: services
-	| stonString stonResultString |
-	services do:[:service | service prepareForReplication].
-	stonString := STON toString: services.
-	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
-		ensure: [services do: [:service | service clearCommand]].
-	^self update: services afterStonReplication: stonResultString.!
-
 methodListSelection
 	"really a selection from the frame list"
 
@@ -316,21 +308,9 @@ stepOver
 		self stepInto.
 	].!
 
-update: services afterStonReplication: stonResults
-	BrowserUpdate current update: services afterStonReplication: stonResults!
-
 updateMethodSource
 
 	self selectedFrame!
-
-updateServices: services
-	"copied from RowanProjectsBrowserPresenter>>updateServices:"
-
-	| stonString stonResults |
-	services do: [:service | service prepareForReplication].
-	stonString := STON toString: services.
-	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResults!
 
 variableDataPresenter
 	^variableDataPresenter!
@@ -351,7 +331,6 @@ variableListPresenter
 !RowanDebugger categoriesFor: #errorMessagePresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #frameListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #getProcessList!public! !
-!RowanDebugger categoriesFor: #issueCommand:!public! !
 !RowanDebugger categoriesFor: #methodListSelection!Accessing!public! !
 !RowanDebugger categoriesFor: #methodSourcePresenter!public! !
 !RowanDebugger categoriesFor: #onIdleEntered!public! !
@@ -366,9 +345,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #stepInto!public! !
 !RowanDebugger categoriesFor: #stepOut!public! !
 !RowanDebugger categoriesFor: #stepOver!public! !
-!RowanDebugger categoriesFor: #update:afterStonReplication:!public! !
 !RowanDebugger categoriesFor: #updateMethodSource!public! !
-!RowanDebugger categoriesFor: #updateServices:!public! !
 !RowanDebugger categoriesFor: #variableDataPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #variableListPresenter!Accessing!public! !
 

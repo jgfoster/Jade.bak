@@ -19,19 +19,14 @@ flipTranscript
 	| answeringService |
 	answeringService := RowanAnsweringService new.
 	answeringService command: #flipTranscript.
-	self jadePresenter issueCommand: (Array with: answeringService)!
+	self issueCommand: (Array with: answeringService)!
 
 isTranscriptInstalled
 	| answeringService |
 	answeringService := RowanAnsweringService new.
 	answeringService command: #transcriptInstalled.
-	self jadePresenter issueCommand: (Array with: answeringService).
+	self issueCommand: (Array with: answeringService).
 	^answeringService answer!
-
-jadePresenter
-	"toolbarPresenter subclasses from JadePresenter where #issueCommand: lives for now"
-
-	^toolbarPresenter!
 
 openJadeiteProjectsBrowser
 	gciSession hasServer ifTrue: [^JadeiteProjectsSystemBrowser showOnSession: gciSession].
@@ -51,7 +46,6 @@ queryCommand: query
 !RowanTranscript categoriesFor: #flipDebugger!menu handlers!public! !
 !RowanTranscript categoriesFor: #flipTranscript!menu handlers!public! !
 !RowanTranscript categoriesFor: #isTranscriptInstalled!public! !
-!RowanTranscript categoriesFor: #jadePresenter!public! !
 !RowanTranscript categoriesFor: #openJadeiteProjectsBrowser!menu handlers!public! !
 !RowanTranscript categoriesFor: #queryCommand:!private! !
 

@@ -169,7 +169,10 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #updateMethod;
 	add: #JadeSystemBrowserPresenter -> #updateSelector;
 	add: #JadeTextDocument -> #aboutJadeite;
+	add: #JadeTextDocument -> #issueCommand:;
 	add: #JadeTextDocument -> #onPromptToSaveChanges:;
+	add: #JadeTextDocument -> #update:afterStonReplication:;
+	add: #JadeTextDocument -> #updateServices:;
 	add: #JadeToolsToolBarPresenter -> #browseClasses;
 	add: #JadeTranscript -> #methodsChanged24;
 	add: #JadeTranscript -> #methodsChangedDays;
@@ -2381,14 +2384,37 @@ updateSelector
 aboutJadeite
 	JadeLoginShell aboutJadeite!
 
+issueCommand: services
+	| stonString stonResultString |
+	services do:[:service | service prepareForReplication].
+	stonString := STON toString: services.
+	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
+		ensure: [services do: [:service | service clearCommand]].
+	^self update: services afterStonReplication: stonResultString.!
+
 onPromptToSaveChanges: aBooleanValue
 	"we were calling #getDocumentData essentially to test for nil. 
 	That uses #asString which some objects don't understand - like booleans."
 
 	documentPresenter value ifNil: [self isModified: false].
-	^super onPromptToSaveChanges: aBooleanValue! !
+	^super onPromptToSaveChanges: aBooleanValue!
+
+update: services afterStonReplication: stonResults
+	BrowserUpdate current update: services afterStonReplication: stonResults!
+
+updateServices: services
+	"copied from RowanProjectsBrowserPresenter>>updateServices:"
+
+	| stonString stonResults |
+	services do: [:service | service prepareForReplication].
+	stonString := STON toString: services.
+	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
+	self update: services afterStonReplication: stonResults! !
 !JadeTextDocument categoriesFor: #aboutJadeite!private! !
+!JadeTextDocument categoriesFor: #issueCommand:!public!services! !
 !JadeTextDocument categoriesFor: #onPromptToSaveChanges:!private! !
+!JadeTextDocument categoriesFor: #update:afterStonReplication:!public!services! !
+!JadeTextDocument categoriesFor: #updateServices:!public!services! !
 
 !JadeToolsToolBarPresenter methodsFor!
 
