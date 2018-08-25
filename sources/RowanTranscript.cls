@@ -28,6 +28,9 @@ isTranscriptInstalled
 	self issueCommand: (Array with: answeringService).
 	^answeringService answer!
 
+openDictionaryBrowser
+	gciSession hasServer ifTrue: [^RowanSystemBrowser showOnSession: gciSession]!
+
 openJadeiteProjectsBrowser
 	gciSession hasServer ifTrue: [^JadeiteProjectsSystemBrowser showOnSession: gciSession].
 	MessageBox warning: 'Cannot open Jadeite Projects browser'
@@ -46,6 +49,7 @@ queryCommand: query
 !RowanTranscript categoriesFor: #flipDebugger!menu handlers!public! !
 !RowanTranscript categoriesFor: #flipTranscript!menu handlers!public! !
 !RowanTranscript categoriesFor: #isTranscriptInstalled!public! !
+!RowanTranscript categoriesFor: #openDictionaryBrowser!menu handlers!public! !
 !RowanTranscript categoriesFor: #openJadeiteProjectsBrowser!menu handlers!public! !
 !RowanTranscript categoriesFor: #queryCommand:!private! !
 

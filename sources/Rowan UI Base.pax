@@ -97,6 +97,7 @@ package methodNames
 	add: #JadeLoginShell -> #aboutJadeite;
 	add: #JadeNavigationInspector -> #setNewInspectedObject;
 	add: #JadePresenter -> #issueCommand:;
+	add: #JadePresenter -> #update:afterStonReplication:;
 	add: #JadePresenterA -> #basicCloneProject:root:;
 	add: #JadePresenterA -> #basicUpdateServices:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
@@ -1055,8 +1056,12 @@ issueCommand: services
 	stonString := STON toString: services.
 	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
 		ensure: [services do: [:service | service clearCommand]].
-	^self update: services afterStonReplication: stonResultString.! !
+	^self update: services afterStonReplication: stonResultString.!
+
+update: services afterStonReplication: stonResults
+	^BrowserUpdate current update: services afterStonReplication: stonResults! !
 !JadePresenter categoriesFor: #issueCommand:!Jadeite!public! !
+!JadePresenter categoriesFor: #update:afterStonReplication:!Jadeite!public! !
 
 !JadePresenterA methodsFor!
 
