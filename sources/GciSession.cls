@@ -172,18 +172,6 @@ executeString: aString
 		environment: 0.
 !
 
-executeString: aString fromContext: anObject environment: anInteger
-
-	^self
-		withExplanation: aString 
-		do: [
-			self
-				_executeString: aString
-				fromContextOop: (self oopTypeFor: anObject)
-				environment: anInteger.
-		].
-!
-
 fetchBytes: anOopType
 
 	^library 
@@ -437,17 +425,6 @@ oopGemStoneError
 oopIllegal
 
 	^library oopIllegal.
-!
-
-oopTypeFor: anObject 
-
-	anObject isNil 					ifTrue: [^library oopNil].
-	(anObject isKindOf: ExternalInteger) 	ifTrue: [^anObject].
-	(anObject isKindOf: Boolean) 		ifTrue: [^anObject ifTrue: [library oopTrue] ifFalse: [library oopFalse]].
-	(anObject isKindOf: SmallInteger) 	ifTrue: [^library session: gciSessionId oopForInteger: anObject].
-	(anObject isKindOf: GsObject) 		ifTrue: [^anObject oopType].
-	MessageBox notify: 'Sorry, we are not yet prepared to convert ' , anObject printString , ' to an OOP!!'.
-	SessionManager current pause.
 !
 
 oopTypeWithOop: anInteger
@@ -887,7 +864,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #debugToFilePath:!Jade convenience!public! !
 !GciSession categoriesFor: #eventCount!public! !
 !GciSession categoriesFor: #executeString:!Jade convenience!public! !
-!GciSession categoriesFor: #executeString:fromContext:environment:!long running!public! !
 !GciSession categoriesFor: #fetchBytes:!private! !
 !GciSession categoriesFor: #forceLogout!Jade!public! !
 !GciSession categoriesFor: #gciSessionId!public! !
@@ -916,7 +892,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #oopForString:!public! !
 !GciSession categoriesFor: #oopGemStoneError!public! !
 !GciSession categoriesFor: #oopIllegal!public! !
-!GciSession categoriesFor: #oopTypeFor:!public! !
 !GciSession categoriesFor: #oopTypeWithOop:!public! !
 !GciSession categoriesFor: #printString:!Jade convenience!public! !
 !GciSession categoriesFor: #releaseOop:!Jade convenience!public! !

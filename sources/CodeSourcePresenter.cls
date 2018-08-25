@@ -237,14 +237,6 @@ jadeExecuteAndDisplay: showResult
 	].
 !
 
-jadeInspect
-
-	| result |
-
-	result := self jadeExecuteAndDisplay: false.	result == self ifTrue: [^self].
-	JadeInspector showOn: result session: gciSession.
-!
-
 menuTitle: aString
 
 	menuTitle := aString.
@@ -473,7 +465,6 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #jadeDisplay!Jade!private! !
 !CodeSourcePresenter categoriesFor: #jadeExecute!Jade!private! !
 !CodeSourcePresenter categoriesFor: #jadeExecuteAndDisplay:!Jade!private! !
-!CodeSourcePresenter categoriesFor: #jadeInspect!Jade!private! !
 !CodeSourcePresenter categoriesFor: #menuTitle:!menus!public! !
 !CodeSourcePresenter categoriesFor: #mySave!private! !
 !CodeSourcePresenter categoriesFor: #pasteClipboard!public! !

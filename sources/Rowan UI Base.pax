@@ -66,11 +66,14 @@ package classNames
 package methodNames
 	add: #CodeSourcePresenter -> #browseSelectedClass;
 	add: #CodeSourcePresenter -> #executeSelectionOrLine;
+	add: #CodeSourcePresenter -> #jadeInspect;
 	add: #Collection -> #prepareForReplication;
 	add: #GciSession -> #computeGemHost;
 	add: #GciSession -> #computeStoneHost;
+	add: #GciSession -> #executeString:fromContext:environment:;
 	add: #GciSession -> #hasServer;
 	add: #GciSession -> #initializeServer;
+	add: #GciSession -> #oopTypeFor:;
 	add: #GciSession -> #postLoginAs:useSocket:;
 	add: #GciSession -> #titleBarFor:;
 	add: #GciSession -> #verifyRowanLoaded;
@@ -608,9 +611,23 @@ executeSelectionOrLine
 	].
 	self error: 'How did we get here?'.
 	^false -> #(nil).
-! !
+!
+
+jadeInspect
+	| result |
+	
+	[result := self jadeExecuteAndDisplay: false.
+	result == self ifTrue: [^self].
+	JadeInspector showOn: result session: gciSession]
+			on: Error
+			do: 
+				[:ex |
+				MessageBox
+					notify: 'Error executing and inspecting line. Possibly the inspected object cannot be coerced for server execution. Error: '
+							, ex messageText]! !
 !CodeSourcePresenter categoriesFor: #browseSelectedClass!public! !
 !CodeSourcePresenter categoriesFor: #executeSelectionOrLine!Jade!private! !
+!CodeSourcePresenter categoriesFor: #jadeInspect!Jade!private! !
 
 !Collection methodsFor!
 
@@ -634,6 +651,19 @@ computeStoneHost
 	list := (list at: 2) subStrings: $#.
 	list := (list at: 1) subStrings: $@.
 	stoneHost := list at: 2.!
+
+executeString: aString fromContext: anObject environment: anInteger
+	| oopType | 
+	oopType := self oopTypeFor: anObject.
+	^self
+		withExplanation: aString 
+		do: [
+			self
+				_executeString: aString
+				fromContextOop: oopType
+				environment: anInteger.
+		].
+!
 
 hasServer
 
@@ -673,6 +703,17 @@ Server initialization failed. Most functionality will be broken!!'.
 			signalTextRequestUsing: nil;
 			yourself.
 	].
+!
+
+oopTypeFor: anObject 
+
+	anObject isNil 					ifTrue: [^library oopNil].
+	(anObject isKindOf: ExternalInteger) 	ifTrue: [^anObject].
+	(anObject isKindOf: Boolean) 		ifTrue: [^anObject ifTrue: [library oopTrue] ifFalse: [library oopFalse]].
+	(anObject isKindOf: SmallInteger) 	ifTrue: [^library session: gciSessionId oopForInteger: anObject].
+	(anObject isKindOf: GsObject) 		ifTrue: [^anObject oopType].
+	self error: 'Sorry, we are not yet prepared to convert ' , anObject printString , ' to an OOP!!'.
+	SessionManager current pause.
 !
 
 postLoginAs: aString useSocket: aBoolean
@@ -715,8 +756,10 @@ verifyRowanLoaded
 		executeString: '(System myUserProfile objectNamed: ''Rowan'') notNil and:[(System gemEnvironmentVariable: ''ROWAN_PROJECTS_HOME'') notNil] '! !
 !GciSession categoriesFor: #computeGemHost!public!title bar! !
 !GciSession categoriesFor: #computeStoneHost!public!title bar! !
+!GciSession categoriesFor: #executeString:fromContext:environment:!long running!public! !
 !GciSession categoriesFor: #hasServer!public! !
 !GciSession categoriesFor: #initializeServer!private! !
+!GciSession categoriesFor: #oopTypeFor:!public! !
 !GciSession categoriesFor: #postLoginAs:useSocket:!private! !
 !GciSession categoriesFor: #titleBarFor:!public!title bar! !
 !GciSession categoriesFor: #verifyRowanLoaded!private! !
