@@ -550,9 +550,6 @@ methodsMenuStrings
 	).
 !
 
-newService
-	^(RowanProjectService on: gciSession) name: projectListPresenter selection name!
-
 onDragMethod: aSession 
 
 	| list |
@@ -1402,7 +1399,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #newService!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDragMethod:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnClassList:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnMethodCategory:!drag & drop!public! !

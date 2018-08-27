@@ -60,9 +60,6 @@ makeDefault
 	self issueCommand: (Array with: projectService).
 	RowanProjectService defaultProjectName: projectService name!
 
-newService
-	^(RowanProjectService on: gciSession) name: projectListPresenter selection name!
-
 openChangesShell: changesString
 	| shell editor rs |
 	editor := RichTextEdit new.
@@ -162,7 +159,6 @@ writeProject
 !RowanProjectListPresenter categoriesFor: #list:!public! !
 !RowanProjectListPresenter categoriesFor: #loadProjects!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #makeDefault!project menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #newService!private!project menu handlers! !
 !RowanProjectListPresenter categoriesFor: #openChangesShell:!private!project menu handlers! !
 !RowanProjectListPresenter categoriesFor: #primaryPresenter!public! !
 !RowanProjectListPresenter categoriesFor: #projectChanges!project menu handlers!public! !

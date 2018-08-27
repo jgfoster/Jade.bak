@@ -15,7 +15,7 @@ removeMethods
 	(MessageBox confirm: 'Really remove the selected methods?') ifFalse:[^self].
 	methodListPresenter selections do: 
 			[:methodDef |
-				service := RowanMethodService on: gciSession.
+				service := RowanMethodService new.
 				service selector: methodDef name.
 				service className: methodDef gsClass name.
 				service removeSelector].

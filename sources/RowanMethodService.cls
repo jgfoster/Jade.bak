@@ -115,9 +115,6 @@ copyBasicsFrom: oldService
 	className := oldService className.
 	meta 	:= oldService meta.!
 
-createSampleMethod
-	transport send: #createSampleMethod to: remoteService.  !
-
 displayClassName
 	^className , (meta ifTrue: [' class'] ifFalse: [String new])!
 
@@ -263,23 +260,10 @@ references: anObject
 remoteServiceName
 	^'Rowan methodServiceClass'!
 
-removeSelector
-	^transport send: #removeSelector:class: to: remoteService withAll: (Array with: selector with: className)
-	!
-
-removeSelector: aSelector class: class
-
-	^transport send: #removeSelector:class: to: self remoteService withAll: (Array with: aSelector with: class)
-	!
-
 replicateFrom: newService
 	^(self isMethodService and: [newService isMethodService])
 		ifTrue: 
 			[self = newService ifTrue: [super replicateFrom: newService]]!
-
-sampleClassInstance
-
-	^transport send: #sampleClassInstance to: remoteService!
 
 selectedPackageServices
 	^selectedPackageServices!
@@ -407,7 +391,6 @@ user: anObject
 !RowanMethodService categoriesFor: #clearBreakAtStepPoint:session:!public! !
 !RowanMethodService categoriesFor: #compilationWarnings!accessing!private! !
 !RowanMethodService categoriesFor: #copyBasicsFrom:!public!updating! !
-!RowanMethodService categoriesFor: #createSampleMethod!examples!public! !
 !RowanMethodService categoriesFor: #displayClassName!displaying!public! !
 !RowanMethodService categoriesFor: #displayOn:!displaying!public! !
 !RowanMethodService categoriesFor: #displayStringFor:!displaying!public! !
@@ -442,10 +425,7 @@ user: anObject
 !RowanMethodService categoriesFor: #references!accessing!private! !
 !RowanMethodService categoriesFor: #references:!accessing!private! !
 !RowanMethodService categoriesFor: #remoteServiceName!must not strip!public! !
-!RowanMethodService categoriesFor: #removeSelector!public!remote! !
-!RowanMethodService categoriesFor: #removeSelector:class:!public!remote! !
 !RowanMethodService categoriesFor: #replicateFrom:!public!updating! !
-!RowanMethodService categoriesFor: #sampleClassInstance!examples!public! !
 !RowanMethodService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanMethodService categoriesFor: #selectedPackageServices:!accessing!private! !
 !RowanMethodService categoriesFor: #selector!accessing!private! !

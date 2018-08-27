@@ -78,9 +78,6 @@ computeVisibleMethods
 		do: [:svc | svc inSelectedPackage: (self selectedPackageServiceNames includes: svc packageName)].
 	^visibleMethods!
 
-createSampleClass
-	transport send: #createSampleClass to: remoteService.  !
-
 definedPackageName
 	^definedPackageName!
 
@@ -215,15 +212,8 @@ removedClass: presenter
 	removal := presenter list detect:[:classService | classService name = name] ifNone:[^self ].
 	presenter model remove: removal. !
 
-removeSelector: selector
-
-	transport send: #removeSelector: to: remoteService withAll: (Array with: selector)!
-
 replicateFrom: newService
 	newService isClassService ifTrue: [^super replicateFrom: newService]!
-
-sampleClassName
-	^transport send: #sampleClassName to: remoteService.  !
 
 selectedMethods
 
@@ -257,9 +247,6 @@ stonOn: stonWriter
 								ifNotNil: [:value | dictionary at: each asSymbol put: value]
 								ifNil: [self stonShouldWriteNilInstVars ifTrue: [dictionary at: each asSymbol put: nil]]]]]!
 
-subclassCreationTemplate
-	^transport send: #subclassCreationTemplate to: self remoteService!
-
 template
 	^template!
 
@@ -291,7 +278,6 @@ variables
 !RowanClassService categoriesFor: #comment!accessing!public! !
 !RowanClassService categoriesFor: #comment:!accessing!public! !
 !RowanClassService categoriesFor: #computeVisibleMethods!private!updating! !
-!RowanClassService categoriesFor: #createSampleClass!public! !
 !RowanClassService categoriesFor: #definedPackageName!accessing!private! !
 !RowanClassService categoriesFor: #definedPackageName:!accessing!private! !
 !RowanClassService categoriesFor: #displayMethodsOn:!public!updating! !
@@ -321,16 +307,13 @@ variables
 !RowanClassService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanClassService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanClassService categoriesFor: #removedClass:!public!updating! !
-!RowanClassService categoriesFor: #removeSelector:!public!rowan! !
 !RowanClassService categoriesFor: #replicateFrom:!public!replication! !
-!RowanClassService categoriesFor: #sampleClassName!public! !
 !RowanClassService categoriesFor: #selectedMethods!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServiceNames!private!updating! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
 !RowanClassService categoriesFor: #shouldClearMethods!public!replication!testing! !
 !RowanClassService categoriesFor: #stonOn:!must not strip!public!ston! !
-!RowanClassService categoriesFor: #subclassCreationTemplate!public! !
 !RowanClassService categoriesFor: #template!accessing!private! !
 !RowanClassService categoriesFor: #template:!accessing!private! !
 !RowanClassService categoriesFor: #updateCategories:!private!updating! !

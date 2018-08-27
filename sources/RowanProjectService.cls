@@ -21,12 +21,6 @@ addPackageNamed: newPackageName using: presenter
 	presenter issueCommand: (Array with: self).
 	presenter refreshFromServer!
 
-addProjectNamed: projectName
-	transport
-		send: #createProjectNamed:in:
-		to: remoteService
-		withAll: (Array with: projectName with: self class defaultProjectName).!
-
 basicName: aString
 	"don't round trip to the server to get information" 
 	name := aString!
@@ -48,12 +42,6 @@ changesUsing: presenter
 		do: [:changeString | operations addAll: (RowanPatch fromString: changeString session: session) operations].
 	RowanPatchBrowser showOn: (RowanPatch new operations: operations; session: session) name: name!
 
-checkout: branchName
-	transport
-		send: #checkout:
-		to: remoteService
-		withAll: (Array with: branchName)!
-
 checkoutUsing: presenter
 	| branchString query branchName |
 	query := RowanQueryService new
@@ -69,10 +57,6 @@ checkoutUsing: presenter
 		command: #checkout:;
 		commandArgs: (Array with: branchName).
 	presenter issueCommand: (Array with: self).!
-
-commitWithMessage: message
-
-	transport send: #commitWithMessage: to: remoteService withAll: (Array with: message)  !
 
 defaultProjectName
 	^self class defaultProjectName!
@@ -178,13 +162,6 @@ releaseReferencedServices
 	packages := Array new.
 	copy do: [:service | service releaseReferencedServices]!
 
-remoteDefaultProjectName
-
-	^transport
-		send: #defaultProjectName
-		to: remoteService
-!
-
 remoteServiceName
 	^'Rowan projectServiceClass'!
 
@@ -204,14 +181,11 @@ sha: anObject
 	sha := anObject! !
 !RowanProjectService categoriesFor: #=!comparing!public! !
 !RowanProjectService categoriesFor: #addPackageNamed:using:!presenter support!public! !
-!RowanProjectService categoriesFor: #addProjectNamed:!public! !
 !RowanProjectService categoriesFor: #basicName:!accessing!public! !
 !RowanProjectService categoriesFor: #branch!accessing!public! !
 !RowanProjectService categoriesFor: #branch:!accessing!public! !
 !RowanProjectService categoriesFor: #changesUsing:!presenter support!public! !
-!RowanProjectService categoriesFor: #checkout:!public!rowan! !
 !RowanProjectService categoriesFor: #checkoutUsing:!presenter support!public! !
-!RowanProjectService categoriesFor: #commitWithMessage:!public!rowan! !
 !RowanProjectService categoriesFor: #defaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #displayName!accessing!displaying!public! !
 !RowanProjectService categoriesFor: #displayStringFor:!displaying!public! !
@@ -227,7 +201,6 @@ sha: anObject
 !RowanProjectService categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanProjectService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanProjectService categoriesFor: #releaseReferencedServices!Init / Release!public! !
-!RowanProjectService categoriesFor: #remoteDefaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanProjectService categoriesFor: #removedProject:!public!updating! !
 !RowanProjectService categoriesFor: #replicateFrom:!public!updating! !

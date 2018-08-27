@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name isDirty command commandArgs updateType'
+	instanceVariableNames: 'remoteService name isDirty command commandArgs updateType'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -83,10 +83,6 @@ initialize
 
 initializePresenterList: presenter
 	presenter list: (SortedCollection sortBlock: [:x :y | x sortAspect < y sortAspect])!
-
-initializeRemoteService
-	self halt. 
-	remoteService := transport executeString: self remoteServiceName , ' new'!
 
 isBrowserService
 
@@ -200,10 +196,6 @@ toolTip
 	^self displayString
 !
 
-transport: anObject
-	self halt. 
-	transport := anObject!
-
 updateClassCategorySelectionsFor: presenter!
 
 updateClassHierarchySelectionFor: presenter!
@@ -264,7 +256,6 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #globalsUpdate:!public!updating! !
 !RowanService categoriesFor: #initialize!Init / Release!public! !
 !RowanService categoriesFor: #initializePresenterList:!Init / Release!private! !
-!RowanService categoriesFor: #initializeRemoteService!Init / Release!public! !
 !RowanService categoriesFor: #isBrowserService!public!testing! !
 !RowanService categoriesFor: #isClassService!public!testing! !
 !RowanService categoriesFor: #isDirty!accessing!public! !
@@ -297,7 +288,6 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #stonOn:!must not strip!public! !
 !RowanService categoriesFor: #superclassListUpdate:!public!updating! !
 !RowanService categoriesFor: #toolTip!printing!public! !
-!RowanService categoriesFor: #transport:!accessing!public! !
 !RowanService categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
 !RowanService categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !
 !RowanService categoriesFor: #updateClassSelectionFor:!public!updating! !
@@ -342,19 +332,10 @@ icon
 	^##(self) defaultIcon!
 
 new
-	^super new initialize!
-
-on: aSession
-	| inst |
-	self halt. 
-	inst := self new.
-	inst transport: aSession.
-	inst initializeRemoteService.
-	^inst! !
+	^super new initialize! !
 !RowanService class categoriesFor: #command:withArgs:!instance creation!public! !
 !RowanService class categoriesFor: #defaultIcon!private! !
 !RowanService class categoriesFor: #defaultIconName!private! !
 !RowanService class categoriesFor: #icon!private! !
 !RowanService class categoriesFor: #new!initialization!public! !
-!RowanService class categoriesFor: #on:!initialization!public! !
 

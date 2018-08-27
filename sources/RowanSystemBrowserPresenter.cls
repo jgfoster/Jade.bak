@@ -10,14 +10,6 @@ RowanSystemBrowserPresenter comment: ''!
 !RowanSystemBrowserPresenter categoriesForClass!Unclassified! !
 !RowanSystemBrowserPresenter methodsFor!
 
-addPackage
-	| service |
-	service := RowanProjectService on: gciSession.
-	(service remoteDefaultProjectName isNil or: [service defaultProjectName isNil])
-		ifTrue: 
-			[^MessageBox notify: 'No default project has been created. Please specify in the project list.'].
-	^super addPackage!
-
 addPackageDictionaryInfoTo: aStream
 	aStream
 		nextPutAll: 'dictionaryList';
@@ -30,10 +22,15 @@ addPackageDictionaryInfoTo: aStream
 	aStream lf!
 
 addSubclass
+	| answeringService |
+	answeringService := RowanAnsweringService new.
+	answeringService
+		command: #subclassCreationTemplate:;
+		commandArgs: (Array with: self selectedClassNameWithoutVersion).
+	self issueCommand: (Array with: answeringService).
 	classDefinitionPresenter
 		ensureVisible;
-		value: self classService subclassCreationTemplate;
-		yourself!
+		value: answeringService answer!
 
 browseClassReferencesOf: className
 	
@@ -72,7 +69,7 @@ classesMenuStrings
 !
 
 classService
-	^(RowanClassService on: gciSession)
+	^RowanClassService new
 		name: self selectedClassNameWithoutVersion;
 		yourself!
 
@@ -500,7 +497,6 @@ updateTabLabel
 			selections size = 1 ifTrue: [newLabel := selections first key]].
 	self view arrangement: cardNumber printString , ' ' , newLabel.
 	self parentPresenter view updateTabs! !
-!RowanSystemBrowserPresenter categoriesFor: #addPackage!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #addPackageDictionaryInfoTo:!create schemantic wiring!public! !
 !RowanSystemBrowserPresenter categoriesFor: #addSubclass!menu handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #browseClassReferencesOf:!public! !

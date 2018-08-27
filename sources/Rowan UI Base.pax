@@ -331,7 +331,7 @@ Model subclass: #BrowserUpdate
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #RowanService
-	instanceVariableNames: 'transport remoteService name isDirty command commandArgs updateType'
+	instanceVariableNames: 'remoteService name isDirty command commandArgs updateType'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -770,7 +770,7 @@ debugError
 !GsMethod methodsFor!
 
 methodService
-	^RowanMethodService on: gciSession! !
+	^RowanMethodService new! !
 !GsMethod categoriesFor: #methodService!public!rowan! !
 
 !JadeAutoTextPresenter3 methodsFor!
