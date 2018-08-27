@@ -180,12 +180,6 @@ onLeftButtonPressed: aMouseEvent
 	[self doSearch] forkAt: Processor userBackgroundPriority.
 !
 
-onViewOpened
-
-	super onViewOpened.
-	[methodSourcePresenter addMenu] forkAt: Processor userBackgroundPriority.
-!
-
 searchFor: aString
 
 	| sourceView selectionRange textRange found |
@@ -290,7 +284,6 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #jadeMenuStrings!public! !
 !JadeMethodListPresenter categoriesFor: #methodListPresenter!public! !
 !JadeMethodListPresenter categoriesFor: #onLeftButtonPressed:!public! !
-!JadeMethodListPresenter categoriesFor: #onViewOpened!public! !
 !JadeMethodListPresenter categoriesFor: #searchFor:!public! !
 !JadeMethodListPresenter categoriesFor: #selectedCategory!public! !
 !JadeMethodListPresenter categoriesFor: #selectedClass!public! !
