@@ -71,7 +71,6 @@ currentSelectionOrLine
 !
 
 editCopy
-	self halt. 
 	self activeTextEdit 
 		copySelection;
 		updateModel;
