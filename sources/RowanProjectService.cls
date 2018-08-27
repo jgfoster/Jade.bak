@@ -51,12 +51,15 @@ checkoutUsing: presenter
 	branchString := branchString subStrings asOrderedCollection
 				remove: '*';
 				yourself.
-	branchName := ChoicePrompter choices: branchString caption: 'Select branch to checkout:'.
+	branchName := ChoicePrompter
+				on: branch
+				choices: branchString
+				caption: 'Select branch to checkout:'.
 	branchName isNil ifTrue: [^self].
 	self
 		command: #checkout:;
 		commandArgs: (Array with: branchName).
-	presenter issueCommand: (Array with: self).!
+	presenter issueCommand: (Array with: self)!
 
 defaultProjectName
 	^self class defaultProjectName!
