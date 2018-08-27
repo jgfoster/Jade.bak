@@ -180,6 +180,10 @@ processListPresenter
 queryCommand: query
 
 	processList := processListPresenter list collect: [:each | GsProcess session: gciSession oopType: each oopType].
+	(#(#browseFrameMethod #browseImplementors #browseSenders) includes: query commandSymbol) ifTrue: [
+		query isEnabled: frame method selector notNil.
+		^true
+	].
 	(#(#'resumeProcess' #'runToCursor' #'stepInto' #'stepOut' #'stepOver') includes: query commandSymbol) ifTrue: [
 		query isEnabled: processListPresenter selectionByIndex == 1.
 		^true
@@ -342,7 +346,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #onViewClosed!event handlers!private! !
 !RowanDebugger categoriesFor: #onViewOpened!event handlers!private! !
 !RowanDebugger categoriesFor: #processListPresenter!Accessing!public! !
-!RowanDebugger categoriesFor: #queryCommand:!public! !
+!RowanDebugger categoriesFor: #queryCommand:!menu handlers!public! !
 !RowanDebugger categoriesFor: #registerPresentersForUpdates!public! !
 !RowanDebugger categoriesFor: #reportCompileError:in:!compiling!public! !
 !RowanDebugger categoriesFor: #restart!menu handlers!private! !

@@ -57,6 +57,12 @@ getDebugger
 	].
 !
 
+menuItemIsEnabled: menuItem
+	| commandPolicy commandQuery |
+	commandPolicy := CommandPolicy defaultClass commandSource: debugger view.
+	commandQuery := menuItem queryAlong: commandPolicy.
+	^commandQuery isEnabled!
+
 methodListBrowser
 
 	^JadeiteMethodListBrowser allInstances detect: [:each | true] ifNone: [nil]
@@ -381,46 +387,53 @@ testBug82
 	].!
 
 testContextMenu
-	"https://github.com/ericwinger/Jade/issues/68"
- 
 	| error time view |
+	self testsIssue: #issue68 withTitle: 'Debuggers (old and new) text panes get error on popup menu'.
 	ShortcutMenuStatus reset.
 	self openDebuggerOn: 'nil halt'.
 	view := debugger documentPresenter view.
-	[
-		| counter |
-		counter := 0.
-		[ShortcutMenuStatus status isNil] whileTrue: [(Delay forMilliseconds: 10) wait].
-		self assert: ShortcutMenuStatus isOpen.
-		[
-			counter := counter + 1.
-			(Delay forMilliseconds: 100) wait.
-			ShortcutMenuStatus isOpen and: [counter <= 10].
-		] whileTrue: [
-			view
-				postMessage: 	16r100 "WM_KEYDOWN" 	wParam: 27 "VK_ESCAPE" lParam: 0;
-				postMessage: 	16r101 "WM_KEYUP" 		wParam: 27 "VK_ESCAPE" lParam: 0;
-				yourself.
-		].
-		Transcript show: '
-testContextMenu - counter = ' , counter printString.
-	] fork.
+	
+	[| counter |
+	counter := 0.
+	[ShortcutMenuStatus status isNil] whileTrue: [(Delay forMilliseconds: 10) wait].
+	self assert: ShortcutMenuStatus isOpen.
+	
+	[counter := counter + 1.
+	(Delay forMilliseconds: 100) wait.
+	ShortcutMenuStatus isOpen and: [counter <= 10]]
+			whileTrue: 
+				[view
+					postMessage: 16r100
+						wParam: 27
+						lParam: 0;
+					postMessage: 16r101
+						wParam: 27
+						lParam: 0;
+					yourself	"WM_KEYDOWN"	"VK_ESCAPE"	"WM_KEYUP"	"VK_ESCAPE"].
+	Transcript show: '
+testContextMenu - counter = ' , counter printString]
+			fork.
 	view
-		postMessage: 16r204 "WM_RBUTTONDOWN" 	wParam: 0 lParam: 16r12C0064;		" (300 @ 100) "
-		postMessage: 16r205 "WM_RBUTTONUP" 		wParam: 0 lParam: 16r12C0064;	
-		yourself.
+		postMessage: 16r204
+			wParam: 0
+			lParam: 16r12C0064;
+		postMessage: 16r205
+			wParam: 0
+			lParam: 16r12C0064;
+		yourself.	"WM_RBUTTONDOWN"	" (300 @ 100) "	"WM_RBUTTONUP"
 	time := Time millisecondClockValue + 2000.
-	[
-		SessionManager current inputState loopWhile: [ShortcutMenuStatus isClosed not and: [Time millisecondClockValue < time]].
-	] on: Error do: [:ex | 
-		error := ex.
-		ex return.
-	].
-	self 
+	
+	[SessionManager current inputState
+		loopWhile: [ShortcutMenuStatus isClosed not and: [Time millisecondClockValue < time]]]
+			on: Error
+			do: 
+				[:ex |
+				error := ex.
+				ex return].
+	self
 		assert: error isNil;
 		debuggerDo: [debugger resumeProcess];
-		yourself.
-!
+		yourself!
 
 testErrorInPrintString
 	"https://github.com/ericwinger/Jade/issues/49"
@@ -453,10 +466,23 @@ testSaveMethod
 		assert: (view selection) equals: 'testMethod';
 		debuggerDo: [debugger resumeProcess];
 		assert: (session executeString: 'RowanFrameService new testMethod') equals: number;
-		yourself.! !
+		yourself.!
+
+testStackMenuEnablement
+	| frameContextMenu |
+	self testsIssue: #issue103 withTitle: 'debugger, ''Executed Code'' stack frame, pop up menu items'.
+	self openDebuggerOn: 'nil halt'.
+	self assert: debugger _processList size equals: 1.
+	self assert: debugger frameListPresenter list first equals: 'Executed Code  @2 line 1'.
+	frameContextMenu := debugger frameListPresenter view contextMenu.
+	frameContextMenu itemsDo: [:item | self deny: (self menuItemIsEnabled: item)].
+	debugger frameListPresenter selection: (debugger frameListPresenter list at: 2).
+	frameContextMenu itemsDo: [:item | self assert: (self menuItemIsEnabled: item)].
+! !
 !JadeiteDebuggerTestCase categoriesFor: #closeDebuggers!public! !
 !JadeiteDebuggerTestCase categoriesFor: #debuggerDo:!public! !
 !JadeiteDebuggerTestCase categoriesFor: #getDebugger!public! !
+!JadeiteDebuggerTestCase categoriesFor: #menuItemIsEnabled:!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #methodListBrowser!public! !
 !JadeiteDebuggerTestCase categoriesFor: #openDebuggerOn:!public! !
 !JadeiteDebuggerTestCase categoriesFor: #setUp!public!running! !
@@ -477,4 +503,5 @@ testSaveMethod
 !JadeiteDebuggerTestCase categoriesFor: #testContextMenu!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testErrorInPrintString!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testSaveMethod!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #testStackMenuEnablement!public!tests! !
 

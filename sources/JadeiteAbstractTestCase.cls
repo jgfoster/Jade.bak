@@ -41,6 +41,9 @@ testsIssue: aSymbol withTitle: anObject
 
 	" a helpful parameter format is #issue<issueNumber>"
 
+	"Issues currently reside in: 
+		https://github.com/ericwinger/Jade/issues/"
+
 	! !
 !JadeiteAbstractTestCase categoriesFor: #abortTransaction!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #openWindow:!browser test support!private! !
