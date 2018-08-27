@@ -611,15 +611,9 @@ executeSelectionOrLine
 jadeInspect
 	| result |
 	
-	[result := self jadeExecuteAndDisplay: false.
+	result := self jadeExecuteAndDisplay: false.
 	result == self ifTrue: [^self].
-	JadeInspector showOn: result session: gciSession]
-			on: Error
-			do: 
-				[:ex |
-				MessageBox
-					notify: 'Error executing and inspecting line. Possibly the inspected object cannot be coerced for server execution. Error: '
-							, ex messageText]! !
+	JadeInspector showOn: result session: gciSession! !
 !CodeSourcePresenter categoriesFor: #browseSelectedClass!public! !
 !CodeSourcePresenter categoriesFor: #executeSelectionOrLine!Jade!private! !
 !CodeSourcePresenter categoriesFor: #jadeInspect!Jade!private! !
