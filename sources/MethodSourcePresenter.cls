@@ -48,39 +48,6 @@ defaultMethod
 '.
 !
 
-editMenuStrings
-
-	false ifTrue: [
-		self fileSave; undo; redo; cutSelection; copySelection; pasteClipboard; clearSelection; selectAll; editFind; editFindNext; editReplace; 
-			jadeDisplay; jadeExecute; jadeInspect; browseSelectedClass.
-	].
-	^#(
-		'&Edit'
-		'&Save/Ctrl+S/fileSave'
-		'-'
-		'&Undo/Ctrl+Z/undo'
-		'&Redo/Ctrl+Y/redo'
-		'-'
-		'&Reformat Source/Ctrl+R/reformatSource'
-		'-'
-		'&Cu&t/Ctrl+X/cutSelection'
-		'&Copy/Ctrl+C/copySelection'
-		'&Paste/Ctrl+V/pasteClipboard'
-		'&Delete/Delete/clearSelection'
-		'-'
-		'Select &All/Ctrl+A/selectAll'
-		'-'
-		'&Find/Ctrl+F/editFind'
-		'Find &Next/F3/editFindNext'
-		'&Replace/Ctrl+H/editReplace'
-		'-'
-		'Display/Ctrl+D/jadeDisplay'
-		'Execute/Ctrl+E/jadeExecute'
-		'Inspect/Ctrl+Q/jadeInspect'
-		'Browse Class/Ctrl+B/browseSelectedClass'
-	).
-!
-
 gsMethod: aGsMethod
 	gsMethod := aGsMethod.
 	self update.!
@@ -273,7 +240,6 @@ updateMethodStepPoints
 !MethodSourcePresenter categoriesFor: #codePresenterIsMethod!public! !
 !MethodSourcePresenter categoriesFor: #createSchematicWiring!Jade!private! !
 !MethodSourcePresenter categoriesFor: #defaultMethod!public! !
-!MethodSourcePresenter categoriesFor: #editMenuStrings!Jade!private! !
 !MethodSourcePresenter categoriesFor: #gsMethod:!public! !
 !MethodSourcePresenter categoriesFor: #hoverEnd:!Jade!private! !
 !MethodSourcePresenter categoriesFor: #hoverStart:!Jade!private! !

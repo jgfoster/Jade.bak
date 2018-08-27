@@ -192,6 +192,8 @@ package methodNames
 	add: #MCPatchBrowser -> #operationSelected;
 	add: #MethodListPresenter -> #browseClass;
 	add: #MethodListPresenter -> #browseMethodsContaining;
+	add: #MethodSourcePresenter -> #editMenuStrings;
+	add: #MethodSourcePresenter -> #editSaveMethod;
 	add: #MethodSourcePresenter -> #fileSave;
 	add: #MethodSourcePresenter -> #isOkayToChange;
 	add: #MethodSourcePresenter -> #methodMenuBreak:;
@@ -2682,6 +2684,51 @@ browseMethodsContaining
 
 !MethodSourcePresenter methodsFor!
 
+editMenuStrings
+
+	false ifTrue: [
+		self editSaveMethod; undo; redo; cutSelection; copySelection; pasteClipboard; clearSelection; selectAll; editFind; editFindNext; editReplace; 
+			jadeDisplay; jadeExecute; jadeInspect; browseSelectedClass.
+	].
+	^#(
+		'&Edit'
+		'&Save/Ctrl+S/editSaveMethod'
+		'-'
+		'&Undo/Ctrl+Z/undo'
+		'&Redo/Ctrl+Y/redo'
+		'-'
+		'&Reformat Source/Ctrl+R/reformatSource'
+		'-'
+		'&Cu&t/Ctrl+X/cutSelection'
+		'&Copy/Ctrl+C/copySelection'
+		'&Paste/Ctrl+V/pasteClipboard'
+		'&Delete/Delete/clearSelection'
+		'-'
+		'Select &All/Ctrl+A/selectAll'
+		'-'
+		'&Find/Ctrl+F/editFind'
+		'Find &Next/F3/editFindNext'
+		'&Replace/Ctrl+H/editReplace'
+		'-'
+		'Display/Ctrl+D/jadeDisplay'
+		'Execute/Ctrl+E/jadeExecute'
+		'Inspect/Ctrl+Q/jadeInspect'
+		'Browse Class/Ctrl+B/browseSelectedClass'
+	).
+!
+
+editSaveMethod
+	| classService newMethodService |
+	classService := RowanClassService named: gsMethod className.
+	classService meta: gsMethod meta.
+	self
+		editSaveMethod: classService
+		in: documentPresenter
+		category: gsMethod category.
+	newMethodService := classService selectedMethods first.
+	documentPresenter value: newMethodService source.
+	parentPresenter selectedFrame gsMethod: newMethodService!
+
 fileSave
 		"Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"
 
@@ -2759,6 +2806,8 @@ methodMenuBreak: aMenu
 
 updateMethodSource
 	parentPresenter updateMethodSource! !
+!MethodSourcePresenter categoriesFor: #editMenuStrings!Jade!private! !
+!MethodSourcePresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !MethodSourcePresenter categoriesFor: #fileSave!public! !
 !MethodSourcePresenter categoriesFor: #isOkayToChange!Jade!private! !
 !MethodSourcePresenter categoriesFor: #methodMenuBreak:!Jade!public! !

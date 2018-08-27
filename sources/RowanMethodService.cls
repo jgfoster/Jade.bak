@@ -66,6 +66,10 @@ basicSubSuperIcon
 	hasSubs ifTrue: [^JadeiteProjectsBrowserPresenter downArrowIcon].
 	^Icon blank!
 
+behavior
+	"to catch a bug" 
+	self halt !
+
 breakPoints
 
 	^breakPoints!
@@ -393,6 +397,7 @@ user: anObject
 !RowanMethodService categoriesFor: #addBreakPointMenuAt:to:presenter:!presenter support!private! !
 !RowanMethodService categoriesFor: #appendToSourceMenu:presenter:!presenter support!public! !
 !RowanMethodService categoriesFor: #basicSubSuperIcon!displaying!public! !
+!RowanMethodService categoriesFor: #behavior!accessing!public! !
 !RowanMethodService categoriesFor: #breakPoints!public! !
 !RowanMethodService categoriesFor: #category!accessing!private! !
 !RowanMethodService categoriesFor: #category:!accessing!private! !
