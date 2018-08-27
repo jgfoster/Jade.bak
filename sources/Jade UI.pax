@@ -326,7 +326,7 @@ jadeInspect
 	JadeInspector showOn: result session: gciSession.
 ! !
 !JadeTextDocument categoriesFor: #fileIn!private! !
-!JadeTextDocument categoriesFor: #jadeInspect!Jade!private! !
+!JadeTextDocument categoriesFor: #jadeInspect!menu handlers!private! !
 
 !JadeToolsToolBarPresenter methodsFor!
 

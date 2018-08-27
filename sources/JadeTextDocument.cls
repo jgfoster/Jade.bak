@@ -71,7 +71,7 @@ currentSelectionOrLine
 !
 
 editCopy
-
+	self halt. 
 	self activeTextEdit 
 		copySelection;
 		updateModel;
@@ -326,7 +326,7 @@ queryCommand: query
 
 	| textEdit |
 	textEdit := self activeTextEdit.
-	(#(#editCut #copySelection #fileIn) includes: query commandSymbol) ifTrue: [
+	(#(#addQuotesToSelection #removeQuotesFromSelection #editCut #editCopy #editDelete #editReplace #editFind #editFindNext #editSelectAll #fileIn #jadeDebug #jadeDisplay #jadeExecute #jadeInspect) includes: query commandSymbol) ifTrue: [
 		query isEnabled: (textEdit notNil and: [(textEdit isKindOf: TextEdit) and: [textEdit hasSelection]]).
 		^true.
 	].
@@ -438,7 +438,7 @@ validateUserInterface
 	].! !
 !JadeTextDocument categoriesFor: #abortTransaction!Jade!private! !
 !JadeTextDocument categoriesFor: #activeTextEdit!private! !
-!JadeTextDocument categoriesFor: #addQuotesToSelection!edit!private! !
+!JadeTextDocument categoriesFor: #addQuotesToSelection!menu handlers!private! !
 !JadeTextDocument categoriesFor: #codePresenterIsMethod!private! !
 !JadeTextDocument categoriesFor: #codeSourcePresenterClass!private! !
 !JadeTextDocument categoriesFor: #commitTransaction!Jade!private! !
@@ -446,14 +446,14 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #continueTransaction!Jade!private! !
 !JadeTextDocument categoriesFor: #createComponents!private! !
 !JadeTextDocument categoriesFor: #currentSelectionOrLine!Jade!private! !
-!JadeTextDocument categoriesFor: #editCopy!edit!private! !
-!JadeTextDocument categoriesFor: #editCut!edit!private! !
-!JadeTextDocument categoriesFor: #editDelete!edit!private! !
-!JadeTextDocument categoriesFor: #editFind!edit!private! !
-!JadeTextDocument categoriesFor: #editFindNext!edit!private! !
-!JadeTextDocument categoriesFor: #editPaste!edit!private! !
-!JadeTextDocument categoriesFor: #editReplace!edit!private! !
-!JadeTextDocument categoriesFor: #editSelectAll!edit!private! !
+!JadeTextDocument categoriesFor: #editCopy!menu handlers!private! !
+!JadeTextDocument categoriesFor: #editCut!menu handlers!private! !
+!JadeTextDocument categoriesFor: #editDelete!menu handlers!private! !
+!JadeTextDocument categoriesFor: #editFind!menu handlers!private! !
+!JadeTextDocument categoriesFor: #editFindNext!menu handlers!private! !
+!JadeTextDocument categoriesFor: #editPaste!menu handlers!private! !
+!JadeTextDocument categoriesFor: #editReplace!menu handlers!private! !
+!JadeTextDocument categoriesFor: #editSelectAll!menu handlers!private! !
 !JadeTextDocument categoriesFor: #environment:!accessing!public! !
 !JadeTextDocument categoriesFor: #executeSelectionOrLine!Jade!private! !
 !JadeTextDocument categoriesFor: #fileIn:!private! !
@@ -464,9 +464,9 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #getDocumentData!accessing!private! !
 !JadeTextDocument categoriesFor: #help!private! !
 !JadeTextDocument categoriesFor: #initialize!overrides!public! !
-!JadeTextDocument categoriesFor: #jadeDebug!Jade!private! !
-!JadeTextDocument categoriesFor: #jadeDisplay!Jade!private! !
-!JadeTextDocument categoriesFor: #jadeExecute!Jade!private! !
+!JadeTextDocument categoriesFor: #jadeDebug!menu handlers!private! !
+!JadeTextDocument categoriesFor: #jadeDisplay!menu handlers!private! !
+!JadeTextDocument categoriesFor: #jadeExecute!menu handlers!private! !
 !JadeTextDocument categoriesFor: #jadeExecuteAndDisplay:!Jade!private! !
 !JadeTextDocument categoriesFor: #jadeExecuteAndDisplay:result:!Jade!private! !
 !JadeTextDocument categoriesFor: #logoutRequested:!private! !
@@ -474,13 +474,13 @@ validateUserInterface
 !JadeTextDocument categoriesFor: #onViewClosed!private! !
 !JadeTextDocument categoriesFor: #onViewOpened!private! !
 !JadeTextDocument categoriesFor: #print!private! !
-!JadeTextDocument categoriesFor: #queryCommand:!overrides!private! !
-!JadeTextDocument categoriesFor: #removeQuotesFromSelection!edit!private! !
+!JadeTextDocument categoriesFor: #queryCommand:!menu handlers!private! !
+!JadeTextDocument categoriesFor: #removeQuotesFromSelection!menu handlers!private! !
 !JadeTextDocument categoriesFor: #saveDocument!private! !
-!JadeTextDocument categoriesFor: #selectLfIfEndingOnCr!edit!private! !
+!JadeTextDocument categoriesFor: #selectLfIfEndingOnCr!menu handlers!private! !
 !JadeTextDocument categoriesFor: #setDocumentData:!accessing!private! !
 !JadeTextDocument categoriesFor: #showError:on:!private! !
-!JadeTextDocument categoriesFor: #showSelection!edit!private! !
+!JadeTextDocument categoriesFor: #showSelection!menu handlers!private! !
 !JadeTextDocument categoriesFor: #showText:!private! !
 !JadeTextDocument categoriesFor: #updateCodeFont!private! !
 !JadeTextDocument categoriesFor: #updateStatusBar!private! !
