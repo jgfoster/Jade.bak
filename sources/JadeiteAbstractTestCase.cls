@@ -34,11 +34,19 @@ setUp
 
 tearDown
 	super tearDown.
-! !
+!
+
+testsIssue: aSymbol withTitle: anObject
+	"send this to help identify which tests test which issues"
+
+	" a helpful parameter format is #issue<issueNumber>"
+
+	! !
 !JadeiteAbstractTestCase categoriesFor: #abortTransaction!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #openWindow:!browser test support!private! !
 !JadeiteAbstractTestCase categoriesFor: #setUp!private! !
 !JadeiteAbstractTestCase categoriesFor: #tearDown!private! !
+!JadeiteAbstractTestCase categoriesFor: #testsIssue:withTitle:!public!support! !
 
 !JadeiteAbstractTestCase class methodsFor!
 

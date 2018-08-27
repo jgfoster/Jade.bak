@@ -140,6 +140,9 @@ classesMenuStrings
 	).
 !
 
+classHierarchyTabs
+	^classHierarchyTabs!
+
 cleanupComparisonBrowser
 	comparisonPresenter
 		beforeTitle: String new;
@@ -1355,6 +1358,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #checkout!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #classesMenuStrings!menus!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #classHierarchyTabs!accessing!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #cleanupComparisonBrowser!initialize/release!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #clearFilterLists!event handlers support!private!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #cloneProject!project menu handlers!public! !

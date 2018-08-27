@@ -27,8 +27,9 @@ categories
 
 classHierarchyUpdate: presenter browser: browser
 	| treeModel selection |
-	hierarchyServices ifNil:[^self]. 
+	hierarchyServices ifNil: [^self].
 	browser isClassListTabSelected ifTrue: [^self].
+	presenter selections isEmpty ifFalse: [(presenter selections includes: self) ifFalse: [^self]].
 	treeModel := TreeModel new
 				searchPolicy: SearchPolicy equality;
 				reset.
@@ -39,12 +40,11 @@ classHierarchyUpdate: presenter browser: browser
 				to: treeModel
 				withParent: nil].
 	presenter model: treeModel.
-	presenter view expandAll. 
-	selection := (treeModel asBag detect: [:svc | svc name = name]). 
-	selection hierarchyServices: nil. 
-	hierarchyServices := nil. 
-	presenter selection: selection
-!
+	presenter view expandAll.
+	selection := treeModel asBag detect: [:svc | svc name = name].
+	selection hierarchyServices: nil.
+	hierarchyServices := nil.
+	presenter selection: selection!
 
 classMethodsUpdate: presenter browser: browser
 	| classPresenter |

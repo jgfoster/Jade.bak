@@ -98,6 +98,15 @@ selectCategoriesNamed: categories
 						add: service;
 						yourself)]!
 
+selectClassListTab
+	^self projectsPresenter classHierarchyTabs firstCard!
+
+selectClassListTabIn: presenter
+	^presenter classHierarchyTabs firstCard!
+
+selectHierarchyTabIn: presenter
+	^presenter classHierarchyTabs lastCard!
+
 selectRowanSample1Class
 	"big assumption - RowanSample1 class will allways be in RowanSample1 project"
 
@@ -143,6 +152,28 @@ test_addRemoveCategory
 	self assert: self categoryListPresenter selection = 'jadeite test'.
 	self projectsPresenter basicRemoveMethodCategories.
 	self deny: (self categoryListPresenter list includes: 'jadeite test')!
+
+test_hierarchySelectTwoBrowsers
+	| secondBrowser firstBrowser |
+	self testsIssue: #issue122 withTitle: 'Hierarchy tab selection updates incorrectly.'.
+	self ensureRowanSample1Available.
+	firstBrowser := projectsBrowser.	"for easier reading"
+	secondBrowser := self openWindow: [transcript openJadeiteProjectsBrowser].
+	
+	[self selectRowanSample1Class.
+	self selectServicesNamed: (Array with: 'RowanSample1')
+		in: secondBrowser currentCard projectListPresenter.
+	self selectServicesNamed: #('RowanSample1-Tests') in: secondBrowser currentCard packageListPresenter.
+	self selectServicesNamed: (Array with: 'RowanSample1Test')
+		in: secondBrowser currentCard classListPresenter.
+	self selectHierarchyTabIn: firstBrowser currentCard.
+	self assert: firstBrowser currentCard classHierarchyPresenter selection name = 'RowanSample1'.
+	self selectHierarchyTabIn: secondBrowser currentCard.
+	self assert: firstBrowser currentCard classHierarchyPresenter selection name = 'RowanSample1'.
+	self assert: (firstBrowser currentCard classHierarchyPresenter isKindOf: TreePresenter).
+	self assert: secondBrowser currentCard classHierarchyPresenter selection name = 'RowanSample1Test'.
+	self assert: (secondBrowser currentCard classHierarchyPresenter isKindOf: TreePresenter)]
+			ensure: [secondBrowser destroy]!
 
 test_markDirty
 	| nonDefaultService |
@@ -234,12 +265,16 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanSample1Path!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectCategoriesNamed:!private!selection! !
+!JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
+!JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTabIn:!private!selection! !
+!JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTabIn:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectRowanSample1Class!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectServicesNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #serviceNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !

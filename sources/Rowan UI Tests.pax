@@ -27,6 +27,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Tree\Dolphin Tree Presenter';
 	add: 'GemStone Session';
 	add: 'Jade UI Base';
 	add: 'Rowan UI Base';
