@@ -352,18 +352,18 @@ updateSaveMethodOop: anInteger
 !JadeDebugger categoriesFor: #clearUI!public! !
 !JadeDebugger categoriesFor: #codeSourcePresenterClass!private! !
 !JadeDebugger categoriesFor: #contextObject!public! !
-!JadeDebugger categoriesFor: #copyStack!menu handlers!public! !
+!JadeDebugger categoriesFor: #copyStack!menu handlers!private! !
 !JadeDebugger categoriesFor: #createComponents!public! !
 !JadeDebugger categoriesFor: #createSchematicWiring!public! !
 !JadeDebugger categoriesFor: #getProcessList!public! !
 !JadeDebugger categoriesFor: #implement!public! !
 !JadeDebugger categoriesFor: #initializeProcess:message:terminateOnClose:!public! !
-!JadeDebugger categoriesFor: #inspectVariable!public! !
-!JadeDebugger categoriesFor: #onViewClosed!public! !
+!JadeDebugger categoriesFor: #inspectVariable!menu handlers!private! !
+!JadeDebugger categoriesFor: #onViewClosed!event handlers!public! !
 !JadeDebugger categoriesFor: #queryCommand:!public! !
-!JadeDebugger categoriesFor: #resumeProcess!public! !
-!JadeDebugger categoriesFor: #runToCursor!public! !
-!JadeDebugger categoriesFor: #saveMethod!public! !
+!JadeDebugger categoriesFor: #resumeProcess!menu handlers!private! !
+!JadeDebugger categoriesFor: #runToCursor!menu handlers!private! !
+!JadeDebugger categoriesFor: #saveMethod!menu handlers!private! !
 !JadeDebugger categoriesFor: #selectedFrame!public! !
 !JadeDebugger categoriesFor: #selectedProcess!public! !
 !JadeDebugger categoriesFor: #selectedVariable!public! !
@@ -372,10 +372,10 @@ updateSaveMethodOop: anInteger
 !JadeDebugger categoriesFor: #stackInitialSelection!public! !
 !JadeDebugger categoriesFor: #stackInitialSelectionData!public! !
 !JadeDebugger categoriesFor: #statusBarText:!public! !
-!JadeDebugger categoriesFor: #stepInto!public! !
-!JadeDebugger categoriesFor: #stepOut!public! !
-!JadeDebugger categoriesFor: #stepOver!public! !
-!JadeDebugger categoriesFor: #terminateProcess!public! !
+!JadeDebugger categoriesFor: #stepInto!menu handlers!private! !
+!JadeDebugger categoriesFor: #stepOut!menu handlers!private! !
+!JadeDebugger categoriesFor: #stepOver!menu handlers!private! !
+!JadeDebugger categoriesFor: #terminateProcess!menu handlers!private! !
 !JadeDebugger categoriesFor: #update!public! !
 !JadeDebugger categoriesFor: #updateSaveMethodOop:!public! !
 

@@ -6,11 +6,11 @@ package paxVersion: 1;
 
 package classNames
 	add: #JadeiteAbstractTestCase;
+	add: #JadeiteDebuggerTestCase;
 	add: #JadeiteDictionaryBrowserTestCase;
 	add: #JadeiteInspectorTestCase;
 	add: #JadeiteProjectBrowserTestCase;
 	add: #JadeiteTestResource;
-	add: #RowanDebuggerTestCase;
 	yourself.
 
 package methodNames
@@ -42,6 +42,11 @@ TestCase subclass: #JadeiteAbstractTestCase
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadeiteAbstractTestCase subclass: #JadeiteDebuggerTestCase
+	instanceVariableNames: 'debugger gsProcess process'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeiteAbstractTestCase subclass: #JadeiteDictionaryBrowserTestCase
 	instanceVariableNames: 'dictionaryBrowser'
 	classVariableNames: ''
@@ -54,11 +59,6 @@ JadeiteAbstractTestCase subclass: #JadeiteInspectorTestCase
 	classInstanceVariableNames: ''!
 JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
 	instanceVariableNames: 'projectsBrowser dictionaryBrowser transcriptWritesWereEnabled'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-JadeiteAbstractTestCase subclass: #RowanDebuggerTestCase
-	instanceVariableNames: 'debugger gsProcess process'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

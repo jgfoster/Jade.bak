@@ -42,6 +42,7 @@ appendToSourceMenu: aMenu presenter: methodSourcePresenter
 	| stepPoint menuCommand messageSelector |
 	stepPoint := self stepPointFromCursorIn: methodSourcePresenter.
 	stepPoint isNil ifTrue: [^self].
+	('*Debug*' match: aMenu text) ifTrue: [^self].	"Don't add breakpoints to the Debug menu. Let's keep it in the context menu for consistency."
 	aMenu addSeparator.
 	menuCommand := self
 				addBreakPointMenuAt: stepPoint
