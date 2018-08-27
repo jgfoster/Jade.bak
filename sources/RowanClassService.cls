@@ -25,10 +25,6 @@ addHierarchyService: service to: treeModel withParent: parentService
 categories
 	^categories!
 
-classCreationTemplate
-
-	^transport send: #classCreationTemplate to: self remoteService!
-
 classHierarchyUpdate: presenter browser: browser
 	| treeModel selection |
 	hierarchyServices ifNil:[^self]. 
@@ -289,7 +285,6 @@ variables
 !RowanClassService categoriesFor: #=!comparing!public! !
 !RowanClassService categoriesFor: #addHierarchyService:to:withParent:!private!updating! !
 !RowanClassService categoriesFor: #categories!accessing!private! !
-!RowanClassService categoriesFor: #classCreationTemplate!public! !
 !RowanClassService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #classMethodsUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #classOrHierarchyPresenter:!private!updating! !

@@ -14,10 +14,6 @@ RowanPackageService comment: ''!
 
 	^name = packageService name!
 
-classCreationTemplate
-
-	^transport send: #genericClassCreationTemplate to: self remoteService!
-
 classes: anArray
 
 	classes := anArray!
@@ -44,10 +40,6 @@ condenseExtensions: presenter
 	newList := newList reject: [:svc | svc isExtension and: [defined includes: svc name]].
 	^newList!
 
-createPackageNamed: packageName inProject: projectName
-
-	transport send: #createPackageNamed:inProject: to: remoteService withAll: (Array with: packageName with: projectName)!
-
 defaultTemplate
 	^defaultTemplate!
 
@@ -63,24 +55,12 @@ displayStringFor: displayThing
 				beBold.
 			displayThing forecolor: Color black]!
 
-genericClassCreationTemplate
-
-	^transport send: #genericClassCreationTemplate to: remoteService 
-!
-
 hash
 	^self name hash!
 
 isPackageService
 
 	^true!
-
-name: packageName
-	super name: packageName.
-	transport
-		send: #name:
-		to: remoteService
-		withAll: (Array with: packageName)!
 
 prepareForReplication
 
@@ -106,18 +86,14 @@ replicateFrom: newService
 	^(self isPackageService and: [newService isPackageService])
 		ifTrue: [super replicateFrom: newService]! !
 !RowanPackageService categoriesFor: #=!comparing!public! !
-!RowanPackageService categoriesFor: #classCreationTemplate!public!rowan! !
 !RowanPackageService categoriesFor: #classes:!public!updating! !
 !RowanPackageService categoriesFor: #classesUpdate:browser:!public!updating! !
 !RowanPackageService categoriesFor: #condenseExtensions:!private! !
-!RowanPackageService categoriesFor: #createPackageNamed:inProject:!public!rowan! !
 !RowanPackageService categoriesFor: #defaultTemplate!accessing!private! !
 !RowanPackageService categoriesFor: #defaultTemplate:!accessing!private! !
 !RowanPackageService categoriesFor: #displayStringFor:!displaying!public! !
-!RowanPackageService categoriesFor: #genericClassCreationTemplate!public!rowan! !
 !RowanPackageService categoriesFor: #hash!comparing!public! !
 !RowanPackageService categoriesFor: #isPackageService!public!testing! !
-!RowanPackageService categoriesFor: #name:!accessing!public! !
 !RowanPackageService categoriesFor: #prepareForReplication!public!replication! !
 !RowanPackageService categoriesFor: #projectName!accessing!private! !
 !RowanPackageService categoriesFor: #projectName:!accessing!private! !

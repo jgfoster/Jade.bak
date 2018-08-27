@@ -54,7 +54,6 @@ package classNames
 	add: #RowanQueryService;
 	add: #RowanSavePackageDialog;
 	add: #RowanService;
-	add: #RowanServiceTest;
 	add: #RowanShell;
 	add: #RowanSuperclassUpdate;
 	add: #RowanSystemBrowser;
@@ -310,7 +309,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
 	add: '..\Core\Contributions\ITC Gorisek\Source Tracking System';
 	add: '..\Core\Contributions\Solutions Software\SSW EditableListView';
-	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
 	yourself).
 
 package!
@@ -574,11 +572,6 @@ RowanShell subclass: #RowanPackageShell
 	classInstanceVariableNames: ''!
 RowanShell subclass: #RowanProjectListShell
 	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-TestCase subclass: #RowanServiceTest
-	instanceVariableNames: 'shell methodService gciSession classService'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

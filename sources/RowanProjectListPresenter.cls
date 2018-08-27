@@ -11,7 +11,12 @@ RowanProjectListPresenter comment: ''!
 !RowanProjectListPresenter methodsFor!
 
 browseProjects
-	self list: (RowanProjectService on: gciSession) projects!
+	| browserService |
+	browserService := RowanBrowserService new.
+	browserService
+		command: #updateProjects.
+	self issueCommand: (Array with: browserService).
+	self list: browserService projects.!
 
 checkout
 	projectListPresenter selection checkoutUsing: self.!

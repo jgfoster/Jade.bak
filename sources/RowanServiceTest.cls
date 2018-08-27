@@ -37,14 +37,6 @@ compileMethodSource: aString
 firstListElement
 	^shell primaryPresenter methodListPresenter subPresenters first model list first!
 
-removeSampleProject
-	"ensure the test project is removed from Rowan"
-
-	| service |
-	service := (RowanProjectService on: gciSession).
-	service removeSampleProject.
-	service removeSampleSymbolDictionary!
-
 setUp
 	super setUp.
 	methodService := RowanMethodService new.
@@ -54,13 +46,6 @@ setUp
 
 systemBrowserPresenter
 	^shell currentCard!
-
-tearDown
-	super tearDown.
-	shell ifNotNil: [:shell | shell exit].
-	RowanPackageService new removeSampleSymbolDictionary.
-	methodService transport abort.
-	self removeSampleProject!
 
 test_addNewMethod
 	| instanceOop |
@@ -112,10 +97,8 @@ test_sampleMethodDefinitions
 !RowanServiceTest categoriesFor: #browseImplementorsOf:!browsing!private! !
 !RowanServiceTest categoriesFor: #compileMethodSource:!private! !
 !RowanServiceTest categoriesFor: #firstListElement!private!support! !
-!RowanServiceTest categoriesFor: #removeSampleProject!private!support! !
 !RowanServiceTest categoriesFor: #setUp!private!support! !
 !RowanServiceTest categoriesFor: #systemBrowserPresenter!private!support! !
-!RowanServiceTest categoriesFor: #tearDown!private!support! !
 !RowanServiceTest categoriesFor: #test_addNewMethod!public! !
 !RowanServiceTest categoriesFor: #test_createSampleClass!public! !
 !RowanServiceTest categoriesFor: #test_createSampleMethod!public! !

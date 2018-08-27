@@ -35,10 +35,6 @@ classHierarchyUpdate: presenter browser: browser
 classMethodsUpdate: presenter browser: anObject
 	!
 
-classNameFrom: aClassOop
-
-	^transport send: #name to: aClassOop!
-
 classUpdate: presenter
 	!
 
@@ -62,14 +58,6 @@ commandArgs
 
 commandArgs: anObject
 	commandArgs := anObject!
-
-createClientFrom: anArrayOop
-	| string |
-	string := transport
-				send: #stonStringFor:
-				to: remoteService
-				withAll: (Array with: anArrayOop).
-	^STON fromString: string!
 
 dictionaryUpdate: presenter
 	!
@@ -97,12 +85,8 @@ initializePresenterList: presenter
 	presenter list: (SortedCollection sortBlock: [:x :y | x sortAspect < y sortAspect])!
 
 initializeRemoteService
+	self halt. 
 	remoteService := transport executeString: self remoteServiceName , ' new'!
-
-inspectDefinition
-	| definition |
-	definition := transport send: #definition to: remoteService.
-	JadeInspector showOn: definition session: transport!
 
 isBrowserService
 
@@ -196,23 +180,10 @@ removedClass: aPresenter!
 
 removedProject: presenter!
 
-removeSampleSymbolDictionary
-
-	transport send: #removeSampleSymbolDictionary to: remoteService!
-
 replicateFrom: newService
 	newService name = self name
 		ifTrue: 
 			[1 to: self class instSize do: [:index | self instVarAt: index put: (newService instVarAt: index)]]!
-
-sampleDefinitions
-	| anArrayOop |
-	anArrayOop := transport send: #sampleDefinitions to: remoteService.
-	^self createClientFrom: anArrayOop!
-
-setRemoteName
-
-	transport send: #name: to: remoteService withAll: (Array with: name)!
 
 sortAspect
 
@@ -229,10 +200,8 @@ toolTip
 	^self displayString
 !
 
-transport
-	^transport!
-
 transport: anObject
+	self halt. 
 	transport := anObject!
 
 updateClassCategorySelectionsFor: presenter!
@@ -280,7 +249,6 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #classHierarchyUpdate:!public!updating! !
 !RowanService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanService categoriesFor: #classMethodsUpdate:browser:!public!updating! !
-!RowanService categoriesFor: #classNameFrom:!public! !
 !RowanService categoriesFor: #classUpdate:!public!updating! !
 !RowanService categoriesFor: #clearCommand!Init / Release!public! !
 !RowanService categoriesFor: #clientDefinitionClass!public! !
@@ -288,7 +256,6 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #command:!accessing!public! !
 !RowanService categoriesFor: #commandArgs!accessing!public! !
 !RowanService categoriesFor: #commandArgs:!accessing!public! !
-!RowanService categoriesFor: #createClientFrom:!public! !
 !RowanService categoriesFor: #dictionaryUpdate:!public!updating! !
 !RowanService categoriesFor: #displayString!displaying!public! !
 !RowanService categoriesFor: #emptyFilterListsIn:!Init / Release!private! !
@@ -298,7 +265,6 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #initialize!Init / Release!public! !
 !RowanService categoriesFor: #initializePresenterList:!Init / Release!private! !
 !RowanService categoriesFor: #initializeRemoteService!Init / Release!public! !
-!RowanService categoriesFor: #inspectDefinition!public!rowan! !
 !RowanService categoriesFor: #isBrowserService!public!testing! !
 !RowanService categoriesFor: #isClassService!public!testing! !
 !RowanService categoriesFor: #isDirty!accessing!public! !
@@ -326,15 +292,11 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanService categoriesFor: #removedClass:!public!updating! !
 !RowanService categoriesFor: #removedProject:!public!updating! !
-!RowanService categoriesFor: #removeSampleSymbolDictionary!public! !
 !RowanService categoriesFor: #replicateFrom:!public!replication!updating! !
-!RowanService categoriesFor: #sampleDefinitions!examples!public! !
-!RowanService categoriesFor: #setRemoteName!accessing!public! !
 !RowanService categoriesFor: #sortAspect!accessing!public! !
 !RowanService categoriesFor: #stonOn:!must not strip!public! !
 !RowanService categoriesFor: #superclassListUpdate:!public!updating! !
 !RowanService categoriesFor: #toolTip!printing!public! !
-!RowanService categoriesFor: #transport!accessing!public! !
 !RowanService categoriesFor: #transport:!accessing!public! !
 !RowanService categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
 !RowanService categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !
@@ -384,18 +346,15 @@ new
 
 on: aSession
 	| inst |
+	self halt. 
 	inst := self new.
 	inst transport: aSession.
 	inst initializeRemoteService.
-	^inst!
-
-sampleDefinitions
-	^self new sampleDefinitions! !
+	^inst! !
 !RowanService class categoriesFor: #command:withArgs:!instance creation!public! !
 !RowanService class categoriesFor: #defaultIcon!private! !
 !RowanService class categoriesFor: #defaultIconName!private! !
 !RowanService class categoriesFor: #icon!private! !
 !RowanService class categoriesFor: #new!initialization!public! !
 !RowanService class categoriesFor: #on:!initialization!public! !
-!RowanService class categoriesFor: #sampleDefinitions!examples!public! !
 

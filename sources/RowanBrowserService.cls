@@ -74,6 +74,9 @@ prepareForReplication
 	removedMethods
 		ifNotNil: [removedMethods do: [:methodService | methodService prepareForReplication]]!
 
+projects
+	^projects!
+
 projectsUpdate: presenter
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
 	self updateList: presenter whilePreservingSelections: projects!
@@ -124,6 +127,7 @@ stonOn: stonWriter
 !RowanBrowserService categoriesFor: #methodsRemoved:!public!updating! !
 !RowanBrowserService categoriesFor: #name!accessing!public! !
 !RowanBrowserService categoriesFor: #prepareForReplication!public!replication! !
+!RowanBrowserService categoriesFor: #projects!accessing!public! !
 !RowanBrowserService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanBrowserService categoriesFor: #releaseReferencedServices!public! !
 !RowanBrowserService categoriesFor: #reloadProjects:presenter:!Jadeite!public! !

@@ -139,20 +139,6 @@ newTextView
 		alignment: #center.
 	^edit!
 
-packageNames
-	| arrayOop names size |
-	self rowanFixMe.	"slow slow slow"
-	arrayOop := transport send: #packageNames to: remoteService.
-	names := OrderedCollection new.
-	size := transport send: #size to: arrayOop.
-	1 to: size do:[:idx |
-		names add:  (transport send: #at: to: arrayOop withAll: (Array with: idx) )].
-	^names!
-
-packageNameString
-
-	^transport send: #packageNameString to: remoteService  !
-
 projectLogUsing: presenter
 	| textEdit projectName queryService |
 	projectName := self name.
@@ -168,13 +154,6 @@ projectPackagesUpdate: presenter browser: browser
 		ifNone: [^self].
 	self updateList: presenter whilePreservingSelections: packages.
 	browser isClassSelected ifFalse: [self emptyFilterListsIn: browser]!
-
-projects
-	| oops services |
-	oops := transport send: #projects to: remoteService.
-	services := self createClientFrom: oops.
-	services := services asSortedCollection: [:a :b | a name < b name].
-	^services!
 
 projectSelectionUpdate: presenter
 	| newSelections |
@@ -215,18 +194,8 @@ removedProject: presenter
 	removedProject := presenter list detect: [:projectService | projectService name = name] ifNone: [].
 	removedProject ifNotNil: [presenter model remove: removedProject]!
 
-removeProjectNamed: projectName
-
-	transport send: #removeProjectNamed: to: remoteService withAll: (Array with: projectName)!
-
-removeSampleProject
-	self removeProjectNamed: self sampleProjectName!
-
 replicateFrom: newService
 	^self isProjectService ifTrue: [super replicateFrom: newService]!
-
-sampleProjectName
-	^transport send: #sampleProjectName to: remoteService!
 
 sha
 	^sha!
@@ -253,21 +222,15 @@ sha: anObject
 !RowanProjectService categoriesFor: #isSkew:!accessing!private! !
 !RowanProjectService categoriesFor: #loadProjectFrom:!presenter support!public! !
 !RowanProjectService categoriesFor: #newTextView!displaying!private! !
-!RowanProjectService categoriesFor: #packageNames!public!rowan! !
-!RowanProjectService categoriesFor: #packageNameString!public!rowan! !
 !RowanProjectService categoriesFor: #projectLogUsing:!presenter support!public! !
 !RowanProjectService categoriesFor: #projectPackagesUpdate:browser:!public!updating! !
-!RowanProjectService categoriesFor: #projects!public!rowan! !
 !RowanProjectService categoriesFor: #projectSelectionUpdate:!public!updating! !
 !RowanProjectService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanProjectService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanProjectService categoriesFor: #remoteDefaultProjectName!accessing!public! !
 !RowanProjectService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanProjectService categoriesFor: #removedProject:!public!updating! !
-!RowanProjectService categoriesFor: #removeProjectNamed:!public! !
-!RowanProjectService categoriesFor: #removeSampleProject!public! !
 !RowanProjectService categoriesFor: #replicateFrom:!public!updating! !
-!RowanProjectService categoriesFor: #sampleProjectName!public! !
 !RowanProjectService categoriesFor: #sha!accessing!public! !
 !RowanProjectService categoriesFor: #sha:!accessing!public! !
 
