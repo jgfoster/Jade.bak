@@ -90,9 +90,13 @@ TestResource subclass: #JadeiteTestResource
 !MessageBox class methodsFor!
 
 new
+	"#JadeiteTestsActive should never be present without the tests loaded"
+
 	| testsActive |
 	testsActive := Smalltalk at: #JadeiteTestsActive ifAbsent: [^self basicNew initialize].
-	^testsActive ifTrue: [TestMessageBox basicNew initialize] ifFalse: [self basicNew initialize]! !
+	^testsActive
+		ifTrue: [(Smalltalk at: #TestMessageBox) basicNew initialize]
+		ifFalse: [self basicNew initialize] ! !
 !MessageBox class categoriesFor: #new!instance creation!public! !
 
 !TestResource class methodsFor!
