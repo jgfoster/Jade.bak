@@ -355,36 +355,23 @@ x halt.
 testBug82
 	"Terminate a process other than the primary one"
 
-	| confirmProcess |
-	gsProcess := session executeString: '[(Delay forSeconds: 9999) wait] fork asOop'.
-	self 
+	self testsIssue: #issue82 withTitle: 'Pressing Terminate button gives walkback'.
+	TestMessageBox enableJadeiteTestMessageBox.
+	
+	[gsProcess := session executeString: '[(Delay forSeconds: 9999) wait] fork asOop'.
+	self
 		openDebuggerOn: 'nil halt';
 		assert: debugger _processList size equals: 2;
 		assert: debugger processListPresenter list size equals: 2;
 		assert: (debugger processListPresenter selectionByIndex: 2) notNil;
-		assert: (debugger _processList at: 2) oopType value equals: gsProcess;
-		yourself.
-	confirmProcess := [
-		[
-			((View active printString subStrings: $') at: 2) = 'GemStone/S Process Termi...'.
-		] whileFalse: [
-			(Delay forMilliseconds: 100) wait.
-		].
-		View active
-			postMessage: 	16r100 "WM_KEYDOWN" 	wParam: 13 "VK_RETURN" lParam: 0;
-			postMessage: 	16r101 "WM_KEYUP" 		wParam: 13 "VK_RETURN" lParam: 0;
-			yourself.
-	] fork.
-	[
-		self
-			assert: debugger terminateProcess notNil;
-			assert: debugger _processList size equals: 1;
-			assert: debugger processListPresenter list size equals: 1;
-			debuggerDo: [debugger resumeProcess];
-			yourself.
-	] ensure: [
-		confirmProcess terminate.
-	].!
+		assert: (debugger _processList at: 2) oopType value equals: gsProcess.
+	TestMessageBox plannedResult: #yes.	"confirm we want to terminate process"
+	self
+		assert: debugger terminateProcess notNil;
+		assert: debugger _processList size equals: 1;
+		assert: debugger processListPresenter list size equals: 1;
+		debuggerDo: [debugger resumeProcess]]
+			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
 testContextMenu
 	| error time view |
