@@ -436,27 +436,40 @@ testContextMenu - counter = ' , counter printString]
 		yourself!
 
 testDebuggerCopyToClipboard
-	| confirmProcess |
-	self rowanFixMe. "test broken" 
-	"self testsIssue: #issue120 withTitle: 'Debugger, edits in text, copy to clipboard, get error'.
-	self openDebuggerOn: 'nil halt'.
+	"Make sure to turn off test message box if you need to
+	debug this test. "
+
+	self testsIssue: #issue120 withTitle: 'Debugger, edits in text, copy to clipboard, get error'.
+	TestMessageBox enableJadeiteTestMessageBox.
+	
+	[self openDebuggerOn: 'nil halt'.
 	self assert: debugger frameListPresenter list first equals: 'Executed Code  @2 line 1'.
+	'notCopiedYet' copyToClipboard.
+	self assert: Clipboard current getText = 'notCopiedYet'.
 	debugger methodSourcePresenter documentPresenter value: 'new text'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
+	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
 	debugger frameListPresenter selection: (debugger frameListPresenter list at: 2).
-	confirmProcess := 
-			[[((View active printString subStrings: $') at: 2) = 'Untitled*']
-				whileFalse: [(Delay forMilliseconds: 100) wait].
-			View active
-				postMessage: 16r100
-					wParam: 13
-					lParam: 0;
-				postMessage: 16r101
-					wParam: 13
-					lParam: 0;
-				yourself	]
-					fork.
-	[self assert: Clipboard current getText = 'new text'] ensure: [confirmProcess terminate]"!
+	self assert: Clipboard current getText = 'new text']
+			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
+
+testDebuggerDoNotCopyToClipboard
+	"Make sure to turn off test message box if you need to
+	debug this test. "
+
+	self testsIssue: #issue120 withTitle: 'Debugger, edits in text, copy to clipboard, get error'.
+	TestMessageBox enableJadeiteTestMessageBox.
+	
+	[self openDebuggerOn: 'nil halt'.
+	self assert: debugger frameListPresenter list first equals: 'Executed Code  @2 line 1'.
+	'notCopiedYet' copyToClipboard.
+	self assert: Clipboard current getText = 'notCopiedYet'.
+	debugger methodSourcePresenter documentPresenter value: 'new text'.
+	debugger methodSourcePresenter documentPresenter view isModified: true.
+	TestMessageBox plannedResult: #no.	"reject offer to copy to clip board"
+	debugger frameListPresenter selection: (debugger frameListPresenter list at: 2).
+	self assert: Clipboard current getText = 'notCopiedYet']
+			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
 testErrorInPrintString
 	"https://github.com/ericwinger/Jade/issues/49"
@@ -525,6 +538,7 @@ testStackMenuEnablement
 !JadeiteDebuggerTestCase categoriesFor: #testBug82!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testContextMenu!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testDebuggerCopyToClipboard!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #testDebuggerDoNotCopyToClipboard!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testErrorInPrintString!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testSaveMethod!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testStackMenuEnablement!public!tests! !

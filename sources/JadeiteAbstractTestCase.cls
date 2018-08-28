@@ -33,8 +33,7 @@ setUp
 !
 
 tearDown
-	super tearDown.
-!
+	super tearDown.!
 
 testsIssue: aSymbol withTitle: anObject
 	"send this to help identify which tests test which issues"

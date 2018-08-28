@@ -9,11 +9,14 @@ package classNames
 	add: #JadeiteDebuggerTestCase;
 	add: #JadeiteDictionaryBrowserTestCase;
 	add: #JadeiteInspectorTestCase;
+	add: #JadeiteMessageBoxTestCase;
 	add: #JadeiteProjectBrowserTestCase;
 	add: #JadeiteTestResource;
+	add: #TestMessageBox;
 	yourself.
 
 package methodNames
+	add: 'MessageBox class' -> #new;
 	add: 'TestResource class' -> #signalInitializationError;
 	yourself.
 
@@ -38,6 +41,11 @@ package!
 
 "Class Definitions"!
 
+MessageBox subclass: #TestMessageBox
+	instanceVariableNames: ''
+	classVariableNames: 'PlannedResult'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 TestCase subclass: #JadeiteAbstractTestCase
 	instanceVariableNames: 'session transcript'
 	classVariableNames: ''
@@ -58,6 +66,11 @@ JadeiteAbstractTestCase subclass: #JadeiteInspectorTestCase
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadeiteAbstractTestCase subclass: #JadeiteMessageBoxTestCase
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
 	instanceVariableNames: 'projectsBrowser dictionaryBrowser transcriptWritesWereEnabled'
 	classVariableNames: ''
@@ -73,6 +86,14 @@ TestResource subclass: #JadeiteTestResource
 
 
 "Loose Methods"!
+
+!MessageBox class methodsFor!
+
+new
+	| testsActive |
+	testsActive := Smalltalk at: #JadeiteTestsActive ifAbsent: [^self basicNew initialize].
+	^testsActive ifTrue: [TestMessageBox basicNew initialize] ifFalse: [self basicNew initialize]! !
+!MessageBox class categoriesFor: #new!instance creation!public! !
 
 !TestResource class methodsFor!
 
