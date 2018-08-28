@@ -435,6 +435,29 @@ testContextMenu - counter = ' , counter printString]
 		debuggerDo: [debugger resumeProcess];
 		yourself!
 
+testDebuggerCopyToClipboard
+	| confirmProcess |
+	self rowanFixMe. "test broken" 
+	"self testsIssue: #issue120 withTitle: 'Debugger, edits in text, copy to clipboard, get error'.
+	self openDebuggerOn: 'nil halt'.
+	self assert: debugger frameListPresenter list first equals: 'Executed Code  @2 line 1'.
+	debugger methodSourcePresenter documentPresenter value: 'new text'.
+	debugger methodSourcePresenter documentPresenter view isModified: true.
+	debugger frameListPresenter selection: (debugger frameListPresenter list at: 2).
+	confirmProcess := 
+			[[((View active printString subStrings: $') at: 2) = 'Untitled*']
+				whileFalse: [(Delay forMilliseconds: 100) wait].
+			View active
+				postMessage: 16r100
+					wParam: 13
+					lParam: 0;
+				postMessage: 16r101
+					wParam: 13
+					lParam: 0;
+				yourself	]
+					fork.
+	[self assert: Clipboard current getText = 'new text'] ensure: [confirmProcess terminate]"!
+
 testErrorInPrintString
 	"https://github.com/ericwinger/Jade/issues/49"
 
@@ -501,6 +524,7 @@ testStackMenuEnablement
 !JadeiteDebuggerTestCase categoriesFor: #testBug77!public! !
 !JadeiteDebuggerTestCase categoriesFor: #testBug82!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testContextMenu!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #testDebuggerCopyToClipboard!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testErrorInPrintString!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testSaveMethod!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testStackMenuEnablement!public!tests! !

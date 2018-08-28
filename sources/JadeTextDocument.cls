@@ -71,7 +71,7 @@ currentSelectionOrLine
 !
 
 editCopy
-	self activeTextEdit 
+	self activeTextEdit  
 		copySelection;
 		updateModel;
 		yourself.

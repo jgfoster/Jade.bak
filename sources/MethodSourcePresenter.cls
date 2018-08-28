@@ -182,33 +182,33 @@ stepPointAt: aPoint
 !
 
 update
-
-	| newSource string | 
+	| newSource string |
 	documentPresenter view cancelCallTip.
 	newSource := gsMethod source.
-	documentPresenter view isModified ifTrue: [
-		newSource = originalSource ifTrue: [^self].
-		(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!') ifTrue: [
-			originalSource value copyToClipboard.
-		].
-	].
+	documentPresenter view isModified
+		ifTrue: 
+			[newSource = originalSource ifTrue: [^self].
+			(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!')
+				ifTrue: 
+					[documentPresenter value isString
+						ifTrue: [documentPresenter value copyToClipboard	"come in through debugger"]
+						ifFalse: [documentPresenter value value copyToClipboard]]].
 	self setEmptyMethod.
 	gsMethod ifNil: [^self].
-	string := "package" ' -- ' , gsMethod category , ' -- ' "mcTimestamp".
+	string := ' -- ' , gsMethod category , ' -- '.	"package"	"mcTimestamp"
 	self statusBarText: string.
 	originalSource := newSource.
-	documentPresenter 
+	documentPresenter
 		value: originalSource;
 		isModified: false;
 		isReadOnly: gsMethod isReadOnly;
 		yourself.
-	documentPresenter view 
+	documentPresenter view
 		backcolor: JadeTextStyles default colorForNoEdits;
 		isEnabled: true;
 		yourself.
 	self updateMethodStepPoints.
-	currentSelector := gsMethod selector.
-!
+	currentSelector := gsMethod selector!
 
 updateMethodStepPoints
 
