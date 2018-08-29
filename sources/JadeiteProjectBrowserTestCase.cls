@@ -35,7 +35,7 @@ ensureRowanSample1Available
 
 ensureRowanSample1Loaded
 	| selections |
-	self selectServicesNamed: (Array with: self sampleClassName)
+	self selectServicesNamed: (Array with: self sampleProjectName)
 		in: self projectsPresenter projectListPresenter.
 	selections := self projectsPresenter projectListPresenter selections.
 	RowanBrowserService new reloadProjects: selections presenter: self projectsPresenter.
@@ -78,7 +78,7 @@ rowanProjectsHome
 rowanSample1Path
 	^'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston'!
 
-sampleClassName
+sampleProjectName
 	^'RowanSample1'!
 
 saveSampleMethod
@@ -157,15 +157,16 @@ tearDown
 	transcriptWritesWereEnabled ifTrue: [transcript flipTranscript]!
 
 test_addRemoveCategory
-
 	self ensureRowanSample1Available.
-	self selectRowanSample1Class.
+	
+	[self selectRowanSample1Class.
 	self deny: (self categoryListPresenter list includes: 'jadeite test').
 	self projectsPresenter basicAddMethodCategory: 'jadeite test'.
 	self assert: (self categoryListPresenter list includes: 'jadeite test').
 	self assert: self categoryListPresenter selection = 'jadeite test'.
 	self projectsPresenter basicRemoveMethodCategories.
-	self deny: (self categoryListPresenter list includes: 'jadeite test')!
+	self deny: (self categoryListPresenter list includes: 'jadeite test')]
+			ensure: [self unloadSampleProject]!
 
 test_classListNotBlank
 	| rowanClass |
@@ -229,9 +230,9 @@ test_goToDefinedPackageFromHierarchy
 test_hierarchySelectTwoBrowsers
 	| secondBrowser firstBrowser |
 	self testsIssue: #issue122 withTitle: 'Hierarchy tab selection updates incorrectly.'.
-	self ensureRowanSample1Available.
 	firstBrowser := projectsBrowser.	"for easier reading"
 	secondBrowser := self openWindow: [transcript openJadeiteProjectsBrowser].
+	self ensureRowanSample1Available.
 	[self selectRowanSample1Class.
 	self selectServicesNamed: (Array with: 'RowanSample1')
 		in: secondBrowser currentCard projectListPresenter.
@@ -245,11 +246,15 @@ test_hierarchySelectTwoBrowsers
 	self assert: (firstBrowser currentCard classHierarchyPresenter isKindOf: TreePresenter).
 	self assert: secondBrowser currentCard classHierarchyPresenter selection name = 'RowanSample1Test'.
 	self assert: (secondBrowser currentCard classHierarchyPresenter isKindOf: TreePresenter)]
-			ensure: [secondBrowser destroy]!
+			ensure: 
+				[secondBrowser destroy.
+				self unloadSampleProject]!
 
 test_markDirty
 	| nonDefaultService |
-	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
+	self ensureRowanSample1Available.
+	
+	[self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
 	self projectsPresenter makeDefault.
 	self assert: self projectListPresenter selection displayName = 'RowanSample1*'.
 	nonDefaultService := self projectListPresenter list
@@ -260,7 +265,8 @@ test_markDirty
 	self projectsPresenter makeDefault.
 	nonDefaultService := self projectListPresenter list
 				detect: [:projectService | projectService name = 'RowanSample1'].
-	self assert: self projectListPresenter selection displayName = 'Rowan*'!
+	self assert: self projectListPresenter selection displayName = 'Rowan*']
+			ensure: [self unloadSampleProject]!
 
 test_openProjectsBrowser
 	"project browser opened in setup"
@@ -299,24 +305,26 @@ test_removeProject
 	self testsIssue: #issue129 withTitle: 'Expose unload project.'.
 	self ensureRowanSample1Available.
 	targetProject := self projectListPresenter list
-				detect: [:projectService | projectService name = self sampleClassName]
+				detect: [:projectService | projectService name = self sampleProjectName]
 				ifNone: [].
 	self denyIsNil: targetProject.
 	self projectListPresenter selection: targetProject.
-	self projectsPresenter basicUnloadProjects: (Array with: self sampleClassName).
+	self projectsPresenter basicUnloadProjects: (Array with: self sampleProjectName).
 	targetProject := self projectListPresenter list
-				detect: [:projectService | projectService name = self sampleClassName]
+				detect: [:projectService | projectService name = self sampleProjectName]
 				ifNone: [].
 	self assertIsNil: targetProject!
 
 test_saveMethod
 	self ensureRowanSample1Available.
-	self selectRowanSample1Class.
+	
+	[self selectRowanSample1Class.
 	(self categoryListPresenter list includes: 'test_saveMethod')
 		ifFalse: [self projectsPresenter basicAddMethodCategory: 'test_saveMethod'].
 	self saveSampleMethod.
 	self selectServicesNamed: (Array with: 'sampleMethod') in: self methodListPresenter.
-	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123!
+	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123]
+			ensure: [self unloadSampleProject]!
 
 test_selectMultiplePackages
 	self assert: self packageListPresenter list isEmpty.
@@ -347,6 +355,9 @@ test_simpleHierarchyTest
 	self selectClassListTab.
 	self assert: self projectsPresenter classListPresenter selection name = 'RowanProjectService'!
 
+unloadSampleProject
+	self projectsPresenter basicUnloadProjects: (Array with: self sampleProjectName)!
+
 waitForPresenter: presenter
 	[presenter list isEmpty] whileTrue: [(Delay forMilliseconds: 50) wait]! !
 !JadeiteProjectBrowserTestCase categoriesFor: #categoryListPresenter!presenter!private! !
@@ -366,7 +377,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectsHome!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanSample1Path!constants!private! !
-!JadeiteProjectBrowserTestCase categoriesFor: #sampleClassName!constants!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #sampleProjectName!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectCategoriesNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
@@ -393,6 +404,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultiplePackages!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultipleProjects!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_simpleHierarchyTest!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #unloadSampleProject!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #waitForPresenter:!private!selection! !
 
 !JadeiteProjectBrowserTestCase class methodsFor!
