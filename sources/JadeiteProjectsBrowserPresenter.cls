@@ -67,7 +67,11 @@ basicUnloadProjects: projectNames
 	browserService
 		command: #unloadProjectsNamed:;
 		commandArgs: (Array with: projectNames).
-	self issueCommand: (Array with: browserService)!
+	self issueCommand: (Array with: browserService).
+	packageListPresenter model: Array new.
+	classListPresenter model: Array new.
+	categoryListPresenter model: Array new.
+	methodListPresenter model: Array new!
 
 browseClassReferences
 	self browseClassReferences: (classListPresenter selectionIfNone: [^self]) name!

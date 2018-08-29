@@ -309,11 +309,21 @@ test_removeProject
 				ifNone: [].
 	self denyIsNil: targetProject.
 	self projectListPresenter selection: targetProject.
-	self projectsPresenter basicUnloadProjects: (Array with: self sampleProjectName).
+	self packageListPresenter selection: self packageListPresenter list first.
+	self classListPresenter selection: self classListPresenter list first.
+	self categoryListPresenter selection: self categoryListPresenter list first.
+	self methodListPresenter selection: self methodListPresenter list first.
+	self projectsPresenter basicUnloadProjects: (Array with: self projectListPresenter selection name).
 	targetProject := self projectListPresenter list
 				detect: [:projectService | projectService name = self sampleProjectName]
 				ifNone: [].
-	self assertIsNil: targetProject!
+	self assertIsNil: targetProject.
+	"make sure browser cleans itself up"
+	self assert: self projectListPresenter selections isEmpty.
+	self assert: self packageListPresenter list isEmpty.
+	self assert: self classListPresenter list isEmpty.
+	self assert: self categoryListPresenter list isEmpty.
+	self assert: self methodListPresenter list isEmpty!
 
 test_saveMethod
 	self ensureRowanSample1Available.
