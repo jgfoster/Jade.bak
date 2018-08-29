@@ -41,8 +41,6 @@ classHierarchyUpdate: presenter browser: browser
 	presenter model: treeModel.
 	presenter view expandAll. 
 	selection := (treeModel asBag detect: [:svc | svc name = name asSymbol]). 
-	selection hierarchyServices: nil. 
-	hierarchyServices := nil. 
 	presenter selection: selection
 !
 

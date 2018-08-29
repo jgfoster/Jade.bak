@@ -48,7 +48,6 @@ register: presenter selector: selector
 register: presenter selector: selector browser: browser
 	"send the update to the presenter so that when the presenter gets
 	removed, it's events go with it."
-
 	self
 		when: #updateReady
 		send: #update:withSelector:browser:
@@ -78,7 +77,6 @@ updates
 updates: aCollection
 	"don't just reinitialize the updates instance variable because
 	presenters are registered to that object"
-
 	updates removeAll: updates.
 	updates addAll: aCollection.
 	self updateReady!

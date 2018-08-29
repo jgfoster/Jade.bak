@@ -136,6 +136,9 @@ name
 name: aString
 	name := aString.!
 
+notRowanizedPackageName
+	^'(NONE)'!
+
 packagesUpdate: presenter!
 
 prepareForReplication
@@ -271,6 +274,7 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #methodUpdate:!public!updating! !
 !RowanService categoriesFor: #name!accessing!public! !
 !RowanService categoriesFor: #name:!accessing!public! !
+!RowanService categoriesFor: #notRowanizedPackageName!displaying!public! !
 !RowanService categoriesFor: #packagesUpdate:!public!updating! !
 !RowanService categoriesFor: #prepareForReplication!public!replication! !
 !RowanService categoriesFor: #printOn:!printing!public! !

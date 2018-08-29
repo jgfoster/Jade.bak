@@ -101,11 +101,11 @@ selectCategoriesNamed: categories
 selectClassListTab
 	^self projectsPresenter classHierarchyTabs firstCard!
 
-selectClassListTabIn: presenter
-	^presenter classHierarchyTabs firstCard!
+selectHierarchyTab
+	self selectHierarchyTabIn: self projectsPresenter!
 
 selectHierarchyTabIn: presenter
-	^presenter classHierarchyTabs lastCard!
+	presenter classHierarchyTabs lastCard!
 
 selectRowanSample1Class
 	"big assumption - RowanSample1 class will allways be in RowanSample1 project"
@@ -153,13 +153,28 @@ test_addRemoveCategory
 	self projectsPresenter basicRemoveMethodCategories.
 	self deny: (self categoryListPresenter list includes: 'jadeite test')!
 
+test_classListNotBlank
+	| rowanClass |
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Services-Core') in: self packageListPresenter.
+	self selectServicesNamed: (Array with: 'RowanClassService') in: self classListPresenter.
+	self selectHierarchyTabIn: self projectsPresenter.
+	self assert: self projectsPresenter classHierarchyPresenter selection name = 'RowanClassService'.
+	self selectServicesNamed: #('Rowan-Kernel') in: self packageListPresenter.
+	self assert: self projectsPresenter classHierarchyPresenter model isEmpty.  "for now"
+	self selectClassListTab.
+	self assert: self projectsPresenter classListPresenter list notEmpty. 
+	rowanClass := self projectsPresenter classListPresenter list detect:[:classService | classService name = 'Rowan'] ifNone:[].
+	self denyIsNil: rowanClass
+	
+	!
+
 test_hierarchySelectTwoBrowsers
 	| secondBrowser firstBrowser |
 	self testsIssue: #issue122 withTitle: 'Hierarchy tab selection updates incorrectly.'.
 	self ensureRowanSample1Available.
 	firstBrowser := projectsBrowser.	"for easier reading"
 	secondBrowser := self openWindow: [transcript openJadeiteProjectsBrowser].
-	
 	[self selectRowanSample1Class.
 	self selectServicesNamed: (Array with: 'RowanSample1')
 		in: secondBrowser currentCard projectListPresenter.
@@ -244,6 +259,22 @@ test_selectMultipleProjects
 	self selectServicesNamed: self rowanProjectNames in: self projectListPresenter.
 	self assert: self projectListPresenter selections size = 4!
 
+test_simpleHierarchyTest
+	"just make sure that we can select different classes and the hierarchy browser updates"
+
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Services-Core') in: self packageListPresenter.
+	self selectServicesNamed: (Array with: 'RowanService') in: self classListPresenter.
+	self selectHierarchyTab.
+	self assert: self projectsPresenter classHierarchyPresenter selection name = 'RowanService'.
+	self selectClassListTab.
+	self assert: self projectsPresenter classListPresenter selection name = 'RowanService'.
+	self selectServicesNamed: (Array with: 'RowanProjectService') in: self classListPresenter.
+	self selectHierarchyTab.
+	self assert: self projectsPresenter classHierarchyPresenter selection name = 'RowanProjectService'.
+	self selectClassListTab.
+	self assert: self projectsPresenter classListPresenter selection name = 'RowanProjectService'!
+
 waitForPresenter: presenter
 	[presenter list isEmpty] whileTrue: [(Delay forMilliseconds: 50) wait]! !
 !JadeiteProjectBrowserTestCase categoriesFor: #categoryListPresenter!presenter!private! !
@@ -266,7 +297,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectCategoriesNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
-!JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTabIn:!private!selection! !
+!JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTabIn:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectRowanSample1Class!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectServicesNamed:in:!private!selection! !
@@ -274,6 +305,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
@@ -282,6 +314,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultiplePackages!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultipleProjects!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_simpleHierarchyTest!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #waitForPresenter:!private!selection! !
 
 !JadeiteProjectBrowserTestCase class methodsFor!

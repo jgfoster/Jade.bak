@@ -15,19 +15,20 @@ RowanPackageService comment: ''!
 	^name = packageService name!
 
 classes: anArray
-
 	classes := anArray!
 
 classesUpdate: presenter browser: browser
 	"If the selected packages have the same class defined and extended, show the defined class"
 
 	| condensedList |
-	browser isClassListTabSelected ifFalse: [^self].
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
 	browser packageListPresenter selections detect: [:packageService | packageService name = name]
 		ifNone: [^self].
 	condensedList := self condenseExtensions: presenter.
 	self updateList: presenter whilePreservingSelections: condensedList.
+	presenter list
+		do: [:classService | classService selectedPackageServices: browser packageListPresenter selections].
+	presenter view invalidate. 
 	browser isClassSelected ifFalse: [self emptyFilterListsIn: browser]!
 
 condenseExtensions: presenter

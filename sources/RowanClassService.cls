@@ -26,10 +26,10 @@ categories
 	^categories!
 
 classHierarchyUpdate: presenter browser: browser
-	| treeModel selection |
+	| treeModel |
 	hierarchyServices ifNil: [^self].
 	browser isClassListTabSelected ifTrue: [^self].
-	presenter selections isEmpty ifFalse: [(presenter selections includes: self) ifFalse: [^self]].
+	presenter selections notEmpty ifTrue: [(presenter selections includes: self) ifFalse: [^self]].
 	treeModel := TreeModel new
 				searchPolicy: SearchPolicy equality;
 				reset.
@@ -39,12 +39,10 @@ classHierarchyUpdate: presenter browser: browser
 				addHierarchyService: classService
 				to: treeModel
 				withParent: nil].
+	treeModel asBag do:[:classService | classService selectedPackageServices: browser packageListPresenter selections].
 	presenter model: treeModel.
 	presenter view expandAll.
-	selection := treeModel asBag detect: [:svc | svc name = name].
-	selection hierarchyServices: nil.
-	hierarchyServices := nil.
-	presenter selection: selection!
+!
 
 classMethodsUpdate: presenter browser: browser
 	| classPresenter |
@@ -100,7 +98,10 @@ displayString
 	^displayString!
 
 displayStringFor: displayThing
-	isExtension ifTrue: [displayThing forecolor: Color darkMagenta ].
+	definedPackageName = self notRowanizedPackageName
+		ifFalse: 
+			[(self selectedPackageNames includes: definedPackageName)
+				ifFalse: [displayThing forecolor: Color darkMagenta]].
 	^self displayString!
 
 excludedInstVars
@@ -135,12 +136,6 @@ filterUpdate: presenter browser: browser
 
 hash
 	^self name hash!
-
-hierarchyServices
-	^hierarchyServices!
-
-hierarchyServices: anObject
-	hierarchyServices := anObject!
 
 initialize
 	
@@ -192,11 +187,6 @@ projectName
 
 releaseReferencedServices
 	| copy |
-	selectedPackageServices
-		ifNotNil: 
-			[copy := selectedPackageServices copy.
-			selectedPackageServices := Array new.
-			copy do: [:service | service releaseReferencedServices]].
 	methods
 		ifNotNil: 
 			[copy := methods copy.
@@ -213,12 +203,17 @@ removedClass: presenter
 	presenter model remove: removal. !
 
 replicateFrom: newService
-	newService isClassService ifTrue: [^super replicateFrom: newService]!
+	newService isClassService ifTrue: [^super replicateFrom: newService].!
 
 selectedMethods
 
 	^selectedMethods
 		!
+
+selectedPackageNames
+	^selectedPackageServices
+		ifNil: [Array new]
+		ifNotNil: [selectedPackageServices collect: [:packageService | packageService name]]!
 
 selectedPackageServiceNames
 	^selectedPackageServices collect: [:pkgService | pkgService name]!
@@ -281,8 +276,8 @@ variables
 !RowanClassService categoriesFor: #definedPackageName!accessing!private! !
 !RowanClassService categoriesFor: #definedPackageName:!accessing!private! !
 !RowanClassService categoriesFor: #displayMethodsOn:!public!updating! !
-!RowanClassService categoriesFor: #displayString!printing!public! !
-!RowanClassService categoriesFor: #displayStringFor:!printing!public! !
+!RowanClassService categoriesFor: #displayString!displaying!public! !
+!RowanClassService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanClassService categoriesFor: #excludedInstVars!public!ston! !
 !RowanClassService categoriesFor: #filters!accessing!public! !
 !RowanClassService categoriesFor: #filters:!accessing!public! !
@@ -290,8 +285,6 @@ variables
 !RowanClassService categoriesFor: #filterType:!accessing!private! !
 !RowanClassService categoriesFor: #filterUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #hash!comparing!public! !
-!RowanClassService categoriesFor: #hierarchyServices!accessing!private! !
-!RowanClassService categoriesFor: #hierarchyServices:!accessing!private! !
 !RowanClassService categoriesFor: #initialize!Init / Release!public! !
 !RowanClassService categoriesFor: #isClassService!public!testing! !
 !RowanClassService categoriesFor: #isDefined!public!testing! !
@@ -309,6 +302,7 @@ variables
 !RowanClassService categoriesFor: #removedClass:!public!updating! !
 !RowanClassService categoriesFor: #replicateFrom:!public!replication! !
 !RowanClassService categoriesFor: #selectedMethods!accessing!private! !
+!RowanClassService categoriesFor: #selectedPackageNames!private! !
 !RowanClassService categoriesFor: #selectedPackageServiceNames!private!updating! !
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
