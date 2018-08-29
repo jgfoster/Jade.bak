@@ -125,6 +125,17 @@ selectServicesNamed: anArray in: presenter
 						add: service;
 						yourself)]!
 
+selectTreeServicesNamed: anArray in: presenter
+	presenter resetSelection.
+	anArray do: 
+			[:name |
+			| service |
+			service := presenter model asBag detect: [:svc | svc name = name]
+						ifNone: [self error: 'Tree element ' , name , ' not found'].
+			presenter selections: (presenter selections asOrderedCollection
+						add: service;
+						yourself)]!
+
 serviceNamed: name in: presenter
 	| service |
 	service := presenter list detect: [:service | service name = name] ifNone: [].
@@ -168,6 +179,23 @@ test_classListNotBlank
 	self denyIsNil: rowanClass
 	
 	!
+
+test_extensionColoringInHierarchy
+	| testClass |
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Specifications') in: self packageListPresenter.
+	self selectServicesNamed: (Array with: 'RwPlatformSpecification') in: self classListPresenter.
+	testClass := self classListPresenter list
+				detect: [:classService | classService name = 'RwGemStoneSpecification']
+				ifNone: [].
+	self assertIsNil: testClass.	"Our guy is an extension"
+	self selectHierarchyTab.
+	self
+		assert: self projectsPresenter classHierarchyPresenter selection name = 'RwPlatformSpecification'.
+	self deny: self projectsPresenter classHierarchyPresenter selection shouldColorAsExtension.
+	self selectTreeServicesNamed: (Array with: 'RwGemStoneSpecification')
+		in: self projectsPresenter classHierarchyPresenter.
+	self assert: self projectsPresenter classHierarchyPresenter selection shouldColorAsExtension!
 
 test_hierarchySelectTwoBrowsers
 	| secondBrowser firstBrowser |
@@ -301,11 +329,13 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTabIn:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectRowanSample1Class!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectServicesNamed:in:!private!selection! !
+!JadeiteProjectBrowserTestCase categoriesFor: #selectTreeServicesNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #serviceNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_extensionColoringInHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !

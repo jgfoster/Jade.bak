@@ -98,10 +98,7 @@ displayString
 	^displayString!
 
 displayStringFor: displayThing
-	definedPackageName = self notRowanizedPackageName
-		ifFalse: 
-			[(self selectedPackageNames includes: definedPackageName)
-				ifFalse: [displayThing forecolor: Color darkMagenta]].
+	self shouldColorAsExtension ifTrue: [displayThing forecolor: Color darkMagenta].
 	^self displayString!
 
 excludedInstVars
@@ -228,6 +225,11 @@ shouldClearMethods
 
 	^(#(#removeMethods) includes: command) not!
 
+shouldColorAsExtension
+	^definedPackageName = self notRowanizedPackageName
+		ifTrue: [false]
+		ifFalse: [(self selectedPackageNames includes: definedPackageName) not]!
+
 stonOn: stonWriter
 	| instanceVariableNames |
 	(instanceVariableNames := self class allInstVarNames reject: [:iv | self excludedInstVars includes: iv]) isEmpty
@@ -307,6 +309,7 @@ variables
 !RowanClassService categoriesFor: #selectedPackageServices!accessing!private! !
 !RowanClassService categoriesFor: #selectedPackageServices:!accessing!private! !
 !RowanClassService categoriesFor: #shouldClearMethods!public!replication!testing! !
+!RowanClassService categoriesFor: #shouldColorAsExtension!public!testing! !
 !RowanClassService categoriesFor: #stonOn:!must not strip!public!ston! !
 !RowanClassService categoriesFor: #template!accessing!private! !
 !RowanClassService categoriesFor: #template:!accessing!private! !
