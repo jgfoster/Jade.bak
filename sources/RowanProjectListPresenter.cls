@@ -134,7 +134,7 @@ pushToGit
 	projectServices do: [:service | service command: #pushToGit].
 	self issueCommand: projectServices!
 
-unloadProject
+unloadProjects
 	MessageBox notify: 'This feature not yet implemented'!
 
 writeProject
@@ -166,6 +166,6 @@ writeProject
 !RowanProjectListPresenter categoriesFor: #projectLog!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #pullFromGit!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #pushToGit!project menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #unloadProject!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #unloadProjects!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #writeProject!project menu handlers!public! !
 

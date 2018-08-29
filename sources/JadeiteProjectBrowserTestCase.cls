@@ -35,7 +35,7 @@ ensureRowanSample1Available
 
 ensureRowanSample1Loaded
 	| selections |
-	self selectServicesNamed: (Array with: 'RowanSample1')
+	self selectServicesNamed: (Array with: self sampleClassName)
 		in: self projectsPresenter projectListPresenter.
 	selections := self projectsPresenter projectListPresenter selections.
 	RowanBrowserService new reloadProjects: selections presenter: self projectsPresenter.
@@ -77,6 +77,9 @@ rowanProjectsHome
 
 rowanSample1Path
 	^'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston'!
+
+sampleClassName
+	^'RowanSample1'!
 
 saveSampleMethod
 
@@ -291,6 +294,21 @@ test_projectRemoved
 	sampleProject := self projectNamed: 'RowanSample1'.
 	self assertIsNil: sampleProject!
 
+test_removeProject
+	| targetProject |
+	self testsIssue: #issue129 withTitle: 'Expose unload project.'.
+	self ensureRowanSample1Available.
+	targetProject := self projectListPresenter list
+				detect: [:projectService | projectService name = self sampleClassName]
+				ifNone: [].
+	self denyIsNil: targetProject.
+	self projectListPresenter selection: targetProject.
+	self projectsPresenter basicUnloadProjects: (Array with: self sampleClassName).
+	targetProject := self projectListPresenter list
+				detect: [:projectService | projectService name = self sampleClassName]
+				ifNone: [].
+	self assertIsNil: targetProject!
+
 test_saveMethod
 	self ensureRowanSample1Available.
 	self selectRowanSample1Class.
@@ -345,9 +363,10 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #projectListPresenter!presenter!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectsPresenter!presenter!private!project support! !
-!JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!private!project support! !
+!JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectsHome!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanSample1Path!constants!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #sampleClassName!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectCategoriesNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
@@ -369,6 +388,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_projectRemoved!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_removeProject!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultiplePackages!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultipleProjects!public!test! !

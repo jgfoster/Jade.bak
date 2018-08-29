@@ -76,7 +76,10 @@ projects
 	^projects!
 
 projectsUpdate: presenter
+	| removals |
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
+	removals := presenter list select:[:projectService | (projects includes: projectService) not]. 
+	presenter model removeAll: removals. 
 	self updateList: presenter whilePreservingSelections: projects!
 
 releaseReferencedServices

@@ -58,7 +58,16 @@ basicRemoveMethods
 	| service |
 	service := classListPresenter selectionIfNone: [^self].
 	self setClassMeta.
-	self removeMethods: (Array with: service)!
+	self removeMethods: (Array with: service).
+	self maybeRefreshFromServer. !
+
+basicUnloadProjects: projectNames
+	| browserService |
+	browserService := RowanBrowserService new.
+	browserService
+		command: #unloadProjectsNamed:;
+		commandArgs: (Array with: projectNames).
+	self issueCommand: (Array with: browserService)!
 
 browseClassReferences
 	self browseClassReferences: (classListPresenter selectionIfNone: [^self]) name!
@@ -516,6 +525,14 @@ makeDefault
 	RowanProjectService defaultProjectName: projectService name.
 	projectListPresenter view invalidate. !
 
+maybeRefreshFromServer
+	"we don't always want to update from the server
+	after every action. However, if we've performed
+	an operation that may have dirtied our project, 
+	do a refresh."
+
+	(projectListPresenter selectionIfNone: [^self]) isDirty ifFalse: [self refreshFromServer]!
+
 methodListPresenter
 	^methodListPresenter!
 
@@ -680,7 +697,7 @@ projectMenuStrings
 				makeDefault;
 				cloneProject;
 				loadProjects;
-				unloadProject;
+				unloadProjects;
 				pullFromGit;
 				gitCommit;
 				pushToGit;
@@ -689,7 +706,7 @@ projectMenuStrings
 				checkout;
 				projectLog;
 				refresh].
-	^#('Projects' '&Find Class.../Ctrl+Shift+F/findClass' '&Make Default//makeDefault' '-' 'Clone Git Project ...//cloneProject' 'Load//loadProjects' 'Unload//unloadProject' '-' 'Pull from Git ...//pullFromGit' 'Commit ...//gitCommit' 'Push to Git ...//pushToGit' '-' '&Changes ...//projectChanges' 'Write ...//writeProject' 'Checkout ...//checkout' '-' 'Log//projectLog' '&Refresh//refreshFromServer')!
+	^#('Projects' '&Find Class.../Ctrl+Shift+F/findClass' '&Make Default//makeDefault' '-' 'Clone Git Project ...//cloneProject' 'Load//loadProjects' 'Unload//unloadProjects' '-' 'Pull from Git ...//pullFromGit' 'Commit ...//gitCommit' 'Push to Git ...//pushToGit' '-' '&Changes ...//projectChanges' 'Write ...//writeProject' 'Checkout ...//checkout' '-' 'Log//projectLog' '&Refresh//refreshFromServer')!
 
 projectTabLabel
 	"Selections get mixed up switching between system presenters unless the tabs
@@ -1140,8 +1157,20 @@ textTabs
 unloadPackage
 	MessageBox notify: 'This feature is not yet available'!
 
-unloadProject
-	MessageBox notify: 'This feature not yet implemented'!
+unloadProjects
+	| projectNames ws |
+	projectNames := projectListPresenter selections collect: [:projectService | projectService name].
+	projectNames isEmpty ifTrue: [^self].
+	ws := WriteStream on: String new.
+	projectNames do: 
+			[:projectName |
+			ws
+				space;
+				nextPutAll: projectName].
+	(MessageBox
+		confirm: 'Really unload project(s) - ' , ws contents , '?  You will lose any unsaved changes!! '
+		caption: 'UNLOAD PROJECTS WARNING!!') ifFalse: [^self].
+	self basicUnloadProjects: projectNames!
 
 updateAfterFindClass: classService
 	| projectService packageService updatedClassService |
@@ -1378,6 +1407,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicAddMethodCategory:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethodCategories!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers support!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #basicUnloadProjects:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementors!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementorsOf:!public!queries! !
@@ -1430,6 +1460,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProjects!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #maybeRefreshFromServer!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menu handlers support!private! !
@@ -1488,7 +1519,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabChanged!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabs!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #unloadPackage!menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #unloadProject!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #unloadProjects!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateAfterFindClass:!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateClasses!event handlers!public!updating! !
