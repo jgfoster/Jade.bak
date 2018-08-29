@@ -197,6 +197,32 @@ test_extensionColoringInHierarchy
 		in: self projectsPresenter classHierarchyPresenter.
 	self assert: self projectsPresenter classHierarchyPresenter selection shouldColorAsExtension!
 
+test_goToDefinedPackageFromClassList
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Services-Extensions') in: self packageListPresenter.
+	self selectServicesNamed: (Array with: 'RwGsPlatform') in: self classListPresenter.
+	self assert: self projectsPresenter isClassListTabSelected.
+	self projectsPresenter gotoClassDefinedPackage.
+	self assert: self classListPresenter selection name = 'RwGsPlatform'.
+	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Core'!
+
+test_goToDefinedPackageFromHierarchy
+	| gotoClass |
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Specifications') in: self packageListPresenter.
+	self selectServicesNamed: (Array with: 'RwPlatformSpecification') in: self classListPresenter.
+	gotoClass := self classListPresenter list
+				detect: [:classService | classService name = 'RwGemStoneSpecification']
+				ifNone: [].
+	self assertIsNil: gotoClass.	"Our guy is an extension"
+	self selectHierarchyTab.
+	self deny: self projectsPresenter isClassListTabSelected.
+	self selectTreeServicesNamed: (Array with: 'RwGemStoneSpecification')
+		in: self projectsPresenter classHierarchyPresenter.
+	self projectsPresenter gotoClassDefinedPackage.
+	self assert: self projectsPresenter isClassListTabSelected.
+	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Specifications'!
+
 test_hierarchySelectTwoBrowsers
 	| secondBrowser firstBrowser |
 	self testsIssue: #issue122 withTitle: 'Hierarchy tab selection updates incorrectly.'.
@@ -336,6 +362,8 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_extensionColoringInHierarchy!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromClassList!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !

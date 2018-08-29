@@ -136,7 +136,7 @@ classesMenuStrings
 		'Set Compiler &Environment ...//setEnvironment'
 		'Run &Tests//runClassTests'
 		'-'
-		'Go To Defining Package//gotoClassPackage'
+		'Go To Defining Package//gotoClassDefinedPackage'
 	).
 !
 
@@ -423,12 +423,16 @@ gitCommit
 	MessageBox notify: 'Project ' , projectName , ' committed to local repository!!'.
 	self refreshFromServer. !
 
-gotoClassPackage
-	| newPackageSelection target |
-	target := classListPresenter selection definedPackageName ifNil: [classListPresenter selection packageName].
+gotoClassDefinedPackage
+	| newPackageSelection selection |
+	selection := self isClassListTabSelected
+				ifTrue: [classListPresenter selection]
+				ifFalse: [classHierarchyPresenter selection].
 	newPackageSelection := packageListPresenter list
-				detect: [:svc | svc name = target].
-	self selectPackage: newPackageSelection!
+				detect: [:svc | svc name = selection definedPackageName].
+	self selectClassListTab.
+	self selectPackage: newPackageSelection.
+	self updateAfterFindClass: selection!
 
 gotoMethodPackage
 	| newPackageSelection |
@@ -802,7 +806,7 @@ queryCommand: aCommandQuery
 		ifTrue: 
 			[aCommandQuery isEnabled: self methodListPresenter selectionOrNil notNil.
 			^true].
-	(#(#gotoClassPackage) includes: command)
+	(#(#gotoClassDefinedPackage) includes: command)
 		ifTrue: 
 			[aCommandQuery isEnabled: self classListPresenter selectionOrNil notNil.
 			^true].
@@ -836,20 +840,46 @@ queryCommand: aCommandQuery
 		ifTrue: 
 			[aCommandQuery isEnabled: self hasCommandHistoryForward.
 			^true].
-	command == #renameMethodCategory ifTrue: [aCommandQuery isEnabled: self hasExactlyOneCategorySelected.^true].
-	command == #removeMethodCategories ifTrue:  [aCommandQuery isEnabled: self hasCategorySelected .^true].
-
-	command == #cloneProject ifTrue:[aCommandQuery isEnabled: true. ^true].
-	command == #refreshFromServer ifTrue:[aCommandQuery isEnabled: true. ^true].
-	command == #findClass ifTrue:[aCommandQuery isEnabled: true. ^true].
-	
-	(command == #setEnvironment0 and: [environment == 0]) ifTrue: [aCommandQuery isChecked: true.^true].
-	(command == #setEnvironment1 and: [environment == 1]) ifTrue: [aCommandQuery isChecked: true.^true].
-	(command == #setEnvironment2 and: [environment == 2]) ifTrue: [aCommandQuery isChecked: true.^true].
-
-	(self projectMenuCommands includes: command) ifTrue:  [aCommandQuery isEnabled: projectListPresenter selections notEmpty. ^true].
-	(#(#browseHierarchyImplementors #browseHierarchySenders) includes: command) ifTrue: [aCommandQuery isEnabled: methodListPresenter selections notEmpty. ^true].
-
+	command == #renameMethodCategory
+		ifTrue: 
+			[aCommandQuery isEnabled: self hasExactlyOneCategorySelected.
+			^true].
+	command == #removeMethodCategories
+		ifTrue: 
+			[aCommandQuery isEnabled: self hasCategorySelected.
+			^true].
+	command == #cloneProject
+		ifTrue: 
+			[aCommandQuery isEnabled: true.
+			^true].
+	command == #refreshFromServer
+		ifTrue: 
+			[aCommandQuery isEnabled: true.
+			^true].
+	command == #findClass
+		ifTrue: 
+			[aCommandQuery isEnabled: true.
+			^true].
+	(command == #setEnvironment0 and: [environment == 0])
+		ifTrue: 
+			[aCommandQuery isChecked: true.
+			^true].
+	(command == #setEnvironment1 and: [environment == 1])
+		ifTrue: 
+			[aCommandQuery isChecked: true.
+			^true].
+	(command == #setEnvironment2 and: [environment == 2])
+		ifTrue: 
+			[aCommandQuery isChecked: true.
+			^true].
+	(self projectMenuCommands includes: command)
+		ifTrue: 
+			[aCommandQuery isEnabled: projectListPresenter selections notEmpty.
+			^true].
+	(#(#browseHierarchyImplementors #browseHierarchySenders) includes: command)
+		ifTrue: 
+			[aCommandQuery isEnabled: methodListPresenter selections notEmpty.
+			^true].
 	(self queryCommandHandlers: aCommandQuery) ifTrue: [^true].
 	(aCommandQuery canPerformAgainst: self) ifTrue: [aCommandQuery beEnabled].
 	^false	"There was no specific enablement of the command at this level"!
@@ -1001,6 +1031,9 @@ selectClass: classSelection
 	newClassSelection := classListPresenter list detect: [:svc | svc name = classSelection name]
 				ifNone: [].
 	^newClassSelection ifNotNil: [classListPresenter selection: newClassSelection]!
+
+selectClassListTab
+	classHierarchyTabs firstCard!
 
 selectedMethodCategory
 	^methodListPresenter selectionOrNil ifNotNil: [:methodService | methodService category]!
@@ -1385,14 +1418,14 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #getViews!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gitCommit!project menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassPackage!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassDefinedPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoMethodPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #hasCategorySelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #hasExactlyOneCategorySelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #initialize!initialize/release!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isClassSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #issueCommand:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProjects!project menu handlers!public! !
@@ -1437,6 +1470,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoryFrom:!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #selectClassListTab!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectedMethodCategory!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectedMethodName!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
