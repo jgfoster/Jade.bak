@@ -610,7 +610,8 @@ onDropOnMethodCategory: aSession
 		command: #moveMethods:to:;
 		commandArgs: (Array with: methodServices with: targetCategory).
 	self issueCommand: (Array with: classService).
-	self selectMethodsFrom: classService!
+	self selectMethodsFrom: classService.
+	self maybeRefreshFromServer. !
 
 onSetFocus: aView stack: aString
 
@@ -1430,17 +1431,17 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #comparisonTab!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #confirmCategoryRemoval:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createComponents!initialize/release!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchy!create schemantic wiring!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!overrides!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForClassList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForInstanceClassTabs!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForMethodCategoryList!create schemantic wiring!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForMethodFilterTabs!create schemantic wiring!overrides!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForMethodFilterTabs!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForMethodList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForPackageDictionaryTabs!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForPackageList!create schemantic wiring!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForProjectDictionaryList!create schemantic wiring!overrides!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForProjectDictionaryList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForProjectList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createSchematicWiringForVariableList!create schemantic wiring!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #createStateEntry!accessing!public!updating! !
@@ -1473,7 +1474,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnClassList:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnMethodCategory:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onSetFocus:stack:!event handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!overrides!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #onViewOpened!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #openDictionaryBrowserOn:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pkgsMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #populateFilterList!event handlers support!private!services!updating! !
@@ -1484,7 +1485,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectLog!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectMenu!menus!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #projectMenuCommands!menus!overrides!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #projectMenuCommands!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #projectTabLabel!displaying!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #pullFromGit!project menu handlers!public! !

@@ -309,6 +309,7 @@ test_removeProject
 				ifNone: [].
 	self denyIsNil: targetProject.
 	self projectListPresenter selection: targetProject.
+	"just select an element in each list to test cleanup after removal"
 	self packageListPresenter selection: self packageListPresenter list first.
 	self classListPresenter selection: self classListPresenter list first.
 	self categoryListPresenter selection: self categoryListPresenter list first.
