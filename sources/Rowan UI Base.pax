@@ -157,6 +157,8 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #currentMethodSource;
 	add: #JadeSystemBrowserPresenter -> #editSaveClass;
 	add: #JadeSystemBrowserPresenter -> #handleClassCompileError:;
+	add: #JadeSystemBrowserPresenter -> #instanceClassTabs;
+	add: #JadeSystemBrowserPresenter -> #instanceClassTabs:;
 	add: #JadeSystemBrowserPresenter -> #methodsMenuStrings;
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
@@ -2093,6 +2095,12 @@ handleClassCompileError: ex
 		yourself.
 	^string!
 
+instanceClassTabs
+	^instanceClassTabs!
+
+instanceClassTabs: anObject
+	instanceClassTabs := anObject!
+
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
@@ -2405,6 +2413,8 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #currentMethodSource!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #editSaveClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #handleClassCompileError:!compiling!public! !
+!JadeSystemBrowserPresenter categoriesFor: #instanceClassTabs!accessing!private! !
+!JadeSystemBrowserPresenter categoriesFor: #instanceClassTabs:!accessing!private! !
 !JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !

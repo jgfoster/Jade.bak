@@ -111,6 +111,12 @@ selectCategoriesNamed: categories
 selectClassListTab
 	^self projectsPresenter classHierarchyTabs firstCard!
 
+selectClassTab
+	self selectClassTabIn: self projectsPresenter!
+
+selectClassTabIn: presenter
+	presenter instanceClassTabs lastCard!
+
 selectHierarchyTab
 	self selectHierarchyTabIn: self projectsPresenter!
 
@@ -118,6 +124,7 @@ selectHierarchyTabIn: presenter
 	presenter classHierarchyTabs lastCard!
 
 selectMethodsNamed: selectors
+	self methodListPresenter resetSelection. 
 	selectors do: 
 			[:selector |
 			| service |
@@ -235,6 +242,41 @@ test_classListNotBlank
 	self denyIsNil: rowanClass
 	
 	!
+
+test_classSideSelection
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Services-Core') in: self packageListPresenter.
+	self selectServicesNamed: (Array with: 'RowanService') in: self classListPresenter.
+	"select methods in class list view"
+	self selectMethodsNamed: (Array with: #stonStringFor:).	"pick some methods that hopefully won't go away someday"
+	self assert: self methodListPresenter selection selector == #stonStringFor:.
+	self selectMethodsNamed: (Array with: #stonOn:).
+	self assert: self methodListPresenter selection selector == #stonOn:.
+	self selectMethodsNamed: (Array with: #command:).
+	self assert: self methodListPresenter selection selector == #command:.
+	"see same methods in hierarchy view"
+	self selectHierarchyTab.
+	self selectMethodsNamed: (Array with: #stonStringFor:).
+	self assert: self methodListPresenter selection selector == #stonStringFor:.
+	self selectMethodsNamed: (Array with: #stonOn:).
+	self assert: self methodListPresenter selection selector == #stonOn:.
+	self selectMethodsNamed: (Array with: #command:).
+	self assert: self methodListPresenter selection selector == #command:.
+	"see methods in class list view on class side"
+	self selectClassListTab.
+	self selectClassTab.
+	self selectMethodsNamed: (Array with: #new).
+	self assert: self methodListPresenter selection selector == #new.
+	self methodListPresenter resetSelection.
+	self assertIsNil: (self methodListPresenter list
+				detect: [:methodService | methodService selector = #stonStringFor:]
+				ifNone: []).
+	self selectHierarchyTab.
+	self selectMethodsNamed: (Array with: #new).
+	self assert: self methodListPresenter selection selector == #new.
+	self assertIsNil: (self methodListPresenter list
+				detect: [:methodService | methodService selector = #stonStringFor:]
+				ifNone: [])!
 
 test_extensionColoringInHierarchy
 	| testClass |
@@ -372,6 +414,34 @@ test_removeProject
 	self assert: self categoryListPresenter list isEmpty.
 	self assert: self methodListPresenter list isEmpty!
 
+test_saveClassMethod
+	| source |
+	self selectRowanSample1Class.
+	self selectClassTab.
+	self projectsPresenter basicAddMethodCategory: 'class side category'.
+	self assert: self categoryListPresenter selection = 'class side category'.
+	source := 'classSideMethod  ^#classSide'.
+	self methodSourcePresenter value: source.
+	self projectsPresenter editSaveMethod: self classListPresenter selection.
+	self selectServicesNamed: (Array with: 'classSideMethod') in: self methodListPresenter.
+	self assert: self methodListPresenter selection selector = #classSideMethod.
+	self assert: (session executeString: 'RowanSample1 classSideMethod') = #classSide!
+
+test_saveClassMethodHierarchy
+	| source |
+	self testsIssue: #issue121 withTitle: 'Package Browser (3.0.20): hierarchy class view and classes defined in different pacakge oddity'.
+	self selectRowanSample1Class.
+	self selectHierarchyTab.
+	self selectClassTab.
+	self projectsPresenter basicAddMethodCategory: 'class side category'.
+	self assert: self categoryListPresenter selection = 'class side category'.
+	source := 'classSideMethod  ^''on the class side'''.
+	self methodSourcePresenter value: source.
+	self projectsPresenter editSaveMethod: self projectsPresenter classHierarchyPresenter selection.
+	self selectServicesNamed: (Array with: 'classSideMethod') in: self methodListPresenter.
+	self assert: self methodListPresenter selection selector = #classSideMethod.
+	self assert: (session executeString: 'RowanSample1 classSideMethod') = 'on the class side'!
+
 test_saveMethod
 	self selectRowanSample1Class.
 	(self categoryListPresenter list includes: 'test_saveMethod')
@@ -381,12 +451,18 @@ test_saveMethod
 	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123!
 
 test_saveMethodHierarchy
+	| source |
+	self testsIssue: #issue121 withTitle: 'Package Browser (3.0.20): hierarchy class view and classes defined in different pacakge oddity'.
 	self selectRowanSample1Class.
 	self selectHierarchyTab.
 	self selectCategoriesNamed: #('accessing').
-	self saveSampleMethod.
+	source := 'sampleMethod  
+		aaa := 123. 
+		^aaa'.
+	self methodSourcePresenter value: source.
+	self projectsPresenter editSaveMethod: self projectsPresenter classHierarchyPresenter selection.
 	self selectServicesNamed: (Array with: 'sampleMethod') in: self methodListPresenter.
-	self assert: self methodListPresenter selection selector = #sampleMethod. 
+	self assert: self methodListPresenter selection selector = #sampleMethod.
 	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123!
 
 test_selectMultiplePackages
@@ -448,6 +524,8 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectCategoriesNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
+!JadeiteProjectBrowserTestCase categoriesFor: #selectClassTab!private!selection! !
+!JadeiteProjectBrowserTestCase categoriesFor: #selectClassTabIn:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTabIn:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectMethodsNamed:!private!selection! !
@@ -461,6 +539,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_autoDirtyDisplayMoveMethodsToCategory!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_autoDirtyDisplayRemoveMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_classSideSelection!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_extensionColoringInHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromClassList!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromHierarchy!public!test! !
@@ -470,6 +549,8 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_projectRemoved!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_removeProject!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_saveClassMethod!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_saveClassMethodHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethodHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultiplePackages!public!test! !

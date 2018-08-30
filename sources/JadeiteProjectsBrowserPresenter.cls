@@ -55,10 +55,13 @@ basicRemoveMethodCategories
 	self issueCommand: (Array with: service)!
 
 basicRemoveMethods
-	| service |
-	service := classListPresenter selectionIfNone: [^self].
-	self setClassMeta.
-	self removeMethods: (Array with: service).!
+	| service presenter |
+	presenter := self isClassListTabSelected
+				ifTrue: [classListPresenter]
+				ifFalse: [classHierarchyPresenter].
+	service := presenter selectionIfNone: [^self].
+	service meta: self isClassSideSelected.
+	self removeMethods: (Array with: service)!
 
 basicUnloadProjects: projectNames
 	| browserService |
@@ -916,15 +919,15 @@ redrawAllViews
 
 refreshClass
 	| selection presenter |
-	inUpdate ifTrue:[^self].
-	self setClassMeta.
-	self setMethodFilter.
+	inUpdate ifTrue: [^self].
 	presenter := self isClassListTabSelected
 				ifTrue: [classListPresenter]
 				ifFalse: [classHierarchyPresenter].
+	self setMethodFilter.
 	selection := presenter selectionIfNone: 
 					[categoryListPresenter clear.
 					^methodListPresenter clear].
+	selection meta: self isClassSideSelected.
 	selection selectedPackageServices: packageListPresenter selections.
 	self setFilterType: selection.
 	self updateServices: (Array with: selection).
@@ -1086,11 +1089,6 @@ selectPackage: newPackageSelection
 	packageListPresenter selection: newPackageSelection.
 	classSelection ifNotNil: [self selectClass: classSelection].
 	methodSelection ifNotNil: [self selectionMethod: methodSelection]!
-
-setClassMeta
-	| meta |
-	meta := instanceClassTabs currentCard name = 'classTab'.
-	classListPresenter list do: [:service | service meta: meta]!
 
 setDefaultProjectTablLabel
 	projectLabel ifNil: [projectLabel := self textTabs detect: [:each | each text = 'Project']]!
@@ -1507,7 +1505,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectMethodsFrom:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectMethodSourceTab!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectPackage:!private!selection! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #setClassMeta!event handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setDefaultProjectTablLabel!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setDefaultProjectTablLabel:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setFilterType:!event handlers support!private!services! !
