@@ -375,7 +375,12 @@ editSaveClassComment
 	self refreshFromServer. !
 
 editSaveMethod
-	self editSaveMethod: classListPresenter selection.
+	| selection |
+	selection := self isClassListTabSelected
+				ifTrue: [classListPresenter selection]
+				ifFalse: [classHierarchyPresenter selection].
+	selection meta: self isClassSideSelected.
+	self editSaveMethod: selection.
 	self redrawAllViews!
 
 editSaveMethod: classService
@@ -1230,13 +1235,13 @@ updateCommand: aString onSuccessDo: aBlock
 
 updateHierarchy
 	| service selection |
-	service := classListPresenter selectionOrNil
-				ifNil: [^classHierarchyPresenter model: TreeModel new]
-				ifNotNil: [:classService | classService command: #classHierarchy].
 	classHierarchyPresenter model: TreeModel new.
+	service := classListPresenter selectionOrNil
+				ifNil: [^self]
+				ifNotNil: [:classService | classService command: #classHierarchy].
 	self issueCommand: (Array with: service).
 	selection := classHierarchyPresenter model asBag detect: [:svc | svc name = service name].
-	classHierarchyPresenter selection: selection.!
+	classHierarchyPresenter selection: selection!
 
 updateMenuBar
 

@@ -89,7 +89,9 @@ sampleProjectName
 saveSampleMethod
 
 	| source |
-	source := 'sampleMethod   ^123'. 
+	source := 'sampleMethod  
+		aaa := 123. 
+		^aaa'. 
 	self methodSourcePresenter value: source. 
 	self projectsPresenter editSaveMethod: self classListPresenter selection. 
 
@@ -378,6 +380,15 @@ test_saveMethod
 	self selectServicesNamed: (Array with: 'sampleMethod') in: self methodListPresenter.
 	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123!
 
+test_saveMethodHierarchy
+	self selectRowanSample1Class.
+	self selectHierarchyTab.
+	self selectCategoriesNamed: #('accessing').
+	self saveSampleMethod.
+	self selectServicesNamed: (Array with: 'sampleMethod') in: self methodListPresenter.
+	self assert: self methodListPresenter selection selector = #sampleMethod. 
+	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123!
+
 test_selectMultiplePackages
 	self selectServicesNamed: #() in: self projectListPresenter .
 	self assert: self packageListPresenter list isEmpty.
@@ -460,6 +471,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_projectRemoved!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_removeProject!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethod!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethodHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultiplePackages!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultipleProjects!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_simpleHierarchyTest!public!test! !

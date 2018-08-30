@@ -19,21 +19,15 @@ commitTransaction
 	gciSession commit!
 
 createComponents
-
 	super createComponents.
-
 	testCasesPresenter := self add: ListPresenter new name: 'testCases'.
-	textResultPresenter := self add: TextPresenter new name: 'textResult'.!
+	textResultPresenter := self add: TextPresenter new name: 'textResult'!
 
 reset
-
 	testCasesPresenter model do: [:each | each result: nil].
-
-	textResultPresenter value: ''.
-
+	textResultPresenter value: String new.
 	testCasesPresenter view invalidate.
-
-	textResultPresenter view backcolor: Color face3d.!
+	textResultPresenter view backcolor: Color face3d!
 
 runTests: anOrderedCollection in: testClassName
 	|  jadeResult |
