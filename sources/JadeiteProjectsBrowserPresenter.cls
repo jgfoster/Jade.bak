@@ -58,8 +58,7 @@ basicRemoveMethods
 	| service |
 	service := classListPresenter selectionIfNone: [^self].
 	self setClassMeta.
-	self removeMethods: (Array with: service).
-	self maybeRefreshFromServer. !
+	self removeMethods: (Array with: service).!
 
 basicUnloadProjects: projectNames
 	| browserService |
@@ -68,10 +67,10 @@ basicUnloadProjects: projectNames
 		command: #unloadProjectsNamed:;
 		commandArgs: (Array with: projectNames).
 	self issueCommand: (Array with: browserService).
-	packageListPresenter model: Array new.
-	classListPresenter model: Array new.
-	categoryListPresenter model: Array new.
-	methodListPresenter model: Array new!
+	packageListPresenter model: ListModel new.
+	classListPresenter model: ListModel new.
+	categoryListPresenter model: ListModel new.
+	methodListPresenter model: ListModel new!
 
 browseClassReferences
 	self browseClassReferences: (classListPresenter selectionIfNone: [^self]) name!
@@ -362,16 +361,18 @@ editSaveClass
 				self handleClassCompileError: ex]
 			ifFalse:[
 				self statusBarText: 'ERROR: ', ex messageText ]].
-	classDefinitionPresenter view isModified: false!
+	classDefinitionPresenter view isModified: false.
+	self refreshFromServer. !
 
 editSaveClassComment
 	| classService |
-	classService := classListPresenter selection.
+	classService := classListPresenter selectionIfNone: [MessageBox notify: 'No class selected'. ^self]. 
 	classService
 		command: #classComment:;
 		commandArgs: (Array with: classCommentPresenter value trimBlanks).
 	self issueCommand: (Array with: classService).
-	classCommentPresenter ensureVisible. !
+	classCommentPresenter ensureVisible. 
+	self refreshFromServer. !
 
 editSaveMethod
 	self editSaveMethod: classListPresenter selection.
@@ -529,14 +530,6 @@ makeDefault
 	RowanProjectService defaultProjectName: projectService name.
 	projectListPresenter view invalidate. !
 
-maybeRefreshFromServer
-	"we don't always want to update from the server
-	after every action. However, if we've performed
-	an operation that may have dirtied our project, 
-	do a refresh."
-
-	(projectListPresenter selectionIfNone: [^self]) isDirty ifFalse: [self refreshFromServer]!
-
 methodListPresenter
 	^methodListPresenter!
 
@@ -610,8 +603,7 @@ onDropOnMethodCategory: aSession
 		command: #moveMethods:to:;
 		commandArgs: (Array with: methodServices with: targetCategory).
 	self issueCommand: (Array with: classService).
-	self selectMethodsFrom: classService.
-	self maybeRefreshFromServer. !
+	self selectMethodsFrom: classService.!
 
 onSetFocus: aView stack: aString
 
@@ -972,34 +964,18 @@ registerClassData
 	"temporarily disabled"!
 
 registerPresentersForUpdates
-	"copied to RowanDebugger"
 
-	BrowserUpdate current register: projectListPresenter selector: #projectsUpdate:.
-	BrowserUpdate current register: projectListPresenter selector: #removedProject:.
-	BrowserUpdate current register: classListPresenter selector: #classesUpdate:browser: browser: self.
-	BrowserUpdate current register: classListPresenter selector: #removedClass:.
-	BrowserUpdate current
-		register: packageListPresenter
-		selector: #projectPackagesUpdate:browser:
-		browser: self.
-	BrowserUpdate current
-		register: categoryListPresenter
-		selector: #filterUpdate:browser:
-		browser: self.
-	BrowserUpdate current
-		register: classHierarchyPresenter
-		selector: #classHierarchyUpdate:browser:
-		browser: self.
-	BrowserUpdate current
-		register: variableListPresenter
-		selector: #filterUpdate:browser:
-		browser: self.
-	BrowserUpdate current
-		register: methodListPresenter
-		selector: #classMethodsUpdate:browser:
-		browser: self.
-	BrowserUpdate current register: methodListPresenter selector: #methodsRemoved:.
-	BrowserUpdate current register: methodSourcePresenter selector: #methodSourceUpdate:browser: browser: self. !
+	BrowserUpdate current register: projectListPresenter 		selector: #projectsUpdate:.
+	BrowserUpdate current register: projectListPresenter 		selector: #removedProject:.
+	BrowserUpdate current register: classListPresenter 		selector: #classesUpdate:browser: browser: self.
+	BrowserUpdate current register: classListPresenter 		selector: #removedClass:.
+	BrowserUpdate current register: packageListPresenter 	selector: #projectPackagesUpdate:browser: browser: self.
+	BrowserUpdate current register: categoryListPresenter 	selector: #filterUpdate:browser: browser: self.
+	BrowserUpdate current register: classHierarchyPresenter 	selector: #classHierarchyUpdate:browser: browser: self.
+	BrowserUpdate current register: variableListPresenter 	selector: #filterUpdate:browser: browser: self.
+	BrowserUpdate current register: methodListPresenter 	selector: #classMethodsUpdate:browser: browser: self.
+	BrowserUpdate current register: methodListPresenter 	selector: #methodsRemoved:.
+	BrowserUpdate current register: methodSourcePresenter 	selector: #methodSourceUpdate:browser: browser: self. !
 
 releasedReferencedServices: selectionChangingEvent
 	selectionChangingEvent window presenter selectionOrNil
@@ -1176,6 +1152,12 @@ unloadProjects
 		confirm: 'Really unload project(s) - ' , ws contents , '?  You will lose any unsaved changes!! '
 		caption: 'UNLOAD PROJECTS WARNING!!') ifFalse: [^self].
 	self basicUnloadProjects: projectNames!
+
+update: services afterStonReplication: stonResults
+	| result |
+	result := super update: services afterStonReplication: stonResults. 
+	self redrawAllViews. 
+	^result!
 
 updateAfterFindClass: classService
 	| projectService packageService updatedClassService |
@@ -1465,7 +1447,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProjects!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #maybeRefreshFromServer!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menu handlers support!private! !
@@ -1525,6 +1506,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #textTabs!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #unloadPackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #unloadProjects!project menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #update:afterStonReplication:!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateAfterFindClass:!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateClasses!event handlers!public!updating! !
