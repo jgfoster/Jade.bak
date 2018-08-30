@@ -4,3 +4,4 @@ text  eol=crlf
 *.pac eol=crlf
 *.pax eol=crlf
 *.stb binary
+*.cls linguist-language=Smalltalk
