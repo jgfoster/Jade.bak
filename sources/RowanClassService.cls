@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanClassService
-	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods projectName hierarchyServices variables categories'
+	instanceVariableNames: 'comment instVarNames classVarNames classInstVarNames superclassName subclassType poolDictionaryNames classType meta isExtension version versions template oop filters filterType methods packageName definedPackageName selectedPackageServices selectedMethods projectName hierarchyServices variables categories isTestCase'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -138,7 +138,8 @@ initialize
 	
 	super initialize. 
 	filters := Array new. 
-	selectedPackageServices := Array new. "method list browser will not have packages to select"!
+	selectedPackageServices := Array new. "method list browser will not have packages to select"
+	isTestCase := false. !
 
 isClassService
 
@@ -151,6 +152,9 @@ isDefined
 isExtension
 
 	^isExtension!
+
+isTestCase
+	^isTestCase!
 
 meta
 	^meta!
@@ -291,6 +295,7 @@ variables
 !RowanClassService categoriesFor: #isClassService!public!testing! !
 !RowanClassService categoriesFor: #isDefined!public!testing! !
 !RowanClassService categoriesFor: #isExtension!public!testing! !
+!RowanClassService categoriesFor: #isTestCase!public!testing! !
 !RowanClassService categoriesFor: #meta!accessing!private! !
 !RowanClassService categoriesFor: #meta:!accessing!private! !
 !RowanClassService categoriesFor: #methods!accessing!private! !

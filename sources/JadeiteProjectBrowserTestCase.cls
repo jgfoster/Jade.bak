@@ -41,6 +41,11 @@ ensureRowanSample1Loaded
 	RowanBrowserService new reloadProjects: selections presenter: self projectsPresenter.
 	self projectsPresenter refreshFromServer!
 
+isSampleProjectLoaded
+	^(self projectsPresenter projectListPresenter list
+		detect: [:projectService | projectService name = self sampleProjectName]
+		ifNone: [self]) notNil!
+
 methodListPresenter
 	^self projectsPresenter methodListPresenter!
 
@@ -110,6 +115,17 @@ selectHierarchyTab
 selectHierarchyTabIn: presenter
 	presenter classHierarchyTabs lastCard!
 
+selectMethodsNamed: selectors
+	selectors do: 
+			[:selector |
+			| service |
+			service := self methodListPresenter list
+						detect: [:methodService | methodService selector = selector]
+						ifNone: [self error: 'Selector ''' , selector , ''' not found'].
+			self methodListPresenter selections: (self methodListPresenter selections asOrderedCollection
+						add: service;
+						yourself)]!
+
 selectRowanSample1Class
 	"big assumption - RowanSample1 class will allways be in RowanSample1 project"
 
@@ -119,6 +135,7 @@ selectRowanSample1Class
 
 selectServicesNamed: anArray in: presenter
 	presenter resetSelection.
+	anArray isEmpty ifTrue:[^self].
 	anArray do: 
 			[:name |
 			| service |
@@ -148,7 +165,8 @@ setUp
 	super setUp.
 	self disableTranscriptWrites.	"turn off gemstone transcript writes for performance"
 	self openProjectsBrowser.
-	self abortTransaction.	"ensure we don't have unsaved changes in the images"!
+	self abortTransaction.	"ensure we don't have unsaved changes in the images"
+	self ensureRowanSample1Available.!
 
 tearDown
 	super tearDown.
@@ -157,16 +175,48 @@ tearDown
 	transcriptWritesWereEnabled ifTrue: [transcript flipTranscript]!
 
 test_addRemoveCategory
-	self ensureRowanSample1Available.
-	
-	[self selectRowanSample1Class.
+	self selectRowanSample1Class.
 	self deny: (self categoryListPresenter list includes: 'jadeite test').
 	self projectsPresenter basicAddMethodCategory: 'jadeite test'.
 	self assert: (self categoryListPresenter list includes: 'jadeite test').
 	self assert: self categoryListPresenter selection = 'jadeite test'.
 	self projectsPresenter basicRemoveMethodCategories.
-	self deny: (self categoryListPresenter list includes: 'jadeite test')]
-			ensure: [self unloadSampleProject]!
+	self deny: (self categoryListPresenter list includes: 'jadeite test')!
+
+test_autoDirtyDisplayMoveMethodsToCategory
+	self testsIssue: #issue16 withTitle: 'Review/revisit semantics of font color/italic/bold etc.'.
+	self selectServicesNamed: #('RowanSample1') in: self projectListPresenter.
+	self selectServicesNamed: #('RowanSample1-Core') in: self packageListPresenter.
+	self deny: self projectListPresenter selection isDirty.
+	self deny: self packageListPresenter selection isDirty.
+	self selectRowanSample1Class.
+	self projectsPresenter basicAddMethodCategory: 'newCategory'. 
+	self selectCategoriesNamed: #('accessing').
+	self selectMethodsNamed: #(#foo).
+	self projectsPresenter moveMethods: self methodListPresenter selections toCategory: 'newCategory'. 
+	self assert: self projectListPresenter selection name = 'RowanSample1'.
+	self assert: self projectListPresenter selection isDirty.
+	self assert: self packageListPresenter selection name = 'RowanSample1-Core'.
+	self assert: self packageListPresenter selection isDirty.
+	"verify method moved" 
+	self selectCategoriesNamed: #('newCategory'). 
+	self selectMethodsNamed: #(#foo). 
+	self assert: self methodListPresenter selection selector = #foo. !
+
+test_autoDirtyDisplayRemoveMethod
+	self testsIssue: #issue16 withTitle: 'Review/revisit semantics of font color/italic/bold etc.'.
+	self selectServicesNamed: #('RowanSample1') in: self projectListPresenter.
+	self selectServicesNamed: #('RowanSample1-Core') in: self packageListPresenter.
+	self deny: self projectListPresenter selection isDirty.
+	self deny: self packageListPresenter selection isDirty.
+	self selectRowanSample1Class.
+	self selectCategoriesNamed: #('accessing').
+	self selectMethodsNamed: #(#foo).
+	self projectsPresenter removeMethods: self classListPresenter selections.
+	self assert: self projectListPresenter selection name = 'RowanSample1'.
+	self assert: self projectListPresenter selection isDirty.
+	self assert: self packageListPresenter selection name = 'RowanSample1-Core'.
+	self assert: self packageListPresenter selection isDirty!
 
 test_classListNotBlank
 	| rowanClass |
@@ -232,7 +282,7 @@ test_hierarchySelectTwoBrowsers
 	self testsIssue: #issue122 withTitle: 'Hierarchy tab selection updates incorrectly.'.
 	firstBrowser := projectsBrowser.	"for easier reading"
 	secondBrowser := self openWindow: [transcript openJadeiteProjectsBrowser].
-	self ensureRowanSample1Available.
+	
 	[self selectRowanSample1Class.
 	self selectServicesNamed: (Array with: 'RowanSample1')
 		in: secondBrowser currentCard projectListPresenter.
@@ -246,15 +296,11 @@ test_hierarchySelectTwoBrowsers
 	self assert: (firstBrowser currentCard classHierarchyPresenter isKindOf: TreePresenter).
 	self assert: secondBrowser currentCard classHierarchyPresenter selection name = 'RowanSample1Test'.
 	self assert: (secondBrowser currentCard classHierarchyPresenter isKindOf: TreePresenter)]
-			ensure: 
-				[secondBrowser destroy.
-				self unloadSampleProject]!
+			ensure: [secondBrowser destroy]!
 
 test_markDirty
 	| nonDefaultService |
-	self ensureRowanSample1Available.
-	
-	[self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
+	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
 	self projectsPresenter makeDefault.
 	self assert: self projectListPresenter selection displayName = 'RowanSample1*'.
 	nonDefaultService := self projectListPresenter list
@@ -265,8 +311,7 @@ test_markDirty
 	self projectsPresenter makeDefault.
 	nonDefaultService := self projectListPresenter list
 				detect: [:projectService | projectService name = 'RowanSample1'].
-	self assert: self projectListPresenter selection displayName = 'Rowan*']
-			ensure: [self unloadSampleProject]!
+	self assert: self projectListPresenter selection displayName = 'Rowan*'!
 
 test_openProjectsBrowser
 	"project browser opened in setup"
@@ -303,7 +348,6 @@ test_projectRemoved
 test_removeProject
 	| targetProject |
 	self testsIssue: #issue129 withTitle: 'Expose unload project.'.
-	self ensureRowanSample1Available.
 	targetProject := self projectListPresenter list
 				detect: [:projectService | projectService name = self sampleProjectName]
 				ifNone: [].
@@ -327,17 +371,15 @@ test_removeProject
 	self assert: self methodListPresenter list isEmpty!
 
 test_saveMethod
-	self ensureRowanSample1Available.
-	
-	[self selectRowanSample1Class.
+	self selectRowanSample1Class.
 	(self categoryListPresenter list includes: 'test_saveMethod')
 		ifFalse: [self projectsPresenter basicAddMethodCategory: 'test_saveMethod'].
 	self saveSampleMethod.
 	self selectServicesNamed: (Array with: 'sampleMethod') in: self methodListPresenter.
-	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123]
-			ensure: [self unloadSampleProject]!
+	self assert: (session executeString: 'RowanSample1 new sampleMethod') = 123!
 
 test_selectMultiplePackages
+	self selectServicesNamed: #() in: self projectListPresenter .
 	self assert: self packageListPresenter list isEmpty.
 	self selectServicesNamed: #('Rowan') in: self projectListPresenter.
 	self deny: self packageListPresenter list isEmpty.
@@ -346,6 +388,7 @@ test_selectMultiplePackages
 	self selectServicesNamed: #('Rowan-Services-Core' 'Rowan-JadeServer') in: self packageListPresenter!
 
 test_selectMultipleProjects
+	self selectServicesNamed: #() in: self projectListPresenter .
 	self assert: self projectListPresenter selections isEmpty.
 	self selectServicesNamed: self rowanProjectNames in: self projectListPresenter.
 	self assert: self projectListPresenter selections size = 4!
@@ -367,7 +410,8 @@ test_simpleHierarchyTest
 	self assert: self projectsPresenter classListPresenter selection name = 'RowanProjectService'!
 
 unloadSampleProject
-	self projectsPresenter basicUnloadProjects: (Array with: self sampleProjectName)!
+	self isSampleProjectLoaded
+		ifTrue: [self projectsPresenter basicUnloadProjects: (Array with: self sampleProjectName)]!
 
 waitForPresenter: presenter
 	[presenter list isEmpty] whileTrue: [(Delay forMilliseconds: 50) wait]! !
@@ -377,6 +421,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Available!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Loaded!private!project support! !
+!JadeiteProjectBrowserTestCase categoriesFor: #isSampleProjectLoaded!private!private testing!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #methodListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #methodSourcePresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #openProjectsBrowser!private!project support! !
@@ -394,6 +439,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTabIn:!private!selection! !
+!JadeiteProjectBrowserTestCase categoriesFor: #selectMethodsNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectRowanSample1Class!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectServicesNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectTreeServicesNamed:in:!private!selection! !
@@ -401,6 +447,8 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_autoDirtyDisplayMoveMethodsToCategory!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_autoDirtyDisplayRemoveMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_extensionColoringInHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromClassList!public!test! !

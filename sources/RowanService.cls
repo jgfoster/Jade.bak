@@ -112,7 +112,6 @@ isProjectService
 
 isTestCase
 
-	self rowanFixMe. "need to support running tests" 
 	^false!
 
 methodFilterUpdate: presenter

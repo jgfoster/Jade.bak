@@ -45,20 +45,21 @@ runSelected
 
 	self runTests: testCasesPresenter selection in: testClassName!
 
-testClassName: anObject
-
+testClassName: className
 	| tests |
-	testClassName = anObject ifTrue: [^self].
-	testClassName := anObject.
+	testClassName = className ifTrue: [^self].
+	testClassName := className.
 	self reset.
-	testClassName isEmpty ifTrue: [^self].
-	[
-		tests := gciSession serverPerform: #getTestMethodsNamesOf: with: testClassName.
-		tests := (tests subStrings: ',') collect: [:each | GsTestMethod name: each].
-	] on: Error do: [:ex | 
-		^self		"fix error on system history navigation, sometime GS answer error #2106"
-	].
-	testCasesPresenter model: (ListModel on: tests asOrderedCollection).! !
+	testClassName isEmpty
+		ifTrue: 
+			[testCasesPresenter model: (ListModel on: Array new).
+			^self].
+	
+	[tests := gciSession serverPerform: #getTestMethodsNamesOf: with: testClassName.
+	tests := (tests subStrings: ',') collect: [:each | GsTestMethod name: each]]
+			on: Error
+			do: [:ex | ^self	"fix error on system history navigation, sometime GS answer error #2106"].
+	testCasesPresenter model: (ListModel on: tests asOrderedCollection)! !
 !JadeSUnitInClassPresenter categoriesFor: #debug!public! !
 !JadeSUnitInClassPresenter categoriesFor: #runAll!public! !
 !JadeSUnitInClassPresenter categoriesFor: #runAndMesureTime!public! !

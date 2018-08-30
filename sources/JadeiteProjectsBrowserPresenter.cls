@@ -571,6 +571,16 @@ methodsMenuStrings
 	).
 !
 
+moveMethods: methodServices toCategory: targetCategory
+	| classService |
+	classService := classListPresenter selection.
+	categoryListPresenter selections: (categoryListPresenter selections copyWith: targetCategory).
+	classService
+		command: #moveMethods:to:;
+		commandArgs: (Array with: methodServices with: targetCategory).
+	self issueCommand: (Array with: classService).
+	self selectMethodsFrom: classService!
+
 onDragMethod: aSession 
 
 	| list |
@@ -594,16 +604,10 @@ onDropOnClassList: aSession
 	self selectMethodsFrom: classService!
 
 onDropOnMethodCategory: aSession
-	| methodServices targetCategory classService |
+	| methodServices targetCategory |
 	methodServices := aSession dragObjects collect: [:each | each format: #method].
 	targetCategory := aSession suggestedTarget trimBlanks.
-	classService := classListPresenter selection.
-	categoryListPresenter selections: (categoryListPresenter selections copyWith: targetCategory).
-	classService
-		command: #moveMethods:to:;
-		commandArgs: (Array with: methodServices with: targetCategory).
-	self issueCommand: (Array with: classService).
-	self selectMethodsFrom: classService.!
+	self moveMethods: methodServices toCategory: targetCategory!
 
 onSetFocus: aView stack: aString
 
@@ -1025,10 +1029,9 @@ selectCategoryFrom: methodService
 		ifFalse: [categoryListPresenter selection: methodService category]!
 
 selectClass: classSelection
-	| newClassSelection |
-	newClassSelection := classListPresenter list detect: [:svc | svc name = classSelection name]
-				ifNone: [].
-	^newClassSelection ifNotNil: [classListPresenter selection: newClassSelection]!
+	| selection |
+	selection := classListPresenter list detect: [:svc | svc name = classSelection name] ifNone: [].
+	^selection ifNotNil: [classListPresenter selection: selection]!
 
 selectClassListTab
 	classHierarchyTabs firstCard!
@@ -1101,6 +1104,9 @@ setMethodFilter
 		ifTrue: [filters := categoryListPresenter selections]
 		ifFalse: [filters := variableListPresenter selections].
 	classListPresenter list do: [:service | service filters: filters]!
+
+setTestClass: service
+	sunitPresenter testClassName: (service isTestCase ifTrue: [service name] ifFalse: [String new])!
 
 showSuperClassComparison
 	| methodService |
@@ -1202,6 +1208,7 @@ updateClassInfo
 	classDefinitionPresenter view
 		backcolor: Color white;
 		isModified: false.
+	self setTestClass: service.
 	classDefinitionPresenter ensureVisible.
 	self sundryCleanup!
 
@@ -1451,6 +1458,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodListSelection!accessing!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodMenuBreak:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #moveMethods:toCategory:!drag & drop!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDragMethod:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnClassList:!drag & drop!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #onDropOnMethodCategory:!drag & drop!public! !
@@ -1499,6 +1507,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #setDefaultProjectTablLabel:!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setFilterType:!event handlers support!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #setMethodFilter!event handlers support!private!services!updating! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #setTestClass:!event handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #showSuperClassComparison!private!text tabs! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #sundryCleanup!initialize/release!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #targetCategory!menu handlers support!private! !
