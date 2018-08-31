@@ -137,18 +137,6 @@ inspectVariable
 	JadeInspector showOn: object session: gciSession.
 !
 
-onViewClosed
-
-	(processList notNil and: [processList notEmpty]) ifTrue: [
-		gsProcess := processList first.
-		self class debuggers removeKey: gsProcess oopType asInteger ifAbsent: [].
-		(terminateOnClose and: [answer isNil]) ifTrue: [
-			gsProcess terminate.
-			self error: 'We should never get here!!'.
-		].
-	].
-!
-
 queryCommand: query
 
 	(#(#'resumeProcess' #'runToCursor' #'stepInto' #'stopOut' #'stepOver') includes: query commandSymbol) ifTrue: [
@@ -361,7 +349,6 @@ updateSaveMethodOop: anInteger
 !JadeDebugger categoriesFor: #implement!public! !
 !JadeDebugger categoriesFor: #initializeProcess:message:terminateOnClose:!public! !
 !JadeDebugger categoriesFor: #inspectVariable!menu handlers!private! !
-!JadeDebugger categoriesFor: #onViewClosed!event handlers!public! !
 !JadeDebugger categoriesFor: #queryCommand:!public! !
 !JadeDebugger categoriesFor: #resumeProcess!menu handlers!private! !
 !JadeDebugger categoriesFor: #runToCursor!menu handlers!private! !

@@ -109,6 +109,27 @@ tearDown
 	super tearDown.
 	(Delay forMilliseconds: 50) wait.!
 
+terminateDoesNotWalkback
+	"Terminate a process other than the primary one"
+
+	self testsIssue: #issue82 withTitle: 'Pressing Terminate button gives walkback'.
+	TestMessageBox enableJadeiteTestMessageBox.
+	
+	[gsProcess := session executeString: '[(Delay forSeconds: 9999) wait] fork asOop'.
+	self
+		openDebuggerOn: 'nil halt';
+		assert: debugger _processList size equals: 2;
+		assert: debugger processListPresenter list size equals: 2;
+		assert: (debugger processListPresenter selectionByIndex: 2) notNil;
+		assert: (debugger _processList at: 2) oopType value equals: gsProcess.
+	TestMessageBox plannedResult: #yes.	"confirm we want to terminate process"
+	self
+		assert: debugger terminateProcess notNil;
+		assert: debugger _processList size equals: 1;
+		assert: debugger processListPresenter list size equals: 1;
+		debuggerDo: [debugger resumeProcess]]
+			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
+
 terminateGsProcess
 
 	| string |
@@ -352,27 +373,6 @@ x halt.
 		yourself.
 !
 
-testBug82
-	"Terminate a process other than the primary one"
-
-	self testsIssue: #issue82 withTitle: 'Pressing Terminate button gives walkback'.
-	TestMessageBox enableJadeiteTestMessageBox.
-	
-	[gsProcess := session executeString: '[(Delay forSeconds: 9999) wait] fork asOop'.
-	self
-		openDebuggerOn: 'nil halt';
-		assert: debugger _processList size equals: 2;
-		assert: debugger processListPresenter list size equals: 2;
-		assert: (debugger processListPresenter selectionByIndex: 2) notNil;
-		assert: (debugger _processList at: 2) oopType value equals: gsProcess.
-	TestMessageBox plannedResult: #yes.	"confirm we want to terminate process"
-	self
-		assert: debugger terminateProcess notNil;
-		assert: debugger _processList size equals: 1;
-		assert: debugger processListPresenter list size equals: 1;
-		debuggerDo: [debugger resumeProcess]]
-			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
-
 testContextMenu
 	| error time view |
 	self testsIssue: #issue68 withTitle: 'Debuggers (old and new) text panes get error on popup menu'.
@@ -511,6 +511,7 @@ testStackMenuEnablement
 !JadeiteDebuggerTestCase categoriesFor: #setUp!public!running! !
 !JadeiteDebuggerTestCase categoriesFor: #systemBrowser!public! !
 !JadeiteDebuggerTestCase categoriesFor: #tearDown!public!running! !
+!JadeiteDebuggerTestCase categoriesFor: #terminateDoesNotWalkback!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #terminateGsProcess!public!running! !
 !JadeiteDebuggerTestCase categoriesFor: #test1!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test2!public!tests! !
@@ -522,7 +523,6 @@ testStackMenuEnablement
 !JadeiteDebuggerTestCase categoriesFor: #test8!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testBug74!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testBug77!public! !
-!JadeiteDebuggerTestCase categoriesFor: #testBug82!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testContextMenu!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testDebuggerCopyToClipboard!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testDebuggerDoNotCopyToClipboard!public!tests! !

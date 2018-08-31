@@ -762,11 +762,6 @@ stopHeartbeat
 	].
 !
 
-terminate: anOopType
-
-	self serverPerform: #'terminate:' with: anOopType.
-	TerminateProcess signal.!
-
 userID
 
 	^userID.
@@ -924,7 +919,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #stoneSerial!private! !
 !GciSession categoriesFor: #stoneSessionID!public! !
 !GciSession categoriesFor: #stopHeartbeat!Jade!public! !
-!GciSession categoriesFor: #terminate:!public! !
 !GciSession categoriesFor: #userID!public! !
 !GciSession categoriesFor: #valueOfArrayOop:!Jade convenience!public! !
 !GciSession categoriesFor: #valueOfOop:!Jade convenience!public! !

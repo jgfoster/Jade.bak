@@ -371,7 +371,6 @@ aboutToShowErrorShellOn: gsError
 	]!
 
 debuggerClass
-
 	^debuggerClass ifNil: [RowanDebugger]!
 
 debuggerClass: aDebugger
