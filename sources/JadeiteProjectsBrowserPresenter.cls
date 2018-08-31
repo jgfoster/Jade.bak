@@ -396,6 +396,31 @@ editSaveMethod: classService
 			["there will be no method selected on a compiler error"
 			self selectMethodsFrom: classService]!
 
+fileOutMethods
+	| path suggestedFileName |
+	suggestedFileName := methodListPresenter selections size = 1
+				ifTrue: 
+					[methodListPresenter selection className , '_' , methodListPresenter selection selector asString]
+				ifFalse: [methodListPresenter selections first className , '_methods'].
+	path := FileSaveDialog new
+				caption: 'File Out Method';
+				fileTypes: self fileTypes;
+				defaultExtension: self defaultFileExtension;
+				value: suggestedFileName;
+				overwritePrompt;
+				showModal.
+	path ifNotNil: [self fileOutMethodsOnPath: path]!
+
+fileOutMethodsOnPath: path
+	|  file services |
+	methodListPresenter selections size = 1
+		ifTrue: 
+			[methodListPresenter selection command: #fileout.
+			services := self issueCommand: (Array with: methodListPresenter selection).
+			file := FileStream write: path.
+			[file nextPutAll: services first answer] ensure: [file close]].
+	self rowanFixMe	"multiple methods"!
+
 filterTabChanged
 	self isClassSelected
 		ifFalse: 
@@ -555,7 +580,7 @@ methodMenuBreak: aMenu
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
-		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseHierarchyImplementors; browseHierarchySenders; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2; fileOutMethod; gotoMethodPackage.
+		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseHierarchyImplementors; browseHierarchySenders; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2; fileOutMethods; gotoMethodPackage.
 	].
 	^#(
 		'&Methods'
@@ -570,7 +595,7 @@ methodsMenuStrings
 		'Browse Methods &Containing ...//browseMethodsContaining'
 		'Browse &History//browseMethodHistory'
 		'BrowseMethod &Pragmas ...//browseMethodPragmas'
-		'&File out method ...//fileOutMethod'
+		'&File out methods ...//fileOutMethods'
 		'-'
 		'&Remove Method(s) ...//removeMethods'
 		#('&Method Environment' '&0//setEnvironment0' '&1//setEnvironment1' '&2//setEnvironment2')
@@ -815,7 +840,7 @@ queryCommand: aCommandQuery
 			[aCommandQuery
 				isEnabled: (packageListPresenter selections size = 1 and: [ancestorListPresenter hasSelection]).
 			^true].
-	(#(#browseMethodHistory #browseImplementors #browseSenders #fileOutMethod) includes: command)
+	(#(#browseMethodHistory #browseImplementors #browseSenders #gotoMethodPackage) includes: command)
 		ifTrue: 
 			[aCommandQuery isEnabled: methodListPresenter selections size = 1.
 			^true].
@@ -828,9 +853,9 @@ queryCommand: aCommandQuery
 			[aCommandQuery isEnabled: globalsPresenter selections notEmpty.
 			^true].
 	"(#(#'runMethodTests') includes: command) ifTrue: [aCommandQuery isEnabled: (methodListPresenter selections notEmpty and: [methodListPresenter selections first at: 3]). ^true]."
-	(#(#gotoMethodPackage) includes: command)
+	(#( #fileOutMethods) includes: command)
 		ifTrue: 
-			[aCommandQuery isEnabled: self methodListPresenter selectionOrNil notNil.
+			[aCommandQuery isEnabled: self methodListPresenter selections notEmpty.
 			^true].
 	(#(#gotoClassDefinedPackage) includes: command)
 		ifTrue: 
@@ -1443,6 +1468,8 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClassComment!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers support!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #fileOutMethods!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #fileOutMethodsOnPath:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #getViews!public! !
