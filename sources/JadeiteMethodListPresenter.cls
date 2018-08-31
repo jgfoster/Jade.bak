@@ -10,6 +10,18 @@ JadeiteMethodListPresenter comment: ''!
 !JadeiteMethodListPresenter categoriesForClass!Unclassified! !
 !JadeiteMethodListPresenter methodsFor!
 
+browseImplementorsOf: string
+	| service |
+	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
+	self issueCommand: (Array with: service).
+	self methods: service queryResults selecting: string!
+
+browseSendersOf: string
+	| service |
+	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
+	self issueCommand: (Array with: service).
+	self methods: service queryResults selecting: string!
+
 comparisonTab
 	^comparisonTab
 		ifNil: 
@@ -77,6 +89,8 @@ updateSource
 	selection := methodListPresenter selectionOrNil. 
 	methodSourcePresenter methodService: selection. 
 	methodSourcePresenter update. ! !
+!JadeiteMethodListPresenter categoriesFor: #browseImplementorsOf:!menu handlers!public! !
+!JadeiteMethodListPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeiteMethodListPresenter categoriesFor: #comparisonTab!private!selection!text tabs! !
 !JadeiteMethodListPresenter categoriesFor: #contextObject!public! !
 !JadeiteMethodListPresenter categoriesFor: #createComponents!public! !

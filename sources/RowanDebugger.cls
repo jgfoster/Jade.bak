@@ -261,12 +261,17 @@ saveMethod
 !
 
 selectedFrame 
+	"Comment from RowanFrameService>>initializeProcess:level:organizer: ---- 
+		'In 3.2.15 the server does some whacky things with IP, stepPoint, and nested methods.
+		See http://kermit.gemtalksystems.com/bug?bug=45553 --JGF'
+	When the step point error is thrown, we do a step into instead. There may be better
+	solutions."
 
 	| index breaks source |
 	(index := frameListPresenter selectionByIndex) = 0 ifTrue: [^self].
 	index := index + frameListOffset.
 	(frame := gsProcess frameForLevel: index) isNil ifTrue: [^self].
-	frame stepPoint ifNil: [RowanDebuggerStepPointError signal].		"see comment in  RowanFrameService>>initializeProcess:level:organizer:"
+	frame stepPoint ifNil: [RowanDebuggerStepPointError signal].
 	source := frame source.
 	breaks := frame breaks collect: [:each | frame offsets at: each].
 	breaks := breaks collect: [:each | ((source copyFrom: 1 to: each) select: [:char | char = Character lf]) size + 1].
