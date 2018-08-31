@@ -201,6 +201,7 @@ methodUpdate: presenter
 		do: [:methodService | methodService = self ifTrue: [methodService replicateFrom: self]]!
 
 name
+	selector isNil ifTrue:[^String new].
 	^selector asString!
 
 oop
