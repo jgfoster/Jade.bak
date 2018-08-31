@@ -80,8 +80,11 @@ package methodNames
 	add: #GsMethod -> #className;
 	add: #GsMethod -> #meta;
 	add: #GsMethod -> #methodService;
+	add: #GsProcess -> #oop;
 	add: #JadeAutoTextPresenter3 -> #defaultMethod;
 	add: #JadeAutoTextPresenter3 -> #setDefaultMethod;
+	add: #JadeDebugger -> #gsProcess;
+	add: #JadeDebugger -> #gsProcess:;
 	add: #JadeDebugger -> #updateCaption;
 	add: #JadeErrorShell -> #doCopy;
 	add: #JadeErrorShell -> #onViewOpened;
@@ -781,6 +784,14 @@ methodService
 !GsMethod categoriesFor: #meta!accessing!public! !
 !GsMethod categoriesFor: #methodService!public!rowan! !
 
+!GsProcess methodsFor!
+
+oop 
+
+	^oopType value
+	! !
+!GsProcess categoriesFor: #oop!accessing!public! !
+
 !JadeAutoTextPresenter3 methodsFor!
 
 defaultMethod
@@ -805,11 +816,19 @@ setDefaultMethod
 
 !JadeDebugger methodsFor!
 
+gsProcess
+	^gsProcess!
+
+gsProcess: anObject
+	gsProcess := anObject!
+
 updateCaption
 	self caption: (gciSession
 				titleBarFor: (self class == RowanDebugger
 				ifTrue: ['New Jadeite Debugger']
 				ifFalse: ['Jade Debugger']))! !
+!JadeDebugger categoriesFor: #gsProcess!accessing!private! !
+!JadeDebugger categoriesFor: #gsProcess:!accessing!private! !
 !JadeDebugger categoriesFor: #updateCaption!public! !
 
 !JadeErrorShell methodsFor!

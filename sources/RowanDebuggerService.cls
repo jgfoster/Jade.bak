@@ -16,10 +16,11 @@ initialize: aGsProcess
 !
 
 processListUpdate: aPresenter
-	aPresenter 
+	aPresenter parentPresenter gsProcess oop = processes first oop ifFalse: [^self].
+	aPresenter
 		list: processes;
 		selection: processes first;
-		yourself.! !
+		yourself! !
 !RowanDebuggerService categoriesFor: #initialize:!public! !
 !RowanDebuggerService categoriesFor: #processListUpdate:!Debugger!public!updating! !
 
