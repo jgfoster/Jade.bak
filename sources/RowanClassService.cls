@@ -41,7 +41,8 @@ classHierarchyUpdate: presenter browser: browser
 				withParent: nil].
 	treeModel asBag do:[:classService | classService selectedPackageServices: browser packageListPresenter selections].
 	presenter model: treeModel.
-	presenter view expandAll.
+	name = 'Object' ifFalse:[
+		presenter view expandAll].
 !
 
 classMethodsUpdate: presenter browser: browser

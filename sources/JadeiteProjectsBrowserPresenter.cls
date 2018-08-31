@@ -1234,12 +1234,13 @@ updateCommand: aString onSuccessDo: aBlock
 updateHierarchy
 	| service selection |
 	classHierarchyPresenter model: TreeModel new.
-	service := classListPresenter selectionOrNil
-				ifNil: [^self]
-				ifNotNil: [:classService | classService command: #classHierarchy].
+	service := classListPresenter selectionOrNil ifNil: [RowanClassService new name: 'Object'].
+	service command: #classHierarchy.
 	self issueCommand: (Array with: service).
-	selection := classHierarchyPresenter model asBag detect: [:svc | svc name = service name].
-	classHierarchyPresenter selection: selection!
+	service name = 'Object'
+		ifFalse: 
+			[selection := classHierarchyPresenter model asBag detect: [:svc | svc name = service name].
+			classHierarchyPresenter selection: selection]!
 
 updateMenuBar
 
@@ -1287,6 +1288,7 @@ updatePackage
 	classListPresenter model: ListModel new.
 	classHierarchyPresenter model: TreeModel new.
 	self updateClasses.
+	self isClassListTabSelected ifFalse:[self updateHierarchy].
 	self updatePackageInfo!
 
 updatePackageInfo
