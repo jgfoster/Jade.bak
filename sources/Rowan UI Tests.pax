@@ -47,12 +47,12 @@ MessageBox subclass: #TestMessageBox
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 TestCase subclass: #JadeiteAbstractTestCase
-	instanceVariableNames: 'session transcript'
+	instanceVariableNames: 'session transcript projectsBrowser'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeiteAbstractTestCase subclass: #JadeiteDebuggerTestCase
-	instanceVariableNames: 'debugger gsProcess process'
+	instanceVariableNames: 'debugger gsProcess process secondDebugger'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -72,7 +72,7 @@ JadeiteAbstractTestCase subclass: #JadeiteMessageBoxTestCase
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
-	instanceVariableNames: 'projectsBrowser dictionaryBrowser transcriptWritesWereEnabled'
+	instanceVariableNames: 'transcriptWritesWereEnabled'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

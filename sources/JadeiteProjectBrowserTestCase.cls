@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
-	instanceVariableNames: 'projectsBrowser dictionaryBrowser transcriptWritesWereEnabled'
+	instanceVariableNames: 'transcriptWritesWereEnabled'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -9,12 +9,6 @@ JadeiteProjectBrowserTestCase guid: (GUID fromString: '{1d6db475-c257-442b-9f91-
 JadeiteProjectBrowserTestCase comment: 'General Jadeite tests. Assumes a logged in session and transcript present. '!
 !JadeiteProjectBrowserTestCase categoriesForClass!Unclassified! !
 !JadeiteProjectBrowserTestCase methodsFor!
-
-categoryListPresenter
-	^self projectsPresenter categoryListPresenter!
-
-classListPresenter
-	^self projectsPresenter classListPresenter!
 
 disableTranscriptWrites
 	(transcriptWritesWereEnabled := transcript isTranscriptInstalled)
@@ -46,31 +40,13 @@ isSampleProjectLoaded
 		detect: [:projectService | projectService name = self sampleProjectName]
 		ifNone: [self]) notNil!
 
-methodListPresenter
-	^self projectsPresenter methodListPresenter!
-
-methodSourcePresenter
-	^self projectsPresenter methodSourcePresenter!
-
-openProjectsBrowser
-	projectsBrowser := self openWindow: [transcript openJadeiteProjectsBrowser]!
-
-packageListPresenter
-	^self projectsPresenter packageListPresenter!
-
 projectList
 	^self projectListPresenter list!
-
-projectListPresenter
-	^self projectsPresenter projectListPresenter!
 
 projectNamed: aString
 	^self projectsPresenter projectListPresenter list
 		detect: [:projectService | projectService name = 'RowanSample1']
 		ifNone: []!
-
-projectsPresenter
-	^projectsBrowser currentCard!
 
 rowanProjectNames
 	"this may change"
@@ -97,17 +73,6 @@ saveSampleMethod
 
 	!
 
-selectCategoriesNamed: categories
-	categories do: 
-			[:category |
-			| service |
-			service := self categoryListPresenter list
-						detect: [:listCategory | categories includes: listCategory]
-						ifNone: [self error: 'Category ''' , category , ''' not found'].
-			self categoryListPresenter selections: (self categoryListPresenter selections asOrderedCollection
-						add: service;
-						yourself)]!
-
 selectClassListTab
 	^self projectsPresenter classHierarchyTabs firstCard!
 
@@ -132,25 +97,6 @@ selectMethodsNamed: selectors
 						detect: [:methodService | methodService selector = selector]
 						ifNone: [self error: 'Selector ''' , selector , ''' not found'].
 			self methodListPresenter selections: (self methodListPresenter selections asOrderedCollection
-						add: service;
-						yourself)]!
-
-selectRowanSample1Class
-	"big assumption - RowanSample1 class will allways be in RowanSample1 project"
-
-	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
-	self selectServicesNamed: #('RowanSample1-Core') in: self packageListPresenter.
-	self selectServicesNamed: (Array with: self class sampleClass) in: self classListPresenter!
-
-selectServicesNamed: anArray in: presenter
-	presenter resetSelection.
-	anArray isEmpty ifTrue:[^self].
-	anArray do: 
-			[:name |
-			| service |
-			service := presenter list detect: [:svc | svc name = name]
-						ifNone: [self error: 'List element ' , name , ' not found'].
-			presenter selections: (presenter selections asOrderedCollection
 						add: service;
 						yourself)]!
 
@@ -502,35 +448,24 @@ unloadSampleProject
 
 waitForPresenter: presenter
 	[presenter list isEmpty] whileTrue: [(Delay forMilliseconds: 50) wait]! !
-!JadeiteProjectBrowserTestCase categoriesFor: #categoryListPresenter!presenter!private! !
-!JadeiteProjectBrowserTestCase categoriesFor: #classListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #disableTranscriptWrites!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Available!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Loaded!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #isSampleProjectLoaded!private!private testing!project support! !
-!JadeiteProjectBrowserTestCase categoriesFor: #methodListPresenter!presenter!private! !
-!JadeiteProjectBrowserTestCase categoriesFor: #methodSourcePresenter!presenter!private! !
-!JadeiteProjectBrowserTestCase categoriesFor: #openProjectsBrowser!private!project support! !
-!JadeiteProjectBrowserTestCase categoriesFor: #packageListPresenter!presenter!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectList!private!project support! !
-!JadeiteProjectBrowserTestCase categoriesFor: #projectListPresenter!presenter!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!project support! !
-!JadeiteProjectBrowserTestCase categoriesFor: #projectsPresenter!presenter!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectsHome!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanSample1Path!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #sampleProjectName!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
-!JadeiteProjectBrowserTestCase categoriesFor: #selectCategoriesNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassTabIn:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTabIn:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectMethodsNamed:!private!selection! !
-!JadeiteProjectBrowserTestCase categoriesFor: #selectRowanSample1Class!private!selection! !
-!JadeiteProjectBrowserTestCase categoriesFor: #selectServicesNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectTreeServicesNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #serviceNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
@@ -562,10 +497,6 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase class methodsFor!
 
 resources
-	^IdentitySet with: JadeiteTestResource!
-
-sampleClass
-	^'RowanSample1'! !
+	^IdentitySet with: JadeiteTestResource! !
 !JadeiteProjectBrowserTestCase class categoriesFor: #resources!public! !
-!JadeiteProjectBrowserTestCase class categoriesFor: #sampleClass!public! !
 

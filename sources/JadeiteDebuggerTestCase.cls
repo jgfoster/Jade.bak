@@ -1,12 +1,14 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeiteAbstractTestCase subclass: #JadeiteDebuggerTestCase
-	instanceVariableNames: 'debugger gsProcess process'
+	instanceVariableNames: 'debugger gsProcess process secondDebugger'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeiteDebuggerTestCase guid: (GUID fromString: '{f159d434-7740-414b-9e64-d9fdde995061}')!
-JadeiteDebuggerTestCase comment: ''!
+JadeiteDebuggerTestCase comment: 'Tests the Jadeite debugger. 
+
+It''s recommended to run this set of tests with a fresh login to avoid counting stale processes. '!
 !JadeiteDebuggerTestCase categoriesForClass!SUnit! !
 !JadeiteDebuggerTestCase methodsFor!
 
@@ -57,6 +59,17 @@ getDebugger
 	].
 !
 
+getSecondDebugger
+	"Private - we opened up one debugger in the test, then another. find the second"
+
+	100 timesRepeat: 
+			[secondDebugger := RowanDebugger allInstances detect: [:each | true] ifNone: [nil].
+			(secondDebugger notNil and: 
+					[secondDebugger gsProcess notNil
+						and: [secondDebugger documentPresenter view selection notEmpty and: [secondDebugger ~~ debugger]]])
+				ifTrue: [^self].
+			(Delay forMilliseconds: 10) wait]!
+
 menuItemIsEnabled: menuItem
 	| commandPolicy commandQuery |
 	commandPolicy := CommandPolicy defaultClass commandSource: debugger view.
@@ -72,10 +85,31 @@ openDebuggerOn: aString
 
 	self 
 		assert: RowanDebugger allInstances isEmpty;
-		debuggerDo: [process := [session executeString: aString] fork];		"Typically ~ 180ms"
+		debuggerDo: [process := [session executeString: aString] fork];		
 		getDebugger;
 		yourself.
 !
+
+saveInterestingLoopMethod
+	| source |
+	source := 'interestingLoop
+
+	| contents result |
+	result := String new. 
+	contents := { 23 . 55 . 45 . 999 }.
+	contents select: [:n |
+		| temp |
+		temp := self test + n. 
+		(temp / self anotherNumber) > 5
+			ifTrue:[result add: ''found'']
+			ifFalse: [result add: ''not found''].
+		result add: '' - ''.
+		n = 2.
+	].
+	^result'.
+	self selectCategoriesNamed: (Array with: 'accessing'). 
+	self methodSourcePresenter value: source.
+	self projectsPresenter editSaveMethod: self classListPresenter selection!
 
 setUp
 
@@ -98,37 +132,19 @@ systemBrowser
 !
 
 tearDown
-
-	process ifNotNil: [process terminate. process := nil].
-	self 
+	process
+		ifNotNil: 
+			[process terminate.
+			process := nil].
+	self
 		terminateGsProcess;
 		closeDebuggers;
 		yourself.
 	RowanDebugger debuggerClass: nil.
 	RowanDebugger semaphore: nil.
 	super tearDown.
-	(Delay forMilliseconds: 50) wait.!
-
-terminateDoesNotWalkback
-	"Terminate a process other than the primary one"
-
-	self testsIssue: #issue82 withTitle: 'Pressing Terminate button gives walkback'.
-	TestMessageBox enableJadeiteTestMessageBox.
-	
-	[gsProcess := session executeString: '[(Delay forSeconds: 9999) wait] fork asOop'.
-	self
-		openDebuggerOn: 'nil halt';
-		assert: debugger _processList size equals: 2;
-		assert: debugger processListPresenter list size equals: 2;
-		assert: (debugger processListPresenter selectionByIndex: 2) notNil;
-		assert: (debugger _processList at: 2) oopType value equals: gsProcess.
-	TestMessageBox plannedResult: #yes.	"confirm we want to terminate process"
-	self
-		assert: debugger terminateProcess notNil;
-		assert: debugger _processList size equals: 1;
-		assert: debugger processListPresenter list size equals: 1;
-		debuggerDo: [debugger resumeProcess]]
-			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
+	(Delay forMilliseconds: 50) wait.
+	projectsBrowser ifNotNil: [projectsBrowser destroy]!
 
 terminateGsProcess
 
@@ -145,6 +161,52 @@ Processor allProcesses includes: gsProcess'.
 	].
 	self assert: false.
 !
+
+test_restartInBlock
+	| restartProcess |
+	self testsIssue: #issue126
+		withTitle: 'Debugger opens second debugger, loses stack in original debugger'.
+	self openProjectsBrowser.
+	self selectRowanSample1Class.
+	self saveInterestingLoopMethod.
+	self methodListPresenter selection setBreakAtStepPoint: 8 session: session.	"inside the block"
+	
+	[self openDebuggerOn: 'RowanSample1 new interestingLoop'.
+	restartProcess := [self debuggerDo: [debugger restart]] fork.	"can't restart inside block. expect notifier"
+	
+	[self getSecondDebugger.
+	self denyIsNil: secondDebugger.
+	self deny: debugger == secondDebugger.
+	self deny: debugger gsProcess oop = secondDebugger gsProcess oop.
+	self deny: debugger frameListPresenter list size = secondDebugger frameListPresenter list size]
+			ensure: [restartProcess terminate]]
+			ensure: [self methodListPresenter selection clearBreakAtStepPoint: 8 session: session]!
+
+test_terminateDoesNotWalkback
+	"Terminate a process other than the primary one"
+
+	| terminateProcess |
+	self testsIssue: #issue82 withTitle: 'Pressing Terminate button gives walkback'.
+	TestMessageBox enableJadeiteTestMessageBox.
+	
+	[gsProcess := session executeString: '[(Delay forSeconds: 9999) wait] fork asOop'.
+	self
+		openDebuggerOn: 'nil halt';
+		assert: debugger _processList size equals: 2;
+		assert: debugger processListPresenter list size equals: 2;
+		assert: (debugger processListPresenter selectionByIndex: 2) notNil;
+		assert: (debugger _processList at: 2) oopType value equals: gsProcess.
+	TestMessageBox plannedResult: #yes.	"confirm we want to terminate process"
+	terminateProcess := 
+			[self
+				assert: debugger terminateProcess notNil;
+				assert: debugger _processList size equals: 1;
+				assert: debugger processListPresenter list size equals: 1]
+					fork.
+	self debuggerDo: [debugger resumeProcess]]
+			ensure: 
+				[TestMessageBox disableJadeiteTestMessageBox.
+				terminateProcess terminate]!
 
 test1
 	"Basics of opening a debugger, viewing the UI, and resuming."
@@ -502,17 +564,20 @@ testStackMenuEnablement
 	debugger frameListPresenter selection: (debugger frameListPresenter list at: 2).
 	frameContextMenu itemsDo: [:item | self assert: (self menuItemIsEnabled: item)].
 ! !
-!JadeiteDebuggerTestCase categoriesFor: #closeDebuggers!public! !
-!JadeiteDebuggerTestCase categoriesFor: #debuggerDo:!public! !
-!JadeiteDebuggerTestCase categoriesFor: #getDebugger!public! !
+!JadeiteDebuggerTestCase categoriesFor: #closeDebuggers!private!support! !
+!JadeiteDebuggerTestCase categoriesFor: #debuggerDo:!private!support! !
+!JadeiteDebuggerTestCase categoriesFor: #getDebugger!private!support! !
+!JadeiteDebuggerTestCase categoriesFor: #getSecondDebugger!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #menuItemIsEnabled:!private!support! !
-!JadeiteDebuggerTestCase categoriesFor: #methodListBrowser!public! !
-!JadeiteDebuggerTestCase categoriesFor: #openDebuggerOn:!public! !
-!JadeiteDebuggerTestCase categoriesFor: #setUp!public!running! !
-!JadeiteDebuggerTestCase categoriesFor: #systemBrowser!public! !
-!JadeiteDebuggerTestCase categoriesFor: #tearDown!public!running! !
-!JadeiteDebuggerTestCase categoriesFor: #terminateDoesNotWalkback!public!tests! !
-!JadeiteDebuggerTestCase categoriesFor: #terminateGsProcess!public!running! !
+!JadeiteDebuggerTestCase categoriesFor: #methodListBrowser!private! !
+!JadeiteDebuggerTestCase categoriesFor: #openDebuggerOn:!private! !
+!JadeiteDebuggerTestCase categoriesFor: #saveInterestingLoopMethod!browser support!private! !
+!JadeiteDebuggerTestCase categoriesFor: #setUp!private!running! !
+!JadeiteDebuggerTestCase categoriesFor: #systemBrowser!private! !
+!JadeiteDebuggerTestCase categoriesFor: #tearDown!private!running! !
+!JadeiteDebuggerTestCase categoriesFor: #terminateGsProcess!private!running! !
+!JadeiteDebuggerTestCase categoriesFor: #test_restartInBlock!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #test_terminateDoesNotWalkback!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test1!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test2!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test3!public!tests! !
