@@ -121,7 +121,6 @@ frameListPresenter
 
 getProcessList
 	"#getProcessList copied from RowanProjectsBrowserPresenter>>updatePresenters"
-
 	self updateServices: (Array with: (RowanDebuggerService onProcess: gsProcess)).!
 
 methodListSelection

@@ -221,11 +221,12 @@ selectedFrame
 !
 
 selectedProcess
-
+	processListPresenter selectionOrNil ifNil: [^self].
+	gsProcess
+		ifNotNil: [gsProcess oopType value = processListPresenter selection oopType value ifFalse: [^self]].
 	self clearUI.
-	(gsProcess := processListPresenter selectionOrNil) ifNil: [^self].
-	self stack: gsProcess stack.
-!
+	gsProcess := processListPresenter selectionOrNil.
+	self stack: gsProcess stack!
 
 selectedVariable
 
@@ -248,6 +249,7 @@ showNextStatement
 stack: aList
 
 	| index |
+
 	index := self stackInitialSelection.
 	frameListOffset := index - 1.
 	frameListPresenter list: (aList copyFrom: index to: aList size).

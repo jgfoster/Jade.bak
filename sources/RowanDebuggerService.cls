@@ -16,7 +16,6 @@ initialize: aGsProcess
 !
 
 processListUpdate: aPresenter
-
 	aPresenter 
 		list: processes;
 		selection: processes first;
