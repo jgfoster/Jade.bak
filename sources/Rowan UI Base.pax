@@ -77,6 +77,8 @@ package methodNames
 	add: #GciSession -> #titleBarFor:;
 	add: #GciSession -> #verifyRowanLoaded;
 	add: #GsError -> #debugError;
+	add: #GsMethod -> #className;
+	add: #GsMethod -> #meta;
 	add: #GsMethod -> #methodService;
 	add: #JadeAutoTextPresenter3 -> #defaultMethod;
 	add: #JadeAutoTextPresenter3 -> #setDefaultMethod;
@@ -765,8 +767,18 @@ debugError
 
 !GsMethod methodsFor!
 
+className
+	^behaviorName!
+
+meta
+	"no op. We'll figure this out on the server during a debugger method save"
+
+	^nil!
+
 methodService
 	^RowanMethodService new! !
+!GsMethod categoriesFor: #className!public! !
+!GsMethod categoriesFor: #meta!accessing!public! !
 !GsMethod categoriesFor: #methodService!public!rowan! !
 
 !JadeAutoTextPresenter3 methodsFor!
@@ -2715,6 +2727,8 @@ editMenuStrings
 !
 
 editSaveMethod
+	"for older method source presenter"
+
 	| classService newMethodService |
 	classService := RowanClassService named: gsMethod className.
 	classService meta: gsMethod meta.
@@ -2723,8 +2737,11 @@ editSaveMethod
 		in: documentPresenter
 		category: gsMethod category.
 	newMethodService := classService selectedMethods first.
-	documentPresenter value: newMethodService source.
-	parentPresenter selectedFrame gsMethod: newMethodService!
+	gsMethod selector = newMethodService selector
+		ifTrue: 
+			[gsMethod replicateFrom: newMethodService.
+			documentPresenter value: newMethodService source.
+			self parentPresenter  selectedFrame ]!
 
 fileSave
 		"Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"

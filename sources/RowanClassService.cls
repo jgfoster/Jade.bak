@@ -168,6 +168,12 @@ methods
 methods: anObject
 	methods := anObject!
 
+oop
+	^oop!
+
+oop: anObject
+	oop := anObject!
+
 packageName
 	^packageName!
 
@@ -300,6 +306,8 @@ variables
 !RowanClassService categoriesFor: #meta:!accessing!private! !
 !RowanClassService categoriesFor: #methods!accessing!private! !
 !RowanClassService categoriesFor: #methods:!accessing!private! !
+!RowanClassService categoriesFor: #oop!accessing!private! !
+!RowanClassService categoriesFor: #oop:!accessing!private! !
 !RowanClassService categoriesFor: #packageName!accessing!private! !
 !RowanClassService categoriesFor: #packageName:!accessing!private! !
 !RowanClassService categoriesFor: #prepareForReplication!public!replication! !
