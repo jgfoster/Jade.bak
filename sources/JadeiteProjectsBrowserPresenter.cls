@@ -119,14 +119,16 @@ browseSelectedClass
 categoriesMenuStrings
 
 	false ifTrue: [
-		self addMethodCategory; renameMethodCategory; removeMethodCategories.
+		self addMethodCategory; renameMethodCategory; removeMethodCategories; fileOutCategories.
 	].
 	^#(
 		'&Categories'
 		'&Add//addMethodCategory'
 		'&Rename//renameMethodCategory'
 		'&Remove//removeMethodCategories'
-	).
+		'-'
+		'&File out categories//fileOutCategories'
+	)
 !
 
 categoryListPresenter
@@ -379,9 +381,7 @@ editSaveClassComment
 
 editSaveMethod
 	| selection |
-	selection := self isClassListTabSelected
-				ifTrue: [classListPresenter selection]
-				ifFalse: [classHierarchyPresenter selection].
+	selection := self selectedClass.
 	selection meta: self isClassSideSelected.
 	self editSaveMethod: selection.
 	self redrawAllViews!
@@ -396,12 +396,48 @@ editSaveMethod: classService
 			["there will be no method selected on a compiler error"
 			self selectMethodsFrom: classService]!
 
+fileOutCategories
+	| path suggestedFileName classSide |
+	classSide := self selectedClass meta ifTrue: ['class_'] ifFalse: [String new].
+	suggestedFileName := categoryListPresenter selections size = 1
+				ifTrue: [classListPresenter selection name , '_' , classSide , categoryListPresenter selection]
+				ifFalse: [classListPresenter selection name , classSide , 'categories'].
+	suggestedFileName := suggestedFileName copyWithout: $*. 
+	path := FileSaveDialog new
+				caption: 'File Out Categories';
+				fileTypes: self fileTypes;
+				defaultExtension: self defaultFileExtension;
+				value: suggestedFileName;
+				overwritePrompt;
+				showModal.
+	path ifNotNil: [self fileOutCategoriesOnPath: path]!
+
+fileOutCategoriesOnPath: path
+	| file service answeringService |
+	service := self selectedClass.
+	service
+		command: #fileoutCategories:;
+		commandArgs: (Array with: categoryListPresenter selections).
+	answeringService := (self issueCommand: (Array with: service)) first.
+	file := FileStream write: path.
+	[file nextPutAll: answeringService answer] ensure: [file close]!
+
+fileOutClassOnPath: path
+	| file answeringService service |
+	service := self selectedClass.
+	service command: #fileoutClass.
+	answeringService := (self issueCommand: (Array with: service)) first.
+	file := FileStream write: path.
+	[file nextPutAll: answeringService answer] ensure: [file close]!
+
 fileOutMethods
-	| path suggestedFileName |
+	| path suggestedFileName classSide |
+	classSide := self selectedClass meta ifTrue: ['class_'] ifFalse: [String new].
 	suggestedFileName := methodListPresenter selections size = 1
 				ifTrue: 
-					[methodListPresenter selection className , '_' , methodListPresenter selection selector asString]
-				ifFalse: [methodListPresenter selections first className , '_methods'].
+					[methodListPresenter selection className , '_' , classSide
+						, methodListPresenter selection selector asString]
+				ifFalse: [methodListPresenter selections first className , '_' , classSide , 'methods'].
 	path := FileSaveDialog new
 				caption: 'File Out Method';
 				fileTypes: self fileTypes;
@@ -412,14 +448,14 @@ fileOutMethods
 	path ifNotNil: [self fileOutMethodsOnPath: path]!
 
 fileOutMethodsOnPath: path
-	|  file services |
-	methodListPresenter selections size = 1
-		ifTrue: 
-			[methodListPresenter selection command: #fileout.
-			services := self issueCommand: (Array with: methodListPresenter selection).
-			file := FileStream write: path.
-			[file nextPutAll: services first answer] ensure: [file close]].
-	self rowanFixMe	"multiple methods"!
+	| file answeringService service |
+	service := self selectedClass.
+	service
+		command: #fileoutMethods:;
+		commandArgs: (Array with: methodListPresenter selections).
+	answeringService := (self issueCommand: (Array with: service)) first.
+	file := FileStream write: path.
+	[file nextPutAll: answeringService answer] ensure: [file close]!
 
 filterTabChanged
 	self isClassSelected
@@ -472,9 +508,7 @@ gitCommit
 
 gotoClassDefinedPackage
 	| newPackageSelection selection |
-	selection := self isClassListTabSelected
-				ifTrue: [classListPresenter selection]
-				ifFalse: [classHierarchyPresenter selection].
+	selection := self selectedClass.
 	newPackageSelection := packageListPresenter list
 				detect: [:svc | svc name = selection definedPackageName].
 	self selectClassListTab.
@@ -899,6 +933,10 @@ queryCommand: aCommandQuery
 		ifTrue: 
 			[aCommandQuery isEnabled: self hasCategorySelected.
 			^true].
+	command == #fileOutCategories
+		ifTrue: 
+			[aCommandQuery isEnabled: self hasCategorySelected.
+			^true].
 	command == #cloneProject
 		ifTrue: 
 			[aCommandQuery isEnabled: true.
@@ -1073,6 +1111,11 @@ selectClass: classSelection
 
 selectClassListTab
 	classHierarchyTabs firstCard!
+
+selectedClass
+	^self isClassListTabSelected
+		ifTrue: [classListPresenter selection]
+		ifFalse: [classHierarchyPresenter selection]!
 
 selectedMethodCategory
 	^methodListPresenter selectionOrNil ifNotNil: [:methodService | methodService category]!
@@ -1264,13 +1307,14 @@ updateCommand: aString onSuccessDo: aBlock
 updateHierarchy
 	| service selection |
 	classHierarchyPresenter model: TreeModel new.
-	service := classListPresenter selectionOrNil ifNil: [RowanClassService new name: 'Object'].
-	service command: #classHierarchy.
-	self issueCommand: (Array with: service).
-	service name = 'Object'
-		ifFalse: 
-			[selection := classHierarchyPresenter model asBag detect: [:svc | svc name = service name].
-			classHierarchyPresenter selection: selection]!
+	Cursor wait showWhile: 
+			[service := classListPresenter selectionOrNil ifNil: [RowanClassService new name: 'Object'].
+			service command: #classHierarchy.
+			self issueCommand: (Array with: service).
+			service name = 'Object'
+				ifFalse: 
+					[selection := classHierarchyPresenter model asBag detect: [:svc | svc name = service name].
+					classHierarchyPresenter selection: selection]]!
 
 updateMenuBar
 
@@ -1473,6 +1517,9 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClassComment!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers support!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #fileOutCategories!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #fileOutCategoriesOnPath:!menu handlers support!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #fileOutClassOnPath:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutMethods!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutMethodsOnPath:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!updating! !
@@ -1533,6 +1580,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoryFrom:!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClassListTab!public!selection! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #selectedClass!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectedMethodCategory!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectedMethodName!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
