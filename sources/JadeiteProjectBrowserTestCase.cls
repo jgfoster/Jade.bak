@@ -181,7 +181,6 @@ test_classListNotBlank
 	self selectHierarchyTabIn: self projectsPresenter.
 	self assert: self projectsPresenter classHierarchyPresenter selection name = 'RowanClassService'.
 	self selectServicesNamed: #('Rowan-Kernel') in: self packageListPresenter.
-	self assert: self projectsPresenter classHierarchyPresenter model isEmpty.  "for now"
 	self selectClassListTab.
 	self assert: self projectsPresenter classListPresenter list notEmpty. 
 	rowanClass := self projectsPresenter classListPresenter list detect:[:classService | classService name = 'Rowan'] ifNone:[].
