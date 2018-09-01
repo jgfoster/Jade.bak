@@ -30,7 +30,7 @@ editMenuStrings
 	].
 	^#(
 		'&Edit'
-		'&Save/Ctrl+S/editSaveMethod'
+		'&Save/Ctrl+S/editSaveMethod' 
 		'-'
 		'&Undo/Ctrl+Z/undo'
 		'&Redo/Ctrl+Y/redo'
@@ -63,6 +63,9 @@ editSaveMethod
 		editSaveMethod: classService
 		in: documentPresenter
 		category: methodService category.!
+
+fileSave
+	self editSaveMethod!
 
 methodListSelection
 
@@ -110,6 +113,7 @@ value: string
 !JadeiteMethodSourcePresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #editMenuStrings!menu handlers!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #editSaveMethod!menu handlers!public! !
+!JadeiteMethodSourcePresenter categoriesFor: #fileSave!menu handlers!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #methodListSelection!accessing!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #methodService!accessing!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #methodService:!accessing!private! !
