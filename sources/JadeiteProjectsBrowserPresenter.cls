@@ -422,6 +422,18 @@ fileOutCategoriesOnPath: path
 	file := FileStream write: path.
 	[file nextPutAll: answeringService answer] ensure: [file close]!
 
+fileOutClass
+	| path suggestedFileName classSide |
+	suggestedFileName := classListPresenter selection name. 
+	path := FileSaveDialog new
+				caption: 'File Out Class';
+				fileTypes: self fileTypes;
+				defaultExtension: self defaultFileExtension;
+				value: suggestedFileName;
+				overwritePrompt;
+				showModal.
+	path ifNotNil: [self fileOutClassOnPath: path]!
+
 fileOutClassOnPath: path
 	| file answeringService service |
 	service := self selectedClass.
@@ -1519,6 +1531,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutCategories!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutCategoriesOnPath:!menu handlers support!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #fileOutClass!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutClassOnPath:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutMethods!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutMethodsOnPath:!menu handlers support!private! !
