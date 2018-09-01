@@ -43,29 +43,6 @@ defineInstanceMethod
 		inCategory: category.
 !
 
-defineMethod: methodString inClassNamed: className inPackageNamed: aPackageName inCategory: categoryName 
- 
-	| string result |
-	string := className , 
-		' compileMethod: ' , methodString printString , '
-		dictionaries: System myUserProfile symbolList
-		category: ' , categoryName printString.
-	[
-		(result := gciSession executeString: string) isNil ifTrue: [^self].
-	] on: GsCompileError do: [:ex | 
-		(JadeWorkspace showOnSession: gciSession)
-			caption: 'Jade Workspace - Compile Error';
-			showError: ex list on: string.
-		^self.
-	].
-	result := GsCompileError
-		errorListFor: result
-		inSession: gciSession.
-	(JadeWorkspace showOnSession: gciSession)
-		caption: 'Jade Workspace - Compile Error on ' , className;
-		showError: result on: methodString.
-!
-
 doIt
 
 	self doIt: text.
@@ -328,7 +305,6 @@ stream: aStream
 !JadeFileIn categoriesFor: #defineClass!public! !
 !JadeFileIn categoriesFor: #defineClassMethod!public! !
 !JadeFileIn categoriesFor: #defineInstanceMethod!public! !
-!JadeFileIn categoriesFor: #defineMethod:inClassNamed:inPackageNamed:inCategory:!public! !
 !JadeFileIn categoriesFor: #doIt!public! !
 !JadeFileIn categoriesFor: #doIt:!public! !
 !JadeFileIn categoriesFor: #fileInPath:session:!public! !

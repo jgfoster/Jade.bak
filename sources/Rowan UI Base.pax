@@ -90,6 +90,7 @@ package methodNames
 	add: #JadeDebugger -> #updateCaption;
 	add: #JadeErrorShell -> #doCopy;
 	add: #JadeErrorShell -> #onViewOpened;
+	add: #JadeFileIn -> #defineMethod:inClassNamed:inPackageNamed:inCategory:;
 	add: #JadeFindClassDialog -> #initializeAvailable;
 	add: #JadeImageStripper -> #closeLoginShells;
 	add: #JadeImageStripper -> #createVersionResource;
@@ -887,6 +888,31 @@ onViewOpened
 	self model: #'terminate'.		"If window is closed without any buttons pressed!!"! !
 !JadeErrorShell categoriesFor: #doCopy!public! !
 !JadeErrorShell categoriesFor: #onViewOpened!public! !
+
+!JadeFileIn methodsFor!
+
+defineMethod: methodString inClassNamed: className inPackageNamed: aPackageName inCategory: categoryName 
+ 
+	| string result |
+	string := className , 
+		' rwCompileMethod: ' , methodString printString , '
+		category: ' , categoryName printString.
+	[
+		(result := gciSession executeString: string) isNil ifTrue: [^self].
+	] on: GsCompileError do: [:ex | 
+		(JadeWorkspace showOnSession: gciSession)
+			caption: 'Jade Workspace - Compile Error';
+			showError: ex list on: string.
+		^self.
+	].
+	result := GsCompileError
+		errorListFor: result
+		inSession: gciSession.
+	(JadeWorkspace showOnSession: gciSession)
+		caption: 'Jade Workspace - Compile Error on ' , className;
+		showError: result on: methodString.
+! !
+!JadeFileIn categoriesFor: #defineMethod:inClassNamed:inPackageNamed:inCategory:!public! !
 
 !JadeFindClassDialog methodsFor!
 
