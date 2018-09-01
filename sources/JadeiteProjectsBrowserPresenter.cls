@@ -982,8 +982,11 @@ refreshFromServer
 	self redrawAllViews!
 
 refreshMethodsOn: presenter
-	| classService |
-	classService := classListPresenter selectionOrNil ifNil:[^self].
+	| classService classPresenter |
+	classPresenter := self isClassListTabSelected
+				ifTrue: [classListPresenter]
+				ifFalse: [classHierarchyPresenter].
+	classService := classPresenter selectionOrNil ifNil: [^self].
 	self isCategoriesTabSelected
 		ifTrue: [classService filters: categoryListPresenter selections]
 		ifFalse: [classService filters: variableListPresenter selections].
@@ -993,8 +996,10 @@ refreshMethodsOn: presenter
 			[self isCategoriesTabSelected
 				ifTrue: [classService filterType: 'categories']
 				ifFalse: [classService filterType: 'variables']].
-	classService methods isNil ifTrue:[ "if we got an error recently, could be nil"
-		self updateServices: (Array with: classService)]. 
+	classService methods isNil
+		ifTrue: 
+			["if we got an error recently, could be nil"
+			self updateServices: (Array with: classService)].
 	classService displayMethodsOn: presenter!
 
 registerClassData
