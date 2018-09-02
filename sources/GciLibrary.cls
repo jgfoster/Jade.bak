@@ -359,6 +359,10 @@ fileNameSearch
 	self subclassResponsibility.
 !
 
+isRowanReady
+
+	^false!
+
 onStartup2
 
 	default := nil.
@@ -403,6 +407,7 @@ withDisplayName: aString
 !GciLibrary class categoriesFor: #displayName!public! !
 !GciLibrary class categoriesFor: #fileName!public! !
 !GciLibrary class categoriesFor: #fileNameSearch!public! !
+!GciLibrary class categoriesFor: #isRowanReady!public!testing! !
 !GciLibrary class categoriesFor: #onStartup2!public! !
 !GciLibrary class categoriesFor: #open:!public! !
 !GciLibrary class categoriesFor: #sessionStarted!public! !

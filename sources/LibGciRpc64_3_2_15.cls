@@ -18,7 +18,12 @@ displayName
 fileNameSearch
 
 	^'libgcirpc-3.2.15-32.dll'.
-! !
+!
+
+isRowanReady
+
+	^true! !
 !LibGciRpc64_3_2_15 class categoriesFor: #displayName!public! !
 !LibGciRpc64_3_2_15 class categoriesFor: #fileNameSearch!public! !
+!LibGciRpc64_3_2_15 class categoriesFor: #isRowanReady!public!testing! !
 

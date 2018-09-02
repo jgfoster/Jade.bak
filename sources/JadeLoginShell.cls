@@ -295,6 +295,10 @@ queryCommand: query
 	^super queryCommand: query.
 !
 
+rowanReadyLibraries
+	^GciLibrary allSubclasses select: [:library | library isRowanReady]
+		thenCollect: [:library | library displayName]!
+
 saveDocument
 
 	| result |
@@ -413,6 +417,7 @@ updateView
 !JadeLoginShell categoriesFor: #openHomePage!public! !
 !JadeLoginShell categoriesFor: #postLogin:!public! !
 !JadeLoginShell categoriesFor: #queryCommand:!public! !
+!JadeLoginShell categoriesFor: #rowanReadyLibraries!gci!private! !
 !JadeLoginShell categoriesFor: #saveDocument!public! !
 !JadeLoginShell categoriesFor: #sendRequiredMessages!public! !
 !JadeLoginShell categoriesFor: #setDocumentData:!accessing!public! !

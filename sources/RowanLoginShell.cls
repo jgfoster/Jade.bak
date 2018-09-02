@@ -17,9 +17,7 @@ basicCaption
 
 fillVersionList
 	| list |
-
-	list := GciLibrary allSubclasses collect: [:each | each displayName].
-	list := list reject: [:each | each isNil or:[('*3.2.15*' match: each) not]].
+	list := self rowanReadyLibraries.
 	list := list asSortedCollection: [:a :b | self isVersion: a lessThanOrEqualTo: b].
 	versionListPresenter list: list!
 
