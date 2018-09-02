@@ -15,7 +15,18 @@ answer
 	^answer!
 
 answer: anObject
-	answer := anObject! !
+	answer := anObject!
+
+flipTranscriptIn: session
+	command := #flipTranscript.
+	BrowserUpdate current issueCommand: (Array with: self) session: session!
+
+isTranscriptInstalledIn: session
+	command := #transcriptInstalled.
+	BrowserUpdate current issueCommand: (Array with: self) session: session.
+	^answer! !
 !RowanAnsweringService categoriesFor: #answer!accessing!private! !
 !RowanAnsweringService categoriesFor: #answer:!accessing!private! !
+!RowanAnsweringService categoriesFor: #flipTranscriptIn:!commands!public! !
+!RowanAnsweringService categoriesFor: #isTranscriptInstalledIn:!commands!public! !
 

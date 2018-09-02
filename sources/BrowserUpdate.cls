@@ -27,6 +27,14 @@ initializeUpdates
 	updates := OrderedCollection new.
 	!
 
+issueCommand: services session: session
+	| stonString stonResultString |
+	services do:[:service | service prepareForReplication].
+	stonString := STON toString: services.
+	[stonResultString := session serverPerform: #updateFromSton: with: stonString]
+		ensure: [services do: [:service | service clearCommand]].
+	^self update: services afterStonReplication: stonResultString.!
+
 performUpdate: updateBlock with: selector
 	updates do: 
 			[:update |
@@ -105,6 +113,7 @@ updatesPerform: selector presenter: presenter browser: browser
 !BrowserUpdate categoriesFor: #debug:!accessing!private! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
 !BrowserUpdate categoriesFor: #initializeUpdates!initialization!public! !
+!BrowserUpdate categoriesFor: #issueCommand:session:!commands!public! !
 !BrowserUpdate categoriesFor: #performUpdate:with:!private!updating! !
 !BrowserUpdate categoriesFor: #register:selector:!public!registeringPresenters! !
 !BrowserUpdate categoriesFor: #register:selector:browser:!public!registeringPresenters! !

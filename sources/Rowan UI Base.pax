@@ -14,6 +14,9 @@ package classNames
 	add: #JadeiteMethodListBrowser;
 	add: #JadeiteMethodListPresenter;
 	add: #JadeiteMethodSourcePresenter;
+	add: #JadeitePreferences;
+	add: #JadeitePreferencesPresenter;
+	add: #JadeitePreferencesShell;
 	add: #JadeiteProjectsBrowserPresenter;
 	add: #JadeiteProjectsSystemBrowser;
 	add: #PackageMethodListPresenter;
@@ -73,7 +76,10 @@ package methodNames
 	add: #GciSession -> #hasServer;
 	add: #GciSession -> #initializeServer;
 	add: #GciSession -> #oopTypeFor:;
+	add: #GciSession -> #postLoadClientPreferences;
+	add: #GciSession -> #postLoadServerPreferences;
 	add: #GciSession -> #postLoginAs:useSocket:;
+	add: #GciSession -> #preferencesFile;
 	add: #GciSession -> #terminate:;
 	add: #GciSession -> #titleBarFor:;
 	add: #GciSession -> #verifyRowanLoaded;
@@ -188,6 +194,7 @@ package methodNames
 	add: #JadeTextDocument -> #update:afterStonReplication:;
 	add: #JadeTextDocument -> #updateServices:;
 	add: #JadeToolsToolBarPresenter -> #browseClasses;
+	add: #JadeToolsToolBarPresenter -> #jadePreferences;
 	add: #JadeTranscript -> #methodsChanged24;
 	add: #JadeTranscript -> #methodsChangedDays;
 	add: #JadeTranscript -> #openRowanProjectList;
@@ -284,6 +291,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Difference\Dolphin Differences Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Font\Dolphin Font Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Key-Value Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
@@ -326,6 +334,11 @@ package!
 
 "Class Definitions"!
 
+Object subclass: #JadeitePreferences
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 Object subclass: #Rowan
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -491,6 +504,11 @@ RowanSystemBrowserPresenter subclass: #JadeiteProjectsBrowserPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadePreferencesPresenter subclass: #JadeitePreferencesPresenter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 MethodListPresenter subclass: #PackageMethodListPresenter
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -557,6 +575,11 @@ JadeMethodListBrowser subclass: #RowanMethodListBrowser
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanMethodListBrowser subclass: #JadeiteMethodListBrowser
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePreferencesShell subclass: #JadeitePreferencesShell
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -716,15 +739,53 @@ oopTypeFor: anObject
 	SessionManager current pause.
 !
 
+postLoadClientPreferences
+	| path file stream nextLine |
+	path := File workingDirectory , self preferencesFile.
+	(File exists: path) ifFalse: [^self].
+	file := File open: path mode: #read.
+	
+	[stream := file readWriteStream.
+	[stream atEnd] whileFalse: 
+			[| message |
+			nextLine := stream nextLine.
+			message := (nextLine subStrings first , ':session:') asSymbol.
+			(JadeitePreferences canUnderstand: message)
+				ifTrue: 
+					[JadeitePreferences new
+						perform: message
+						with: nextLine subStrings last
+						with: self]]]
+			ensure: [file close]!
+
+postLoadServerPreferences
+	self
+		executeString: '
+		[| block |
+		block := UserGlobals at: #JadeitePreferences ifAbsent:[^self].
+		(block class canUnderstand: #value) ifTrue:[
+			block value]] 
+		on: Error 
+		do:[:ex | "do not break the login"]'!
+
 postLoginAs: aString useSocket: aBoolean
-	self verifyRowanLoaded ifFalse: [^MessageBox notify: 'Rowan not loaded or $ROWAN_PROJECTS_HOME not set. Logging out.' "log out in RowinLoginShell>>postLogin:"].
+	self verifyRowanLoaded
+		ifFalse: 
+			[^MessageBox notify: 'Rowan not loaded or $ROWAN_PROJECTS_HOME not set. Logging out.'	"log out in RowinLoginShell>>postLogin:"].
 	"self initializeServer."
-	server := self executeString: '| server | 
+	server := self
+				executeString: '| server | 
 			server := (Rowan jadeServerClassNamed: #JadeServer64bit32) new initialize; yourself.
 			System _sessionStateAt: 3 put: server.
 			^server'.
+	self postLoadClientPreferences.
+	self postLoadServerPreferences.
 	aBoolean ifTrue: [self attemptSocket].
 	self setInitials: aString	"This gets back the session and serial number"!
+
+preferencesFile
+
+	^'Jadeite.prefs'!
 
 terminate: anOopType
 	[self serverPerform: #terminate: with: anOopType] on: GsError
@@ -768,7 +829,10 @@ verifyRowanLoaded
 !GciSession categoriesFor: #hasServer!public! !
 !GciSession categoriesFor: #initializeServer!private! !
 !GciSession categoriesFor: #oopTypeFor:!public! !
+!GciSession categoriesFor: #postLoadClientPreferences!private! !
+!GciSession categoriesFor: #postLoadServerPreferences!private! !
 !GciSession categoriesFor: #postLoginAs:useSocket:!private! !
+!GciSession categoriesFor: #preferencesFile!constants!private! !
 !GciSession categoriesFor: #terminate:!public! !
 !GciSession categoriesFor: #titleBarFor:!public!title bar! !
 !GciSession categoriesFor: #verifyRowanLoaded!private! !
@@ -1169,12 +1233,7 @@ resource_Default_view
 !JadePresenter methodsFor!
 
 issueCommand: services
-	| stonString stonResultString |
-	services do:[:service | service prepareForReplication].
-	stonString := STON toString: services.
-	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
-		ensure: [services do: [:service | service clearCommand]].
-	^self update: services afterStonReplication: stonResultString.!
+	^BrowserUpdate current issueCommand: services session: self gciSession!
 
 update: services afterStonReplication: stonResults
 	^BrowserUpdate current update: services afterStonReplication: stonResults! !
@@ -2516,12 +2575,7 @@ aboutJadeite
 	JadeLoginShell aboutJadeite!
 
 issueCommand: services
-	| stonString stonResultString |
-	services do:[:service | service prepareForReplication].
-	stonString := STON toString: services.
-	[stonResultString := self gciSession serverPerform: #updateFromSton: with: stonString]
-		ensure: [services do: [:service | service clearCommand]].
-	^self update: services afterStonReplication: stonResultString.!
+	^BrowserUpdate current issueCommand: services session: self gciSession!
 
 onPromptToSaveChanges: aBooleanValue
 	"we were calling #getDocumentData essentially to test for nil. 
@@ -2556,8 +2610,14 @@ updateServices: services
 browseClasses
 
 	RowanSystemBrowser showOnSession: gciSession.
+!
+
+jadePreferences
+
+	JadeitePreferencesShell showOnSession: gciSession.
 ! !
 !JadeToolsToolBarPresenter categoriesFor: #browseClasses!public! !
+!JadeToolsToolBarPresenter categoriesFor: #jadePreferences!public! !
 
 !JadeTranscript methodsFor!
 

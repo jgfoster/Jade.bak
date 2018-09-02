@@ -37,7 +37,6 @@ package methodNames
 	add: #JadeServer64bit3x -> #_stepPointsForBreaksInMethod:;
 	add: #JadeTextDocument -> #fileIn;
 	add: #JadeTextDocument -> #jadeInspect;
-	add: #JadeToolsToolBarPresenter -> #jadePreferences;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -327,14 +326,6 @@ jadeInspect
 ! !
 !JadeTextDocument categoriesFor: #fileIn!private! !
 !JadeTextDocument categoriesFor: #jadeInspect!menu handlers!private! !
-
-!JadeToolsToolBarPresenter methodsFor!
-
-jadePreferences
-
-	JadePreferencesShell showOnSession: gciSession.
-! !
-!JadeToolsToolBarPresenter categoriesFor: #jadePreferences!public! !
 
 "End of package definition"!
 

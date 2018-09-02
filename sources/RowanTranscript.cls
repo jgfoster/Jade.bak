@@ -18,15 +18,12 @@ flipDebugger
 flipTranscript
 	| answeringService |
 	answeringService := RowanAnsweringService new.
-	answeringService command: #flipTranscript.
-	self issueCommand: (Array with: answeringService)!
+	answeringService flipTranscriptIn: self gciSession!
 
 isTranscriptInstalled
 	| answeringService |
 	answeringService := RowanAnsweringService new.
-	answeringService command: #transcriptInstalled.
-	self issueCommand: (Array with: answeringService).
-	^answeringService answer!
+	^answeringService isTranscriptInstalledIn: self gciSession!
 
 openDictionaryBrowser
 	gciSession hasServer ifTrue: [^RowanSystemBrowser showOnSession: gciSession]!
