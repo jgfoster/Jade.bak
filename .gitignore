@@ -20,3 +20,6 @@ runtime/Jade.*
 tempBkp/*
 runtime/Jadeite.exe
 runtime/Jadeite.xml
+
+Jadeite.prefs
+Jadeite.prefsBKP
