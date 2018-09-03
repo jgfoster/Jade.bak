@@ -76,7 +76,7 @@ basicUnloadProjects: projectNames
 	methodListPresenter model: ListModel new!
 
 browseClassReferences
-	self browseClassReferences: (classListPresenter selectionIfNone: [^self]) name!
+	self browseClassReferences: self selectedClass name!
 
 browseHierarchyImplementors
 
