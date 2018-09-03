@@ -19,6 +19,32 @@ categoryListPresenter
 classListPresenter
 	^self projectsPresenter classListPresenter!
 
+ensureRowanSample1Attached
+	| sample1Path root |
+	sample1Path := self rowanSample1Path.
+	root := self rowanProjectsHome.
+	self projectsPresenter basicCloneProject: sample1Path root: root.
+	self projectsPresenter refreshFromServer.!
+
+ensureRowanSample1Available
+
+	self ensureRowanSample1Attached.
+	self ensureRowanSample1Loaded. 
+	!
+
+ensureRowanSample1Loaded
+	| selections |
+	self selectServicesNamed: (Array with: self sampleProjectName)
+		in: self projectsPresenter projectListPresenter.
+	selections := self projectsPresenter projectListPresenter selections.
+	RowanBrowserService new reloadProjects: selections presenter: self projectsPresenter.
+	self projectsPresenter refreshFromServer!
+
+isSampleProjectLoaded
+	^(self projectsPresenter projectListPresenter list
+		detect: [:projectService | projectService name = self sampleProjectName]
+		ifNone: []) notNil!
+
 methodListPresenter
 	^self projectsPresenter methodListPresenter!
 
@@ -50,7 +76,16 @@ projectListPresenter
 projectsPresenter
 	^projectsBrowser currentCard!
 
+rowanProjectsHome
+	^'$ROWAN_PROJECTS_HOME'!
+
+rowanSample1Path
+	^'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston'!
+
 sampleClass
+	^'RowanSample1'!
+
+sampleProjectName
 	^'RowanSample1'!
 
 selectCategoriesNamed: categories
@@ -100,10 +135,18 @@ testsIssue: aSymbol withTitle: anObject
 	"Issues currently reside in: 
 		https://github.com/ericwinger/Jade/issues/"
 
-	! !
+	!
+
+unloadSampleProject
+	self isSampleProjectLoaded
+		ifTrue: [self projectsPresenter basicUnloadProjects: (Array with: self sampleProjectName)]! !
 !JadeiteAbstractTestCase categoriesFor: #abortTransaction!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #categoryListPresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #classListPresenter!private!project browser support! !
+!JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !
+!JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Available!private!project support! !
+!JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Loaded!private!project support! !
+!JadeiteAbstractTestCase categoriesFor: #isSampleProjectLoaded!private!private testing!project support! !
 !JadeiteAbstractTestCase categoriesFor: #methodListPresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #methodSourcePresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #openProjectsBrowser!private!project browser support! !
@@ -111,13 +154,17 @@ testsIssue: aSymbol withTitle: anObject
 !JadeiteAbstractTestCase categoriesFor: #packageListPresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #projectListPresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #projectsPresenter!private!project browser support! !
+!JadeiteAbstractTestCase categoriesFor: #rowanProjectsHome!constants!private! !
+!JadeiteAbstractTestCase categoriesFor: #rowanSample1Path!constants!private! !
 !JadeiteAbstractTestCase categoriesFor: #sampleClass!private!project browser support! !
+!JadeiteAbstractTestCase categoriesFor: #sampleProjectName!constants!private! !
 !JadeiteAbstractTestCase categoriesFor: #selectCategoriesNamed:!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #selectRowanSample1Class!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #selectServicesNamed:in:!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #setUp!private! !
 !JadeiteAbstractTestCase categoriesFor: #tearDown!private! !
 !JadeiteAbstractTestCase categoriesFor: #testsIssue:withTitle:!public!support! !
+!JadeiteAbstractTestCase categoriesFor: #unloadSampleProject!private!project support! !
 
 !JadeiteAbstractTestCase class methodsFor!
 

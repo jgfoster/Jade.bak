@@ -1126,8 +1126,8 @@ selectClassListTab
 
 selectedClass
 	^self isClassListTabSelected
-		ifTrue: [classListPresenter selection]
-		ifFalse: [classHierarchyPresenter selection]!
+		ifTrue: [classListPresenter selectionIfNone: []]
+		ifFalse: [classHierarchyPresenter selectionIfNone: []]!
 
 selectedMethodCategory
 	^methodListPresenter selectionOrNil ifNotNil: [:methodService | methodService category]!

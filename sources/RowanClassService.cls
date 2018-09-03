@@ -46,10 +46,8 @@ classHierarchyUpdate: presenter browser: browser
 !
 
 classMethodsUpdate: presenter browser: browser
-	| classPresenter |
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].
-	classPresenter := self classOrHierarchyPresenter: browser.
-	classPresenter selections detect: [:classService | classService name = name] ifNone: [^self].
+	browser selectedClass name = name ifFalse: [^self].
 	filters isEmpty ifTrue:[filterType := nil].
 	self displayMethodsOn: presenter!
 
@@ -84,12 +82,9 @@ definedPackageName: anObject
 	definedPackageName := anObject!
 
 displayMethodsOn: presenter
-	| selections visibleMethods |
+	| visibleMethods |
 	visibleMethods := self computeVisibleMethods.
-	selections := presenter selections collect: [:methodService | methodService selector].
-	presenter list: visibleMethods.
-	presenter
-		selections: (visibleMethods select: [:methodService | selections includes: methodService selector])!
+	self updateListIn: presenter from: visibleMethods!
 
 displayString
 	| displayString |
@@ -268,6 +263,19 @@ updateCategories: presenter
 	availableSelections := categories select: [:filter | selections includes: filter].
 	presenter selections: availableSelections!
 
+updateListIn: presenter from: visibleMethods
+	"add new methods and remove removed methods without
+	disturbing selections which trigger updates"
+	presenter selections isEmpty ifTrue:[^presenter list: visibleMethods].
+	presenter list copy do: 
+			[:methodService |
+			visibleMethods detect: [:visible | visible selector = methodService selector]
+				ifNone: [presenter model remove: methodService]].
+	visibleMethods do: 
+			[:visible |
+			presenter list detect: [:methodService | methodService selector = visible selector]
+				ifNone: [presenter model add: visible]]!
+
 updateVariables: presenter
 	| selections availableSelections |
 	selections := presenter selections.
@@ -328,6 +336,7 @@ variables
 !RowanClassService categoriesFor: #template!accessing!private! !
 !RowanClassService categoriesFor: #template:!accessing!private! !
 !RowanClassService categoriesFor: #updateCategories:!private!updating! !
+!RowanClassService categoriesFor: #updateListIn:from:!private! !
 !RowanClassService categoriesFor: #updateVariables:!private!updating! !
 !RowanClassService categoriesFor: #variables!accessing!private! !
 

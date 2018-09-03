@@ -14,32 +14,6 @@ disableTranscriptWrites
 	(transcriptWritesWereEnabled := transcript isTranscriptInstalled)
 		ifTrue: [transcript flipTranscript]	"turn off gemstone transcript writes for performance"!
 
-ensureRowanSample1Attached
-	| sample1Path root |
-	sample1Path := self rowanSample1Path.
-	root := self rowanProjectsHome.
-	self projectsPresenter basicCloneProject: sample1Path root: root.
-	self projectsPresenter refreshFromServer.!
-
-ensureRowanSample1Available
-
-	self ensureRowanSample1Attached.
-	self ensureRowanSample1Loaded. 
-	!
-
-ensureRowanSample1Loaded
-	| selections |
-	self selectServicesNamed: (Array with: self sampleProjectName)
-		in: self projectsPresenter projectListPresenter.
-	selections := self projectsPresenter projectListPresenter selections.
-	RowanBrowserService new reloadProjects: selections presenter: self projectsPresenter.
-	self projectsPresenter refreshFromServer!
-
-isSampleProjectLoaded
-	^(self projectsPresenter projectListPresenter list
-		detect: [:projectService | projectService name = self sampleProjectName]
-		ifNone: [self]) notNil!
-
 projectList
 	^self projectListPresenter list!
 
@@ -52,15 +26,6 @@ rowanProjectNames
 	"this may change"
 
 	^#('Cypress' 'Rowan' 'STON' 'Tonel')!
-
-rowanProjectsHome
-	^'$ROWAN_PROJECTS_HOME'!
-
-rowanSample1Path
-	^'file:$ROWAN_PROJECTS_HOME/Rowan/samples/RowanSample1.ston'!
-
-sampleProjectName
-	^'RowanSample1'!
 
 saveSampleMethod
 
@@ -125,9 +90,11 @@ setUp
 
 tearDown
 	super tearDown.
+	self unloadSampleProject.
 	self abortTransaction.
 	projectsBrowser ifNotNil: [projectsBrowser destroy].
-	transcriptWritesWereEnabled ifTrue: [transcript flipTranscript]!
+	transcriptWritesWereEnabled ifTrue: [transcript flipTranscript].
+!
 
 test_addRemoveCategory
 	self selectRowanSample1Class.
@@ -323,8 +290,6 @@ test_projectRemoved
 	removed behind the tool's back"
 
 	| sampleProject |
-	self ensureRowanSample1Attached.
-	self projectsPresenter refreshFromServer.
 	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
 	sampleProject := self projectNamed: 'RowanSample1'.
 	self denyIsNil: sampleProject.
@@ -376,6 +341,7 @@ test_saveClassMethodHierarchy
 	| source |
 	self testsIssue: #issue121 withTitle: 'Package Browser (3.0.20): hierarchy class view and classes defined in different pacakge oddity'.
 	self selectRowanSample1Class.
+	self assert: self classListPresenter selection name = 'RowanSample1'. 
 	self selectHierarchyTab.
 	self selectClassTab.
 	self projectsPresenter basicAddMethodCategory: 'class side category'.
@@ -441,23 +407,12 @@ test_simpleHierarchyTest
 	self selectClassListTab.
 	self assert: self projectsPresenter classListPresenter selection name = 'RowanProjectService'!
 
-unloadSampleProject
-	self isSampleProjectLoaded
-		ifTrue: [self projectsPresenter basicUnloadProjects: (Array with: self sampleProjectName)]!
-
 waitForPresenter: presenter
 	[presenter list isEmpty] whileTrue: [(Delay forMilliseconds: 50) wait]! !
 !JadeiteProjectBrowserTestCase categoriesFor: #disableTranscriptWrites!private! !
-!JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !
-!JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Available!private!project support! !
-!JadeiteProjectBrowserTestCase categoriesFor: #ensureRowanSample1Loaded!private!project support! !
-!JadeiteProjectBrowserTestCase categoriesFor: #isSampleProjectLoaded!private!private testing!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectList!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!constants!private! !
-!JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectsHome!constants!private! !
-!JadeiteProjectBrowserTestCase categoriesFor: #rowanSample1Path!constants!private! !
-!JadeiteProjectBrowserTestCase categoriesFor: #sampleProjectName!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassTab!private!selection! !
@@ -490,7 +445,6 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultiplePackages!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultipleProjects!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_simpleHierarchyTest!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #unloadSampleProject!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #waitForPresenter:!private!selection! !
 
 !JadeiteProjectBrowserTestCase class methodsFor!

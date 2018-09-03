@@ -13,36 +13,8 @@ RowanBrowserService comment: ''!
 = projectService
 	^name = projectService name!
 
-addHierarchyService: service to: treeModel withParent: parentService
-	treeModel add: service asChildOf: parentService.
-	(hierarchyServices at: service ifAbsent: [^self]) do: 
-			[:classService |
-			self
-				addHierarchyService: classService
-				to: treeModel
-				withParent: service]!
-
 allClasses
 	^allClasses!
-
-classHierarchyUpdate: presenter browser: browser
-	| treeModel selection |
-	hierarchyServices ifNil:[^self]. 
-	browser isClassListTabSelected ifTrue: [^self].
-	treeModel := TreeModel new
-				searchPolicy: SearchPolicy equality;
-				reset.
-	(hierarchyServices at: #nil) do: 
-			[:classService |
-			self
-				addHierarchyService: classService
-				to: treeModel
-				withParent: nil].
-	presenter model: treeModel.
-	presenter view expandAll. 
-	selection := (treeModel asBag detect: [:svc | svc name = name asSymbol]). 
-	presenter selection: selection
-!
 
 excludedInstVars
 
@@ -119,9 +91,7 @@ stonOn: stonWriter
 								ifNotNil: [:value | dictionary at: each asSymbol put: value]
 								ifNil: [self stonShouldWriteNilInstVars ifTrue: [dictionary at: each asSymbol put: nil]]]]]! !
 !RowanBrowserService categoriesFor: #=!comparing!public! !
-!RowanBrowserService categoriesFor: #addHierarchyService:to:withParent:!private!updating! !
 !RowanBrowserService categoriesFor: #allClasses!accessing!private! !
-!RowanBrowserService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanBrowserService categoriesFor: #excludedInstVars!public!ston! !
 !RowanBrowserService categoriesFor: #hash!comparing!public! !
 !RowanBrowserService categoriesFor: #isBrowserService!public!testing! !

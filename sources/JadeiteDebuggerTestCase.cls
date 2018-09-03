@@ -167,6 +167,7 @@ test_restartInBlock
 	self testsIssue: #issue126
 		withTitle: 'Debugger opens second debugger, loses stack in original debugger'.
 	self openProjectsBrowser.
+	self ensureRowanSample1Available.
 	self selectRowanSample1Class.
 	self saveInterestingLoopMethod.
 	self methodListPresenter selection setBreakAtStepPoint: 8 session: session.	"inside the block"
@@ -180,7 +181,9 @@ test_restartInBlock
 	self deny: debugger gsProcess oop = secondDebugger gsProcess oop.
 	self deny: debugger frameListPresenter list size = secondDebugger frameListPresenter list size]
 			ensure: [restartProcess terminate]]
-			ensure: [self methodListPresenter selection clearBreakAtStepPoint: 8 session: session]!
+			ensure: 
+				[self methodListPresenter selection clearBreakAtStepPoint: 8 session: session.
+				self unloadSampleProject]!
 
 test_terminateDoesNotWalkback
 	"Terminate a process other than the primary one"

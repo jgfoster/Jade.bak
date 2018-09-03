@@ -99,16 +99,17 @@ updatesPerform: selector presenter: presenter
 
 updatesPerform: selector presenter: presenter browser: browser
 	"the update may know which client updates 
-	it wants us to care about. Respect that."
+	it wants us to care about if updateType is set. 
+	Respect the server's wishes."
 
-	| updateBlock |
-	updateBlock := 
+	updates do: 
 			[:update |
-			update
-				perform: selector
-				with: presenter
-				with: browser].
-	self performUpdate: updateBlock with: selector! !
+			(update updateType isNil or: [update updateType == selector])
+				ifTrue: 
+					[update
+						perform: selector
+						with: presenter
+						with: browser]]! !
 !BrowserUpdate categoriesFor: #debug!accessing!private! !
 !BrowserUpdate categoriesFor: #debug:!accessing!private! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
