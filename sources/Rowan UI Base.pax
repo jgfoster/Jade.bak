@@ -2860,6 +2860,7 @@ editSaveMethod
 	"for older method source presenter"
 
 	| classService newMethodService |
+	(self parentPresenter isKindOf: RowanDebugger) ifTrue: [^self parentPresenter saveMethod]. "yuck, need to get Dolphin's menus sorted out"
 	classService := RowanClassService named: gsMethod className.
 	classService meta: gsMethod meta.
 	self
@@ -2871,7 +2872,7 @@ editSaveMethod
 		ifTrue: 
 			[gsMethod replicateFrom: newMethodService.
 			documentPresenter value: newMethodService source.
-			self parentPresenter  selectedFrame ]!
+			self parentPresenter selectedFrame]!
 
 fileSave
 		"Answer whether the save succeeded (false means to stay on the window and cancel any attempt to leave)"
