@@ -135,7 +135,7 @@ onViewOpened
 
 	super onViewOpened.
 	self view position: 95 @ 35.
-	codePane view ensureVisible.!
+!
 
 queryCommand: query
 

@@ -234,6 +234,7 @@ updateMethodStepPoints
 			tag: string).
 	].
 	documentPresenter view indicators: indicators.
+
 ! !
 !MethodSourcePresenter categoriesFor: #canSetBreakpoints!Breakpoints!public! !
 !MethodSourcePresenter categoriesFor: #clearBreakAtStepPoint:!public! !

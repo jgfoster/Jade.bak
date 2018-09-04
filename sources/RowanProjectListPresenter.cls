@@ -10,6 +10,13 @@ RowanProjectListPresenter comment: ''!
 !RowanProjectListPresenter categoriesForClass!MVP-Presenters! !
 !RowanProjectListPresenter methodsFor!
 
+browseProject
+	| shell presenter service| 
+	shell := (JadeiteProjectsSystemBrowser showOnSession: gciSession) .
+	presenter := shell currentCard projectListPresenter.
+	service := presenter list detect:[:projectService | projectService name = (projectListPresenter selection name)] ifNone:[^self]. 
+	presenter selection: service. !
+
 browseProjects
 	| browserService |
 	browserService := RowanBrowserService new.
@@ -152,6 +159,7 @@ writeProject
 	projectServices do: [:service | service command: #write].
 	self issueCommand: projectServices.
 	MessageBox notify: 'Projects ' ,  ws contents  , ' written to disk'! !
+!RowanProjectListPresenter categoriesFor: #browseProject!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #browseProjects!public! !
 !RowanProjectListPresenter categoriesFor: #checkout!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #commit!project menu handlers!public! !
