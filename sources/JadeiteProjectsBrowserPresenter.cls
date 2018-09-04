@@ -1320,7 +1320,7 @@ updateHierarchy
 	| service selection |
 	classHierarchyPresenter model: TreeModel new.
 	Cursor wait showWhile: 
-			[service := classListPresenter selectionOrNil ifNil: [RowanClassService new name: 'Object'].
+			[service := classListPresenter selectionOrNil ifNil: [RowanClassService new name: classListPresenter list first name].
 			service command: #classHierarchy.
 			self issueCommand: (Array with: service).
 			service name = 'Object'

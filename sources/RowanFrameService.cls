@@ -27,6 +27,10 @@ indexOfSubCollection: aString
 
 	^method source indexOfSubCollection: aString !
 
+isExecutedBlockContext
+
+	^method className isNil!
+
 method
 	^method!
 
@@ -52,6 +56,7 @@ vars
 !RowanFrameService categoriesFor: #copyBasicsFrom:!public! !
 !RowanFrameService categoriesFor: #gsMethod!public! !
 !RowanFrameService categoriesFor: #indexOfSubCollection:!public! !
+!RowanFrameService categoriesFor: #isExecutedBlockContext!public!testing! !
 !RowanFrameService categoriesFor: #method!public! !
 !RowanFrameService categoriesFor: #offsets!public! !
 !RowanFrameService categoriesFor: #printOn:!public! !

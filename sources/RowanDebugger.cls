@@ -242,6 +242,8 @@ restart
 
 saveMethod
 	| classService string |
+	frame isExecutedBlockContext
+		ifTrue: [^MessageBox notify: 'Cannot save code in an executed block context.'].
 	string := self getDocumentData reject: [:each | each == Character cr].
 	classService := RowanClassService new
 				name: frame method className;
@@ -253,12 +255,11 @@ saveMethod
 	[self issueCommand: (Array with: classService)] on: GsCompileError
 		do: [:ex | ^self reportCompileError: ex list in: nil].
 	(self compilationWarningFrom: classService selectedMethods)
-		ifNotNil: [:warning |MessageBox notify: warning].
+		ifNotNil: [:warning | MessageBox notify: warning].
 	documentPresenter isModified: false.
 	(gsProcess gsProcessForSession: gciSession)
 		trimStackToLevel: frameListPresenter selectionByIndex + frameListOffset.
-	self getProcessList.
-!
+	self getProcessList!
 
 selectedFrame 
 	"Comment from RowanFrameService>>initializeProcess:level:organizer: ---- 
