@@ -52,12 +52,7 @@ queryCommand: query
 	query commandSymbol = #flipDebugger
 		ifTrue: 
 			[query isChecked: RowanDebugger debuggerClass = RowanDebugger.
-			^true]!
-
-showShell
-	super showShell. 
-	projectsListPresenter ensureVisible.
-! !
+			^true]! !
 !RowanTranscript categoriesFor: #createComponents!public! !
 !RowanTranscript categoriesFor: #flipDebugger!menu handlers!public! !
 !RowanTranscript categoriesFor: #flipTranscript!menu handlers!public! !
@@ -66,7 +61,6 @@ showShell
 !RowanTranscript categoriesFor: #openDictionaryBrowser!menu handlers!public! !
 !RowanTranscript categoriesFor: #openJadeiteProjectsBrowser!menu handlers!public! !
 !RowanTranscript categoriesFor: #queryCommand:!private! !
-!RowanTranscript categoriesFor: #showShell!public!updating! !
 
 !RowanTranscript class methodsFor!
 
