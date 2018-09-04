@@ -152,6 +152,7 @@ package globalAliases: (Set new
 package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\IDE\Base\Development System';
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Cards\Dolphin Card Containers';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
@@ -164,10 +165,12 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Sliding Tray\Dolphin Slidey-Inney-Outey Thing';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
+	add: '..\Core\Object Arts\Dolphin\MVP\Icons\Dolphin Text Tile Icons';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Tree\Dolphin Tree Models';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Tree\Dolphin Tree Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
+	add: '..\Core\Object Arts\Dolphin\MVP\Gdiplus\Gdiplus';
 	add: 'GemStone Objects';
 	add: 'GemStone Session';
 	add: 'Jade Autocompletation';

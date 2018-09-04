@@ -171,9 +171,9 @@ hostUserID: aString
 icon
 
 	(session notNil and: [session isValidSession not]) ifTrue: [session := nil].
-	session notNil ifTrue: [^Presenter icon].		"green - logged in"
-	self isAbleToLoadLibrary ifTrue: [^Object icon].	"yellow - can log in"
-	^Model icon	"red - not available because we have another DLL loaded"
+	session notNil ifTrue: [^InputState icon].		"green - logged in"
+	self isAbleToLoadLibrary ifTrue: [^Event icon].	"yellow - can log in"
+	^Signal icon	"red - not available because we have another DLL loaded"
 !
 
 initializeFromXML: aString
