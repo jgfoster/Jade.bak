@@ -1109,6 +1109,16 @@ renameMethodCategory
 	self issueCommand: (Array with: service).
 	categoryListPresenter selection: new!
 
+runMethodTests
+	| result classService answeringService |
+	classService := self selectedClass.
+	classService
+		command: #runMethodTests:;
+		commandArgs: (Array with: methodListPresenter selections).
+	answeringService := (self issueCommand: (Array with: classService)) first.
+	answeringService answer
+		ifTrue: [MessageBox notify: 'Ran ' , methodListPresenter selections size printString , ' test(s)']!
+
 savePackage
 	MessageBox notify: 'This feature is not yet available'!
 
@@ -1589,6 +1599,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodCategories!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethods:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #renameMethodCategory!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #runMethodTests!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoryFrom:!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
