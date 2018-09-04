@@ -583,7 +583,7 @@ jadeMenuStrings
 		self abortTransaction; commitTransaction; newWorkspace; openSystemBrowser; refreshFromServer; exit.
 	]. 
 	^#(
-		'&Jade'
+		'&Jadeite'
 		'&Abort Transaction//abortTransaction'
 		'&CommitTransaction//commitTransaction'
 		'-'

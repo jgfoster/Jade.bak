@@ -160,13 +160,14 @@ getSelectedMethodName
 jadeMenuStrings
 
 	^#(
-		'&Jade'
+		'&Jadeite'
 		'&Abort Transaction//abortTransaction'
 		'&CommitTransaction//commitTransaction'
 		'-'
 		'&New Worspace/Ctrl+N/newWorkspace'
 		'&Open System Browser/Ctrl+B/openSystemBrowser'
 		'-'
+		'Save/Ctrl+S/fileSave'
 		'E&xit/Shift+F4/exit'
 	).
 !
