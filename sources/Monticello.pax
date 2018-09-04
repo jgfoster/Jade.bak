@@ -95,6 +95,7 @@ package globalAliases: (Set new
 package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\IDE\Base\Development System';
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Cards\Dolphin Card Containers';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter';
@@ -600,7 +601,10 @@ mcInitials: aString
 
 mcLoadedVersionNames
 
-	^self _encodeString: self _mcLoadedVersionNames
+	| stringOrNil |
+	stringOrNil := self _mcLoadedVersionNames.
+	stringOrNil isNil ifTrue: [^nil].
+	^self _encodeString: stringOrNil
 !
 
 mcNewDirectoryRepository: aString
