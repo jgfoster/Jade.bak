@@ -805,9 +805,13 @@ sbFileOutJadeServer: anOrderedCollection
 
 sbFileOutMethod: anOrderedCollection
 
-	| aClass |
+	| aClass selector |
 	aClass := (self sbClassFrom: anOrderedCollection) thisClass.
-	writeStream nextPutAll: (aClass fileOutMethod: anOrderedCollection removeFirst).
+	selector := anOrderedCollection removeFirst.
+	(aClass categoryOfSelector: selector) isNil ifTrue: [
+		aClass moveMethod: selector toCategory: 'uncategorized'.
+	].
+	writeStream nextPutAll: (aClass fileOutMethod: selector).
 !
 
 sbFindClass

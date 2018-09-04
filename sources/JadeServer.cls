@@ -326,7 +326,7 @@ _preferences
 		nextPutAll: (GsSession serialOfSession: System session) printString; tab;
 		nextPutAll: packagePolicyEnabled printString; tab;
 		nextPutAll: (((x := System configurationAt: #GemNativeCodeEnabled) isKindOf: SmallInteger) ifTrue: [(0 < x) printString] ifFalse: [x printString]); tab;
-		nextPutAll: (mcPlatformSupport ifNil: [nil] ifNotNil: [mcPlatformSupport autoMigrate]) printString; tab;
+		nextPutAll: (mcPlatformSupport isNil ifTrue: [nil] ifFalse: [mcPlatformSupport autoMigrate]) printString; tab;
 		nextPutAll: 'nil'; tab;	"isAutoCommit"
 		nextPutAll: self showUnimplementedMessages printString; tab;
 		yourself.
