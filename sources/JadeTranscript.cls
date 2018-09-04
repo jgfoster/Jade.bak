@@ -163,7 +163,7 @@ methodsChangedDays
 
 onCloseRequested: boolValueHolder
  
-	| answer |
+	| answer flag |
 	super onCloseRequested: boolValueHolder.
 	boolValueHolder value ifFalse: [^self].
 	gciSession isNil ifTrue: [^self].
@@ -172,7 +172,12 @@ onCloseRequested: boolValueHolder
 		boolValueHolder value: false.
 		^self.
 	].
-	(gciSession serverPerform: #hasDirtyObjects) ifTrue: [
+	flag := [
+		gciSession serverPerform: #hasDirtyObjects.
+	] on: Error do: [:ex | 		"https://github.com/jgfoster/Jade/issues/170"
+		ex return: false.
+	].
+	flag ifTrue: [
 		answer := MessageBox new
 			caption: 'Close Requested';
 			confirmOrCancel: 'Commit current transaction?'.
