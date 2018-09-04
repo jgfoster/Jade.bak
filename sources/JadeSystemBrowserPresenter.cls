@@ -1650,22 +1650,29 @@ methodMenuBreak: aMenu
 		addSeparator;
 		addCommand: command description: desc;
 		yourself.
-	(message := (stepPoints at: stepPoint) value) isEmpty ifTrue: [^self].
-	command := MessageSend
-		receiver: self 
-		selector: #'browseImplementorsOf:' 
-		argument: message.
-	aMenu
-		addCommand: command
-		description: 'Browse Implementors of #' , message printString.
-	command := MessageSend
-		receiver: self 
-		selector: #'browseSendersOf:' 
-		argument: message.
-	aMenu
-		addCommand: command
-		description: 'Browse Senders of #' , message printString.
-!
+	(message := (stepPoints at: stepPoint) value) isEmpty ifTrue: [
+		command := MessageSend
+			receiver: self 
+			selector: #'optimizedSelector'.
+		aMenu
+			addCommand: command
+			description: 'Optimized Selector'.
+	] ifFalse: [
+		command := MessageSend
+			receiver: self 
+			selector: #'browseImplementorsOf:' 
+			argument: message.
+		aMenu
+			addCommand: command
+			description: 'Browse Implementors of #' , message printString.
+		command := MessageSend
+			receiver: self 
+			selector: #'browseSendersOf:' 
+			argument: message.
+		aMenu
+			addCommand: command
+			description: 'Browse Senders of #' , message printString.
+	].!
 
 methodsIdentifier
 
@@ -2090,6 +2097,12 @@ openSourceStyler
 	originalSourcePresenter view textStyles: textStyles.
 !
 
+optimizedSelector
+	"https://github.com/jgfoster/Jade/issues/173
+	http://kermit.gemtalksystems.com/bug?bug=43830"
+
+	MessageBox notify: 'Because this selector is optimized we do not have adequate information to offer implementors/senders as a shortcut menu here.'.!
+
 packageListPresenter
 
 	^packageListPresenter!
@@ -2175,7 +2188,11 @@ queryCommand: aCommandQuery
 	focusView := View focus.
 	isTextEdit := focusView isKindOf: TextEdit.
 	(#(#'browseMethodPragmas') includes: command) ifTrue: [aCommandQuery isEnabled: gciSession gsHasPragmas. ^true].
-	(#(#'editSave') includes: command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView isModified]). ^true].
+	(#(#'editSave') includes: command) ifTrue: [
+		aCommandQuery isEnabled: (isTextEdit and: [focusView isModified and: [
+			textAreaTabs view currentCard ~= methodSourcePresenter view or: [self selectedClasses size == 1]	"Require a class when saving a method (#149)"
+		]
+	]). ^true].
 	(#(#'editUndo') includes: aCommandQuery command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView canUndo]). ^true].
 	(#(#'editRedo') includes: aCommandQuery command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView canRedo]). ^true].
 	(#(#'editCut' #'editCopy' "#'editDelete'" ) includes: aCommandQuery command) ifTrue: [aCommandQuery isEnabled: (isTextEdit and: [focusView hasSelection]). ^true].
@@ -3560,6 +3577,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #onSetFocus:stack:!public! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #openSourceStyler!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #optimizedSelector!event handlers!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #packageListPresenter!accessing!public! !
 !JadeSystemBrowserPresenter categoriesFor: #parseContext!public! !
 !JadeSystemBrowserPresenter categoriesFor: #pkgDictChanged!event handlers!public! !
