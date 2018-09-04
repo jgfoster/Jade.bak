@@ -176,6 +176,7 @@ warnings
 fromOopType: anOopType session: aGciSession
 
 	| string |
+	(anOopType isKindOf: ExternalInteger) ifFalse: [self error: 'Expected an OopType but got ' , anOopType printString].
 	string := aGciSession 
 		serverPerform: #'describeMethod:'
 		with: anOopType.

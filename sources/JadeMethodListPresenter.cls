@@ -241,11 +241,12 @@ updateMenuBar: aMenuBar
 
 updateSaveMethodOop: anInteger
 
-	| newGsMethod |
+	| newGsMethod oopType |
  	methodListPresenter selectedMethod isNil ifTrue: [^self].
-
+	(anInteger isKindOf: Integer) ifFalse: [self error: 'Expected an Integer, but got ' , anInteger printString].
+	((oopType := gciSession oopTypeWithOop: anInteger) isKindOf: ExternalInteger) ifFalse: [self error: 'Expected an OopType but got ' , oopType printString]. 
 	newGsMethod := methodListPresenter selectedMethod copy
-		oopType: (gciSession oopTypeWithOop: anInteger);
+		oopType: oopType;
 		yourself.
 	methodListPresenter primaryPresenter model add: newGsMethod.
 

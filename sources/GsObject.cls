@@ -71,6 +71,7 @@ oopType
 
 oopType: anOopType
 
+	(anOopType isKindOf: ExternalInteger) ifFalse: [self error: 'Expected an OopType but got ' , anOopType printString].
 	oopType := anOopType.
 !
 

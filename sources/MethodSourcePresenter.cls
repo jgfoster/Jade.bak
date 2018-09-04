@@ -110,6 +110,7 @@ fileSave
 		| pieces |
 		pieces := line subStrings: Character tab.
 		newOop := (pieces at: 1) asNumber. 
+		(newOop isKindOf: Integer) ifFalse: [self error: 'Expected an Integer but got ' , newOop printString].
 		newSelector := pieces at: 2.
 		documentPresenter isModified: false.
 		self 
