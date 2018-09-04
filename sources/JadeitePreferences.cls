@@ -14,7 +14,6 @@ transcriptEnabled: booleanString session: session
 	"file syntax - transcriptEnabled false"
 
 	| answeringService boolean |
-	false ifTrue:[self transcriptEnabled: booleanString session: session].  "to avoid getting stripped in runtime" 
 	boolean := booleanString = 'true'.
 	answeringService := RowanAnsweringService new.
 	(answeringService isTranscriptInstalledIn: session) == boolean

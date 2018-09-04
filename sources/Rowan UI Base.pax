@@ -756,7 +756,9 @@ postLoadClientPreferences
 						perform: message
 						with: nextLine subStrings last
 						with: self]]]
-			ensure: [file close]!
+			ensure: [^file close].
+	"unreachable code"
+	[JadeitePreferences new transcriptEnabled: nil session: nil].  "to avoid getting stripped in runtime" !
 
 postLoadServerPreferences
 	self
