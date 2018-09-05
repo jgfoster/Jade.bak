@@ -43,6 +43,9 @@ openJadeiteProjectsBrowser
 	MessageBox warning: 'Cannot open Jadeite Projects browser'
 		caption: 'Cannot open Jadeite Projects browser'!
 
+projectsListPresenter
+	^projectsListPresenter!
+
 queryCommand: query
 	super queryCommand: query.
 	query commandSymbol = #flipTranscript
@@ -60,6 +63,7 @@ queryCommand: query
 !RowanTranscript categoriesFor: #onViewOpened!public!updating! !
 !RowanTranscript categoriesFor: #openDictionaryBrowser!menu handlers!public! !
 !RowanTranscript categoriesFor: #openJadeiteProjectsBrowser!menu handlers!public! !
+!RowanTranscript categoriesFor: #projectsListPresenter!accessing!public! !
 !RowanTranscript categoriesFor: #queryCommand:!private! !
 
 !RowanTranscript class methodsFor!

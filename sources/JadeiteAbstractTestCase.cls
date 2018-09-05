@@ -45,6 +45,18 @@ isSampleProjectLoaded
 		detect: [:projectService | projectService name = self sampleProjectName]
 		ifNone: []) notNil!
 
+loadRowanSample1InProjectList
+	| sample1Path root selections |
+	sample1Path := self rowanSample1Path.
+	root := self rowanProjectsHome.
+	self transcriptTab basicCloneProject: sample1Path root: root.
+	self transcriptTab refresh.
+	self selectServicesNamed: (Array with: self sampleProjectName)
+		in: self transcriptTab projectListPresenter.
+	selections := self transcriptTab projectListPresenter selections.
+	RowanBrowserService new reloadProjects: selections presenter: self transcriptTab.
+	self transcriptTab refresh!
+
 methodListPresenter
 	^self projectsPresenter methodListPresenter!
 
@@ -137,6 +149,18 @@ testsIssue: aSymbol withTitle: anObject
 
 	!
 
+transcript
+	^transcript!
+
+transcriptProjectList
+	^self transcriptTab projectListPresenter!
+
+transcriptProjectNamed: string
+	^self transcriptProjectList list detect: [:projectService | projectService name = string] ifNone: []!
+
+transcriptTab
+	^transcript projectsListPresenter !
+
 unloadSampleProject
 	self isSampleProjectLoaded
 		ifTrue: [self projectsPresenter basicUnloadProjects: (Array with: self sampleProjectName)]! !
@@ -147,6 +171,7 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Available!private!project support! !
 !JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Loaded!private!project support! !
 !JadeiteAbstractTestCase categoriesFor: #isSampleProjectLoaded!private!private testing!project support! !
+!JadeiteAbstractTestCase categoriesFor: #loadRowanSample1InProjectList!private!project support! !
 !JadeiteAbstractTestCase categoriesFor: #methodListPresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #methodSourcePresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #openProjectsBrowser!private!project browser support! !
@@ -161,9 +186,13 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #selectCategoriesNamed:!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #selectRowanSample1Class!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #selectServicesNamed:in:!private!project browser support! !
-!JadeiteAbstractTestCase categoriesFor: #setUp!private! !
-!JadeiteAbstractTestCase categoriesFor: #tearDown!private! !
+!JadeiteAbstractTestCase categoriesFor: #setUp!private!setup teardown! !
+!JadeiteAbstractTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #testsIssue:withTitle:!public!support! !
+!JadeiteAbstractTestCase categoriesFor: #transcript!public!transcript support! !
+!JadeiteAbstractTestCase categoriesFor: #transcriptProjectList!public!transcript support! !
+!JadeiteAbstractTestCase categoriesFor: #transcriptProjectNamed:!public!transcript support! !
+!JadeiteAbstractTestCase categoriesFor: #transcriptTab!public!transcript support! !
 !JadeiteAbstractTestCase categoriesFor: #unloadSampleProject!private!project support! !
 
 !JadeiteAbstractTestCase class methodsFor!

@@ -285,6 +285,36 @@ test_packagesShownInMultipleProjects
 	self selectServicesNamed: #('Rowan-JadeServer') in: self packageListPresenter.
 	self denyIsNil: (self serviceNamed: 'JadeServer' in: self classListPresenter)!
 
+test_projectDisplaysSync
+	"the projects browser and project list in the transcript should
+	stay sync'ed automaticall"
+
+	"project removal in projects browser"
+	self denyIsNil: (self projectNamed: 'RowanSample1').
+	self assert: self transcriptTab isKindOf: RowanProjectListPresenter.
+	self denyIsNil: (self transcriptProjectNamed: 'RowanSample1').
+	self unloadSampleProject.
+	self assertIsNil: (self projectNamed: 'RowanSample1').
+	self assertIsNil: (self transcriptProjectNamed: 'RowanSample1').
+	"project addition in projects browser"
+	self ensureRowanSample1Available.
+	self denyIsNil: (self transcriptProjectNamed: 'RowanSample1').
+	self denyIsNil: (self projectNamed: 'RowanSample1').
+	self unloadSampleProject.
+	self assertIsNil: (self projectNamed: 'RowanSample1').
+	self assertIsNil: (self transcriptProjectNamed: 'RowanSample1').
+	"project addition in project list"
+	self loadRowanSample1InProjectList.
+	self denyIsNil: (self transcriptProjectNamed: 'RowanSample1').
+	self denyIsNil: (self projectNamed: 'RowanSample1').
+	"project removal in project list"
+	(self transcriptTab projectListPresenter list
+		detect: [:projectService | projectService name = self sampleProjectName]
+		ifNone: []) notNil
+		ifTrue: [self transcriptTab basicUnloadProjects: (Array with: self sampleProjectName)].
+	self assertIsNil: (self projectNamed: 'RowanSample1').
+	self assertIsNil: (self transcriptProjectNamed: 'RowanSample1')!
+
 test_projectRemoved
 	"Gracefully remove a project from the project list if it was 
 	removed behind the tool's back"
@@ -436,6 +466,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_projectDisplaysSync!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_projectRemoved!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_removeProject!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveClassMethod!public!test! !
