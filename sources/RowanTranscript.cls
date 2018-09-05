@@ -33,7 +33,7 @@ onViewOpened
 	super onViewOpened.
 	projectsListPresenter
 		gciSession: gciSession;
-		browseProjects. !
+		browseProjects!
 
 openDictionaryBrowser
 	gciSession hasServer ifTrue: [^RowanSystemBrowser showOnSession: gciSession]!

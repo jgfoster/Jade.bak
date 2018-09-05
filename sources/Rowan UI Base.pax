@@ -1298,7 +1298,7 @@ cloneProject
 				prompt: 'Please select location of the code repository to clone:'
 				caption: 'Clone Git Repository'.
 	filePath isNil ifTrue: [^false].
-	self basicCloneProject: filePath key root: filePath value!
+	self basicCloneProject: filePath key root: filePath value.!
 
 compilationWarningFrom: methodServices
 

@@ -10,6 +10,14 @@ RowanProjectListPresenter comment: ''!
 !RowanProjectListPresenter categoriesForClass!MVP-Presenters! !
 !RowanProjectListPresenter methodsFor!
 
+basicUnloadProjects: projectNames
+	| browserService |
+	browserService := RowanBrowserService new.
+	browserService
+		command: #unloadProjectsNamed:;
+		commandArgs: (Array with: projectNames).
+	self issueCommand: (Array with: browserService).!
+
 browseProject
 	| shell presenter service| 
 	shell := (JadeiteProjectsSystemBrowser showOnSession: gciSession) .
@@ -27,6 +35,10 @@ browseProjects
 
 checkout
 	projectListPresenter selection checkoutUsing: self.!
+
+cloneProject
+	super cloneProject.
+	self refresh!
 
 commit
 	| projectName message service promptResult |
@@ -53,11 +65,13 @@ createComponents
 	super createComponents.
 	projectListPresenter := self add: ListPresenter new name: 'projectList'!
 
-list: aList
-	projectListPresenter list: aList!
+list: list
+	projectListPresenter list: (SortedCollection sortBlock: [:x :y | x sortAspect < y sortAspect]).
+	projectListPresenter model addAll: list!
 
 loadProjects
-	self loadProjectsFrom: self!
+	self loadProjectsFrom: self.
+	self refresh!
 
 makeDefault
 	"the server is the gold copy"
@@ -66,6 +80,11 @@ makeDefault
 	projectService command: #setDefaultProject.
 	self issueCommand: (Array with: projectService).
 	RowanProjectService defaultProjectName: projectService name!
+
+onViewOpened
+
+	super onViewOpened.
+	self registerPresentersForUpdates.!
 
 openChangesShell: changesString
 	| shell editor rs |
@@ -141,8 +160,40 @@ pushToGit
 	projectServices do: [:service | service command: #pushToGit].
 	self issueCommand: projectServices!
 
+queryCommand: aCommandQuery
+	(#(#unloadProjects #loadProjects #pullFromGit #pushToGit #commit #writeProject #projectChanges #browseProject #makeDefault #projectLog #checkout)
+		includes: aCommandQuery command)
+			ifTrue: 
+				[aCommandQuery isEnabled: projectListPresenter selections notEmpty.
+				^true].
+	(#(#cloneProject #refresh #includes: #aCommandQuery #command) includes: aCommandQuery command)
+		ifTrue: 
+			[aCommandQuery isEnabled: true.
+			^true].
+	^true!
+
+refresh
+	self browseProjects.
+	self view invalidate!
+
+registerPresentersForUpdates
+	BrowserUpdate current register: projectListPresenter selector: #projectsUpdate:.
+	BrowserUpdate current register: projectListPresenter selector: #removedProject:!
+
 unloadProjects
-	MessageBox notify: 'This feature not yet implemented'!
+	| projectNames ws |
+	projectNames := projectListPresenter selections collect: [:projectService | projectService name].
+	projectNames isEmpty ifTrue: [^self].
+	ws := WriteStream on: String new.
+	projectNames do: 
+			[:projectName |
+			ws
+				space;
+				nextPutAll: projectName].
+	(MessageBox
+		confirm: 'Really unload project(s) - ' , ws contents , '?  You will lose any unsaved changes!! '
+		caption: 'UNLOAD PROJECTS WARNING!!') ifFalse: [^self].
+	self basicUnloadProjects: projectNames!
 
 writeProject
 	| projectServices ws |
@@ -159,14 +210,17 @@ writeProject
 	projectServices do: [:service | service command: #write].
 	self issueCommand: projectServices.
 	MessageBox notify: 'Projects ' ,  ws contents  , ' written to disk'! !
+!RowanProjectListPresenter categoriesFor: #basicUnloadProjects:!private!project menu handlers! !
 !RowanProjectListPresenter categoriesFor: #browseProject!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #browseProjects!public! !
 !RowanProjectListPresenter categoriesFor: #checkout!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #cloneProject!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #commit!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #createComponents!public! !
 !RowanProjectListPresenter categoriesFor: #list:!public! !
 !RowanProjectListPresenter categoriesFor: #loadProjects!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #makeDefault!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #onViewOpened!event handlers!public! !
 !RowanProjectListPresenter categoriesFor: #openChangesShell:!private!project menu handlers! !
 !RowanProjectListPresenter categoriesFor: #primaryPresenter!public! !
 !RowanProjectListPresenter categoriesFor: #projectChanges!project menu handlers!public! !
@@ -174,6 +228,9 @@ writeProject
 !RowanProjectListPresenter categoriesFor: #projectLog!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #pullFromGit!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #pushToGit!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #queryCommand:!menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #refresh!project menu handlers!public! !
+!RowanProjectListPresenter categoriesFor: #registerPresentersForUpdates!event handlers!private! !
 !RowanProjectListPresenter categoriesFor: #unloadProjects!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #writeProject!project menu handlers!public! !
 

@@ -101,7 +101,7 @@ stonOn: stonWriter
 !RowanBrowserService categoriesFor: #projects!accessing!public! !
 !RowanBrowserService categoriesFor: #projectsUpdate:!public!updating! !
 !RowanBrowserService categoriesFor: #releaseReferencedServices!public! !
-!RowanBrowserService categoriesFor: #reloadProjects:presenter:!Jadeite!public! !
+!RowanBrowserService categoriesFor: #reloadProjects:presenter:!commands!public! !
 !RowanBrowserService categoriesFor: #removedMethods!accessing!private! !
 !RowanBrowserService categoriesFor: #removedMethods:!accessing!private! !
 !RowanBrowserService categoriesFor: #replicateFrom:!public!replication!updating! !

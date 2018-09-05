@@ -10,10 +10,6 @@ RowanProjectListShell comment: ''!
 !RowanProjectListShell categoriesForClass!Unclassified! !
 !RowanProjectListShell methodsFor!
 
-cloneProject
-	self primaryPresenter cloneProject.
-	self refresh!
-
 makeDefault
 
 	self primaryPresenter makeDefault.
@@ -38,7 +34,6 @@ shellName
 unloadProjects
 	self primaryPresenter unloadProjects.
 	self refresh! !
-!RowanProjectListShell categoriesFor: #cloneProject!menu handlers!public! !
 !RowanProjectListShell categoriesFor: #makeDefault!menu handlers!public! !
 !RowanProjectListShell categoriesFor: #performCommand:!public! !
 !RowanProjectListShell categoriesFor: #presenterClass!public! !
