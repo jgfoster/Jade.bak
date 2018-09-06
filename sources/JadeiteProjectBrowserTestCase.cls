@@ -417,7 +417,6 @@ test_saveMethodHierarchy
 	| source |
 	self testsIssue: #issue121 withTitle: 'Package Browser (3.0.20): hierarchy class view and classes defined in different pacakge oddity'.
 	self selectRowanSample1Class.
-	self halt. 
 	self selectHierarchyTab.
 	self selectCategoriesNamed: #('accessing').
 	source := 'sampleMethod  
