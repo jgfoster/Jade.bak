@@ -920,7 +920,7 @@ queryCommand: aCommandQuery
 				^true].
 	(#(#runClassTests) includes: command)
 		ifTrue: 
-			[aCommandQuery isEnabled: selectedClassesAreTestCases.
+			[aCommandQuery isEnabled: self selectedClass isTestCase.
 			^true].
 	(#(#browseSelectedClass) includes: command)
 		ifTrue: 
@@ -1201,7 +1201,7 @@ setMethodFilter
 	classListPresenter list do: [:service | service filters: filters]!
 
 setTestClass: service
-	sunitPresenter testClassName: (service isTestCase ifTrue: [service name] ifFalse: [String new])!
+	sunitPresenter testClassService: (service isTestCase ifTrue: [service] ifFalse: [nil])!
 
 showSuperClassComparison
 	| methodService |
@@ -1290,9 +1290,7 @@ updateClasses
 
 updateClassInfo
 	| service |
-	service := self isClassListTabSelected
-				ifTrue: [classListPresenter selectionIfNone: [^self]]
-				ifFalse: [classHierarchyPresenter selectionIfNone: [^self]].
+	service := self selectedClass ifNil:[^self]. 
 	classCommentPresenter value: service comment.
 	classDefinitionPresenter view isModified
 		ifTrue: 
@@ -1304,6 +1302,7 @@ updateClassInfo
 		backcolor: Color white;
 		isModified: false.
 	self setTestClass: service.
+	
 	classDefinitionPresenter ensureVisible.
 	self sundryCleanup!
 

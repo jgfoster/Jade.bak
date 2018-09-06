@@ -55,10 +55,10 @@ packagesSize
 	^'Packages: ' , packageListPresenter model size printString!
 
 runAll
-	self runTests: methodListPresenter model in: classListPresenter selection!
+	self runTests: methodListPresenter model in: classListPresenter selection name!
 
 runSelected
-	self runTests: methodListPresenter selection in: classListPresenter selection!
+	self runTests: methodListPresenter selection in: classListPresenter selection name!
 
 status
 	^status!

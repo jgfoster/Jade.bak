@@ -61,7 +61,7 @@ JadePresenter subclass: #JadeSUnitAbstractPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeSUnitAbstractPresenter subclass: #JadeSUnitInClassPresenter
-	instanceVariableNames: 'testClassName'
+	instanceVariableNames: 'testClassService'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

@@ -2389,61 +2389,59 @@ updateClassCategoryTree
 !
 
 updateClassHierarchy
-
 	| list paths treeModel x y currentSelection newSelection flags |
 	list := readStream nextList.
 	newSelection := readStream nextLineAsList reverse.
 	flags := readStream nextLineAsList.
-
 	classHierarchyPresenter ensureVisible.
 	list := list collect: [:each | each reverse].
 	paths := Set new.
-	list do: [:eachClass | 
-		| string |
-		string := ''.
-		eachClass do: [:each | 
-			string := string , each.
-			paths add: string.
-			string := string , Character tab asString.
-		].
-	].
+	list do: 
+			[:eachClass |
+			| string |
+			string := ''.
+			eachClass do: 
+					[:each |
+					string := string , each.
+					paths add: string.
+					string := string , Character tab asString]].
 	paths := paths asSortedCollection asArray.
 	treeModel := TreeModel new
-		searchPolicy: SearchPolicy equality;
-		reset;
-		yourself.
-	paths do: [:each | 
-		| path parent |
-		path := each subStrings: Character tab.
-		parent := path copyFrom: 1 to: path size - 1.
-		parent isEmpty ifTrue: [parent := nil].
-		treeModel add: path asChildOf: parent.
-	].
+				searchPolicy: SearchPolicy equality;
+				reset;
+				yourself.
+	paths do: 
+			[:each |
+			| path parent |
+			path := each subStrings: Character tab.
+			parent := path copyFrom: 1 to: path size - 1.
+			parent isEmpty ifTrue: [parent := nil].
+			treeModel add: path asChildOf: parent].
 	x := (treeModel asBag collect: [:each | each printString]) asSortedCollection asArray.
-	y := (classHierarchyPresenter model asBag collect: [:each | each printString]) asSortedCollection asArray.
-	x = y ifFalse: [
-		classHierarchyPresenter
-			model: treeModel;
-			yourself.
-	].
+	y := (classHierarchyPresenter model asBag collect: [:each | each printString]) asSortedCollection
+				asArray.
+	x = y
+		ifFalse: 
+			[classHierarchyPresenter
+				model: treeModel;
+				yourself].
 	currentSelection := classHierarchyPresenter selectionIfNone: [#()].
-	(currentSelection isEmpty and: [newSelection isEmpty and: [classListPresenter selections size = 1]]) ifTrue: [
-		x := classListPresenter selection.
-		newSelection := classHierarchyPresenter model asBag asArray
-			detect: [:each | each last = x]
-			ifNone: [nil].
-	].
-	(newSelection notEmpty and: [currentSelection ~= newSelection]) ifTrue: [
-		classHierarchyPresenter 
-			selection: newSelection;
-			expand: newSelection;
-			yourself.
-	].
+	(currentSelection isEmpty and: [newSelection isEmpty and: [classListPresenter selections size = 1]])
+		ifTrue: 
+			[x := classListPresenter selection.
+			newSelection := classHierarchyPresenter model asBag asArray detect: [:each | each last = x]
+						ifNone: [nil]].
+	(newSelection notEmpty and: [currentSelection ~= newSelection])
+		ifTrue: 
+			[classHierarchyPresenter
+				selection: newSelection;
+				expand: newSelection;
+				yourself].
 	self selectedClassName: (newSelection notEmpty ifTrue: [newSelection last] ifFalse: ['']).
 	classListPresenter selectionOrNil: nil.
-
 	selectedClassesAreTestCases := (flags at: 1) = 'true'.
-	sunitPresenter testClassName: (selectedClassesAreTestCases ifTrue: [selectedClassName] ifFalse: ['']).!
+	sunitPresenter
+		testClassService: (selectedClassesAreTestCases ifTrue: [selectedClassName] ifFalse: [''])!
 
 updateClassInfo
 
@@ -2482,33 +2480,23 @@ updateClassInfo
 !
 
 updateClassList
-
 	| fullList newSelections flags |
 	classListPresenter ensureVisible.
 	fullList := readStream nextLineAsList.
 	newSelections := readStream nextLineAsList.
 	flags := readStream nextLineAsList.
-
-	fullList = classListPresenter list ifFalse: [
-		classListPresenter list: fullList.
-	].
-
+	fullList = classListPresenter list ifFalse: [classListPresenter list: fullList].
 	newSelections := classListPresenter list select: [:each | newSelections includes: each].
-	newSelections = classListPresenter selections ifFalse: [
-		classListPresenter selections: newSelections.
-	].
+	newSelections = classListPresenter selections
+		ifFalse: [classListPresenter selections: newSelections].
 	self selectedClassName: (newSelections size = 1 ifTrue: [newSelections first] ifFalse: ['']).
 	classHierarchyPresenter selectionOrNil: nil.
-	newSelections notEmpty ifTrue: [
-		classListPresenter view ensureSelectionVisible.
-	] ifFalse: [
-		fullList notEmpty ifTrue: [
-			classListPresenter view ensureVisible: 1.
-		].
-	].
-
+	newSelections notEmpty
+		ifTrue: [classListPresenter view ensureSelectionVisible]
+		ifFalse: [fullList notEmpty ifTrue: [classListPresenter view ensureVisible: 1]].
 	selectedClassesAreTestCases := (flags at: 1) = 'true'.
-	sunitPresenter testClassName: (selectedClassesAreTestCases ifTrue: [selectedClassName] ifFalse: ['']).!
+	sunitPresenter
+		testClassService: (selectedClassesAreTestCases ifTrue: [selectedClassName] ifFalse: [''])!
 
 updateClassListOrHierarchy
 

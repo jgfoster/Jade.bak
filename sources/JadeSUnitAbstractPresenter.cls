@@ -29,7 +29,7 @@ reset
 	methodListPresenter view invalidate.
 	textResultPresenter view backcolor: Color face3d!
 
-runTests: anOrderedCollection in: classService
+runTests: anOrderedCollection in: className
 	| jadeResult |
 	methodListPresenter selection isEmpty ifTrue: [^self].
 	jadeResult := JadeTestResult new.
@@ -39,7 +39,7 @@ runTests: anOrderedCollection in: classService
 			result := gciSession
 						serverPerform: #runTestNamed:in:
 						with: methodService selector
-						with: classService name.
+						with: className.
 			resultArray := result subStrings: ','.
 			resultArray first ~= '0'
 				ifTrue: 
