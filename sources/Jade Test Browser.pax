@@ -36,8 +36,8 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
-	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
 	add: 'Jade UI Base';
+	add: 'Rowan STON';
 	add: '..\Core\Contributions\Odellsoft\SUnitBrowser\SUnitBrowser';
 	yourself).
 
@@ -56,7 +56,7 @@ Object subclass: #JadeTestResult
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePresenter subclass: #JadeSUnitAbstractPresenter
-	instanceVariableNames: 'testCasesPresenter textResultPresenter'
+	instanceVariableNames: 'methodListPresenter textResultPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -66,7 +66,7 @@ JadeSUnitAbstractPresenter subclass: #JadeSUnitInClassPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeSUnitAbstractPresenter subclass: #JadeSUnitPresenter
-	instanceVariableNames: 'packagesPresenter testClassesPresenter status testCounter'
+	instanceVariableNames: 'packageListPresenter classListPresenter status testCounter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

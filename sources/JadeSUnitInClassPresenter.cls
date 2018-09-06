@@ -11,16 +11,16 @@ JadeSUnitInClassPresenter comment: ''!
 !JadeSUnitInClassPresenter methodsFor!
 
 debug
-
 	testClassName ifNil: [^self].
-
-	(testCasesPresenter selection size = 1) ifFalse: [^MessageBox  notify: 'Select only one TestCase to debug'].
-
-	^gciSession serverPerform: #debugTestNamed:of: with: testCasesPresenter selection last methodName with: testClassName!
+	methodListPresenter selection size = 1
+		ifFalse: [^MessageBox notify: 'Select only one TestCase to debug'].
+	^gciSession
+		serverPerform: #debugTestNamed:of:
+		with: methodListPresenter selection last methodName
+		with: testClassName!
 
 runAll
-
-	self runTests: testCasesPresenter model in: testClassName!
+	self runTests: methodListPresenter model in: testClassName!
 
 runAndMesureTime
 	| millisecondsToRun  timeMessage time |
@@ -42,8 +42,7 @@ runAndMesureTime
 !
 
 runSelected
-
-	self runTests: testCasesPresenter selection in: testClassName!
+	self runTests: methodListPresenter selection in: testClassName!
 
 testClassName: className
 	| tests |
@@ -52,14 +51,14 @@ testClassName: className
 	self reset.
 	testClassName isEmpty
 		ifTrue: 
-			[testCasesPresenter model: (ListModel on: Array new).
+			[methodListPresenter model: (ListModel on: Array new).
 			^self].
 	
 	[tests := gciSession serverPerform: #getTestMethodsNamesOf: with: testClassName.
 	tests := (tests subStrings: ',') collect: [:each | GsTestMethod name: each]]
 			on: Error
 			do: [:ex | ^self	"fix error on system history navigation, sometime GS answer error #2106"].
-	testCasesPresenter model: (ListModel on: tests asOrderedCollection)! !
+	methodListPresenter model: (ListModel on: tests asOrderedCollection)! !
 !JadeSUnitInClassPresenter categoriesFor: #debug!public! !
 !JadeSUnitInClassPresenter categoriesFor: #runAll!public! !
 !JadeSUnitInClassPresenter categoriesFor: #runAndMesureTime!public! !

@@ -157,6 +157,11 @@ package methodNames
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer64bit3x -> #sbClassComment:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
+	add: #JadeSUnitPresenter -> #onViewOpened;
+	add: #JadeSUnitPresenter -> #registerPresentersForUpdates;
+	add: #JadeSUnitPresenter -> #updateClasses;
+	add: #JadeSUnitPresenter -> #updateMethods;
+	add: #JadeSUnitPresenter -> #updatePackages;
 	add: #JadeSystemBrowserPresenter -> #basicAddMethodCategory:;
 	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #browseClassReferences;
@@ -250,6 +255,7 @@ package methodNames
 	add: #RowanCommandResult -> #removedClass:;
 	add: #RowanCommandResult -> #removedProject:;
 	add: #RowanCommandResult -> #superclassListUpdate:;
+	add: #RowanCommandResult -> #testPackages:;
 	add: #RowanCommandResult -> #updateClassCategorySelectionsFor:;
 	add: #RowanCommandResult -> #updateClassHierarchySelectionFor:;
 	add: #RowanCommandResult -> #updateClassSelectionFor:;
@@ -420,7 +426,7 @@ RowanService subclass: #RowanAnsweringService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanBrowserService
-	instanceVariableNames: 'projects removedMethods allClasses hierarchyServices'
+	instanceVariableNames: 'projects removedMethods allClasses hierarchyServices testPackages testCount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -440,12 +446,12 @@ RowanService subclass: #RowanFrameService
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop compilationWarnings'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop compilationWarnings testResult'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanService subclass: #RowanPackageService
-	instanceVariableNames: 'classes defaultTemplate projectName classCompilationFailures'
+	instanceVariableNames: 'classes defaultTemplate projectName classCompilationFailures testClasses'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1257,7 +1263,11 @@ basicCloneProject: path root: root
 
 basicUpdateServices: services
 	| stonString stonResults |
-	services do: [:service | service prepareForReplication].
+	services do: 
+			[:service |
+			service
+				prepareForReplication;
+				command: nil	"updates don't have commands"].
 	stonString := STON toString: services.
 	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
 	self update: services afterStonReplication: stonResults!
@@ -1419,16 +1429,19 @@ refreshBreakPointsIn: methodSourcePresenter
 removeSelectorsStringUsing: methodListPresenter
 	| stream methodServices |
 	methodServices := self updateMethodReferences: methodListPresenter selections.
-	stream := String new writeStream. 
+	stream := String new writeStream.
 	methodServices do: 
 			[:service |
 			stream nextPutAll: service selectorsDisplayString.
-			service references notEmpty
-				ifTrue: 
-					[stream
-						nextPutAll: ' (referenced by ';
-						nextPutAll: service references size printString;
-						nextPutAll: ' methods)'].
+			service references
+				ifNotNil: 
+					[:refs |
+					refs notEmpty
+						ifTrue: 
+							[stream
+								nextPutAll: ' (referenced by ';
+								nextPutAll: service references size printString;
+								nextPutAll: ' methods)']].
 			stream cr].
 	^stream contents!
 
@@ -2085,6 +2098,54 @@ setVersion
 !JadeSessionManager class categoriesFor: #mainShellClass!public! !
 !JadeSessionManager class categoriesFor: #setVersion!public! !
 
+!JadeSUnitPresenter methodsFor!
+
+onViewOpened
+	testCounter := Array with: 0 with: OrderedCollection new.
+	super onViewOpened.
+	self registerPresentersForUpdates.
+	status := ValueHolder new.
+	(self view viewNamed: 'statusPackages') model: status.
+	(self view viewNamed: 'statusTestsClasses') model: status.
+	(self view viewNamed: 'statusTestCases') model: status.
+	(self view viewNamed: 'statusTestCounter') model: status.
+	self updatePackages. !
+
+registerPresentersForUpdates
+	BrowserUpdate current register: packageListPresenter selector: #testPackages:.
+	BrowserUpdate current register: classListPresenter selector: #testClasses:!
+
+updateClasses
+	| packageServices |
+	classListPresenter list: ListModel new.
+	packageServices := packageListPresenter selections.
+	packageServices do: [:packageService | packageService command: #testClasses].
+	self issueCommand: packageServices!
+
+updateMethods
+	| classServices testMethods |
+	classServices := classListPresenter selections.
+	classServices isEmpty ifTrue: [^methodListPresenter list: ListModel new].
+	self updateServices: classServices.
+	methodListPresenter list: (SortedCollection sortBlock: [:x :y | x selector < y selector]).
+	classServices do: 
+			[:classService |
+			testMethods := classService methods
+						select: [:methodService | (methodService selector first: 4) = 'test'].
+			methodListPresenter model addAll: testMethods]!
+
+updatePackages
+	| browserService |
+	browserService := RowanBrowserService new.
+	browserService command: #packagesWithTests.
+	self issueCommand: (Array with: browserService).
+	testCounter at: 1 put: browserService testCount. ! !
+!JadeSUnitPresenter categoriesFor: #onViewOpened!event handlers!public! !
+!JadeSUnitPresenter categoriesFor: #registerPresentersForUpdates!public!register presenters! !
+!JadeSUnitPresenter categoriesFor: #updateClasses!event handlers!public! !
+!JadeSUnitPresenter categoriesFor: #updateMethods!event handlers!public! !
+!JadeSUnitPresenter categoriesFor: #updatePackages!event handlers!public! !
+
 !JadeSystemBrowserPresenter methodsFor!
 
 basicAddMethodCategory: string
@@ -2593,8 +2654,6 @@ update: services afterStonReplication: stonResults
 	BrowserUpdate current update: services afterStonReplication: stonResults!
 
 updateServices: services
-	"copied from RowanProjectsBrowserPresenter>>updateServices:"
-
 	| stonString stonResults |
 	services do: [:service | service prepareForReplication].
 	stonString := STON toString: services.
@@ -3108,6 +3167,8 @@ removedProject: presenter
 superclassListUpdate: presenter
 	!
 
+testPackages: presenter!
+
 updateClassCategorySelectionsFor: presenter!
 
 updateClassHierarchySelectionFor: presenter!
@@ -3156,6 +3217,7 @@ updateType
 !RowanCommandResult categoriesFor: #removedClass:!public!updating! !
 !RowanCommandResult categoriesFor: #removedProject:!public!updating! !
 !RowanCommandResult categoriesFor: #superclassListUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #testPackages:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassSelectionFor:!public!updating! !

@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop compilationWarnings'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop compilationWarnings testResult'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -140,6 +140,13 @@ hasSupers
 
 hasSupers: anObject
 	hasSupers := anObject!
+
+icon
+	testResult ifNil: [^self class icon].
+	testResult = 'passed' ifTrue: [^true icon].
+	testResult = 'failure' ifTrue: [^Warning icon].
+	testResult = 'error' ifTrue: [^false icon].
+	^self class icon!
 
 implementorsOf: aString
 
@@ -291,6 +298,15 @@ setBreakAtStepPoint: anInteger session: aGciSession
 	BrowserUpdate current update: (Array with: self) afterStonReplication: stonResults.
 !
 
+setError
+	testResult := 'error'!
+
+setFailure
+	testResult := 'failure'!
+
+setPassed
+	testResult := 'passed'!
+
 sortAspect
 
 	^selector!
@@ -352,6 +368,12 @@ superSource
 superSource: anObject
 	superSource := anObject!
 
+testResult
+	^testResult!
+
+testResult: anObject
+	testResult := anObject!
+
 unimplementedSelectors
 
 	self rowanFixMe.
@@ -395,6 +417,7 @@ user: anObject
 !RowanMethodService categoriesFor: #hasSubs:!accessing!private! !
 !RowanMethodService categoriesFor: #hasSupers!accessing!private! !
 !RowanMethodService categoriesFor: #hasSupers:!accessing!private! !
+!RowanMethodService categoriesFor: #icon!public!sunit! !
 !RowanMethodService categoriesFor: #implementorsOf:!method accessing!public! !
 !RowanMethodService categoriesFor: #initialize!initialization!public! !
 !RowanMethodService categoriesFor: #inSelectedPackage!public!testing! !
@@ -428,6 +451,9 @@ user: anObject
 !RowanMethodService categoriesFor: #selector:!accessing!private! !
 !RowanMethodService categoriesFor: #selectorsDisplayString!displaying!public! !
 !RowanMethodService categoriesFor: #setBreakAtStepPoint:session:!public! !
+!RowanMethodService categoriesFor: #setError!public!sunit! !
+!RowanMethodService categoriesFor: #setFailure!public!sunit! !
+!RowanMethodService categoriesFor: #setPassed!public!sunit! !
 !RowanMethodService categoriesFor: #sortAspect!accessing!public! !
 !RowanMethodService categoriesFor: #source!accessing!private! !
 !RowanMethodService categoriesFor: #source:!accessing!private! !
@@ -438,8 +464,24 @@ user: anObject
 !RowanMethodService categoriesFor: #superDisplayString:!accessing!private! !
 !RowanMethodService categoriesFor: #superSource!accessing!private! !
 !RowanMethodService categoriesFor: #superSource:!accessing!private! !
+!RowanMethodService categoriesFor: #testResult!accessing!public! !
+!RowanMethodService categoriesFor: #testResult:!accessing!public! !
 !RowanMethodService categoriesFor: #unimplementedSelectors!public! !
 !RowanMethodService categoriesFor: #updateSelectorFromCompiledMethod:!private! !
 !RowanMethodService categoriesFor: #user!accessing!private! !
 !RowanMethodService categoriesFor: #user:!accessing!private! !
+
+!RowanMethodService class methodsFor!
+
+defaultIconName
+	"Answer a filename to use for an icon of this class."
+
+	^File composeStem: 'Message' extension: 'ico'.!
+
+icon
+	"Answers an Icon that can be used to represent this class"
+
+	^##(self) defaultIcon ! !
+!RowanMethodService class categoriesFor: #defaultIconName!private! !
+!RowanMethodService class categoriesFor: #icon!private! !
 

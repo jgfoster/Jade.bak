@@ -342,9 +342,21 @@ variables
 
 !RowanClassService class methodsFor!
 
+defaultIconName
+	"Answer a filename to use for an icon of this class."
+
+	^File composeStem: 'Class' extension: 'ico'.!
+
+icon
+	"Answers an Icon that can be used to represent this class"
+
+	^##(self) defaultIcon!
+
 named: theName
 	| inst |
 	inst := self new name: theName.
 	^inst! !
+!RowanClassService class categoriesFor: #defaultIconName!private! !
+!RowanClassService class categoriesFor: #icon!private! !
 !RowanClassService class categoriesFor: #named:!instance creation!public! !
 

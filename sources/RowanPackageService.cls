@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanPackageService
-	instanceVariableNames: 'classes defaultTemplate projectName classCompilationFailures'
+	instanceVariableNames: 'classes defaultTemplate projectName classCompilationFailures testClasses'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -85,7 +85,13 @@ remoteServiceName
 
 replicateFrom: newService
 	^(self isPackageService and: [newService isPackageService])
-		ifTrue: [super replicateFrom: newService]! !
+		ifTrue: [super replicateFrom: newService]!
+
+testClasses: presenter
+	testClasses
+		ifNotNil: 
+			[self initializePresenterList: presenter.
+			presenter model addAll: testClasses]! !
 !RowanPackageService categoriesFor: #=!comparing!public! !
 !RowanPackageService categoriesFor: #classes:!public!updating! !
 !RowanPackageService categoriesFor: #classesUpdate:browser:!public!updating! !
@@ -101,6 +107,7 @@ replicateFrom: newService
 !RowanPackageService categoriesFor: #releaseReferencedServices!Init / Release!public! !
 !RowanPackageService categoriesFor: #remoteServiceName!must not strip!public! !
 !RowanPackageService categoriesFor: #replicateFrom:!public!updating! !
+!RowanPackageService categoriesFor: #testClasses:!public!updating! !
 
 !RowanPackageService class methodsFor!
 

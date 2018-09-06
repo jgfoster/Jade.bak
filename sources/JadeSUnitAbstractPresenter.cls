@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadePresenter subclass: #JadeSUnitAbstractPresenter
-	instanceVariableNames: 'testCasesPresenter textResultPresenter'
+	instanceVariableNames: 'methodListPresenter textResultPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -20,42 +20,59 @@ commitTransaction
 
 createComponents
 	super createComponents.
-	testCasesPresenter := self add: ListPresenter new name: 'testCases'.
+	methodListPresenter := self add: ListPresenter new name: 'testCases'.
 	textResultPresenter := self add: TextPresenter new name: 'textResult'!
 
 reset
-	testCasesPresenter model do: [:each | each result: nil].
+	methodListPresenter model do: [:each | each testResult: nil].
 	textResultPresenter value: String new.
-	testCasesPresenter view invalidate.
+	methodListPresenter view invalidate.
 	textResultPresenter view backcolor: Color face3d!
 
-runTests: anOrderedCollection in: testClassName
-	|  jadeResult |
-
-	testCasesPresenter selection isEmpty ifTrue: [^self].
-
+runTests: anOrderedCollection in: classService
+	| jadeResult |
+	methodListPresenter selection isEmpty ifTrue: [^self].
 	jadeResult := JadeTestResult new.
-	anOrderedCollection do: [:gsTestMethod | | result resultArray | 
-		result := gciSession serverPerform: #runTestNamed:in: with: gsTestMethod methodName with: testClassName.
-		resultArray := result subStrings: ','.
-		(resultArray first ~= '0') ifTrue: [gsTestMethod result: 'error'. jadeResult addError: gsTestMethod methodName].
-		(resultArray second ~= '0') ifTrue: [gsTestMethod result: 'failure'. jadeResult addFailure: gsTestMethod methodName].
-		(resultArray third ~= '0') ifTrue: [gsTestMethod result: 'passed'. jadeResult addPassed: gsTestMethod methodName].].
-
+	anOrderedCollection do: 
+			[:methodService |
+			| result resultArray |
+			result := gciSession
+						serverPerform: #runTestNamed:in:
+						with: methodService selector
+						with: classService name.
+			resultArray := result subStrings: ','.
+			resultArray first ~= '0'
+				ifTrue: 
+					[methodService testResult: 'error'.
+					jadeResult addError: methodService selector].
+			resultArray second ~= '0'
+				ifTrue: 
+					[methodService testResult: 'failure'.
+					jadeResult addFailure: methodService selector].
+			resultArray third ~= '0'
+				ifTrue: 
+					[methodService testResult: 'passed'.
+					jadeResult addPassed: methodService selector]].
 	jadeResult setSummary.
-
 	self setColorFor: jadeResult.
-
 	^jadeResult!
 
 setColorFor: aJadeTestResult
-
 	textResultPresenter value: aJadeTestResult summary.
-	aJadeTestResult failures do: [:eachSymbol | testCasesPresenter model do: [:eachTest | (eachTest methodName = eachSymbol) ifTrue: [eachTest setFailure]]].
-	aJadeTestResult errors do: [:eachSymbol | testCasesPresenter model do: [:eachTest | (eachTest methodName = eachSymbol) ifTrue: [eachTest setError]]].
-	aJadeTestResult passed do: [:eachSymbol | testCasesPresenter model do: [:eachTest | (eachTest methodName = eachSymbol) ifTrue: [eachTest setPassed]]].
-	testCasesPresenter view invalidate.
-	textResultPresenter view backcolor: aJadeTestResult backgroundColor.! !
+	aJadeTestResult failures do: 
+			[:eachSymbol |
+			methodListPresenter model 
+				do: [:eachTest | eachTest selector = eachSymbol ifTrue: [eachTest setFailure]]].
+	aJadeTestResult errors do: 
+			[:eachSymbol |
+			methodListPresenter model
+				do: [:eachTest | eachTest selector = eachSymbol ifTrue: [eachTest setError]]].
+	aJadeTestResult passed do: 
+			[:eachSymbol |
+			methodListPresenter model
+				do: [:eachTest | eachTest selector = eachSymbol ifTrue: [eachTest setPassed]]].
+	methodListPresenter view invalidate.
+	textResultPresenter view backcolor: aJadeTestResult backgroundColor! !
 !JadeSUnitAbstractPresenter categoriesFor: #abortTransaction!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #commitTransaction!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #createComponents!public! !

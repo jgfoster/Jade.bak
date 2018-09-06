@@ -16,7 +16,7 @@ presenterClass
 
 shellName
  
-	^'SUnit Browser'.
+	^'Rowan SUnit Browser'.
 ! !
 !JadeSUnitBrowser categoriesFor: #presenterClass!private! !
 !JadeSUnitBrowser categoriesFor: #shellName!overrides!private! !

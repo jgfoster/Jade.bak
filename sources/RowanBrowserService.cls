@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanBrowserService
-	instanceVariableNames: 'projects removedMethods allClasses hierarchyServices'
+	instanceVariableNames: 'projects removedMethods allClasses hierarchyServices testPackages testCount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -90,7 +90,17 @@ stonOn: stonWriter
 							[:each |
 							(self instVarAt: (instanceVariableNames indexOf: each))
 								ifNotNil: [:value | dictionary at: each asSymbol put: value]
-								ifNil: [self stonShouldWriteNilInstVars ifTrue: [dictionary at: each asSymbol put: nil]]]]]! !
+								ifNil: [self stonShouldWriteNilInstVars ifTrue: [dictionary at: each asSymbol put: nil]]]]]!
+
+testCount
+	^testCount!
+
+testCount: anObject
+	testCount := anObject!
+
+testPackages: presenter
+	self initializePresenterList: presenter.
+	presenter model addAll: testPackages! !
 !RowanBrowserService categoriesFor: #=!comparing!public! !
 !RowanBrowserService categoriesFor: #allClasses!accessing!private! !
 !RowanBrowserService categoriesFor: #excludedInstVars!public!ston! !
@@ -107,4 +117,7 @@ stonOn: stonWriter
 !RowanBrowserService categoriesFor: #removedMethods:!accessing!private! !
 !RowanBrowserService categoriesFor: #replicateFrom:!public!replication!updating! !
 !RowanBrowserService categoriesFor: #stonOn:!must not strip!public!ston! !
+!RowanBrowserService categoriesFor: #testCount!accessing!private! !
+!RowanBrowserService categoriesFor: #testCount:!accessing!private! !
+!RowanBrowserService categoriesFor: #testPackages:!public!updating! !
 

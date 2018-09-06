@@ -193,6 +193,10 @@ stonOn: anObject
 superclassListUpdate: presenter
 	!
 
+testClasses: presenter!
+
+testPackages: presenter!
+
 toolTip
 	^self displayString
 !
@@ -289,6 +293,8 @@ variableListUpdate: aPresenter! !
 !RowanService categoriesFor: #sortAspect!accessing!public! !
 !RowanService categoriesFor: #stonOn:!must not strip!public! !
 !RowanService categoriesFor: #superclassListUpdate:!public!updating! !
+!RowanService categoriesFor: #testClasses:!public!updating! !
+!RowanService categoriesFor: #testPackages:!public!updating! !
 !RowanService categoriesFor: #toolTip!printing!public! !
 !RowanService categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
 !RowanService categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !
