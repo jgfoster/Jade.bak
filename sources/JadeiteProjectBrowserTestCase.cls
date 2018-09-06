@@ -253,7 +253,6 @@ test_goToDefinedPackageFromHierarchy
 	self selectTreeServicesNamed: (Array with: 'RwGemStoneSpecification')
 		in: self projectsPresenter classHierarchyPresenter.
 	self projectsPresenter gotoClassDefinedPackage.
-	self assert: self projectsPresenter isClassListTabSelected.
 	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Specifications'!
 
 test_hierarchySelectTwoBrowsers
@@ -418,6 +417,7 @@ test_saveMethodHierarchy
 	| source |
 	self testsIssue: #issue121 withTitle: 'Package Browser (3.0.20): hierarchy class view and classes defined in different pacakge oddity'.
 	self selectRowanSample1Class.
+	self halt. 
 	self selectHierarchyTab.
 	self selectCategoriesNamed: #('accessing').
 	source := 'sampleMethod  

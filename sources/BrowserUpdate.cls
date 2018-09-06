@@ -93,9 +93,10 @@ updatesPerform: selector presenter: presenter
 	"the update may know which client updates 
 	it wants us to care about. Respect that."
 
-	| updateBlock |
-	updateBlock := [:update | update perform: selector with: presenter].
-	self performUpdate: updateBlock with: selector!
+	updates do: 
+			[:update |
+			(update updateType isNil or: [update updateType == selector])
+				ifTrue: [update perform: selector with: presenter]]!
 
 updatesPerform: selector presenter: presenter browser: browser
 	"the update may know which client updates 
