@@ -207,6 +207,29 @@ test_extensionColoringInHierarchy
 		in: self projectsPresenter classHierarchyPresenter.
 	self assert: self projectsPresenter classHierarchyPresenter selection shouldColorAsExtension!
 
+test_gotoDefinedPackage
+	| dictionaryPresenter |
+	self testsIssue: #issue150 withTitle: 'Go to defining package -> Not found: a BlockClosure'.
+	"different project within projects browser"
+	self selectServiceNamed: 'Rowan' in: self projectListPresenter.
+	self selectServiceNamed: 'Rowan-Tools-Kernel' in: self packageListPresenter.
+	self selectServiceNamed: 'CypressDefinition' in: self classListPresenter.
+	self projectsPresenter gotoClassDefinedPackage.
+	self assert: self projectListPresenter selection name = 'Cypress'.
+	self assert: self packageListPresenter selection name = 'Cypress-Definitions'.
+	self assert: self classListPresenter selection name = 'CypressDefinition'.
+
+	"go to dictionary browser"
+	self selectServiceNamed: 'Rowan' in: self projectListPresenter.
+	self selectServiceNamed: 'Rowan-GemStone-Kernel' in: self packageListPresenter.
+	self selectServiceNamed: 'ByteArray' in: self classListPresenter.
+	dictionaryPresenter := self projectsPresenter gotoClassDefinedPackage.
+	
+	[self assert: dictionaryPresenter dictionaryListPresenter selection key = 'Globals'.
+	self assert: dictionaryPresenter classCategoryPresenter selection value = 'Kernel'.
+	self assert: dictionaryPresenter classListPresenter selection = 'ByteArray']
+			ensure: [dictionaryPresenter topShell destroy]!
+
 test_goToDefinedPackageFromClassList
 	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
 	self selectServicesNamed: #('Rowan-Services-Extensions') in: self packageListPresenter.
@@ -460,6 +483,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classSideSelection!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_extensionColoringInHierarchy!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedPackage!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromClassList!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !

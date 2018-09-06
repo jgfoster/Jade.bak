@@ -519,13 +519,9 @@ gitCommit
 	self refreshFromServer. !
 
 gotoClassDefinedPackage
-	| newPackageSelection selection |
-	selection := self selectedClass.
-	newPackageSelection := packageListPresenter list
-				detect: [:svc | svc name = selection definedPackageName].
-	self selectClassListTab.
-	self selectPackage: newPackageSelection.
-	self updateAfterFindClass: selection!
+	" find will go to the class in it's defined package project"
+
+	^self updateAfterFindClass: self selectedClass!
 
 gotoMethodPackage
 	| newPackageSelection |
@@ -705,7 +701,8 @@ openDictionaryBrowserOn: classService
 	| shell |
 	Cursor wait showWhile: 
 			[shell := RowanSystemBrowser showOnSession: gciSession.
-			shell selectClass: classService name asString selector: String new]!
+			shell selectClass: classService name asString selector: String new.
+			^shell currentCard]!
 
 pkgsMenuStrings
 	0 == 1

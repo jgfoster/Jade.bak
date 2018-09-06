@@ -118,6 +118,9 @@ selectRowanSample1Class
 	self selectServicesNamed: #('RowanSample1-Core') in: self packageListPresenter.
 	self selectServicesNamed: (Array with: self sampleClass) in: self classListPresenter!
 
+selectServiceNamed: aString in: presenter
+	self selectServicesNamed: (Array with: aString) in: presenter!
+
 selectServicesNamed: anArray in: presenter
 	presenter resetSelection.
 	anArray isEmpty ifTrue:[^self].
@@ -185,6 +188,7 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #sampleProjectName!constants!private! !
 !JadeiteAbstractTestCase categoriesFor: #selectCategoriesNamed:!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #selectRowanSample1Class!private!project browser support! !
+!JadeiteAbstractTestCase categoriesFor: #selectServiceNamed:in:!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #selectServicesNamed:in:!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #tearDown!private!setup teardown! !
