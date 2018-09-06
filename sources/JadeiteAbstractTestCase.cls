@@ -19,6 +19,9 @@ categoryListPresenter
 classListPresenter
 	^self projectsPresenter classListPresenter!
 
+commitTransaction
+	transcript commitTransaction!
+
 ensureRowanSample1Attached
 	| sample1Path root |
 	sample1Path := self rowanSample1Path.
@@ -168,6 +171,7 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #abortTransaction!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #categoryListPresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #classListPresenter!private!project browser support! !
+!JadeiteAbstractTestCase categoriesFor: #commitTransaction!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !
 !JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Available!private!project support! !
 !JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Loaded!private!project support! !

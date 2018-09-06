@@ -50,8 +50,8 @@ clientDefinitionClass
 command
 	^command!
 
-command: anObject
-	command := anObject!
+command: symbol
+	command := symbol.!
 
 commandArgs
 	^commandArgs!
@@ -141,9 +141,8 @@ notRowanizedPackageName
 packagesUpdate: presenter!
 
 prepareForReplication
-	"only ston replicate what is absolutely necessary. Each
-	service knows how to do that. Make this method prepares
-	each command arg as well"
+	"only replicate what is absolutely necessary. Each service knows how to do that. 
+	This method prepares each command arg as well"
 
 	commandArgs ifNotNil: [commandArgs do: [:arg | arg prepareForReplication]]!
 

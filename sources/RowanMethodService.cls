@@ -219,9 +219,9 @@ packageName: anObject
 	packageName := anObject!
 
 prepareForReplication
-
-	stepPoints := Array new. 
-	breakPoints := Array new. !
+	super prepareForReplication.
+	stepPoints := Array new.
+	breakPoints := Array new!
 
 printOn: target
 	"Append, to the <puttableStream>, target, a string whose characters are a 

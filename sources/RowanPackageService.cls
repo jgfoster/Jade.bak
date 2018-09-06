@@ -64,8 +64,8 @@ isPackageService
 	^true!
 
 prepareForReplication
-
-	classes := nil. !
+	super prepareForReplication.
+	classes := nil!
 
 projectName
 	^projectName!

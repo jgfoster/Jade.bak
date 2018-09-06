@@ -86,12 +86,14 @@ setUp
 	self disableTranscriptWrites.	"turn off gemstone transcript writes for performance"
 	self openProjectsBrowser.
 	self abortTransaction.	"ensure we don't have unsaved changes in the images"
-	self ensureRowanSample1Available.!
+	self ensureRowanSample1Available. "load sample project after abort  - especially until https://github.com/GemTalk/Rowan/issues/349 is fixed."
+	self commitTransaction. "take this out after #349 is fixed"!
 
 tearDown
 	super tearDown.
+	self abortTransaction. 
 	self unloadSampleProject.
-	self abortTransaction.
+	self commitTransaction. "can remove this when #349 is fixed. See setUp" 
 	projectsBrowser ifNotNil: [projectsBrowser destroy].
 	transcriptWritesWereEnabled ifTrue: [transcript flipTranscript].
 !

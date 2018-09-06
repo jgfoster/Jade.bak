@@ -41,6 +41,7 @@ name
 	^nil!
 
 prepareForReplication
+	super prepareForReplication.	
 	removedMethods
 		ifNotNil: [removedMethods do: [:methodService | methodService prepareForReplication]]!
 
