@@ -312,6 +312,7 @@ test_projectDisplaysSync
 	stay sync'ed automaticall"
 
 	"project removal in projects browser"
+
 	self denyIsNil: (self projectNamed: 'RowanSample1').
 	self assert: self transcriptTab isKindOf: RowanProjectListPresenter.
 	self denyIsNil: (self transcriptProjectNamed: 'RowanSample1').
@@ -320,9 +321,10 @@ test_projectDisplaysSync
 	self assertIsNil: (self transcriptProjectNamed: 'RowanSample1').
 	"project addition in projects browser"
 	self ensureRowanSample1Available.
-	self denyIsNil: (self transcriptProjectNamed: 'RowanSample1').
-	self denyIsNil: (self projectNamed: 'RowanSample1').
-	self unloadSampleProject.
+	
+	[self denyIsNil: (self transcriptProjectNamed: 'RowanSample1').
+	self denyIsNil: (self projectNamed: 'RowanSample1')]
+			ensure: [self unloadSampleProject].
 	self assertIsNil: (self projectNamed: 'RowanSample1').
 	self assertIsNil: (self transcriptProjectNamed: 'RowanSample1').
 	"project addition in project list"

@@ -139,9 +139,6 @@ setUp
 	transcript := JadeiteTestResource current transcript.
 !
 
-tearDown
-	super tearDown.!
-
 testsIssue: aSymbol withTitle: anObject
 	"send this to help identify which tests test which issues"
 
@@ -166,7 +163,8 @@ transcriptTab
 
 unloadSampleProject
 	self isSampleProjectLoaded
-		ifTrue: [self projectsPresenter basicUnloadProjects: (Array with: self sampleProjectName)]! !
+		ifTrue: [self projectsPresenter basicUnloadProjects: (Array with: self sampleProjectName)].
+! !
 !JadeiteAbstractTestCase categoriesFor: #abortTransaction!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #categoryListPresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #classListPresenter!private!project browser support! !
@@ -191,7 +189,6 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #selectServiceNamed:in:!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #selectServicesNamed:in:!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #setUp!private!setup teardown! !
-!JadeiteAbstractTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #testsIssue:withTitle:!public!support! !
 !JadeiteAbstractTestCase categoriesFor: #transcript!public!transcript support! !
 !JadeiteAbstractTestCase categoriesFor: #transcriptProjectList!public!transcript support! !
