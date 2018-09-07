@@ -255,6 +255,7 @@ package methodNames
 	add: #RowanCommandResult -> #removedClass:;
 	add: #RowanCommandResult -> #removedProject:;
 	add: #RowanCommandResult -> #superclassListUpdate:;
+	add: #RowanCommandResult -> #testClasses:;
 	add: #RowanCommandResult -> #testPackages:;
 	add: #RowanCommandResult -> #updateClassCategorySelectionsFor:;
 	add: #RowanCommandResult -> #updateClassHierarchySelectionFor:;
@@ -3167,6 +3168,8 @@ removedProject: presenter
 superclassListUpdate: presenter
 	!
 
+testClasses: presenter!
+
 testPackages: presenter!
 
 updateClassCategorySelectionsFor: presenter!
@@ -3217,6 +3220,7 @@ updateType
 !RowanCommandResult categoriesFor: #removedClass:!public!updating! !
 !RowanCommandResult categoriesFor: #removedProject:!public!updating! !
 !RowanCommandResult categoriesFor: #superclassListUpdate:!public!updating! !
+!RowanCommandResult categoriesFor: #testClasses:!public!updating! !
 !RowanCommandResult categoriesFor: #testPackages:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassCategorySelectionsFor:!public!updating! !
 !RowanCommandResult categoriesFor: #updateClassHierarchySelectionFor:!public!updating! !

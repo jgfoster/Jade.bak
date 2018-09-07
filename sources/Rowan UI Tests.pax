@@ -16,7 +16,6 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #RowanCommandResult -> #testClasses:;
 	add: 'MessageBox class' -> #new;
 	add: 'TestResource class' -> #signalInitializationError;
 	yourself.
@@ -32,7 +31,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Tree\Dolphin Tree Presenter';
-	add: 'GemStone Objects';
 	add: 'GemStone Session';
 	add: 'Jade UI Base';
 	add: 'Rowan UI Base';
@@ -100,11 +98,6 @@ new
 		ifTrue: [(Smalltalk at: #TestMessageBox) basicNew initialize]
 		ifFalse: [self basicNew initialize] ! !
 !MessageBox class categoriesFor: #new!instance creation!public! !
-
-!RowanCommandResult methodsFor!
-
-testClasses: presenter! !
-!RowanCommandResult categoriesFor: #testClasses:!public!updating! !
 
 !TestResource class methodsFor!
 
