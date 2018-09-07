@@ -121,7 +121,11 @@ frameListPresenter
 
 getProcessList
 	"#getProcessList copied from RowanProjectsBrowserPresenter>>updatePresenters"
-	self updateServices: (Array with: (RowanDebuggerService onProcess: gsProcess)).!
+
+	| debuggerService |
+	debuggerService := RowanDebuggerService onProcess: gsProcess.
+	self updateServices: (Array with: debuggerService).
+	processListPresenter selection: debuggerService processes first!
 
 methodListSelection
 	"really a selection from the frame list"
@@ -352,7 +356,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #onViewOpened!event handlers!private! !
 !RowanDebugger categoriesFor: #processListPresenter!Accessing!public! !
 !RowanDebugger categoriesFor: #queryCommand:!menu handlers!public! !
-!RowanDebugger categoriesFor: #registerPresentersForUpdates!public! !
+!RowanDebugger categoriesFor: #registerPresentersForUpdates!public!register presenters! !
 !RowanDebugger categoriesFor: #reportCompileError:in:!compiling!public! !
 !RowanDebugger categoriesFor: #restart!menu handlers!private! !
 !RowanDebugger categoriesFor: #saveMethod!compiling!menu handlers!private! !

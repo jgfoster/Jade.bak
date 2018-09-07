@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #BrowserUpdate
-	instanceVariableNames: 'updates debug'
+	instanceVariableNames: 'updates debug inUpdate'
 	classVariableNames: 'Current'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -9,6 +9,25 @@ BrowserUpdate guid: (GUID fromString: '{9ec78c86-d74d-477a-bb5a-254ba1c54272}')!
 BrowserUpdate comment: 'Coordinate client presenters with updates from the server'!
 !BrowserUpdate categoriesForClass!MVP-Models! !
 !BrowserUpdate methodsFor!
+
+basicIssueCommand: services session: session
+	| stonString stonResultString |
+	services do:[:service | service prepareForReplication].
+	stonString := STON toString: services.
+	[stonResultString := session serverPerform: #updateFromSton: with: stonString]
+		ensure: [services do: [:service | service clearCommand]].
+	^self update: services afterStonReplication: stonResultString.!
+
+basicUpdateServices: services session: session
+	| stonString stonResults |
+	services do: 
+			[:service |
+			service
+				prepareForReplication;
+				command: nil	"updates don't have commands"].
+	stonString := STON toString: services.
+	stonResults := session serverPerform: #updateFromSton: with: stonString.
+	self update: services afterStonReplication: stonResults!
 
 debug
 	^debug!
@@ -21,19 +40,17 @@ debug: aBoolean
 
 initialize
 	self initializeUpdates.
-	debug := false. !
+	debug := false. 
+	inUpdate := false. !
 
 initializeUpdates
 	updates := OrderedCollection new.
 	!
 
 issueCommand: services session: session
-	| stonString stonResultString |
-	services do:[:service | service prepareForReplication].
-	stonString := STON toString: services.
-	[stonResultString := session serverPerform: #updateFromSton: with: stonString]
-		ensure: [services do: [:service | service clearCommand]].
-	^self update: services afterStonReplication: stonResultString.!
+	inUpdate ifTrue: [^self].
+	inUpdate := true.
+	[self basicIssueCommand: services session: session] ensure: [inUpdate := false]!
 
 performUpdate: updateBlock with: selector
 	updates do: 
@@ -89,6 +106,11 @@ updates: aCollection
 	updates addAll: aCollection.
 	self updateReady!
 
+updateServices: services session: session
+	inUpdate ifTrue: [^self].
+	inUpdate := true.
+	[self basicUpdateServices: services session: session] ensure: [inUpdate := false]!
+
 updatesPerform: selector presenter: presenter
 	"the update may know which client updates 
 	it wants us to care about. Respect that."
@@ -111,6 +133,8 @@ updatesPerform: selector presenter: presenter browser: browser
 						perform: selector
 						with: presenter
 						with: browser]]! !
+!BrowserUpdate categoriesFor: #basicIssueCommand:session:!commands!private! !
+!BrowserUpdate categoriesFor: #basicUpdateServices:session:!private!updating! !
 !BrowserUpdate categoriesFor: #debug!accessing!private! !
 !BrowserUpdate categoriesFor: #debug:!accessing!private! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
@@ -123,6 +147,7 @@ updatesPerform: selector presenter: presenter browser: browser
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !
 !BrowserUpdate categoriesFor: #updates!accessing!public! !
 !BrowserUpdate categoriesFor: #updates:!accessing!public! !
+!BrowserUpdate categoriesFor: #updateServices:session:!public!updating! !
 !BrowserUpdate categoriesFor: #updatesPerform:presenter:!public!updating! !
 !BrowserUpdate categoriesFor: #updatesPerform:presenter:browser:!public!updating! !
 

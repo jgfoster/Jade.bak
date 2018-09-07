@@ -124,7 +124,7 @@ methodMenuBreak: aMenu
 				selector: selection first asSymbol;
 				className: classListPresenter selection asSymbol;
 				meta: self isClassSideSelected.
-	self basicUpdateServices: (Array with: service).
+	self issueCommand: (Array with: service). 
 	service appendToSourceMenu: aMenu presenter: methodSourcePresenter!
 
 onViewClosed
@@ -414,7 +414,7 @@ updateMethodReferences: displayArrays
 			[:service |
 			service meta: self isClassSideSelected.
 			service command: #allReferences].
-	self basicUpdateServices: services.
+	self issueCommand: services. 
 	^services!
 
 updateMethodsFrom: update

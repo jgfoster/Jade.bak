@@ -115,7 +115,6 @@ package methodNames
 	add: #JadePresenter -> #issueCommand:;
 	add: #JadePresenter -> #update:afterStonReplication:;
 	add: #JadePresenterA -> #basicCloneProject:root:;
-	add: #JadePresenterA -> #basicUpdateServices:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadePresenterA -> #clearBreakPointAt:in:;
@@ -360,7 +359,7 @@ Error subclass: #RowanDebuggerStepPointError
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #BrowserUpdate
-	instanceVariableNames: 'updates debug'
+	instanceVariableNames: 'updates debug inUpdate'
 	classVariableNames: 'Current'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -1265,17 +1264,6 @@ basicCloneProject: path root: root
 					with: true).
 	self issueCommand: (Array with: service)!
 
-basicUpdateServices: services
-	| stonString stonResults |
-	services do: 
-			[:service |
-			service
-				prepareForReplication;
-				command: nil	"updates don't have commands"].
-	stonString := STON toString: services.
-	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResults!
-
 browseImplementorsOf: aGsMethodOrString
 	
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
@@ -1486,10 +1474,9 @@ setBreakPointAt: stepPoint in: browser
 
 updateMethodReferences: services
 	services do: [:service | service command: #allReferences].
-	self basicUpdateServices: services.
+	self issueCommand: services.
 	^services! !
 !JadePresenterA categoriesFor: #basicCloneProject:root:!Jadeite!public! !
-!JadePresenterA categoriesFor: #basicUpdateServices:!Jadeite!public! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
 !JadePresenterA categoriesFor: #clearBreakPointAt:in:!Jadeite!public! !
@@ -2146,11 +2133,7 @@ updatePackages
 	testCounter at: 1 put: browserService testCount. !
 
 updateServices: services
-	| stonString stonResults |
-	services do: [:service | service prepareForReplication].
-	stonString := STON toString: services.
-	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResults! !
+	BrowserUpdate current updateServices: services session: gciSession! !
 !JadeSUnitPresenter categoriesFor: #onViewOpened!event handlers!public! !
 !JadeSUnitPresenter categoriesFor: #registerPresentersForUpdates!public!register presenters! !
 !JadeSUnitPresenter categoriesFor: #updateClasses!event handlers!public! !
@@ -2687,11 +2670,7 @@ update: services afterStonReplication: stonResults
 	BrowserUpdate current update: services afterStonReplication: stonResults!
 
 updateServices: services
-	| stonString stonResults |
-	services do: [:service | service prepareForReplication].
-	stonString := STON toString: services.
-	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResults! !
+	BrowserUpdate current updateServices: services session: gciSession! !
 !JadeTextDocument categoriesFor: #aboutJadeite!private! !
 !JadeTextDocument categoriesFor: #issueCommand:!public!services! !
 !JadeTextDocument categoriesFor: #onPromptToSaveChanges:!private! !

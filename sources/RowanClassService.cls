@@ -336,7 +336,7 @@ variables
 !RowanClassService categoriesFor: #template!accessing!private! !
 !RowanClassService categoriesFor: #template:!accessing!private! !
 !RowanClassService categoriesFor: #updateCategories:!private!updating! !
-!RowanClassService categoriesFor: #updateListIn:from:!private! !
+!RowanClassService categoriesFor: #updateListIn:from:!private!updating! !
 !RowanClassService categoriesFor: #updateVariables:!private!updating! !
 !RowanClassService categoriesFor: #variables!accessing!private! !
 

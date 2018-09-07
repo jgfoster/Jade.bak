@@ -568,13 +568,6 @@ isOkayToChange
 	^true.
 !
 
-issueCommand: services
-	inUpdate ifTrue: [^self].
-	inUpdate := true.
-	[^super issueCommand: services] ensure: 
-			[self redrawAllViews.
-			inUpdate := false]!
-
 jadeMenuStrings
 
 	false ifTrue: [
@@ -993,7 +986,6 @@ redrawAllViews
 
 refreshClass
 	| selection presenter |
-	inUpdate ifTrue: [^self].
 	presenter := self isClassListTabSelected
 				ifTrue: [classListPresenter]
 				ifFalse: [classHierarchyPresenter].
@@ -1285,9 +1277,7 @@ updateAfterFindClass: classService
 	classListPresenter selections: (Array with: updatedClassService)!
 
 updateAndSelectA: aView
-
-	inUpdate ifTrue: [^self].
-	"self updateCommand: self requestStringForUpdate."
+	"is this override still needed?"
 	self updateMenuBar.
 	aView notNil ifTrue: [aView ensureVisible].
 !
@@ -1367,7 +1357,7 @@ updateMenuBar
 
 updateMethodReferences: services
 	services do: [:service | service command: #allReferences].
-	self updateServices: services.
+	self issueCommand: services.
 	^services!
 
 updateMethodSource
@@ -1462,9 +1452,7 @@ updateService: service
 	^self updateServices: (Array with: service) !
 
 updateServices: services
-	inUpdate ifTrue: [^self].
-	inUpdate := true.
-	[self basicUpdateServices: services] ensure: [inUpdate := false]!
+	BrowserUpdate current updateServices: services session: gciSession!
 
 updateSingleMethodSource
 	methodSourcePresenter value: methodListPresenter selection source.
@@ -1564,7 +1552,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #isClassSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isOkayToChange!event handlers!public!testing! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #issueCommand:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #jadeMenuStrings!menus!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #loadProjects!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #makeDefault!project menu handlers!public! !
