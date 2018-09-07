@@ -76,11 +76,6 @@ selectTreeServicesNamed: anArray in: presenter
 						add: service;
 						yourself)]!
 
-serviceNamed: name in: presenter
-	| service |
-	service := presenter list detect: [:service | service name = name] ifNone: [].
-	^service!
-
 setUp
 	super setUp.
 	self disableTranscriptWrites.	"turn off gemstone transcript writes for performance"
@@ -477,7 +472,6 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTabIn:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectMethodsNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectTreeServicesNamed:in:!private!selection! !
-!JadeiteProjectBrowserTestCase categoriesFor: #serviceNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !

@@ -136,6 +136,11 @@ selectServicesNamed: anArray in: presenter
 						add: service;
 						yourself)]!
 
+serviceNamed: name in: presenter
+	| service |
+	service := presenter list detect: [:service | service name = name] ifNone: [].
+	^service!
+
 setUp
 	super setUp.
 	session := JadeiteTestResource current session.
@@ -192,6 +197,7 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #selectRowanSample1Class!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #selectServiceNamed:in:!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #selectServicesNamed:in:!private!project browser support! !
+!JadeiteAbstractTestCase categoriesFor: #serviceNamed:in:!private!selection! !
 !JadeiteAbstractTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #testsIssue:withTitle:!public!support! !
 !JadeiteAbstractTestCase categoriesFor: #transcript!public!transcript support! !

@@ -83,15 +83,13 @@ JadeShell subclass: #JadeSUnitBrowser
 !JadeTextDocument methodsFor!
 
 jadeBrowseTests
-
-	JadeSUnitBrowser showOnSession: gciSession.
+	^JadeSUnitBrowser showOnSession: gciSession.
 ! !
-!JadeTextDocument categoriesFor: #jadeBrowseTests!Jade!private! !
+!JadeTextDocument categoriesFor: #jadeBrowseTests!Jade!public! !
 
 !JadeToolsToolBarPresenter methodsFor!
 
 browseTests
-
 	JadeSUnitBrowser showOnSession: gciSession.! !
 !JadeToolsToolBarPresenter categoriesFor: #browseTests!public! !
 

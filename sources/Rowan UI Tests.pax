@@ -11,11 +11,17 @@ package classNames
 	add: #JadeiteInspectorTestCase;
 	add: #JadeiteMessageBoxTestCase;
 	add: #JadeiteProjectBrowserTestCase;
+	add: #JadeiteSUnitSupportTestCase;
 	add: #JadeiteTestResource;
 	add: #TestMessageBox;
 	yourself.
 
 package methodNames
+	add: #JadeSUnitAbstractPresenter -> #methodListPresenter;
+	add: #JadeSUnitAbstractPresenter -> #methodListPresenter:;
+	add: #JadeSUnitPresenter -> #classListPresenter;
+	add: #JadeSUnitPresenter -> #methodListPresenter;
+	add: #JadeSUnitPresenter -> #packageListPresenter;
 	add: 'MessageBox class' -> #new;
 	add: 'TestResource class' -> #signalInitializationError;
 	yourself.
@@ -32,6 +38,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Tree\Dolphin Tree Presenter';
 	add: 'GemStone Session';
+	add: 'Jade Test Browser';
 	add: 'Jade UI Base';
 	add: 'Rowan UI Base';
 	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
@@ -76,6 +83,11 @@ JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+JadeiteAbstractTestCase subclass: #JadeiteSUnitSupportTestCase
+	instanceVariableNames: 'sunitBrowser'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 TestResource subclass: #JadeiteTestResource
 	instanceVariableNames: 'session transcript'
 	classVariableNames: ''
@@ -86,6 +98,30 @@ TestResource subclass: #JadeiteTestResource
 
 
 "Loose Methods"!
+
+!JadeSUnitAbstractPresenter methodsFor!
+
+methodListPresenter
+	^methodListPresenter!
+
+methodListPresenter: anObject
+	methodListPresenter := anObject! !
+!JadeSUnitAbstractPresenter categoriesFor: #methodListPresenter!accessing!private! !
+!JadeSUnitAbstractPresenter categoriesFor: #methodListPresenter:!accessing!private! !
+
+!JadeSUnitPresenter methodsFor!
+
+classListPresenter
+	^classListPresenter!
+
+methodListPresenter
+	^methodListPresenter!
+
+packageListPresenter
+	^packageListPresenter! !
+!JadeSUnitPresenter categoriesFor: #classListPresenter!accessing!private! !
+!JadeSUnitPresenter categoriesFor: #methodListPresenter!accessing!private! !
+!JadeSUnitPresenter categoriesFor: #packageListPresenter!accessing!private! !
 
 !MessageBox class methodsFor!
 
