@@ -13,6 +13,7 @@ package classNames
 	add: #JadeiteProjectBrowserTestCase;
 	add: #JadeiteSUnitSupportTestCase;
 	add: #JadeiteTestResource;
+	add: #JadeiteTranscriptTestCase;
 	add: #TestMessageBox;
 	yourself.
 
@@ -85,6 +86,11 @@ JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
 	classInstanceVariableNames: ''!
 JadeiteAbstractTestCase subclass: #JadeiteSUnitSupportTestCase
 	instanceVariableNames: 'sunitBrowser'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeiteAbstractTestCase subclass: #JadeiteTranscriptTestCase
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

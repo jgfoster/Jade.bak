@@ -205,6 +205,7 @@ package methodNames
 	add: #JadeTranscript -> #methodsChanged24;
 	add: #JadeTranscript -> #methodsChangedDays;
 	add: #JadeTranscript -> #openRowanProjectList;
+	add: #JadeTranscript -> #updateCaption;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:;
 	add: #JadeTreeMethodListPresenter -> #browseMethodsFromString:methodName:type:;
@@ -2747,10 +2748,16 @@ methodsChangedDays
 openRowanProjectList
 	^(RowanProjectListShell showOnSession: self gciSession) primaryPresenter
 		browseProjects;
-		yourself! !
+		yourself!
+
+updateCaption
+
+	self caption: (gciSession titleBarFor: 'Console').
+! !
 !JadeTranscript categoriesFor: #methodsChanged24!event handling!public! !
 !JadeTranscript categoriesFor: #methodsChangedDays!event handling!public! !
 !JadeTranscript categoriesFor: #openRowanProjectList!public!rowan! !
+!JadeTranscript categoriesFor: #updateCaption!public! !
 
 !JadeTreeMethodListPresenter methodsFor!
 

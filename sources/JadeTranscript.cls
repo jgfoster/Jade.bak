@@ -169,11 +169,6 @@ turnAutoMigrateOff
 turnAutoMigrateOn
 
 	gciSession executeString: 'MCPlatformSupport autoMigrate: true'.
-!
-
-updateCaption
-
-	self caption: (gciSession titleBarFor: 'Transcript').
 ! !
 !JadeTranscript categoriesFor: #autocompletion!event handling!public! !
 !JadeTranscript categoriesFor: #browseMonticelloRepositories!event handling!public! !
@@ -193,5 +188,4 @@ updateCaption
 !JadeTranscript categoriesFor: #sleepAndCommit!event handling!public! !
 !JadeTranscript categoriesFor: #turnAutoMigrateOff!event handling!public! !
 !JadeTranscript categoriesFor: #turnAutoMigrateOn!event handling!public! !
-!JadeTranscript categoriesFor: #updateCaption!public! !
 
