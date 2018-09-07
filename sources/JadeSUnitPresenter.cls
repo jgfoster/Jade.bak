@@ -70,14 +70,7 @@ testCasesSize
 	^'Test Cases:' , methodListPresenter model size printString!
 
 testClassesSize
-	^'Test Classes:' , classListPresenter model size printString!
-
-updateServices: services
-	| stonString stonResults |
-	services do: [:service | service prepareForReplication].
-	stonString := STON toString: services.
-	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResults! !
+	^'Test Classes:' , classListPresenter model size printString! !
 !JadeSUnitPresenter categoriesFor: #createComponents!public! !
 !JadeSUnitPresenter categoriesFor: #createSchematicWiring!public! !
 !JadeSUnitPresenter categoriesFor: #debug!public! !
@@ -91,7 +84,6 @@ updateServices: services
 !JadeSUnitPresenter categoriesFor: #status:!accessing!private! !
 !JadeSUnitPresenter categoriesFor: #testCasesSize!public! !
 !JadeSUnitPresenter categoriesFor: #testClassesSize!public! !
-!JadeSUnitPresenter categoriesFor: #updateServices:!private! !
 
 !JadeSUnitPresenter class methodsFor!
 

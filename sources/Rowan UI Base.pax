@@ -162,6 +162,7 @@ package methodNames
 	add: #JadeSUnitPresenter -> #updateClasses;
 	add: #JadeSUnitPresenter -> #updateMethods;
 	add: #JadeSUnitPresenter -> #updatePackages;
+	add: #JadeSUnitPresenter -> #updateServices:;
 	add: #JadeSystemBrowserPresenter -> #basicAddMethodCategory:;
 	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #browseClassReferences;
@@ -2140,12 +2141,20 @@ updatePackages
 	browserService := RowanBrowserService new.
 	browserService command: #packagesWithTests.
 	self issueCommand: (Array with: browserService).
-	testCounter at: 1 put: browserService testCount. ! !
+	testCounter at: 1 put: browserService testCount. !
+
+updateServices: services
+	| stonString stonResults |
+	services do: [:service | service prepareForReplication].
+	stonString := STON toString: services.
+	stonResults := self gciSession serverPerform: #updateFromSton: with: stonString.
+	self update: services afterStonReplication: stonResults! !
 !JadeSUnitPresenter categoriesFor: #onViewOpened!event handlers!public! !
 !JadeSUnitPresenter categoriesFor: #registerPresentersForUpdates!public!register presenters! !
 !JadeSUnitPresenter categoriesFor: #updateClasses!event handlers!public! !
 !JadeSUnitPresenter categoriesFor: #updateMethods!event handlers!public! !
 !JadeSUnitPresenter categoriesFor: #updatePackages!event handlers!public! !
+!JadeSUnitPresenter categoriesFor: #updateServices:!private! !
 
 !JadeSystemBrowserPresenter methodsFor!
 

@@ -37,7 +37,6 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: 'Jade UI Base';
-	add: 'Rowan STON';
 	add: '..\Core\Contributions\Odellsoft\SUnitBrowser\SUnitBrowser';
 	yourself).
 
