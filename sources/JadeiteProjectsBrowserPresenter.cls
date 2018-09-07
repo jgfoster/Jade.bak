@@ -828,7 +828,6 @@ pushToGit
 
 queryCommand: aCommandQuery
 	| command focusView isTextEdit |
-	Transcript cr; show: aCommandQuery printString. 
 	command := aCommandQuery command.
 	focusView := View focus.
 	isTextEdit := focusView isKindOf: TextEdit.
