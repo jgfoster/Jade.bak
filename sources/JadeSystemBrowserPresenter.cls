@@ -2479,25 +2479,6 @@ updateClassInfo
 		yourself.
 !
 
-updateClassList
-	| fullList newSelections flags |
-	classListPresenter ensureVisible.
-	fullList := readStream nextLineAsList.
-	newSelections := readStream nextLineAsList.
-	flags := readStream nextLineAsList.
-	fullList = classListPresenter list ifFalse: [classListPresenter list: fullList].
-	newSelections := classListPresenter list select: [:each | newSelections includes: each].
-	newSelections = classListPresenter selections
-		ifFalse: [classListPresenter selections: newSelections].
-	self selectedClassName: (newSelections size = 1 ifTrue: [newSelections first] ifFalse: ['']).
-	classHierarchyPresenter selectionOrNil: nil.
-	newSelections notEmpty
-		ifTrue: [classListPresenter view ensureSelectionVisible]
-		ifFalse: [fullList notEmpty ifTrue: [classListPresenter view ensureVisible: 1]].
-	selectedClassesAreTestCases := (flags at: 1) = 'true'.
-	sunitPresenter
-		testClassService: (selectedClassesAreTestCases ifTrue: [selectedClassName] ifFalse: [''])!
-
 updateClassListOrHierarchy
 
 	| tab |
@@ -3028,7 +3009,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #updateClassCategoryTree!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateClassHierarchy!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateClassInfo!public!updating! !
-!JadeSystemBrowserPresenter categoriesFor: #updateClassList!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateClassListOrHierarchy!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateCommand:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateCommand:onSuccessDo:!public!updating! !

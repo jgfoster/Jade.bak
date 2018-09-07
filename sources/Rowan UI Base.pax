@@ -191,6 +191,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #runClassTests;
 	add: #JadeSystemBrowserPresenter -> #savePackage;
 	add: #JadeSystemBrowserPresenter -> #selectorsString;
+	add: #JadeSystemBrowserPresenter -> #updateClassList;
 	add: #JadeSystemBrowserPresenter -> #updateMethod;
 	add: #JadeSystemBrowserPresenter -> #updateSelector;
 	add: #JadeTextDocument -> #aboutJadeite;
@@ -2500,6 +2501,26 @@ savePackage
 selectorsString
 	^(methodListPresenter selections collect: [:each | each first]) printString!
 
+updateClassList
+	| fullList newSelections flags |
+	classListPresenter ensureVisible.
+	fullList := readStream nextLineAsList.
+	newSelections := readStream nextLineAsList.
+	flags := readStream nextLineAsList.
+	fullList = classListPresenter list ifFalse: [classListPresenter list: fullList].
+	newSelections := classListPresenter list select: [:each | newSelections includes: each].
+	newSelections = classListPresenter selections
+		ifFalse: [classListPresenter selections: newSelections].
+	self selectedClassName: (newSelections size = 1 ifTrue: [newSelections first] ifFalse: ['']).
+	classHierarchyPresenter selectionOrNil: nil.
+	newSelections notEmpty
+		ifTrue: [classListPresenter view ensureSelectionVisible]
+		ifFalse: [fullList notEmpty ifTrue: [classListPresenter view ensureVisible: 1]].
+	selectedClassesAreTestCases := (flags at: 1) = 'true'.
+	sunitPresenter testClassService: (selectedClassesAreTestCases
+				ifTrue: [selectedClassName isEmpty ifTrue: [] ifFalse: [RowanClassService new name: selectedClassName]]
+				ifFalse: [])!
+
 updateMethod
 	| gsMethod isReadOnly listModel methodSourceLabel newSource warnings x |
 	methodSourcePresenter view cancelCallTip.
@@ -2639,6 +2660,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #runClassTests!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #selectorsString!menu handlers!private! !
+!JadeSystemBrowserPresenter categoriesFor: #updateClassList!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateMethod!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateSelector!public!updating! !
 
