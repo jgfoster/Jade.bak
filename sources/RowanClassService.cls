@@ -264,17 +264,10 @@ updateCategories: presenter
 	presenter selections: availableSelections!
 
 updateListIn: presenter from: visibleMethods
-	"add new methods and remove removed methods without
-	disturbing selections which trigger updates"
-	presenter selections isEmpty ifTrue:[^presenter list: visibleMethods].
-	presenter list copy do: 
-			[:methodService |
-			visibleMethods detect: [:visible | visible selector = methodService selector]
-				ifNone: [presenter model remove: methodService]].
-	visibleMethods do: 
-			[:visible |
-			presenter list detect: [:methodService | methodService selector = visible selector]
-				ifNone: [presenter model add: visible]]!
+	| newSelections |
+	newSelections := presenter selections select:[:methodService | visibleMethods includes: methodService].
+	presenter list: visibleMethods. 
+	presenter selections: newSelections. !
 
 updateVariables: presenter
 	| selections availableSelections |

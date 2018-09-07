@@ -14,6 +14,17 @@ disableTranscriptWrites
 	(transcriptWritesWereEnabled := transcript isTranscriptInstalled)
 		ifTrue: [transcript flipTranscript]	"turn off gemstone transcript writes for performance"!
 
+issue170methodCreation
+	| source |
+	self methodSourcePresenter value: (source := 'another  ^5').
+	self projectsPresenter editSaveMethod: self classListPresenter selection.
+	self methodSourcePresenter value: (source := 'interesting  ^5').
+	self projectsPresenter editSaveMethod: self classListPresenter selection.
+	self methodSourcePresenter value: (source := 'test  ^5').
+	self projectsPresenter editSaveMethod: self classListPresenter selection.
+	self methodSourcePresenter value: (source := 'try  ^5').
+	self projectsPresenter editSaveMethod: self classListPresenter selection!
+
 projectList
 	^self projectListPresenter list!
 
@@ -52,6 +63,9 @@ selectHierarchyTab
 
 selectHierarchyTabIn: presenter
 	presenter classHierarchyTabs lastCard!
+
+selectMethodNamed: selector
+	self selectMethodsNamed: (Array with: selector)!
 
 selectMethodsNamed: selectors
 	self methodListPresenter resetSelection. 
@@ -288,6 +302,36 @@ test_markDirty
 				detect: [:projectService | projectService name = 'RowanSample1'].
 	self assert: self projectListPresenter selection displayName = 'Rowan*'!
 
+test_multipleCompileMethod
+	self testsIssue: #issue170
+		withTitle: 'Editing methods to create new method and updating created method gets errors'.
+	self selectRowanSample1Class.
+	self issue170methodCreation.
+	self selectMethodNamed: #test.
+	self methodSourcePresenter value: 'pest  ^55'.
+	self projectsPresenter editSaveMethod: self classListPresenter selection.
+	"run through the list of methods"
+	self selectMethodNamed: #another.
+	self selectMethodNamed: #interesting.
+	self selectMethodNamed: #test.
+	self selectMethodNamed: #try.
+	self selectMethodNamed: #test.
+	self selectMethodNamed: #interesting.
+	self selectMethodNamed: #another.
+	self selectMethodNamed: #pest.
+	self assert: self methodSourcePresenter value equals: 'pest  ^55'.
+	self methodSourcePresenter value: 'pest  ^55 + 1'.
+	self projectsPresenter editSaveMethod: self classListPresenter selection.
+	self selectMethodNamed: #another.
+	self selectMethodNamed: #interesting.
+	self selectMethodNamed: #test.
+	self selectMethodNamed: #try.
+	self selectMethodNamed: #test.
+	self selectMethodNamed: #interesting.
+	self selectMethodNamed: #another.
+	self selectMethodNamed: #pest.	"<< bug occurred here"
+	self assert: self methodSourcePresenter value equals: 'pest  ^55 + 1'!
+
 test_openProjectsBrowser
 	"project browser opened in setup"
 
@@ -461,6 +505,7 @@ test_simpleHierarchyTest
 waitForPresenter: presenter
 	[presenter list isEmpty] whileTrue: [(Delay forMilliseconds: 50) wait]! !
 !JadeiteProjectBrowserTestCase categoriesFor: #disableTranscriptWrites!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #issue170methodCreation!issue test support!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectList!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!constants!private! !
@@ -470,6 +515,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassTabIn:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTabIn:!private!selection! !
+!JadeiteProjectBrowserTestCase categoriesFor: #selectMethodNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectMethodsNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectTreeServicesNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
@@ -485,6 +531,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_multipleCompileMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_projectDisplaysSync!public!test! !

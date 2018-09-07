@@ -193,10 +193,10 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #rowanSample1Path!constants!private! !
 !JadeiteAbstractTestCase categoriesFor: #sampleClass!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #sampleProjectName!constants!private! !
-!JadeiteAbstractTestCase categoriesFor: #selectCategoriesNamed:!private!project browser support! !
-!JadeiteAbstractTestCase categoriesFor: #selectRowanSample1Class!private!project browser support! !
-!JadeiteAbstractTestCase categoriesFor: #selectServiceNamed:in:!private!project browser support! !
-!JadeiteAbstractTestCase categoriesFor: #selectServicesNamed:in:!private!project browser support! !
+!JadeiteAbstractTestCase categoriesFor: #selectCategoriesNamed:!private!project browser support!selection! !
+!JadeiteAbstractTestCase categoriesFor: #selectRowanSample1Class!private!project browser support!selection! !
+!JadeiteAbstractTestCase categoriesFor: #selectServiceNamed:in:!private!project browser support!selection! !
+!JadeiteAbstractTestCase categoriesFor: #selectServicesNamed:in:!private!project browser support!selection! !
 !JadeiteAbstractTestCase categoriesFor: #serviceNamed:in:!private!selection! !
 !JadeiteAbstractTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #testsIssue:withTitle:!public!support! !
