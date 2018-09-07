@@ -1430,8 +1430,7 @@ methodMenu: aMenu
 	] whileTrue: [
 		aMenu removeItemAt: aMenu items size.
 	].
-	self methodMenuBreak: aMenu.
-!
+	self methodMenuBreak: aMenu.!
 
 methodsIdentifier
 

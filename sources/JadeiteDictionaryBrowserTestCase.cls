@@ -29,6 +29,21 @@ selectDictionary: dictionaryName
 				ifNone: [self error: 'Dictionary ' , dictionaryName , ' not found'].
 	dictionaryPresenter selection: selection!
 
+selectMethod: selector
+	| methodListPresenter selection |
+	methodListPresenter := self primaryPresenter methodListPresenter.
+	methodListPresenter resetSelection.
+	selection := methodListPresenter list detect: [:assoc | assoc first = selector]
+				ifNone: [self error: 'Method ' , selector , ' not found'].
+	methodListPresenter selection: selection!
+
+selectWellKnownMethod
+	"select some method in the method list pane"
+	self selectDictionary: 'Globals'. 
+	self selectClass: 'Behavior'. 
+	self selectMethod: 'basicNew'. 
+!
+
 setUp
 	super setUp.
 	dictionaryBrowser := self openWindow: [transcript openDictionaryBrowser]!
@@ -46,13 +61,33 @@ test_browseReferencesInDictionaryBrowser
 	
 	[source := methodListBrowser primaryPresenter methodSourcePresenter documentPresenter value.
 	self assert: ('*Date*' match: source)]
-			ensure: [methodListBrowser destroy]! !
+			ensure: [methodListBrowser destroy]!
+
+test_menusDontAddBreaks
+	"not a great test, but make sure we don't add a breakpoint menu item in 
+	the menu bar"
+
+	| menuBar jadeMenu methodsMenu |
+	self testsIssue: #issue162 withTitle: 'In method list browser, get new breakpoint menu items'.
+	menuBar := dictionaryBrowser view menuBar.
+	jadeMenu := self menuNamed: 'Jade' in: menuBar.
+	methodsMenu := self menuNamed: 'Methods' in: menuBar.
+	self noBreakIn: jadeMenu.
+	self noBreakIn: methodsMenu.
+	self selectWellKnownMethod. "the method we're testing requires a selection"
+	self primaryPresenter methodMenuBreak: jadeMenu.
+	self primaryPresenter methodMenuBreak: methodsMenu.
+	self noBreakIn: jadeMenu.
+	self noBreakIn: methodsMenu! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #primaryPresenter!private! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #selectClass:!private!selection! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #selectDictionary:!private!selection! !
+!JadeiteDictionaryBrowserTestCase categoriesFor: #selectMethod:!private!selection! !
+!JadeiteDictionaryBrowserTestCase categoriesFor: #selectWellKnownMethod!private!selection! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #setUp!public!setup teardown! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #tearDown!public!setup teardown! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #test_browseReferencesInDictionaryBrowser!public!test! !
+!JadeiteDictionaryBrowserTestCase categoriesFor: #test_menusDontAddBreaks!public!test! !
 
 !JadeiteDictionaryBrowserTestCase class methodsFor!
 

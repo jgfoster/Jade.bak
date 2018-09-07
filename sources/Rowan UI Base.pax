@@ -88,6 +88,7 @@ package methodNames
 	add: #GsMethod -> #meta;
 	add: #GsMethod -> #methodService;
 	add: #GsProcess -> #oop;
+	add: #JadeAutoSystemBrowserPresenter -> #methodMenuBreak:;
 	add: #JadeAutoTextPresenter3 -> #defaultMethod;
 	add: #JadeAutoTextPresenter3 -> #setDefaultMethod;
 	add: #JadeDebugger -> #gsProcess;
@@ -879,6 +880,21 @@ oop
 	^oopType value
 	! !
 !GsProcess categoriesFor: #oop!accessing!public! !
+
+!JadeAutoSystemBrowserPresenter methodsFor!
+
+methodMenuBreak: aMenu
+	| selection service |
+	methodSourcePresenter view isModified ifTrue: [^self].
+	selection := methodListPresenter selectionOrNil.
+	selection ifNil: [^self].
+	service := RowanMethodService new
+				selector: selection first asSymbol;
+				className: classListPresenter selection asSymbol;
+				meta: self isClassSideSelected.
+	self issueCommand: (Array with: service). 
+	service appendToSourceMenu: aMenu presenter: methodSourcePresenter! !
+!JadeAutoSystemBrowserPresenter categoriesFor: #methodMenuBreak:!menus!public! !
 
 !JadeAutoTextPresenter3 methodsFor!
 

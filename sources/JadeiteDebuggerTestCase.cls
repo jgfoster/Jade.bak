@@ -90,27 +90,6 @@ openDebuggerOn: aString
 		yourself.
 !
 
-saveInterestingLoopMethod
-	| source |
-	source := 'interestingLoop
-
-	| contents result |
-	result := String new. 
-	contents := { 23 . 55 . 45 . 999 }.
-	contents select: [:n |
-		| temp |
-		temp := self test + n. 
-		(temp / self anotherNumber) > 5
-			ifTrue:[result add: ''found'']
-			ifFalse: [result add: ''not found''].
-		result add: '' - ''.
-		n = 2.
-	].
-	^result'.
-	self selectCategoriesNamed: (Array with: 'accessing'). 
-	self methodSourcePresenter value: source.
-	self projectsPresenter editSaveMethod: self classListPresenter selection!
-
 setUp
 
 	| list1 list2 |
@@ -574,7 +553,6 @@ testStackMenuEnablement
 !JadeiteDebuggerTestCase categoriesFor: #menuItemIsEnabled:!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #methodListBrowser!private! !
 !JadeiteDebuggerTestCase categoriesFor: #openDebuggerOn:!private! !
-!JadeiteDebuggerTestCase categoriesFor: #saveInterestingLoopMethod!browser support!private! !
 !JadeiteDebuggerTestCase categoriesFor: #setUp!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #systemBrowser!private! !
 !JadeiteDebuggerTestCase categoriesFor: #tearDown!private!running! !

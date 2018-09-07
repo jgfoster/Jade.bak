@@ -64,21 +64,6 @@ selectHierarchyTab
 selectHierarchyTabIn: presenter
 	presenter classHierarchyTabs lastCard!
 
-selectMethodNamed: selector
-	self selectMethodsNamed: (Array with: selector)!
-
-selectMethodsNamed: selectors
-	self methodListPresenter resetSelection. 
-	selectors do: 
-			[:selector |
-			| service |
-			service := self methodListPresenter list
-						detect: [:methodService | methodService selector = selector]
-						ifNone: [self error: 'Selector ''' , selector , ''' not found'].
-			self methodListPresenter selections: (self methodListPresenter selections asOrderedCollection
-						add: service;
-						yourself)]!
-
 selectTreeServicesNamed: anArray in: presenter
 	presenter resetSelection.
 	anArray do: 
@@ -318,6 +303,26 @@ test_menuEnablementDoesNotBreak
 	self assertIsNil: self classListPresenter selectionOrNil.
 	view menuBar items do: [:menu | menu queryAllFromView: view]!
 
+test_menusDontAddBreaks
+	"not a great test, but make sure we don't add a breakpoint menu item in 
+	the menu bar"
+	| menuBar jadeiteMenu methodsMenu |
+	self testsIssue: #issue162 withTitle: 'In method list browser, get new breakpoint menu items'.
+	menuBar := projectsBrowser view menuBar.
+	jadeiteMenu := self menuNamed: 'Jadeite' in: menuBar.
+	methodsMenu := self menuNamed: 'Methods' in: menuBar.
+	self noBreakIn: jadeiteMenu.
+	self noBreakIn: methodsMenu.
+	self selectRowanSample1Class.
+	self saveInterestingLoopMethod.
+	self selectMethodNamed: #interestingLoop.
+	self methodListPresenter selection appendToSourceMenu: jadeiteMenu
+		presenter: self methodSourcePresenter view.
+	self noBreakIn: jadeiteMenu.
+	self methodListPresenter selection appendToSourceMenu: methodsMenu
+		presenter: self methodSourcePresenter view.
+	self noBreakIn: methodsMenu!
+
 test_multipleCompileMethod
 	self testsIssue: #issue170
 		withTitle: 'Editing methods to create new method and updating created method gets errors'.
@@ -531,8 +536,6 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassTabIn:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectHierarchyTabIn:!private!selection! !
-!JadeiteProjectBrowserTestCase categoriesFor: #selectMethodNamed:!private!selection! !
-!JadeiteProjectBrowserTestCase categoriesFor: #selectMethodsNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectTreeServicesNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
@@ -548,6 +551,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menuEnablementDoesNotBreak!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_menusDontAddBreaks!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_multipleCompileMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !

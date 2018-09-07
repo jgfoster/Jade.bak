@@ -37,9 +37,9 @@ createSchematicWiringForMethodSource
 	methodSourcePresenter 	
 		when: #'hoverStart:'						send: #'methodHoverStart:'			to: self;
 		when: #'hoverEnd:'						send: #'methodHoverEnd:'				to: self;
-		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'					to: self;
-		when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'		to: self;
-		when: #'valueChanged'					send: #'methodValueChanged'		to: self;
+		when: #'aboutToDisplayMenu:'				send: #'methodMenu:'				to: self;
+		when: #'leftButtonDoubleClicked:'			send: #'methodDoubleClicked:'			to: self;
+		when: #'valueChanged'					send: #'methodValueChanged'			to: self;
 		when: #'focusLost'						send: #'cancelCallTip'					to: methodSourcePresenter view;
 		yourself.
 !

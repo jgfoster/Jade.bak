@@ -32,8 +32,6 @@ createSchematicWiring
 		when: #'hoverStart:'				send: #'hoverStart:'			to: self;
 		when: #'hoverEnd:'				send: #'hoverEnd:'			to: self;
 		when: #'aboutToDisplayMenu:'		send: #'methodMenu:'		to: self;
-		"when: #'leftButtonDoubleClicked:'	send: #'methodDoubleClicked:'	to: self;
-		when: #'valueChanged'			send: #'methodValueChanged'	to: self;"
 		when: #'focusLost'				send: #'cancelCallTip'			to: documentPresenter view;
 		yourself.
 !

@@ -115,18 +115,6 @@ labelOfClass: oldName changedTo: newName
 
 !
 
-methodMenuBreak: aMenu
-	| selection service |
-	methodSourcePresenter view isModified ifTrue: [^self].
-	selection := methodListPresenter selectionOrNil.
-	selection ifNil: [^self].
-	service := RowanMethodService new
-				selector: selection first asSymbol;
-				className: classListPresenter selection asSymbol;
-				meta: self isClassSideSelected.
-	self issueCommand: (Array with: service). 
-	service appendToSourceMenu: aMenu presenter: methodSourcePresenter!
-
 onViewClosed
 	"copied to RowanDebugger"
 
@@ -506,7 +494,6 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #createSchematicWiringForPackageDictionaryTabs!create schemantic wiring!public! !
 !RowanSystemBrowserPresenter categoriesFor: #getViews!public! !
 !RowanSystemBrowserPresenter categoriesFor: #labelOfClass:changedTo:!event handlers!public! !
-!RowanSystemBrowserPresenter categoriesFor: #methodMenuBreak:!menu handlers support!private! !
 !RowanSystemBrowserPresenter categoriesFor: #onViewClosed!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #projectDictionaryChanged!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!rowan! !

@@ -60,11 +60,17 @@ loadRowanSample1InProjectList
 	RowanBrowserService new reloadProjects: selections presenter: self transcriptTab.
 	self transcriptTab refresh!
 
+menuNamed: menuName in: menuBar
+	^menuBar items detect: [:menu | '*' , menuName , '*' match: menu text]!
+
 methodListPresenter
 	^self projectsPresenter methodListPresenter!
 
 methodSourcePresenter
 	^self projectsPresenter methodSourcePresenter!
+
+noBreakIn: aMenu
+	self assertIsNil: (aMenu items detect: [:command | '*Break*' match: command text] ifNone: [])!
 
 openProjectsBrowser
 	projectsBrowser := self openWindow: [transcript openJadeiteProjectsBrowser]!
@@ -103,6 +109,27 @@ sampleClass
 sampleProjectName
 	^'RowanSample1'!
 
+saveInterestingLoopMethod
+	| source |
+	source := 'interestingLoop
+
+	| contents result |
+	result := String new. 
+	contents := { 23 . 55 . 45 . 999 }.
+	contents select: [:n |
+		| temp |
+		temp := self test + n. 
+		(temp / self anotherNumber) > 5
+			ifTrue:[result add: ''found'']
+			ifFalse: [result add: ''not found''].
+		result add: '' - ''.
+		n = 2.
+	].
+	^result'.
+	self selectCategoriesNamed: (Array with: 'accessing'). 
+	self methodSourcePresenter value: source.
+	self projectsPresenter editSaveMethod: self classListPresenter selection!
+
 selectCategoriesNamed: categories
 	categories do: 
 			[:category |
@@ -111,6 +138,21 @@ selectCategoriesNamed: categories
 						detect: [:listCategory | categories includes: listCategory]
 						ifNone: [self error: 'Category ''' , category , ''' not found'].
 			self categoryListPresenter selections: (self categoryListPresenter selections asOrderedCollection
+						add: service;
+						yourself)]!
+
+selectMethodNamed: selector
+	self selectMethodsNamed: (Array with: selector)!
+
+selectMethodsNamed: selectors
+	self methodListPresenter resetSelection. 
+	selectors do: 
+			[:selector |
+			| service |
+			service := self methodListPresenter list
+						detect: [:methodService | methodService selector = selector]
+						ifNone: [self error: 'Selector ''' , selector , ''' not found'].
+			self methodListPresenter selections: (self methodListPresenter selections asOrderedCollection
 						add: service;
 						yourself)]!
 
@@ -182,8 +224,10 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Loaded!private!project support! !
 !JadeiteAbstractTestCase categoriesFor: #isSampleProjectLoaded!private!private testing!project support! !
 !JadeiteAbstractTestCase categoriesFor: #loadRowanSample1InProjectList!private!project support! !
+!JadeiteAbstractTestCase categoriesFor: #menuNamed:in:!issue test support!private! !
 !JadeiteAbstractTestCase categoriesFor: #methodListPresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #methodSourcePresenter!private!project browser support! !
+!JadeiteAbstractTestCase categoriesFor: #noBreakIn:!issue test support!private! !
 !JadeiteAbstractTestCase categoriesFor: #openProjectsBrowser!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #openWindow:!browser test support!private! !
 !JadeiteAbstractTestCase categoriesFor: #packageListPresenter!private!project browser support! !
@@ -193,7 +237,10 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #rowanSample1Path!constants!private! !
 !JadeiteAbstractTestCase categoriesFor: #sampleClass!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #sampleProjectName!constants!private! !
+!JadeiteAbstractTestCase categoriesFor: #saveInterestingLoopMethod!browser support!private! !
 !JadeiteAbstractTestCase categoriesFor: #selectCategoriesNamed:!private!project browser support!selection! !
+!JadeiteAbstractTestCase categoriesFor: #selectMethodNamed:!private!selection! !
+!JadeiteAbstractTestCase categoriesFor: #selectMethodsNamed:!private!selection! !
 !JadeiteAbstractTestCase categoriesFor: #selectRowanSample1Class!private!project browser support!selection! !
 !JadeiteAbstractTestCase categoriesFor: #selectServiceNamed:in:!private!project browser support!selection! !
 !JadeiteAbstractTestCase categoriesFor: #selectServicesNamed:in:!private!project browser support!selection! !
