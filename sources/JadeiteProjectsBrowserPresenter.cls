@@ -828,7 +828,7 @@ pushToGit
 
 queryCommand: aCommandQuery
 	| command focusView isTextEdit |
-	self rowanFixMe.	"enablement of method test thingy + this is a complicated way to method enablement. Would like to improve"
+	Transcript cr; show: aCommandQuery printString. 
 	command := aCommandQuery command.
 	focusView := View focus.
 	isTextEdit := focusView isKindOf: TextEdit.
@@ -890,7 +890,6 @@ queryCommand: aCommandQuery
 		ifTrue: 
 			[aCommandQuery isEnabled: globalsPresenter selections notEmpty.
 			^true].
-	"(#(#'runMethodTests') includes: command) ifTrue: [aCommandQuery isEnabled: (methodListPresenter selections notEmpty and: [methodListPresenter selections first at: 3]). ^true]."
 	(#( #fileOutMethods) includes: command)
 		ifTrue: 
 			[aCommandQuery isEnabled: self methodListPresenter selections notEmpty.
@@ -915,7 +914,7 @@ queryCommand: aCommandQuery
 				^true].
 	(#(#runClassTests) includes: command)
 		ifTrue: 
-			[aCommandQuery isEnabled: self selectedClass isTestCase.
+			[aCommandQuery isEnabled: (self selectedClass ifNil:[false] ifNotNil:[:classService | classService isTestCase]).
 			^true].
 	(#(#browseSelectedClass) includes: command)
 		ifTrue: 

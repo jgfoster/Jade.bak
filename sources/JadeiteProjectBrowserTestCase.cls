@@ -302,6 +302,22 @@ test_markDirty
 				detect: [:projectService | projectService name = 'RowanSample1'].
 	self assert: self projectListPresenter selection displayName = 'Rowan*'!
 
+test_menuEnablementDoesNotBreak
+	"the bug in the issue was a bad enablement test in a menu item
+	during the query. If nothing else, test that we can always query
+	all the menus in the toolbar without error regardless if a class is 
+	selected or not."
+
+	| view |
+	self testsIssue: #issue172 withTitle: 'Classes menu error if no Class selected'.
+	view := projectsBrowser view.
+	self selectRowanSample1Class.
+	self denyIsNil: self classListPresenter selectionOrNil.
+	view menuBar items do: [:menu | menu queryAllFromView: view].
+	self selectServiceNamed: 'Cypress' in: self projectListPresenter.	"this will deselect the class."
+	self assertIsNil: self classListPresenter selectionOrNil.
+	view menuBar items do: [:menu | menu queryAllFromView: view]!
+
 test_multipleCompileMethod
 	self testsIssue: #issue170
 		withTitle: 'Editing methods to create new method and updating created method gets errors'.
@@ -531,6 +547,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_menuEnablementDoesNotBreak!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_multipleCompileMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !
