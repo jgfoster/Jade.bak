@@ -45,7 +45,7 @@ basicAddMethodCategory: string
 				command: #addCategory:;
 				commandArgs: (Array with: string).
 	self issueCommand: (Array with: service).
-	categoryListPresenter selection: string. !
+	self selectCategoriesNamed: (Array with: string)!
 
 basicRemoveMethodCategories
 	| service |
@@ -571,7 +571,9 @@ isOkayToChange
 issueCommand: services
 	inUpdate ifTrue: [^self].
 	inUpdate := true.
-	[^super issueCommand: services] ensure: [inUpdate := false]!
+	[^super issueCommand: services] ensure: 
+			[self redrawAllViews.
+			inUpdate := false]!
 
 jadeMenuStrings
 
@@ -649,7 +651,7 @@ methodsMenuStrings
 moveMethods: methodServices toCategory: targetCategory
 	| classService |
 	classService := classListPresenter selection.
-	categoryListPresenter selections: (categoryListPresenter selections copyWith: targetCategory).
+	self selectCategoriesNamed: (categoryListPresenter selections copyWith: targetCategory).
 	classService
 		command: #moveMethods:to:;
 		commandArgs: (Array with: methodServices with: targetCategory).
@@ -1118,6 +1120,11 @@ runMethodTests
 
 savePackage
 	MessageBox notify: 'This feature is not yet available'!
+
+selectCategoriesNamed: array
+	| selections |
+	selections := categoryListPresenter list select: [:category | array includes: category].
+	categoryListPresenter selections: selections!
 
 selectCategoryFrom: methodService
 	^categoryListPresenter selectionOrNil = methodService category
@@ -1601,6 +1608,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #renameMethodCategory!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #runMethodTests!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoriesNamed:!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoryFrom:!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClassListTab!public!selection! !
