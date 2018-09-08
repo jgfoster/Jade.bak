@@ -304,7 +304,7 @@ test_menuEnablementDoesNotBreak
 	view menuBar items do: [:menu | menu queryAllFromView: view]!
 
 test_menusDontAddBreaks
-	"not a great test, but make sure we don't add a breakpoint menu item in 
+	"incomplete test - make sure we don't add a breakpoint menu item in 
 	the menu bar"
 	| menuBar jadeiteMenu methodsMenu |
 	self testsIssue: #issue162 withTitle: 'In method list browser, get new breakpoint menu items'.

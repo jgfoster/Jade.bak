@@ -10,18 +10,9 @@ RowanMethodSourcePresenter comment: ''!
 !RowanMethodSourcePresenter categoriesForClass!Unclassified! !
 !RowanMethodSourcePresenter methodsFor!
 
-browseSelectedClass
-	| range string shell |
-	range := documentPresenter view selectionRange.
-	string := documentPresenter value copyFrom: range start to: range stop.
-	shell := RowanSystemBrowser showOnSession: self gciSession.
-	shell selectClass:string selector: String new.
-	!
-
 updateMethodStepPoints
 
 	self rowanFixMe.
 	! !
-!RowanMethodSourcePresenter categoriesFor: #browseSelectedClass!public! !
 !RowanMethodSourcePresenter categoriesFor: #updateMethodStepPoints!public! !
 

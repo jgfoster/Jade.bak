@@ -136,7 +136,7 @@ name: aString
 	name := aString.!
 
 notRowanizedPackageName
-	^'(NONE)'!
+	^self class notRowanizedPackageName!
 
 packagesUpdate: presenter!
 
@@ -340,10 +340,14 @@ icon
 	^##(self) defaultIcon!
 
 new
-	^super new initialize! !
+	^super new initialize!
+
+notRowanizedPackageName
+	^'(NONE)'! !
 !RowanService class categoriesFor: #command:withArgs:!instance creation!public! !
 !RowanService class categoriesFor: #defaultIcon!private! !
 !RowanService class categoriesFor: #defaultIconName!private! !
 !RowanService class categoriesFor: #icon!private! !
 !RowanService class categoriesFor: #new!initialization!public! !
+!RowanService class categoriesFor: #notRowanizedPackageName!constants!public! !
 

@@ -628,18 +628,17 @@ RowanShell subclass: #RowanProjectListShell
 !CodeSourcePresenter methodsFor!
 
 browseSelectedClass
-	| range string list assoc parent shell |
-	range := documentPresenter view selectionRange.
-	string := documentPresenter value copyFrom: range start to: range stop.
-	list := self findClassList.
-	assoc := list detect: [:each | each key = string]
-				ifNone: [^MessageBox warning: 'Class ' , string printString , ' not found!!!!' caption: 'Jade'].
-	parent := parentPresenter parentPresenter parentPresenter.
-	parent isNil
+	| shell classService |
+	classService := RowanClassService new name: self currentSelectionOrLine.
+	BrowserUpdate current updateService: classService session: gciSession.
+	^classService projectName = RowanService notRowanizedPackageName
 		ifTrue: 
-			[shell := RowanSystemBrowser showOnSession: gciSession.
-			shell selectClass: string selector: String new]
-		ifFalse: [parent addSystemBrowserForClass: assoc value]!
+			[Cursor wait showWhile: 
+					[shell := RowanSystemBrowser showOnSession: gciSession.
+					shell selectClass: classService name asString selector: String new]]
+		ifFalse: 
+			[shell := JadeiteProjectsSystemBrowser showOnSession: gciSession.
+			shell currentCard updateAfterFindClass: classService]!
 
 executeSelectionOrLine
 
@@ -658,7 +657,7 @@ jadeInspect
 	result := self jadeExecuteAndDisplay: false.
 	result == self ifTrue: [^self].
 	JadeInspector showOn: result session: gciSession! !
-!CodeSourcePresenter categoriesFor: #browseSelectedClass!public! !
+!CodeSourcePresenter categoriesFor: #browseSelectedClass!Jade!public! !
 !CodeSourcePresenter categoriesFor: #executeSelectionOrLine!Jade!private! !
 !CodeSourcePresenter categoriesFor: #jadeInspect!Jade!private! !
 

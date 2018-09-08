@@ -141,6 +141,29 @@ Processor allProcesses includes: gsProcess'.
 	self assert: false.
 !
 
+test_browseClass
+	| browser |
+	self testsIssue: #issue169 withTitle: 'Debugger menu option Browse Class broken'.
+	self openProjectsBrowser.
+	self ensureRowanSample1Available.
+	
+	[self selectRowanSample1Class.
+	self saveIssue169Method.
+	self openDebuggerOn: 'RowanSample1 new issue169'.
+	debugger documentPresenter view selectionRange: (81 to: 85).	"Select Rowan"
+	browser := debugger methodSourcePresenter browseSelectedClass.
+	
+	[self assert: (browser isKindOf: JadeiteProjectsBrowserPresenter).
+	self assert: browser classListPresenter selection name = 'Rowan']
+			ensure: [browser topShell destroy].
+	debugger documentPresenter view selectionRange: (105 to: 110).	"Select String"
+	browser := debugger methodSourcePresenter browseSelectedClass.
+	
+	[self assert: (browser isKindOf: RowanSystemBrowser).
+	self assert: ('*String*' match: browser currentCard selectedClasses first)]
+			ensure: [browser topShell destroy]]
+			ensure: [self unloadSampleProject]!
+
 test_restartInBlock
 	| restartProcess |
 	self testsIssue: #issue126
@@ -557,6 +580,7 @@ testStackMenuEnablement
 !JadeiteDebuggerTestCase categoriesFor: #systemBrowser!private! !
 !JadeiteDebuggerTestCase categoriesFor: #tearDown!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #terminateGsProcess!private!running! !
+!JadeiteDebuggerTestCase categoriesFor: #test_browseClass!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_restartInBlock!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_terminateDoesNotWalkback!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test1!public!tests! !

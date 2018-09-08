@@ -106,6 +106,9 @@ updates: aCollection
 	updates addAll: aCollection.
 	self updateReady!
 
+updateService: service session: session
+	self updateServices: (Array with: service) session: session!
+
 updateServices: services session: session
 	inUpdate ifTrue: [^self].
 	inUpdate := true.
@@ -147,6 +150,7 @@ updatesPerform: selector presenter: presenter browser: browser
 !BrowserUpdate categoriesFor: #updateReady!public!updating! !
 !BrowserUpdate categoriesFor: #updates!accessing!public! !
 !BrowserUpdate categoriesFor: #updates:!accessing!public! !
+!BrowserUpdate categoriesFor: #updateService:session:!public!updating! !
 !BrowserUpdate categoriesFor: #updateServices:session:!public!updating! !
 !BrowserUpdate categoriesFor: #updatesPerform:presenter:!public!updating! !
 !BrowserUpdate categoriesFor: #updatesPerform:presenter:browser:!public!updating! !
