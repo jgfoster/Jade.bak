@@ -1097,14 +1097,14 @@ renameMethodCategory
 	categoryListPresenter selection: new!
 
 runMethodTests
-	| result classService answeringService |
+	| classService answeringService |
 	classService := self selectedClass.
 	classService
 		command: #runMethodTests:;
 		commandArgs: (Array with: methodListPresenter selections).
 	answeringService := (self issueCommand: (Array with: classService)) first.
 	answeringService answer
-		ifTrue: [MessageBox notify: 'Ran ' , methodListPresenter selections size printString , ' test(s)']!
+		ifTrue: [MessageBox notify: 'Passed ' , methodListPresenter selections size printString , ' test(s)!!']!
 
 savePackage
 	MessageBox notify: 'This feature is not yet available'!
