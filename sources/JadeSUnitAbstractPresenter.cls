@@ -53,8 +53,7 @@ runTests: anOrderedCollection in: className
 				ifTrue: 
 					[methodService testResult: 'passed'.
 					jadeResult addPassed: methodService selector]].
-	jadeResult setSummary.
-	self setColorFor: jadeResult.
+	self updateResult: jadeResult.
 	^jadeResult!
 
 setColorFor: aJadeTestResult
@@ -72,11 +71,24 @@ setColorFor: aJadeTestResult
 			methodListPresenter model
 				do: [:eachTest | eachTest selector = eachSymbol ifTrue: [eachTest setPassed]]].
 	methodListPresenter view invalidate.
-	textResultPresenter view backcolor: aJadeTestResult backgroundColor! !
+	textResultPresenter view backcolor: aJadeTestResult backgroundColor!
+
+textResultPresenter
+	^textResultPresenter!
+
+textResultPresenter: anObject
+	textResultPresenter := anObject!
+
+updateResult: jadeResult
+	jadeResult setSummary.
+	self setColorFor: jadeResult! !
 !JadeSUnitAbstractPresenter categoriesFor: #abortTransaction!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #commitTransaction!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #createComponents!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #reset!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #runTests:in:!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #setColorFor:!public! !
+!JadeSUnitAbstractPresenter categoriesFor: #textResultPresenter!accessing!private! !
+!JadeSUnitAbstractPresenter categoriesFor: #textResultPresenter:!accessing!private! !
+!JadeSUnitAbstractPresenter categoriesFor: #updateResult:!public! !
 

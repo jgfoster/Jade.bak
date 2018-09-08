@@ -125,7 +125,9 @@ getProcessList
 	| debuggerService |
 	debuggerService := RowanDebuggerService onProcess: gsProcess.
 	self updateServices: (Array with: debuggerService).
-	processListPresenter selection: debuggerService processes first!
+	debuggerService processes ifNil:[^self].
+	debuggerService processes notEmpty ifTrue:[
+		processListPresenter selection: debuggerService processes first]!
 
 methodListSelection
 	"really a selection from the frame list"
@@ -171,11 +173,8 @@ onViewOpened
 	"Private - copied from RowanProjectsBrowserPresenter>>onViewOpened"
 
 	super onViewOpened.
-	self 
-		registerPresentersForUpdates;
-		"updatePresenters;"	"see #getProcessList"
-		yourself.
-!
+	self registerPresentersForUpdates.
+	BrowserUpdate current inUpdate: false. "The debugger isn't opened in a forked process so make sure our 'semaphore' won't block updates"!
 
 processListPresenter
 	^processListPresenter!

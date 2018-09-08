@@ -1104,7 +1104,14 @@ runMethodTests
 		commandArgs: (Array with: methodListPresenter selections).
 	answeringService := (self issueCommand: (Array with: classService)) first.
 	answeringService answer
-		ifTrue: [MessageBox notify: 'Passed ' , methodListPresenter selections size printString , ' test(s)!!']!
+		ifTrue: 
+			[| testResult |
+			sunitPresenter reset. 
+			testResult := JadeTestResult new.
+			testResult
+				passed: (methodListPresenter selections collect: [:methodService | methodService selector]).
+			sunitPresenter updateResult: testResult.
+			sunitPresenter ensureVisible]!
 
 savePackage
 	MessageBox notify: 'This feature is not yet available'!

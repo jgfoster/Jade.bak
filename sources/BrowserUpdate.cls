@@ -27,7 +27,7 @@ basicUpdateServices: services session: session
 				command: nil	"updates don't have commands"].
 	stonString := STON toString: services.
 	stonResults := session serverPerform: #updateFromSton: with: stonString.
-	self update: services afterStonReplication: stonResults!
+	^self update: services afterStonReplication: stonResults!
 
 debug
 	^debug!
@@ -47,10 +47,14 @@ initializeUpdates
 	updates := OrderedCollection new.
 	!
 
+inUpdate: anObject
+	^inUpdate := anObject!
+
 issueCommand: services session: session
 	inUpdate ifTrue: [^self].
 	inUpdate := true.
-	[^self basicIssueCommand: services session: session] ensure: [inUpdate := false]!
+	[[^self basicIssueCommand: services session: session] ensure: [inUpdate := false]]
+		ifCurtailed: [inUpdate := false]!
 
 performUpdate: updateBlock with: selector
 	updates do: 
@@ -112,7 +116,8 @@ updateService: service session: session
 updateServices: services session: session
 	inUpdate ifTrue: [^self].
 	inUpdate := true.
-	[self basicUpdateServices: services session: session] ensure: [inUpdate := false]!
+	[[^self basicIssueCommand: services session: session] ensure: [inUpdate := false]]
+		ifCurtailed: [inUpdate := false]!
 
 updatesPerform: selector presenter: presenter
 	"the update may know which client updates 
@@ -142,6 +147,7 @@ updatesPerform: selector presenter: presenter browser: browser
 !BrowserUpdate categoriesFor: #debug:!accessing!private! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
 !BrowserUpdate categoriesFor: #initializeUpdates!initialization!public! !
+!BrowserUpdate categoriesFor: #inUpdate:!accessing!private! !
 !BrowserUpdate categoriesFor: #issueCommand:session:!commands!public! !
 !BrowserUpdate categoriesFor: #performUpdate:with:!private!updating! !
 !BrowserUpdate categoriesFor: #register:selector:!public!registeringPresenters! !
