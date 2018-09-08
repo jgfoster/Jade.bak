@@ -53,8 +53,7 @@ testClassService: classService
 		ifTrue: 
 			[methodListPresenter model: (ListModel on: ListModel new).
 			^self].
-	testMethodServices := classService methods
-				select: [:methodService | (methodService selector asString first: 4) = 'test'].
+	testMethodServices := classService methods select: [:methodService | methodService isTestMethod].
 	methodListPresenter model: (ListModel on: testMethodServices)! !
 !JadeSUnitInClassPresenter categoriesFor: #debug!public! !
 !JadeSUnitInClassPresenter categoriesFor: #runAll!public! !

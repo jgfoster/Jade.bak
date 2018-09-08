@@ -181,6 +181,9 @@ isReadOnly
 	self rowanFixMe.
 	^false!
 
+isTestMethod
+	^selector size >= 4 and: [(selector first: 4) = 'test']!
+
 meta
 	^meta!
 
@@ -429,6 +432,7 @@ user: anObject
 !RowanMethodService categoriesFor: #isExtension:!accessing!public! !
 !RowanMethodService categoriesFor: #isMethodService!public!testing! !
 !RowanMethodService categoriesFor: #isReadOnly!public!testing! !
+!RowanMethodService categoriesFor: #isTestMethod!public!testing! !
 !RowanMethodService categoriesFor: #meta!accessing!private! !
 !RowanMethodService categoriesFor: #meta:!accessing!private! !
 !RowanMethodService categoriesFor: #methodDefinitions!accessing!private! !

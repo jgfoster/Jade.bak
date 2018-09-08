@@ -16,6 +16,9 @@ abortTransaction
 categoryListPresenter
 	^self projectsPresenter categoryListPresenter!
 
+classHierarchyPresenter
+	^self projectsPresenter classHierarchyPresenter!
+
 classListPresenter
 	^self projectsPresenter classListPresenter!
 
@@ -232,6 +235,7 @@ unloadSampleProject
 ! !
 !JadeiteAbstractTestCase categoriesFor: #abortTransaction!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #categoryListPresenter!private!project browser support! !
+!JadeiteAbstractTestCase categoriesFor: #classHierarchyPresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #classListPresenter!private!project browser support! !
 !JadeiteAbstractTestCase categoriesFor: #commitTransaction!private!setup teardown! !
 !JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !

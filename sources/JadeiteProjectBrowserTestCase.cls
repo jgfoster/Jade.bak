@@ -49,6 +49,9 @@ saveSampleMethod
 
 	!
 
+selectClassInHierarchNamed: className
+	self selectTreeServicesNamed: (Array with: className) in: self classHierarchyPresenter!
+
 selectClassListTab
 	^self projectsPresenter classHierarchyTabs firstCard!
 
@@ -199,8 +202,7 @@ test_extensionColoringInHierarchy
 	self
 		assert: self projectsPresenter classHierarchyPresenter selection name = 'RwPlatformSpecification'.
 	self deny: self projectsPresenter classHierarchyPresenter selection shouldColorAsExtension.
-	self selectTreeServicesNamed: (Array with: 'RwGemStoneSpecification')
-		in: self projectsPresenter classHierarchyPresenter.
+	self selectClassInHierarchNamed: 'RwGemStoneSpecification'.
 	self assert: self projectsPresenter classHierarchyPresenter selection shouldColorAsExtension!
 
 test_gotoDefinedPackage
@@ -246,8 +248,7 @@ test_goToDefinedPackageFromHierarchy
 	self assertIsNil: gotoClass.	"Our guy is an extension"
 	self selectHierarchyTab.
 	self deny: self projectsPresenter isClassListTabSelected.
-	self selectTreeServicesNamed: (Array with: 'RwGemStoneSpecification')
-		in: self projectsPresenter classHierarchyPresenter.
+	self selectClassInHierarchNamed: 'RwGemStoneSpecification'.
 	self projectsPresenter gotoClassDefinedPackage.
 	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Specifications'!
 
@@ -523,6 +524,15 @@ test_simpleHierarchyTest
 	self selectClassListTab.
 	self assert: self projectsPresenter classListPresenter selection name = 'RowanProjectService'!
 
+testSUnitTabHandlesShortSelector
+	self testsIssue: #issue173 withTitle: 'new SUnit browser code walksback on short selector'.
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Services-Tests') in: self packageListPresenter.
+	self selectServiceNamed: 'RwRowanProjectIssuesTest' in: self classListPresenter.
+	self selectHierarchyTab.
+	self selectClassInHierarchNamed: 'TestCase'. "<<< bug occurred here"
+	self assert: self projectsPresenter selectedClass name = 'TestCase'!
+
 waitForPresenter: presenter
 	[presenter list isEmpty] whileTrue: [(Delay forMilliseconds: 50) wait]! !
 !JadeiteProjectBrowserTestCase categoriesFor: #disableTranscriptWrites!private! !
@@ -531,6 +541,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #selectClassInHierarchNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassTab!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassTabIn:!private!selection! !
@@ -565,6 +576,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultiplePackages!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultipleProjects!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_simpleHierarchyTest!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #testSUnitTabHandlesShortSelector!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #waitForPresenter:!private!selection! !
 
 !JadeiteProjectBrowserTestCase class methodsFor!

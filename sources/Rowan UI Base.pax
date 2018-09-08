@@ -2136,8 +2136,7 @@ updateMethods
 	methodListPresenter list: (SortedCollection sortBlock: [:x :y | x selector < y selector]).
 	classServices do: 
 			[:classService |
-			testMethods := classService methods
-						select: [:methodService | (methodService selector first: 4) = 'test'].
+			testMethods := classService methods select: [:methodService | methodService isTestMethod].
 			methodListPresenter model addAll: testMethods]!
 
 updatePackages
