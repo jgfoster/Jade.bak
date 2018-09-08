@@ -911,10 +911,8 @@ queryCommand: aCommandQuery
 			ifTrue: 
 				[aCommandQuery isEnabled: self selectedClasses size == 1.
 				^true].
-	(#(#runClassTests) includes: command)
-		ifTrue: 
-			[aCommandQuery isEnabled: (self selectedClass ifNil:[false] ifNotNil:[:classService | classService isTestCase]).
-			^true].
+	(#(#runClassTests) includes: command) ifTrue: [aCommandQuery isEnabled: (self selectedClass ifNil:[false] ifNotNil:[:classService | classService isTestCase]). ^true].
+	(#(#'runMethodTests') includes: command) ifTrue: [aCommandQuery isEnabled: (methodListPresenter selections notEmpty and: [methodListPresenter selections first isTestMethod]). ^true].
 	(#(#browseSelectedClass) includes: command)
 		ifTrue: 
 			[aCommandQuery isEnabled: self isClassSelectedInEditor.

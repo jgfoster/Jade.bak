@@ -50,7 +50,7 @@ initializeUpdates
 issueCommand: services session: session
 	inUpdate ifTrue: [^self].
 	inUpdate := true.
-	[self basicIssueCommand: services session: session] ensure: [inUpdate := false]!
+	[^self basicIssueCommand: services session: session] ensure: [inUpdate := false]!
 
 performUpdate: updateBlock with: selector
 	updates do: 
