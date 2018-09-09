@@ -205,6 +205,75 @@ test_extensionColoringInHierarchy
 	self selectClassInHierarchNamed: 'RwGemStoneSpecification'.
 	self assert: self projectsPresenter classHierarchyPresenter selection shouldColorAsExtension!
 
+test_goToDefinedClassFromClassList
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Services-Extensions') in: self packageListPresenter.
+	self selectServicesNamed: (Array with: 'RwGsPlatform') in: self classListPresenter.
+	self assert: self projectsPresenter isClassListTabSelected.
+	self projectsPresenter gotoClassDefinedPackage.
+	self assert: self classListPresenter selection name = 'RwGsPlatform'.
+	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Core'!
+
+test_goToDefinedClassFromHierarchy
+	| gotoClass |
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Specifications') in: self packageListPresenter.
+	self selectServicesNamed: (Array with: 'RwPlatformSpecification') in: self classListPresenter.
+	gotoClass := self classListPresenter list
+				detect: [:classService | classService name = 'RwGemStoneSpecification']
+				ifNone: [].
+	self assertIsNil: gotoClass.	"Our guy is an extension"
+	self selectHierarchyTab.
+	self deny: self projectsPresenter isClassListTabSelected.
+	self selectClassInHierarchNamed: 'RwGemStoneSpecification'.
+	self projectsPresenter gotoClassDefinedPackage.
+	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Specifications'!
+
+test_goToDefinedMethodFromClassList
+	self selectServiceNamed: 'Rowan' in: self projectListPresenter.
+	self selectServiceNamed: 'Rowan-Services-Extensions' in: self packageListPresenter.
+	self selectServiceNamed: 'RwGsPlatform' in: self classListPresenter.
+	self selectCategoryNamed: '*rowan-services-extensions'.
+	self selectMethodNamed: #classServiceClass.
+	self assert: self projectsPresenter isClassListTabSelected.
+	self projectsPresenter gotoMethodPackage.
+	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Core'.
+	self assert: self classListPresenter selection name = 'RwGsPlatform'.
+	self assert: self categoryListPresenter selection = '*rowan-services-extensions'.
+	self assert: self methodListPresenter selection selector = #classServiceClass.
+	self assert: self projectsPresenter isClassListTabSelected!
+
+test_goToDefinedMethodFromClassListClassSide
+	self selectServiceNamed: 'Rowan' in: self projectListPresenter.
+	self selectServiceNamed: 'Rowan-GemStone-Loader-Extensions' in: self packageListPresenter.
+	self selectServiceNamed: 'RwGsImage' in: self classListPresenter.
+	self selectClassTab.
+	self selectCategoryNamed: '*rowan-gemstone-loader-extensions'.
+	self selectMethodNamed: #_shouldCloneRowanLoader:.
+	self assert: self projectsPresenter isClassListTabSelected.
+	self projectsPresenter gotoMethodPackage.
+	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Core'.
+	self assert: self classListPresenter selection name = 'RwGsImage'.
+	self assert: self categoryListPresenter selection = '*rowan-gemstone-loader-extensions'.
+	self assert: self methodListPresenter selection selector = #_shouldCloneRowanLoader:.
+	self assert: self projectsPresenter isClassListTabSelected. 
+	self assert: self projectsPresenter isClassSideSelected.!
+
+test_goToDefinedMethodFromHierarchy
+	self selectServiceNamed: 'Rowan' in: self projectListPresenter.
+	self selectServiceNamed: 'Rowan-Services-Extensions' in: self packageListPresenter.
+	self selectServiceNamed: 'RwGsPlatform' in: self classListPresenter.
+	self selectHierarchyTab.
+	self selectCategoryNamed: '*rowan-services-extensions'.
+	self selectMethodNamed: #classServiceClass.
+	self deny: self projectsPresenter isClassListTabSelected.
+	self projectsPresenter gotoMethodPackage.
+	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Core'.
+	self assert: self classListPresenter selection name = 'RwGsPlatform'.
+	self assert: self categoryListPresenter selection = '*rowan-services-extensions'.
+	self assert: self methodListPresenter selection selector = #classServiceClass.
+	self deny: self projectsPresenter isClassListTabSelected!
+
 test_gotoDefinedPackage
 	| dictionaryPresenter |
 	self testsIssue: #issue150 withTitle: 'Go to defining package -> Not found: a BlockClosure'.
@@ -227,30 +296,6 @@ test_gotoDefinedPackage
 	self assert: dictionaryPresenter classCategoryPresenter selection value = 'Kernel'.
 	self assert: dictionaryPresenter classListPresenter selection = 'ByteArray']
 			ensure: [dictionaryPresenter topShell destroy]!
-
-test_goToDefinedPackageFromClassList
-	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
-	self selectServicesNamed: #('Rowan-Services-Extensions') in: self packageListPresenter.
-	self selectServicesNamed: (Array with: 'RwGsPlatform') in: self classListPresenter.
-	self assert: self projectsPresenter isClassListTabSelected.
-	self projectsPresenter gotoClassDefinedPackage.
-	self assert: self classListPresenter selection name = 'RwGsPlatform'.
-	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Core'!
-
-test_goToDefinedPackageFromHierarchy
-	| gotoClass |
-	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
-	self selectServicesNamed: #('Rowan-Specifications') in: self packageListPresenter.
-	self selectServicesNamed: (Array with: 'RwPlatformSpecification') in: self classListPresenter.
-	gotoClass := self classListPresenter list
-				detect: [:classService | classService name = 'RwGemStoneSpecification']
-				ifNone: [].
-	self assertIsNil: gotoClass.	"Our guy is an extension"
-	self selectHierarchyTab.
-	self deny: self projectsPresenter isClassListTabSelected.
-	self selectClassInHierarchNamed: 'RwGemStoneSpecification'.
-	self projectsPresenter gotoClassDefinedPackage.
-	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Specifications'!
 
 test_hierarchySelectTwoBrowsers
 	| secondBrowser firstBrowser |
@@ -556,9 +601,12 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classSideSelection!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_extensionColoringInHierarchy!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedClassFromClassList!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedClassFromHierarchy!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromClassList!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromClassListClassSide!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedPackage!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromClassList!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedPackageFromHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menuEnablementDoesNotBreak!public!test! !

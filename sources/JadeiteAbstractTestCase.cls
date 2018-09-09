@@ -159,6 +159,9 @@ selectCategoriesNamed: categories
 						add: service;
 						yourself)]!
 
+selectCategoryNamed: category
+	self selectCategoriesNamed: (Array with: category)!
+
 selectMethodNamed: selector
 	self selectMethodsNamed: (Array with: selector)!
 
@@ -259,6 +262,7 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #saveInterestingLoopMethod!browser support!private! !
 !JadeiteAbstractTestCase categoriesFor: #saveIssue169Method!issue test support!private! !
 !JadeiteAbstractTestCase categoriesFor: #selectCategoriesNamed:!private!project browser support!selection! !
+!JadeiteAbstractTestCase categoriesFor: #selectCategoryNamed:!private!project browser support!selection! !
 !JadeiteAbstractTestCase categoriesFor: #selectMethodNamed:!private!selection! !
 !JadeiteAbstractTestCase categoriesFor: #selectMethodsNamed:!private!selection! !
 !JadeiteAbstractTestCase categoriesFor: #selectRowanSample1Class!private!project browser support!selection! !

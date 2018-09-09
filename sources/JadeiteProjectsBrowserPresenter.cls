@@ -524,10 +524,15 @@ gotoClassDefinedPackage
 	^self updateAfterFindClass: self selectedClass!
 
 gotoMethodPackage
-	| newPackageSelection |
-	newPackageSelection := packageListPresenter list
-				detect: [:svc | svc name = methodListPresenter selection packageName].
-	self selectPackage: newPackageSelection!
+	"find will go to the defined package of the selected class"
+
+	| selectedCategory selectedMethod |
+	selectedCategory := categoryListPresenter selectionIfNone: [].
+	selectedMethod := methodListPresenter selectionIfNone: [].
+	self updateAfterFindClass: self selectedClass.
+	selectedCategory ifNotNil: [:category | categoryListPresenter selection: category].
+	methodListPresenter selection: (methodListPresenter list
+				detect: [:methodService | methodService selector = selectedMethod selector])	"It better be there"!
 
 hasCategorySelected
 
@@ -893,10 +898,6 @@ queryCommand: aCommandQuery
 		ifTrue: 
 			[aCommandQuery isEnabled: self methodListPresenter selections notEmpty.
 			^true].
-	(#(#gotoClassDefinedPackage) includes: command)
-		ifTrue: 
-			[aCommandQuery isEnabled: self classListPresenter selectionOrNil notNil.
-			^true].
 	(#(#removeMethods) includes: command)
 		ifTrue: 
 			[aCommandQuery isEnabled: self methodListPresenter selections notEmpty.
@@ -906,7 +907,7 @@ queryCommand: aCommandQuery
 			[aCommandQuery isEnabled: (packageListPresenter selections notEmpty
 						and: [packageListPresenter selections allSatisfy: [:each | each key beginsWith: 'ConfigurationOf']]).
 			^true].
-	(#(#browseClassReferences #fileOutClass #addSubclass #addMissingAccessors #removeClass #removePriorVersions)
+	(#(#browseClassReferences #fileOutClass #addSubclass #addMissingAccessors #removeClass #removePriorVersions #gotoClassDefinedPackage)
 		includes: command)
 			ifTrue: 
 				[aCommandQuery isEnabled: self selectedClasses size == 1.
@@ -1130,13 +1131,39 @@ selectClass: classSelection
 	selection := classListPresenter list detect: [:svc | svc name = classSelection name] ifNone: [].
 	^selection ifNotNil: [classListPresenter selection: selection]!
 
+selectClassInClassHierarchyNamed: className
+	| selection |
+	selection := classHierarchyPresenter model asBag
+				detect: [:classService | classService name = className]
+				ifNone: [].
+	selection ifNotNil: [classHierarchyPresenter selection: selection].
+	^selection!
+
+selectClassInClassListNamed: className
+	| selection |
+	selection := classListPresenter list detect: [:classService | classService name = className]
+				ifNone: [].
+	selection ifNotNil: [classListPresenter selection: selection].
+	^selection!
+
 selectClassListTab
 	classHierarchyTabs firstCard!
+
+selectClassNamed: className
+	| selection |
+	self isClassListTabSelected
+		ifTrue: [selection := self selectClassInClassListNamed: className]
+		ifFalse: [selection := self selectClassInClassHierarchyNamed: className]!
 
 selectedClass
 	^self isClassListTabSelected
 		ifTrue: [classListPresenter selectionIfNone: []]
 		ifFalse: [classHierarchyPresenter selectionIfNone: []]!
+
+selectedClasses
+	^self isClassListTabSelected
+		ifTrue: [classListPresenter selections]
+		ifFalse: [classHierarchyPresenter selections]!
 
 selectedMethodCategory
 	^methodListPresenter selectionOrNil ifNotNil: [:methodService | methodService category]!
@@ -1263,7 +1290,7 @@ update: services afterStonReplication: stonResults
 	^result!
 
 updateAfterFindClass: classService
-	| projectService packageService updatedClassService |
+	| projectService packageService|
 	projectService := projectListPresenter list
 				detect: [:service | service name = classService projectName]
 				ifNone: 
@@ -1271,13 +1298,14 @@ updateAfterFindClass: classService
 					^self openDictionaryBrowserOn: classService].
 	projectListPresenter selections: (Array with: projectService).
 	packageService := packageListPresenter list
-				detect: [:service | service name = classService packageName]
+				detect: [:service | service name = classService definedPackageName]
 				ifNone: [^self].
 	packageListPresenter selections: (Array with: packageService).
-	updatedClassService := classListPresenter list
-				detect: [:service | service name asString = classService name asString]
-				ifNone: [^self].
-	classListPresenter selections: (Array with: updatedClassService)!
+	self isClassListTabSelected
+		ifTrue: [self selectClassNamed: classService name]
+		ifFalse: 
+			[self selectClassInClassListNamed: classService name.
+			self updateHierarchy]!
 
 updateAndSelectA: aView
 	"is this override still needed?"
@@ -1325,12 +1353,10 @@ updateCommand: aString onSuccessDo: aBlock
 updateHierarchy
 	| service selection |
 	classHierarchyPresenter model: TreeModel new.
+	packageListPresenter list isEmpty ifTrue: [^self].
 	Cursor wait showWhile: 
 			[service := classListPresenter selectionOrNil
-						ifNil: 
-							[classListPresenter list isEmpty
-								ifTrue: [RowanClassService new name: 'Object']
-								ifFalse: [RowanClassService new name: classListPresenter list first name]].
+						ifNil: [^self].
 			service command: #classHierarchy.
 			self issueCommand: (Array with: service).
 			service name = 'Object'
@@ -1601,8 +1627,12 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoriesNamed:!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoryFrom:!public!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClass:!private!selection! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #selectClassInClassHierarchyNamed:!private!selection! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #selectClassInClassListNamed:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectClassListTab!public!selection! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #selectClassNamed:!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectedClass!private!selection! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #selectedClasses!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectedMethodCategory!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectedMethodName!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectionMethod:!private!selection! !
