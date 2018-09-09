@@ -10,6 +10,9 @@ RowanService comment: ''!
 !RowanService categoriesForClass!Kernel-Objects! !
 !RowanService methodsFor!
 
+basicPrepareForReplication
+	"don't call anything potentially recursive here"!
+
 classCategoryUpdate: presenter
 	!
 
@@ -144,7 +147,7 @@ prepareForReplication
 	"only replicate what is absolutely necessary. Each service knows how to do that. 
 	This method prepares each command arg as well"
 
-	commandArgs ifNotNil: [commandArgs do: [:arg | arg prepareForReplication]]!
+	commandArgs ifNotNil: [:args | args basicPrepareForReplication]!
 
 printOn: aStream
 
@@ -238,6 +241,7 @@ updateType: anObject
 variableDataUpdate: aPresenter!
 
 variableListUpdate: aPresenter! !
+!RowanService categoriesFor: #basicPrepareForReplication!public!replication! !
 !RowanService categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanService categoriesFor: #classCommentUpdate:!public!updating! !
 !RowanService categoriesFor: #classDefinitionUpdate:!public!updating! !

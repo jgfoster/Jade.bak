@@ -14,6 +14,10 @@ RowanPackageService comment: ''!
 
 	^name = packageService name!
 
+basicPrepareForReplication
+	"don't iterate over sub colletions"
+	classes := nil!
+
 classes: anArray
 	classes := anArray!
 
@@ -65,7 +69,7 @@ isPackageService
 
 prepareForReplication
 	super prepareForReplication.
-	classes := nil!
+	self basicPrepareForReplication!
 
 projectName
 	^projectName!
@@ -93,6 +97,7 @@ testClasses: presenter
 			[self initializePresenterList: presenter.
 			presenter model addAll: testClasses]! !
 !RowanPackageService categoriesFor: #=!comparing!public! !
+!RowanPackageService categoriesFor: #basicPrepareForReplication!public!replication! !
 !RowanPackageService categoriesFor: #classes:!public!updating! !
 !RowanPackageService categoriesFor: #classesUpdate:browser:!public!updating! !
 !RowanPackageService categoriesFor: #condenseExtensions:!private! !

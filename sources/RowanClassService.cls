@@ -22,6 +22,17 @@ addHierarchyService: service to: treeModel withParent: parentService
 				to: treeModel
 				withParent: service]!
 
+basicPrepareForReplication
+	"don't call anything potentially recursive here.
+	method & package services don't iterate over subcollections"
+	self shouldClearMethods ifTrue: [methods := nil].
+	hierarchyServices := nil.
+	selectedMethods := nil.
+	methods ifNotNil: [methods do: [:methodService | methodService basicPrepareForReplication]].
+	selectedMethods
+		ifNotNil: [selectedMethods do: [:methodService | methodService basicPrepareForReplication]].
+	selectedPackageServices do: [:packageService | packageService basicPrepareForReplication]!
+
 categories
 	^categories!
 
@@ -178,12 +189,7 @@ packageName: anObject
 
 prepareForReplication
 	super prepareForReplication.
-	self shouldClearMethods ifTrue: [methods := nil].
-	hierarchyServices := nil.
-	selectedMethods := nil.
-	methods ifNotNil: [methods do: [:methodService | methodService prepareForReplication]].
-	selectedMethods ifNotNil: [selectedMethods do: [:methodService | methodService prepareForReplication]].
-	selectedPackageServices do: [:packageService | packageService prepareForReplication]!
+	self basicPrepareForReplication!
 
 projectName
 	^projectName!
@@ -280,6 +286,7 @@ variables
 	^variables! !
 !RowanClassService categoriesFor: #=!comparing!public! !
 !RowanClassService categoriesFor: #addHierarchyService:to:withParent:!private!updating! !
+!RowanClassService categoriesFor: #basicPrepareForReplication!public!replication! !
 !RowanClassService categoriesFor: #categories!accessing!private! !
 !RowanClassService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #classMethodsUpdate:browser:!public!updating! !

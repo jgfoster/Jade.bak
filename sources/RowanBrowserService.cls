@@ -16,6 +16,13 @@ RowanBrowserService comment: ''!
 allClasses
 	^allClasses!
 
+basicPrepareForReplication
+	"don't call anything potentially recursive here.
+	method services don't iterate over subcollections"
+
+	removedMethods
+		ifNotNil: [removedMethods do: [:methodService | methodService basicPrepareForReplication]]!
+
 excludedInstVars
 
 	^#( 'hierarchyServices' )
@@ -41,9 +48,8 @@ name
 	^nil!
 
 prepareForReplication
-	super prepareForReplication.	
-	removedMethods
-		ifNotNil: [removedMethods do: [:methodService | methodService prepareForReplication]]!
+	super prepareForReplication.
+	self basicPrepareForReplication!
 
 projects
 	^projects!
@@ -103,6 +109,7 @@ testPackages: presenter
 	presenter model addAll: testPackages! !
 !RowanBrowserService categoriesFor: #=!comparing!public! !
 !RowanBrowserService categoriesFor: #allClasses!accessing!private! !
+!RowanBrowserService categoriesFor: #basicPrepareForReplication!public!replication! !
 !RowanBrowserService categoriesFor: #excludedInstVars!public!ston! !
 !RowanBrowserService categoriesFor: #hash!comparing!public! !
 !RowanBrowserService categoriesFor: #isBrowserService!public!testing! !

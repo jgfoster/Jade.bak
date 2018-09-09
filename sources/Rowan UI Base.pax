@@ -69,6 +69,7 @@ package methodNames
 	add: #CodeSourcePresenter -> #browseSelectedClass;
 	add: #CodeSourcePresenter -> #executeSelectionOrLine;
 	add: #CodeSourcePresenter -> #jadeInspect;
+	add: #Collection -> #basicPrepareForReplication;
 	add: #Collection -> #prepareForReplication;
 	add: #GciSession -> #computeGemHost;
 	add: #GciSession -> #computeStoneHost;
@@ -222,6 +223,7 @@ package methodNames
 	add: #MethodSourcePresenter -> #isOkayToChange;
 	add: #MethodSourcePresenter -> #methodMenuBreak:;
 	add: #MethodSourcePresenter -> #updateMethodSource;
+	add: #Object -> #basicPrepareForReplication;
 	add: #Object -> #isClassService;
 	add: #Object -> #isMethodService;
 	add: #Object -> #isPackageService;
@@ -234,6 +236,7 @@ package methodNames
 	add: #Presenter -> #updateReady:;
 	add: #Presenter -> #updateSelectionsFor:;
 	add: #Presenter -> #updateSelectionsForUpdate:;
+	add: #RowanCommandResult -> #basicPrepareForReplication;
 	add: #RowanCommandResult -> #classCategoryUpdate:;
 	add: #RowanCommandResult -> #classCommentUpdate:;
 	add: #RowanCommandResult -> #classDefinitionUpdate:;
@@ -663,8 +666,12 @@ jadeInspect
 
 !Collection methodsFor!
 
+basicPrepareForReplication
+	self do: [:element | element basicPrepareForReplication]!
+
 prepareForReplication
 	self do: [:element | element prepareForReplication]! !
+!Collection categoriesFor: #basicPrepareForReplication!Jadeite!public! !
 !Collection categoriesFor: #prepareForReplication!Jadeite!public! !
 
 !GciSession methodsFor!
@@ -3051,6 +3058,10 @@ updateMethodSource
 
 !Object methodsFor!
 
+basicPrepareForReplication
+
+	!
+
 isClassService
 
 	^false!
@@ -3075,6 +3086,7 @@ rowanFixMe
 
 	"do nothing. Used for marking to-do items 
 	during Rowan Development"! !
+!Object categoriesFor: #basicPrepareForReplication!Jadeite!public! !
 !Object categoriesFor: #isClassService!public!testing! !
 !Object categoriesFor: #isMethodService!public!testing! !
 !Object categoriesFor: #isPackageService!public!testing! !
@@ -3127,6 +3139,8 @@ updateSelectionsForUpdate: update
 !Presenter categoriesFor: #updateSelectionsForUpdate:!public!rowan! !
 
 !RowanCommandResult methodsFor!
+
+basicPrepareForReplication!
 
 classCategoryUpdate: presenter
 	!
@@ -3227,6 +3241,7 @@ updateType
 	"old-style command results don't use updateType"
 
 	^nil! !
+!RowanCommandResult categoriesFor: #basicPrepareForReplication!public!replication! !
 !RowanCommandResult categoriesFor: #classCategoryUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classCommentUpdate:!public!updating! !
 !RowanCommandResult categoriesFor: #classDefinitionUpdate:!public!updating! !

@@ -64,6 +64,11 @@ appendToSourceMenu: aMenu presenter: methodSourcePresenter
 				argument: messageSelector.
 	aMenu addCommand: menuCommand description: 'Browse Senders of ' , messageSelector printString!
 
+basicPrepareForReplication
+	"don't iterate over subcollections"
+	stepPoints := Array new.
+	breakPoints := Array new!
+
 basicSubSuperIcon
 	hasSupers ifTrue: [^JadeSystemBrowserPresenter overriddenIcon].
 	hasSubs ifTrue: [^JadeiteProjectsBrowserPresenter downArrowIcon].
@@ -233,8 +238,7 @@ packageName: anObject
 
 prepareForReplication
 	super prepareForReplication.
-	stepPoints := Array new.
-	breakPoints := Array new!
+	self basicPrepareForReplication!
 
 printOn: target
 	"Append, to the <puttableStream>, target, a string whose characters are a 
@@ -405,6 +409,7 @@ user: anObject
 !RowanMethodService categoriesFor: #accessedInstVars:!accessing!private! !
 !RowanMethodService categoriesFor: #addBreakPointMenuAt:to:presenter:!presenter support!private! !
 !RowanMethodService categoriesFor: #appendToSourceMenu:presenter:!presenter support!public! !
+!RowanMethodService categoriesFor: #basicPrepareForReplication!public!replication! !
 !RowanMethodService categoriesFor: #basicSubSuperIcon!displaying!public! !
 !RowanMethodService categoriesFor: #breakPoints!public! !
 !RowanMethodService categoriesFor: #category!accessing!private! !
