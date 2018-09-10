@@ -302,6 +302,9 @@ _stepPointsForBreaksInMethod: gsMethod
 
 fileIn
 
+	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
+		caption: 'Filein/fileout notification'.
+	true ifTrue:[^self].
 	[
 		JadeFileIn new
 			fileInString: self activeTextEdit selection

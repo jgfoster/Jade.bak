@@ -388,7 +388,15 @@ testResult: anObject
 	testResult := anObject!
 
 toolTip
-	^'Defined package: ' , definedPackage!
+	| ws |
+	ws := WriteStream on: String new.
+	ws
+		nextPutAll: 'Defined package: ';
+		nextPutAll: definedPackage;
+		cr;
+		nextPutAll: 'Category: '; 
+		nextPutAll: category.
+	^ws contents!
 
 unimplementedSelectors
 

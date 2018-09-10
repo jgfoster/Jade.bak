@@ -830,6 +830,9 @@ executeSelectionOrLine
 fileInCode
 
 	| path |
+	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
+		caption: 'Filein/fileout notification'.
+	true ifTrue:[^self].
 	path := FileOpenDialog new
 		caption: 'File In Code';
 		fileTypes: self fileTypes;
@@ -844,6 +847,9 @@ fileInCode
 fileOutClass
 
 	| path string |
+	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
+		caption: 'Filein/fileout notification'.
+	true ifTrue:[^self].
 	((string := self selectedClassNameWithoutVersion) endsWith: 'TestCase') ifTrue: [
 		string := string copyFrom: 1 to: string size - 8.
 	].
@@ -877,6 +883,9 @@ fileOutClassOnPath: aString
 fileOutDictionary
 
 	| dictionaryName path string file index |
+	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
+		caption: 'Filein/fileout notification'.
+	true ifTrue:[^self].
 	dictionaryName :=  dictionaryListPresenter selection key.
 	path := FileSaveDialog new
 		caption: 'File Out ' , dictionaryName;
@@ -902,6 +911,9 @@ fileOutDictionary
 fileOutMethod
 
 	| name path myReadStream writeStream |
+	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
+		caption: 'Filein/fileout notification'.
+	true ifTrue:[^self].
 	name := self selectedClassNameWithoutVersion.
 	self isClassSideSelected ifTrue: [name := name , '-class'].
 	name := name , '-' , self selectedMethodName.

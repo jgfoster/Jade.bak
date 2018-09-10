@@ -224,7 +224,7 @@ writeProject
 !RowanProjectListPresenter categoriesFor: #openChangesShell:!private!project menu handlers! !
 !RowanProjectListPresenter categoriesFor: #primaryPresenter!public! !
 !RowanProjectListPresenter categoriesFor: #projectChanges!project menu handlers!public! !
-!RowanProjectListPresenter categoriesFor: #projectListPresenter!private! !
+!RowanProjectListPresenter categoriesFor: #projectListPresenter!public! !
 !RowanProjectListPresenter categoriesFor: #projectLog!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #pullFromGit!project menu handlers!public! !
 !RowanProjectListPresenter categoriesFor: #pushToGit!project menu handlers!public! !

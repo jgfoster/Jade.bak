@@ -404,11 +404,15 @@ editSaveMethod: classService
 
 fileOutCategories
 	| path suggestedFileName classSide |
+	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
+		caption: 'Filein/fileout notification'.
+	true ifTrue:[^self].
+	"note that the code below should work. Rowan issue is problem"
 	classSide := self selectedClass meta ifTrue: ['class_'] ifFalse: [String new].
 	suggestedFileName := categoryListPresenter selections size = 1
 				ifTrue: [classListPresenter selection name , '_' , classSide , categoryListPresenter selection]
 				ifFalse: [classListPresenter selection name , classSide , 'categories'].
-	suggestedFileName := suggestedFileName copyWithout: $*. 
+	suggestedFileName := suggestedFileName copyWithout: $*.
 	path := FileSaveDialog new
 				caption: 'File Out Categories';
 				fileTypes: self fileTypes;
@@ -430,6 +434,10 @@ fileOutCategoriesOnPath: path
 
 fileOutClass
 	| path suggestedFileName classSide |
+	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
+		caption: 'Filein/fileout notification'.
+	true ifTrue:[^self].
+	"note that the code below should work. Rowan issue is problem"
 	suggestedFileName := classListPresenter selection name. 
 	path := FileSaveDialog new
 				caption: 'File Out Class';
@@ -450,6 +458,10 @@ fileOutClassOnPath: path
 
 fileOutMethods
 	| path suggestedFileName classSide |
+	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
+		caption: 'Filein/fileout notification'.
+	true ifTrue:[^self].
+	"note that the code below should work. Rowan issue is problem"
 	classSide := self selectedClass meta ifTrue: ['class_'] ifFalse: [String new].
 	suggestedFileName := methodListPresenter selections size = 1
 				ifTrue: 
