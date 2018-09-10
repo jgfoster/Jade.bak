@@ -116,7 +116,7 @@ updateService: service session: session
 updateServices: services session: session
 	inUpdate ifTrue: [^self].
 	inUpdate := true.
-	[[^self basicIssueCommand: services session: session] ensure: [inUpdate := false]]
+	[[^self basicUpdateServices: services session: session] ensure: [inUpdate := false]]
 		ifCurtailed: [inUpdate := false]!
 
 updatesPerform: selector presenter: presenter

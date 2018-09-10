@@ -231,6 +231,7 @@ package methodNames
 	add: #Object -> #prepareForReplication;
 	add: #Object -> #rowanFixMe;
 	add: #ObjectLogBrowser -> #debug:;
+	add: #Presenter -> #redrawAllViews;
 	add: #Presenter -> #update:withSelector:;
 	add: #Presenter -> #update:withSelector:browser:;
 	add: #Presenter -> #updateReady:;
@@ -3109,11 +3110,17 @@ debug: anArray
 
 !Presenter methodsFor!
 
+redrawAllViews!
+
 update: browserUpdate withSelector: selector
-	browserUpdate updatesPerform: selector presenter: self!
+	browserUpdate updatesPerform: selector presenter: self. !
 
 update: browserUpdate withSelector: selector browser: browser
-	browserUpdate updatesPerform: selector presenter: self browser: browser !
+	browserUpdate
+		updatesPerform: selector
+		presenter: self
+		browser: browser.
+	(browser class canUnderstand: #redrawAllViews) ifTrue: [browser redrawAllViews]!
 
 updateReady: aBlock
 
@@ -3132,6 +3139,7 @@ updateSelectionsForUpdate: update
 	"do nothing for most presenters"
 
 	! !
+!Presenter categoriesFor: #redrawAllViews!Jadeite!public! !
 !Presenter categoriesFor: #update:withSelector:!Jadeite!public! !
 !Presenter categoriesFor: #update:withSelector:browser:!Jadeite!public! !
 !Presenter categoriesFor: #updateReady:!public!rowan! !

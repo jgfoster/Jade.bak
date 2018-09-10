@@ -271,9 +271,10 @@ updateCategories: presenter
 
 updateListIn: presenter from: visibleMethods
 	| newSelections |
-	newSelections := presenter selections select:[:methodService | visibleMethods includes: methodService].
-	presenter list: visibleMethods. 
-	presenter selections: newSelections. !
+	newSelections := visibleMethods
+				select: [:methodService | presenter selections includes: methodService].
+	presenter list: visibleMethods.
+	presenter selections: newSelections!
 
 updateVariables: presenter
 	| selections availableSelections |
