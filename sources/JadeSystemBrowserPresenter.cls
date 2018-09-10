@@ -1842,7 +1842,7 @@ pkgsMenuStrings
 				savePackage;
 				showPackageChanges;
 				deletePackage].
-	^#('&Packages' '&Find Class.../Ctrl+Shift+F/findClass' '&Add Package...//addPackage' '-' '&Load Latest Version//loadLatestVersion' 'Add &Repository...//addRepository' 'Remo&ve Repository...//removeRepository' '&Save Package..//savePackage' 'Show &Changes//showPackageChanges' '&Unload Package...//unloadPackage')!
+	^#('&Packages' '&Find Class.../Ctrl+Shift+F/findClass' '&Add Package...//addPackage' '-' '&Load Latest Version//loadLatestVersion' 'Add &Repository...//addRepository' 'Remo&ve Repository...//removeRepository' '&Write Package..//savePackage' 'Show &Changes//showPackageChanges' '&Unload Package...//unloadPackage')!
 
 preferencesMenuStrings
 

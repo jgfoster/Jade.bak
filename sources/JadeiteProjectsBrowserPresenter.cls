@@ -626,7 +626,7 @@ isOkayToChange
 jadeMenuStrings
 
 	false ifTrue: [
-		self abortTransaction; commitTransaction; newWorkspace; openSystemBrowser; refreshFromServer; exit.
+		self abortTransaction; commitTransaction; newWorkspace; openSystemBrowser; findClass; refreshFromServer; exit.
 	]. 
 	^#(
 		'&Jadeite'
@@ -637,6 +637,7 @@ jadeMenuStrings
 		'&Open System Browser/Ctrl+B/addSystemBrowser'
 		'&Maximize Code/Ctrl+M/maximizeCode'
 		'-'
+		'&Find Class.../Ctrl+Shift+F/findClass' 
 		'&Refresh/Ctrl+R/refreshFromServer'
 		'-'
 		'E&xit/Shift+F4/exit'
@@ -767,7 +768,7 @@ pkgsMenuStrings
 	'&Find Class.../Ctrl+Shift+F/findClass'
 	'&Add Package...//addPackage'
 	'-' 
-	'&Save Package...//savePackage'
+	'&Write Package...//savePackage'
 	'&Unload Package...//unloadPackage')!
 
 populateFilterList
@@ -821,7 +822,6 @@ projectMenuStrings
 	0 == 1
 		ifTrue: 
 			[self
-				findClass;
 				makeDefault;
 				cloneProject;
 				loadProjects;
@@ -834,7 +834,7 @@ projectMenuStrings
 				checkout;
 				projectLog;
 				refresh].
-	^#('Projects' '&Find Class.../Ctrl+Shift+F/findClass' '&Make Default//makeDefault' '-' 'Clone Git Project ...//cloneProject' 'Load//loadProjects' 'Unload//unloadProjects' '-' 'Pull from Git ...//pullFromGit' 'Commit ...//gitCommit' 'Push to Git ...//pushToGit' '-' '&Changes ...//projectChanges' 'Write ...//writeProject' 'Checkout ...//checkout' '-' 'Log//projectLog' '&Refresh//refreshFromServer')!
+	^#('Projects' '&Make Default//makeDefault' '-' 'Clone Git Project ...//cloneProject' 'Load//loadProjects' 'Unload//unloadProjects' '-' 'Pull from Git//pullFromGit' 'Commit ...//gitCommit' 'Push to Git//pushToGit' '-' '&Changes//projectChanges' 'Write//writeProject' 'Checkout ...//checkout' '-' 'Log//projectLog' '&Refresh//refreshFromServer')!
 
 projectTabLabel
 	"Selections get mixed up switching between system presenters unless the tabs
