@@ -318,7 +318,7 @@ test_hierarchySelectTwoBrowsers
 	self assert: (secondBrowser currentCard classHierarchyPresenter isKindOf: TreePresenter)]
 			ensure: [secondBrowser destroy]!
 
-test_markDirty
+test_makeDefault
 	| nonDefaultService |
 	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
 	self projectsPresenter makeDefault.
@@ -608,7 +608,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedPackage!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_markDirty!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_makeDefault!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menuEnablementDoesNotBreak!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menusDontAddBreaks!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_multipleCompileMethod!public!test! !

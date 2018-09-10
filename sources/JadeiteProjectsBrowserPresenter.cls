@@ -622,7 +622,7 @@ methodMenuBreak: aMenu
 methodsMenuStrings
 
 	false ifTrue: [	"This helps us find senders"
-		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseHierarchyImplementors; browseHierarchySenders; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; setEnvironment0; setEnvironment1; setEnvironment2; fileOutMethods; gotoMethodPackage.
+		self browseImplementors; browseImplementorsOf; browseSenders; browseSendersOf; browseHierarchyImplementors; browseHierarchySenders; browseMethodsContaining; browseMethodPragmas; removeMethods; runMethodTests; fileOutMethods; gotoMethodPackage.
 	].
 	^#(
 		'&Methods'
@@ -640,7 +640,6 @@ methodsMenuStrings
 		'&File out methods ...//fileOutMethods'
 		'-'
 		'&Remove Method(s) ...//removeMethods'
-		#('&Method Environment' '&0//setEnvironment0' '&1//setEnvironment1' '&2//setEnvironment2')
 		'Run &Tests//runMethodTests'
 		'Go To Defining Package//gotoMethodPackage'
 	).
