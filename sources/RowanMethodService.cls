@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanMethodService
-	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop compilationWarnings testResult'
+	instanceVariableNames: 'source selector methodDefinitions category packageName projectName className meta user hasSupers hasSubs isExtension inSelectedPackage references stepPoints selectedPackageServices superSource superDisplayString accessedInstVars breakPoints oop compilationWarnings testResult definedPackage'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -118,6 +118,9 @@ copyBasicsFrom: oldService
 	selector 	:= oldService selector.
 	className := oldService className.
 	meta 	:= oldService meta.!
+
+definedPackage
+	^definedPackage!
 
 displayClassName
 	^className , (meta ifTrue: [' class'] ifFalse: [String new])!
@@ -384,6 +387,9 @@ testResult
 testResult: anObject
 	testResult := anObject!
 
+toolTip
+	^'Defined package: ' , definedPackage!
+
 unimplementedSelectors
 
 	self rowanFixMe.
@@ -420,6 +426,7 @@ user: anObject
 !RowanMethodService categoriesFor: #clearBreakAtStepPoint:session:!public! !
 !RowanMethodService categoriesFor: #compilationWarnings!accessing!private! !
 !RowanMethodService categoriesFor: #copyBasicsFrom:!public!updating! !
+!RowanMethodService categoriesFor: #definedPackage!accessing!private! !
 !RowanMethodService categoriesFor: #displayClassName!displaying!public! !
 !RowanMethodService categoriesFor: #displayOn:!displaying!public! !
 !RowanMethodService categoriesFor: #displayStringFor:!displaying!public! !
@@ -478,6 +485,7 @@ user: anObject
 !RowanMethodService categoriesFor: #superSource:!accessing!private! !
 !RowanMethodService categoriesFor: #testResult!accessing!public! !
 !RowanMethodService categoriesFor: #testResult:!accessing!public! !
+!RowanMethodService categoriesFor: #toolTip!accessing!private! !
 !RowanMethodService categoriesFor: #unimplementedSelectors!public! !
 !RowanMethodService categoriesFor: #updateSelectorFromCompiledMethod:!private! !
 !RowanMethodService categoriesFor: #user!accessing!private! !

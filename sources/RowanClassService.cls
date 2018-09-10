@@ -262,6 +262,9 @@ template
 template: anObject
 	template := anObject!
 
+toolTip
+	^'Defined package: ' , self definedPackageName!
+
 updateCategories: presenter
 	| selections availableSelections |
 	selections := presenter selections.
@@ -336,6 +339,7 @@ variables
 !RowanClassService categoriesFor: #stonOn:!must not strip!public!ston! !
 !RowanClassService categoriesFor: #template!accessing!private! !
 !RowanClassService categoriesFor: #template:!accessing!private! !
+!RowanClassService categoriesFor: #toolTip!public! !
 !RowanClassService categoriesFor: #updateCategories:!private!updating! !
 !RowanClassService categoriesFor: #updateListIn:from:!private!updating! !
 !RowanClassService categoriesFor: #updateVariables:!private!updating! !
