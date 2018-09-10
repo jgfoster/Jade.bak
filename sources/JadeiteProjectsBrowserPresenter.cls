@@ -1087,7 +1087,11 @@ removeMethods: services
 renameMethodCategory
 	| new service old |
 	old := categoryListPresenter selection.
-	(new := Prompter prompt: 'New method category?') isNil ifTrue: [^self].
+	(new := Prompter
+				on: old
+				prompt: 'New method category?'
+				caption: 'Rename Category') isNil
+		ifTrue: [^self].
 	(categoryListPresenter list includes: new)
 		ifTrue: [^MessageBox notify: 'category ' , new , ' already exists'].
 	service := classListPresenter selection
