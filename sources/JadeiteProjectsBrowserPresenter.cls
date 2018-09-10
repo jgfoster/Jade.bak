@@ -219,7 +219,8 @@ createSchematicWiringForClassHierarchy
 		when: #'drop:'				send: #'onDropOnClassHierarchy:'	to: self;
 		when: #selectionChanging:		send: #aboutToChange:			to: self;
 		when: #'selectionChanging:'	send: #'releasedReferencedServices:'	to: self;
-		when: #selectionChanged		send: #refreshClass				to: self!
+		when: #selectionChanged		send: #refreshClass				to: self;
+		when: #actionPerformed		send: #hierarchyClassDoubleClicked	to: self!
 
 createSchematicWiringForClassHierarchyTabs
 	classHierarchyTabs
@@ -402,6 +403,14 @@ editSaveMethod: classService
 			["there will be no method selected on a compiler error"
 			self selectMethodsFrom: classService]!
 
+expandHierarchyAt: classService
+	| selection |
+	Cursor wait showWhile: 
+			[classService command: #oneLevelClassHierarchy.
+			self issueCommand: (Array with: classService).
+			selection := classHierarchyPresenter model asBag detect: [:svc | svc name = classService name].
+			classHierarchyPresenter selection: selection]!
+
 fileOutCategories
 	| path suggestedFileName classSide |
 	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
@@ -578,6 +587,10 @@ hasCategorySelected
 hasExactlyOneCategorySelected
 
 	^categoryListPresenter selections size = 1!
+
+hierarchyClassDoubleClicked
+
+	self expandHierarchyAt: classHierarchyPresenter selection!
 
 initialize
 
@@ -1605,6 +1618,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveClassComment!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #editSaveMethod:!menu handlers support!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #expandHierarchyAt:!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutCategories!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutCategoriesOnPath:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutClass!menu handlers!public! !
@@ -1621,6 +1635,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoProjectNamed:!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #hasCategorySelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #hasExactlyOneCategorySelected!public!testing! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #hierarchyClassDoubleClicked!event handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #initialize!initialize/release!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isClassSelected!public!testing! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #isDictionariesTabSelected!public!testing! !

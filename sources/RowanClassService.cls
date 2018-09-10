@@ -14,7 +14,7 @@ RowanClassService comment: ''!
 	^classService isClassService ifTrue: [name asString = classService name asString] ifFalse: [^false]!
 
 addHierarchyService: service to: treeModel withParent: parentService
-	treeModel add: service asChildOf: parentService.
+	treeModel getNodeFor: service ifAbsent: [treeModel add: service asChildOf: parentService].
 	(hierarchyServices at: service ifAbsent: [^self]) do: 
 			[:classService |
 			self
@@ -37,24 +37,42 @@ categories
 	^categories!
 
 classHierarchyUpdate: presenter browser: browser
-	| treeModel |
+	| treeModel subclasses parent |
 	hierarchyServices ifNil: [^self].
 	browser isClassListTabSelected ifTrue: [^self].
 	presenter selections notEmpty ifTrue: [(presenter selections includes: self) ifFalse: [^self]].
 	treeModel := TreeModel new
 				searchPolicy: SearchPolicy equality;
 				reset.
-	(hierarchyServices at: #nil) do: 
+	parent := nil.	
+	subclasses := hierarchyServices at: #nil ifAbsent: [].
+	subclasses
+		ifNil: 
+			[| subs |
+			parent := self.
+			treeModel := presenter model.
+			subs := hierarchyServices at: #expand.
+			1 to: subs size
+				do: 
+					[:index |
+					| classService node |
+					classService := subs at: index.
+					node := treeModel getNodeFor: classService ifAbsent: [].
+					node
+						ifNotNil: 
+							[treeModel remove: classService ifAbsent: [].
+							subs at: index put: node object]].
+			subclasses := subs].
+	subclasses do: 
 			[:classService |
 			self
 				addHierarchyService: classService
 				to: treeModel
-				withParent: nil].
-	treeModel asBag do:[:classService | classService selectedPackageServices: browser packageListPresenter selections].
+				withParent: parent].
+	treeModel asBag
+		do: [:classService | classService selectedPackageServices: browser packageListPresenter selections].
 	presenter model: treeModel.
-	name = 'Object' ifFalse:[
-		presenter view expandAll].
-!
+	presenter view expandAll!
 
 classMethodsUpdate: presenter browser: browser
 	presenter list isEmpty ifTrue: [self initializePresenterList: presenter].

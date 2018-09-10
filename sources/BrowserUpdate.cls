@@ -47,6 +47,9 @@ initializeUpdates
 	updates := OrderedCollection new.
 	!
 
+inUpdate
+	^inUpdate!
+
 inUpdate: anObject
 	^inUpdate := anObject!
 
@@ -147,6 +150,7 @@ updatesPerform: selector presenter: presenter browser: browser
 !BrowserUpdate categoriesFor: #debug:!accessing!private! !
 !BrowserUpdate categoriesFor: #initialize!initialization!public! !
 !BrowserUpdate categoriesFor: #initializeUpdates!initialization!public! !
+!BrowserUpdate categoriesFor: #inUpdate!accessing!public! !
 !BrowserUpdate categoriesFor: #inUpdate:!accessing!private! !
 !BrowserUpdate categoriesFor: #issueCommand:session:!commands!public! !
 !BrowserUpdate categoriesFor: #performUpdate:with:!private!updating! !
