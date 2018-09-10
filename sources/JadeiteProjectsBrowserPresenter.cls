@@ -1408,13 +1408,13 @@ updateCommand: aString onSuccessDo: aBlock
 updateHierarchy
 	| service selection |
 	classHierarchyPresenter model: TreeModel new.
-	packageListPresenter list isEmpty ifTrue: [^self].
+	packageListPresenter selectionOrNil ifNil: [^self].
 	Cursor wait showWhile: 
 			[service := classListPresenter selectionOrNil ifNil: [packageListPresenter selection].
 			service command: #classHierarchy.
 			self issueCommand: (Array with: service).
 			service isPackageService
-				ifTrue:[service hierarchyServices: Array new]
+				ifTrue: [service hierarchyServices: Array new]
 				ifFalse: 
 					[service name = 'Object'
 						ifFalse: 
