@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 RowanService subclass: #RowanPackageService
-	instanceVariableNames: 'classes defaultTemplate projectName classCompilationFailures testClasses'
+	instanceVariableNames: 'classes defaultTemplate projectName classCompilationFailures testClasses hierarchyServices'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -13,6 +13,15 @@ RowanPackageService comment: ''!
 = packageService
 
 	^name = packageService name!
+
+addHierarchyService: service to: treeModel withParent: parentService
+	treeModel getNodeFor: service ifAbsent: [treeModel add: service asChildOf: parentService].
+	(hierarchyServices at: service ifAbsent: [^self]) do: 
+			[:classService |
+			self
+				addHierarchyService: classService
+				to: treeModel
+				withParent: service]!
 
 basicPrepareForReplication
 	"don't iterate over sub colletions"
@@ -34,6 +43,45 @@ classesUpdate: presenter browser: browser
 		do: [:classService | classService selectedPackageServices: browser packageListPresenter selections].
 	presenter view invalidate. 
 	browser isClassSelected ifFalse: [self emptyFilterListsIn: browser]!
+
+classHierarchyUpdate: presenter browser: browser
+	| treeModel subclasses parent |
+	hierarchyServices ifNil: [^self].
+	hierarchyServices isEmpty ifTrue:[^self].
+	browser isClassListTabSelected ifTrue: [^self].
+	presenter selections notEmpty ifTrue: [(presenter selections includes: self) ifFalse: [^self]].
+	treeModel := TreeModel new
+				searchPolicy: SearchPolicy equality;
+				reset.
+	parent := nil.	
+	subclasses := hierarchyServices at: #nil ifAbsent: [].
+	subclasses
+		ifNil: 
+			[| subs |
+			parent := self.
+			treeModel := presenter model.
+			subs := hierarchyServices at: #expand.
+			1 to: subs size
+				do: 
+					[:index |
+					| classService node |
+					classService := subs at: index.
+					node := treeModel getNodeFor: classService ifAbsent: [].
+					node
+						ifNotNil: 
+							[treeModel remove: classService ifAbsent: [].
+							subs at: index put: node object]].
+			subclasses := subs].
+	subclasses do: 
+			[:classService |
+			self
+				addHierarchyService: classService
+				to: treeModel
+				withParent: parent].
+	treeModel asBag
+		do: [:classService | classService selectedPackageServices: browser packageListPresenter selections].
+	presenter model: treeModel.
+	presenter view expandAll!
 
 condenseExtensions: presenter
 	| defined newList |
@@ -62,6 +110,10 @@ displayStringFor: displayThing
 
 hash
 	^self name hash!
+
+hierarchyServices: collection
+
+	hierarchyServices := collection!
 
 isPackageService
 
@@ -97,14 +149,17 @@ testClasses: presenter
 			[self initializePresenterList: presenter.
 			presenter model addAll: testClasses]! !
 !RowanPackageService categoriesFor: #=!comparing!public! !
+!RowanPackageService categoriesFor: #addHierarchyService:to:withParent:!private!updating! !
 !RowanPackageService categoriesFor: #basicPrepareForReplication!public!replication! !
 !RowanPackageService categoriesFor: #classes:!public!updating! !
 !RowanPackageService categoriesFor: #classesUpdate:browser:!public!updating! !
+!RowanPackageService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanPackageService categoriesFor: #condenseExtensions:!private! !
 !RowanPackageService categoriesFor: #defaultTemplate!accessing!private! !
 !RowanPackageService categoriesFor: #defaultTemplate:!accessing!private! !
 !RowanPackageService categoriesFor: #displayStringFor:!displaying!public! !
 !RowanPackageService categoriesFor: #hash!comparing!public! !
+!RowanPackageService categoriesFor: #hierarchyServices:!public!updating! !
 !RowanPackageService categoriesFor: #isPackageService!public!testing! !
 !RowanPackageService categoriesFor: #prepareForReplication!public!replication! !
 !RowanPackageService categoriesFor: #projectName!accessing!private! !

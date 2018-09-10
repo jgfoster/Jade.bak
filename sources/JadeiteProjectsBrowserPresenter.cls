@@ -1410,14 +1410,16 @@ updateHierarchy
 	classHierarchyPresenter model: TreeModel new.
 	packageListPresenter list isEmpty ifTrue: [^self].
 	Cursor wait showWhile: 
-			[service := classListPresenter selectionOrNil
-						ifNil: [^self].
+			[service := classListPresenter selectionOrNil ifNil: [packageListPresenter selection].
 			service command: #classHierarchy.
 			self issueCommand: (Array with: service).
-			service name = 'Object'
+			service isPackageService
+				ifTrue:[service hierarchyServices: Array new]
 				ifFalse: 
-					[selection := classHierarchyPresenter model asBag detect: [:svc | svc name = service name].
-					classHierarchyPresenter selection: selection]]!
+					[service name = 'Object'
+						ifFalse: 
+							[selection := classHierarchyPresenter model asBag detect: [:svc | svc name = service name].
+							classHierarchyPresenter selection: selection]]]!
 
 updateMenuBar
 
