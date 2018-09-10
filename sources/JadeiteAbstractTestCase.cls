@@ -230,7 +230,7 @@ transcriptProjectNamed: string
 	^self transcriptProjectList list detect: [:projectService | projectService name = string] ifNone: []!
 
 transcriptTab
-	^transcript projectsListPresenter !
+	^transcript projectListPresenter !
 
 unloadSampleProject
 	self isSampleProjectLoaded

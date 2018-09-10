@@ -44,7 +44,7 @@ openJadeiteProjectsBrowser
 		caption: 'Cannot open Jadeite Projects browser'!
 
 projectListPresenter
-	^projectListPresenter projectListPresenter!
+	^projectListPresenter!
 
 queryCommand: query
 	super queryCommand: query.

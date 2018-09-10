@@ -14,10 +14,10 @@ test_multiSelectProject
 	| projectServices projectCount |
 	self testsIssue: #issue163
 		withTitle: 'Project list in transcript/console should be multi-select for multi-load'.
-	projectServices := transcript projectListPresenter list.
+	projectServices := transcript projectListPresenter projectListPresenter list.
 	projectCount := projectServices size.
-	transcript projectListPresenter selections: projectServices.
-	self assert: transcript projectListPresenter selections size equals: projectCount!
+	transcript projectListPresenter projectListPresenter selections: projectServices.
+	self assert: transcript projectListPresenter projectListPresenter selections size equals: projectCount!
 
 test_transcriptNamedConsole
 	self testsIssue: #issue161 withTitle: 'Rename transcrip to console'.
