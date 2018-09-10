@@ -411,6 +411,39 @@ test_multipleCompileMethod
 	self selectMethodNamed: #pest.	"<< bug occurred here"
 	self assert: self methodSourcePresenter value equals: 'pest  ^55 + 1'!
 
+test_noSelectionHierarchy
+	| roots children childrensNames grandchildren grandchildrensNames |
+	self testsIssue: #issue125 withTitle: 'Hierarchy view empty if class not selected'.
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Services-Core') in: self packageListPresenter.
+	self assertIsNil: self projectsPresenter selectedClass.
+	self selectHierarchyTab.
+	self assert: self classHierarchyPresenter model notEmpty.
+	roots := self classHierarchyPresenter model roots.
+	self assert: roots size = 1.
+	self assert: roots first name = 'Object'.
+	children := self classHierarchyPresenter model getChildrenOf: roots first.
+	childrensNames := children collect: [:classService | classService name].
+	self assert: (childrensNames includes: 'RowanCommandResult').
+	self assert: (childrensNames includes: 'RowanService').
+	self deny: (childrensNames includes: 'RowanClassService').
+	grandchildren := self classHierarchyPresenter model getChildrenOf: (children detect: [:classService | classService name = 'RowanService']).
+	self assert: grandchildren size = 11. "this will probably change but it's a nice test to ensure all the expected services are present"
+	grandchildrensNames := grandchildren collect: [:classService | classService name].
+	self assert: (grandchildrensNames at: 1) equals: 'RowanAnsweringService'.
+	self assert: (grandchildrensNames at: 2) equals: 'RowanBrowserService'.
+	self assert: (grandchildrensNames at: 3) equals: 'RowanClassService'.
+	self assert: (grandchildrensNames at: 4) equals: 'RowanDebuggerService'.
+	self assert: (grandchildrensNames at: 5) equals: 'RowanFrameService'.
+	self assert: (grandchildrensNames at: 6) equals: 'RowanMethodService'.
+	self assert: (grandchildrensNames at: 7) equals: 'RowanPackageService'.
+	self assert: (grandchildrensNames at: 8) equals: 'RowanProcessService'.
+	self assert: (grandchildrensNames at: 9) equals: 'RowanProjectService'.
+	self assert: (grandchildrensNames at: 10) equals: 'RowanQueryService'.
+	self assert: (grandchildrensNames at: 11) equals: 'RowanVariableService'.
+
+!
+
 test_openProjectsBrowser
 	"project browser opened in setup"
 
@@ -625,6 +658,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menuEnablementDoesNotBreak!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menusDontAddBreaks!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_multipleCompileMethod!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_noSelectionHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_projectDisplaysSync!public!test! !
