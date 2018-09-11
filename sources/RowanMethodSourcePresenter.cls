@@ -12,7 +12,7 @@ RowanMethodSourcePresenter comment: ''!
 
 updateMethodStepPoints
 
-	self rowanFixMe.
+	super updateMethodStepPoints
 	! !
 !RowanMethodSourcePresenter categoriesFor: #updateMethodStepPoints!public! !
 

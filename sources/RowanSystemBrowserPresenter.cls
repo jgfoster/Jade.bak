@@ -115,6 +115,13 @@ labelOfClass: oldName changedTo: newName
 
 !
 
+methodListSelection
+	^RowanMethodService new
+				selector: self selectedMethodName asSymbol;
+				className: classListPresenter selection;
+				meta: self isClassSideSelected.
+	!
+
 onViewClosed
 	"copied to RowanDebugger"
 
@@ -422,6 +429,11 @@ updateMethodsFrom: update
 		ifTrue: [methodListPresenter view ensureSelectionVisible]
 		ifFalse: [fullList notEmpty ifTrue: [methodListPresenter view ensureVisible: 1]]!
 
+updateMethodSource
+	self updateAndSelect: methodSourcePresenter .
+	
+!
+
 updateOverrideListFrom: update
 
 	| list selection |
@@ -501,6 +513,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #createSchematicWiringForPackageDictionaryTabs!create schemantic wiring!public! !
 !RowanSystemBrowserPresenter categoriesFor: #getViews!public! !
 !RowanSystemBrowserPresenter categoriesFor: #labelOfClass:changedTo:!event handlers!public! !
+!RowanSystemBrowserPresenter categoriesFor: #methodListSelection!private! !
 !RowanSystemBrowserPresenter categoriesFor: #onViewClosed!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #projectDictionaryChanged!event handlers!public! !
 !RowanSystemBrowserPresenter categoriesFor: #registerPresentersForUpdates!event handlers!initialization!public!rowan! !
@@ -517,6 +530,7 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodReferences:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateMethodsFrom:!public!updating! !
+!RowanSystemBrowserPresenter categoriesFor: #updateMethodSource!private! !
 !RowanSystemBrowserPresenter categoriesFor: #updateOverrideListFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updatePresenters!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!rowan! !
