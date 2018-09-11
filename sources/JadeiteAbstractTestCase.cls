@@ -46,6 +46,23 @@ ensureRowanSample1Loaded
 	RowanBrowserService new reloadProjects: selections presenter: self projectsPresenter.
 	self projectsPresenter refreshFromServer!
 
+interestingLoopMethodSource
+	^'interestingLoop
+
+	| contents result |
+	result := String new. 
+	contents := { 23 . 55 . 45 . 999 }.
+	contents select: [:n |
+		| temp |
+		temp := self test + n. 
+		(temp / self anotherNumber) > 5
+			ifTrue:[result add: ''found'']
+			ifFalse: [result add: ''not found''].
+		result add: '' - ''.
+		n = 2.
+	].
+	^result'!
+
 isSampleProjectLoaded
 	^(self projectsPresenter projectListPresenter list
 		detect: [:projectService | projectService name = self sampleProjectName]
@@ -114,22 +131,8 @@ sampleProjectName
 
 saveInterestingLoopMethod
 	| source |
-	source := 'interestingLoop
-
-	| contents result |
-	result := String new. 
-	contents := { 23 . 55 . 45 . 999 }.
-	contents select: [:n |
-		| temp |
-		temp := self test + n. 
-		(temp / self anotherNumber) > 5
-			ifTrue:[result add: ''found'']
-			ifFalse: [result add: ''not found''].
-		result add: '' - ''.
-		n = 2.
-	].
-	^result'.
-	self selectCategoriesNamed: (Array with: 'accessing'). 
+	source := self interestingLoopMethodSource.
+	self selectCategoriesNamed: (Array with: 'accessing').
 	self methodSourcePresenter value: source.
 	self projectsPresenter editSaveMethod: self classListPresenter selection!
 
@@ -244,6 +247,7 @@ unloadSampleProject
 !JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Attached!private!project support! !
 !JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Available!private!project support! !
 !JadeiteAbstractTestCase categoriesFor: #ensureRowanSample1Loaded!private!project support! !
+!JadeiteAbstractTestCase categoriesFor: #interestingLoopMethodSource!constants!private! !
 !JadeiteAbstractTestCase categoriesFor: #isSampleProjectLoaded!private!private testing!project support! !
 !JadeiteAbstractTestCase categoriesFor: #loadRowanSample1InProjectList!private!project support! !
 !JadeiteAbstractTestCase categoriesFor: #menuNamed:in:!issue test support!private! !

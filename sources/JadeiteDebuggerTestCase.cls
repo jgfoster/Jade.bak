@@ -568,7 +568,52 @@ testStackMenuEnablement
 	frameContextMenu itemsDo: [:item | self deny: (self menuItemIsEnabled: item)].
 	debugger frameListPresenter selection: (debugger frameListPresenter list at: 2).
 	frameContextMenu itemsDo: [:item | self assert: (self menuItemIsEnabled: item)].
-! !
+!
+
+testUnsavedChangesActionChangeFrame
+	"Make sure to turn off test message box if you need to
+	debug this test. "
+
+	self testsIssue: #issue176 withTitle: 'unsaved debugger frame method not handled well'.
+	TestMessageBox enableJadeiteTestMessageBox.
+	
+	[self openDebuggerOn: 'nil halt'.
+	self assert: debugger frameListPresenter list first equals: 'Executed Code  @2 line 1'.
+	'notCopiedYet' copyToClipboard.
+	self assert: Clipboard current getText = 'notCopiedYet'.
+	debugger methodSourcePresenter documentPresenter value: 'new text'.
+	debugger methodSourcePresenter documentPresenter view isModified: true.
+	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
+	self debuggerDo: [debugger stepOver].
+	self assert: Clipboard current getText = 'new text']
+			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
+
+testUnsavedChangesActionStepping
+	"Make sure to turn off test message box if you need to
+	debug this test. "
+
+	| originalSource |
+	self testsIssue: #issue176 withTitle: 'unsaved debugger frame method not handled well'.
+	TestMessageBox enableJadeiteTestMessageBox.
+	originalSource := 'nil halt. Array new. Array new. Array new.'.
+	
+	[self openDebuggerOn: originalSource.
+	self assert: debugger frameListPresenter list first equals: 'Executed Code  @2 line 1'.
+	'notCopiedYet' copyToClipboard.
+	self assert: Clipboard current getText = 'notCopiedYet'.
+	debugger methodSourcePresenter documentPresenter value: 'step over'.
+	debugger methodSourcePresenter documentPresenter view isModified: true.
+	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
+	self debuggerDo: [debugger stepOver].
+	self assert: Clipboard current getText = 'step over'.
+	self assert: debugger methodSourcePresenter documentPresenter value equals: originalSource.
+	debugger methodSourcePresenter documentPresenter value: 'step into'.
+	debugger methodSourcePresenter documentPresenter view isModified: true.
+	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
+	self debuggerDo: [debugger stepInto].
+	self assert: Clipboard current getText = 'step into'.
+	self assert: debugger methodSourcePresenter documentPresenter value equals: originalSource]
+			ensure: [TestMessageBox disableJadeiteTestMessageBox]! !
 !JadeiteDebuggerTestCase categoriesFor: #closeDebuggers!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #debuggerDo:!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #getDebugger!private!support! !
@@ -599,4 +644,6 @@ testStackMenuEnablement
 !JadeiteDebuggerTestCase categoriesFor: #testErrorInPrintString!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testSaveMethod!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testStackMenuEnablement!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #testUnsavedChangesActionChangeFrame!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #testUnsavedChangesActionStepping!public!tests! !
 
