@@ -313,9 +313,9 @@ stepOver
 	^self update!
 
 terminateProcess
-
-	(MessageBox confirm: 'Terminate process?' caption: 'GemStone/S Process Termination') ifFalse: [^self].
-	self _terminateProcess.!
+	(MessageBox confirm: 'Terminate process?' caption: 'GemStone/S Process Termination')
+		ifFalse: [^self].
+	self _terminateProcess!
 
 update
 
