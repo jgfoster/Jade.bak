@@ -1346,6 +1346,7 @@ update: services afterStonReplication: stonResults
 
 updateAfterFindClass: classService
 	| projectService packageService|
+	self updateService: classService.
 	projectService := projectListPresenter list
 				detect: [:service | service name = classService projectName]
 				ifNone: 

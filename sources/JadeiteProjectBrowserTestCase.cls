@@ -205,6 +205,18 @@ test_extensionColoringInHierarchy
 	self selectClassInHierarchNamed: 'RwGemStoneSpecification'.
 	self assert: self projectsPresenter classHierarchyPresenter selection shouldColorAsExtension!
 
+test_findClass
+	self projectsPresenter updateAfterFindClass: (RowanClassService new name: 'RwGsPlatform').
+	self assert: self classListPresenter selection name equals: 'RwGsPlatform'.
+	self assert: self classListPresenter selection definedPackageName equals: 'Rowan-GemStone-Core'.
+	self assert: self packageListPresenter selection name equals: 'Rowan-GemStone-Core'.
+	self assert: self projectListPresenter selection name equals: 'Rowan'.
+	self projectsPresenter updateAfterFindClass: (RowanClassService new name: 'CypressClassDefinition').
+	self assert: self classListPresenter selection name equals: 'CypressClassDefinition'.
+	self assert: self classListPresenter selection definedPackageName equals: 'Cypress-Definitions'.
+	self assert: self packageListPresenter selection name equals: 'Cypress-Definitions'.
+	self assert: self projectListPresenter selection name equals: 'Cypress'!
+
 test_goToDefinedClassFromClassList
 	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
 	self selectServicesNamed: #('Rowan-Services-Extensions') in: self packageListPresenter.
@@ -646,6 +658,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classSideSelection!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_extensionColoringInHierarchy!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_findClass!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedClassFromClassList!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedClassFromHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromClassList!public!test! !

@@ -21,14 +21,6 @@ selectClass: className
 				ifNone: [self error: 'Class ' , className , ' not found'].
 	classPresenter selection: selection!
 
-selectClassCategory: classCategoryName
-	| classCategoryPresenter selection |
-	classCategoryPresenter := self primaryPresenter classCategoryPresenter.
-	classCategoryPresenter resetSelection.
-	selection := classCategoryPresenter list detect: [:assoc | assoc key = classCategoryName]
-				ifNone: [self error: 'Class Category ' , classCategoryName , ' not found'].
-	classCategoryPresenter selection: selection!
-
 selectDictionary: dictionaryName
 	| dictionaryPresenter selection |
 	dictionaryPresenter := self primaryPresenter dictionaryListPresenter.
@@ -90,13 +82,11 @@ test_menusDontAddBreaks
 
 test_selectTestClass
 	self testsIssue: #issue177 withTitle: 'Dictionary browser error/s'.
-	self selectDictionary: 'Rowan'.
-	self selectClassCategory: 'Rowan-Tests'.
+	self selectDictionary: 'RowanKernel'.
 	self selectClass: 'RwBrowserToolApiTest'.	"<<< walkback occurred here"
-	self assert: self primaryPresenter classListPresenter selection name equals: 'RwBrowserToolApiTest'! !
+	self assert: self primaryPresenter classListPresenter selection equals: 'RwBrowserToolApiTest'! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #primaryPresenter!private! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #selectClass:!private!selection! !
-!JadeiteDictionaryBrowserTestCase categoriesFor: #selectClassCategory:!private!selection! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #selectDictionary:!private!selection! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #selectMethod:!private!selection! !
 !JadeiteDictionaryBrowserTestCase categoriesFor: #selectWellKnownMethod!private!selection! !
