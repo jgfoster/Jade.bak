@@ -14,12 +14,6 @@ createComponents
 	super createComponents.
 	projectListPresenter := self add: RowanProjectListPresenter new name: 'Projects'!
 
-createSchematicWiring
-	projectListPresenter
-		when: #actionPerformed
-		send: #openJadeiteProjectsBrowser
-		to: self!
-
 flipDebugger
 	RowanDebugger debuggerClass == RowanDebugger
 		ifTrue: [RowanDebugger debuggerClass: JadeDebugger]
@@ -63,7 +57,6 @@ queryCommand: query
 			[query isChecked: RowanDebugger debuggerClass = RowanDebugger.
 			^true]! !
 !RowanTranscript categoriesFor: #createComponents!public! !
-!RowanTranscript categoriesFor: #createSchematicWiring!public!updating! !
 !RowanTranscript categoriesFor: #flipDebugger!menu handlers!public! !
 !RowanTranscript categoriesFor: #flipTranscript!menu handlers!public! !
 !RowanTranscript categoriesFor: #isTranscriptInstalled!public! !
