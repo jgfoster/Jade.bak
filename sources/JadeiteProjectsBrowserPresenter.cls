@@ -1533,13 +1533,6 @@ updateSelectionsForUpdate: update
 	update updateMethodSelectionFor: self methodListPresenter.
 	update projectSelectionUpdate: projectListPresenter!
 
-updateService: service
-
-	^self updateServices: (Array with: service) !
-
-updateServices: services
-	BrowserUpdate current updateServices: services session: gciSession!
-
 updateSingleMethodSource
 	methodSourcePresenter value: methodListPresenter selection source.
 	self refreshBreakPointsIn: methodSourcePresenter.
@@ -1732,8 +1725,6 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjects!event handlers!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateProjectTab!event handlers support!private!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!updating! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #updateService:!public!services! !
-!JadeiteProjectsBrowserPresenter categoriesFor: #updateServices:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateSingleMethodSource!event handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #updateTabLabel!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #writeProject!project menu handlers!public! !

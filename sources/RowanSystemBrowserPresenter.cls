@@ -470,6 +470,13 @@ updateSelectionsForUpdate: update
 	update updateMethodSelectionFor: self methodListPresenter.
 	!
 
+updateService: service
+
+	^self updateServices: (Array with: service) !
+
+updateServices: services
+	BrowserUpdate current updateServices: services session: gciSession!
+
 updateTabLabel
 	| cardNumber newLabel |
 	cardNumber := self parentPresenter view cards indexOf: self view.
@@ -513,6 +520,8 @@ updateTabLabel
 !RowanSystemBrowserPresenter categoriesFor: #updateOverrideListFrom:!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updatePresenters!public!updating! !
 !RowanSystemBrowserPresenter categoriesFor: #updateSelectionsForUpdate:!public!rowan! !
+!RowanSystemBrowserPresenter categoriesFor: #updateService:!public!services! !
+!RowanSystemBrowserPresenter categoriesFor: #updateServices:!private!services! !
 !RowanSystemBrowserPresenter categoriesFor: #updateTabLabel!public!updating! !
 
 !RowanSystemBrowserPresenter class methodsFor!

@@ -2524,7 +2524,13 @@ updateClassList
 		ifFalse: [fullList notEmpty ifTrue: [classListPresenter view ensureVisible: 1]].
 	selectedClassesAreTestCases := (flags at: 1) = 'true'.
 	sunitPresenter testClassService: (selectedClassesAreTestCases
-				ifTrue: [selectedClassName isEmpty ifTrue: [] ifFalse: [RowanClassService new name: selectedClassName]]
+				ifTrue: 
+					[selectedClassName isEmpty
+						ifTrue: []
+						ifFalse: 
+							[| service |
+							self updateService: (service := RowanClassService new name: selectedClassName).
+							service]]
 				ifFalse: [])!
 
 updateMethod
