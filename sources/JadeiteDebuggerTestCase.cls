@@ -588,6 +588,27 @@ testUnsavedChangesActionChangeFrame
 	self assert: Clipboard current getText = 'new text']
 			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
+testUnsavedChangesActionChangeToHomeFrame
+	"Make sure to turn off test message box if you need to
+	debug this test. "
+
+	self testsIssue: #issue176 withTitle: 'unsaved debugger frame method not handled well'.
+	TestMessageBox enableJadeiteTestMessageBox.
+	
+	[| originalSource |
+	originalSource := '(Array with: 1) do:[:obj | self halt. obj size]'.
+	self openDebuggerOn: originalSource.
+	self assert: debugger frameListPresenter list first equals: '[] in  Executed Code  @2 line 1'.
+	'notCopiedYet' copyToClipboard.
+	self assert: Clipboard current getText = 'notCopiedYet'.
+	debugger methodSourcePresenter documentPresenter value: 'new text'.
+	debugger methodSourcePresenter documentPresenter view isModified: true.
+	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
+	debugger frameListPresenter selection: (debugger frameListPresenter list at: 3).
+	self assert: Clipboard current getText = 'new text'.
+	self assert: debugger methodSourcePresenter documentPresenter value equals: originalSource]
+			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
+
 testUnsavedChangesActionStepping
 	"Make sure to turn off test message box if you need to
 	debug this test. "
@@ -645,5 +666,6 @@ testUnsavedChangesActionStepping
 !JadeiteDebuggerTestCase categoriesFor: #testSaveMethod!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testStackMenuEnablement!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testUnsavedChangesActionChangeFrame!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #testUnsavedChangesActionChangeToHomeFrame!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #testUnsavedChangesActionStepping!public!tests! !
 
