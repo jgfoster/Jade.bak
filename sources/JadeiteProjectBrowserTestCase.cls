@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
-	instanceVariableNames: 'transcriptWritesWereEnabled'
+	instanceVariableNames: 'transcriptWritesWereEnabled methodListBrowser'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -37,6 +37,17 @@ rowanProjectNames
 	"this may change"
 
 	^#('Cypress' 'Rowan' 'STON' 'Tonel')!
+
+saveHooMethod
+
+	| source |
+	source := 'hoo
+	"RowanSample1 new hoo"
+	^self goo'. 
+	self methodSourcePresenter value: source. 
+	self projectsPresenter editSaveMethod: self classListPresenter selection. 
+
+	!
 
 saveSampleMethod
 
@@ -92,6 +103,7 @@ tearDown
 	self unloadSampleProject.
 	self commitTransaction. "can remove this when #349 is fixed. See setUp" 
 	projectsBrowser ifNotNil: [projectsBrowser destroy].
+	methodListBrowser ifNotNil: [methodListBrowser destroy].
 	transcriptWritesWereEnabled ifTrue: [transcript flipTranscript].
 !
 
@@ -610,6 +622,29 @@ test_selectMultipleProjects
 	self selectServicesNamed: self rowanProjectNames in: self projectListPresenter.
 	self assert: self projectListPresenter selections size = 4!
 
+test_setAndClearBreakpoint
+	" at least set breakpoints in the projects browser and method list browser for now"
+
+	| methodListPresenter |
+	self selectRowanSample1Class.
+	self saveHooMethod.
+	self assert: self methodListPresenter selection breakPoints size equals: 0.
+	self projectsPresenter setBreakPointAt: 2 in: self projectsPresenter.
+	self assert: self methodListPresenter selection breakPoints size equals: 1.
+	self assert: self methodListPresenter selection breakPoints first equals: 2.
+	self projectsPresenter clearBreakPointAt: 2 in: self projectsPresenter.
+	self assert: self methodListPresenter selection breakPoints size equals: 0.
+	"set breaks in method list browser"
+	methodListBrowser := self projectsPresenter browseImplementorsOf: #hoo.
+	self assert: (methodListBrowser isKindOf: JadeiteMethodListBrowser).
+	methodListPresenter := methodListBrowser primaryPresenter.
+	self assert: methodListPresenter methodListPresenter selection breakPoints size equals: 0.
+	methodListPresenter setBreakPointAt: 2 in: methodListPresenter.
+	self assert: methodListPresenter methodListPresenter selection breakPoints size equals: 1.
+	self assert: methodListPresenter methodListPresenter selection breakPoints first equals: 2.
+	methodListPresenter clearBreakPointAt: 2 in: methodListPresenter.
+	self assert: methodListPresenter methodListPresenter selection breakPoints size equals: 0!
+
 test_simpleHierarchyTest
 	"just make sure that we can select different classes and the hierarchy browser updates"
 
@@ -626,13 +661,13 @@ test_simpleHierarchyTest
 	self selectClassListTab.
 	self assert: self projectsPresenter classListPresenter selection name = 'RowanProjectService'!
 
-testSUnitTabHandlesShortSelector
+test_SUnitTabHandlesShortSelector
 	self testsIssue: #issue173 withTitle: 'new SUnit browser code walksback on short selector'.
 	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
 	self selectServicesNamed: #('Rowan-Services-Tests') in: self packageListPresenter.
 	self selectServiceNamed: 'RwRowanProjectIssuesTest' in: self classListPresenter.
 	self selectHierarchyTab.
-	self selectClassInHierarchNamed: 'TestCase'. "<<< bug occurred here"
+	self selectClassInHierarchNamed: 'TestCase'.	"<<< bug occurred here"
 	self assert: self projectsPresenter selectedClass name = 'TestCase'!
 
 waitForPresenter: presenter
@@ -642,6 +677,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #projectList!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!constants!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #saveHooMethod!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassInHierarchNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
@@ -683,8 +719,9 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethodHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultiplePackages!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultipleProjects!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_setAndClearBreakpoint!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_simpleHierarchyTest!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #testSUnitTabHandlesShortSelector!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_SUnitTabHandlesShortSelector!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #waitForPresenter:!private!selection! !
 
 !JadeiteProjectBrowserTestCase class methodsFor!

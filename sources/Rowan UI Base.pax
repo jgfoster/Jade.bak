@@ -2202,7 +2202,7 @@ browseImplementorsOf: string
 	| service |
 	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
 	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string!
+	^self openMethodListOn: service selecting: string!
 
 browseMethodsAndSelect: aString
 

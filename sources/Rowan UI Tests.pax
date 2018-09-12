@@ -80,7 +80,7 @@ JadeiteAbstractTestCase subclass: #JadeiteMessageBoxTestCase
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeiteAbstractTestCase subclass: #JadeiteProjectBrowserTestCase
-	instanceVariableNames: 'transcriptWritesWereEnabled'
+	instanceVariableNames: 'transcriptWritesWereEnabled methodListBrowser'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
