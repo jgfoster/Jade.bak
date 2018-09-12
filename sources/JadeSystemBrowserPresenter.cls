@@ -2399,61 +2399,6 @@ updateClassCategoryTree
 	classCategoryPresenter view ensureSelectionVisible.
 !
 
-updateClassHierarchy
-	| list paths treeModel x y currentSelection newSelection flags |
-	list := readStream nextList.
-	newSelection := readStream nextLineAsList reverse.
-	flags := readStream nextLineAsList.
-	classHierarchyPresenter ensureVisible.
-	list := list collect: [:each | each reverse].
-	paths := Set new.
-	list do: 
-			[:eachClass |
-			| string |
-			string := ''.
-			eachClass do: 
-					[:each |
-					string := string , each.
-					paths add: string.
-					string := string , Character tab asString]].
-	paths := paths asSortedCollection asArray.
-	treeModel := TreeModel new
-				searchPolicy: SearchPolicy equality;
-				reset;
-				yourself.
-	paths do: 
-			[:each |
-			| path parent |
-			path := each subStrings: Character tab.
-			parent := path copyFrom: 1 to: path size - 1.
-			parent isEmpty ifTrue: [parent := nil].
-			treeModel add: path asChildOf: parent].
-	x := (treeModel asBag collect: [:each | each printString]) asSortedCollection asArray.
-	y := (classHierarchyPresenter model asBag collect: [:each | each printString]) asSortedCollection
-				asArray.
-	x = y
-		ifFalse: 
-			[classHierarchyPresenter
-				model: treeModel;
-				yourself].
-	currentSelection := classHierarchyPresenter selectionIfNone: [#()].
-	(currentSelection isEmpty and: [newSelection isEmpty and: [classListPresenter selections size = 1]])
-		ifTrue: 
-			[x := classListPresenter selection.
-			newSelection := classHierarchyPresenter model asBag asArray detect: [:each | each last = x]
-						ifNone: [nil]].
-	(newSelection notEmpty and: [currentSelection ~= newSelection])
-		ifTrue: 
-			[classHierarchyPresenter
-				selection: newSelection;
-				expand: newSelection;
-				yourself].
-	self selectedClassName: (newSelection notEmpty ifTrue: [newSelection last] ifFalse: ['']).
-	classListPresenter selectionOrNil: nil.
-	selectedClassesAreTestCases := (flags at: 1) = 'true'.
-	sunitPresenter
-		testClassService: (selectedClassesAreTestCases ifTrue: [selectedClassName] ifFalse: [''])!
-
 updateClassInfo
 
 	| index newClassDefinition |
@@ -3018,7 +2963,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #updateAndSelectA:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateAndSelectB:!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateClassCategoryTree!public!updating! !
-!JadeSystemBrowserPresenter categoriesFor: #updateClassHierarchy!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateClassInfo!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateClassListOrHierarchy!public!updating! !
 !JadeSystemBrowserPresenter categoriesFor: #updateCommand:!public!updating! !
