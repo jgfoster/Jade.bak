@@ -205,6 +205,10 @@ methodDefinitions: anObject
 	methodDefinitions := anObject.
 	self trigger: #changed!
 
+methodName
+	"for the old sunit in class browser tab"
+	^selector!
+
 methodSourceUpdate: presenter browser: browser
 	| selection |
 	selection := browser methodListSelection.
@@ -457,6 +461,7 @@ user: anObject
 !RowanMethodService categoriesFor: #meta:!accessing!private! !
 !RowanMethodService categoriesFor: #methodDefinitions!accessing!private! !
 !RowanMethodService categoriesFor: #methodDefinitions:!accessing!private! !
+!RowanMethodService categoriesFor: #methodName!accessing!private! !
 !RowanMethodService categoriesFor: #methodSourceUpdate:browser:!public!updating! !
 !RowanMethodService categoriesFor: #methodUpdate:!public!updating! !
 !RowanMethodService categoriesFor: #name!accessing!public! !
@@ -493,7 +498,7 @@ user: anObject
 !RowanMethodService categoriesFor: #superSource:!accessing!private! !
 !RowanMethodService categoriesFor: #testResult!accessing!public! !
 !RowanMethodService categoriesFor: #testResult:!accessing!public! !
-!RowanMethodService categoriesFor: #toolTip!accessing!private! !
+!RowanMethodService categoriesFor: #toolTip!accessing!displaying!private! !
 !RowanMethodService categoriesFor: #unimplementedSelectors!public! !
 !RowanMethodService categoriesFor: #updateSelectorFromCompiledMethod:!private! !
 !RowanMethodService categoriesFor: #user!accessing!private! !
