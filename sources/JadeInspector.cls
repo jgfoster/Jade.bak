@@ -35,6 +35,12 @@ inspectInstVar
 		session: gciSession.
 !
 
+instVarListPresenter
+	^instVarListPresenter!
+
+instVarListPresenter: anObject
+	instVarListPresenter := anObject!
+
 isModified
 
 	^false.
@@ -76,6 +82,8 @@ selectedInstVar
 !JadeInspector categoriesFor: #createComponents!accessing!private! !
 !JadeInspector categoriesFor: #createSchematicWiring!accessing!private! !
 !JadeInspector categoriesFor: #inspectInstVar!accessing!private! !
+!JadeInspector categoriesFor: #instVarListPresenter!accessing!private! !
+!JadeInspector categoriesFor: #instVarListPresenter:!accessing!private! !
 !JadeInspector categoriesFor: #isModified!private! !
 !JadeInspector categoriesFor: #model:!private! !
 !JadeInspector categoriesFor: #selectedInstVar!accessing!private! !

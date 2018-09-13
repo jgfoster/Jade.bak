@@ -1245,7 +1245,6 @@ aboutJadeite
 !JadeNavigationInspector methodsFor!
 
 setNewInspectedObject
-
 	self model: (self gciSession oopTypeWithOop: (oopsCollection at: objectIndex)).
 	self displayObject.
 	self updateCaption. 

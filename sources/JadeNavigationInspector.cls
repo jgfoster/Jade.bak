@@ -29,7 +29,6 @@ getNextObject
 !
 
 getPreviousObject
-
 	objectIndex := (objectIndex <= 1) 
 				ifTrue: [oopsCollection size]
 				ifFalse:[objectIndex - 1].
@@ -46,17 +45,15 @@ initialize
 
 inspectInstVar
 	| oop |
-
-	oop := instVarListPresenter selection value. "instVarListPresenter selection is <anAssociation>"
-
+	oop := instVarListPresenter selection value.	"instVarListPresenter selection is <anAssociation>"
+	objectIndex = oopsCollection size
+		ifFalse: [(oopsCollection at: objectIndex + 1) = oop value ifTrue: [^self getNextObject]].
 	(oop isKindOf: String) ifTrue: [^self].
 	self model: oop.
-
 	self addOop: oop.
-
 	self setDocumentPresenterLabel.
-
-	self displayObject.!
+	self displayObject.
+	self updateCaption!
 
 objectIndex
 	^objectIndex!
@@ -84,6 +81,17 @@ openNormalInspector
 		ifTrue: [JadeInspector showOn: (self gciSession oopTypeWithOop: oopsCollection first) session: gciSession] 
 		ifFalse: [JadeInspector showOn: instVarListPresenter selection value session: gciSession]
 !
+
+queryCommand: query
+	query command == #getPreviousObject
+		ifTrue: 
+			[query isEnabled: objectIndex ~= 1.
+			^true].
+	query command == #getNextObject
+		ifTrue: 
+			[query isEnabled: objectIndex < oopsCollection size.
+			^true].
+	^false!
 
 removeObject
 
@@ -114,6 +122,7 @@ selectedInstVar
 !JadeNavigationInspector categoriesFor: #oopsCollection!accessing!private! !
 !JadeNavigationInspector categoriesFor: #oopsCollection:!accessing!private! !
 !JadeNavigationInspector categoriesFor: #openNormalInspector!public! !
+!JadeNavigationInspector categoriesFor: #queryCommand:!menu handlers support!public! !
 !JadeNavigationInspector categoriesFor: #removeObject!public! !
 !JadeNavigationInspector categoriesFor: #selectedInstVar!public! !
 
