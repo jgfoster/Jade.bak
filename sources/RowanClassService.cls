@@ -33,6 +33,17 @@ basicPrepareForReplication
 		ifNotNil: [selectedMethods do: [:methodService | methodService basicPrepareForReplication]].
 	selectedPackageServices do: [:packageService | packageService basicPrepareForReplication]!
 
+behaviorIdentifier
+	"for old school stuff"
+
+	^(WriteStream on: String new)
+		nextPutAll: name;
+		tab;
+		nextPutAll: oop printString;
+		tab;
+		nextPutAll: name printString;
+		contents!
+
 categories
 	^categories!
 
@@ -309,6 +320,7 @@ variables
 !RowanClassService categoriesFor: #=!comparing!public! !
 !RowanClassService categoriesFor: #addHierarchyService:to:withParent:!private!updating! !
 !RowanClassService categoriesFor: #basicPrepareForReplication!public!replication! !
+!RowanClassService categoriesFor: #behaviorIdentifier!accessing!public! !
 !RowanClassService categoriesFor: #categories!accessing!private! !
 !RowanClassService categoriesFor: #classHierarchyUpdate:browser:!public!updating! !
 !RowanClassService categoriesFor: #classMethodsUpdate:browser:!public!updating! !

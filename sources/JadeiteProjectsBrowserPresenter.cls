@@ -75,6 +75,10 @@ basicUnloadProjects: projectNames
 	categoryListPresenter model: ListModel new.
 	methodListPresenter model: ListModel new!
 
+behaviorIdentifier
+
+	^classListPresenter selection behaviorIdentifier!
+
 browseClassReferences
 	self browseClassReferences: self selectedClass name!
 
@@ -209,7 +213,7 @@ createSchematicWiring
 	super createSchematicWiring.
 	self
 		createSchematicWiringForProjectList;
-		createSchematicWiringForMethodFilterTabs!
+		createSchematicWiringForMethodFilterTabs.!
 
 createSchematicWiringForClassHierarchy
 	classHierarchyPresenter
@@ -1578,6 +1582,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethodCategories!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #basicUnloadProjects:!menu handlers support!private! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #behaviorIdentifier!private!selection! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementors!menu handlers!public!queries! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #browseHierarchyImplementorsOf:!public!queries! !

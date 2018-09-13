@@ -31,7 +31,7 @@ reset
 
 runTests: anOrderedCollection in: className
 	| jadeResult |
-	methodListPresenter selection isEmpty ifTrue: [^self].
+	anOrderedCollection isEmpty ifTrue: [^self].
 	jadeResult := JadeTestResult new.
 	anOrderedCollection do: 
 			[:methodService |
