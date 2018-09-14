@@ -302,9 +302,8 @@ selectedFrame
 	variableListPresenter list: frame vars.
 	self handleSourceChanges.
 	codePane
-		gsMethod: frame gsMethod;
-		showStepPoint: frame stepPoint;
-		yourself.
+		gsMethod: frame gsMethod.
+	frame stepPoint ifNotNil: [codePane showStepPoint: frame stepPoint]. 
 	(self view viewNamed: 'toolbar') update!
 
 stepInto

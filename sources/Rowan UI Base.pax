@@ -95,6 +95,7 @@ package methodNames
 	add: #JadeDebugger -> #gsProcess;
 	add: #JadeDebugger -> #gsProcess:;
 	add: #JadeDebugger -> #onViewClosed;
+	add: #JadeDebugger -> #selectedFrameWithErrorHandling;
 	add: #JadeDebugger -> #updateCaption;
 	add: #JadeErrorShell -> #doCopy;
 	add: #JadeErrorShell -> #onViewOpened;
@@ -932,7 +933,7 @@ gsProcess
 	^gsProcess!
 
 gsProcess: anObject
-	gsProcess := anObject!
+	gsProcess := anObject.!
 
 onViewClosed
 	(processList notNil and: [processList notEmpty])
@@ -944,6 +945,10 @@ onViewClosed
 					[gsProcess terminate.
 					self error: 'We should never get here!!']]!
 
+selectedFrameWithErrorHandling
+	[self selectedFrame] on: RowanDebuggerStepPointError
+		do: [:ex | ex isNested ifTrue: [ex pass] ifFalse: [ex resume]]!
+
 updateCaption
 	self caption: (gciSession
 				titleBarFor: (self class == RowanDebugger
@@ -952,6 +957,7 @@ updateCaption
 !JadeDebugger categoriesFor: #gsProcess!accessing!private! !
 !JadeDebugger categoriesFor: #gsProcess:!accessing!private! !
 !JadeDebugger categoriesFor: #onViewClosed!event handlers!public! !
+!JadeDebugger categoriesFor: #selectedFrameWithErrorHandling!public! !
 !JadeDebugger categoriesFor: #updateCaption!public! !
 
 !JadeErrorShell methodsFor!

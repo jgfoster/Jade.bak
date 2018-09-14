@@ -84,7 +84,7 @@ createComponents
 createSchematicWiring
 
 	super createSchematicWiring.
-	frameListPresenter 		when: #selectionChanged 	send: #selectedFrame 	to: self.
+	frameListPresenter 		when: #selectionChanged 	send: #selectedFrameWithErrorHandling 	to: self.
 	processListPresenter 	when: #selectionChanged 	send: #selectedProcess 	to: self.
 	variableListPresenter		when: #selectionChanged	send: #selectedVariable	to: self.
 	variableListPresenter		when: #actionPerformed	send: #inspectVariable	to: self.
@@ -115,7 +115,7 @@ implement
 
 initializeProcess: aProcess message: aString terminateOnClose: aBoolean
 
-	gsProcess := aProcess.
+	gsProcess := aProcess. 
 	errorMessagePresenter value: aString.
 	terminateOnClose := aBoolean.
 	[

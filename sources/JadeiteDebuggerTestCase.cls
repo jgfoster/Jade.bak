@@ -90,6 +90,9 @@ openDebuggerOn: aString
 		yourself.
 !
 
+selectFrameAt: integer
+	debugger frameListPresenter selection: (debugger frameListPresenter list at: integer)!
+
 setUp
 
 	| list1 list2 |
@@ -183,6 +186,28 @@ test_restartInBlock
 	self deny: debugger gsProcess oop = secondDebugger gsProcess oop.
 	self deny: debugger frameListPresenter list size = secondDebugger frameListPresenter list size]
 			ensure: [restartProcess terminate]]
+			ensure: 
+				[self methodListPresenter selection clearBreakAtStepPoint: 8 session: session.
+				self unloadSampleProject]!
+
+test_selectAfterDiveNoStepPoint
+	self testsIssue: #issue166
+		withTitle: 'Debugger step with unsaved edits results in empty source pane'.
+	self openProjectsBrowser.
+	self ensureRowanSample1Available.
+	self selectRowanSample1Class.
+	self saveInterestingLoopMethod.
+	self methodListPresenter selection setBreakAtStepPoint: 8 session: session.	"inside the block"
+	
+	[self openDebuggerOn: 'RowanSample1 new interestingLoop'.
+	self debuggerDo: [debugger stepInto].
+	self assert: debugger frameListPresenter list first equals: 'RowanSample1 >> test @1 line 1'.
+	self assert: (debugger frameListPresenter list at: 2)
+		equals: '[] in  ExecBlock1 (RowanSample1) >> interestingLoop @2 line 8'.
+	[self selectFrameAt: 2] fork. "<<< Walkback occurred here"  "Fork so that the tests' error handler doesn't catch the expected error raised in #selectedFrame"
+	(Delay forMilliseconds: 100) wait. 
+	self assert: debugger documentPresenter value replaceLfWithCrLf
+		equals: self interestingLoopMethodSource]
 			ensure: 
 				[self methodListPresenter selection clearBreakAtStepPoint: 8 session: session.
 				self unloadSampleProject]!
@@ -503,7 +528,8 @@ testDebuggerCopyToClipboard
 	debugger methodSourcePresenter documentPresenter value: 'new text'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
-	debugger frameListPresenter selection: (debugger frameListPresenter list at: 2).
+	[self selectFrameAt: 2] fork.	"Fork so that the tests' error handler doesn't catch the expected error raised in #selectedFrame"
+	(Delay forMilliseconds: 100) wait.
 	self assert: Clipboard current getText = 'new text']
 			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
@@ -521,7 +547,8 @@ testDebuggerDoNotCopyToClipboard
 	debugger methodSourcePresenter documentPresenter value: 'new text'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #no.	"reject offer to copy to clip board"
-	debugger frameListPresenter selection: (debugger frameListPresenter list at: 2).
+	[self selectFrameAt: 2] fork. "Fork so that the tests' error handler doesn't catch the expected error raised in #selectedFrame"
+	(Delay forMilliseconds: 100) wait. 
 	self assert: Clipboard current getText = 'notCopiedYet']
 			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
@@ -642,12 +669,14 @@ testUnsavedChangesActionStepping
 !JadeiteDebuggerTestCase categoriesFor: #menuItemIsEnabled:!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #methodListBrowser!private! !
 !JadeiteDebuggerTestCase categoriesFor: #openDebuggerOn:!private! !
+!JadeiteDebuggerTestCase categoriesFor: #selectFrameAt:!private!support!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #setUp!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #systemBrowser!private! !
 !JadeiteDebuggerTestCase categoriesFor: #tearDown!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #terminateGsProcess!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #test_browseClass!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_restartInBlock!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #test_selectAfterDiveNoStepPoint!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_terminateDoesNotWalkback!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test1!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test2!public!tests! !
