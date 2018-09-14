@@ -293,7 +293,7 @@ selectedFrame
 	(index := frameListPresenter selectionByIndex) = 0 ifTrue: [^self].
 	index := index + frameListOffset.
 	(frame := gsProcess frameForLevel: index) isNil ifTrue: [^self].
-	frame stepPoint ifNil: [RowanDebuggerStepPointError signal].
+	frame stepPoint ifNil: [RowanDebuggerStepPointError signal].		"see comment in  RowanFrameService>>initializeProcess:level:organizer:"
 	source := frame source.
 	breaks := frame breaks collect: [:each | frame offsets at: each].
 	breaks := breaks

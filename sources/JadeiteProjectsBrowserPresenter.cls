@@ -650,6 +650,7 @@ jadeMenuStrings
 
 loadProjects
 	self loadProjectsFrom: self. 
+	packageListPresenter list: ListModel new. 
 	self refreshFromServer!
 
 makeDefault

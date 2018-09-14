@@ -25,12 +25,17 @@ issue170methodCreation
 	self methodSourcePresenter value: (source := 'try  ^5').
 	self projectsPresenter editSaveMethod: self classListPresenter selection!
 
+packageNamed: aString
+	^self packageListPresenter list
+		detect: [:projectService | projectService name = aString]
+		ifNone: []!
+
 projectList
 	^self projectListPresenter list!
 
 projectNamed: aString
 	^self projectsPresenter projectListPresenter list
-		detect: [:projectService | projectService name = 'RowanSample1']
+		detect: [:projectService | projectService name = aString]
 		ifNone: []!
 
 rowanProjectNames
@@ -106,6 +111,20 @@ tearDown
 	methodListBrowser ifNotNil: [methodListBrowser destroy].
 	transcriptWritesWereEnabled ifTrue: [transcript flipTranscript].
 !
+
+test_addPackageReloadProject
+	self testsIssue: #issue183
+		withTitle: 'Add package but don''t write it to disk then reload - walkback'.
+	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
+	self assertIsNil: (self packageNamed: 'NewPackage').
+	self projectListPresenter selection addPackageNamed: 'NewPackage' using: self projectsPresenter.
+	self denyIsNil: (self packageNamed: 'NewPackage').
+	TestMessageBox enableJadeiteTestMessageBox.
+	
+	[TestMessageBox plannedResult: #yes.	"confirm we want to reload project"
+	self projectsPresenter loadProjects.
+	self assertIsNil: (self packageNamed: 'NewPackage')]
+			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
 test_addRemoveCategory
 	self selectRowanSample1Class.
@@ -684,6 +703,7 @@ waitForPresenter: presenter
 	[presenter list isEmpty] whileTrue: [(Delay forMilliseconds: 50) wait]! !
 !JadeiteProjectBrowserTestCase categoriesFor: #disableTranscriptWrites!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #issue170methodCreation!issue test support!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #packageNamed:!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectList!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!constants!private! !
@@ -698,6 +718,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #selectTreeServicesNamed:in:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #setUp!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_addPackageReloadProject!public!test projects! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_autoDirtyDisplayMoveMethodsToCategory!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_autoDirtyDisplayRemoveMethod!public!test! !
@@ -714,22 +735,22 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedPackage!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_makeDefault!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_menuAddPackageOnProjectMenu!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_menuAddPackageOnProjectMenu!public!test!test projects! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menuEnablementDoesNotBreak!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menusDontAddBreaks!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_multipleCompileMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_noSelectionHierarchy!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test projects! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_packagesShownInMultipleProjects!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_projectDisplaysSync!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_projectRemoved!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_removeProject!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_projectDisplaysSync!public!test projects! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_projectRemoved!public!test projects! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_removeProject!public!test projects! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveClassMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveClassMethodHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethodHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultiplePackages!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultipleProjects!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_selectMultipleProjects!public!test projects! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_setAndClearBreakpoint!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_simpleHierarchyTest!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_SUnitTabHandlesShortSelector!public!test! !
