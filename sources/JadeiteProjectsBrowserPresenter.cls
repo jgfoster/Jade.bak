@@ -764,14 +764,9 @@ pkgsMenuStrings
 	0 == 1
 		ifTrue: 
 			[self
-				findClass;
-				addPackage;
 				savePackage;
 				unloadPackage].
 	^#('&Packages' 
-	'&Find Class.../Ctrl+Shift+F/findClass'
-	'&Add Package...//addPackage'
-	'-' 
 	'&Write Package...//savePackage'
 	'&Unload Package...//unloadPackage')!
 
@@ -826,6 +821,7 @@ projectMenuStrings
 	0 == 1
 		ifTrue: 
 			[self
+				addPackage;
 				makeDefault;
 				cloneProject;
 				loadProjects;
@@ -838,7 +834,23 @@ projectMenuStrings
 				checkout;
 				projectLog;
 				refresh].
-	^#('Projects' '&Make Default//makeDefault' '-' 'Clone Git Project ...//cloneProject' 'Load//loadProjects' 'Unload//unloadProjects' '-' 'Pull from Git//pullFromGit' 'Commit ...//gitCommit' 'Push to Git//pushToGit' '-' '&Changes//projectChanges' 'Write//writeProject' 'Checkout ...//checkout' '-' 'Log//projectLog' '&Refresh//refreshFromServer')!
+	^#('Projects' '&Make Default//makeDefault' 
+		'-' 
+		'Clone Git Project ...//cloneProject' 
+		'Load//loadProjects' 'Unload//unloadProjects' 
+		'-'
+		'Pull from Git//pullFromGit'
+		'Commit ...//gitCommit'
+		'Push to Git//pushToGit'
+		'-'
+		'&Changes//projectChanges'
+		'Write//writeProject'
+		'Checkout ...//checkout'
+		'-'
+		'&Add Package...//addPackage'
+		'-'
+		'Log//projectLog'
+		'&Refresh//refreshFromServer')!
 
 projectTabLabel
 	"Selections get mixed up switching between system presenters unless the tabs

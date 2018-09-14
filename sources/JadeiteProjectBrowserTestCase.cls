@@ -369,6 +369,16 @@ test_makeDefault
 				detect: [:projectService | projectService name = 'RowanSample1'].
 	self assert: self projectListPresenter selection displayName = 'Rowan*'!
 
+test_menuAddPackageOnProjectMenu
+	| transcriptProjectMenu transcriptCommands |
+	self testsIssue: #issue171 withTitle: 'Project menu quibbles'.
+	self assert: ((self projectsPresenter projectMenu items collect: [:each | each command])
+				includes: #addPackage).	"on projects menu in browser"
+	transcriptProjectMenu := transcript projectListPresenter projectListPresenter view parentView
+				contextMenu.
+	transcriptCommands := transcriptProjectMenu items collect: [:each | each command].
+	self deny: (transcriptCommands includes: #addPackage)!
+
 test_menuEnablementDoesNotBreak
 	"the bug in the issue was a bad enablement test in a menu item
 	during the query. If nothing else, test that we can always query
@@ -704,6 +714,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedPackage!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_makeDefault!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_menuAddPackageOnProjectMenu!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menuEnablementDoesNotBreak!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menusDontAddBreaks!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_multipleCompileMethod!public!test! !
