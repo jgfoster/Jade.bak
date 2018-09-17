@@ -33,7 +33,9 @@ onViewOpened
 	super onViewOpened.
 	projectListPresenter
 		gciSession: gciSession;
-		browseProjects.!
+		browseProjects.
+	"reset colors on login" 
+	JadeTextStyles default resetColors.!
 
 openDictionaryBrowser
 	gciSession hasServer ifTrue: [^RowanSystemBrowser showOnSession: gciSession]!

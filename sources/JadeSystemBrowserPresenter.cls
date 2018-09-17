@@ -2114,25 +2114,19 @@ selectedMethodName
 !
 
 setColorForCompileErrors
-
 	| newColor |
 	newColor := ColorDialog showModalOn: JadeTextStyles default colorForNoEdits.
-	JadeTextStyles default colorForCompileError: newColor.
-!
+	newColor ifNotNil: [JadeTextStyles default colorForCompileError: newColor]!
 
 setColorForNoEdits
-
 	| newColor |
 	newColor := ColorDialog showModalOn: JadeTextStyles default colorForNoEdits.
-	JadeTextStyles default colorForNoEdits: newColor.
-!
+	newColor ifNotNil: [JadeTextStyles default colorForNoEdits: newColor]!
 
 setColorForUnsavedEdits
-
 	| newColor |
 	newColor := ColorDialog showModalOn: JadeTextStyles default colorForUnsavedEdits.
-	JadeTextStyles default colorForUnsavedEdits: newColor.
-	!
+	newColor ifNotNil: [JadeTextStyles default colorForUnsavedEdits: newColor]!
 
 setEnvironment: anInteger
 
