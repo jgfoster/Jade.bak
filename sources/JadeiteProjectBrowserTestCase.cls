@@ -699,6 +699,33 @@ test_SUnitTabHandlesShortSelector
 	self selectClassInHierarchNamed: 'TestCase'.	"<<< bug occurred here"
 	self assert: self projectsPresenter selectedClass name = 'TestCase'!
 
+test_tabNames
+	| textTabs |
+	self testsIssue: #issue186 withTitle: 'icon in console menu'.
+	self selectRowanSample1Class.
+	self saveHooMethod.
+	methodListBrowser := self projectsPresenter browseImplementorsOf: #hoo.
+	textTabs := methodListBrowser primaryPresenter textTabs. 
+	self assert: textTabs size equals: 2. 
+	self assert: textTabs first equals: 'Method Source'. 
+	self assert: textTabs last equals: 'Comparison'. 
+	!
+
+test_tabNames_projectsBrowser
+	| textTabs |
+	self rowanFixMe. "fix the oddity that one tab is created differently" 
+	self testsIssue: #issue186 withTitle: 'icon in console menu'.
+	self selectRowanSample1Class.
+	self saveHooMethod.
+	textTabs := self projectsPresenter textTabs.
+	self assert: textTabs size equals: 6.
+	self assert: (textTabs at: 1) text equals: 'Project'.
+	self assert: (textTabs at: 2) text equals: 'Class Definition'.
+	self assert: (textTabs at: 3) text equals: 'Class Documentation'.
+	self assert: (textTabs at: 4) text equals: 'Method Source'.
+	self assert: (textTabs at: 5) text equals: 'SUnit'.
+	self assert: (textTabs at: 6)  equals: 'Comparison' "for some as yet unknown reason, this is created differently"!
+
 waitForPresenter: presenter
 	[presenter list isEmpty] whileTrue: [(Delay forMilliseconds: 50) wait]! !
 !JadeiteProjectBrowserTestCase categoriesFor: #disableTranscriptWrites!private! !
@@ -754,6 +781,8 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_setAndClearBreakpoint!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_simpleHierarchyTest!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_SUnitTabHandlesShortSelector!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_tabNames!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_tabNames_projectsBrowser!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #waitForPresenter:!private!selection! !
 
 !JadeiteProjectBrowserTestCase class methodsFor!
