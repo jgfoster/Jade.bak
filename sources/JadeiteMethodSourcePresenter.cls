@@ -22,6 +22,13 @@ browseSendersOf: string
 	self issueCommand: (Array with: service).
 	self openMethodListOn: service selecting: string!
 
+createSchematicWiring
+	super createSchematicWiring.
+	documentPresenter
+		when: #textChanged
+		send: #methodValueChanged
+		to: self!
+
 editMenuStrings
 
 	false ifTrue: [
@@ -77,6 +84,23 @@ methodService
 methodService: anObject
 	methodService := anObject!
 
+methodSourceEqual
+	^documentPresenter value = methodService source 
+	!
+
+methodValueChanged
+	methodService ifNil:[^true].
+	self methodSourceEqual
+		ifTrue: 
+			[documentPresenter view
+				backcolor: JadeTextStyles default colorForNoEdits;
+				isModified: false.
+			self statusBarText: String new]
+		ifFalse: 
+			[documentPresenter view
+				backcolor: JadeTextStyles default colorForUnsavedEdits;
+				clearContainerIndicators]!
+
 onViewOpened
 	super onViewOpened.
 	self registerPresentersForUpdates. !
@@ -111,12 +135,15 @@ value: string
 	documentPresenter value: string! !
 !JadeiteMethodSourcePresenter categoriesFor: #browseImplementorsOf:!menu handlers!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
+!JadeiteMethodSourcePresenter categoriesFor: #createSchematicWiring!create schemantic wiring!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #editMenuStrings!menu handlers!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #editSaveMethod!menu handlers!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #fileSave!menu handlers!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #methodListSelection!accessing!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #methodService!accessing!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #methodService:!accessing!private! !
+!JadeiteMethodSourcePresenter categoriesFor: #methodSourceEqual!public!testing! !
+!JadeiteMethodSourcePresenter categoriesFor: #methodValueChanged!event handlers!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #onViewOpened!event handlers!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #openMethodListOn:selecting:!menu handlers!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #registerPresentersForUpdates!public!register presenters! !

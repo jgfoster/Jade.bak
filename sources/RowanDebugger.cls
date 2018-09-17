@@ -78,10 +78,9 @@ compilationWarningFrom: methodServices
 	^nil!
 
 createSchematicWiring
-
 	super createSchematicWiring.
-	frameListPresenter when: #actionPerformed send: #browseClass to: self.
-!
+	frameListPresenter when: #actionPerformed 	send: #browseClass 			to: self.
+	documentPresenter when: #textChanged 		send: #methodValueChanged 	to: self!
 
 currentMethodSourceFrom: sourceString
 
@@ -149,6 +148,12 @@ methodListSelection
 methodSourcePresenter
 
 	^codePane!
+
+methodValueChanged
+	frameListPresenter selectionIfNone: [^true].
+	documentPresenter view
+		backcolor: JadeTextStyles default colorForUnsavedEdits;
+		clearContainerIndicators!
 
 onCloseRequested: boolValueHolder
 
@@ -361,6 +366,7 @@ variableListPresenter
 !RowanDebugger categoriesFor: #handleSourceChanges!frames!private! !
 !RowanDebugger categoriesFor: #methodListSelection!Accessing!public! !
 !RowanDebugger categoriesFor: #methodSourcePresenter!public! !
+!RowanDebugger categoriesFor: #methodValueChanged!event handlers!public! !
 !RowanDebugger categoriesFor: #onCloseRequested:!event handlers!private! !
 !RowanDebugger categoriesFor: #onIdleEntered!event handlers!private! !
 !RowanDebugger categoriesFor: #onViewClosed!event handlers!private! !
