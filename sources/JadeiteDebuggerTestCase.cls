@@ -99,6 +99,7 @@ setUp
 	super setUp.
 	self closeDebuggers.
 	RowanDebugger debuggerClass: RowanDebugger.
+	self assertIsNil: RowanDebugger semaphore.
 	list1 := RowanSystemBrowser allInstances.
 	list2 := RowanMethodListBrowser allInstances.
 	self 
@@ -611,7 +612,7 @@ testUnsavedChangesActionChangeFrame
 	debugger methodSourcePresenter documentPresenter value: 'new text'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
-	self debuggerDo: [debugger stepOver].
+	self debuggerDo: [[debugger stepOver] fork].
 	self assert: Clipboard current getText = 'new text']
 			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
@@ -652,13 +653,13 @@ testUnsavedChangesActionStepping
 	debugger methodSourcePresenter documentPresenter value: 'step over'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
-	self debuggerDo: [debugger stepOver].
+	self debuggerDo: [[debugger stepOver] fork].
 	self assert: Clipboard current getText = 'step over'.
 	self assert: debugger methodSourcePresenter documentPresenter value equals: originalSource.
 	debugger methodSourcePresenter documentPresenter value: 'step into'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
-	self debuggerDo: [debugger stepInto].
+	self debuggerDo: [[debugger stepInto] fork].
 	self assert: Clipboard current getText = 'step into'.
 	self assert: debugger methodSourcePresenter documentPresenter value equals: originalSource]
 			ensure: [TestMessageBox disableJadeiteTestMessageBox]! !
