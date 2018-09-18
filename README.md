@@ -1,26 +1,19 @@
-This a fork of Jade Smalltalk developed by James Foster. 
-
-Jade
+﻿Jadeite
 ====
 
-Jade is an Alternative Development Environment (IDE) for GemStone/S that runs on Microsoft Windows. This [screencast](https://www.youtube.com/watch?v=dnRB5rBbkiI) gives a brief demo from 2013. 
+Jadeite is a graphical user interface/IDE for GemStone/S 64 Bit development. Jadeite is a Dolphin-based Smalltalk application that runs on Microsoft Windows. It allows login to a GemStone Smalltalk Repository in which the Rowan tools are loaded, to allow project and package management, code development, and debugging.
 
-Jade is built in (and inspired by) Dolphin Smalltalk from [Object-Arts](https://github.com/dolphinsmalltalk/Dolphin).
+Jadeite is based on the Jade Smalltalk project developed by James Foster, built in (and inspired by) Dolphin Smalltalk from [Object-Arts](https://github.com/dolphinsmalltalk/Dolphin).
+
+The "Oscar" versions of Jadeite are the development line for Release, which is separate from and not compatible with the Jadeite Alpha.  
 
 ### Runtime Installation
-To install Jade runtime, download a 35 MB zip file with the executable and supporting libraries from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.zip). Once you have the environment, you can get just the latest executable (about 1.5 MB) from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.exe).
+To install Jadeite runtime, download the zip file with the executable and supporting libraries from [here](https://github.com/GemTalk/Jadeite/releases).  Once you have the environment, you can generally download just the latest jadeite.exe executable.
 
-Older versions are available using the instructions [here](https://github.com/jgfoster/Jade/issues/56).
+Within the zip file, the runtime directory contains the jadeite.exe, README.md, and /bin and /icons directories that compose the Jadeite runtime environment. 
 
-Jade runs pretty well under [Wine](https://www.winehq.org/) and a pre-built Mac app is available [here](http://seaside.gemtalksystems.com/jade/Jade.app.zip). It may be out-of-date, so you can use “Show Package Contents” and then update "drive_c/Program Files/Jade” with items obtained from [here](https://github.com/jgfoster/Jade/raw/master/runtime/Jade.zip).
+On Windows, create a directory for Jadeite, and copy the contents of the runtime directory to this directory. You can now execute jadeite.exe.  No updates to the OS path or %GEMSTONE% environment variable are required. 
 
-### Development Installation
+Jadeite can only log into a GemStone/S 64 Bit GemStone repository that has Rowan installed. Note that the GemStone server is not supported on Windows; server platforms other than Linux have not been tested. 
 
-To install Jade in Dolphin 7, follow these steps:
-
-1. Install a Github client such as [SourceTree](http://www.sourcetreeapp.com/).
-2. Clone [Dolphin](https://github.com/jgfoster/Dolphin) to Documents\Dolphin.
-3. Run Documents\Dolphin\BootPRO.cmd to build the DPRO image.
-4. Clone [Jade](https://github.com/jgfoster/Jade) to Documents\Dolphin\Jade.
-4. Run Documents\Dolphin\Jade\BootJade.cmd to build the JadeDev image.
-5. Finally, from the Additional Tools folder in the System Shell open the Jade Login.
+To download Rowan, see the [Rowan Releases](https://github.com/GemTalk/Rowan/releases), and installation is described in the [README](https://github.com/GemTalk/Rowan/blob/master/README.md).
