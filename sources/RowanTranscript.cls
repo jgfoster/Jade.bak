@@ -33,12 +33,15 @@ isTranscriptInstalled
 	^isTranscriptInstalled value!
 
 onViewOpened
+	| answeringService installed |
 	super onViewOpened.
 	projectListPresenter
 		gciSession: gciSession;
 		browseProjects.
-	"reset colors on login" 
-	JadeTextStyles default resetColors.!
+	JadeTextStyles default resetColors.	"reset colors on login"
+	answeringService := RowanAnsweringService new.
+	installed := answeringService isTranscriptInstalledIn: self gciSession.
+	isTranscriptInstalled value: installed!
 
 openDictionaryBrowser
 	gciSession hasServer ifTrue: [^RowanSystemBrowser showOnSession: gciSession]!
