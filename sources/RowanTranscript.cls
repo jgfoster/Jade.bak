@@ -1,7 +1,7 @@
 "Filed out from Dolphin Smalltalk 7"!
 
 JadeTranscript subclass: #RowanTranscript
-	instanceVariableNames: 'projectListPresenter'
+	instanceVariableNames: 'projectListPresenter isTranscriptInstalled'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -22,12 +22,15 @@ flipDebugger
 flipTranscript
 	| answeringService |
 	answeringService := RowanAnsweringService new.
-	answeringService flipTranscriptIn: self gciSession!
+	answeringService flipTranscriptIn: self gciSession.
+	isTranscriptInstalled := isTranscriptInstalled value: isTranscriptInstalled value not!
+
+initialize
+	super initialize. 
+	isTranscriptInstalled := ValueHolder with: true!
 
 isTranscriptInstalled
-	| answeringService |
-	answeringService := RowanAnsweringService new.
-	^answeringService isTranscriptInstalledIn: self gciSession!
+	^isTranscriptInstalled value!
 
 onViewOpened
 	super onViewOpened.
@@ -61,6 +64,7 @@ queryCommand: query
 !RowanTranscript categoriesFor: #createComponents!public! !
 !RowanTranscript categoriesFor: #flipDebugger!menu handlers!public! !
 !RowanTranscript categoriesFor: #flipTranscript!menu handlers!public! !
+!RowanTranscript categoriesFor: #initialize!initialization!public! !
 !RowanTranscript categoriesFor: #isTranscriptInstalled!public! !
 !RowanTranscript categoriesFor: #onViewOpened!public!updating! !
 !RowanTranscript categoriesFor: #openDictionaryBrowser!menu handlers!public! !
