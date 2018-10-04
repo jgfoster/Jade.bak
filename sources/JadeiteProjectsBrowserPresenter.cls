@@ -226,6 +226,7 @@ createSchematicWiringForClassHierarchy
 		when: #'dragCut:'			send: #'onDragCutClassHierarchy:'	to: self;
 		when: #'dragOver:'			send: #'onDragOverClassHierarchy:'	to: self;
 		when: #'drop:'				send: #'onDropOnClassHierarchy:'	to: self;
+		when: #aboutToDisplayMenu: send: #updateClassMenu:			to: self;
 		when: #selectionChanging:		send: #aboutToChange:			to: self;
 		when: #'selectionChanging:'	send: #'releasedReferencedServices:'	to: self;
 		when: #selectionChanged		send: #refreshClass				to: self;
