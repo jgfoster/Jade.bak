@@ -220,6 +220,25 @@ test_classSideSelection
 				detect: [:methodService | methodService selector = #stonStringFor:]
 				ifNone: [])!
 
+test_definedClassMenuItem
+	| classMenuItem menuLabel |
+	self selectServiceNamed: 'Rowan' in: self projectListPresenter.
+	self selectServiceNamed: 'Rowan-Core-Definitions-Extensions' in: self packageListPresenter.
+	self selectServiceNamed: 'RwClassDefinition' in: self classListPresenter.
+	menuLabel := 'Go To Defining Package (Rowan-Definitions)'.
+	self assert: self projectsPresenter definedClassMenuItemLabel equals: menuLabel.
+	self projectsPresenter updateClassMenu: self classListPresenter view contextMenu.	"triggered just before pop-up menu opens"
+	classMenuItem := self classListPresenter view contextMenu items
+				detect: [:commandItem | commandItem commandDescription command = #gotoClassDefinedPackage]
+				ifNone: [^self error: 'go to defined package not found'].
+	self assert: classMenuItem description equals: menuLabel.
+	menuLabel := 'Go To Defining Package (Rowan-Core)'.
+	self selectServiceNamed: 'Rowan-GemStone-Loader-Extensions' in: self packageListPresenter.
+	self selectServiceNamed: 'RwClassModification' in: self classListPresenter.
+	self assert: self projectsPresenter definedClassMenuItemLabel equals: menuLabel.
+	self projectsPresenter updateClassMenu: self classListPresenter view contextMenu.	"triggered just before pop-up menu opens"
+	self assert: classMenuItem description equals: menuLabel!
+
 test_extensionColoringInHierarchy
 	| testClass |
 	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
@@ -279,7 +298,7 @@ test_goToDefinedMethodFromClassList
 	self selectCategoryNamed: '*rowan-services-extensions'.
 	self selectMethodNamed: #classServiceClass.
 	self assert: self projectsPresenter isClassListTabSelected.
-	self projectsPresenter gotoMethodPackage.
+	self projectsPresenter gotoMethodDefinedPackage.
 	self assert: self packageListPresenter selection name = 'Rowan-Services-Extensions'.
 	self assert: self classListPresenter selection name = 'RwGsPlatform'.
 	self assert: self categoryListPresenter selection = '*rowan-services-extensions'.
@@ -294,13 +313,13 @@ test_goToDefinedMethodFromClassListClassSide
 	self selectCategoryNamed: '*rowan-gemstone-loader-extensions'.
 	self selectMethodNamed: #_shouldCloneRowanLoader:.
 	self assert: self projectsPresenter isClassListTabSelected.
-	self projectsPresenter gotoMethodPackage.
+	self projectsPresenter gotoMethodDefinedPackage.
 	self assert: self packageListPresenter selection name = 'Rowan-GemStone-Loader-Extensions'.
 	self assert: self classListPresenter selection name = 'RwGsImage'.
 	self assert: self categoryListPresenter selection = '*rowan-gemstone-loader-extensions'.
 	self assert: self methodListPresenter selection selector = #_shouldCloneRowanLoader:.
-	self assert: self projectsPresenter isClassListTabSelected. 
-	self assert: self projectsPresenter isClassSideSelected.!
+	self assert: self projectsPresenter isClassListTabSelected.
+	self assert: self projectsPresenter isClassSideSelected!
 
 test_goToDefinedMethodFromHierarchy
 	self selectServiceNamed: 'Rowan' in: self projectListPresenter.
@@ -310,12 +329,12 @@ test_goToDefinedMethodFromHierarchy
 	self selectCategoryNamed: '*rowan-services-extensions'.
 	self selectMethodNamed: #classServiceClass.
 	self deny: self projectsPresenter isClassListTabSelected.
-	self projectsPresenter gotoMethodPackage.
+	self projectsPresenter gotoMethodDefinedPackage.
 	self assert: self packageListPresenter selection name = 'Rowan-Services-Extensions'.
 	self assert: self classListPresenter selection name = 'RwGsPlatform'.
 	self assert: self categoryListPresenter selection = '*rowan-services-extensions'.
 	self assert: self methodListPresenter selection selector = #classServiceClass.
-	self assert: self projectsPresenter isClassListTabSelected "make my life easier by forcing the class side to be seleted"!
+	self assert: self projectsPresenter isClassListTabSelected	"make my life easier by forcing the class side to be seleted"!
 
 test_gotoDefinedMethodNotSameAsClass
 	self selectServiceNamed: 'Rowan' in: self projectListPresenter.
@@ -323,7 +342,7 @@ test_gotoDefinedMethodNotSameAsClass
 	self selectServiceNamed: 'RwClassDefinition' in: self classListPresenter.
 	self selectCategoryNamed: '*rowan-core-definitions-extensions'.
 	self selectMethodNamed: #_methodsModificationClass.
-	self projectsPresenter gotoMethodPackage.
+	self projectsPresenter gotoMethodDefinedPackage.
 	self assert: self packageListPresenter selection name = 'Rowan-Core-Definitions-Extensions'.
 	self assert: self classListPresenter selection name = 'RwClassDefinition'.
 	self assert: self categoryListPresenter selection = '*rowan-core-definitions-extensions'.
@@ -751,6 +770,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_autoDirtyDisplayRemoveMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classSideSelection!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_definedClassMenuItem!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_extensionColoringInHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_findClass!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedClassFromClassList!public!test! !
