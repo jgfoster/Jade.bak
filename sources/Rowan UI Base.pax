@@ -952,8 +952,8 @@ selectedFrameWithErrorHandling
 updateCaption
 	self caption: (gciSession
 				titleBarFor: (self class == RowanDebugger
-				ifTrue: ['New Jadeite Debugger']
-				ifFalse: ['Jade Debugger']))! !
+				ifTrue: ['Jadeite Debugger']
+				ifFalse: ['Rowan Debugger']))! !
 !JadeDebugger categoriesFor: #gsProcess!accessing!private! !
 !JadeDebugger categoriesFor: #gsProcess:!accessing!private! !
 !JadeDebugger categoriesFor: #onViewClosed!event handlers!public! !
