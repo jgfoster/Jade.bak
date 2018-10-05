@@ -135,6 +135,18 @@ test_addRemoveCategory
 	self projectsPresenter basicRemoveMethodCategories.
 	self deny: (self categoryListPresenter list includes: 'jadeite test')!
 
+test_addRemoveHierarchyCategory
+	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
+	self selectServicesNamed: #('RowanSample1-Core') in: self packageListPresenter.
+	self selectHierarchyTab.
+	self selectClassInHierarchNamed: self sampleClass. 
+	self deny: (self categoryListPresenter list includes: 'jadeite test').
+	self projectsPresenter basicAddMethodCategory: 'jadeite test'.
+	self assert: (self categoryListPresenter list includes: 'jadeite test').
+	self assert: self categoryListPresenter selection = 'jadeite test'.
+	self projectsPresenter basicRemoveMethodCategories.
+	self deny: (self categoryListPresenter list includes: 'jadeite test')!
+
 test_autoDirtyDisplayMoveMethodsToCategory
 	self testsIssue: #issue16 withTitle: 'Review/revisit semantics of font color/italic/bold etc.'.
 	self selectServicesNamed: #('RowanSample1') in: self projectListPresenter.
@@ -766,6 +778,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #tearDown!private!setup teardown! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addPackageReloadProject!public!test projects! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveCategory!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_addRemoveHierarchyCategory!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_autoDirtyDisplayMoveMethodsToCategory!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_autoDirtyDisplayRemoveMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !

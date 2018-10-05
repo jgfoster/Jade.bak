@@ -149,7 +149,9 @@ test_browseClass
 	| browser |
 	self testsIssue: #issue169 withTitle: 'Debugger menu option Browse Class broken'.
 	self openProjectsBrowser.
-	self ensureRowanSample1Available.
+	self abortTransaction.	"ensure we don't have unsaved changes in the images"
+	self ensureRowanSample1Available.	"load sample project after abort  - especially until https://github.com/GemTalk/Rowan/issues/349 is fixed."
+	self commitTransaction.
 	
 	[self selectRowanSample1Class.
 	self saveIssue169Method.
@@ -166,7 +168,10 @@ test_browseClass
 	[self assert: (browser isKindOf: RowanSystemBrowser).
 	self assert: ('*String*' match: browser currentCard selectedClasses first)]
 			ensure: [browser topShell destroy]]
-			ensure: [self unloadSampleProject]!
+			ensure: 
+				[self abortTransaction.
+				self unloadSampleProject.
+				self commitTransaction	"can remove this when #349 is fixed. See setUp"]!
 
 test_restartInBlock
 	| restartProcess |

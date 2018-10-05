@@ -48,7 +48,7 @@ allClasses
 
 basicAddMethodCategory: string
 	| service |
-	service := classListPresenter selection
+	service := self selectedClass
 				command: #addCategory:;
 				commandArgs: (Array with: string).
 	self issueCommand: (Array with: service).
@@ -56,7 +56,7 @@ basicAddMethodCategory: string
 
 basicRemoveMethodCategories
 	| service |
-	service := classListPresenter selection
+	service := self selectedClass
 				command: #removeCategories:;
 				commandArgs: (Array with: categoryListPresenter selections).
 	self issueCommand: (Array with: service)!
@@ -83,8 +83,7 @@ basicUnloadProjects: projectNames
 	methodListPresenter model: ListModel new!
 
 behaviorIdentifier
-
-	^classListPresenter selection behaviorIdentifier!
+	^self selectedClass behaviorIdentifier!
 
 browseClassReferences
 	self browseClassReferences: self selectedClass name!
@@ -442,12 +441,12 @@ fileOutCategories
 	| path suggestedFileName classSide |
 	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
 		caption: 'Filein/fileout notification'.
-	true ifTrue:[^self].
+	true ifTrue: [^self].
 	"note that the code below should work. Rowan issue is problem"
 	classSide := self selectedClass meta ifTrue: ['class_'] ifFalse: [String new].
 	suggestedFileName := categoryListPresenter selections size = 1
-				ifTrue: [classListPresenter selection name , '_' , classSide , categoryListPresenter selection]
-				ifFalse: [classListPresenter selection name , classSide , 'categories'].
+				ifTrue: [self selectedClass name , '_' , classSide , categoryListPresenter selection]
+				ifFalse: [self selectedClass name , classSide , 'categories'].
 	suggestedFileName := suggestedFileName copyWithout: $*.
 	path := FileSaveDialog new
 				caption: 'File Out Categories';
@@ -472,9 +471,9 @@ fileOutClass
 	| path suggestedFileName classSide |
 	MessageBox notify: 'Filein/fileout are not Rowan-ready in this version'
 		caption: 'Filein/fileout notification'.
-	true ifTrue:[^self].
+	true ifTrue: [^self].
 	"note that the code below should work. Rowan issue is problem"
-	suggestedFileName := classListPresenter selection name. 
+	suggestedFileName := self selectedClass name.
 	path := FileSaveDialog new
 				caption: 'File Out Class';
 				fileTypes: self fileTypes;
@@ -724,7 +723,7 @@ methodsMenuStrings
 
 moveMethods: methodServices toCategory: targetCategory
 	| classService |
-	classService := classListPresenter selection.
+	classService := self selectedClass.
 	self selectCategoriesNamed: (categoryListPresenter selections copyWith: targetCategory).
 	classService
 		command: #moveMethods:to:;
@@ -751,7 +750,7 @@ onDropOnClassList: aSession
 	| classService |
 	classService := aSession suggestedTarget.
 	self editSaveMethod: classService.
-	classListPresenter selection == classService ifFalse: [self selectClass: classService].
+	self selectedClass == classService ifFalse: [self selectClass: classService].
 	self selectMethodsFrom: classService!
 
 onDropOnMethodCategory: aSession
@@ -792,8 +791,8 @@ pkgsMenuStrings
 
 populateFilterList
 	self isCategoriesTabSelected
-		ifTrue: [categoryListPresenter list: classListPresenter selection categories]
-		ifFalse: [variableListPresenter list: classListPresenter selection variables]!
+		ifTrue: [categoryListPresenter list: self selectedClass categories]
+		ifFalse: [variableListPresenter list: self selectedClass variables]!
 
 postOkToChangeEvent
 	| service |
@@ -1206,7 +1205,7 @@ renameMethodCategory
 		ifTrue: [^self].
 	(categoryListPresenter list includes: new)
 		ifTrue: [^MessageBox notify: 'category ' , new , ' already exists'].
-	service := classListPresenter selection
+	service := self selectedClass
 				command: #renameCategoryFrom:to:;
 				commandArgs: (Array with: old with: new).
 	self issueCommand: (Array with: service).
