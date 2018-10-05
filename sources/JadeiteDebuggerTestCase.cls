@@ -50,6 +50,19 @@ debuggerDo: aBlock
 	RowanDebugger semaphore: nil.
 !
 
+getClipboardContents
+	"Private - `Clipboard current getText` occasionally gets an `Access is denied` error.
+	Retry several times, pausing in between each attempt, until the clipboard is retrieved."
+
+	| clipboardContents contentsRetrieved |
+	contentsRetrieved := true.
+	[clipboardContents := Clipboard current getText] on: Error do: [:ex | contentsRetrieved := false].
+	contentsRetrieved
+		ifFalse: 
+			[(Delay forMilliseconds: 100) wait.
+			clipboardContents := Clipboard current getText].
+	^clipboardContents!
+
 getDebugger
 
 	100 timesRepeat: [
@@ -530,13 +543,13 @@ testDebuggerCopyToClipboard
 	[self openDebuggerOn: 'nil halt'.
 	self assert: debugger frameListPresenter list first equals: 'Executed Code  @2 line 1'.
 	'notCopiedYet' copyToClipboard.
-	self assert: Clipboard current getText = 'notCopiedYet'.
+	self assert: self getClipboardContents equals: 'notCopiedYet'.
 	debugger methodSourcePresenter documentPresenter value: 'new text'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
 	[self selectFrameAt: 2] fork.	"Fork so that the tests' error handler doesn't catch the expected error raised in #selectedFrame"
 	(Delay forMilliseconds: 100) wait.
-	self assert: Clipboard current getText = 'new text']
+	self assert: self getClipboardContents equals: 'new text']
 			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
 testDebuggerDoNotCopyToClipboard
@@ -549,13 +562,13 @@ testDebuggerDoNotCopyToClipboard
 	[self openDebuggerOn: 'nil halt'.
 	self assert: debugger frameListPresenter list first equals: 'Executed Code  @2 line 1'.
 	'notCopiedYet' copyToClipboard.
-	self assert: Clipboard current getText = 'notCopiedYet'.
+	self assert: self getClipboardContents equals: 'notCopiedYet'.
 	debugger methodSourcePresenter documentPresenter value: 'new text'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #no.	"reject offer to copy to clip board"
 	[self selectFrameAt: 2] fork. "Fork so that the tests' error handler doesn't catch the expected error raised in #selectedFrame"
 	(Delay forMilliseconds: 100) wait. 
-	self assert: Clipboard current getText = 'notCopiedYet']
+	self assert: self getClipboardContents equals: 'notCopiedYet']
 			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
 testErrorInPrintString
@@ -613,12 +626,12 @@ testUnsavedChangesActionChangeFrame
 	[self openDebuggerOn: 'nil halt'.
 	self assert: debugger frameListPresenter list first equals: 'Executed Code  @2 line 1'.
 	'notCopiedYet' copyToClipboard.
-	self assert: Clipboard current getText = 'notCopiedYet'.
+	self assert: self getClipboardContents equals:  'notCopiedYet'.
 	debugger methodSourcePresenter documentPresenter value: 'new text'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
 	self debuggerDo: [[debugger stepOver] fork].
-	self assert: Clipboard current getText = 'new text']
+	self assert: self getClipboardContents equals:  'new text']
 			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
 testUnsavedChangesActionChangeToHomeFrame
@@ -633,12 +646,12 @@ testUnsavedChangesActionChangeToHomeFrame
 	self openDebuggerOn: originalSource.
 	self assert: debugger frameListPresenter list first equals: '[] in  Executed Code  @2 line 1'.
 	'notCopiedYet' copyToClipboard.
-	self assert: Clipboard current getText = 'notCopiedYet'.
+	self assert: self getClipboardContents equals:  'notCopiedYet'.
 	debugger methodSourcePresenter documentPresenter value: 'new text'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
 	debugger frameListPresenter selection: (debugger frameListPresenter list at: 3).
-	self assert: Clipboard current getText = 'new text'.
+	self assert: self getClipboardContents equals: 'new text'.
 	self assert: debugger methodSourcePresenter documentPresenter value equals: originalSource]
 			ensure: [TestMessageBox disableJadeiteTestMessageBox]!
 
@@ -654,22 +667,23 @@ testUnsavedChangesActionStepping
 	[self openDebuggerOn: originalSource.
 	self assert: debugger frameListPresenter list first equals: 'Executed Code  @2 line 1'.
 	'notCopiedYet' copyToClipboard.
-	self assert: Clipboard current getText = 'notCopiedYet'.
+	self assert: self getClipboardContents equals:  'notCopiedYet'.
 	debugger methodSourcePresenter documentPresenter value: 'step over'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
 	self debuggerDo: [[debugger stepOver] fork].
-	self assert: Clipboard current getText = 'step over'.
+	self assert: self getClipboardContents equals:  'step over'.
 	self assert: debugger methodSourcePresenter documentPresenter value equals: originalSource.
 	debugger methodSourcePresenter documentPresenter value: 'step into'.
 	debugger methodSourcePresenter documentPresenter view isModified: true.
 	TestMessageBox plannedResult: #yes.	"confirm we want to copy to clipboard"
 	self debuggerDo: [[debugger stepInto] fork].
-	self assert: Clipboard current getText = 'step into'.
+	self assert: self getClipboardContents equals:  'step into'.
 	self assert: debugger methodSourcePresenter documentPresenter value equals: originalSource]
 			ensure: [TestMessageBox disableJadeiteTestMessageBox]! !
 !JadeiteDebuggerTestCase categoriesFor: #closeDebuggers!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #debuggerDo:!private!support! !
+!JadeiteDebuggerTestCase categoriesFor: #getClipboardContents!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #getDebugger!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #getSecondDebugger!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #menuItemIsEnabled:!private!support! !
