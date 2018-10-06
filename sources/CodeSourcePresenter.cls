@@ -36,11 +36,11 @@ addQuotesToSelection
 
 browseImplementors
 
-	self browseImplementorsOf: self currentSelector.!
+	^self browseImplementorsOf: self currentSelector.!
 
 browseSenders
 
-	self browseSendersOf: self currentSelector.!
+	^self browseSendersOf: self currentSelector.!
 
 clearBreakAtStepPoint: anInteger
 

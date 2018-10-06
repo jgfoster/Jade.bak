@@ -67,7 +67,7 @@ browseSenders
 	string := frame gsMethod selector.
 	service := RowanQueryService command: #sendersOf: withArgs: (Array with: frame gsMethod selector).
 	self issueCommand: (Array with: service).
-	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	^(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		methods: service queryResults
 		selecting: string!
 

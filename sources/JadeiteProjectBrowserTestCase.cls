@@ -136,6 +136,7 @@ test_addRemoveCategory
 	self deny: (self categoryListPresenter list includes: 'jadeite test')!
 
 test_addRemoveHierarchyCategory
+	self testsIssue: #issue215 withTitle: 'add category in hierarchy view'.
 	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
 	self selectServicesNamed: #('RowanSample1-Core') in: self packageListPresenter.
 	self selectHierarchyTab.

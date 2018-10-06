@@ -186,6 +186,28 @@ test_browseClass
 				self unloadSampleProject.
 				self commitTransaction	"can remove this when #349 is fixed. See setUp"]!
 
+test_implementersFromDebugger
+	| browser |
+	self testsIssue: #issue216 withTitle: 'method list in method browser reorders on accept'.
+	self openProjectsBrowser.
+	self abortTransaction.	"ensure we don't have unsaved changes in the images"
+	self ensureRowanSample1Available.	"load sample project after abort  - especially until https://github.com/GemTalk/Rowan/issues/349 is fixed."
+	self commitTransaction.
+	
+	[self selectRowanSample1Class.
+	self saveIssue216Method.
+	self openDebuggerOn: 'RowanSample1 new issue216'.
+	debugger documentPresenter view selectionRange: (77 to: 89).	"Select classFromName"	
+	browser := debugger methodSourcePresenter browseImplementors.
+	
+	[self assert: (browser isKindOf: JadeiteMethodListPresenter).
+	self assert: ('*Jadeite Method List*' match: browser topShell caption)]
+			ensure: [browser topShell destroy]]
+			ensure: 
+				[self abortTransaction.
+				self unloadSampleProject.
+				self commitTransaction	"can remove this when #349 is fixed. See setUp"]!
+
 test_restartInBlock
 	| restartProcess |
 	self testsIssue: #issue126
@@ -230,6 +252,28 @@ test_selectAfterDiveNoStepPoint
 			ensure: 
 				[self methodListPresenter selection clearBreakAtStepPoint: 8 session: session.
 				self unloadSampleProject]!
+
+test_sendersFromDebugger
+	| browser |
+	self testsIssue: #issue216 withTitle: 'method list in method browser reorders on accept'.
+	self openProjectsBrowser.
+	self abortTransaction.	"ensure we don't have unsaved changes in the images"
+	self ensureRowanSample1Available.	"load sample project after abort  - especially until https://github.com/GemTalk/Rowan/issues/349 is fixed."
+	self commitTransaction.
+	
+	[self selectRowanSample1Class.
+	self saveIssue216Method.
+	self openDebuggerOn: 'RowanSample1 new issue216'.
+	debugger documentPresenter view selectionRange: (77 to: 89).	"Select classFromName"
+	browser := debugger methodSourcePresenter browseSenders.
+	
+	[self assert: (browser isKindOf: JadeiteMethodListPresenter).
+	self assert: ('*Jadeite Method List*' match: browser topShell caption)]
+			ensure: [browser topShell destroy]]
+			ensure: 
+				[self abortTransaction.
+				self unloadSampleProject.
+				self commitTransaction	"can remove this when #349 is fixed. See setUp"]!
 
 test_terminateDoesNotWalkback
 	"Terminate a process other than the primary one"
@@ -695,8 +739,10 @@ testUnsavedChangesActionStepping
 !JadeiteDebuggerTestCase categoriesFor: #tearDown!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #terminateGsProcess!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #test_browseClass!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #test_implementersFromDebugger!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_restartInBlock!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_selectAfterDiveNoStepPoint!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #test_sendersFromDebugger!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_terminateDoesNotWalkback!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test1!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test2!public!tests! !

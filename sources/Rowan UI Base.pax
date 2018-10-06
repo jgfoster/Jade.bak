@@ -1306,7 +1306,7 @@ browseSendersOf: aGsMethodOrString
 
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseSendersOf: aGsMethodOrString].
 
-	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
+	^(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
 		browseSendersOf: aGsMethodOrString;
 		yourself.
 !
