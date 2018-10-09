@@ -797,7 +797,7 @@ postLoginAs: aString useSocket: aBoolean
 	server := self
 				executeString: '| server | 
 			server := (Rowan jadeServerClassNamed: #JadeServer64bit32) new initialize; yourself.
-			System _sessionStateAt: 3 put: server.
+			System __sessionStateAt: 3 put: server. "Topaz server slot. Should be safe as we''re not a Topaz session"
 			^server'.
 	self postLoadClientPreferences.
 	self postLoadServerPreferences.
