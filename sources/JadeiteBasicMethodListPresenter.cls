@@ -39,15 +39,6 @@ browseImplementorsOf: methodService
 	self issueCommand: (Array with: service).
 	self openMethodListOn: service selecting: methodService selector!
 
-browseMethodsContaining
-
-	| string service |
-	(string := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
-	service := RowanQueryService command: #methodsContaining:
-				withArgs: (Array with: string).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string!
-
 browseSendersOf
 	self withSelectorDo: 
 			[:aSelector |
@@ -68,11 +59,6 @@ methodListPresenter
 onViewOpened
 	super onViewOpened.
 	self registerPresentersForUpdates!
-
-openMethodListOn: service selecting: string
-	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		methods: service queryResults
-		selecting: string!
 
 registerPresentersForUpdates
 	BrowserUpdate current register: methodListPresenter selector: #methodsRemoved:.
@@ -107,12 +93,10 @@ selections
 !JadeiteBasicMethodListPresenter categoriesFor: #browseClass!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseImplementorsOf!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
-!JadeiteBasicMethodListPresenter categoriesFor: #browseMethodsContaining!public!queries! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseSendersOf!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseSendersOf:!public!queries! !
 !JadeiteBasicMethodListPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #onViewOpened!event handlers!public! !
-!JadeiteBasicMethodListPresenter categoriesFor: #openMethodListOn:selecting:!private!queries! !
 !JadeiteBasicMethodListPresenter categoriesFor: #registerPresentersForUpdates!public!register presenters! !
 !JadeiteBasicMethodListPresenter categoriesFor: #removeFromList!menu handlers!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #removeMethods!menu handlers!public! !

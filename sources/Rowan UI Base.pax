@@ -117,8 +117,10 @@ package methodNames
 	add: #JadeNavigationInspector -> #setNewInspectedObject;
 	add: #JadePresenter -> #issueCommand:;
 	add: #JadePresenter -> #update:afterStonReplication:;
+	add: #JadePresenterA -> #basicBrowseMethodsContaining:;
 	add: #JadePresenterA -> #basicCloneProject:root:;
 	add: #JadePresenterA -> #browseImplementorsOf:;
+	add: #JadePresenterA -> #browseMethodsContaining;
 	add: #JadePresenterA -> #browseSendersOf:;
 	add: #JadePresenterA -> #clearBreakPointAt:in:;
 	add: #JadePresenterA -> #cloneProject;
@@ -130,6 +132,7 @@ package methodNames
 	add: #JadePresenterA -> #isOkayToChangeSource:;
 	add: #JadePresenterA -> #loadProjectsFrom:;
 	add: #JadePresenterA -> #methodListSelection;
+	add: #JadePresenterA -> #openMethodListOn:selecting:;
 	add: #JadePresenterA -> #refreshBreakPointsIn:;
 	add: #JadePresenterA -> #removeSelectorsStringUsing:;
 	add: #JadePresenterA -> #reportCompileError:in:;
@@ -172,7 +175,6 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #browseImplementorsOf:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
-	add: #JadeSystemBrowserPresenter -> #browseMethodsContaining;
 	add: #JadeSystemBrowserPresenter -> #browseSendersOf:;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiring;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiringForClassHierarchyTabs;
@@ -184,7 +186,6 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #methodsMenuStrings;
 	add: #JadeSystemBrowserPresenter -> #methodSourceEqual;
 	add: #JadeSystemBrowserPresenter -> #onViewOpened;
-	add: #JadeSystemBrowserPresenter -> #openMethodListOn:selecting:;
 	add: #JadeSystemBrowserPresenter -> #packageTabName;
 	add: #JadeSystemBrowserPresenter -> #postOkToChangeEvent;
 	add: #JadeSystemBrowserPresenter -> #preRemoveMethods;
@@ -218,7 +219,6 @@ package methodNames
 	add: #MCPatchBrowser -> #browseChangedThing;
 	add: #MCPatchBrowser -> #operationSelected;
 	add: #MethodListPresenter -> #browseClass;
-	add: #MethodListPresenter -> #browseMethodsContaining;
 	add: #MethodSourcePresenter -> #editMenuStrings;
 	add: #MethodSourcePresenter -> #editSaveMethod;
 	add: #MethodSourcePresenter -> #fileSave;
@@ -1282,6 +1282,12 @@ update: services afterStonReplication: stonResults
 
 !JadePresenterA methodsFor!
 
+basicBrowseMethodsContaining: string
+	| service |
+	service := RowanQueryService command: #methodsContaining: withArgs: (Array with: string).
+	self issueCommand: (Array with: service).
+	^self openMethodListOn: service selecting: string!
+
 basicCloneProject: path root: root
 	| service |
 	service := RowanProjectService new.
@@ -1301,6 +1307,11 @@ browseImplementorsOf: aGsMethodOrString
 		browseImplementorsOf: aGsMethodOrString;
 		yourself.
 !
+
+browseMethodsContaining
+	| string |
+	(string := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
+	self basicBrowseMethodsContaining: string!
 
 browseSendersOf: aGsMethodOrString
 
@@ -1427,6 +1438,13 @@ methodListSelection
 	
 	^self parentPresenter methodListSelection!
 
+openMethodListOn: service selecting: string
+	| shell |
+	(shell := JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
+		methods: service queryResults
+		selecting: string.
+	^shell!
+
 refreshBreakPointsIn: methodSourcePresenter
 	| indicators selection |
 	selection := self methodListSelection.
@@ -1505,8 +1523,10 @@ updateMethodReferences: services
 	services do: [:service | service command: #allReferences].
 	self issueCommand: services.
 	^services! !
+!JadePresenterA categoriesFor: #basicBrowseMethodsContaining:!public! !
 !JadePresenterA categoriesFor: #basicCloneProject:root:!Jadeite!public! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public! !
+!JadePresenterA categoriesFor: #browseMethodsContaining!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!public! !
 !JadePresenterA categoriesFor: #clearBreakPointAt:in:!Jadeite!public! !
 !JadePresenterA categoriesFor: #cloneProject!Jadeite!public! !
@@ -1518,6 +1538,7 @@ updateMethodReferences: services
 !JadePresenterA categoriesFor: #isOkayToChangeSource:!Jadeite!public! !
 !JadePresenterA categoriesFor: #loadProjectsFrom:!Jadeite!public! !
 !JadePresenterA categoriesFor: #methodListSelection!Jadeite!public! !
+!JadePresenterA categoriesFor: #openMethodListOn:selecting:!menu handlers support!private!queries! !
 !JadePresenterA categoriesFor: #refreshBreakPointsIn:!Jadeite!public! !
 !JadePresenterA categoriesFor: #removeSelectorsStringUsing:!Jadeite!public! !
 !JadePresenterA categoriesFor: #reportCompileError:in:!Jadeite!public! !
@@ -2224,16 +2245,6 @@ browseMethodsAndSelect: aString type: browseType
 		selecting: aString.
 !
 
-browseMethodsContaining
-
-	| string service |
-	(string := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
-	service := RowanQueryService command: #methodsContaining:
-				withArgs: (Array with: string).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string
-	!
-
 browseSendersOf: string
 	| service |
 	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
@@ -2367,13 +2378,6 @@ onViewOpened
 	variableListPresenter view contextMenu: (Menu fromStrings: self variablesMenuStrings).
 	self setSearchPolicy.
 	!
-
-openMethodListOn: service selecting: string
-	| shell |
-	(shell := JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		methods: service queryResults
-		selecting: string.
-	^shell!
 
 packageTabName
 
@@ -2716,7 +2720,6 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #browseMethodsContaining!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiringForClassHierarchyTabs!create schemantic wiring!public! !
@@ -2728,7 +2731,6 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #methodsMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #methodSourceEqual!private!testing! !
 !JadeSystemBrowserPresenter categoriesFor: #onViewOpened!menus!overrides!public! !
-!JadeSystemBrowserPresenter categoriesFor: #openMethodListOn:selecting:!menu handlers support!private!queries! !
 !JadeSystemBrowserPresenter categoriesFor: #packageTabName!menus!overrides!public! !
 !JadeSystemBrowserPresenter categoriesFor: #postOkToChangeEvent!event handlers!private! !
 !JadeSystemBrowserPresenter categoriesFor: #preRemoveMethods!menu handlers!public! !
@@ -2981,16 +2983,8 @@ browseClass
 	(browserClass showOnSession: self gciSession)
 		selectClass: selection gsClass name
 		selector: selection name.
-!
-
-browseMethodsContaining
-
-	| string |
-	(string := Prompter prompt: 'Enter substring:') isNil ifTrue: [^self].
-	(JadeMethodListBrowser showOnSession: self gciSession) primaryPresenter browseMethodsContaining: string.
 ! !
 !MethodListPresenter categoriesFor: #browseClass!public! !
-!MethodListPresenter categoriesFor: #browseMethodsContaining!public! !
 
 !MethodSourcePresenter methodsFor!
 

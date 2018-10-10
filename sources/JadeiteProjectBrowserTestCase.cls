@@ -54,6 +54,17 @@ saveHooMethod
 
 	!
 
+saveMethodWithUniqueString
+
+	| source |
+	source := 'gloop
+	"I be unique"
+	^self gloop'. 
+	self methodSourcePresenter value: source. 
+	self projectsPresenter editSaveMethod: self classListPresenter selection. 
+
+	!
+
 saveSampleMethod
 
 	| source |
@@ -466,6 +477,20 @@ test_menusDontAddBreaks
 		presenter: self methodSourcePresenter view.
 	self noBreakIn: methodsMenu!
 
+test_methodsContaining
+	| methodListPresenter sourcePresenter |
+	self testsIssue: #issue220
+		withTitle: 'Verify using Jadeite method list browser for senders of "methods containing"'.
+	self selectRowanSample1Class.
+	self saveMethodWithUniqueString.
+	methodListBrowser := self projectsPresenter basicBrowseMethodsContaining: 'I be unique'.
+	"the method list browser contains the BasicMethodListPresenter which is of questionable value now. 
+	That's why there are two methodListPresenter message sends"
+	methodListPresenter := methodListBrowser primaryPresenter methodListPresenter methodListPresenter.
+	sourcePresenter := methodListBrowser primaryPresenter  methodSourcePresenter documentPresenter.
+	self assert: methodListPresenter list size equals: 1.
+	self assert: sourcePresenter view selection = 'I be unique'. !
+
 test_multipleCompileMethod
 	self testsIssue: #issue170
 		withTitle: 'Editing methods to create new method and updating created method gets errors'.
@@ -767,6 +792,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #projectNamed:!private!project support! !
 !JadeiteProjectBrowserTestCase categoriesFor: #rowanProjectNames!constants!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #saveHooMethod!private! !
+!JadeiteProjectBrowserTestCase categoriesFor: #saveMethodWithUniqueString!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #saveSampleMethod!private! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassInHierarchNamed:!private!selection! !
 !JadeiteProjectBrowserTestCase categoriesFor: #selectClassListTab!private!selection! !
@@ -784,21 +810,22 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_autoDirtyDisplayRemoveMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classListNotBlank!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_classSideSelection!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_definedClassMenuItem!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_definedClassMenuItem!public!test defined package! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_extensionColoringInHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_findClass!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedClassFromClassList!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedClassFromHierarchy!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromClassList!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromClassListClassSide!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromHierarchy!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedMethodNotSameAsClass!public!test! !
-!JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedPackage!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedClassFromClassList!public!test defined package! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedClassFromHierarchy!public!test defined package! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromClassList!public!test defined package! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromClassListClassSide!public!test defined package! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_goToDefinedMethodFromHierarchy!public!test defined package! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedMethodNotSameAsClass!public!test defined package! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedPackage!public!test defined package! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_makeDefault!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menuAddPackageOnProjectMenu!public!test!test projects! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menuEnablementDoesNotBreak!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menusDontAddBreaks!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_methodsContaining!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_multipleCompileMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_noSelectionHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test projects! !

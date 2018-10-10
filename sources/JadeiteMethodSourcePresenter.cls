@@ -105,11 +105,6 @@ onViewOpened
 	super onViewOpened.
 	self registerPresentersForUpdates. !
 
-openMethodListOn: service selecting: string
-	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		methods: service queryResults
-		selecting: string!
-
 registerPresentersForUpdates
 	BrowserUpdate current
 		register: documentPresenter
@@ -145,7 +140,6 @@ value: string
 !JadeiteMethodSourcePresenter categoriesFor: #methodSourceEqual!public!testing! !
 !JadeiteMethodSourcePresenter categoriesFor: #methodValueChanged!event handlers!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #onViewOpened!event handlers!public! !
-!JadeiteMethodSourcePresenter categoriesFor: #openMethodListOn:selecting:!menu handlers!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #registerPresentersForUpdates!public!register presenters! !
 !JadeiteMethodSourcePresenter categoriesFor: #update!public!updating! !
 !JadeiteMethodSourcePresenter categoriesFor: #updateMethodSource!public!updating! !
