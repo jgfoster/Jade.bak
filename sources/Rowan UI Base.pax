@@ -162,6 +162,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer64bit3x -> #sbClassComment:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
+	add: #JadeShell -> #updateCaptionFromSearchString:;
 	add: #JadeSUnitPresenter -> #onViewOpened;
 	add: #JadeSUnitPresenter -> #registerPresentersForUpdates;
 	add: #JadeSUnitPresenter -> #updateClasses;
@@ -793,12 +794,7 @@ postLoginAs: aString useSocket: aBoolean
 	self verifyRowanLoaded
 		ifFalse: 
 			[^MessageBox notify: 'Rowan not loaded or $ROWAN_PROJECTS_HOME not set. Logging out.'	"log out in RowinLoginShell>>postLogin:"].
-	"self initializeServer."
-	server := self
-				executeString: '| server | 
-			server := (Rowan jadeServerClassNamed: #JadeServer64bit32) new initialize; yourself.
-			System __sessionStateAt: 3 put: server. "Topaz server slot. Should be safe as we''re not a Topaz session"
-			^server'.
+	server := self executeString: '(Rowan jadeServerClassNamed: #JadeServer) theJadeiteServer installTranscript; yourself'.
 	self postLoadClientPreferences.
 	self postLoadServerPreferences.
 	aBoolean ifTrue: [self attemptSocket].
@@ -1300,7 +1296,6 @@ basicCloneProject: path root: root
 	self issueCommand: (Array with: service)!
 
 browseImplementorsOf: aGsMethodOrString
-	
 	(parentPresenter class = JadeTreeMethodListPresenter) ifTrue: [^parentPresenter browseImplementorsOf: aGsMethodOrString].
 
 	^(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
@@ -2139,6 +2134,14 @@ setVersion
 !JadeSessionManager class categoriesFor: #mainShellClass!public! !
 !JadeSessionManager class categoriesFor: #setVersion!public! !
 
+!JadeShell methodsFor!
+
+updateCaptionFromSearchString: searchString
+
+	self caption: (gciSession titleBarFor: searchString).
+! !
+!JadeShell categoriesFor: #updateCaptionFromSearchString:!overrides!private! !
+
 !JadeSUnitPresenter methodsFor!
 
 onViewOpened
@@ -2226,10 +2229,12 @@ browseClassReferences: className
 	^self openMethodListOn: service selecting: className!
 
 browseImplementorsOf: string
-	| service |
+	| service shell |
 	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
 	self issueCommand: (Array with: service).
-	^self openMethodListOn: service selecting: string!
+	shell := self openMethodListOn: service selecting: string.
+	shell updateCaptionFromSearchString: 'Implementors of ' , string asString printString.
+	^shell!
 
 browseMethodsAndSelect: aString
 
@@ -2246,10 +2251,12 @@ browseMethodsAndSelect: aString type: browseType
 !
 
 browseSendersOf: string
-	| service |
+	| service shell |
 	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
 	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string!
+	shell := self openMethodListOn: service selecting: string.
+	shell updateCaptionFromSearchString: 'Implementors of ' , string asString printString.
+	^shell!
 
 createSchematicWiring
 	super createSchematicWiring.

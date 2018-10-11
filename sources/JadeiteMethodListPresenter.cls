@@ -14,7 +14,7 @@ browseImplementorsOf: string
 	| service |
 	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
 	self issueCommand: (Array with: service).
-	self methods: service queryResults selecting: string!
+	self methods: service queryResults selecting: string.!
 
 browseSendersOf: string
 	| service |
