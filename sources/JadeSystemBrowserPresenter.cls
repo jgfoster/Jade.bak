@@ -199,8 +199,7 @@ browseGlobalReferences
 !
 
 browseImplementors
-
-	self browseImplementorsOf: self selectedMethodName.
+	^self browseImplementorsOf: self selectedMethodName.
 !
 
 browseImplementorsOf
@@ -269,9 +268,7 @@ browseSelectedClass
 !
 
 browseSenders
-
-	self browseSendersOf: self selectedMethodName.
-!
+	^self browseSendersOf: self selectedMethodName!
 
 browseSendersOf
 

@@ -42,13 +42,6 @@ browse: performSelector methodSelector: aString
 	self browseMethodsFromString: string.
 !
 
-browseImplementorsOf: aGsMethod
-	
-	^self
-		browse: #'implementorsOf:' 
-		method: aGsMethod.
-!
-
 browseMethods: aGsMethodColl
 
 	| string |
@@ -97,13 +90,6 @@ browseMethodsFromString: aString methodName: methodName type: browseType
 	list notEmpty ifTrue: [
 		methodListPresenter selectFirstMethod.
 	].!
-
-browseSendersOf: aGsMethodOrString
-
-	self
-		browse: #'sendersOf:' 
-		method: aGsMethodOrString.
-!
 
 codePresenterIsMethod
 
@@ -226,6 +212,10 @@ selecting: aString
 	self doSearch.
 !
 
+selectingAnyMatch: aString
+	searchBlock := [self searchForAnyTextMatching: aString].
+	self doSearch!
+
 updateMenuBar: aMenuBar
 
 	| menu |
@@ -267,13 +257,11 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #browse:gsMethod:!public! !
 !JadeMethodListPresenter categoriesFor: #browse:method:!public! !
 !JadeMethodListPresenter categoriesFor: #browse:methodSelector:!public! !
-!JadeMethodListPresenter categoriesFor: #browseImplementorsOf:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethods:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsContaining:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsFromString:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:!public! !
 !JadeMethodListPresenter categoriesFor: #browseMethodsFromString:methodName:type:!public! !
-!JadeMethodListPresenter categoriesFor: #browseSendersOf:!public! !
 !JadeMethodListPresenter categoriesFor: #codePresenterIsMethod!public! !
 !JadeMethodListPresenter categoriesFor: #createComponents!public! !
 !JadeMethodListPresenter categoriesFor: #createSchematicWiring!public! !
@@ -290,6 +278,7 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #selectedClass!public! !
 !JadeMethodListPresenter categoriesFor: #selectFirstMethod!public! !
 !JadeMethodListPresenter categoriesFor: #selecting:!public! !
+!JadeMethodListPresenter categoriesFor: #selectingAnyMatch:!public! !
 !JadeMethodListPresenter categoriesFor: #updateMenuBar:!public! !
 !JadeMethodListPresenter categoriesFor: #updateSaveMethodOop:!public! !
 !JadeMethodListPresenter categoriesFor: #updateSource!public! !

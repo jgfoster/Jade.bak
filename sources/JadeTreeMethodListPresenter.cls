@@ -46,21 +46,6 @@ browse: performSelector method: aGsMethodOrString
 	].
 	self selecting: string.!
 
-browseImplementorsOf: aGsMethod
- 	| methodName |
-
-	methodName := (aGsMethod class = String) ifTrue: [aGsMethod] ifFalse: [aGsMethod name].
-
-	^self browseMethodsFromString: (self gsBrowse: #implementorsOf: methodSelector: aGsMethod) methodName: methodName type: #definitions.!
-
-browseSendersOf: aGsMethod
-	| methodName |
-
-	methodName := (aGsMethod class = String) ifTrue: [aGsMethod] ifFalse: [aGsMethod name].
-
-	self browseMethodsFromString: (self gsBrowse: #sendersOf: methodSelector: aGsMethod) methodName: methodName type: #references.
-!
-
 buildHistoryBackMenu
 
 	^(self buildHistoryMenuWith: (historyEntries copyFrom: 1 to: entriesIndex) command: #historyBack:)
@@ -278,8 +263,6 @@ treeMethodsPresenter: anObject
 !JadeTreeMethodListPresenter categoriesFor: #addList!public! !
 !JadeTreeMethodListPresenter categoriesFor: #addTreeListRoot:type:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browse:method:!public! !
-!JadeTreeMethodListPresenter categoriesFor: #browseImplementorsOf:!public! !
-!JadeTreeMethodListPresenter categoriesFor: #browseSendersOf:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #buildHistoryBackMenu!public! !
 !JadeTreeMethodListPresenter categoriesFor: #buildHistoryForwardMenu!public! !
 !JadeTreeMethodListPresenter categoriesFor: #buildHistoryMenuWith:command:!public! !

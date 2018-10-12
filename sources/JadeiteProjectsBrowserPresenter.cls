@@ -543,6 +543,14 @@ findClass
 	find := JadeiteFindClassDialog showModal: 'DefaultView' on: self allClasses.
 	find ifNotNil: [self updateAfterFindClass: find]!
 
+findMethod: selector
+	"assume we have a populated method list"
+
+	| methodService |
+	methodService := methodListPresenter list detect: [:service | service selector = selector]
+				ifNone: [^self].
+	methodListPresenter selections: (Array with: methodService)!
+
 getViews
 	classHierarchyTabs := self view viewNamed: 'classHierarchyTabs'.
 	instanceClassTabs := self view viewNamed: 'instanceClassTabs'.
@@ -1283,10 +1291,9 @@ selectClassListTab
 	classHierarchyTabs firstCard!
 
 selectClassNamed: className
-	| selection |
 	self isClassListTabSelected
-		ifTrue: [selection := self selectClassInClassListNamed: className]
-		ifFalse: [selection := self selectClassInClassHierarchyNamed: className]!
+		ifTrue: [self selectClassInClassListNamed: className]
+		ifFalse: [self selectClassInClassHierarchyNamed: className]!
 
 selectedClass
 	^self isClassListTabSelected
@@ -1436,7 +1443,7 @@ updateAfterFindClass: classService
 				ifNone: [^self].
 	packageListPresenter selections: (Array with: packageService).
 	self isClassListTabSelected
-		ifTrue: [self selectClassNamed: classService name]
+		ifTrue: [self selectClassNamed: classService name asString]
 		ifFalse: 
 			[self selectClassInClassListNamed: classService name.
 			self updateHierarchy]!
@@ -1729,6 +1736,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #fileOutMethodsOnPath:!menu handlers support!private! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #filterTabChanged!event handlers!public!updating! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #findClass!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #findMethod:!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #getViews!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gitCommit!project menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #gotoClassDefinedPackage!menu handlers!public! !

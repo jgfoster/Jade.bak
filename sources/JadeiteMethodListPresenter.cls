@@ -10,18 +10,6 @@ JadeiteMethodListPresenter comment: ''!
 !JadeiteMethodListPresenter categoriesForClass!Unclassified! !
 !JadeiteMethodListPresenter methodsFor!
 
-browseImplementorsOf: string
-	| service |
-	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	self methods: service queryResults selecting: string.!
-
-browseSendersOf: string
-	| service |
-	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	self methods: service queryResults selecting: string!
-
 comparisonTab
 	^comparisonTab
 		ifNil: 
@@ -60,6 +48,13 @@ methods: services selecting: string
 		selectFirstMethod.
 	self selecting: string!
 
+methods: services selectingAnyMatch: string
+	services isEmpty ifTrue: [^self].
+	methodListPresenter
+		list: services;
+		selectFirstMethod.
+	self selectingAnyMatch: string!
+
 removeComparisonTab
 	self textTabs remove: self comparisonTab ifAbsent: []!
 
@@ -93,8 +88,6 @@ updateSource
 	selection := methodListPresenter selectionOrNil. 
 	methodSourcePresenter methodService: selection. 
 	methodSourcePresenter update. ! !
-!JadeiteMethodListPresenter categoriesFor: #browseImplementorsOf:!menu handlers!public! !
-!JadeiteMethodListPresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeiteMethodListPresenter categoriesFor: #comparisonTab!private!selection!text tabs! !
 !JadeiteMethodListPresenter categoriesFor: #contextObject!public! !
 !JadeiteMethodListPresenter categoriesFor: #createComponents!public! !
@@ -103,6 +96,7 @@ updateSource
 !JadeiteMethodListPresenter categoriesFor: #getViews!public! !
 !JadeiteMethodListPresenter categoriesFor: #methodListSelection!public! !
 !JadeiteMethodListPresenter categoriesFor: #methods:selecting:!public! !
+!JadeiteMethodListPresenter categoriesFor: #methods:selectingAnyMatch:!public! !
 !JadeiteMethodListPresenter categoriesFor: #removeComparisonTab!private!selection!text tabs! !
 !JadeiteMethodListPresenter categoriesFor: #showComparisonTab!private!selection!text tabs! !
 !JadeiteMethodListPresenter categoriesFor: #textTabs!private!text tabs! !

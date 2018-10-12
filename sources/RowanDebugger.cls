@@ -35,23 +35,30 @@ basicSelectedFrame
 	^gsProcess frameForLevel: index!
 
 browseFrameMethod
-
-	| method |
-	method := frame gsMethod.
-	(RowanSystemBrowser showOnSession: self gciSession)
-		selectClass: method className asString
-		selector: method selector asString.
-!
+	| classService shell |
+	classService := RowanClassService new name: frame gsMethod className.
+	BrowserUpdate current updateService: classService session: gciSession.
+	^classService projectName = RowanService notRowanizedPackageName
+		ifTrue: 
+			[Cursor wait showWhile: 
+					[shell := RowanSystemBrowser showOnSession: gciSession.
+					shell selectClass: classService name asString selector: frame gsMethod selector asString]]
+		ifFalse: 
+			[shell := JadeiteProjectsSystemBrowser showOnSession: gciSession.
+			shell currentCard updateAfterFindClass: classService.
+			shell currentCard findMethod: frame gsMethod selector]!
 
 browseImplementors
-	| service string |
+	| service string shell |
 	string := frame gsMethod selector.
-	service := RowanQueryService command: #implementorsOf:
-				withArgs: (Array with: frame gsMethod selector).
+	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
 	self issueCommand: (Array with: service).
-	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		methods: service queryResults
-		selecting: string!
+	shell := JadeiteMethodListBrowser
+				openOn: service
+				selecting: string
+				session: self gciSession.
+	shell updateCaptionFromSearchString: 'Implementors of ' , string asString printString.
+	^shell!
 
 browseObjectClass
 
@@ -63,13 +70,16 @@ browseObjectClass
 !
 
 browseSenders
-	| service string |
+	| service string shell |
 	string := frame gsMethod selector.
-	service := RowanQueryService command: #sendersOf: withArgs: (Array with: frame gsMethod selector).
+	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
 	self issueCommand: (Array with: service).
-	^(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
-		methods: service queryResults
-		selecting: string!
+	shell := JadeiteMethodListBrowser
+				openOn: service
+				selecting: string
+				session: self gciSession.
+	shell updateCaptionFromSearchString: 'Senders of ' , string asString printString.
+	^shell!
 
 compilationWarningFrom: methodServices
 

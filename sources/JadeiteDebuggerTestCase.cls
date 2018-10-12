@@ -208,6 +208,21 @@ test_implementersFromDebugger
 				self unloadSampleProject.
 				self commitTransaction	"can remove this when #349 is fixed. See setUp"]!
 
+test_implementorsSendersCaption
+	| methodListBrowser |
+	self testsIssue: #issue209 withTitle: 'MethodListBrowser needs the token in the title bar'.
+	self
+		openDebuggerOn: '(RowanProjectService new name: ''Rowan'') halt; branch';
+		debuggerDo: [debugger stepOver];
+		debuggerDo: [debugger stepInto];
+		assert: debugger frameListPresenter list first = 'RowanProjectService >> branch @1 line 1'.
+	methodListBrowser := debugger browseImplementors.
+	[self assert: ('Implementors of ''branch'' for *' match: methodListBrowser caption)]
+		ensure: [methodListBrowser destroy].
+	methodListBrowser := debugger browseSenders.
+	[self assert: ('Senders of ''branch'' for *' match: methodListBrowser caption)]
+		ensure: [methodListBrowser destroy]!
+
 test_restartInBlock
 	| restartProcess |
 	self testsIssue: #issue126
@@ -740,6 +755,7 @@ testUnsavedChangesActionStepping
 !JadeiteDebuggerTestCase categoriesFor: #terminateGsProcess!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #test_browseClass!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_implementersFromDebugger!public!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #test_implementorsSendersCaption!public! !
 !JadeiteDebuggerTestCase categoriesFor: #test_restartInBlock!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_selectAfterDiveNoStepPoint!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_sendersFromDebugger!public!tests! !

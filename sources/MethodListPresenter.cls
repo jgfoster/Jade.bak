@@ -16,8 +16,7 @@ anyMethod
 !
 
 browseImplementors
-	
-	self browseImplementorsOf: methodListPresenter selection.!
+	self browseImplementorsOf: methodListPresenter selection selector!
 
 browseImplementorsOf
 	
@@ -26,7 +25,7 @@ browseImplementorsOf
 
 browseSenders
 
-	self browseSendersOf: methodListPresenter selection.!
+	self browseSendersOf: methodListPresenter selection selector.!
 
 browseSendersOf
 

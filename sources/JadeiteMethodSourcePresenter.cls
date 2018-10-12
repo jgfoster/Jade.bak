@@ -10,18 +10,6 @@ JadeiteMethodSourcePresenter comment: ''!
 !JadeiteMethodSourcePresenter categoriesForClass!Unclassified! !
 !JadeiteMethodSourcePresenter methodsFor!
 
-browseImplementorsOf: string
-	| service |
-	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string!
-
-browseSendersOf: string
-	| service |
-	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: string!
-
 createSchematicWiring
 	super createSchematicWiring.
 	documentPresenter
@@ -128,8 +116,6 @@ updateMethodSource
 value: string
 
 	documentPresenter value: string! !
-!JadeiteMethodSourcePresenter categoriesFor: #browseImplementorsOf:!menu handlers!public! !
-!JadeiteMethodSourcePresenter categoriesFor: #browseSendersOf:!menu handlers!public! !
 !JadeiteMethodSourcePresenter categoriesFor: #createSchematicWiring!create schemantic wiring!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #editMenuStrings!menu handlers!private! !
 !JadeiteMethodSourcePresenter categoriesFor: #editSaveMethod!menu handlers!public! !

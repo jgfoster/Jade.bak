@@ -416,6 +416,19 @@ test_hierarchySelectTwoBrowsers
 	self assert: (secondBrowser currentCard classHierarchyPresenter isKindOf: TreePresenter)]
 			ensure: [secondBrowser destroy]!
 
+test_implementorsSendersCaption
+	self testsIssue: #issue209 withTitle: 'MethodListBrowser needs the token in the title bar'.
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectServicesNamed: #('Rowan-Services-Core') in: self packageListPresenter.
+	self selectServicesNamed: (Array with: 'RowanProjectService') in: self classListPresenter.
+	self selectMethodNamed: #branch.
+	methodListBrowser := self projectsPresenter browseImplementors.
+	[self assert: ('Implementors of ''branch'' for *' match: methodListBrowser caption)]
+		ensure: [methodListBrowser destroy].
+	methodListBrowser := self projectsPresenter browseSenders.
+	[self assert: ('Senders of ''branch'' for *' match: methodListBrowser caption)]
+		ensure: [methodListBrowser destroy]!
+
 test_makeDefault
 	| nonDefaultService |
 	self selectServicesNamed: (Array with: 'RowanSample1') in: self projectListPresenter.
@@ -490,6 +503,13 @@ test_methodsContaining
 	sourcePresenter := methodListBrowser primaryPresenter  methodSourcePresenter documentPresenter.
 	self assert: methodListPresenter list size equals: 1.
 	self assert: sourcePresenter view selection = 'I be unique'. !
+
+test_methodsContainingCaption
+	self testsIssue: #issue209 withTitle: 'MethodListBrowser needs the token in the title bar'.
+	methodListBrowser := self projectsPresenter basicBrowseMethodsContaining: 'updateFromSton:'.
+	self halt. 
+	[self assert: ('Methods containing ''updateFromSton:'' for *' match: methodListBrowser caption)]
+		ensure: [methodListBrowser destroy]!
 
 test_multipleCompileMethod
 	self testsIssue: #issue170
@@ -821,11 +841,13 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedMethodNotSameAsClass!public!test defined package! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_gotoDefinedPackage!public!test defined package! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_hierarchySelectTwoBrowsers!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_implementorsSendersCaption!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_makeDefault!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menuAddPackageOnProjectMenu!public!test!test projects! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menuEnablementDoesNotBreak!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_menusDontAddBreaks!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_methodsContaining!public!test! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_methodsContainingCaption!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_multipleCompileMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_noSelectionHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_openProjectsBrowser!public!test projects! !

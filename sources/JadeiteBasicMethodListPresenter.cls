@@ -33,24 +33,12 @@ browseImplementorsOf
 			methodService := RowanMethodService new selector: aSelector.
 			self browseImplementorsOf: methodService]!
 
-browseImplementorsOf: methodService 
-	| service |
-	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: methodService selector).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: methodService selector!
-
 browseSendersOf
 	self withSelectorDo: 
 			[:aSelector |
 			| methodService |
 			methodService := RowanMethodService new selector: aSelector.
 			self browseSendersOf: methodService]!
-
-browseSendersOf: methodService
-	| service |
-	service := RowanQueryService command: #sendersOf: withArgs: (Array with: methodService selector).
-	self issueCommand: (Array with: service).
-	self openMethodListOn: service selecting: methodService selector!
 
 methodListPresenter
 
@@ -92,9 +80,7 @@ selections
 !JadeiteBasicMethodListPresenter categoriesFor: #basicRemoveMethods!private! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseClass!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseImplementorsOf!public! !
-!JadeiteBasicMethodListPresenter categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseSendersOf!public! !
-!JadeiteBasicMethodListPresenter categoriesFor: #browseSendersOf:!public!queries! !
 !JadeiteBasicMethodListPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #onViewOpened!event handlers!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #registerPresentersForUpdates!public!register presenters! !
