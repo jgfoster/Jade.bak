@@ -718,6 +718,7 @@ methodsMenuStrings
 				setEnvironment1;
 				setEnvironment2;
 				fileOutMethods;
+				runMethodTests;
 				gotoMethodDefinedPackage].
 	^#('&Methods' 'Browse &Implementors//browseImplementors' 'Browse Implementors of ...//browseImplementorsOf' 'Browse &Senders//browseSenders' 'Browse Senders of ...//browseSendersOf' '-' 'Browse Hierarchy Implementors//browseHierarchyImplementors' 'Browse Hierarchy Senders//browseHierarchySenders' '-' 'Browse Methods &Containing ...//browseMethodsContaining' 'Browse &History//browseMethodHistory' 'BrowseMethod &Pragmas ...//browseMethodPragmas' '&File out methods ...//fileOutMethods' '-' '&Remove Method(s) ...//removeMethods' #('&Method Environment' '&0//setEnvironment0' '&1//setEnvironment1' '&2//setEnvironment2') 'Run &Tests//runMethodTests' 'Go To Defining Package//gotoMethodDefinedPackage')!
 
@@ -1210,6 +1211,24 @@ renameMethodCategory
 				commandArgs: (Array with: old with: new).
 	self issueCommand: (Array with: service).
 	categoryListPresenter selection: new!
+
+runClassTests
+	| classService answeringService |
+	classService := self selectedClass.
+	classService
+		command: #runClassTests:;
+		commandArgs: (Array with: self selectedClass).
+	answeringService := (self issueCommand: (Array with: classService)) first.
+	answeringService answer
+		ifTrue: 
+			[| testResult |
+			sunitPresenter reset.
+			testResult := JadeTestResult new.
+			testResult
+				passed: (methodListPresenter list select: [:methodService | 'test*' match: methodService selector asString]
+						thenCollect: [:methodService | methodService selector]).
+			sunitPresenter updateResult: testResult.
+			sunitPresenter ensureVisible]!
 
 runMethodTests
 	| classService answeringService |
@@ -1764,6 +1783,7 @@ writeProject
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethodCategories!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #removeMethods:!private!services! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #renameMethodCategory!menu handlers!public! !
+!JadeiteProjectsBrowserPresenter categoriesFor: #runClassTests!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #runMethodTests!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #savePackage!menu handlers!public! !
 !JadeiteProjectsBrowserPresenter categoriesFor: #selectCategoriesNamed:!public!selection! !
