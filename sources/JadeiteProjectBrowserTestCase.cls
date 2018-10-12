@@ -507,7 +507,6 @@ test_methodsContaining
 test_methodsContainingCaption
 	self testsIssue: #issue209 withTitle: 'MethodListBrowser needs the token in the title bar'.
 	methodListBrowser := self projectsPresenter basicBrowseMethodsContaining: 'updateFromSton:'.
-	self halt. 
 	[self assert: ('Methods containing ''updateFromSton:'' for *' match: methodListBrowser caption)]
 		ensure: [methodListBrowser destroy]!
 
