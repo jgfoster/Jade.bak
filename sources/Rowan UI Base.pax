@@ -517,7 +517,7 @@ JadeAutoSystemBrowserPresenter subclass: #RowanSystemBrowserPresenter
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 RowanSystemBrowserPresenter subclass: #JadeiteProjectsBrowserPresenter
-	instanceVariableNames: 'projectListPresenter stonCritical projectInfoTab projectLabel projectDictionaryTabs comparisonPresenter comparisonTab'
+	instanceVariableNames: 'projectListPresenter stonCritical projectInfoTab projectLabel projectDictionaryTabs comparisonPresenter comparisonTab definedClassPackageText definedMethodPackageText'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
