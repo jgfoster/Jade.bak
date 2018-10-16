@@ -384,10 +384,11 @@ initializeServer
 		number := ex errorReport number.
 		notes := ''.
 		number = 2151 ifTrue: [notes := ' (code modification?)'].
-		MessageBox warning: ex description , notes , '
-Server initialization failed. Most functionality will be broken!!'.
-		SessionManager current pause.
-		ex return: nil.
+		self logout.
+		GciLoginFailed
+			signal: 'JadeServer could not be installed:
+' , ex description , notes
+			with: self.
 	].
 
 	((server isKindOf: String) or: [server isKindOf: ByteArray]) ifTrue: [
