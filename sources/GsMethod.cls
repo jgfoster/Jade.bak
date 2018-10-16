@@ -2,7 +2,7 @@
 
 GsObject subclass: #GsMethod
 	instanceVariableNames: 'behavior behaviorName breakPoints category isReadOnly originalSource source stepPoints unimplementedSelectors warnings'
-	classVariableNames: ''
+	classVariableNames: 'GsNMethodClassOop'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GsMethod guid: (GUID fromString: '{b1e7fc81-607c-4011-8820-b81aaa95a565}')!
@@ -175,8 +175,18 @@ warnings
 
 fromOopType: anOopType session: aGciSession
 
-	| string |
+	| string oopClass |
 	(anOopType isKindOf: ExternalInteger) ifFalse: [self error: 'Expected an OopType but got ' , anOopType printString].
+
+	"https://github.com/jgfoster/Jade/issues/178"
+	oopClass := aGciSession _library fetchClass: anOopType.
+	GsNMethodClassOop ifNil: [GsNMethodClassOop := aGciSession executeString: 'GsNMethod' ].
+	oopClass ~= GsNMethodClassOop ifTrue: [
+		| actualClass |
+		actualClass := aGciSession send: #'name' to: oopClass.
+		self error: 'Expected ' , anOopType printString , ' to be a GsNMethod but it is a(n) ' , actualClass.
+	].
+
 	string := aGciSession 
 		serverPerform: #'describeMethod:'
 		with: anOopType.

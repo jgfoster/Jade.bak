@@ -38,7 +38,7 @@ Object subclass: #GsObject
 	classInstanceVariableNames: ''!
 GsObject subclass: #GsMethod
 	instanceVariableNames: 'behavior behaviorName breakPoints category isReadOnly originalSource source stepPoints unimplementedSelectors warnings'
-	classVariableNames: ''
+	classVariableNames: 'GsNMethodClassOop'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GsObject subclass: #GsProcess
