@@ -173,7 +173,7 @@ icon
 	(session notNil and: [session isValidSession not]) ifTrue: [session := nil].
 	session notNil ifTrue: [^Icon fromId: 'InputState.ico'].		"green - logged in"
 	self isAbleToLoadLibrary ifTrue: [^Icon fromId: 'Event.ico'].	"yellow - can log in"
-	^Icon fromId: 32513	"red - not available because we have another DLL loaded (Signal icon)"
+	^Icon fromFile: 'icons\EditDelete.ico' usingLocator: ImageRelativeFileLocator new	"red - not available because we have another DLL loaded"
 !
 
 initializeFromXML: aString
