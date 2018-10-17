@@ -232,7 +232,7 @@ testsIssue: aSymbol withTitle: anObject
 	" a helpful parameter format is #issue<issueNumber>"
 
 	"Issues currently reside in: 
-		https://github.com/ericwinger/Jade/issues/"
+		https://github.com/GemTalk/Jadeite/issues"
 
 	!
 

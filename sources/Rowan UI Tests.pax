@@ -15,6 +15,7 @@ package classNames
 	add: #JadeiteTestResource;
 	add: #JadeiteTranscriptTestCase;
 	add: #TestMessageBox;
+	add: #TestPrompter;
 	yourself.
 
 package methodNames
@@ -24,6 +25,7 @@ package methodNames
 	add: #JadeSUnitPresenter -> #methodListPresenter;
 	add: #JadeSUnitPresenter -> #packageListPresenter;
 	add: 'MessageBox class' -> #new;
+	add: 'Prompter class' -> #on:prompt:caption:;
 	add: 'TestResource class' -> #signalInitializationError;
 	yourself.
 
@@ -36,6 +38,7 @@ package globalAliases: (Set new
 package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Tree\Dolphin Tree Presenter';
 	add: 'GemStone Session';
@@ -50,6 +53,11 @@ package!
 "Class Definitions"!
 
 MessageBox subclass: #TestMessageBox
+	instanceVariableNames: ''
+	classVariableNames: 'PlannedResult'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Prompter subclass: #TestPrompter
 	instanceVariableNames: ''
 	classVariableNames: 'PlannedResult'
 	poolDictionaries: ''
@@ -140,6 +148,34 @@ new
 		ifTrue: [(Smalltalk at: #TestMessageBox) basicNew initialize]
 		ifFalse: [self basicNew initialize] ! !
 !MessageBox class categoriesFor: #new!instance creation!public! !
+
+!Prompter class methodsFor!
+
+on: aValueModel prompt: aStringPrompt caption: aStringCaptionOrNil
+	"Creates an instance of the receiver on aValueModel and aStringPrompt. The prompter is given
+	a caption according to aStringCaptionOrNil; if nil a default caption is used. The prompter
+	is displayed modally, prompting for a String reply. The initial value of the reply field is
+	the original value of aValueModel.
+
+	Answers the reply or nil if the dialog is cancelled
+
+	#JadeiteTestsActive should never be present without the tests loaded"
+
+	| testsActive |
+	testsActive := Smalltalk at: #JadeiteTestsActive
+				ifAbsent: 
+					[^(self
+						createOn: aValueModel
+						prompt: aStringPrompt
+						caption: aStringCaptionOrNil) showModal].
+	^testsActive
+		ifTrue: [(Smalltalk at: #TestPrompter) basicNew result]
+		ifFalse: 
+			[^(self
+				createOn: aValueModel
+				prompt: aStringPrompt
+				caption: aStringCaptionOrNil) showModal]! !
+!Prompter class categoriesFor: #on:prompt:caption:!instance creation!public! !
 
 !TestResource class methodsFor!
 

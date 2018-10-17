@@ -202,33 +202,6 @@ browseImplementors
 	^self browseImplementorsOf: self selectedMethodName.
 !
 
-browseImplementorsOf
-
-	| selector list stream string |
-	(selector := self promptForSelector) isNil ifTrue: [^self].
-	selector := selector reject: [:each | each = Character space].
-	(selector includes: $*) ifFalse: [
-		self browseImplementorsOf: selector.
-		^self.
-	].
-	list := (selector subStrings: $*) asOrderedCollection collect: [:each | each asUppercase].
-	list size - 1 to: 1 do: [:i | list add: '*' afterIndex: i].
-	selector last = $* ifTrue: [list addLast: '*'].
-	stream := (WriteStream on: String new)
-		print: environment;
-		nextPutAll: ' findSelectors';
-		yourself.
-	list do: [:each | stream tab; nextPutAll: each].
-
-	string := self gciSession 
-		serverPerform: #'systemBrowser:' 
-		with: stream contents.
-	list := string subStrings: Character lf.
-	list := list copyFrom: 2 to: list size.
-	(selector := ChoicePrompter choices: list) isNil ifTrue: [^self].
-	self browseImplementorsOf: selector.
-!
-
 browseMethodHistory
 
 	| string |
@@ -2765,7 +2738,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #breakAt:operation:!event handlers!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseGlobalReferences!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementors!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodHistory!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodPragmas!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSelectedClass!menu handlers!public! !

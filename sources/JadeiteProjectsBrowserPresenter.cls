@@ -784,11 +784,7 @@ onViewOpened
 	self updateProjects. !
 
 openDictionaryBrowserOn: classService
-	| shell |
-	Cursor wait showWhile: 
-			[shell := RowanSystemBrowser showOnSession: gciSession.
-			shell selectClass: classService name asString selector: String new.
-			^shell currentCard]!
+	^JadePresenter openDictionaryBrowserOn: classService session: self gciSession!
 
 pkgsMenuStrings
 	0 == 1

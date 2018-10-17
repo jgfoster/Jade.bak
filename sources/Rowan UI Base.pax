@@ -175,6 +175,7 @@ package methodNames
 	add: #JadeSystemBrowserPresenter -> #basicRemoveMethods;
 	add: #JadeSystemBrowserPresenter -> #browseClassReferences;
 	add: #JadeSystemBrowserPresenter -> #browseClassReferences:;
+	add: #JadeSystemBrowserPresenter -> #browseImplementorsOf;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:;
 	add: #JadeSystemBrowserPresenter -> #browseMethodsAndSelect:type:;
 	add: #JadeSystemBrowserPresenter -> #createSchematicWiring;
@@ -285,6 +286,19 @@ package methodNames
 	add: 'JadeInspector class' -> #resource_Default_view;
 	add: 'JadeInspector class' -> #resource_Special_view;
 	add: 'JadeNavigationInspector class' -> #resource_Default_view;
+	add: 'JadePresenter class' -> #allClassesIn:;
+	add: 'JadePresenter class' -> #browseClassIn:;
+	add: 'JadePresenter class' -> #browseImplementorsIn:;
+	add: 'JadePresenter class' -> #browseImplementorsOf:session:;
+	add: 'JadePresenter class' -> #browseMethodsContaining:session:;
+	add: 'JadePresenter class' -> #browseSendersIn:;
+	add: 'JadePresenter class' -> #browseSendersOf:session:;
+	add: 'JadePresenter class' -> #issueCommand:session:;
+	add: 'JadePresenter class' -> #openDictionaryBrowserOn:session:;
+	add: 'JadePresenter class' -> #openMethodListOn:selecting:session:;
+	add: 'JadePresenter class' -> #openMethodListOn:selectingAnyMatch:session:;
+	add: 'JadePresenter class' -> #promptForMatchingSymbolsIn:actionBlock:promptCaption:;
+	add: 'JadePresenter class' -> #promptForSelectorWithCaption:;
 	add: 'JadeServer class' -> #gsString;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
 	add: 'JadeSessionManager class' -> #getUrl;
@@ -1290,22 +1304,144 @@ resource_Default_view
 !JadePresenter methodsFor!
 
 issueCommand: services
-	^BrowserUpdate current issueCommand: services session: self gciSession!
+	^self class issueCommand: services session: self gciSession!
 
 update: services afterStonReplication: stonResults
 	^BrowserUpdate current update: services afterStonReplication: stonResults! !
 !JadePresenter categoriesFor: #issueCommand:!Jadeite!public! !
 !JadePresenter categoriesFor: #update:afterStonReplication:!Jadeite!public! !
 
+!JadePresenter class methodsFor!
+
+allClassesIn: session
+	| browserService |
+	browserService := RowanBrowserService new.
+	browserService command: #allClasses.
+	self issueCommand: (Array with: browserService) session: session.
+	^browserService allClasses!
+
+browseClassIn: session
+	| classService browser |
+	classService := JadeiteFindClassDialog showModal: 'DefaultView' on: (self allClassesIn: session).
+	classService
+		ifNotNil: 
+			[classService projectName = RowanService notRowanizedPackageName
+				ifTrue: [^self openDictionaryBrowserOn: classService session: session].
+			browser := JadeiteProjectsSystemBrowser showOnSession: session.
+			browser currentCard updateAfterFindClass: classService]!
+
+browseImplementorsIn: session
+	^self
+		promptForMatchingSymbolsIn: session
+		actionBlock: [:selector | self browseImplementorsOf: selector session: session]
+		promptCaption: 'Browse Implementors Of ...'!
+
+browseImplementorsOf: string session: session
+	| service shell |
+	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
+	self issueCommand: (Array with: service) session: session.
+	shell := self
+				openMethodListOn: service
+				selecting: string
+				session: session.
+	shell updateCaptionFromSearchString: 'Implementors of ' , string asString printString.
+	^shell!
+
+browseMethodsContaining: string session: session
+	| service shell |
+	service := RowanQueryService command: #methodsContaining: withArgs: (Array with: string).
+	self issueCommand: (Array with: service) session: session.
+	shell := self
+				openMethodListOn: service
+				selectingAnyMatch: string
+				session: session.
+	shell updateCaptionFromSearchString: 'Methods Containing ' , string asString printString.
+	^shell!
+
+browseSendersIn: session
+	^self
+		promptForMatchingSymbolsIn: session
+		actionBlock: [:selector | self browseSendersOf: selector session: session]
+		promptCaption: 'Browse Senders Of ...'!
+
+browseSendersOf: string session: session
+	| service shell |
+	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
+	self issueCommand: (Array with: service) session: session.
+	shell := self
+				openMethodListOn: service
+				selecting: string
+				session: session.
+	shell updateCaptionFromSearchString: 'Senders of ' , string asString printString.
+	^shell!
+
+issueCommand: services session: session
+	^BrowserUpdate current issueCommand: services session: session!
+
+openDictionaryBrowserOn: classService session: session
+	| shell |
+	Cursor wait showWhile: 
+			[shell := RowanSystemBrowser showOnSession: session.
+			shell selectClass: classService name asString selector: String new.
+			^shell currentCard]!
+
+openMethodListOn: service selecting: string session: session
+	^JadeiteMethodListBrowser
+		openOn: service
+		selecting: string
+		session: session!
+
+openMethodListOn: service selectingAnyMatch: string session: session
+	^JadeiteMethodListBrowser
+		openOn: service
+		selectingAnyMatch: string
+		session: session!
+
+promptForMatchingSymbolsIn: session actionBlock: aBlock promptCaption: caption
+	| selector list service symbols |
+	(selector := self promptForSelectorWithCaption: caption) isNil ifTrue: [^self].
+	selector := selector copyWithout: Character space.
+	(selector includes: $*) ifFalse: [^aBlock value: selector].
+	list := (selector subStrings: $*) asOrderedCollection.
+	list size - 1 to: 1 do: [:i | list add: $* afterIndex: i].
+	selector last = $* ifTrue: [list addLast: $*].
+	service := RowanAnsweringService new
+				command: #selectorsMatchingPattern:;
+				commandArgs: (Array with: list asArray).
+	symbols := (self issueCommand: (Array with: service) session: session) first answer.
+	(selector := ChoicePrompter choices: symbols) isNil ifTrue: [^self].
+	^aBlock value: selector!
+
+promptForSelectorWithCaption: caption
+	| string list stream |
+	(string := Prompter prompt: 'Enter selector:' caption: caption) isNil ifTrue: [^nil].
+	((string includes: $:) and: [string includes: Character space])
+		ifTrue: 
+			[list := string subStrings: Character space.
+			list := list select: [:each | each last = $:].
+			stream := WriteStream on: String new.
+			list do: [:each | stream nextPutAll: each].
+			string := stream contents].
+	string := string copyWithout: Character space.
+	^string! !
+!JadePresenter class categoriesFor: #allClassesIn:!browsing support!private! !
+!JadePresenter class categoriesFor: #browseClassIn:!browsing!public! !
+!JadePresenter class categoriesFor: #browseImplementorsIn:!browsing!public! !
+!JadePresenter class categoriesFor: #browseImplementorsOf:session:!browsing!public! !
+!JadePresenter class categoriesFor: #browseMethodsContaining:session:!browsing!public! !
+!JadePresenter class categoriesFor: #browseSendersIn:!browsing!public! !
+!JadePresenter class categoriesFor: #browseSendersOf:session:!browsing!public! !
+!JadePresenter class categoriesFor: #issueCommand:session:!public! !
+!JadePresenter class categoriesFor: #openDictionaryBrowserOn:session:!browsing support!public! !
+!JadePresenter class categoriesFor: #openMethodListOn:selecting:session:!public! !
+!JadePresenter class categoriesFor: #openMethodListOn:selectingAnyMatch:session:!public! !
+!JadePresenter class categoriesFor: #promptForMatchingSymbolsIn:actionBlock:promptCaption:!browsing support!private! !
+!JadePresenter class categoriesFor: #promptForSelectorWithCaption:!browsing support!private! !
+
 !JadePresenterA methodsFor!
 
 basicBrowseMethodsContaining: string
-	| service shell |
-	service := RowanQueryService command: #methodsContaining: withArgs: (Array with: string).
-	self issueCommand: (Array with: service).
-	shell := self openMethodListOn: service selectingAnyMatch: string.
-	shell updateCaptionFromSearchString: 'Methods Containing ' , string asString printString.
-	^shell!
+	^self class browseMethodsContaining: string session: self gciSession!
 
 basicCloneProject: path root: root
 	| service |
@@ -1319,25 +1455,16 @@ basicCloneProject: path root: root
 	self issueCommand: (Array with: service)!
 
 browseImplementorsOf: string
-	| service shell |
-	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	shell := self openMethodListOn: service selecting: string.
-	shell updateCaptionFromSearchString: 'Implementors of ' , string asString printString.
-	^shell!
+	^self class browseImplementorsOf: string session: self gciSession!
 
 browseMethodsContaining
 	| string |
-	(string := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
-	self basicBrowseMethodsContaining: string!
+	(string := Prompter prompt: 'Enter string:' caption: 'Browse Methods Containin ...') isNil
+		ifTrue: [^self].
+	^self basicBrowseMethodsContaining: string!
 
 browseSendersOf: string
-	| service shell |
-	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	shell := self openMethodListOn: service selecting: string.
-	shell updateCaptionFromSearchString: 'Senders of ' , string asString printString.
-	^shell!
+	^self class browseSendersOf: string session: self gciSession!
 
 clearBreakPointAt: stepPoint in: browser
 	| selection |
@@ -1545,8 +1672,8 @@ updateMethodReferences: services
 	services do: [:service | service command: #allReferences].
 	self issueCommand: services.
 	^services! !
-!JadePresenterA categoriesFor: #basicBrowseMethodsContaining:!public! !
-!JadePresenterA categoriesFor: #basicCloneProject:root:!Jadeite!public! !
+!JadePresenterA categoriesFor: #basicBrowseMethodsContaining:!private! !
+!JadePresenterA categoriesFor: #basicCloneProject:root:!Jadeite!private! !
 !JadePresenterA categoriesFor: #browseImplementorsOf:!public!queries! !
 !JadePresenterA categoriesFor: #browseMethodsContaining!public! !
 !JadePresenterA categoriesFor: #browseSendersOf:!menu handlers!public! !
@@ -2256,6 +2383,29 @@ browseClassReferences: className
 	self issueCommand: (Array with: service).
 	^self openMethodListOn: service selecting: className!
 
+browseImplementorsOf
+	| selector list stream string |
+	(selector := self promptForSelector) isNil ifTrue: [^self].
+	selector := selector reject: [:each | each = Character space].
+	(selector includes: $*) ifFalse: [^self browseImplementorsOf: selector].
+	list := (selector subStrings: $*) asOrderedCollection collect: [:each | each asUppercase].
+	list size - 1 to: 1 do: [:i | list add: '*' afterIndex: i].
+	selector last = $* ifTrue: [list addLast: '*'].
+	stream := (WriteStream on: String new)
+				print: environment;
+				nextPutAll: ' findSelectors';
+				yourself.
+	list do: 
+			[:each |
+			stream
+				tab;
+				nextPutAll: each].
+	string := self gciSession serverPerform: #systemBrowser: with: stream contents.
+	list := string subStrings: Character lf.
+	list := list copyFrom: 2 to: list size.
+	(selector := ChoicePrompter choices: list) isNil ifTrue: [^self].
+	self browseImplementorsOf: selector!
+
 browseMethodsAndSelect: aString
 
 	(JadeiteMethodListBrowser showOnSession: self gciSession) primaryPresenter
@@ -2736,6 +2886,7 @@ updateSelector
 !JadeSystemBrowserPresenter categoriesFor: #basicRemoveMethods!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseClassReferences:!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodsAndSelect:type:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #createSchematicWiring!create schemantic wiring!overrides!public! !
