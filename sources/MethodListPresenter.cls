@@ -18,19 +18,9 @@ anyMethod
 browseImplementors
 	self browseImplementorsOf: methodListPresenter selection selector!
 
-browseImplementorsOf
-	
-	self withSelectorDo: [:aSelector | self browseImplementorsOf: aSelector].
-!
-
 browseSenders
 
 	self browseSendersOf: methodListPresenter selection selector.!
-
-browseSendersOf
-
-	self withSelectorDo: [:aSelector | self browseSendersOf: aSelector].
-!
 
 createComponents
 
@@ -179,9 +169,7 @@ withSelectorDo: aBlock
 ! !
 !MethodListPresenter categoriesFor: #anyMethod!public! !
 !MethodListPresenter categoriesFor: #browseImplementors!public! !
-!MethodListPresenter categoriesFor: #browseImplementorsOf!public! !
 !MethodListPresenter categoriesFor: #browseSenders!public! !
-!MethodListPresenter categoriesFor: #browseSendersOf!public! !
 !MethodListPresenter categoriesFor: #createComponents!public! !
 !MethodListPresenter categoriesFor: #createSchematicWiring!drag & drop!public! !
 !MethodListPresenter categoriesFor: #list:!public! !

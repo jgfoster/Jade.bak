@@ -25,21 +25,6 @@ browseClass
 		selectClass: selection className asString
 		selector: selection selector.!
 
-browseImplementorsOf
-
-	self withSelectorDo: 
-			[:aSelector |
-			| methodService |
-			methodService := RowanMethodService new selector: aSelector.
-			self browseImplementorsOf: methodService]!
-
-browseSendersOf
-	self withSelectorDo: 
-			[:aSelector |
-			| methodService |
-			methodService := RowanMethodService new selector: aSelector.
-			self browseSendersOf: methodService]!
-
 methodListPresenter
 
 	^methodListPresenter!
@@ -79,8 +64,6 @@ selections
 	^methodListPresenter selections! !
 !JadeiteBasicMethodListPresenter categoriesFor: #basicRemoveMethods!private! !
 !JadeiteBasicMethodListPresenter categoriesFor: #browseClass!public! !
-!JadeiteBasicMethodListPresenter categoriesFor: #browseImplementorsOf!public! !
-!JadeiteBasicMethodListPresenter categoriesFor: #browseSendersOf!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #methodListPresenter!accessing!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #onViewOpened!event handlers!public! !
 !JadeiteBasicMethodListPresenter categoriesFor: #registerPresentersForUpdates!public!register presenters! !

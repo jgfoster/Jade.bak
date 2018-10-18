@@ -243,13 +243,6 @@ browseSelectedClass
 browseSenders
 	^self browseSendersOf: self selectedMethodName!
 
-browseSendersOf
-
-	| string |
-	(string := self promptForSelector) isNil ifTrue: [^self].
-	self browseSendersOf: string.
-!
-
 buildHistoryMenuNamed: aString from: startIndex to: endIndex by: increment
 
 	| currentClassName popup subMenu |
@@ -2742,7 +2735,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #browseMethodPragmas!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSelectedClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseSenders!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #browseSendersOf!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #buildHistoryMenuNamed:from:to:by:!history!public! !
 !JadeSystemBrowserPresenter categoriesFor: #categoriesMenuStrings!menus!public! !
 !JadeSystemBrowserPresenter categoriesFor: #categoryListPresenter!accessing!public! !

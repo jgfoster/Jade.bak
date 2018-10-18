@@ -10,6 +10,16 @@ JadePresenter comment: ''!
 !JadePresenter categoriesForClass!MVP-Presenters! !
 !JadePresenter methodsFor!
 
+browseImplementorsOf
+	
+	^JadePresenter browseImplementorsIn: self gciSession
+!
+
+browseSendersOf
+	
+	^JadePresenter browseSendersIn: self gciSession
+!
+
 gciSession
 
 	^gciSession
@@ -74,6 +84,8 @@ updateMenuBar: aMenuBar withName: aString itemsFrom: aPresenter
 			at: i.
 	].
 ! !
+!JadePresenter categoriesFor: #browseImplementorsOf!public! !
+!JadePresenter categoriesFor: #browseSendersOf!public! !
 !JadePresenter categoriesFor: #gciSession!public! !
 !JadePresenter categoriesFor: #gciSession:!public! !
 !JadePresenter categoriesFor: #resetCursor!public! !
