@@ -197,11 +197,11 @@ test_implementersFromDebugger
 	[self selectRowanSample1Class.
 	self saveIssue216Method.
 	self openDebuggerOn: 'RowanSample1 new issue216'.
-	debugger documentPresenter view selectionRange: (77 to: 89).	"Select classFromName"	
+	debugger documentPresenter view selectionRange: (77 to: 89).	"Select classFromName"
 	browser := debugger methodSourcePresenter browseImplementors.
 	
-	[self assert: (browser isKindOf: JadeiteMethodListPresenter).
-	self assert: ('*Jadeite Method List*' match: browser topShell caption)]
+	[self assert: (browser isKindOf: JadeiteMethodListBrowser).
+	self assert: ('*Implementors of ''classFromName''*' match: browser topShell caption)]
 			ensure: [browser topShell destroy]]
 			ensure: 
 				[self abortTransaction.
@@ -282,8 +282,8 @@ test_sendersFromDebugger
 	debugger documentPresenter view selectionRange: (77 to: 89).	"Select classFromName"
 	browser := debugger methodSourcePresenter browseSenders.
 	
-	[self assert: (browser isKindOf: JadeiteMethodListPresenter).
-	self assert: ('*Jadeite Method List*' match: browser topShell caption)]
+	[self assert: (browser isKindOf: JadeiteMethodListBrowser).
+	self assert: ('*Senders of ''classFromName''*' match: browser topShell caption)]
 			ensure: [browser topShell destroy]]
 			ensure: 
 				[self abortTransaction.

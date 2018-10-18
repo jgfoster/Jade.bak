@@ -49,16 +49,7 @@ browseFrameMethod
 			shell currentCard findMethod: frame gsMethod selector]!
 
 browseImplementors
-	| service string shell |
-	string := frame gsMethod selector.
-	service := RowanQueryService command: #implementorsOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	shell := JadeiteMethodListBrowser
-				openOn: service
-				selecting: string
-				session: self gciSession.
-	shell updateCaptionFromSearchString: 'Implementors of ' , string asString printString.
-	^shell!
+	^JadePresenter browseImplementorsOf: frame gsMethod selector session: self gciSession!
 
 browseObjectClass
 
@@ -70,16 +61,7 @@ browseObjectClass
 !
 
 browseSenders
-	| service string shell |
-	string := frame gsMethod selector.
-	service := RowanQueryService command: #sendersOf: withArgs: (Array with: string asSymbol).
-	self issueCommand: (Array with: service).
-	shell := JadeiteMethodListBrowser
-				openOn: service
-				selecting: string
-				session: self gciSession.
-	shell updateCaptionFromSearchString: 'Senders of ' , string asString printString.
-	^shell!
+	^JadePresenter browseSendersOf: frame gsMethod selector session: self gciSession!
 
 compilationWarningFrom: methodServices
 
