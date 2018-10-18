@@ -25,7 +25,7 @@ package methodNames
 	add: #JadeSUnitPresenter -> #methodListPresenter;
 	add: #JadeSUnitPresenter -> #packageListPresenter;
 	add: 'MessageBox class' -> #new;
-	add: 'Prompter class' -> #on:prompt:caption:;
+	add: 'Prompter class' -> #createOn:;
 	add: 'TestResource class' -> #signalInitializationError;
 	yourself.
 
@@ -151,31 +151,14 @@ new
 
 !Prompter class methodsFor!
 
-on: aValueModel prompt: aStringPrompt caption: aStringCaptionOrNil
-	"Creates an instance of the receiver on aValueModel and aStringPrompt. The prompter is given
-	a caption according to aStringCaptionOrNil; if nil a default caption is used. The prompter
-	is displayed modally, prompting for a String reply. The initial value of the reply field is
-	the original value of aValueModel.
-
-	Answers the reply or nil if the dialog is cancelled
-
-	#JadeiteTestsActive should never be present without the tests loaded"
-
+createOn: aValueModel
 	| testsActive |
-	testsActive := Smalltalk at: #JadeiteTestsActive
-				ifAbsent: 
-					[^(self
-						createOn: aValueModel
-						prompt: aStringPrompt
-						caption: aStringCaptionOrNil) showModal].
+	testsActive := Smalltalk at: #JadeiteTestsActive ifAbsent: [^super createOn: aValueModel].
 	^testsActive
-		ifTrue: [(Smalltalk at: #TestPrompter) basicNew result]
+		ifTrue: [(Smalltalk at: #TestPrompter) basicNew]
 		ifFalse: 
-			[^(self
-				createOn: aValueModel
-				prompt: aStringPrompt
-				caption: aStringCaptionOrNil) showModal]! !
-!Prompter class categoriesFor: #on:prompt:caption:!instance creation!public! !
+			[super createOn: aValueModel]! !
+!Prompter class categoriesFor: #createOn:!instance creation!public! !
 
 !TestResource class methodsFor!
 

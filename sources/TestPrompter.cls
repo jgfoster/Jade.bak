@@ -10,10 +10,20 @@ TestPrompter comment: ''!
 !TestPrompter categoriesForClass!MVP-Presenters! !
 !TestPrompter methodsFor!
 
-result
+answer
+	^self class plannedResult!
 
-	^self class plannedResult! !
-!TestPrompter categoriesFor: #result!public! !
+caption: ignore!
+
+prompt: ignore!
+
+showModalView
+
+	"avoid raising the dialog window"! !
+!TestPrompter categoriesFor: #answer!public! !
+!TestPrompter categoriesFor: #caption:!public! !
+!TestPrompter categoriesFor: #prompt:!public! !
+!TestPrompter categoriesFor: #showModalView!public! !
 
 !TestPrompter class methodsFor!
 
