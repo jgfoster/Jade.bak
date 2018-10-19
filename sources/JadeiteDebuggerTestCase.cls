@@ -174,13 +174,13 @@ test_browseClass
 	
 	[self assert: (browser isKindOf: JadeiteProjectsBrowserPresenter).
 	self assert: browser classListPresenter selection name = 'Rowan']
-			ensure: [browser topShell destroy].
+			ensure: [self assert: browser topShell  view close].
 	debugger documentPresenter view selectionRange: (105 to: 110).	"Select String"
 	browser := debugger methodSourcePresenter browseSelectedClass.
 	
 	[self assert: (browser isKindOf: RowanSystemBrowser).
 	self assert: ('*String*' match: browser currentCard selectedClasses first)]
-			ensure: [browser topShell destroy]]
+			ensure: [self assert: browser topShell  view close]]
 			ensure: 
 				[self abortTransaction.
 				self unloadSampleProject.
@@ -202,7 +202,7 @@ test_implementersFromDebugger
 	
 	[self assert: (browser isKindOf: JadeiteMethodListBrowser).
 	self assert: ('*Implementors of ''classFromName''*' match: browser topShell caption)]
-			ensure: [browser topShell destroy]]
+			ensure: [self assert: browser topShell view close]]
 			ensure: 
 				[self abortTransaction.
 				self unloadSampleProject.
@@ -218,10 +218,10 @@ test_implementorsSendersCaption
 		assert: debugger frameListPresenter list first = 'RowanProjectService >> branch @1 line 1'.
 	methodListBrowser := debugger browseImplementors.
 	[self assert: ('Implementors of ''branch'' for *' match: methodListBrowser caption)]
-		ensure: [methodListBrowser destroy].
+		ensure: [self assert: methodListBrowser view close].
 	methodListBrowser := debugger browseSenders.
 	[self assert: ('Senders of ''branch'' for *' match: methodListBrowser caption)]
-		ensure: [methodListBrowser destroy]!
+		ensure: [self assert: methodListBrowser view close]!
 
 test_restartInBlock
 	| restartProcess |
@@ -284,7 +284,7 @@ test_sendersFromDebugger
 	
 	[self assert: (browser isKindOf: JadeiteMethodListBrowser).
 	self assert: ('*Senders of ''classFromName''*' match: browser topShell caption)]
-			ensure: [browser topShell destroy]]
+			ensure: [self assert: browser topShell view close]]
 			ensure: 
 				[self abortTransaction.
 				self unloadSampleProject.
