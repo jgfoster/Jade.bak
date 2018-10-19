@@ -1608,6 +1608,7 @@ methodHoverStart: aPoint
 	indicator := methodSourcePresenter view indicators
 		detect: [:each | each range includes: charIndex]
 		ifNone: [^self].
+	indicator tag ifNil: [^self].	"https://github.com/jgfoster/Jade/issues/188"
 	methodSourcePresenter view 
 		showCallTip: indicator tag
 		at: charIndex.
