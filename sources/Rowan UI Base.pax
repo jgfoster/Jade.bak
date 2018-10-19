@@ -220,6 +220,7 @@ package methodNames
 	add: #MCPatchBrowser -> #browseChangedThing;
 	add: #MCPatchBrowser -> #operationSelected;
 	add: #MethodListPresenter -> #browseClass;
+	add: #MethodListPresenter -> #selectedMethodsAreTestCases;
 	add: #MethodSourcePresenter -> #editMenuStrings;
 	add: #MethodSourcePresenter -> #editSaveMethod;
 	add: #MethodSourcePresenter -> #fileSave;
@@ -298,6 +299,7 @@ package methodNames
 	add: 'JadePresenter class' -> #openMethodListOn:selectingAnyMatch:session:;
 	add: 'JadePresenter class' -> #promptForMatchingSymbolsIn:actionBlock:promptCaption:;
 	add: 'JadePresenter class' -> #promptForSelectorWithCaption:;
+	add: 'JadePresenter class' -> #runMethodTests:in:;
 	add: 'JadeServer class' -> #gsString;
 	add: 'JadeServer64bit32 class' -> #gsClassDefinitionStringFor:;
 	add: 'JadeSessionManager class' -> #getUrl;
@@ -1422,7 +1424,16 @@ promptForSelectorWithCaption: caption
 			list do: [:each | stream nextPutAll: each].
 			string := stream contents].
 	string := string copyWithout: Character space.
-	^string! !
+	^string!
+
+runMethodTests: methodServices in: session
+	| answeringService |
+	answeringService := RowanAnsweringService new.
+	answeringService
+		command: #runMethodTests:;
+		commandArgs: (Array with: methodServices).
+	answeringService := (self issueCommand: (Array with: answeringService) session: session) first.
+	^answeringService answer! !
 !JadePresenter class categoriesFor: #allClassesIn:!browsing support!private! !
 !JadePresenter class categoriesFor: #browseClassIn:!browsing!public! !
 !JadePresenter class categoriesFor: #browseImplementorsIn:!browsing!public! !
@@ -1436,6 +1447,7 @@ promptForSelectorWithCaption: caption
 !JadePresenter class categoriesFor: #openMethodListOn:selectingAnyMatch:session:!public! !
 !JadePresenter class categoriesFor: #promptForMatchingSymbolsIn:actionBlock:promptCaption:!browsing support!private! !
 !JadePresenter class categoriesFor: #promptForSelectorWithCaption:!browsing support!private! !
+!JadePresenter class categoriesFor: #runMethodTests:in:!public! !
 
 !JadePresenterA methodsFor!
 
@@ -1596,6 +1608,7 @@ openMethodListOn: service selectingAnyMatch: string
 refreshBreakPointsIn: methodSourcePresenter
 	| indicators selection |
 	selection := self methodListSelection.
+	selection ifNil:[^self]. 
 	methodSourcePresenter view clearContainerIndicators.
 	indicators := OrderedCollection new.
 	1 to: selection stepPoints size
@@ -3126,8 +3139,16 @@ browseClass
 	(browserClass showOnSession: self gciSession)
 		selectClass: selection gsClass name
 		selector: selection name.
-! !
+!
+
+selectedMethodsAreTestCases
+	| classServices |
+	classServices := methodListPresenter selections
+				collect: [:methodService | methodService classService].
+	BrowserUpdate current updateServices: classServices session: self gciSession.
+	^classServices allSatisfy: [:classService | classService isTestCase]! !
 !MethodListPresenter categoriesFor: #browseClass!public! !
+!MethodListPresenter categoriesFor: #selectedMethodsAreTestCases!public!testing! !
 
 !MethodSourcePresenter methodsFor!
 

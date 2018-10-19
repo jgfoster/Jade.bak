@@ -69,7 +69,7 @@ updateMethodSource
 	methodListPresenter selections isEmpty ifTrue: [^methodSourcePresenter value: String new].
 	methodListPresenter selections size = 1 ifTrue:[^self updateSingleMethodSource].	
 	self updateMultiMethodComparison.
-	self refreshBreakPointsIn: methodSourcePresenter
+	self refreshBreakPointsIn: methodSourcePresenter documentPresenter
 	!
 
 updateMultiMethodComparison

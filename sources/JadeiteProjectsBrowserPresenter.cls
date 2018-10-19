@@ -1262,16 +1262,10 @@ runClassTests
 			sunitPresenter ensureVisible]!
 
 runMethodTests
-	| classService answeringService |
-	classService := self selectedClass.
-	classService
-		command: #runMethodTests:;
-		commandArgs: (Array with: methodListPresenter selections).
-	answeringService := (self issueCommand: (Array with: classService)) first.
-	answeringService answer
+	(JadePresenter runMethodTests: methodListPresenter selections in: self gciSession)
 		ifTrue: 
 			[| testResult |
-			sunitPresenter reset. 
+			sunitPresenter reset.
 			testResult := JadeTestResult new.
 			testResult
 				passed: (methodListPresenter selections collect: [:methodService | methodService selector]).

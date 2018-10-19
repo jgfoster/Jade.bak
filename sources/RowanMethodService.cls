@@ -96,6 +96,10 @@ className
 className: anObject
 	className := anObject!
 
+classService
+
+	^RowanClassService named: className!
+
 clearBreakAtStepPoint: anInteger session: aGciSession 
 
 	| service stonString stonResults |
@@ -435,6 +439,7 @@ user: anObject
 !RowanMethodService categoriesFor: #classMethodDisplayString!displaying!public! !
 !RowanMethodService categoriesFor: #className!accessing!private! !
 !RowanMethodService categoriesFor: #className:!accessing!private! !
+!RowanMethodService categoriesFor: #classService!public! !
 !RowanMethodService categoriesFor: #clearBreakAtStepPoint:session:!public! !
 !RowanMethodService categoriesFor: #compilationWarnings!accessing!private! !
 !RowanMethodService categoriesFor: #copyBasicsFrom:!public!updating! !
