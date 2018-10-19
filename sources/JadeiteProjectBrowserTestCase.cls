@@ -660,6 +660,25 @@ test_removeProject
 	self assert: self categoryListPresenter list isEmpty.
 	self assert: self methodListPresenter list isEmpty!
 
+test_rowanTestsHierarchy
+	
+	self testsIssue: #issue239 withTitle: 'long update times possible when selecting a package with `hierarchy` tab selected'.
+	self selectServicesNamed: (Array with: 'Rowan') in: self projectListPresenter.
+	self selectHierarchyTab.
+ 	self selectServicesNamed: #('Rowan-Tests') in: self packageListPresenter. "<-- infinite recursion occured here"
+	self assert: self projectsPresenter classListPresenter selections isEmpty.  
+	self selectTreeServicesNamed: (Array with: 'TestCase') in: self classHierarchyPresenter.
+	self assert: self projectsPresenter classHierarchyPresenter selection name = 'TestCase'. 
+	self selectClassListTab.
+	self assert: self projectsPresenter classListPresenter selections isEmpty.  "TestCase not in project"
+	self selectHierarchyTab.
+	self assert: self projectsPresenter classListPresenter selections isEmpty.  
+	self selectTreeServicesNamed: (Array with: 'RwEditToolTest') in: self classHierarchyPresenter.
+	self assert: self projectsPresenter classHierarchyPresenter selection name = 'RwEditToolTest'. 
+	self selectClassListTab.
+	self selectServicesNamed: (Array with: 'RwEditToolTest') in: self classListPresenter.
+!
+
 test_saveClassMethod
 	| source |
 	self selectRowanSample1Class.
@@ -854,6 +873,7 @@ waitForPresenter: presenter
 !JadeiteProjectBrowserTestCase categoriesFor: #test_projectDisplaysSync!public!test projects! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_projectRemoved!public!test projects! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_removeProject!public!test projects! !
+!JadeiteProjectBrowserTestCase categoriesFor: #test_rowanTestsHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveClassMethod!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveClassMethodHierarchy!public!test! !
 !JadeiteProjectBrowserTestCase categoriesFor: #test_saveMethod!public!test! !
