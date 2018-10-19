@@ -162,51 +162,41 @@ test_browseClass
 	| browser |
 	self testsIssue: #issue169 withTitle: 'Debugger menu option Browse Class broken'.
 	self openProjectsBrowser.
-	self abortTransaction.	"ensure we don't have unsaved changes in the images"
-	self ensureRowanSample1Available.	"load sample project after abort  - especially until https://github.com/GemTalk/Rowan/issues/349 is fixed."
-	self commitTransaction.
+	self ensureRowanSample1Available.
 	
 	[self selectRowanSample1Class.
 	self saveIssue169Method.
 	self openDebuggerOn: 'RowanSample1 new issue169'.
 	debugger documentPresenter view selectionRange: (81 to: 85).	"Select Rowan"
-	browser := debugger methodSourcePresenter browseSelectedClass.
+	self debuggerDo: [browser := debugger methodSourcePresenter browseSelectedClass].
 	
 	[self assert: (browser isKindOf: JadeiteProjectsBrowserPresenter).
 	self assert: browser classListPresenter selection name = 'Rowan']
-			ensure: [self assert: browser topShell  view close].
+			ensure: [self assert: browser topShell view close].
 	debugger documentPresenter view selectionRange: (105 to: 110).	"Select String"
-	browser := debugger methodSourcePresenter browseSelectedClass.
+	self debuggerDo: [browser := debugger methodSourcePresenter browseSelectedClass].
 	
 	[self assert: (browser isKindOf: RowanSystemBrowser).
 	self assert: ('*String*' match: browser currentCard selectedClasses first)]
-			ensure: [self assert: browser topShell  view close]]
-			ensure: 
-				[self abortTransaction.
-				self unloadSampleProject.
-				self commitTransaction	"can remove this when #349 is fixed. See setUp"]!
+			ensure: [self assert: browser topShell view close]]
+			ensure: [self unloadSampleProject]!
 
 test_implementersFromDebugger
 	| browser |
 	self testsIssue: #issue216 withTitle: 'method list in method browser reorders on accept'.
 	self openProjectsBrowser.
-	self abortTransaction.	"ensure we don't have unsaved changes in the images"
-	self ensureRowanSample1Available.	"load sample project after abort  - especially until https://github.com/GemTalk/Rowan/issues/349 is fixed."
-	self commitTransaction.
+	self ensureRowanSample1Available.
 	
 	[self selectRowanSample1Class.
 	self saveIssue216Method.
 	self openDebuggerOn: 'RowanSample1 new issue216'.
 	debugger documentPresenter view selectionRange: (77 to: 89).	"Select classFromName"
-	browser := debugger methodSourcePresenter browseImplementors.
+	self debuggerDo: [browser := debugger methodSourcePresenter browseImplementors].
 	
 	[self assert: (browser isKindOf: JadeiteMethodListBrowser).
 	self assert: ('*Implementors of ''classFromName''*' match: browser topShell caption)]
 			ensure: [self assert: browser topShell view close]]
-			ensure: 
-				[self abortTransaction.
-				self unloadSampleProject.
-				self commitTransaction	"can remove this when #349 is fixed. See setUp"]!
+			ensure: [self unloadSampleProject]!
 
 test_implementorsSendersCaption
 	| methodListBrowser |
@@ -216,10 +206,10 @@ test_implementorsSendersCaption
 		debuggerDo: [debugger stepOver];
 		debuggerDo: [debugger stepInto];
 		assert: debugger frameListPresenter list first = 'RowanProjectService >> branch @1 line 1'.
-	methodListBrowser := debugger browseImplementors.
+	self debuggerDo: [methodListBrowser := debugger browseImplementors].
 	[self assert: ('Implementors of ''branch'' for *' match: methodListBrowser caption)]
 		ensure: [self assert: methodListBrowser view close].
-	methodListBrowser := debugger browseSenders.
+	self debuggerDo: [methodListBrowser := debugger browseSenders].
 	[self assert: ('Senders of ''branch'' for *' match: methodListBrowser caption)]
 		ensure: [self assert: methodListBrowser view close]!
 
@@ -280,7 +270,7 @@ test_sendersFromDebugger
 	self saveIssue216Method.
 	self openDebuggerOn: 'RowanSample1 new issue216'.
 	debugger documentPresenter view selectionRange: (77 to: 89).	"Select classFromName"
-	browser := debugger methodSourcePresenter browseSenders.
+	self debuggerDo: [browser := debugger methodSourcePresenter browseSenders].
 	
 	[self assert: (browser isKindOf: JadeiteMethodListBrowser).
 	self assert: ('*Senders of ''classFromName''*' match: browser topShell caption)]
@@ -748,14 +738,14 @@ testUnsavedChangesActionStepping
 !JadeiteDebuggerTestCase categoriesFor: #menuItemIsEnabled:!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #methodListBrowser!private! !
 !JadeiteDebuggerTestCase categoriesFor: #openDebuggerOn:!private! !
-!JadeiteDebuggerTestCase categoriesFor: #selectFrameAt:!private!support!tests! !
+!JadeiteDebuggerTestCase categoriesFor: #selectFrameAt:!private!support! !
 !JadeiteDebuggerTestCase categoriesFor: #setUp!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #systemBrowser!private! !
 !JadeiteDebuggerTestCase categoriesFor: #tearDown!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #terminateGsProcess!private!running! !
 !JadeiteDebuggerTestCase categoriesFor: #test_browseClass!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_implementersFromDebugger!public!tests! !
-!JadeiteDebuggerTestCase categoriesFor: #test_implementorsSendersCaption!public! !
+!JadeiteDebuggerTestCase categoriesFor: #test_implementorsSendersCaption!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_restartInBlock!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_selectAfterDiveNoStepPoint!public!tests! !
 !JadeiteDebuggerTestCase categoriesFor: #test_sendersFromDebugger!public!tests! !
