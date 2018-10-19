@@ -262,9 +262,7 @@ test_sendersFromDebugger
 	| browser |
 	self testsIssue: #issue216 withTitle: 'method list in method browser reorders on accept'.
 	self openProjectsBrowser.
-	self abortTransaction.	"ensure we don't have unsaved changes in the images"
-	self ensureRowanSample1Available.	"load sample project after abort  - especially until https://github.com/GemTalk/Rowan/issues/349 is fixed."
-	self commitTransaction.
+	self ensureRowanSample1Available.
 	
 	[self selectRowanSample1Class.
 	self saveIssue216Method.
@@ -275,10 +273,7 @@ test_sendersFromDebugger
 	[self assert: (browser isKindOf: JadeiteMethodListBrowser).
 	self assert: ('*Senders of ''classFromName''*' match: browser topShell caption)]
 			ensure: [self assert: browser topShell view close]]
-			ensure: 
-				[self abortTransaction.
-				self unloadSampleProject.
-				self commitTransaction	"can remove this when #349 is fixed. See setUp"]!
+			ensure: [self unloadSampleProject]!
 
 test_terminateDoesNotWalkback
 	"Terminate a process other than the primary one"
