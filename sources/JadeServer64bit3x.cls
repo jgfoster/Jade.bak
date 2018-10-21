@@ -141,12 +141,6 @@ debugString: aString fromContext: anObject environment: anInteger
 	].
 !
 
-describeMethod: aMethod
-	"Provide info needed to create a GsMethod in Jade client"
-
-	(aMethod class name == #'GsNMethod') ifFalse: [self error: 'Expected a GsNMethod but got ' , aMethod class name].
-	^super describeMethod: aMethod!
-
 executeString: aString fromContext: anObject environment: anInteger
 
 	[
@@ -185,7 +179,6 @@ nextPutAll: anObject
 !JadeServer64bit3x categoriesFor: #_keysForDictionary:!private! !
 !JadeServer64bit3x categoriesFor: #_methodSignatureForSelector:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #debugString:fromContext:environment:!public! !
-!JadeServer64bit3x categoriesFor: #describeMethod:!public! !
 !JadeServer64bit3x categoriesFor: #executeString:fromContext:environment:!public! !
 !JadeServer64bit3x categoriesFor: #homeMethodFor:!private! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !

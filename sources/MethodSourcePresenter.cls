@@ -332,7 +332,7 @@ update
 
 	| newSource string |
 	documentPresenter view cancelCallTip.
-	newSource := gsMethod source.
+	newSource := gsMethod ifNil: [''] ifNotNil: [gsMethod source].
 	documentPresenter view isModified ifTrue: [
 		newSource = originalSource ifTrue: [^self].
 		(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!') ifTrue: [

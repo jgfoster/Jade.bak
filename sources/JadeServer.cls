@@ -418,11 +418,15 @@ debugString: aString fromContext: anObject environment: anInteger
 		evaluateInContext: anObject 
 		symbolList: GsSession currentSession symbolList. !
 
-describeMethod: aMethod
+describeMethodNamed: aUtf8 inClass: aClass
 	"Provide info needed to create a GsMethod in Jade client"
 
+	| method selector |
+	selector := aUtf8 decodeToUnicode asSymbol.
+	method := aClass compiledMethodAt: selector otherwise: nil.
+	method ifNil: [^''].
 	writeStream := self _writeStreamOnString.
-	self _describeMethod: (self homeMethodFor: aMethod).
+	self _describeMethod: (self homeMethodFor: method).
 	^self _encodeString: writeStream contents
 !
 
@@ -631,7 +635,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #contents!public! !
 !JadeServer categoriesFor: #cr!public!Transcript! !
 !JadeServer categoriesFor: #debugString:fromContext:environment:!public! !
-!JadeServer categoriesFor: #describeMethod:!Debugger!GsObject!public!System Browser! !
+!JadeServer categoriesFor: #describeMethodNamed:inClass:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #errorListFor:!public! !
 !JadeServer categoriesFor: #executeString:fromContext:environment:!public! !
 !JadeServer categoriesFor: #hasDirtyObjects!public! !

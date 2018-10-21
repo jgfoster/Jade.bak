@@ -122,10 +122,10 @@ createSchematicWiring
 	methodListPresenter
 		when: #'methodSelectionChanged'	send: #'updateSource'		to: self;
 		when: #'selectionChanging:'		send: #'selectionChanging:'	to: self;
-		when: #'leftButtonPressed:'		send: #'onLeftButtonPressed:'	to: self;
+		when: #'leftButtonPressed:'			send: #'onLeftButtonPressed:'	to: self;
 		yourself.
 	methodSourcePresenter
-		when: #'needUser'				send: #'userSelection'			to: self;
+		when: #'needUser'				send: #'userSelection'		to: self;
 		when: #'savedMethod:inClass:' 		send: #'doSearch'			to: self;
 		yourself.
 !
@@ -256,20 +256,17 @@ updateSaveMethodOop: anInteger
 !
 
 updateSource
-
-	| gsClass gsMethod2 gsMethod |
-	(gsClass := self selectedClass) ifNotNil: [
-		(gsMethod2 := methodListPresenter selectedMethod) ifNotNil: [
-			gsMethod2 gsClass ~= gsClass ifTrue: [self error: 'Method not from selected class!!'].
-			gsMethod := GsMethod
-				fromOopType: gsMethod2 oopType
-				session: gsMethod2 gciSession.
-		].
+"
+	Triggered by #methodSelectionChanged event.
+"
+	| gsMethod2 gsMethod |
+	(gsMethod2 := methodListPresenter selectedMethod) ifNil: [
+		methodSourcePresenter gsMethod: nil.
+		^self.
 	].
-	gsMethod ifNotNil: [methodSourcePresenter gsMethod: gsMethod.
-					self doSearch].
-
-	methodListPresenter selectedMethod ifNil: [^self].
+	gsMethod := GsMethod fromGsMethod2: gsMethod2.
+	methodSourcePresenter gsMethod: gsMethod.
+	self doSearch.
 	methodSourcePresenter documentPresenter lastGsShape: (self registry getClass: methodListPresenter selectedMethod gsClass name).! !
 !JadeMethodListPresenter categoriesFor: #browse:gsMethod:!public! !
 !JadeMethodListPresenter categoriesFor: #browse:method:!public! !
