@@ -293,7 +293,7 @@ idleWarning
 		showModalWhile: [:progress | 
 			1 to: 300 do: [:i | 
 				progress 
-					caption: 'Your idle session has unsaved changes!!';
+					caption: 'Idle Session Warning';
 					value: i / 3; 
 					text: 'To avoid an excessive commit record backlog, ' , 
 						'this session will abort in ' , (300 - i) displayString, ' seconds...';

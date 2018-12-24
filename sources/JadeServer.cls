@@ -462,9 +462,8 @@ heartbeat
 	(Delay forMilliseconds: 5) wait.
 	array := System descriptionOfSession: System session.
 	viewAge := System timeGmt - (array at: 5).
-	(array at: 8) ifFalse: [^0].	"Session has oldest Commit Record"
-	self hasDirtyObjects ifFalse: [self abort. ^0].
-	^viewAge
+	(array at: 8) ifTrue: [^viewAge].	"Session has oldest Commit Record"
+	^0
 !
 
 homeMethodFor: aGsMethod
