@@ -22,7 +22,7 @@ addOop: aGsOop
 getNextObject
 
 	objectIndex := (objectIndex >= oopsCollection size) 
-				ifTrue: [1]
+				ifTrue: [^self]
 				ifFalse:[objectIndex + 1].
 
 	self setNewInspectedObject.
@@ -31,7 +31,7 @@ getNextObject
 getPreviousObject
 
 	objectIndex := (objectIndex <= 1) 
-				ifTrue: [oopsCollection size]
+				ifTrue: [^self]
 				ifFalse:[objectIndex - 1].
 
 	self setNewInspectedObject.!
@@ -85,6 +85,16 @@ openNormalInspector
 		ifFalse: [JadeInspector showOn: instVarListPresenter selection value session: gciSession]
 !
 
+queryCommand: aCommandQuery
+	| cmd |
+
+	cmd := aCommandQuery commandSymbol.
+
+	cmd == #getNextObject ifTrue: [aCommandQuery isEnabled: (objectIndex < oopsCollection size). ^true].
+	cmd == #getPreviousObject ifTrue: [aCommandQuery isEnabled: (objectIndex > 1). ^true].
+
+	super queryCommand: aCommandQuery.!
+
 removeObject
 
 	(oopsCollection size > 1) ifFalse: [^self].
@@ -113,8 +123,8 @@ setNewInspectedObject
 	self displayObject.
 ! !
 !JadeNavigationInspector categoriesFor: #addOop:!public! !
-!JadeNavigationInspector categoriesFor: #getNextObject!public! !
-!JadeNavigationInspector categoriesFor: #getPreviousObject!public! !
+!JadeNavigationInspector categoriesFor: #getNextObject!object navigation!public! !
+!JadeNavigationInspector categoriesFor: #getPreviousObject!object navigation!public! !
 !JadeNavigationInspector categoriesFor: #initialize!public! !
 !JadeNavigationInspector categoriesFor: #inspectInstVar!public! !
 !JadeNavigationInspector categoriesFor: #objectIndex!accessing!private! !
@@ -123,9 +133,10 @@ setNewInspectedObject
 !JadeNavigationInspector categoriesFor: #oopsCollection!accessing!private! !
 !JadeNavigationInspector categoriesFor: #oopsCollection:!accessing!private! !
 !JadeNavigationInspector categoriesFor: #openNormalInspector!public! !
+!JadeNavigationInspector categoriesFor: #queryCommand:!object navigation!public! !
 !JadeNavigationInspector categoriesFor: #removeObject!public! !
 !JadeNavigationInspector categoriesFor: #selectedInstVar!public! !
-!JadeNavigationInspector categoriesFor: #setNewInspectedObject!public! !
+!JadeNavigationInspector categoriesFor: #setNewInspectedObject!object navigation!public! !
 
 !JadeNavigationInspector class methodsFor!
 
