@@ -282,7 +282,7 @@ heartbeat: receiver arguments: arguments
 				continue: error tag contextOop.
 		].
 	].
-	result < 60 ifFalse: [self idleWarning].
+	0 < result ifFalse: [self idleWarning].
 
 !
 

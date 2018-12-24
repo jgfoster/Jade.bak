@@ -462,8 +462,9 @@ heartbeat
 	(Delay forMilliseconds: 5) wait.
 	array := System descriptionOfSession: System session.
 	viewAge := System timeGmt - (array at: 5).
-	(array at: 8) ifTrue: [^viewAge].	"Session has oldest Commit Record"
-	^0
+	(array at: 8) ifFalse: [^0].	"Session does not have oldest Commit Record"
+	(System stoneCacheStatisticWithName: 'CommitRecordCount') < (System stoneConfigurationAt: 'StnSignalAbortCrBacklog') ifTrue: [^0].
+	^viewAge
 !
 
 homeMethodFor: aGsMethod
