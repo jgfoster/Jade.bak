@@ -456,6 +456,17 @@ hasDirtyObjects
 
 	^System _writtenObjects notEmpty!
 
+heartbeat
+
+	| array viewAge |
+	(Delay forMilliseconds: 5) wait.
+	array := System descriptionOfSession: System session.
+	viewAge := System timeGmt - (array at: 5).
+	(array at: 8) ifFalse: [^0].	"Session has oldest Commit Record"
+	self hasDirtyObjects ifFalse: [self abort. ^0].
+	^viewAge
+!
+
 homeMethodFor: aGsMethod
 
 	^aGsMethod!
@@ -639,6 +650,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #errorListFor:!public! !
 !JadeServer categoriesFor: #executeString:fromContext:environment:!public! !
 !JadeServer categoriesFor: #hasDirtyObjects!public! !
+!JadeServer categoriesFor: #heartbeat!public!Sessions! !
 !JadeServer categoriesFor: #homeMethodFor:!private! !
 !JadeServer categoriesFor: #initialize!public! !
 !JadeServer categoriesFor: #makeListener!private! !

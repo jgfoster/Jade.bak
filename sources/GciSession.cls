@@ -247,6 +247,10 @@ hardBreak
 	library hardBreakSession: gciSessionId.
 !
 
+hasHeartbeat
+
+	^heartbeatProcess notNil!
+
 hasServer
 
 	^server notNil.
@@ -259,7 +263,7 @@ heartbeat: receiver arguments: arguments
 	result := self returningResultOrErrorDo: [
 		library 
 			session: gciSessionId
-			send: 'delay' 
+			send: 'heartbeat' 
 			to: receiver
 			with: arguments
 	].
@@ -277,6 +281,32 @@ heartbeat: receiver arguments: arguments
 				session: gciSessionId
 				continue: error tag contextOop.
 		].
+	].
+	result < 60 ifFalse: [self idleWarning].
+
+!
+
+idleWarning
+
+	| response |
+	response := ProgressDialog
+		showModalWhile: [:progress | 
+			1 to: 300 do: [:i | 
+				progress 
+					caption: 'Your idle session has unsaved changes!!';
+					value: i / 3; 
+					text: 'To avoid an excessive commit record backlog, ' , 
+						'this session will abort in ' , (300 - i) displayString, ' seconds...';
+					yourself.
+				Processor sleep: 1000.
+			].
+			true.
+		].
+	response ifNil: [		"cancel"
+		(Delay forSeconds: 60) wait.
+	] ifNotNil: [		"timeo0ut"
+		self abort.
+		[MessageBox warning: 'To avoid an excessive commit record backlog your session has been aborted.' caption: 'Idle session lost data!!'] fork.
 	].
 !
 
@@ -557,9 +587,11 @@ oopTypeWithOop: anInteger
 
 postLoginAs: aString 
 
-	self initializeServer.
-	self setInitials: aString.		"This gets back the session and serial number and some preferences"
-!
+	self 
+		initializeServer;
+		setInitials: aString;		"This gets back the session and serial number and some preferences"
+		startHeartbeat;
+		yourself.!
 
 printString: anOopType
 
@@ -839,11 +871,8 @@ softBreak
 
 startHeartbeat
 		"Private - Every second execute something inexpensive on the server (a Delay) 
-		so that background processes on the server get a chance to run.
+		so that background processes on the server get a chance to run."
 
-		Could be called from #'postLogin'"
-
-	1 = 1 ifTrue: [^self].
 	heartbeatProcess := [
 		| receiver arguments |
 		receiver := self oopTypeFor: server.
@@ -1071,8 +1100,10 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #gsHasPragmas!public! !
 !GciSession categoriesFor: #handlingClientForwarderSendDo:!long running!private! !
 !GciSession categoriesFor: #hardBreak!Jade!public! !
+!GciSession categoriesFor: #hasHeartbeat!heartbeat!public! !
 !GciSession categoriesFor: #hasServer!public! !
 !GciSession categoriesFor: #heartbeat:arguments:!heartbeat!private! !
+!GciSession categoriesFor: #idleWarning!heartbeat!private! !
 !GciSession categoriesFor: #incrementEventCount!long running!private! !
 !GciSession categoriesFor: #indexOfClientForwarder:!public! !
 !GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:debugPath:!private! !
@@ -1133,7 +1164,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #stoneName!accessing!public! !
 !GciSession categoriesFor: #stoneSerial!private! !
 !GciSession categoriesFor: #stoneSessionID!public! !
-!GciSession categoriesFor: #stopHeartbeat!Jade!public! !
+!GciSession categoriesFor: #stopHeartbeat!heartbeat!private! !
 !GciSession categoriesFor: #terminate:!public! !
 !GciSession categoriesFor: #titleBarFor:!public! !
 !GciSession categoriesFor: #updatePreferences!private! !
