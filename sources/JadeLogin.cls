@@ -183,19 +183,19 @@ initializeFromXML: aString
 	element baseName = 'JadeLogin' ifFalse: [self error: 'Invalid document!!'].
 	gemVersion	:= (element getAttribute: 'gemVersion'	) ifNil: [''].
 	stoneHost		:= (element getAttribute: 'stoneHost'		) ifNil: [''].
-	stoneName	:= (element getAttribute: 'stoneName'	) ifNil: [''].
+	stoneName	:= (element getAttribute: 'stoneName'		) ifNil: [''].
 	stoneNRS		:= (element getAttribute: 'stoneNRS'		) ifNil: [''].
 	gemType		:= (element getAttribute: 'gemType'		) asSymbol.
 	gemHost		:= (element getAttribute: 'gemHost'		) ifNil: [''].
-	gemService	:= (element getAttribute: 'gemService'	) ifNil: [''].
+	gemService	:= (element getAttribute: 'gemService'		) ifNil: [''].
 	gemNRS		:= (element getAttribute: 'gemNRS'		) ifNil: [''].
 	loginType		:= (element getAttribute: 'loginType'		) ifNil: [''].
 	loginType 		:= loginType isNil ifTrue: [#'guest'] ifFalse: [loginType asSymbol].
-	hostUserID	:= (element getAttribute: 'hostUserID'	) ifNil: [''].
+	hostUserID	:= (element getAttribute: 'hostUserID'		) ifNil: [''].
 	hostPassword	:= (element getAttribute: 'hostPassword'	) ifNil: [''].
 	gsUserID		:= (element getAttribute: 'gsUserID'		) ifNil: [''].
 	gsPassword	:= (element getAttribute: 'gsPassword'	) ifNil: [''].
-	initials		:= (element getAttribute: 'initials'		) ifNil: [''].
+	initials		:= (element getAttribute: 'initials'			) ifNil: [''].
 !
 
 initials
