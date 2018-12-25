@@ -1030,7 +1030,7 @@ fileOutClass
 
 fileOutClassOnPath: aString
 
-	| header file newSource index string |
+	| header file newSource index isUTF string |
 	string := environment printString , ' fileOutClass' , Character tab asString , self behaviorIdentifier.
 	self gciSession encode: string.
 	newSource := self gciSession 
@@ -1040,9 +1040,11 @@ fileOutClassOnPath: aString
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
 	header := self stuffToKeepFromPath: aString andAddTo: newSource.
-	file := FileStream write: aString mode: #'truncate' check: false type: #'utf8'.
+	newSource := header , newSource.
+	isUTF := newSource anySatisfy: [:each | 127 < each codePoint].
+	file := FileStream write: aString mode: #'truncate' check: false type: (isUTF ifTrue: [#'utf8'] ifFalse: [#'ansi']).
 	[
-		file nextPutAll: header; nextPutAll: newSource.
+		file nextPutAll: newSource.
 	] ensure: [
 		file close.
 	].
@@ -1050,7 +1052,7 @@ fileOutClassOnPath: aString
 
 fileOutDictionary
 
-	| dictionaryName path string file index |
+	| dictionaryName file index isUTF path string |
 	dictionaryName :=  dictionaryListPresenter selection key.
 	path := FileSaveDialog new
 		caption: 'File Out ' , dictionaryName;
@@ -1066,10 +1068,11 @@ fileOutDictionary
 		serverPerform: #'systemBrowser:' 
 		with: string.
 	string := self gciSession decode: string.
-	index := string indexOf: Character lf.
-	file := FileStream write: path mode: #'truncate' check: false type: #'utf8'.
+	index := string indexOf: Character lf.	string := string copyFrom: index + 1 to: string size.
+	isUTF := string anySatisfy: [:each | 127 < each codePoint].
+	file := FileStream write: path mode: #'truncate' check: false type: (isUTF ifTrue: [#'utf8'] ifFalse: [#'ansi']).
 	[
-		file nextPutAll: (string copyFrom: index + 1 to: string size).
+		file nextPutAll: string.
 	] ensure: [
 		file close.
 	].
