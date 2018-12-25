@@ -30,6 +30,7 @@ list := #(
 	'Contacts Demo'
 	'Jade in Dolphin'
 	'Jade Tests'
+	'Jade Tutorial'
 ).
 (Delay forMilliseconds: 200) wait.
 ProgressDialog showModalWhile: [:progress |

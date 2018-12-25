@@ -1,0 +1,59 @@
+﻿| package |
+package := Package name: 'Jade Tutorial'.
+package paxVersion: 1;
+	basicComment: ''.
+
+
+package classNames
+	add: #GemStoneSyntaxTutorial;
+	add: #GsProfStef;
+	yourself.
+
+package methodNames
+	add: #JadeTranscript -> #profStef;
+	yourself.
+
+package binaryGlobalNames: (Set new
+	yourself).
+
+package globalAliases: (Set new
+	yourself).
+
+package setPrerequisites: (IdentitySet new
+	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
+	add: '..\Core\Object Arts\Dolphin\MVP\Icons\Dolphin Text Tile Icons';
+	add: 'Jade Transcript';
+	add: 'Jade UI Base';
+	add: '..\Core\Object Arts\Dolphin\Utilities\Tutorials\Learn Smalltalk';
+	add: '..\Core\Object Arts\Dolphin\Utilities\Tutorials\Tutorial Player';
+	yourself).
+
+package!
+
+"Class Definitions"!
+
+SmalltalkSyntaxTutorial subclass: #GemStoneSyntaxTutorial
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeWorkspace subclass: #GsProfStef
+	instanceVariableNames: 'tutorial index'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+
+"Global Aliases"!
+
+
+"Loose Methods"!
+
+!JadeTranscript methodsFor!
+
+profStef
+
+	GsProfStef showOnSession: gciSession.! !
+!JadeTranscript categoriesFor: #profStef!event handling!public! !
+
+"End of package definition"!
+

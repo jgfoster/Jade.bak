@@ -421,6 +421,11 @@ subMenuPresenter
 	^documentPresenter.
 !
 
+text: aString
+
+	documentPresenter value: aString.
+!
+
 textStyles
 
 	^documentPresenter view editStyles textStyles!
@@ -492,6 +497,7 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #showSelection!edit!private! !
 !CodeSourcePresenter categoriesFor: #subMenuName!menus!public! !
 !CodeSourcePresenter categoriesFor: #subMenuPresenter!menus!public! !
+!CodeSourcePresenter categoriesFor: #text:!public! !
 !CodeSourcePresenter categoriesFor: #textStyles!public! !
 !CodeSourcePresenter categoriesFor: #undo!Jade!private! !
 !CodeSourcePresenter categoriesFor: #update!public! !

@@ -138,6 +138,7 @@ requiredPackageNames
 		add: 'Object Log Browser';
 		add: 'Jade from Dolphin';
 		add: 'Jade Process Browser';
+		add: 'Jade Tutorial';
 		yourself! !
 !JadeImageStripper categoriesFor: #closeLoginShells!public! !
 !JadeImageStripper categoriesFor: #copyRuntimeFiles!public! !
