@@ -214,6 +214,7 @@ onViewOpened
 queryCommand: aCommandQuery
 
 	aCommandQuery command == #'stopHeartbeat' ifTrue: [aCommandQuery isEnabled: self gciSession hasHeartbeat. ^true].
+	aCommandQuery command == #'profStef' ifTrue: [aCommandQuery isEnabled: self gciSession isProfStefAvailable. ^true].
 	^super queryCommand: aCommandQuery.
 !
 

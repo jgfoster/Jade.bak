@@ -67,6 +67,7 @@ onViewOpened
 	documentPresenter view 
 		backcolor: Color face3d;
 		isReadOnly: true;
+		styler: NullScintillaStyler new;
 		yourself.
 !
 

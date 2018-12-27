@@ -10,11 +10,14 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #JadeServer -> #addProfStef;
-	add: #JadeServer -> #newProfStefClass;
-	add: #JadeServer64bit -> #newProfStefClass;
+	add: #GciLibrary -> #isProfStefAvailable;
+	add: #GciSession -> #isProfStefAvailable;
+	add: #JadeServer64bit32 -> #addProfStef;
 	add: #JadeServer64bit32 -> #newProfStefClass;
+	add: #JadeServer64bit32 -> #removeProfStef;
 	add: #JadeTranscript -> #profStef;
+	add: #LibGciRpc64_3_2_0 -> #isProfStefAvailable;
+	add: #LibGciRpc64_3_3_0 -> #isProfStefAvailable;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -27,6 +30,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Icons\Dolphin Text Tile Icons';
+	add: 'GemStone C Interface';
 	add: 'GemStone Objects';
 	add: 'GemStone Session';
 	add: 'Jade Transcript';
@@ -55,14 +59,28 @@ JadeWorkspace subclass: #GsProfStef
 
 "Loose Methods"!
 
-!JadeServer methodsFor!
+!GciLibrary methodsFor!
+
+isProfStefAvailable
+
+	^false! !
+!GciLibrary categoriesFor: #isProfStefAvailable!public! !
+
+!GciSession methodsFor!
+
+isProfStefAvailable
+
+	^library isProfStefAvailable! !
+!GciSession categoriesFor: #isProfStefAvailable!accessing!public! !
+
+!JadeServer64bit32 methodsFor!
 
 addProfStef
 
 	| dictionary profStef symbolList |
 	symbolList := GsSession currentSession symbolList.
 	profStef := symbolList objectNamed: #'ProfStef'.
-	profStef notNil ifTrue: [^self].
+	profStef notNil ifTrue: [^profStef].
 	profStef := self newProfStefClass.
 	dictionary := symbolList
 		detect: [:each | System canWrite: each]
@@ -70,11 +88,20 @@ addProfStef
 	dictionary ifNil: [self error: 'Unable to add ProfStef to current SymbolList (none of the Dictionaries are writeable!!'].
 	dictionary at: #'ProfStef' put: profStef.
 	profStef class 
-		compileMethod: 'send: aSymbol (ClientForwarderSend new receiver: self clientObj: 3 selector: aSymbol args: #()) defaultAction' dictionaries: symbolList category: 'ProfStef';
-		compileMethod: 'first		self send: #first'		dictionaries: symbolList category: 'ProfStef';
-		compileMethod: 'go		self send: #first'		dictionaries: symbolList category: 'ProfStef';
-		compileMethod: 'next	self send: #next'	dictionaries: symbolList category: 'ProfStef';
-		compileMethod: 'previous	self send: #previous'	dictionaries: symbolList category: 'ProfStef';
+		compileMethod: 'send: aSymbol 
+	(ClientForwarderSend new 
+		receiver: self 
+		clientObj: 3 
+		selector: aSymbol 
+		args: #()) defaultAction' dictionaries: symbolList category: 'ProfStef';
+		compileMethod: 'first
+	self send: #first'		dictionaries: symbolList category: 'ProfStef';
+		compileMethod: 'go
+	self send: #first'		dictionaries: symbolList category: 'ProfStef';
+		compileMethod: 'next
+	self send: #next'	dictionaries: symbolList category: 'ProfStef';
+		compileMethod: 'previous
+	self send: #previous'	dictionaries: symbolList category: 'ProfStef';
 		yourself.
 	self commit.
 	^dictionary name
@@ -83,43 +110,25 @@ addProfStef
 newProfStefClass
 
 	^Object subclass: 'ProfStef'
-		instVarNames: ''
-		classVars: #()
-		classInstVars: #()
-		poolDictionaries: #()
-		inDictionary: SymbolDictionary new
-		constraints: #()
-		instancesInvariant: false
-		isModifiable: false! !
-!JadeServer categoriesFor: #addProfStef!public!Tutorial! !
-!JadeServer categoriesFor: #newProfStefClass!public!Tutorial! !
-
-!JadeServer64bit methodsFor!
-
-newProfStefClass
-
-	^Object subclass: 'ProfStef'
-		instVarNames: ''
-		classVars: #()
-		classInstVars: #()
-		poolDictionaries: #()
-		inDictionary: SymbolDictionary new
-		instancesInvariant: false
-		isModifiable: false
-! !
-!JadeServer64bit categoriesFor: #newProfStefClass!public!Tutorial! !
-
-!JadeServer64bit32 methodsFor!
-
-newProfStefClass
-
-	^Object subclass: 'ProfStef'
 		instVarNames: #()
 		classVars: #()
 		classInstVars: #()
 		poolDictionaries: #()
-		inDictionary: SymbolDictionary new! !
+		inDictionary: SymbolDictionary new!
+
+removeProfStef
+
+	| profStef symbolList |
+	symbolList := GsSession currentSession symbolList.
+	profStef := symbolList objectNamed: #'ProfStef'.
+	profStef isNil ifTrue: [^self].
+	(symbolList dictionariesAndSymbolsOf: profStef) do: [:each | 
+		(each at: 1) removeKey: (each at: 2).
+	].
+! !
+!JadeServer64bit32 categoriesFor: #addProfStef!public!Tutorial! !
 !JadeServer64bit32 categoriesFor: #newProfStefClass!public!Tutorial! !
+!JadeServer64bit32 categoriesFor: #removeProfStef!public!Tutorial! !
 
 !JadeTranscript methodsFor!
 
@@ -127,6 +136,20 @@ profStef
 
 	GsProfStef showOnSession: gciSession.! !
 !JadeTranscript categoriesFor: #profStef!event handling!public! !
+
+!LibGciRpc64_3_2_0 methodsFor!
+
+isProfStefAvailable
+
+	^true! !
+!LibGciRpc64_3_2_0 categoriesFor: #isProfStefAvailable!public! !
+
+!LibGciRpc64_3_3_0 methodsFor!
+
+isProfStefAvailable
+
+	^true! !
+!LibGciRpc64_3_3_0 categoriesFor: #isProfStefAvailable!public! !
 
 "End of package definition"!
 

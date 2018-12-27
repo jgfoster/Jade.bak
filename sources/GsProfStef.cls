@@ -40,6 +40,15 @@ next
 	self updateLesson.
 !
 
+onCloseRequested
+
+	codePane isModified: false.
+	self gciSession 
+		serverPerform: #removeProfStef;
+		commit;
+		yourself.
+	^super onCloseRequested!
+
 onViewDestroyed
 
 	self class clearCurrent.
@@ -49,10 +58,11 @@ onViewDestroyed
 onViewOpened
 
 	super onViewOpened.
-	self updateLesson.
+	self view extent: 700 @ 700.
 	dictionaryName := gciSession serverPerform: #'addProfStef'.
 	(gciSession indexOfClientForwarder: self class) == 3 	"This registers the object if it isn't present"
 		ifFalse: [self error: 'GsProfStef should be the third client forwarder!!'].
+	self updateLesson.
 !
 
 previous
@@ -67,8 +77,12 @@ updateCaption
 
 updateLesson
 
+	| string |
+	string := self lesson contents
+		copyReplaceAll: '<DICT>'
+		with: dictionaryName.
 	codePane isModified: false.
-	codePane text: self lesson contents.
+	codePane text: string.
 	self updateCaption.
 ! !
 !GsProfStef categoriesFor: #executeSelectionOrLine!public! !
@@ -76,6 +90,7 @@ updateLesson
 !GsProfStef categoriesFor: #initialize!public! !
 !GsProfStef categoriesFor: #lesson!public! !
 !GsProfStef categoriesFor: #next!public! !
+!GsProfStef categoriesFor: #onCloseRequested!public! !
 !GsProfStef categoriesFor: #onViewDestroyed!public! !
 !GsProfStef categoriesFor: #onViewOpened!public! !
 !GsProfStef categoriesFor: #previous!public! !

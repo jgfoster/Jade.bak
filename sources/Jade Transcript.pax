@@ -52,6 +52,7 @@ package setPrerequisites: (IdentitySet new
 	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Radio\Dolphin Radio Buttons';
+	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
 	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
 	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
 	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
