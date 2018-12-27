@@ -86,17 +86,17 @@ Shell subclass: #JadeShell
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-ValueDialog subclass: #JadeValueDialog
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 TextDocument subclass: #JadeTextDocument
 	instanceVariableNames: 'gciSession codePane environment'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeTextDocument subclass: #JadeWorkspace
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+ValueDialog subclass: #JadeValueDialog
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''

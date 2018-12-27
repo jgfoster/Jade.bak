@@ -229,6 +229,10 @@ isModified
 
 	^documentPresenter isModified!
 
+isModified: aBoolean
+
+	^documentPresenter isModified: aBoolean!
+
 jadeDebug
 
 	[
@@ -476,6 +480,7 @@ updateCodeFont
 !CodeSourcePresenter categoriesFor: #initialize!public! !
 !CodeSourcePresenter categoriesFor: #isClassSelectedInEditor!public! !
 !CodeSourcePresenter categoriesFor: #isModified!public! !
+!CodeSourcePresenter categoriesFor: #isModified:!public! !
 !CodeSourcePresenter categoriesFor: #jadeDebug!Jade!private! !
 !CodeSourcePresenter categoriesFor: #jadeDisplay!Jade!private! !
 !CodeSourcePresenter categoriesFor: #jadeExecute!Jade!private! !

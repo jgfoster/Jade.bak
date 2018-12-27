@@ -335,6 +335,7 @@ indexOfClientForwarder: anObject
 	representing the receiver of the server's message. Some hard-coded values:
 		1 - self (to handle OBConfirmationRequest)
 		2 - Transcript
+		3 - GsProfStef
 	"
 
 	^self clientForwarders 
@@ -1000,6 +1001,7 @@ userID
 valueOfArrayOop: anOopType
 
 	| array |
+	anOopType isGsNil ifTrue: [^#()].
 	array := library session: gciSessionId fetchObjects: anOopType.
 	array := array collect: [:each | self valueOfOop: each].
 	^array.
