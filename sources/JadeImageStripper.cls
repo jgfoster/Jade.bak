@@ -20,16 +20,16 @@ copyRuntimeFiles
 
 	| basePath |
 	basePath := SessionManager current imageBase.
-	#('bin' 'icons') do: [:eachDir | 
+	#('bin' 'icons') do: [:eachDir |
 		(File exists: basePath , 'runtime\' , eachDir) ifTrue: [
 			(File isDirectory: basePath , 'runtime\' , eachDir) ifFalse: [eachDir error: 'not a directory'].
 			File deleteDirectory: basePath , 'runtime\' , eachDir.
 		].
 		File createDirectory: basePath , 'runtime\' , eachDir.
 		File
-			forAll: '*.*' 
-			in: basePath , eachDir 
-			do: [:each | 
+			forAll: '*.*'
+			in: basePath , eachDir
+			do: [:each |
 				(2 < each fileName size and: [(each fileName first == $.) not]) ifTrue: [
 					File
 						copy: basePath , eachDir , '\' , each fileName
@@ -50,13 +50,13 @@ createVersionResource
 		fileVersion: version;
 		productVersion: version;
 		stringTables: (LookupTable new
-			at: '040904b0' 
+			at: '040904b0'
 			put: (LookupTable new
 				at: 'CompanyName' 		put: 'Foster Agile LLC';
 				at: 'FileDescription' 		put: 'IDE for GemStone/S';
 				at: 'FileVersion' 			put: versionString;
 				at: 'InternalName' 		put: 'Jade';
-				at: 'LegalCopyright' 		put: 'Copyright © James Foster 2001-2018';
+				at: 'LegalCopyright' 		put: 'Copyright © James Foster 2001-2019';
 				at: 'OriginalFilename' 		put: 'Jade.exe';
 				at: 'ProductName' 		put: 'Jade';
 				at: 'ProductVersion' 		put: versionString;
@@ -87,7 +87,7 @@ logRemainingClasses
 		[
 			super logRemainingClasses.
 			^self.
-		] on: Error do: [:ex | 
+		] on: Error do: [:ex |
 			MemoryManager current collectGarbage; compact.
 		].
 	].!
@@ -95,9 +95,9 @@ logRemainingClasses
 prepareToStrip
 
 	JadeSessionManager setVersion.
-	self 
-		loadJadeServerSourceCache; 
-		copyRuntimeFiles; 
+	self
+		loadJadeServerSourceCache;
+		copyRuntimeFiles;
 		closeLoginShells;
 		createVersionResource;
 		yourself.
@@ -161,7 +161,7 @@ JadeImageStripper versionHistory.
 	stream := WriteStream on: String new.
 	imageDir := 'B:\Dolphin\Jade\'.
 	#('Jade' 'JGF') do: [:dir |
-		File for: '*.pac' in: imageDir , dir do: [:winFileInfo | 
+		File for: '*.pac' in: imageDir , dir do: [:winFileInfo |
 			| packageName |
 			packageName := winFileInfo fileName.
 			stream nextPutAll: dir , '\' , packageName; cr.
