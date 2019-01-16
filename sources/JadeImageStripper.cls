@@ -125,18 +125,15 @@ requiredPackageNames
 		add: 'GemStone C Interface';
 		add: 'GemStone Session';
 		add: 'GemStone Objects';
-		add: 'GemStone Services';
 		add: 'Jade Inspector';
 		add: 'Jade Login';
 		add: 'Jade System Browser';
 		add: 'Jade Transcript';
 		add: 'Jade User Browser';
 		add: 'JGF Dolphin';
-		add: 'JGF Dolphin MVP Base';
 		add: 'JGF Fading Dialog';
 		add: 'Jade UI';
 		add: 'Object Log Browser';
-		add: 'Jade from Dolphin';
 		add: 'Jade Process Browser';
 		add: 'Jade Tutorial';
 		yourself! !

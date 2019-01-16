@@ -41,18 +41,17 @@ package binaryGlobalNames: (Set new
 package globalAliases: (Set new
 	yourself).
 
-package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
-	add: '..\Core\Contributions\Burning River\ExternalProcess\ExternalProcess';
-	add: 'GemStone C Interface';
-	add: 'GemStone Session';
-	add: 'Jade Login';
-	add: 'Jade Transcript';
-	add: '..\Core\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper';
-	add: '..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser';
-	yourself).
+package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\Base\Dolphin'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
+	'..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View'
+	'..\Core\Contributions\Burning River\ExternalProcess\ExternalProcess'
+	'GemStone C Interface'
+	'GemStone Session'
+	'Jade Login'
+	'Jade Transcript'
+	'..\Core\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper'
+	'..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser').
 
 package!
 
