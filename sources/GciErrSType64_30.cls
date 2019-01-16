@@ -2,10 +2,19 @@
 
 GciErrSType subclass: #GciErrSType64_30
 	instanceVariableNames: ''
-	classVariableNames: ''
+	classVariableNames: '_OffsetOf_argCount _OffsetOf_args _OffsetOf_category _OffsetOf_context _OffsetOf_exceptionObj _OffsetOf_fatal _OffsetOf_message _OffsetOf_number _OffsetOf_reason'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciErrSType64_30 guid: (GUID fromString: '{2cff1edf-058d-44c9-a9ab-9a6e7bf669f1}')!
+GciErrSType64_30 addClassConstant: '_OffsetOf_argCount' value: 16r6C!
+GciErrSType64_30 addClassConstant: '_OffsetOf_args' value: 16r18!
+GciErrSType64_30 addClassConstant: '_OffsetOf_category' value: 16r0!
+GciErrSType64_30 addClassConstant: '_OffsetOf_context' value: 16r8!
+GciErrSType64_30 addClassConstant: '_OffsetOf_exceptionObj' value: 16r10!
+GciErrSType64_30 addClassConstant: '_OffsetOf_fatal' value: 16r70!
+GciErrSType64_30 addClassConstant: '_OffsetOf_message' value: 16r71!
+GciErrSType64_30 addClassConstant: '_OffsetOf_number' value: 16r68!
+GciErrSType64_30 addClassConstant: '_OffsetOf_reason' value: 16r472!
 GciErrSType64_30 comment: ''!
 !GciErrSType64_30 categoriesForClass!Unclassified! !
 !GciErrSType64_30 methodsFor!

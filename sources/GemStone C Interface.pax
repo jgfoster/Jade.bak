@@ -90,10 +90,9 @@ package binaryGlobalNames: (Set new
 package globalAliases: (Set new
 	yourself).
 
-package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
-	yourself).
+package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\Base\Dolphin'
+	'..\Core\Contributions\Camp Smalltalk\SUnit\SUnit').
 
 package!
 
@@ -401,7 +400,7 @@ ExternalStructure subclass: #GciErrSType
 	classInstanceVariableNames: ''!
 ExternalStructure subclass: #GciTsObjInfo
 	instanceVariableNames: 'data'
-	classVariableNames: ''
+	classVariableNames: '_OffsetOf__bits _OffsetOf_access _OffsetOf_namedSize _OffsetOf_objClass _OffsetOf_objectSecurityPolicyId _OffsetOf_objId _OffsetOf_objSize'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 ExternalArray subclass: #OopType32Array
@@ -431,22 +430,22 @@ ULARGE_INTEGER subclass: #OopType64
 	classInstanceVariableNames: ''!
 GciErrSType subclass: #GciErrSType32
 	instanceVariableNames: ''
-	classVariableNames: ''
+	classVariableNames: '_OffsetOf_argCount _OffsetOf_args _OffsetOf_category _OffsetOf_context _OffsetOf_fatal _OffsetOf_message _OffsetOf_number'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciErrSType subclass: #GciErrSType64
 	instanceVariableNames: ''
-	classVariableNames: ''
+	classVariableNames: '_OffsetOf_argCount _OffsetOf_args _OffsetOf_category _OffsetOf_context _OffsetOf_fatal _OffsetOf_message _OffsetOf_number'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciErrSType subclass: #GciErrSType64_30
 	instanceVariableNames: ''
-	classVariableNames: ''
+	classVariableNames: '_OffsetOf_argCount _OffsetOf_args _OffsetOf_category _OffsetOf_context _OffsetOf_exceptionObj _OffsetOf_fatal _OffsetOf_message _OffsetOf_number _OffsetOf_reason'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciErrSType subclass: #GciErrSType64_31
 	instanceVariableNames: ''
-	classVariableNames: ''
+	classVariableNames: '_OffsetOf_argCount _OffsetOf_args _OffsetOf_category _OffsetOf_context _OffsetOf_exceptionObj _OffsetOf_fatal _OffsetOf_message _OffsetOf_number _OffsetOf_reason'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 TestCase subclass: #GciLibraryTestCase

@@ -2,10 +2,17 @@
 
 ExternalStructure subclass: #GciTsObjInfo
 	instanceVariableNames: 'data'
-	classVariableNames: ''
+	classVariableNames: '_OffsetOf__bits _OffsetOf_access _OffsetOf_namedSize _OffsetOf_objClass _OffsetOf_objectSecurityPolicyId _OffsetOf_objId _OffsetOf_objSize'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciTsObjInfo guid: (GUID fromString: '{6a0671ac-78ff-43d1-b841-525b61598094}')!
+GciTsObjInfo addClassConstant: '_OffsetOf__bits' value: 16r1E!
+GciTsObjInfo addClassConstant: '_OffsetOf_access' value: 16r20!
+GciTsObjInfo addClassConstant: '_OffsetOf_namedSize' value: 16r18!
+GciTsObjInfo addClassConstant: '_OffsetOf_objClass' value: 16r8!
+GciTsObjInfo addClassConstant: '_OffsetOf_objectSecurityPolicyId' value: 16r1C!
+GciTsObjInfo addClassConstant: '_OffsetOf_objId' value: 16r0!
+GciTsObjInfo addClassConstant: '_OffsetOf_objSize' value: 16r10!
 GciTsObjInfo comment: '
 class GciTsObjInfo {
 	public:
