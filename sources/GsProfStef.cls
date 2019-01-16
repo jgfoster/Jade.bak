@@ -23,6 +23,11 @@ first
 	self updateLesson.
 !
 
+goto: anInteger
+	anInteger <= tutorial size ifTrue: [index := anInteger].
+	self updateLesson.
+!
+
 initialize
 
 	super initialize.
@@ -87,6 +92,7 @@ updateLesson
 ! !
 !GsProfStef categoriesFor: #executeSelectionOrLine!public! !
 !GsProfStef categoriesFor: #first!public! !
+!GsProfStef categoriesFor: #goto:!public! !
 !GsProfStef categoriesFor: #initialize!public! !
 !GsProfStef categoriesFor: #lesson!public! !
 !GsProfStef categoriesFor: #next!public! !
@@ -105,6 +111,9 @@ clearCurrent
 !
 
 current
+
+	1 == 1 ifFalse: [self previous].	"send this message to avoid having it stripped!!"
+	1 == 1 ifFalse: [self goto: 1].	"send this message to avoid having it stripped!!"
 	^current!
 
 first
@@ -119,6 +128,11 @@ go
 	self first.
 	^true
 !
+
+goto: anInteger
+
+	[self current goto: anInteger] postToInputQueue.
+	^self current gciSession oopIllegal!
 
 icon
 	"Answers an Icon that can be used to represent this class."
@@ -163,6 +177,7 @@ showOnSession: aGciSession
 !GsProfStef class categoriesFor: #current!public! !
 !GsProfStef class categoriesFor: #first!navigation!public! !
 !GsProfStef class categoriesFor: #go!navigation!public! !
+!GsProfStef class categoriesFor: #goto:!navigation!public! !
 !GsProfStef class categoriesFor: #icon!constants!public! !
 !GsProfStef class categoriesFor: #next!navigation!public! !
 !GsProfStef class categoriesFor: #previous!navigation!public! !

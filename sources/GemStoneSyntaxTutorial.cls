@@ -538,6 +538,26 @@ ProfStef class compileMethod: ''goToNextLesson self next'' dictionaries: #() cat
 ProfStef goToNextLesson.'
 !
 
+reflectionContinued
+	^ Lesson
+title: 'Reflection continued' 
+contents: 
+'"So cool, isn''t it ?  Before going further, let''s remove this method:"
+
+ProfStef class compiledMethodAt: #goToNextLesson.
+
+ProfStef class removeSelector: #goToNextLesson.
+
+"So now this should fail - try it and hit Terminate in the box that appears."
+
+ProfStef class compiledMethodAt: #goToNextLesson.
+
+
+"Then move forward:"
+
+ProfStef perform: #next'
+!
+
 tableOfContents
 	^#(#welcome #evaluatingVsDisplaying #displaying #inspecting #basicTypesNumbers #basicTypesCharacters #basicTypesString #basicTypesSymbol #basicTypesArray #messageSyntaxUnary #messageSyntaxBinary #messageSyntaxKeyword #messageSyntaxExecutionOrder #messageSyntaxExecutionOrderParentheses #mathematicalPrecedence #messageSyntaxCascade #messageSyntaxCascadeShouldNotBeHere #blocks #blocksAssignation #conditionals #loops #iterators #instantiation #reflection #reflectionContinued #gemStoneEnvironment #debugger #theEnd)!
 
@@ -574,6 +594,7 @@ so, select the line (or click anywhere on the line) and do one of the following:
     (3) Press <Ctrl>+<E>; or,
     (4) Click the hourglass button in the toolbar (second from left)."
 
+ProfStef goto: 2.
 ProfStef next.'
 ! !
 !GemStoneSyntaxTutorial categoriesFor: #basicTypesArray!pages!public! !
@@ -597,6 +618,7 @@ ProfStef next.'
 !GemStoneSyntaxTutorial categoriesFor: #messageSyntaxCascade!pages!public! !
 !GemStoneSyntaxTutorial categoriesFor: #messageSyntaxExecutionOrder!pages!public! !
 !GemStoneSyntaxTutorial categoriesFor: #reflection!pages!public! !
+!GemStoneSyntaxTutorial categoriesFor: #reflectionContinued!pages!public! !
 !GemStoneSyntaxTutorial categoriesFor: #tableOfContents!contents!public! !
 !GemStoneSyntaxTutorial categoriesFor: #theEnd!pages!public! !
 !GemStoneSyntaxTutorial categoriesFor: #welcome!pages!public! !

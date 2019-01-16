@@ -26,18 +26,18 @@ package binaryGlobalNames: (Set new
 package globalAliases: (Set new
 	yourself).
 
-package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\Core\Object Arts\Dolphin\MVP\Icons\Dolphin Text Tile Icons';
-	add: 'GemStone C Interface';
-	add: 'GemStone Objects';
-	add: 'GemStone Session';
-	add: 'Jade Transcript';
-	add: 'Jade UI Base';
-	add: '..\Core\Object Arts\Dolphin\Utilities\Tutorials\Learn Smalltalk';
-	add: '..\Core\Object Arts\Dolphin\Utilities\Tutorials\Tutorial Player';
-	yourself).
+package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\Base\Dolphin'
+	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
+	'..\Core\Object Arts\Dolphin\MVP\Icons\Dolphin Text Tile Icons'
+	'GemStone C Interface'
+	'GemStone Objects'
+	'GemStone Session'
+	'Jade Transcript'
+	'Jade UI Base'
+	'..\Core\Object Arts\Dolphin\Utilities\Tutorials\Learn Smalltalk'
+	'..\Core\Object Arts\Dolphin\Utilities\Tutorials\Tutorial Player').
 
 package!
 
@@ -88,20 +88,22 @@ addProfStef
 	dictionary ifNil: [self error: 'Unable to add ProfStef to current SymbolList (none of the Dictionaries are writeable!!'].
 	dictionary at: #'ProfStef' put: profStef.
 	profStef class 
-		compileMethod: 'send: aSymbol 
+		compileMethod: 'send: aSymbol with: args
 	(ClientForwarderSend new 
 		receiver: self 
 		clientObj: 3 
 		selector: aSymbol 
-		args: #()) defaultAction' dictionaries: symbolList category: 'ProfStef';
+		args: args) defaultAction' 	dictionaries: symbolList category: 'ProfStef';
 		compileMethod: 'first
-	self send: #first'		dictionaries: symbolList category: 'ProfStef';
+	self send: #first with: #()'		dictionaries: symbolList category: 'ProfStef';
+		compileMethod: 'goto: anInteger
+	self send: #goto: with: (Array with: anInteger)'	dictionaries: symbolList category: 'ProfStef';
 		compileMethod: 'go
-	self send: #first'		dictionaries: symbolList category: 'ProfStef';
+	self send: #first with: #()'		dictionaries: symbolList category: 'ProfStef';
 		compileMethod: 'next
-	self send: #next'	dictionaries: symbolList category: 'ProfStef';
+	self send: #next with: #()'		dictionaries: symbolList category: 'ProfStef';
 		compileMethod: 'previous
-	self send: #previous'	dictionaries: symbolList category: 'ProfStef';
+	self send: #previous with: #()'	dictionaries: symbolList category: 'ProfStef';
 		yourself.
 	self commit.
 	^dictionary name
