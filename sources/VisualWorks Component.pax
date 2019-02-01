@@ -21,10 +21,10 @@ package binaryGlobalNames: (Set new
 package globalAliases: (Set new
 	yourself).
 
-package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Core\Contributions\ITC Gorisek\Yaxo\YAXO DOM';
-	yourself).
+package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\Base\Dolphin'
+	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
+	'..\Core\Contributions\ITC Gorisek\Yaxo\YAXO DOM').
 
 package!
 

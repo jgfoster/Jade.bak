@@ -17,30 +17,30 @@ package binaryGlobalNames: (Set new
 package globalAliases: (Set new
 	yourself).
 
-package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry';
-	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
-	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs';
-	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
-	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Radio\Dolphin Radio Buttons';
-	add: '..\Core\Object Arts\Dolphin\Registry\Dolphin Registry Access';
-	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
-	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
-	add: 'GemStone C Interface';
-	add: 'GemStone Session';
-	add: '..\Core\Contributions\IDB\IDB DateAndTime';
-	add: 'Jade Transcript';
-	add: 'Jade UI';
-	add: '..\Core\Object Arts\Dolphin\ActiveX\Shell\Windows Shell';
-	add: '..\Core\Object Arts\Dolphin\ActiveX\Components\XML DOM\XML DOM';
-	yourself).
+package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\Base\Dolphin'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry'
+	'..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls'
+	'..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs'
+	'..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars'
+	'..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter'
+	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Radio\Dolphin Radio Buttons'
+	'..\Core\Object Arts\Dolphin\Registry\Dolphin Registry Access'
+	'..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter'
+	'..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters'
+	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
+	'GemStone C Interface'
+	'GemStone Session'
+	'..\Core\Contributions\IDB\IDB DateAndTime'
+	'Jade Transcript'
+	'Jade UI'
+	'..\Core\Object Arts\Dolphin\ActiveX\Shell\Windows Shell'
+	'..\Core\Object Arts\Dolphin\ActiveX\Components\XML DOM\XML DOM').
 
 package!
 

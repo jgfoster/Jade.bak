@@ -56,23 +56,23 @@ package binaryGlobalNames: (Set new
 package globalAliases: (Set new
 	yourself).
 
-package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\IDE\Base\Development System';
-	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry';
-	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
-	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
-	add: 'GemStone C Interface';
-	add: 'GemStone Objects';
-	add: '..\Core\Contributions\IDB\IDB DateAndTime';
-	add: 'JGF Fading Dialog';
-	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
-	yourself).
+package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\IDE\Base\Development System'
+	'..\Core\Object Arts\Dolphin\Base\Dolphin'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry'
+	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
+	'..\Core\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter'
+	'..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter'
+	'..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters'
+	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
+	'GemStone C Interface'
+	'GemStone Objects'
+	'..\Core\Contributions\IDB\IDB DateAndTime'
+	'JGF Fading Dialog'
+	'..\Core\Contributions\Camp Smalltalk\SUnit\SUnit').
 
 package!
 

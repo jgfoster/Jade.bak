@@ -27,30 +27,30 @@ package binaryGlobalNames: (Set new
 package globalAliases: (Set new
 	yourself).
 
-package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry';
-	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
-	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
-	add: 'Jade Deployment';
-	add: 'Jade Login';
-	yourself).
+package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\Base\Dolphin'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry'
+	'..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls'
+	'..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter'
+	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter'
+	'..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters'
+	'Jade Deployment'
+	'Jade Login').
 
 package!
 
 "Class Definitions"!
 
-Model subclass: #Contact
-	instanceVariableNames: 'oop name title phone'
+JadeImageStripper subclass: #ContactsImageStripper
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeImageStripper subclass: #ContactsImageStripper
-	instanceVariableNames: ''
+Model subclass: #Contact
+	instanceVariableNames: 'oop name title phone'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

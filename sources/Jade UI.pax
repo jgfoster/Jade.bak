@@ -59,28 +59,28 @@ package binaryGlobalNames: (Set new
 package globalAliases: (Set new
 	yourself).
 
-package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls';
-	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs';
-	add: '..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Font\Dolphin Font Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base';
-	add: '..\Core\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog';
-	add: '..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter';
-	add: '..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters';
-	add: '..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models';
-	add: 'GemStone Objects';
-	add: 'GemStone Session';
-	add: 'Jade Inspector';
-	add: 'Jade Method Browser';
-	add: 'Jade UI Base';
-	add: 'VisualWorks Component';
-	yourself).
+package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\Base\Dolphin'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter'
+	'..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls'
+	'..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs'
+	'..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Font\Dolphin Font Presenter'
+	'..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter'
+	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
+	'..\Core\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter'
+	'..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters'
+	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
+	'GemStone Objects'
+	'GemStone Session'
+	'Jade Inspector'
+	'Jade Method Browser'
+	'Jade UI Base'
+	'VisualWorks Component').
 
 package!
 
@@ -96,16 +96,16 @@ JadePresenterA subclass: #JadePreferencesPresenter
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
-JadeValueDialog subclass: #JadeErrorShell
-	instanceVariableNames: 'messagePresenter stackPresenter textEditPresenter isResumable'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
 JadeTextDocument subclass: #JadeDebugger
 	instanceVariableNames: 'answer errorMessagePresenter frame frameListOffset frameListPresenter gsProcess processList processListPresenter terminateOnClose variableDataPresenter variableListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'debuggers'!
+JadeValueDialog subclass: #JadeErrorShell
+	instanceVariableNames: 'messagePresenter stackPresenter textEditPresenter isResumable'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeShell subclass: #JadePreferencesShell
 	instanceVariableNames: ''
 	classVariableNames: ''

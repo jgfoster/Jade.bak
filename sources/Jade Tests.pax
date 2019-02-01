@@ -14,12 +14,11 @@ package binaryGlobalNames: (Set new
 package globalAliases: (Set new
 	yourself).
 
-package setPrerequisites: (IdentitySet new
-	add: '..\Core\Object Arts\Dolphin\Base\Dolphin';
-	add: 'Jade Login';
-	add: 'Jade Transcript';
-	add: '..\Core\Contributions\Camp Smalltalk\SUnit\SUnit';
-	yourself).
+package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\Base\Dolphin'
+	'Jade Login'
+	'Jade Transcript'
+	'..\Core\Contributions\Camp Smalltalk\SUnit\SUnit').
 
 package!
 
