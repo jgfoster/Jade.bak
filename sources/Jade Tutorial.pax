@@ -70,7 +70,7 @@ isProfStefAvailable
 
 isProfStefAvailable
 
-	^library isProfStefAvailable! !
+	^library notNil and: [library isProfStefAvailable]! !
 !GciSession categoriesFor: #isProfStefAvailable!accessing!public! !
 
 !JadeServer64bit32 methodsFor!

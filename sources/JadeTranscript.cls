@@ -239,6 +239,7 @@ stopHeartbeat
 
 updateCaption
 
+	gciSession ifNil: [^self].
 	self caption: (gciSession titleBarFor: 'Transcript').
 ! !
 !JadeTranscript categoriesFor: #autocompletion!event handling!public! !

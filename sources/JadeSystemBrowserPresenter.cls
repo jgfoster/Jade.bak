@@ -2046,7 +2046,11 @@ onSetFocus: aView stack: aString
 		eventCount = gciSession eventCount ifTrue: [^self].
 		super onSetFocus.
 		[
-			self updateAndSelect: nil.
+			[
+				self updateAndSelect: nil.
+			] on: GsInvalidSessionError do: [:ex | 		"This process was forked and the session might be logging out"
+				^self
+			].
 		] on: Error do: [:ex | 
 			SessionManager current logError: ex.
 			ignoreNextSetFocusEvent := true.

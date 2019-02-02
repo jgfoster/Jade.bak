@@ -152,10 +152,12 @@ debugToFilePath: aString
 
 decode: aString
 
+	library ifNil: [GsInvalidSessionError signal].
 	^library decode: aString!
 
 encode: aString
 
+	library ifNil: [^GsInvalidSessionError signal].
 	^library encode: aString!
 
 eventCount
@@ -244,6 +246,7 @@ handlingClientForwarderSendDo: aBlock
 
 hardBreak
 
+	library ifNil: [^self].
 	library hardBreakSession: gciSessionId.
 !
 
@@ -260,6 +263,7 @@ heartbeat: receiver arguments: arguments
 
 	| result |
 	(Delay forSeconds: 1) wait.
+	self isValidSession ifFalse: [^self].
 	result := self returningResultOrErrorDo: [
 		library 
 			session: gciSessionId
@@ -282,6 +286,7 @@ heartbeat: receiver arguments: arguments
 				continue: error tag contextOop.
 		].
 	].
+	(result isKindOf: GsFatalError) ifTrue: [^self].
 	0 < result ifTrue: [self idleWarning].
 
 !
@@ -878,7 +883,8 @@ startHeartbeat
 		| receiver arguments |
 		receiver := self oopTypeFor: server.
 		arguments := self serverArrayFor: #().
-		[true] whileTrue: [self heartbeat: receiver arguments: arguments].
+		[self isValidSession] whileTrue: [self heartbeat: receiver arguments: arguments].
+		heartbeatProcess := nil.
 	] forkAt: Processor userBackgroundPriority.
 !
 
