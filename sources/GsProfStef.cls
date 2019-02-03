@@ -65,6 +65,7 @@ onViewOpened
 	super onViewOpened.
 	self view extent: 700 @ 700.
 	dictionaryName := gciSession serverPerform: #'addProfStef'.
+	(dictionaryName isKindOf: String) ifFalse: [self error: 'Expected a String as the dictionary name, but got ' , dictionaryName printString].
 	(gciSession indexOfClientForwarder: self class) == 3 	"This registers the object if it isn't present"
 		ifFalse: [self error: 'GsProfStef should be the third client forwarder!!'].
 	self updateLesson.

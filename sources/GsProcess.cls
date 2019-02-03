@@ -33,6 +33,10 @@ Maybe an object got an error on a #printString method.
 		SessionManager current pause.
 		^nil.
 	].
+	(string beginsWith: 'No frame found for level') ifTrue: [
+		MessageBox errorMsg: string.
+		^self.
+	].
 	^GsStackFrame
 		fromStringXML: string
 		session: gciSession.

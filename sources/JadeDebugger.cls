@@ -17,7 +17,9 @@ answer
 		We mitigate that problem by changing it to the default."
 
 	Cursor current: nil.
-	SessionManager inputState loopWhile: [answer isNil].
+	[
+		SessionManager inputState loopWhile: [answer isNil].
+	] on: GPFault do: [:ex | ].	"It seems that Scintilla can get an error when the debugger closes"
 	^answer.
 !
 
@@ -168,6 +170,7 @@ selectedFrame
 	(index := frameListPresenter selectionByIndex) = 0 ifTrue: [^self].
 	index := index + frameListOffset.
 	(frame := gsProcess frameForLevel: index) isNil ifTrue: [^self].
+	frame == GsStackFrame ifTrue: [self error: 'Should have gotten an instance of GsStackFrame, but got the class instead!!'].
 	source := frame source.
 	breaks := frame breaks collect: [:each | frame offsets at: each].
 	breaks := breaks collect: [:each | ((source copyFrom: 1 to: each) select: [:char | char = Character lf]) size + 1].

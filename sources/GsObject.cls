@@ -99,15 +99,16 @@ printOn: aStream
 fromStream: aStream session: aGciSession
 
 	^self new 
-		initialize: aStream
-		session:  aGciSession.
+		initialize: aStream session:  aGciSession;
+		yourself
+
 !
 
 fromString: aString session: aGciSession
 
 	^self new 
-		initialize: aString
-		session:  aGciSession.
+		initialize: aString session:  aGciSession;
+		yourself
 !
 
 fromStringXML: aString session: gciSession
@@ -121,6 +122,7 @@ fromStringXML: aString session: gciSession
 		MessageBox notify: ex description.
 		SessionManager current pause.
 		SessionManager current logError: ex.
+		^nil
 	].
 !
 

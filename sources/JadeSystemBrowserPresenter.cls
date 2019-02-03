@@ -1452,7 +1452,7 @@ jadeExecuteAndDisplay: aBoolean
 			"string := documentPresenter value."
 		].
 		string := string copyFrom: selectionRange start to: selectionRange stop.
-		string := string copyFrom: 1 to: offset - 1.
+		string := string copyFrom: 1 to: (offset - 1 max: string size).
 		count := (string select: [:each | each = Character lf]) size.
 		offset := offset + count.
 		textView
@@ -1593,7 +1593,7 @@ methodDoubleClicked: anObject
 methodFilterListPresenter
 
 	| name |
-	name := methodFilterTabs currentCard name.
+	(name := methodFilterTabs currentCard name) ifNil: [^self].
 	name = 'categoryList' ifTrue: [^categoryListPresenter].
 	name = 'variableList' ifTrue: [^variableListPresenter].
 	name = 'pragmaList' ifTrue: [^pragmaListPresenter].
@@ -2038,10 +2038,8 @@ onSetFocus: aView stack: aString
 
 	GciSession log: 'JadeSystemBrowserPresenter>>onSetFocus:stack:'.
 	[
-		| startTime activeView |
-		startTime := TimeStamp current.
 		(Delay forMilliseconds: 50) wait.
-		aView ~~ (activeView := View active) ifTrue: [^self].		"If view changed then there is no point in updating it!!"
+		aView ~~ View active ifTrue: [^self].		"If view changed then there is no point in updating it!!"
 		view = DeafObject current ifTrue: [^self].
 		eventCount = gciSession eventCount ifTrue: [^self].
 		super onSetFocus.
@@ -2946,7 +2944,7 @@ updateClassHierarchy
 			detect: [:each | each last = x]
 			ifNone: [nil].
 	].
-	(newSelection notEmpty and: [currentSelection ~= newSelection]) ifTrue: [
+	(newSelection notNil and: [currentSelection ~= newSelection]) ifTrue: [
 		classHierarchyPresenter 
 			selection: newSelection;
 			expand: newSelection;

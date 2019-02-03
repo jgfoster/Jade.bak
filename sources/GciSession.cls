@@ -693,6 +693,7 @@ sendInterpreted: aSymbol to: anObject withAll: anArray
 serverArrayFor: anArray
 
 	| array |
+	library ifNil: [GsInvalidSessionError signal].
 	array := library oopTypeArrayClass new: anArray size.
 	1 to: anArray size do: [:i | 
 		array at: i put: (self oopTypeFor: (anArray at: i)).
@@ -1044,7 +1045,9 @@ withExplanation: aString doA: aBlock
 	shouldRunEventLoop := true.
 	haveResult := false.
 	[
-		result := self handlingClientForwarderSendDo: aBlock.
+		[
+			result := self handlingClientForwarderSendDo: aBlock.
+		] on: GsInvalidSessionError do: [:ex | ].		"Ignore invalid session (logout!!)"
 		haveResult := true.
 		shouldRunEventLoop := false.
 		SessionManager inputState prod.
