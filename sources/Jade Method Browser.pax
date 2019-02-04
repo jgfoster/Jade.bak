@@ -540,7 +540,7 @@ sbSaveMethod: anOrderedCollection
 	association := self		"key: GsNMethod value: (Array withAll: errors and warnings)"
 		compileMethod: string 
 		behavior: behavior 
-		symbolList: self symbolList 
+		symbolList: self persistentSymbolList 
 		inCategory: category asSymbol.
 	(gsMethod := association key) isNil ifTrue: [
 		System

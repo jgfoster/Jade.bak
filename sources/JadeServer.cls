@@ -298,7 +298,7 @@ _moveMethod: aGsMethod toCategory: aString
 _nameOfFirstDictionaryReferencing: aGlobal
 
 	| list |
-	list := self symbolList dictionaryAndSymbolOf: aGlobal.
+	list := self persistentSymbolList dictionaryAndSymbolOf: aGlobal.
 	list isNil ifTrue: [^''].
 	^list first name!
 
@@ -335,7 +335,7 @@ _preferences
 
 _refreshSymbolList
 
-	GsSession currentSession symbolList replaceElementsFrom: self symbolList.	"replace the transcient one with the persistent one"
+	self transientSymbolList replaceElementsFrom: self persistentSymbolList.	"replace the transcient one with the persistent one"
 !
 
 _registerOBNotifications
@@ -416,7 +416,7 @@ debugString: aString fromContext: anObject environment: anInteger
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
 	^'nil halt. ' , (self _decodeString: aString)
 		evaluateInContext: anObject 
-		symbolList: GsSession currentSession symbolList. !
+		symbolList: self transientSymbolList. !
 
 describeMethodNamed: aUtf8 inClass: aClass
 	"Provide info needed to create a GsMethod in Jade client"
@@ -450,7 +450,7 @@ executeString: aString fromContext: anObject environment: anInteger
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
 	^(self _decodeString: aString)
 		evaluateInContext: anObject 
-		symbolList: GsSession currentSession symbolList. !
+		symbolList: self transientSymbolList. !
 
 hasDirtyObjects
 

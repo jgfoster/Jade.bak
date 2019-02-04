@@ -28,7 +28,7 @@ _gemLogPath
 _nameOfFirstDictionaryReferencing: aGlobal
 
 	| list |
-	list := self symbolList dictionariesAndSymbolsOf: aGlobal.
+	list := self persistentSymbolList dictionariesAndSymbolsOf: aGlobal.
 	list isNil ifTrue: [^''].
 	^list first first name!
 

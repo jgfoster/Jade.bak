@@ -30,6 +30,7 @@ package methodNames
 	add: #JadeServer -> #environment;
 	add: #JadeServer -> #environment:;
 	add: #JadeServer -> #historyOf:;
+	add: #JadeServer -> #persistentSymbolList;
 	add: #JadeServer -> #runClassTests:;
 	add: #JadeServer -> #runMethodTests:;
 	add: #JadeServer -> #sbAddDictionary:;
@@ -116,6 +117,7 @@ package methodNames
 	add: #JadeServer -> #systemBrowser:;
 	add: #JadeServer -> #systemBrowserA:;
 	add: #JadeServer -> #systemBrowserUpdate;
+	add: #JadeServer -> #transientSymbolList;
 	add: #JadeServer -> #writeList:;
 	add: #JadeServer32bit -> #systemBrowser:;
 	add: #JadeServer64bit -> #sbRemoveKey:fromDictionary:;
@@ -336,7 +338,7 @@ compiledMethodAt: aSymbol inClass: aClass
 
 dictionaryAndSymbolOf: aClass
 
-	^self symbolList dictionaryAndSymbolOf: aClass.
+	^self persistentSymbolList dictionaryAndSymbolOf: aClass.
 !
 
 dictionaryAndSymbolOf: aClass forUser: aUserProfile
@@ -361,6 +363,11 @@ historyOf: aClass
 	^history.
 !
 
+persistentSymbolList
+
+	^System myUserProfile symbolList.
+!
+
 runClassTests: aString
 
 	| behavior |
@@ -380,7 +387,7 @@ runMethodTests: aString
 sbAddDictionary: anOrderedCollection
 
 	| currentName newName symbolList index |
-	symbolList := self symbolList.
+	symbolList := self persistentSymbolList.
 	newName := anOrderedCollection removeFirst.
 	anOrderedCollection notEmpty ifTrue: [
 		currentName := anOrderedCollection removeFirst asSymbol.
@@ -538,7 +545,7 @@ sbChangeClassName: aList
 	newName := aList removeFirst asSymbol.
 	class changeNameTo: newName.
 	changedIn := OrderedCollection new.
-	self symbolList do: [:each | 
+	self persistentSymbolList do: [:each | 
 		(each includes: class) ifTrue: [
 			(each at: oldName ifAbsent: [nil]) == class ifFalse: [self error: 'Class not at name!!'].
 			(each includesKey: newName) ifTrue: [self error: 'Key already in use!!'].
@@ -580,7 +587,7 @@ sbCheckUniqueClassName: aList
 		^self.
 	].
 	newName := aList removeFirst asSymbol.
-	self symbolList do: [:each | 
+	self persistentSymbolList do: [:each | 
 		((each includes: class) and: [each includesKey: newName]) ifTrue: [
 			writeStream nextPutAll: 'Dictionary '.
 			each name printOn: writeStream.
@@ -653,9 +660,9 @@ sbClassesToDictionary: anOrderedCollection
 	| action targetName target sourceNames sources classNames |
 	action := anOrderedCollection removeFirst.
 	targetName := anOrderedCollection removeFirst asSymbol.
-	target := self symbolList detect: [:each | each name = targetName].
+	target := self persistentSymbolList detect: [:each | each name = targetName].
 	sourceNames := self _nextLineAsList collect: [:each | each asSymbol].
-	sources := sourceNames collect: [:eachName | self symbolList detect: [:eachDictionary | eachDictionary name = eachName]].
+	sources := sourceNames collect: [:eachName | self persistentSymbolList detect: [:eachDictionary | eachDictionary name = eachName]].
 	classNames := self _nextLineAsList collect: [:each | each asSymbol].
 	classNames do: [:eachName | 
 		| source class |
@@ -675,7 +682,7 @@ sbClassFrom: anOrderedCollection
 	selectedClassName := (anOrderedCollection removeFirst subStrings: Character space) first.
 	selectedClassOop := anOrderedCollection removeFirst asNumber.
 	set := IdentitySet new.
-	self symbolList do: [:eachDict | 
+	self persistentSymbolList do: [:eachDict | 
 		eachDict do: [:eachGlobal |
 			eachGlobal isBehavior ifTrue: [
 				set addAll: (self historyOf: eachGlobal).
@@ -736,7 +743,7 @@ sbCopyMethodsFor: newClass
 	history := self historyOf: newClass thisClass.
 	oldClass := history at: history size - 1.
 	newClass isMeta ifTrue: [oldClass := oldClass class].
-	symbolList := self symbolList.
+	symbolList := self persistentSymbolList.
 	oldClass selectors do: [:each | 
 		| source category errors |
 		source := (self compiledMethodAt: each inClass: oldClass) sourceString.
@@ -818,7 +825,7 @@ sbFindClass
 
 	| classToPackageMap |
 	classToPackageMap := self sbFindClassPackageMap.
-	self symbolList do: [:eachDict | 
+	self persistentSymbolList do: [:eachDict | 
 		| name |
 		name := eachDict name.
 		eachDict do: [:eachGlobal | 
@@ -932,7 +939,7 @@ sbMethodClass: anOrderedCollection
 		targetVersion := (targetVersion subStrings: $/) collect: [:each | each asNumber].
 	].
 	set := IdentitySet new.
-	self symbolList do: [:eachDict | 
+	self persistentSymbolList do: [:eachDict | 
 		eachDict do: [:eachGlobal | 
 			(eachGlobal isBehavior and: [eachGlobal name = targetName]) ifTrue: [set add: eachGlobal].
 		].
@@ -951,7 +958,7 @@ sbMethodClass: anOrderedCollection
 		result := self		"key: GsNMethod value: (Array withAll: errors and warnings)"
 				compileMethod: gsMethod sourceString
 				behavior: target
-				symbolList: self symbolList 
+				symbolList: self persistentSymbolList 
 				inCategory: (self _behavior: sourceBehavior categoryOfSelector: gsMethod selector).
 		(result key notNil and: [action = 'move']) ifTrue: [
 			sourceBehavior removeSelector: gsMethod selector.
@@ -1057,7 +1064,7 @@ sbRemoveClasses
 	isPackages := self _nextLine = 'packageList'.
 	containers := self _nextLineAsList.
 	classNames := (self _nextLineAsList reject: [:each | each isEmpty]) collect: [:each | (each subStrings: Character space) first asSymbol].
-	self symbolList do: [:eachDictionary | 
+	self persistentSymbolList do: [:eachDictionary | 
 		| dictionaryName |
 		dictionaryName := eachDictionary name asString.
 		classNames do: [:eachName |
@@ -1096,7 +1103,7 @@ sbRemoveClasses
 sbRemoveDictionaries: anOrderedCollection
 
 	anOrderedCollection do: [:each | 
-		self symbolList removeDictionaryNamed: each asSymbol.
+		self persistentSymbolList removeDictionaryNamed: each asSymbol.
 	].
 	self _refreshSymbolList.
 	self systemBrowserUpdate.
@@ -1105,7 +1112,7 @@ sbRemoveDictionaries: anOrderedCollection
 sbRemoveGlobals
 
 	| symbolList dictionaries globals |
-	symbolList := self symbolList.
+	symbolList := self persistentSymbolList.
 	dictionaries := self _nextLineAsList collect: [:each | each asSymbol].
 	dictionaries := dictionaries collect: [:eachName | symbolList detect: [:eachDict | eachDict name = eachName]].
 	globals := self _nextLineAsList collect: [:each | each asSymbol].
@@ -1155,7 +1162,7 @@ sbRemovePriorVersions
 	isPackages := self _nextLine = 'packageList'.
 	containers := self _nextLineAsList.
 	classNames := (self _nextLineAsList reject: [:each | each isEmpty]) collect: [:each | (each subStrings: Character space) first asSymbol].
-	self symbolList do: [:eachDictionary | 
+	self persistentSymbolList do: [:eachDictionary | 
 		| dictionaryName |
 		dictionaryName := eachDictionary name asString.
 		classNames do: [:eachName |
@@ -1196,7 +1203,7 @@ sbRevertClass
 	isPackages := self _nextLine = 'packageList'.
 	container := self _nextLine trimSeparators.
 	className := self _nextLine trimSeparators.
-	self symbolList do: [:eachDictionary | 
+	self persistentSymbolList do: [:eachDictionary | 
 		| dictionaryName class flag |
 		dictionaryName := eachDictionary name asString.
 		(class := eachDictionary at: className ifAbsent: [nil]) notNil ifTrue: [
@@ -1252,7 +1259,7 @@ sbSetHomeDictionary: list
 
 	| name dictionary packagePolicy |
 	name := list removeFirst asSymbol.
-	dictionary := self symbolList detect: [:each | each name = name].
+	dictionary := self persistentSymbolList detect: [:each | each name = name].
 	(packagePolicy := self _gsPackagePolicy) notNil ifTrue: [
 		packagePolicy homeSymbolDict: dictionary.
 	].
@@ -1425,7 +1432,7 @@ sbUpdateDictionaries
 	| override packagePolicy home symbolList oldSelections newSelections fullList globals |
 	oldSelections := self _nextLineAsList.
 	(override := selections at: #'dictionary' ifAbsent: [nil]) notNil ifTrue: [oldSelections := Array with: override].
-	symbolList := self symbolList.
+	symbolList := self persistentSymbolList.
 	(packagePolicy := self _gsPackagePolicy) notNil  ifTrue: [
 		home := packagePolicy homeSymbolDict.
 	].
@@ -1777,7 +1784,7 @@ sbUpdateSuperclass
 
 symbolList
 
-	^System myUserProfile symbolList.
+	^self persistentSymbolList
 !
 
 systemBrowser: aString
@@ -1813,6 +1820,11 @@ systemBrowserUpdate
 		yourself.
 !
 
+transientSymbolList
+
+	^GsSession currentSession symbolList
+!
+
 writeList: aList
 
 	aList do: [:each | writeStream nextPutAll: each; tab].
@@ -1832,6 +1844,7 @@ writeList: aList
 !JadeServer categoriesFor: #environment!private!System Browser! !
 !JadeServer categoriesFor: #environment:!private!System Browser! !
 !JadeServer categoriesFor: #historyOf:!private! !
+!JadeServer categoriesFor: #persistentSymbolList!private!System Browser! !
 !JadeServer categoriesFor: #runClassTests:!public!System Browser! !
 !JadeServer categoriesFor: #runMethodTests:!private!System Browser! !
 !JadeServer categoriesFor: #sbAddDictionary:!private! !
@@ -1918,6 +1931,7 @@ writeList: aList
 !JadeServer categoriesFor: #systemBrowser:!public!System Browser! !
 !JadeServer categoriesFor: #systemBrowserA:!private!System Browser! !
 !JadeServer categoriesFor: #systemBrowserUpdate!private!System Browser! !
+!JadeServer categoriesFor: #transientSymbolList!private!System Browser! !
 !JadeServer categoriesFor: #writeList:!private!System Browser! !
 
 !JadeServer32bit methodsFor!
@@ -1967,7 +1981,7 @@ systemBrowser: aString
 dictionaryAndSymbolOf: aClass
 
 	| array |
-	array := self symbolList dictionariesAndSymbolsOf: aClass.
+	array := self persistentSymbolList dictionariesAndSymbolsOf: aClass.
 	^array isEmpty
 		ifTrue: [nil]
 		ifFalse: [array first].
@@ -2037,7 +2051,7 @@ sbBrowseMethodsWithPragma: anOrderedCollection
 	| methods symbol |
 	symbol := anOrderedCollection removeFirst asSymbol.
 	methods := IdentitySet new.
-	self symbolList do: [:eachDict | 
+	self persistentSymbolList do: [:eachDict | 
 		eachDict do: [:eachGlobal | 
 			eachGlobal isBehavior ifTrue: [
 				(Array with: eachGlobal class with: eachGlobal) do: [:eachBehavior | 
@@ -2072,7 +2086,7 @@ sbListMethodPragmas: aList
 
 	| pragmas |
 	pragmas := IdentitySet new.
-	self symbolList do: [:eachDict | 
+	self persistentSymbolList do: [:eachDict | 
 		eachDict do: [:eachGlobal | 
 			eachGlobal isBehavior ifTrue: [
 				(Array with: eachGlobal with: eachGlobal class) do: [:eachBehavior | 
@@ -2094,7 +2108,7 @@ sbMethod: anOrderedCollection
 	string := self sbNextParagraph.
 	gsMethod := behavior
 		compileMethod: string 
-		dictionaries: self symbolList 
+		dictionaries: self persistentSymbolList 
 		category: category asSymbol 
 		environmentId: environment.
 	selections 

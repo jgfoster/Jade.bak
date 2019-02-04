@@ -32,7 +32,6 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
 	'..\Core\Object Arts\Dolphin\MVP\Icons\Dolphin Text Tile Icons'
 	'GemStone C Interface'
-	'GemStone Objects'
 	'GemStone Session'
 	'Jade Transcript'
 	'Jade UI Base'
@@ -78,7 +77,7 @@ isProfStefAvailable
 addProfStef
 
 	| dictionary profStef symbolList |
-	symbolList := GsSession currentSession symbolList.
+	symbolList := self transientSymbolList.
 	profStef := symbolList objectNamed: #'ProfStef'.
 	profStef notNil ifTrue: [^profStef].
 	profStef := self newProfStefClass.
@@ -121,7 +120,7 @@ newProfStefClass
 removeProfStef
 
 	| profStef symbolList |
-	symbolList := GsSession currentSession symbolList.
+	symbolList := self transientSymbolList.
 	profStef := symbolList objectNamed: #'ProfStef'.
 	profStef isNil ifTrue: [^self].
 	(symbolList dictionariesAndSymbolsOf: profStef) do: [:each | 

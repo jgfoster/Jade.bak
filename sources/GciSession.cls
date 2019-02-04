@@ -287,6 +287,7 @@ heartbeat: receiver arguments: arguments
 		].
 	].
 	(result isKindOf: GsFatalError) ifTrue: [^self].
+	(result isKindOf: Error) ifTrue: [result signal].
 	0 < result ifTrue: [self idleWarning].
 
 !
