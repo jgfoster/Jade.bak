@@ -233,7 +233,7 @@ handlingClientForwarderSendDo: aBlock
 		result := self returningResultOrErrorDo: block.
 		result isKindOf: GsClientForwarderSend.
 	] whileTrue: [
-		continueWith := result signal.
+		continueWith := self oopTypeFor: result signal.
 		block := [
 			library
 				session: gciSessionId
@@ -286,8 +286,7 @@ heartbeat: receiver arguments: arguments
 				continue: error tag contextOop.
 		].
 	].
-	(result isKindOf: GsFatalError) ifTrue: [^self].
-	(result isKindOf: Error) ifTrue: [result signal].
+	(result isKindOf: Error) ifTrue: [^self].	"We are just going to ignore any errors!!"
 	0 < result ifTrue: [self idleWarning].
 
 !
@@ -553,6 +552,16 @@ logoutRequested
 	^valueHolder value.
 !
 
+message: messageString caption: captionString icon: alertSymbol buttons: buttonsSymbol
+
+	^MessageBox new
+		text: messageString;
+		caption: captionString;
+		iconStyle: alertSymbol asSymbol;
+		buttonStyle: buttonsSymbol asSymbol;
+		open
+!
+
 netPort
 	^netPort!
 
@@ -582,7 +591,7 @@ oopTypeFor: anObject
 	(anObject isKindOf: Boolean) 		ifTrue: [^anObject ifTrue: [library oopTrue] ifFalse: [library oopFalse]].
 	(anObject isKindOf: SmallInteger) 	ifTrue: [^library session: gciSessionId oopForInteger: anObject].
 	(anObject isKindOf: GsObject) 		ifTrue: [^anObject oopType].
-	(anObject isKindOf: String)		ifTrue: [^self oopForString: anObject].
+	(anObject isKindOf: String)			ifTrue: [^self oopForString: anObject].
 	MessageBox notify: 'Sorry, we are not yet prepared to convert ' , anObject printString , ' to an OOP!!'.
 	SessionManager current pause.
 !
@@ -605,6 +614,13 @@ printString: anOopType
 	^self
 		serverPerform: 'printStringOf:'
 		with: anOopType.
+!
+
+prompt: promptString caption: captionString
+
+	^Prompter 
+		prompt: promptString
+		caption: captionString
 !
 
 releaseOop: anOopType
@@ -1137,6 +1153,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #loadLibrary:debugPath:!public! !
 !GciSession categoriesFor: #logout!Jade!public! !
 !GciSession categoriesFor: #logoutRequested!Jade!public! !
+!GciSession categoriesFor: #message:caption:icon:buttons:!OmniBrowser!public! !
 !GciSession categoriesFor: #netPort!accessing!public! !
 !GciSession categoriesFor: #netTask!accessing!public! !
 !GciSession categoriesFor: #oopForString:!public! !
@@ -1146,6 +1163,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #oopTypeWithOop:!public! !
 !GciSession categoriesFor: #postLoginAs:!private! !
 !GciSession categoriesFor: #printString:!Jade convenience!public! !
+!GciSession categoriesFor: #prompt:caption:!OmniBrowser!public! !
 !GciSession categoriesFor: #releaseOop:!Jade convenience!public! !
 !GciSession categoriesFor: #releaseOops:!Jade!public! !
 !GciSession categoriesFor: #returningResultOrErrorDo:!long running!private! !

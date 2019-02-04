@@ -492,6 +492,25 @@ mcRemoveRepository: aRepository fromPackage: aMCWorkingCopy
 	aMCWorkingCopy repositoryGroup removeRepository: aRepository.
 !
 
+message: messageString caption: captionString icon: alertSymbol buttons: buttonsSymbol
+"
+	(System __sessionStateAt: 3)
+		message: 'message' 
+		caption: 'caption' 
+		icon: #error 		""#(#none  #error #prompt #warning #notify #user )""
+		buttons: #okCancel.	""#(#ok #okCancel #abortRetryIgnore #yesNoCancel #yesNo #retryCancel #cancelRetryContinue)""
+"
+	| exception |	exception := (self objectInBaseNamed: #'ClientForwarderSend') new 
+		receiver: self 
+		clientObj: 1
+		selector:#'message:caption:icon:buttons:'
+		args: (Array 
+			with: (self _asString: messageString) 
+			with: (self _asString: captionString)
+			with: (self _asString: alertSymbol asString)
+			with: (self _asString: buttonsSymbol)).
+	^exception defaultAction.  "return error direct to GCI"!
+
 nextPut: aCharacter
 	"Transcript protocol"
 
@@ -566,6 +585,22 @@ preferences
 
 	^self _encodeString: self _preferences
 !
+
+prompt: promptString caption: captionString
+"
+	(System __sessionStateAt: 3)
+		prompt: 'message' 
+		caption: 'caption' 
+"
+	| exception |
+	exception := (self objectInBaseNamed: #'ClientForwarderSend') new 
+		receiver: self 
+		clientObj: 1
+		selector:#'prompt:caption:'
+		args: (Array 
+			with: (self _asString: promptString)
+			with: (self _asString: captionString)).
+	^exception defaultAction.  "return error direct to GCI"!
 
 reset
 	"WriteStream protocol used by Transcript"!
@@ -655,6 +690,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #initialize!public! !
 !JadeServer categoriesFor: #makeListener!private! !
 !JadeServer categoriesFor: #mcRemoveRepository:fromPackage:!public! !
+!JadeServer categoriesFor: #message:caption:icon:buttons:!OmniBrowser!public! !
 !JadeServer categoriesFor: #nextPut:!public!Transcript! !
 !JadeServer categoriesFor: #nextPutAll:!public!Transcript! !
 !JadeServer categoriesFor: #obConfirmationRequest:!OmniBrowser!public! !
@@ -664,6 +700,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #obTextRequest:!OmniBrowser!public! !
 !JadeServer categoriesFor: #oopOf:!private! !
 !JadeServer categoriesFor: #preferences!public! !
+!JadeServer categoriesFor: #prompt:caption:!OmniBrowser!public! !
 !JadeServer categoriesFor: #reset!public!Transcript! !
 !JadeServer categoriesFor: #setBreakAtStepPoint:inMethod:!Methods!public! !
 !JadeServer categoriesFor: #show:!public!Transcript! !
