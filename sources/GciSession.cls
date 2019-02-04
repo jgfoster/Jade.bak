@@ -438,6 +438,8 @@ initializeServer
 		self 
 			signalConfirmationRequestUsing: nil;
 			signalTextRequestUsing: nil;
+			message: 'messageString' caption: 'captionString' icon: 'alertSymbol' buttons: 'buttonsSymbol';
+			prompt: 'promptString' caption: 'captionString';
 			yourself.
 	].
 !
