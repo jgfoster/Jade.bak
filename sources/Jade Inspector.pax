@@ -40,6 +40,7 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
 	'..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View'
+	'..\Core\Object Arts\Dolphin\MVP\Icons\Dolphin Text Tile Icons'
 	'..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters'
 	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
 	'GemStone Session'
