@@ -63,7 +63,7 @@ browseMethodsFromString: aString
 		session: self gciSession.
 	methodListPresenter list: list asSortedCollection.
 	list notEmpty ifTrue: [
-		"methodListPresenter selectFirstMethod."
+		methodListPresenter selectFirstMethod.
 	].!
 
 browseMethodsFromString: aString methodName: methodName
@@ -82,7 +82,10 @@ browseMethodsFromString: aString methodName: methodName
 
 	treeMethodsMap at: node put: list asSortedCollection.
 
-	treeMethodsPresenter selection: node
+	treeMethodsPresenter selection: node.
+	list notEmpty ifTrue: [
+		methodListPresenter selectFirstMethod.
+	].
 !
 
 browseMethodsFromString: aString methodName: methodName type: browseType
@@ -102,7 +105,10 @@ browseMethodsFromString: aString methodName: methodName type: browseType
 
 	treeMethodsMap at: node put: list asSortedCollection.
 
-	treeMethodsPresenter selection: node!
+	treeMethodsPresenter selection: node.
+	list notEmpty ifTrue: [
+		methodListPresenter selectFirstMethod.
+	].!
 
 browseSendersOf: aGsMethod
 	| methodName |
@@ -279,9 +285,9 @@ onMethodSelectionChanged
 	| entry gsMethod className |
 
 	treeMethodsPresenter hasSelection ifFalse: [^self].
-	methodListPresenter selections size == 1 ifFalse: [^self].
+	methodListPresenter selectionOrNil ifNil: [^self].
 
-	gsMethod := methodListPresenter selections last.
+	gsMethod := methodListPresenter selectionOrNil.
 	className := gsMethod gsClass name.
 	((className indexOfSubCollection: ' class') ~= 0) ifTrue: [className := className, ' class'].
 	entry := Array
@@ -342,6 +348,10 @@ selectedMethod
 
 	^methodListPresenter selectionOrNil!
 
+selectFirstMethod
+
+	methodListPresenter selection: methodListPresenter model first ifAbsent: []!
+
 treeListHasSelection
 
 	^treeMethodsPresenter hasSelection!
@@ -397,6 +407,7 @@ treeMethodsPresenter: anObject
 !JadeTreeMethodListPresenter categoriesFor: #restoreFrom:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #selectedExplorerNode!public! !
 !JadeTreeMethodListPresenter categoriesFor: #selectedMethod!public! !
+!JadeTreeMethodListPresenter categoriesFor: #selectFirstMethod!public! !
 !JadeTreeMethodListPresenter categoriesFor: #treeListHasSelection!public! !
 !JadeTreeMethodListPresenter categoriesFor: #treeMethodsMap!accessing!private! !
 !JadeTreeMethodListPresenter categoriesFor: #treeMethodsMap:!accessing!private! !
