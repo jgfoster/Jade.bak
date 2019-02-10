@@ -93,7 +93,7 @@ sbObjectLog: anOrderedCollection
 "2"	writeStream tab; nextPutAll: each class name; tab.
 "3"	each pid printOn: writeStream. 
 		writeStream tab.
-"4"	each stamp rounded printOn: writeStream.
+"4"	each stamp notNil ifTrue: [each stamp rounded printOn: writeStream].	"https://github.com/jgfoster/Jade/issues/196"
 "5"	writeStream tab; nextPutAll: labelString; tab.
 "6"	each priority printOn: writeStream.
 		writeStream tab.
