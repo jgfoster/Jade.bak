@@ -1789,8 +1789,22 @@ symbolList
 
 systemBrowser: aString
 
-	^self copy systemBrowserA: aString.
-!
+	[
+		^self copy systemBrowserA: aString.
+	] on: Error do: [:ex | 
+		[
+			| gsFile |
+			gsFile := GsFile open: 'JadeServer.ERRORS' mode: 'a' onClient: true.
+			gsFile 
+				nextPutAll: ex description; cr;
+				nextPutAll: (self objectInBaseNamed: #'DateTime') now printString; cr;
+				nextPutAll: (GsProcess stackReportToLevel: 100); cr; cr;
+				yourself.
+		] on: Error do: [:ex1 | 
+			ex1 return.
+		].
+		^''.
+	].!
 
 systemBrowserA: aString
 
