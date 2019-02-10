@@ -652,13 +652,13 @@ streamOfMethods: aList
 !JadeServer categoriesFor: #_behavior:categoryOfSelector:!Methods!private! !
 !JadeServer categoriesFor: #_behaviorFor:in:!Methods!private! !
 !JadeServer categoriesFor: #_implementorsOf:!Methods!private! !
-!JadeServer categoriesFor: #_methodsContaining:!Methods!public! !
+!JadeServer categoriesFor: #_methodsContaining:!Methods!private! !
 !JadeServer categoriesFor: #_methodsFor:categories:!Methods!private! !
 !JadeServer categoriesFor: #_methodsFor:filter:isVariables:!Methods!private! !
 !JadeServer categoriesFor: #_methodsFor:variables:!Methods!private! !
 !JadeServer categoriesFor: #_packageNameFor:!Methods!private! !
 !JadeServer categoriesFor: #_referencesToObject:!Methods!private! !
-!JadeServer categoriesFor: #_sendersOf:!Methods!public! !
+!JadeServer categoriesFor: #_sendersOf:!Methods!private! !
 !JadeServer categoriesFor: #_streamOfMethods:!Methods!private! !
 !JadeServer categoriesFor: #_stringOfLineNumbersWithBreaksIn:!Methods!private! !
 !JadeServer categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!private!System Browser! !

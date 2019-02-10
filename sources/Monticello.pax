@@ -890,7 +890,7 @@ mcWorkingCopyClass
 !JadeServer categoriesFor: #_describeMCOrganizationDefinition:on:!Monticello!private! !
 !JadeServer categoriesFor: #_describeMCRemoval:on:!Monticello!private! !
 !JadeServer categoriesFor: #_mcDescriptionOfPatch:baseName:alternateName:!Monticello!private! !
-!JadeServer categoriesFor: #_mcLoadedVersionNames!Monticello!public! !
+!JadeServer categoriesFor: #_mcLoadedVersionNames!Monticello!private! !
 !JadeServer categoriesFor: #_mcRepositoryFrom:!Monticello!private! !
 !JadeServer categoriesFor: #_mcTopazFrom:on:!Monticello!private! !
 !JadeServer categoriesFor: #authorInitials:!Monticello!public! !
