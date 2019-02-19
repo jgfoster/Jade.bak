@@ -116,6 +116,7 @@ clientForwardError: gciErrSType
 		selector := self valueOfOop: (gciErrSType args at: 3).
 		args := self valueOfArrayOop: (gciErrSType args at: 4).		(receiver isNil or: [self clientForwarders size < receiver]) ifTrue: [^library oopNil].
 		receiver := self clientForwarders at: receiver.
+		SessionManager inputState pumpMessages.	"This seems to be necessary to allow #withExplanation:doA: to properly keep in synch."
 		^receiver
 			perform: selector
 			withArguments: args.
@@ -1060,46 +1061,62 @@ withExplanation: aString do: aBlock
 withExplanation: aString doA: aBlock
 	"Here we manage the UI feedback"
 
-	| result haveResult shouldRunEventLoop dialog proc |
-	shouldRunEventLoop := true.
+	| result haveResult shouldRunEventLoop dialog |
 	haveResult := false.
+
+	"The next block does the actual work. It is forked to a separate process so we can monitor it from the main process and handle the delay feedback."
 	[
 		[
 			result := self handlingClientForwarderSendDo: aBlock.
-		] on: GsInvalidSessionError do: [:ex | ].		"Ignore invalid session (logout!!)"
+		] on: GsInvalidSessionError do: [:ex | ex yourself].		"Ignore invalid session (logout!!)"
 		haveResult := true.
 		shouldRunEventLoop := false.
 		SessionManager inputState prod.
 	] newProcess name: 'GciSession>>withExplanation:doA: - 1'; resume.
+
+	"The following loop handles removing the wait dialog if we are in a ClientForwarderSend, then restoring it when we go back to the server."
 	[
-		proc := [
-			(Delay forSeconds: 1) wait.
-			shouldRunEventLoop := false.
-			SessionManager inputState prod.
-		] newProcess name: 'GciSession>>withExplanation:doA: - 2'; resume.
-		isHandlingClientForwarderSend ifTrue: [
-			SessionManager inputState loopWhile: [shouldRunEventLoop].
-			shouldRunEventLoop := true.
-		] ifFalse: [
-			Cursor wait showWhile: [
+		shouldRunEventLoop := true.
+		"The next block shows the busy cursor for up to one second. The one second restarts if something happens on the client (ClientForwarderSend)."
+		[
+			| proc |
+			proc := [
+				(Delay forSeconds: 1) wait.
+				shouldRunEventLoop := false.
+				SessionManager inputState prod.
+			] newProcess name: 'GciSession>>withExplanation:doA: - 2'; resume.
+			isHandlingClientForwarderSend ifTrue: [
 				SessionManager inputState loopWhile: [shouldRunEventLoop].
 				shouldRunEventLoop := true.
+			] ifFalse: [
+				Cursor wait showWhile: [
+					SessionManager inputState loopWhile: [shouldRunEventLoop].
+					shouldRunEventLoop := true.
+				].
 			].
-		].
-		haveResult ifTrue: [^result].
-		isHandlingClientForwarderSend.
-	] whileTrue: [].
-	dialog := WaitOnGemStoneDialog
-		gciSession: self 
-		message: aString
-		havingWaited: 1.
-	[
-		SessionManager inputState loopWhile: [shouldRunEventLoop].
-		shouldRunEventLoop := true.
-		dialog view close.
-	] newProcess name: 'GciSession>>withExplanation:doA: - 3'; resume.
-	dialog showModal.
-	SessionManager inputState pumpMessages.
+			proc terminate.
+			haveResult ifTrue: [^result].
+			isHandlingClientForwarderSend.
+		] whileTrue: [].
+
+		"Now we have been on the server for at least a second and it is time to create a dialog for more detailed feedback (but it doesn't get shown quite yet)."
+		dialog := WaitOnGemStoneDialog
+			gciSession: self 
+			message: aString
+			havingWaited: 1.
+
+		"Watch to see when the main process (above) finishes. Once the work is done we close the wait dialog."
+		[
+			SessionManager inputState loopWhile: [shouldRunEventLoop and: [isHandlingClientForwarderSend not]].
+			dialog view close.
+		] newProcess name: 'GciSession>>withExplanation:doA: - 3'; resume.
+
+		"Show the dialog and wait till the dialog closes."
+		dialog showModal.
+		"The dialog has been closed (either by the background process since the main task finished, or for some other reason."
+		SessionManager inputState pumpMessages.
+		haveResult.	"Dialog may have been closed by a ClientForwarderSend"
+	] whileFalse.
 	^result.
 ! !
 !GciSession categoriesFor: #_executeString:fromContextOop:environment:!private! !
