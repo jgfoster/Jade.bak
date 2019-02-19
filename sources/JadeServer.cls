@@ -382,6 +382,15 @@ abort
 	self _refreshSymbolList.
 !
 
+addJadeServerToUserGlobals
+
+	| class |
+	class := self class.
+	[class notNil] whileTrue: [
+		UserGlobals at: class name put: class.
+		class := class superclass.
+	].!
+
 beginTransaction
 
 	classOrganizers := Array new: 4.
@@ -675,6 +684,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #_string!private! !
 !JadeServer categoriesFor: #_writeStreamOnString!private! !
 !JadeServer categoriesFor: #abort!public! !
+!JadeServer categoriesFor: #addJadeServerToUserGlobals!public! !
 !JadeServer categoriesFor: #beginTransaction!public! !
 !JadeServer categoriesFor: #clearBreakAtStepPoint:inMethod:!Methods!public! !
 !JadeServer categoriesFor: #commit!public! !
