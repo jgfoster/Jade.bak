@@ -2950,7 +2950,7 @@ updateClassHierarchy
 			expand: newSelection;
 			yourself.
 	].
-	self selectedClassName: (newSelection notEmpty ifTrue: [newSelection last] ifFalse: ['']).
+	self selectedClassName: ((newSelection notNil and: [newSelection notEmpty]) ifTrue: [newSelection last] ifFalse: ['']).
 	classListPresenter selectionOrNil: nil.
 
 	selectedClassesAreTestCases := (flags at: 1) = 'true'.

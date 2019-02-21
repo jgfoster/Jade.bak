@@ -40,16 +40,10 @@ _mcInitialsA: aString
 		do: [:ex :cat :num :args | ^false].
 	super _mcInitialsA: aString.
 	^true.
-!
-
-_objectForOop: anInteger
-
-	^Object _objectForOop: anInteger
 ! !
 !JadeServer32bit categoriesFor: #_asString:!private!Transcript! !
 !JadeServer32bit categoriesFor: #_installTranscript!private!Transcript! !
 !JadeServer32bit categoriesFor: #_mcInitialsA:!private! !
-!JadeServer32bit categoriesFor: #_objectForOop:!private!System Browser! !
 
 !JadeServer32bit class methodsFor!
 

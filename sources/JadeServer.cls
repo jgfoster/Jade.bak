@@ -314,7 +314,8 @@ _nextLineAsList
 
 _objectForOop: anInteger
 
-	self subclassResponsibility.!
+	^Object _objectForOop: anInteger.
+!
 
 _preferences
 	"Private - Return useful information to GciSession>>updatePreferencesFrom:"

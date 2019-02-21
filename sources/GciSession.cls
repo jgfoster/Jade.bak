@@ -573,9 +573,13 @@ netTask
 
 oopForString: aString
 
+	| log oop |
 	aString isNil ifTrue: [^library oopNil].
-	^library session: gciSessionId oopForString: aString
-!
+	oop := library session: gciSessionId oopForString: aString.
+	log := 'Allocated oop ' , oop printString , ' for ' , (aString copyFrom: 1 to: (aString size min: 40)) printString.
+	log := log copyReplacing: Character lf withObject: $\.
+	GciSession log: log.
+	^oop!
 
 oopGemStoneError
 
@@ -1049,6 +1053,7 @@ withExplanation: aString do: aBlock
 	(result isKindOf: GsError) ifFalse: [^result].
 
 	error := result.
+	GciSession log: error description.
 	result := error signal.
 	result = #'resume' ifFalse: [self error: 'Unrecognized response of ' , result printString].
 	^self

@@ -1795,11 +1795,15 @@ systemBrowser: aString
 		[
 			| gsFile |
 			gsFile := GsFile open: 'JadeServer.ERRORS' mode: 'a' onClient: true.
-			gsFile 
-				nextPutAll: ex description; cr;
-				nextPutAll: (self objectInBaseNamed: #'DateTime') now printString; cr;
-				nextPutAll: (GsProcess stackReportToLevel: 100); cr; cr;
-				yourself.
+			[
+				gsFile 
+					nextPutAll: ex description; cr;
+					nextPutAll: (self objectInBaseNamed: #'DateTime') now printString; cr;
+					nextPutAll: (GsProcess stackReportToLevel: 100); cr; cr;
+					yourself.
+			] ensure: [
+				gsFile close.
+			].
 		] on: Error do: [:ex1 | 
 			ex1 return.
 		].

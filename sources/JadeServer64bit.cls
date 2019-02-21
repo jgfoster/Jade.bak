@@ -38,18 +38,12 @@ _mcInitialsA: aString
 	].
 !
 
-_objectForOop: anInteger
-
-	^Object _objectForOop: anInteger.
-!
-
 homeMethodFor: aGsMethod
 
 	^[aGsMethod homeMethod] on: Error do: [:ex | ex return: aGsMethod]! !
 !JadeServer64bit categoriesFor: #_asString:!private!Transcript! !
 !JadeServer64bit categoriesFor: #_installTranscript!private!Transcript! !
 !JadeServer64bit categoriesFor: #_mcInitialsA:!private! !
-!JadeServer64bit categoriesFor: #_objectForOop:!private!System Browser! !
 !JadeServer64bit categoriesFor: #homeMethodFor:!private! !
 
 !JadeServer64bit class methodsFor!
