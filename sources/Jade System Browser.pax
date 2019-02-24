@@ -1794,6 +1794,7 @@ systemBrowser: aString
 	] on: Error do: [:ex | 
 		[
 			| gsFile |
+			(ex isKindOf: (self objectInBaseNamed: #'CompileError')) ifTrue: [ex pass].
 			gsFile := GsFile open: 'JadeServer.ERRORS' mode: 'a' onClient: true.
 			[
 				gsFile 
