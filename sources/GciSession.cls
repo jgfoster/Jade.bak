@@ -41,12 +41,23 @@ _send: aSymbol to: anObject withAll: anArray
 		(each isKindOf: String) ifTrue: [oops add: (self oopForString: each)] ifFalse: [
 		each]].
 	].
-	result := library 
-		session: gciSessionId
-		send: aSymbol 
-		to: (self oopTypeFor: anObject) 
-		with: (self serverArrayFor: arguments).
-	self releaseOops: oops.
+	[
+		[
+			result := library 
+				session: gciSessionId
+				send: aSymbol 
+				to: (self oopTypeFor: anObject) 
+				with: (self serverArrayFor: arguments).
+		] on: GsRuntimeError do: [:ex | 
+			ex errorReport number == 2106 ifTrue: [
+				Error signal: oops printString , '; ' , ex description.
+			] ifFalse: [
+				ex pass.
+			].
+		].
+	] ensure: [
+		self releaseOops: oops.
+	].
 	^result.
 !
 
