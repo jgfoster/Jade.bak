@@ -544,6 +544,7 @@ loadLibrary: aClass debugPath: debugPath
 	debugPath notEmpty ifTrue: [
 		(self debugToFilePath: debugPath) ifFalse: [self error: 'Unable to open ' , debugPath printString , ' for GCI debugging'].
 		library gemTrace: 2.
+		library gciGemTrace: 3.
 	].!
 
 logout

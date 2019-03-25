@@ -203,6 +203,7 @@ onCloseRequested: boolValueHolder
 
 onIdleEntered
 
+	GciLibrary activeLibrary ifNil: [^self].
 	GciLibrary activeLibrary gciCallInProgress ifFalse: [
 		Cursor current ifNotNil: [
 			[Cursor current: nil] forkAt: Processor userBackgroundPriority.
