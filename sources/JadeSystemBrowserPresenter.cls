@@ -484,7 +484,7 @@ compareAncestor
 		MessageBox notify: 'No changes!!'.
 		^self.
 	].
-	MCPatchBrowser showOn: patch.
+	MCPatchDiffBrowser showOn: patch.
 !
 
 contextObject
@@ -2672,7 +2672,7 @@ showPackageChanges
 		MessageBox notify: 'No changes!!'.
 		^self.
 	].
-	MCPatchBrowser showOn: patch.
+	MCPatchDiffBrowser showOn: patch.
 !
 
 splitterPosition: aPoint

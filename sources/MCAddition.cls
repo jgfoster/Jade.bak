@@ -15,6 +15,12 @@ className
 	^definition className.
 !
 
+definition
+	^definition!
+
+definition: anObject
+	definition := anObject!
+
 detailsString
 
 	^definition detailsString.
@@ -30,19 +36,31 @@ modificationMemo
 	^definition displayMemo.
 !
 
+modificationSource
+	^self modificationMemo!
+
 modificationText
 
 	^definition displayText.
 !
+
+obsoletionSource
+	"There is no source in the previous version"
+
+	^''!
 
 selector
 
 	^definition selector.
 ! !
 !MCAddition categoriesFor: #className!public! !
+!MCAddition categoriesFor: #definition!accessing!private! !
+!MCAddition categoriesFor: #definition:!accessing!private! !
 !MCAddition categoriesFor: #detailsString!public! !
 !MCAddition categoriesFor: #initialize:!public! !
 !MCAddition categoriesFor: #modificationMemo!public! !
+!MCAddition categoriesFor: #modificationSource!public! !
 !MCAddition categoriesFor: #modificationText!public! !
+!MCAddition categoriesFor: #obsoletionSource!public! !
 !MCAddition categoriesFor: #selector!public! !
 

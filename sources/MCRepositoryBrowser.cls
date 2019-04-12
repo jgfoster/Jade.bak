@@ -89,7 +89,7 @@ compareVersion
 		left := temp.
 	].
 	patch := repositoryListPresenter selection patchFrom: left to: right.
-	MCPatchBrowser showOn: patch.
+	MCPatchDiffBrowser showOn: patch.
 !
 
 createComponents
