@@ -70,28 +70,6 @@ addServerDirectoryRepository
 		serverPerform: #'mcNewServerDirectoryRepository:' 
 		with: (gciSession encode: path)!
 
-compareVersion
-
-	| selections left right patch |
-	selections := versionListPresenter selections.
-	(selections isEmpty or: [2 < selections size]) ifTrue: [
-		MessageBox notify: 'Please select one or two versions!!'. 
-		^self.
-	].
-	left := selections size = 1
-		ifTrue: [nil]
-		ifFalse: [packageListPresenter selection name , '-' , selections first name].
-	right := packageListPresenter selection name , '-' , selections last name.
-	right < left ifTrue: [
-		| temp |
-		temp := right.
-		right := left.
-		left := temp.
-	].
-	patch := repositoryListPresenter selection patchFrom: left to: right.
-	MCPatchBrowser showOn: patch.
-!
-
 createComponents
 
 	super createComponents.
@@ -370,7 +348,6 @@ updateVersionList
 !MCRepositoryBrowser categoriesFor: #addHttpRepository!add repository!public! !
 !MCRepositoryBrowser categoriesFor: #addRepository!add repository!public! !
 !MCRepositoryBrowser categoriesFor: #addServerDirectoryRepository!add repository!public! !
-!MCRepositoryBrowser categoriesFor: #compareVersion!public!version actions! !
 !MCRepositoryBrowser categoriesFor: #createComponents!public! !
 !MCRepositoryBrowser categoriesFor: #createSchematicWiring!public! !
 !MCRepositoryBrowser categoriesFor: #editRepository!public! !

@@ -25,10 +25,19 @@ initialize: aStream
 	definition := MCDefinition fromStream: aStream.
 !
 
+modificationSource
+	"There is no source in the current version"
+
+	^''!
+
 obsoletionMemo
 
 	^definition displayMemo.
 !
+
+obsoletionSource
+
+	^definition source!
 
 obsoletionText
 
@@ -42,7 +51,9 @@ selector
 !MCRemoval categoriesFor: #className!public! !
 !MCRemoval categoriesFor: #detailsString!public! !
 !MCRemoval categoriesFor: #initialize:!public! !
+!MCRemoval categoriesFor: #modificationSource!public! !
 !MCRemoval categoriesFor: #obsoletionMemo!public! !
+!MCRemoval categoriesFor: #obsoletionSource!public! !
 !MCRemoval categoriesFor: #obsoletionText!public! !
 !MCRemoval categoriesFor: #selector!public! !
 
