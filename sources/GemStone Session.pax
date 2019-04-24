@@ -70,7 +70,6 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
 	'GemStone C Interface'
 	'GemStone Objects'
-	'..\Core\Contributions\IDB\IDB DateAndTime'
 	'JGF Fading Dialog'
 	'..\Core\Contributions\Camp Smalltalk\SUnit\SUnit').
 
