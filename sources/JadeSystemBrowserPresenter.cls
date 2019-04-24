@@ -1112,9 +1112,15 @@ fileOutMethod
 !
 
 fileOutMethodOnPath: aString
+	"PeterMoe: for file out a class side method need to know if we selected class or instance (#205)"
 
-	| header file newSource index string |
-	string := environment printString , ' fileOutMethod' , Character tab asString , self behaviorIdentifier , Character tab asString , self selectedMethodName.
+	| header file newSource index string fileOutString |
+	self isClassSideSelected
+	ifTrue:
+		[fileOutString := ' fileOutMethodClass']
+	ifFalse:
+		[fileOutString := ' fileOutMethod'].
+	string := environment printString , fileOutString , Character tab asString , self behaviorIdentifier , Character tab asString , self selectedMethodName.
 	string := self gciSession encode: string.
 	newSource := self gciSession 
 		serverPerform: #'systemBrowser:' 

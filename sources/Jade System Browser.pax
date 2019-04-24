@@ -62,6 +62,8 @@ package methodNames
 	add: #JadeServer -> #sbFileOutDictionary:;
 	add: #JadeServer -> #sbFileOutJadeServer:;
 	add: #JadeServer -> #sbFileOutMethod:;
+	add: #JadeServer -> #sbFileOutMethod:isClassSide:;
+	add: #JadeServer -> #sbFileOutMethodClassSide:;
 	add: #JadeServer -> #sbFindClass;
 	add: #JadeServer -> #sbFindClassPackageMap;
 	add: #JadeServer -> #sbFindSelectors:;
@@ -293,6 +295,7 @@ _systemBrowserCommand
 	command = 'fileOutDictionary'			ifTrue: [^self sbFileOutDictionary: list].
 	command = 'fileOutJadeServer'			ifTrue: [^self sbFileOutJadeServer: list].
 	command = 'fileOutMethod'			ifTrue: [^self sbFileOutMethod: list].
+	command = 'fileOutMethodClass'		ifTrue: [^self sbFileOutMethodClassSide: list]. "PeterMoe: support for class side method file out (#205)"
 	command = 'findClass' 				ifTrue: [^self sbFindClass].
 	command = 'findSelectors'				ifTrue: [^self sbFindSelectors: list].
 
@@ -811,15 +814,25 @@ sbFileOutJadeServer: anOrderedCollection
 !
 
 sbFileOutMethod: anOrderedCollection
+	"PeterMoe: support for class side method file out (#205)"
+
+	^self sbFileOutMethod: anOrderedCollection isClassSide: false!
+
+sbFileOutMethod: anOrderedCollection isClassSide: aBoolean
+	"PeterMoe: support for class side method file out (#205)"
 
 	| aClass selector |
 	aClass := (self sbClassFrom: anOrderedCollection) thisClass.
 	selector := anOrderedCollection removeFirst.
-	(aClass categoryOfSelector: selector) isNil ifTrue: [
-		aClass moveMethod: selector toCategory: 'uncategorized'.
-	].
-	writeStream nextPutAll: (aClass fileOutMethod: selector).
-!
+	aBoolean ifTrue: [aClass := aClass class].
+	(aClass categoryOfSelector: selector) isNil
+		ifTrue: [aClass moveMethod: selector toCategory: 'uncategorized'].
+	writeStream nextPutAll: (aClass fileOutMethod: selector)!
+
+sbFileOutMethodClassSide: anOrderedCollection
+	"PeterMoe: support for class side method file out (#205)"
+
+	^self sbFileOutMethod: anOrderedCollection isClassSide: true!
 
 sbFindClass
 
@@ -1895,6 +1908,8 @@ writeList: aList
 !JadeServer categoriesFor: #sbFileOutDictionary:!private!System Browser! !
 !JadeServer categoriesFor: #sbFileOutJadeServer:!private!System Browser! !
 !JadeServer categoriesFor: #sbFileOutMethod:!private!System Browser! !
+!JadeServer categoriesFor: #sbFileOutMethod:isClassSide:!private!System Browser! !
+!JadeServer categoriesFor: #sbFileOutMethodClassSide:!private!System Browser! !
 !JadeServer categoriesFor: #sbFindClass!private!System Browser! !
 !JadeServer categoriesFor: #sbFindClassPackageMap!private!System Browser! !
 !JadeServer categoriesFor: #sbFindSelectors:!private!System Browser! !
