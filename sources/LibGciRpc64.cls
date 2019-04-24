@@ -187,6 +187,16 @@ gciNewString: string
 !
 
 gciOopToChr: anObject
+	"http://kermit.gemtalksystems.com/bug?bug=47915
+
+	<cdecl: byte GciOopToChr OopType64>
+	^self invalidCall"
+
+	^anObject asInteger bitShift: -8
+!
+
+gciOopToChr32: anObject
+	"http://kermit.gemtalksystems.com/bug?bug=47915"
 
 	<cdecl: sdword GciOopToChr OopType64>
 	^self invalidCall
@@ -405,6 +415,7 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #gciNbPerformNoDebug:_:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciNewString:!private! !
 !LibGciRpc64 categoriesFor: #gciOopToChr:!private! !
+!LibGciRpc64 categoriesFor: #gciOopToChr32:!private! !
 !LibGciRpc64 categoriesFor: #gciReleaseOops:_:!private! !
 !LibGciRpc64 categoriesFor: #gciResolveSymbol:_:!private! !
 !LibGciRpc64 categoriesFor: #oopAsciiNul!public!Reserved OOPs! !

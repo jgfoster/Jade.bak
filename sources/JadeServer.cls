@@ -314,10 +314,11 @@ _nextLineAsList
 
 _objectForOop: anInteger
 
-	self subclassResponsibility.!
+	^Object _objectForOop: anInteger.
+!
 
 _preferences
-	"Return useful information to GciSession>>updatePreferencesFrom:"
+	"Private - Return useful information to GciSession>>updatePreferencesFrom:"
 
 	| mcPlatformSupport packagePolicyEnabled stream x |
 	packagePolicyEnabled := (x := self objectInBaseNamed: #'GsPackagePolicy') notNil and: [x current enabled].
@@ -381,6 +382,15 @@ abort
 	System abortTransaction.
 	self _refreshSymbolList.
 !
+
+addJadeServerToUserGlobals
+
+	| class |
+	class := self class.
+	[class notNil] whileTrue: [
+		UserGlobals at: class name put: class.
+		class := class superclass.
+	].!
 
 beginTransaction
 
@@ -651,7 +661,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #_gemLogPath!private!Transcript! !
 !JadeServer categoriesFor: #_gsPackagePolicy!private! !
 !JadeServer categoriesFor: #_gsPackagePolicyClass!private! !
-!JadeServer categoriesFor: #_initializeMoticello!public! !
+!JadeServer categoriesFor: #_initializeMoticello!private! !
 !JadeServer categoriesFor: #_inspectDictionary:on:!private! !
 !JadeServer categoriesFor: #_inspectNamedInstanceVariablesOf:on:!private! !
 !JadeServer categoriesFor: #_installTranscript!private!Transcript! !
@@ -667,14 +677,15 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #_nextLine!private!System Browser! !
 !JadeServer categoriesFor: #_nextLineAsList!private!System Browser! !
 !JadeServer categoriesFor: #_objectForOop:!private! !
-!JadeServer categoriesFor: #_preferences!public! !
+!JadeServer categoriesFor: #_preferences!private! !
 !JadeServer categoriesFor: #_refreshSymbolList!private! !
 !JadeServer categoriesFor: #_registerOBNotifications!private! !
 !JadeServer categoriesFor: #_registerOBNotificationsForPlatform:clientForwarder:!private! !
-!JadeServer categoriesFor: #_setSessionState!public! !
+!JadeServer categoriesFor: #_setSessionState!private! !
 !JadeServer categoriesFor: #_string!private! !
 !JadeServer categoriesFor: #_writeStreamOnString!private! !
 !JadeServer categoriesFor: #abort!public! !
+!JadeServer categoriesFor: #addJadeServerToUserGlobals!public! !
 !JadeServer categoriesFor: #beginTransaction!public! !
 !JadeServer categoriesFor: #clearBreakAtStepPoint:inMethod:!Methods!public! !
 !JadeServer categoriesFor: #commit!public! !

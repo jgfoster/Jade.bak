@@ -19,7 +19,9 @@ defaultAction
 
 signal
 
-	self gciSession beInvalidSession.
+	self gciSession 
+		ifNil: [^self]
+		ifNotNil: [:aGciSession | aGciSession beInvalidSession].
 	super signal.! !
 !GsInvalidSessionError categoriesFor: #defaultAction!public! !
 !GsInvalidSessionError categoriesFor: #signal!public! !
