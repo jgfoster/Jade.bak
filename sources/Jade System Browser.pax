@@ -160,6 +160,7 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls'
 	'..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs'
 	'..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars'
+	'..\Core\Object Arts\Dolphin\Base\Dolphin Legacy Date & Time'
 	'..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
@@ -813,11 +814,8 @@ sbFileOutJadeServer: anOrderedCollection
 sbFileOutMethod: anOrderedCollection
 
 	| aClass selector |
-	aClass := (self sbClassFrom: anOrderedCollection) thisClass.
-	selector := anOrderedCollection removeFirst.
-	(aClass categoryOfSelector: selector) isNil ifTrue: [
-		aClass moveMethod: selector toCategory: 'uncategorized'.
-	].
+	aClass := self sbClassFrom: anOrderedCollection.
+	selector := anOrderedCollection removeFirst asSymbol.
 	writeStream nextPutAll: (aClass fileOutMethod: selector).
 !
 
@@ -2095,10 +2093,10 @@ sbClassComment: anOrderedCollection
 
 sbFileOutMethod: anOrderedCollection
 
-	| aClass |
+	| aClass selector |
 	aClass := self sbClassFrom: anOrderedCollection.
-	writeStream nextPutAll: (aClass fileOutMethod: anOrderedCollection removeFirst asSymbol environmentId: environment).
-
+	selector := anOrderedCollection removeFirst asSymbol.
+	writeStream nextPutAll: (aClass fileOutMethod: selector environmentId: environment).
 !
 
 sbListMethodPragmas: aList
