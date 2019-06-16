@@ -36,7 +36,6 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
 	'GemStone C Interface'
 	'GemStone Session'
-	'..\Core\Contributions\IDB\IDB DateAndTime'
 	'Jade Transcript'
 	'Jade UI'
 	'..\Core\Object Arts\Dolphin\ActiveX\Shell\Windows Shell'
