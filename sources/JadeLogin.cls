@@ -426,15 +426,10 @@ defaultXML
 
 fromXML: aString
 
-	^[
-		super new
-			initializeFromXML: aString;
-			yourself.
-	] on: Error do: [:ex | 
-		super new
-			initializeFromXML: self defaultXML;
-			yourself.
-	].!
+	^super new
+		initializeFromXML: aString;
+		yourself.
+!
 
 new
 
