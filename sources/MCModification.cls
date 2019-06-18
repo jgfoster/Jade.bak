@@ -159,6 +159,10 @@ modificationMemoMarkers
 
 !
 
+modificationSource
+
+	^modification source!
+
 modificationText
 
 	^modification displayText.
@@ -175,6 +179,10 @@ obsoletionMemoMarkers
 	self computeDifferences.
 	^obsoletionMemoMarkers.
 !
+
+obsoletionSource
+
+	^obsoletion source!
 
 obsoletionText
 
@@ -196,9 +204,11 @@ selector
 !MCModification categoriesFor: #matchCountFromObsoletionLine:modificationLine:!differences!public! !
 !MCModification categoriesFor: #modificationMemo!public! !
 !MCModification categoriesFor: #modificationMemoMarkers!differences!public! !
+!MCModification categoriesFor: #modificationSource!public! !
 !MCModification categoriesFor: #modificationText!public! !
 !MCModification categoriesFor: #obsoletionMemo!public! !
 !MCModification categoriesFor: #obsoletionMemoMarkers!differences!public! !
+!MCModification categoriesFor: #obsoletionSource!public! !
 !MCModification categoriesFor: #obsoletionText!public! !
 !MCModification categoriesFor: #selector!public! !
 

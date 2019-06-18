@@ -11,6 +11,7 @@ package classNames
 	add: #JadeFindClassDialog;
 	add: #JadeSystemBrowser;
 	add: #JadeSystemBrowserPresenter;
+	add: #MCPatchDiffBrowser;
 	add: #SUnitResultDialog;
 	yourself.
 
@@ -143,6 +144,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbUpdateMethodStepPointsFor:;
 	add: #JadeTextDocument -> #jadeBrowseClasses;
 	add: #JadeToolsToolBarPresenter -> #browseClasses;
+	add: #MCRepositoryBrowser -> #compareVersion;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -155,11 +157,13 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\IDE\Base\Development System'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter'
 	'..\Core\Object Arts\Dolphin\MVP\Views\Cards\Dolphin Card Containers'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter'
 	'..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls'
 	'..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs'
 	'..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Difference\Dolphin Differences Presenter'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin Legacy Date & Time'
 	'..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter'
@@ -213,6 +217,11 @@ JadeValueDialog subclass: #SUnitResultDialog
 	classInstanceVariableNames: ''!
 JadeShell subclass: #JadeSystemBrowser
 	instanceVariableNames: 'cardsPresenter roundTripCount'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeShell subclass: #MCPatchDiffBrowser
+	instanceVariableNames: 'patch includeIdenticalPresenter operationListPresenter diffPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -2264,6 +2273,31 @@ browseClasses
 	JadeSystemBrowser showOnSession: gciSession.
 ! !
 !JadeToolsToolBarPresenter categoriesFor: #browseClasses!public! !
+
+!MCRepositoryBrowser methodsFor!
+
+compareVersion
+
+	| selections left right patch |
+	selections := versionListPresenter selections.
+	(selections isEmpty or: [2 < selections size]) ifTrue: [
+		MessageBox notify: 'Please select one or two versions!!'. 
+		^self.
+	].
+	left := selections size = 1
+		ifTrue: [nil]
+		ifFalse: [packageListPresenter selection name , '-' , selections first name].
+	right := packageListPresenter selection name , '-' , selections last name.
+	right < left ifTrue: [
+		| temp |
+		temp := right.
+		right := left.
+		left := temp.
+	].
+	patch := repositoryListPresenter selection patchFrom: left to: right.
+	MCPatchDiffBrowser showOn: patch.
+! !
+!MCRepositoryBrowser categoriesFor: #compareVersion!public!version actions! !
 
 "End of package definition"!
 
