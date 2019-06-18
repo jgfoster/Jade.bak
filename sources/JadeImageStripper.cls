@@ -94,6 +94,7 @@ logRemainingClasses
 
 prepareToStrip
 
+	Transcript view close.
 	JadeSessionManager setVersion.
 	self
 		loadJadeServerSourceCache;
