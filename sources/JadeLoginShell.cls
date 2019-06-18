@@ -327,16 +327,12 @@ openExeDir
 
 openGemTalkHomePage
 
-	ShellLibrary default 
-		shellOpen: 'https://gemtalksystems.com/' 
-		directory: ''.
+	ShellLibrary default shellOpen: 'https://gemtalksystems.com/'.
 !
 
 openJadeHomePage
 
-	ShellLibrary default 
-		shellOpen: 'https://github.com/jgfoster/Jade' 
-		directory: ''.
+	ShellLibrary default shellOpen: 'https://github.com/jgfoster/Jade'.
 !
 
 openLogin
@@ -454,10 +450,10 @@ selectionChanged
 
 sendRequiredMessages
 	"The ImageStripper seems to think these messages aren't needed, but we die during runtime packaging with a MessageNotUnderstood."
-
+"
 	'string1' equals: 'string2'.
 	1 isImmediate.
-!
+"!
 
 setWorkingDirectory
 

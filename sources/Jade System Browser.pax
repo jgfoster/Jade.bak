@@ -823,11 +823,8 @@ sbFileOutJadeServer: anOrderedCollection
 sbFileOutMethod: anOrderedCollection
 
 	| aClass selector |
-	aClass := (self sbClassFrom: anOrderedCollection) thisClass.
-	selector := anOrderedCollection removeFirst.
-	(aClass categoryOfSelector: selector) isNil ifTrue: [
-		aClass moveMethod: selector toCategory: 'uncategorized'.
-	].
+	aClass := self sbClassFrom: anOrderedCollection.
+	selector := anOrderedCollection removeFirst asSymbol.
 	writeStream nextPutAll: (aClass fileOutMethod: selector).
 !
 
@@ -2105,10 +2102,10 @@ sbClassComment: anOrderedCollection
 
 sbFileOutMethod: anOrderedCollection
 
-	| aClass |
+	| aClass selector |
 	aClass := self sbClassFrom: anOrderedCollection.
-	writeStream nextPutAll: (aClass fileOutMethod: anOrderedCollection removeFirst asSymbol environmentId: environment).
-
+	selector := anOrderedCollection removeFirst asSymbol.
+	writeStream nextPutAll: (aClass fileOutMethod: selector environmentId: environment).
 !
 
 sbListMethodPragmas: aList
