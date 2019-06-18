@@ -39,10 +39,15 @@ initialize: aStream
 	i := definition indexOf: $#.
 	j := definition indexOf: Character cr.
 	className := definition copyFrom: i + 1 to: j - 1.
-! !
+!
+
+source
+
+	^self displayMemo! !
 !MCClassDefinition categoriesFor: #className!public! !
 !MCClassDefinition categoriesFor: #detailsString!public! !
 !MCClassDefinition categoriesFor: #displayMemo!public! !
 !MCClassDefinition categoriesFor: #displayText!public! !
 !MCClassDefinition categoriesFor: #initialize:!public! !
+!MCClassDefinition categoriesFor: #source!public! !
 
