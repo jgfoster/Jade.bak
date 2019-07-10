@@ -1,4 +1,4 @@
-| package |
+﻿| package |
 package := Package name: 'Jade System Browser'.
 package paxVersion: 1;
 	basicComment: ''.
@@ -19,13 +19,13 @@ package methodNames
 	add: #JadeBrowserPresenter -> #newMethodPresenter;
 	add: #JadeServer -> #_addMethodCategoryNamesToMethodFilters;
 	add: #JadeServer -> #_class:includesSelector:;
+	add: #JadeServer -> #_compiledMethodAt:inClass:;
 	add: #JadeServer -> #_isPackagePolicyEnabled;
 	add: #JadeServer -> #_objectSecurityPolicyFor:;
 	add: #JadeServer -> #_packagePolicy:includesSelector:forClass:;
 	add: #JadeServer -> #_selectedClassOverridesSelector:;
 	add: #JadeServer -> #_systemBrowserCommand;
 	add: #JadeServer -> #class:includesSelector:;
-	add: #JadeServer -> #compiledMethodAt:inClass:;
 	add: #JadeServer -> #dictionaryAndSymbolOf:;
 	add: #JadeServer -> #dictionaryAndSymbolOf:forUser:;
 	add: #JadeServer -> #environment;
@@ -126,8 +126,10 @@ package methodNames
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:;
 	add: #JadeServer64bit32 -> #dictionaryAndSymbolOf:forUser:;
 	add: #JadeServer64bit34 -> #sbUpdateMethodsByCategories;
+	add: #JadeServer64bit3x -> #_addMethodCategoryNamesToMethodFilters;
+	add: #JadeServer64bit3x -> #_class:includesSelector:;
+	add: #JadeServer64bit3x -> #_compiledMethodAt:inClass:;
 	add: #JadeServer64bit3x -> #class:includesSelector:;
-	add: #JadeServer64bit3x -> #compiledMethodAt:inClass:;
 	add: #JadeServer64bit3x -> #environment;
 	add: #JadeServer64bit3x -> #environment:;
 	add: #JadeServer64bit3x -> #initialize;
@@ -137,6 +139,7 @@ package methodNames
 	add: #JadeServer64bit3x -> #sbListMethodPragmas:;
 	add: #JadeServer64bit3x -> #sbMethod:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodBreakPointsFor:;
+	add: #JadeServer64bit3x -> #sbUpdateMethodInheritedImplementationsOf:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByCategories;
 	add: #JadeServer64bit3x -> #sbUpdateMethodsByPragmas;
@@ -251,6 +254,11 @@ _class: aClass includesSelector: aSelector
 	^aClass includesSelector: aSelector.
 !
 
+_compiledMethodAt: aSymbol inClass: aClass
+
+	^aClass compiledMethodAt: aSymbol.
+!
+
 _isPackagePolicyEnabled
 
 	^self _gsPackagePolicy notNil!
@@ -339,11 +347,6 @@ _systemBrowserCommand
 class: aClass includesSelector: aSelector
 
 	^self _aClass includesSelector: (self _decodeString: aSelector) asSymbol.
-!
-
-compiledMethodAt: aSymbol inClass: aClass
-
-	^aClass compiledMethodAt: aSymbol.
 !
 
 dictionaryAndSymbolOf: aClass
@@ -462,7 +465,7 @@ sbBreak: anOrderedCollection
 
 	| myClass gsMethod stepPoint |
 	myClass := self sbClassFrom: anOrderedCollection.
-	gsMethod := self compiledMethodAt: anOrderedCollection removeFirst asSymbol inClass: myClass.
+	gsMethod := self _compiledMethodAt: anOrderedCollection removeFirst asSymbol inClass: myClass.
 	stepPoint := anOrderedCollection removeFirst asNumber.
 	anOrderedCollection removeFirst = 'set' ifTrue: [
 		gsMethod setBreakAtStepPoint: stepPoint.
@@ -756,7 +759,7 @@ sbCopyMethodsFor: newClass
 	symbolList := self persistentSymbolList.
 	oldClass selectors do: [:each | 
 		| source category errors |
-		source := (self compiledMethodAt: each inClass: oldClass) sourceString.
+		source := (self _compiledMethodAt: each inClass: oldClass) sourceString.
 		category := self _behavior: oldClass categoryOfSelector: each.
 		errors := newClass 
 			compileMethod: source
@@ -857,7 +860,11 @@ sbFindClassPackageMap
 	dictionary := Dictionary new.
 	(systemOrganizerClass := self objectInBaseNamed: #'SystemOrganizer') isNil ifTrue: [^dictionary].
 	(mcWorkingCopyClass := self mcWorkingCopyClass) isNil ifTrue: [^dictionary].
-	packageInfoList := mcWorkingCopyClass allManagers collect: [:each | each packageInfo].
+	[
+		packageInfoList := mcWorkingCopyClass allManagers collect: [:each | each packageInfo].
+	] on: Error do: [:ex | 
+		^dictionary
+	].
 	systemOrganizerClass new categoryDict keysAndValuesDo: [:catName :classes |
 		| symbol packageInfo |
 		symbol := catName asSymbol.
@@ -961,7 +968,7 @@ sbMethodClass: anOrderedCollection
 	sourceBehavior isMeta ifTrue: [target := target class].
 	anOrderedCollection do: [:each | 
 		| gsMethod result |
-		gsMethod := self compiledMethodAt: each asSymbol inClass: sourceBehavior.
+		gsMethod := self _compiledMethodAt: each asSymbol inClass: sourceBehavior.
 		result := self		"key: GsNMethod value: (Array withAll: errors and warnings)"
 				compileMethod: gsMethod sourceString
 				behavior: target
@@ -1494,7 +1501,7 @@ sbUpdateMethod: aSymbol
 	(names includes: selection) ifFalse: [selection := names last].
 	writeStream nextPutAll: selection; lf.	"Line 2"
 
-	method := self compiledMethodAt: aSymbol inClass: (classes detect: [:each | each name asString = selection]).
+	method := self _compiledMethodAt: aSymbol inClass: (classes detect: [:each | each name asString = selection]).
 	self _describeMethod: method.!
 
 sbUpdateMethodBreakPointsFor: aMethod
@@ -1605,7 +1612,7 @@ sbUpdateMethodsByVariables
 	filters := IdentitySet withAll: (methodFilters select: [:each | each isSymbol]).
 	selectedClass selectors do: [:eachSelector | 
 		| gsMethod |
-		gsMethod := self compiledMethodAt: eachSelector inClass: selectedClass.
+		gsMethod := self _compiledMethodAt: eachSelector inClass: selectedClass.
 		(gsMethod instVarsAccessed * filters) notEmpty ifTrue: [selectors add: eachSelector].
 	].
 	^selectors.
@@ -1858,13 +1865,13 @@ writeList: aList
 ! !
 !JadeServer categoriesFor: #_addMethodCategoryNamesToMethodFilters!private!System Browser! !
 !JadeServer categoriesFor: #_class:includesSelector:!Classes!private! !
+!JadeServer categoriesFor: #_compiledMethodAt:inClass:!private!System Browser! !
 !JadeServer categoriesFor: #_isPackagePolicyEnabled!private!System Browser! !
 !JadeServer categoriesFor: #_objectSecurityPolicyFor:!private!System Browser! !
 !JadeServer categoriesFor: #_packagePolicy:includesSelector:forClass:!private!System Browser! !
 !JadeServer categoriesFor: #_selectedClassOverridesSelector:!private!System Browser! !
 !JadeServer categoriesFor: #_systemBrowserCommand!private!System Browser! !
 !JadeServer categoriesFor: #class:includesSelector:!Classes!public! !
-!JadeServer categoriesFor: #compiledMethodAt:inClass:!private!System Browser! !
 !JadeServer categoriesFor: #dictionaryAndSymbolOf:!private!System Browser! !
 !JadeServer categoriesFor: #dictionaryAndSymbolOf:forUser:!private!System Browser! !
 !JadeServer categoriesFor: #environment!private!System Browser! !
@@ -2045,17 +2052,32 @@ sbUpdateMethodsByCategories
 
 !JadeServer64bit3x methodsFor!
 
-class: aClass includesSelector: aSelector
+_addMethodCategoryNamesToMethodFilters
 
-	^aClass includesSelector: (self _decodeString: aSelector) asSymbol environmentId: environment.
+	classList do: [:each | 
+		 | set |
+		 set := IdentitySet new.
+		 each env: environment categorysDo:[:categName :selectors | set add: categName].
+		methodFilters addAll: (Array withAll: set).
+	].
 !
 
-compiledMethodAt: aSymbol inClass: aClass
+_class: aClass includesSelector: aSelector
+
+	^aClass includesSelector: aSelector environmentId: environment
+!
+
+_compiledMethodAt: aSymbol inClass: aClass
 
 	| method |
 	method := aClass compiledMethodAt: aSymbol environmentId: environment.
 	method ifNil: [self error: 'Lookup failed for selector ' , aSymbol , ' inClass ' , aClass name , ' in environment ' , environment printString].
 	^method.!
+
+class: aClass includesSelector: aSelector
+	"Public method is called from the client and needs to handle string conversion"
+
+	^self _class: aClass includesSelector: (self _decodeString: aSelector) asSymbol!
 
 environment
 
@@ -2158,6 +2180,20 @@ sbUpdateMethodBreakPointsFor: aMethod
 	^list.
 !
 
+sbUpdateMethodInheritedImplementationsOf: aSymbol
+
+	| classes currentClass |
+	classes := OrderedCollection new.
+	currentClass := classList last.
+	[
+		currentClass notNil.
+	] whileTrue: [
+		(self _class: currentClass includesSelector: aSymbol) ifTrue: [classes add: currentClass].
+		currentClass := currentClass superclass.
+	].
+	^classes reverse.
+!
+
 sbUpdateMethodPragmas
 
 	| currentClass |
@@ -2236,8 +2272,10 @@ sbUpdateMethodStepPointsFor: aMethod
 	^list.
 
 ! !
+!JadeServer64bit3x categoriesFor: #_addMethodCategoryNamesToMethodFilters!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #_class:includesSelector:!Classes!private! !
+!JadeServer64bit3x categoriesFor: #_compiledMethodAt:inClass:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #class:includesSelector:!public!System Browser! !
-!JadeServer64bit3x categoriesFor: #compiledMethodAt:inClass:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #environment!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #environment:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #initialize!private! !
@@ -2247,6 +2285,7 @@ sbUpdateMethodStepPointsFor: aMethod
 !JadeServer64bit3x categoriesFor: #sbListMethodPragmas:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbMethod:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodBreakPointsFor:!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbUpdateMethodInheritedImplementationsOf:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodPragmas!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodsByCategories!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodsByPragmas!private!System Browser! !

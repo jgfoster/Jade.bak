@@ -114,7 +114,7 @@ _describeMethod: aMethod
 
 	"original method"
 	oldGsMethod := (aMethod inClass class canUnderstand: #'persistentMethodDictForEnv:')
-		ifTrue: [(aMethod inClass persistentMethodDictForEnv: 0) at: aMethod selector ifAbsent: [aMethod]]
+		ifTrue: [(aMethod inClass persistentMethodDictForEnv: (self _environmentForMethod: aMethod)) at: aMethod selector ifAbsent: [aMethod]]
 		ifFalse: [(aMethod inClass class canUnderstand: #'_rawMethodDict')
 			ifTrue: [aMethod inClass _rawMethodDict at: aMethod selector ifAbsent: [aMethod]]
 			ifFalse: [aMethod]].
@@ -131,7 +131,8 @@ _describeMethod: aMethod
 		ifFalse: [selections at: #'methodWarnings' ifAbsent: ['']].
 	string isNil ifTrue: [string := ''].
 	writeStream nextPutAll: string; nextPut: $%; lf.
- !
+ UserGlobals at: #'James' put: 'h' -> writeStream contents.
+!
 
 _encodeString: aString
 
@@ -428,15 +429,11 @@ debugString: aString fromContext: anObject environment: anInteger
 		evaluateInContext: anObject 
 		symbolList: self transientSymbolList. !
 
-describeMethodNamed: aUtf8 inClass: aClass
+describeMethod: aGsNMethod
 	"Provide info needed to create a GsMethod in Jade client"
 
-	| method selector |
-	selector := aUtf8 decodeToUnicode asSymbol.
-	method := aClass compiledMethodAt: selector otherwise: nil.
-	method ifNil: [^''].
 	writeStream := self _writeStreamOnString.
-	self _describeMethod: (self homeMethodFor: method).
+	self _describeMethod: (self homeMethodFor: aGsNMethod).
 	^self _encodeString: writeStream contents
 !
 
@@ -692,7 +689,7 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #contents!public! !
 !JadeServer categoriesFor: #cr!public!Transcript! !
 !JadeServer categoriesFor: #debugString:fromContext:environment:!public! !
-!JadeServer categoriesFor: #describeMethodNamed:inClass:!Debugger!GsObject!public!System Browser! !
+!JadeServer categoriesFor: #describeMethod:!Debugger!GsObject!public!System Browser! !
 !JadeServer categoriesFor: #errorListFor:!public! !
 !JadeServer categoriesFor: #executeString:fromContext:environment:!public! !
 !JadeServer categoriesFor: #hasDirtyObjects!public! !
@@ -724,7 +721,7 @@ addGsStringForClass: aClass to: aStream
 
 	aStream
 		nextPutAll: 'class := ', (self gsClassDefinitionStringFor: aClass); lf;
-		nextPutAll: 'readStream := ReadStream on: ''';
+		nextPutAll: 'readStream := (symbolList objectNamed: #ReadStream) on: ''';
 		yourself.
 	aClass selectors do: [:each | 
 		| string |
@@ -749,7 +746,7 @@ addGsStringForClass: aClass to: aStream
 	aStream nextPutAll: '''.
 [readStream atEnd not] whileTrue: [
 	| line |
-	writeStream := WriteStream on: String new.
+	writeStream := (symbolList objectNamed: #WriteStream) on: String new.
 	[
 		line := readStream nextLine.
 		line ~= ''%''
