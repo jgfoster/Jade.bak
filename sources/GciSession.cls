@@ -662,6 +662,7 @@ returningResultOrErrorDo: aBlock
 	^[
 		aBlock value.
 	] on: GciError do: [:ex | 
+		(SessionManager current class == DevelopmentSessionManager and: [ex tag number == 2106]) ifTrue: [self halt].
 		ex return: (GsError forSession: self gciErrSType: ex tag).
 	].
 !

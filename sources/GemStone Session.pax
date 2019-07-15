@@ -60,6 +60,7 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\IDE\Base\Development System'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry'
+	'..\Core\Object Arts\Dolphin\Base\Dolphin Legacy Date & Time'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
 	'..\Core\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog'

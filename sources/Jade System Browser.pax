@@ -133,11 +133,14 @@ package methodNames
 	add: #JadeServer64bit3x -> #environment;
 	add: #JadeServer64bit3x -> #environment:;
 	add: #JadeServer64bit3x -> #initialize;
+	add: #JadeServer64bit3x -> #sbAddMethodCategory:;
 	add: #JadeServer64bit3x -> #sbBrowseMethodsWithPragma:;
 	add: #JadeServer64bit3x -> #sbClassComment:;
 	add: #JadeServer64bit3x -> #sbFileOutMethod:;
 	add: #JadeServer64bit3x -> #sbListMethodPragmas:;
 	add: #JadeServer64bit3x -> #sbMethod:;
+	add: #JadeServer64bit3x -> #sbRemoveMethodCategories:;
+	add: #JadeServer64bit3x -> #sbRemoveMethods:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodBreakPointsFor:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodInheritedImplementationsOf:;
 	add: #JadeServer64bit3x -> #sbUpdateMethodPragmas;
@@ -2094,6 +2097,13 @@ initialize
 	environment := 0.
 !
 
+sbAddMethodCategory: anOrderedCollection
+
+	(self sbClassFrom: anOrderedCollection) addCategory: anOrderedCollection first environmentId: environment.
+	selections at: #'methodCategory' put: anOrderedCollection first.
+	self systemBrowserUpdate.
+!
+
 sbBrowseMethodsWithPragma: anOrderedCollection
 
 	| methods symbol |
@@ -2163,6 +2173,22 @@ sbMethod: anOrderedCollection
 		at: #'methodCategory' 	put: (self _behavior: gsMethod inClass categoryOfSelector: gsMethod selector) asString;
 		at: #'method'			put: gsMethod selector asString;
 		yourself.
+	self systemBrowserUpdate.
+!
+
+sbRemoveMethodCategories: anOrderedCollection
+
+	| behavior |
+	behavior := self sbClassFrom: anOrderedCollection.
+	anOrderedCollection do: [:each | behavior removeCategory: each environmentId: environment].
+	self systemBrowserUpdate.
+!
+
+sbRemoveMethods: anOrderedCollection
+
+	| behavior |
+	behavior := self sbClassFrom: anOrderedCollection.
+	anOrderedCollection do: [:each | behavior removeSelector: each asSymbol environmentId: environment].
 	self systemBrowserUpdate.
 !
 
@@ -2279,11 +2305,14 @@ sbUpdateMethodStepPointsFor: aMethod
 !JadeServer64bit3x categoriesFor: #environment!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #environment:!public!System Browser! !
 !JadeServer64bit3x categoriesFor: #initialize!private! !
+!JadeServer64bit3x categoriesFor: #sbAddMethodCategory:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbBrowseMethodsWithPragma:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbClassComment:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbFileOutMethod:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbListMethodPragmas:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbMethod:!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbRemoveMethodCategories:!private!System Browser! !
+!JadeServer64bit3x categoriesFor: #sbRemoveMethods:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodBreakPointsFor:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodInheritedImplementationsOf:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #sbUpdateMethodPragmas!private!System Browser! !
