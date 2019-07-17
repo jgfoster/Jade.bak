@@ -92,6 +92,7 @@ package globalAliases: (Set new
 
 package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\Base\Dolphin'
+	'..\Core\Object Arts\Dolphin\Base\Dolphin Legacy Date & Time'
 	'..\Core\Contributions\Camp Smalltalk\SUnit\SUnit').
 
 package!

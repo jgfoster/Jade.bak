@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask server stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask server semaphore stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'debugLog'!
@@ -371,6 +371,7 @@ initials: initials
 debugPath: debugPath
 
 	| list |
+	semaphore := Semaphore forMutualExclusion.
 	isAutoCommit := false.
 	isAutoMigrate := false.
 	isHandlingClientForwarderSend := false.
@@ -693,10 +694,12 @@ send: aSymbol to: anObject withAll: anArray
 	^self
 		withExplanation: stream contents 
 		do: [
-			self
-				_send: aSymbol 
-				to: anObject 
-				withAll: anArray.
+			semaphore critical: [
+				self
+					_send: aSymbol 
+					to: anObject 
+					withAll: anArray.
+			].
 		].
 !
 
