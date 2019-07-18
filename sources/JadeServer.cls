@@ -746,7 +746,7 @@ addGsStringForClass: aClass to: aStream
 	aStream nextPutAll: '''.
 [readStream atEnd not] whileTrue: [
 	| line |
-	writeStream := (symbolList objectNamed: #WriteStream) on: String new.
+	writeStream := (symbolList objectNamed: #WriteStream) on: (symbolList objectNamed: #String) new.
 	[
 		line := readStream nextLine.
 		line ~= ''%''
