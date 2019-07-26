@@ -8,11 +8,15 @@ package basicPackageVersion: '0.204'.
 package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
 package classNames
+	add: #JadeAllSessionsPreference;
+	add: #JadeCurrentSessionPreference;
 	add: #JadeDebugger;
 	add: #JadeErrorShell;
 	add: #JadeFileIn;
+	add: #JadePreferenceObject;
 	add: #JadePreferencesPresenter;
 	add: #JadePreferencesShell;
+	add: #JadePreferencesShell2;
 	yourself.
 
 package methodNames
@@ -60,6 +64,7 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\IDE\Base\Development System'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter'
@@ -91,6 +96,21 @@ Object subclass: #JadeFileIn
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+Object subclass: #JadePreferenceObject
+	instanceVariableNames: ''
+	classVariableNames: 'GCISession'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePreferenceObject subclass: #JadeAllSessionsPreference
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePreferenceObject subclass: #JadeCurrentSessionPreference
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadePresenterA subclass: #JadePreferencesPresenter
 	instanceVariableNames: 'autoCommitPresenter autoMigratePresenter codeFontPresenter debugPresenter defaultFontPresenter nativeCodePresenter unimplementedPresenter'
 	classVariableNames: ''
@@ -108,6 +128,11 @@ JadeValueDialog subclass: #JadeErrorShell
 	classInstanceVariableNames: ''!
 JadeShell subclass: #JadePreferencesShell
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeShell subclass: #JadePreferencesShell2
+	instanceVariableNames: 'preferencesPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
