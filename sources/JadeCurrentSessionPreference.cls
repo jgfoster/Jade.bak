@@ -28,6 +28,9 @@ defaultFont
 defaultFont: aFont
 	View desktop font: aFont!
 
+icon
+	^Icon fromId: 'SMALLTALKOPTIONSFOLDER.ICO'!
+
 publishedAspects
 	"Answer a <LookupTable> of the <Aspect>s published by the receiver."
 
@@ -44,5 +47,6 @@ publishedAspects
 !JadeCurrentSessionPreference class categoriesFor: #debug:!public! !
 !JadeCurrentSessionPreference class categoriesFor: #defaultFont!public! !
 !JadeCurrentSessionPreference class categoriesFor: #defaultFont:!public! !
+!JadeCurrentSessionPreference class categoriesFor: #icon!public! !
 !JadeCurrentSessionPreference class categoriesFor: #publishedAspects!public! !
 

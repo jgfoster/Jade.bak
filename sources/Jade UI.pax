@@ -568,9 +568,7 @@ jadeInspect
 !JadeToolsToolBarPresenter methodsFor!
 
 jadePreferences
-
-	JadePreferencesShell showOnSession: gciSession.
-! !
+	JadePreferencesShell2 showOnSession: gciSession! !
 !JadeToolsToolBarPresenter categoriesFor: #jadePreferences!public! !
 
 "End of package definition"!

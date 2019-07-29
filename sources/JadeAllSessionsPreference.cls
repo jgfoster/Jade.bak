@@ -24,6 +24,10 @@ autoMigrate: aBoolean
 
 	^self gciSession isAutoMigrate: aBoolean!
 
+icon
+
+	^Icon fromId: 'ListView.ico'!
+
 isShowUnimplementedMessages
 	^self gciSession isShowUnimplementedMessages!
 
@@ -40,26 +44,18 @@ nativeCode: aBoolean
 publishedAspects
 	"Answer a <LookupTable> of the <Aspect>s published by the receiver."
 
-	| aspects autoCommit autoMigrate nativeCode messages |
-	nativeCode := Aspect boolean: #nativeCode.
-	autoCommit := Aspect boolean: #autoCommit.
-	autoMigrate := Aspect boolean: #autoMigrate.
-	messages := Aspect boolean: #isShowUnimplementedMessages.
-	self gciSession isNativeCode ifNil: [nativeCode beImmutable].
-	self gciSession isAutoCommit ifNil: [autoCommit beImmutable].
-	self gciSession isAutoMigrate ifNil: [autoMigrate beImmutable].
-	self gciSession isShowUnimplementedMessages ifNil: [messages beImmutable].
+	| aspects |
 	aspects := super publishedAspects.
-	aspects
-		add: nativeCode;
-		add: autoCommit;
-		add: autoMigrate;
-		add: messages.
+	self gciSession isNativeCode ifNotNil: [aspects add: (Aspect boolean: #nativeCode)].
+	self gciSession isAutoCommit ifNotNil: [aspects add: (Aspect boolean: #autoCommit)].
+	self gciSession isAutoMigrate ifNotNil: [aspects add: (Aspect boolean: #autoMigrate)].
+	self gciSession isShowUnimplementedMessages ifNotNil: [aspects add: (Aspect boolean: #isShowUnimplementedMessages)].
 	^aspects! !
 !JadeAllSessionsPreference class categoriesFor: #autoCommit!public! !
 !JadeAllSessionsPreference class categoriesFor: #autoCommit:!public! !
 !JadeAllSessionsPreference class categoriesFor: #autoMigrate!public! !
 !JadeAllSessionsPreference class categoriesFor: #autoMigrate:!public! !
+!JadeAllSessionsPreference class categoriesFor: #icon!public! !
 !JadeAllSessionsPreference class categoriesFor: #isShowUnimplementedMessages!public! !
 !JadeAllSessionsPreference class categoriesFor: #isShowUnimplementedMessages:!public! !
 !JadeAllSessionsPreference class categoriesFor: #nativeCode!public! !
