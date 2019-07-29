@@ -24,6 +24,12 @@ autoMigrate: aBoolean
 
 	^self gciSession isAutoMigrate: aBoolean!
 
+isShowUnimplementedMessages
+	^self gciSession isShowUnimplementedMessages!
+
+isShowUnimplementedMessages: aBoolean
+	self gciSession isShowUnimplementedMessages: aBoolean!
+
 nativeCode
 	^self gciSession isNativeCode!
 
@@ -34,26 +40,29 @@ nativeCode: aBoolean
 publishedAspects
 	"Answer a <LookupTable> of the <Aspect>s published by the receiver."
 
-	| aspects |
+	| aspects autoCommit autoMigrate nativeCode messages |
+	nativeCode := Aspect boolean: #nativeCode.
+	autoCommit := Aspect boolean: #autoCommit.
+	autoMigrate := Aspect boolean: #autoMigrate.
+	messages := Aspect boolean: #isShowUnimplementedMessages.
+	self gciSession isNativeCode ifNil: [nativeCode beImmutable].
+	self gciSession isAutoCommit ifNil: [autoCommit beImmutable].
+	self gciSession isAutoMigrate ifNil: [autoMigrate beImmutable].
+	self gciSession isShowUnimplementedMessages ifNil: [messages beImmutable].
 	aspects := super publishedAspects.
-	aspects add: (Aspect boolean: #nativeCode);
-		add: (Aspect boolean: #autoCommit);
-		add: (Aspect boolean: #autoMigrate);
-		add: (Aspect boolean: #showUnimplementedMessages).
-	^aspects!
-
-showUnimplementedMessages
-	^true!
-
-showUnimplementedMessages: aBoolean
-	! !
+	aspects
+		add: nativeCode;
+		add: autoCommit;
+		add: autoMigrate;
+		add: messages.
+	^aspects! !
 !JadeAllSessionsPreference class categoriesFor: #autoCommit!public! !
 !JadeAllSessionsPreference class categoriesFor: #autoCommit:!public! !
 !JadeAllSessionsPreference class categoriesFor: #autoMigrate!public! !
 !JadeAllSessionsPreference class categoriesFor: #autoMigrate:!public! !
+!JadeAllSessionsPreference class categoriesFor: #isShowUnimplementedMessages!public! !
+!JadeAllSessionsPreference class categoriesFor: #isShowUnimplementedMessages:!public! !
 !JadeAllSessionsPreference class categoriesFor: #nativeCode!public! !
 !JadeAllSessionsPreference class categoriesFor: #nativeCode:!public! !
 !JadeAllSessionsPreference class categoriesFor: #publishedAspects!public! !
-!JadeAllSessionsPreference class categoriesFor: #showUnimplementedMessages!public! !
-!JadeAllSessionsPreference class categoriesFor: #showUnimplementedMessages:!public! !
 
