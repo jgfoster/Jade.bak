@@ -24,6 +24,10 @@ autoMigrate: aBoolean
 
 	^self gciSession isAutoMigrate: aBoolean!
 
+displayString
+
+	^'All Sessions'!
+
 icon
 
 	^Icon fromId: 'ListView.ico'!
@@ -55,6 +59,7 @@ publishedAspects
 !JadeAllSessionsPreference class categoriesFor: #autoCommit:!public! !
 !JadeAllSessionsPreference class categoriesFor: #autoMigrate!public! !
 !JadeAllSessionsPreference class categoriesFor: #autoMigrate:!public! !
+!JadeAllSessionsPreference class categoriesFor: #displayString!public! !
 !JadeAllSessionsPreference class categoriesFor: #icon!public! !
 !JadeAllSessionsPreference class categoriesFor: #isShowUnimplementedMessages!public! !
 !JadeAllSessionsPreference class categoriesFor: #isShowUnimplementedMessages:!public! !

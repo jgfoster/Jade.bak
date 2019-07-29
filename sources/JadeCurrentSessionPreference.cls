@@ -28,6 +28,9 @@ defaultFont
 defaultFont: aFont
 	View desktop font: aFont!
 
+displayString
+	^'Current Session'!
+
 icon
 	^Icon fromId: 'SMALLTALKOPTIONSFOLDER.ICO'!
 
@@ -47,6 +50,7 @@ publishedAspects
 !JadeCurrentSessionPreference class categoriesFor: #debug:!public! !
 !JadeCurrentSessionPreference class categoriesFor: #defaultFont!public! !
 !JadeCurrentSessionPreference class categoriesFor: #defaultFont:!public! !
+!JadeCurrentSessionPreference class categoriesFor: #displayString!public! !
 !JadeCurrentSessionPreference class categoriesFor: #icon!public! !
 !JadeCurrentSessionPreference class categoriesFor: #publishedAspects!public! !
 
