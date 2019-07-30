@@ -70,16 +70,15 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Choice Prompter'
 	'..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls'
 	'..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Difference\Dolphin Differences Presenter'
 	'..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter'
 	'..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View'
-	'..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter'
 	'..\Core\Object Arts\Dolphin\MVP\Models\Tree\Dolphin Tree Models'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Tree\Dolphin Tree Presenter'
-	'..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters'
 	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
 	'GemStone Objects'
 	'GemStone Session'
@@ -265,7 +264,7 @@ _methodsFor: aClass categories: aList
 	aList do: [:eachCategory | 
 		(aClass _includesCategory: eachCategory) ifTrue: [
 			(aClass selectorsIn: eachCategory) do: [:eachSelector |
-				methods add: (self compiledMethodAt: eachSelector inClass: aClass).
+				methods add: (self _compiledMethodAt: eachSelector inClass: aClass).
 			].
 		].
 	].
@@ -283,11 +282,11 @@ _methodsFor: aClass filter: aList isVariables: aBoolean
 _methodsFor: aClass variables: aList
 
 	| methods |
-	aList isEmpty ifTrue: [^aClass selectors collect: [:each | self compiledMethodAt: each inClass: aClass]].
+	aList isEmpty ifTrue: [^aClass selectors collect: [:each | self _compiledMethodAt: each inClass: aClass]].
 	methods := IdentitySet new.
 	aClass selectors do: [:each | 
 		| method intersect |
-		method := self compiledMethodAt: each inClass: aClass.
+		method := self _compiledMethodAt: each inClass: aClass.
 		intersect := method instVarsAccessed * aList.
 		intersect notEmpty ifTrue: [methods add: method].
 	].
@@ -625,7 +624,7 @@ stepPointsFor: aGsMethod in: aClass
 		_behaviorFor: aGsMethod selector
 		in: aClass.
 	source := behavior sourceCodeAt: aGsMethod selector.
-	method := self compiledMethodAt: aGsMethod selector inClass: behavior.
+	method := self _compiledMethodAt: aGsMethod selector inClass: behavior.
 	stream := self _writeStreamOnString.
 	breakStepPoints := (aGsMethod class canUnderstand: #'_breakpointIpOffsets')
 		ifTrue: [aGsMethod _stepPointsFromBreakIpOffsets: aGsMethod _breakpointIpOffsets]
@@ -697,7 +696,7 @@ _methodsFor: aClass categories: aList
 	aList do: [:eachCategory | 
 		(aClass includesCategory: eachCategory) ifTrue: [
 			(aClass selectorsIn: eachCategory) do: [:eachSelector |
-				methods add: (self compiledMethodAt: eachSelector inClass: aClass).
+				methods add: (self _compiledMethodAt: eachSelector inClass: aClass).
 			].
 		].
 	].
@@ -729,7 +728,7 @@ compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCatego
 			category: categorySymbol 
 			using: aSymbolList 
 			environmentId: 0.
-		(self compiledMethodAt: method key selector inClass: aBehavior) -> warnings.
+		(self _compiledMethodAt: method key selector inClass: aBehavior) -> warnings.
 	] on: Error do: [:ex | 
 		ex return: method -> warnings.
 	].

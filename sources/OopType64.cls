@@ -127,10 +127,11 @@ printOn: aStream
 !
 
 smallDoubleAsFloat
+	| bits sign expn frac bitsStream |
 
-	| bits sign expn frac |
 	bits := (bytes qwordAtOffset: 0) bitAnd: 7 bitInvert.
-	bits := bits printStringRadix: 2 showRadix: false.
+	bits printOn: (bitsStream := String writeStream: 16) base: 2 showRadix: false.
+	bits := bitsStream contents.
 	[bits size < 64] whileTrue: [bits := '0' , bits].
 	expn := ('2r' , (bits copyFrom: 1 to: 8)) asNumber.
 	frac := ('2r' , (bits copyFrom: 9 to: 59)) asNumber.

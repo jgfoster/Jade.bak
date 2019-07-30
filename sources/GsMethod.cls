@@ -56,7 +56,7 @@ initialize: readStream session: aGciSession
 	isReadOnly := readStream upToTab = 'false'.	"current user has write permission for the class"
 	readStream nextLine.	"should be empty"
 	(source := readStream nextParagraph) isEmpty ifTrue: [
-		source := 
+		source :=
 'newMethod: argument
 		"Method comment"
 
@@ -65,14 +65,14 @@ initialize: readStream session: aGciSession
 	].
 	"unimplemented selectors"
 	unimplementedSelectors := Dictionary new.
-	readStream nextLineAsList do: [:eachPair | 
+	readStream nextLineAsList do: [:eachPair |
 		| pieces |
 		pieces := eachPair subStrings.
 		unimplementedSelectors at: pieces first asNumber put: pieces last.
 	].
 	"step points"
 	stepPoints := readStream nextLineAsList collect: [:each |
-		| pieces offset selector | 
+		| pieces offset selector |
 		pieces := each subStrings.
 		offset := pieces first asNumber.
 		selector := (2 <= pieces size ifTrue: [pieces at: 2] ifFalse: ['']).
@@ -95,7 +95,7 @@ initialize: readStream session: aGciSession
 			start := start + 1.
 			length := length - 1.
 		].
-		range 
+		range
 			start: start;
 			stop: start + length - 1;
 			yourself.
@@ -176,14 +176,13 @@ warnings
 fromGsMethod2: aGsMethod2
 
 	| string |
-	string := aGsMethod2 gciSession 
-		serverPerform: #'describeMethodNamed:inClass:'
-		with: aGsMethod2 name 
-		with: aGsMethod2 gsClass oopType.
-	string := aGsMethod2 gciSession  decode: string.
+	string := aGsMethod2 gciSession
+		serverPerform: #'describeMethod:'
+		with: aGsMethod2 oopType.
+	string := aGsMethod2 gciSession decode: string.
 	^self new
 		initialize: (JadeServerReadStream on: string)
-		session: aGsMethod2 gciSession 
+		session: aGsMethod2 gciSession
 ! !
 !GsMethod class categoriesFor: #fromGsMethod2:!public! !
 

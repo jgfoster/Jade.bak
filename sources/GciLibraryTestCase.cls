@@ -30,7 +30,7 @@ test_break
 		session: session breakHard: true;
 		yourself.
 	semaphore := Semaphore new.
-	t1 := Time millisecondClockValue.
+	t1 := Delay millisecondClockValue.
 	[
 		[semaphore signal] forkAt: Processor userBackgroundPriority. 
 		a := [
