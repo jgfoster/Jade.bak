@@ -18,7 +18,15 @@ _isClientForwarder: anObject
 oopOf: anObject
 
 	^Reflection oopOf: anObject.
-! !
+!
+
+systemBrowser: aString
+
+	"2019-08-03 PeterMoe: Error Handling in superclass destroyed the errorfeedback in Method Source on save -> issue: #215
+	this overwrite restore the Handling
+	"
+		^self copy systemBrowserA: aString.! !
 !JadeServer64bit24 categoriesFor: #_isClientForwarder:!private! !
 !JadeServer64bit24 categoriesFor: #oopOf:!private! !
+!JadeServer64bit24 categoriesFor: #systemBrowser:!public!System Browser! !
 
