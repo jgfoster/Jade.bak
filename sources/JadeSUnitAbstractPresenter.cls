@@ -36,23 +36,35 @@ reset
 	textResultPresenter view backcolor: Color face3d.!
 
 runTests: anOrderedCollection in: testClassName
-	|  jadeResult |
+
+	^self runTests: anOrderedCollection in: testClassName result: JadeTestResult new!
+
+runTests: anOrderedCollection in: testClassName result: aJadeTestResult
 
 	testCasesPresenter selection isEmpty ifTrue: [^self].
-
-	jadeResult := JadeTestResult new.
-	anOrderedCollection do: [:gsTestMethod | | result resultArray | 
-		result := gciSession serverPerform: #runTestNamed:in: with: (gciSession encode: gsTestMethod methodName) with: testClassName.
-		resultArray := result subStrings: ','.
-		(resultArray first ~= '0') ifTrue: [gsTestMethod result: 'error'. jadeResult addError: gsTestMethod methodName].
-		(resultArray second ~= '0') ifTrue: [gsTestMethod result: 'failure'. jadeResult addFailure: gsTestMethod methodName].
-		(resultArray third ~= '0') ifTrue: [gsTestMethod result: 'passed'. jadeResult addPassed: gsTestMethod methodName].].
-
-	jadeResult setSummary.
-
-	self setColorFor: jadeResult.
-
-	^jadeResult!
+	anOrderedCollection do: 
+			[:gsTestMethod |
+			| result resultArray |
+			result := gciSession
+						serverPerform: #runTestNamed:in:
+						with: (gciSession encode: gsTestMethod methodName)
+						with: testClassName.
+			resultArray := result subStrings: ','.
+			resultArray first ~= '0'
+				ifTrue: 
+					[gsTestMethod result: 'error'.
+					aJadeTestResult addError: gsTestMethod methodName].
+			resultArray second ~= '0'
+				ifTrue: 
+					[gsTestMethod result: 'failure'.
+					aJadeTestResult addFailure: gsTestMethod methodName].
+			resultArray third ~= '0'
+				ifTrue: 
+					[gsTestMethod result: 'passed'.
+					aJadeTestResult addPassed: gsTestMethod methodName]].
+	aJadeTestResult setSummary.
+	self setColorFor: aJadeTestResult.
+	^aJadeTestResult!
 
 setColorFor: aJadeTestResult
 
@@ -67,5 +79,6 @@ setColorFor: aJadeTestResult
 !JadeSUnitAbstractPresenter categoriesFor: #createComponents!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #reset!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #runTests:in:!public! !
+!JadeSUnitAbstractPresenter categoriesFor: #runTests:in:result:!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #setColorFor:!public! !
 

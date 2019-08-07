@@ -54,7 +54,7 @@ package!
 "Class Definitions"!
 
 Object subclass: #GsTestMethod
-	instanceVariableNames: 'methodName result'
+	instanceVariableNames: 'className methodName result'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
