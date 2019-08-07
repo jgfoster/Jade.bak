@@ -39,18 +39,17 @@ getTestCounter
 
 onClassesChanged
 	| gsResult gsTestMethods |
+	testCasesPresenter model: ListModel new.
 	testClassesPresenter hasSelection
 		ifFalse: 
-			[status value: self.
-			^testCasesPresenter model: ListModel new].
-
+			[^status value: self.].
 	gsTestMethods := OrderedCollection new.
-	testClassesPresenter selections do: [:className | 
-		gsResult := gciSession serverPerform: #getTestMethodsNamesOf: with: (gciSession encode: className).
-		gsResult := gciSession decode: gsResult.
-		gsTestMethods addAll: ((gsResult subStrings: ',') collect: [:each | GsTestMethod newOn: className methodName: each]).
-
-	].
+	testClassesPresenter selections do: 
+			[:className |
+			gsResult := gciSession serverPerform: #getTestMethodsNamesOf: with: (gciSession encode: className).
+			gsResult := gciSession decode: gsResult.
+			gsTestMethods
+				addAll: ((gsResult subStrings: ',') collect: [:each | GsTestMethod newOn: className methodName: each])].
 	testCasesPresenter model: (ListModel on: gsTestMethods).
 	testCounter at: 2 put: (OrderedCollection withAll: testClassesPresenter selections).
 	testCounter at: 1 put: testCasesPresenter model size.
@@ -106,13 +105,18 @@ runAll
 				result: result ]!
 
 runSelected
-	| result |
+	| result tests |
 	result := JadeTestResult new.
-	testClassesPresenter selections do: 
-			[:className |
+	tests := Dictionary new.
+
+	testCasesPresenter selections do: 
+			[:gsTestMethod |
+			tests at: gsTestMethod className ifAbsentPut: [OrderedCollection new].
+			(tests at: gsTestMethod className) add: gsTestMethod].
+	tests keysAndValuesDo: 
+			[:className :testsToExecute |
 			self
-				runTests: (testCasesPresenter model
-						select: [:each | each className = className and: [testCasesPresenter selections includes: each]])
+				runTests: testsToExecute
 				in: className
 				result: result]!
 

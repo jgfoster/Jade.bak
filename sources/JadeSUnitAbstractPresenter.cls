@@ -40,7 +40,6 @@ runTests: anOrderedCollection in: testClassName
 	^self runTests: anOrderedCollection in: testClassName result: JadeTestResult new!
 
 runTests: anOrderedCollection in: testClassName result: aJadeTestResult
-
 	testCasesPresenter selection isEmpty ifTrue: [^self].
 	anOrderedCollection do: 
 			[:gsTestMethod |
@@ -53,27 +52,36 @@ runTests: anOrderedCollection in: testClassName result: aJadeTestResult
 			resultArray first ~= '0'
 				ifTrue: 
 					[gsTestMethod result: 'error'.
-					aJadeTestResult addError: gsTestMethod methodName].
+					aJadeTestResult addError: gsTestMethod].
 			resultArray second ~= '0'
 				ifTrue: 
 					[gsTestMethod result: 'failure'.
-					aJadeTestResult addFailure: gsTestMethod methodName].
+					aJadeTestResult addFailure: gsTestMethod].
 			resultArray third ~= '0'
 				ifTrue: 
 					[gsTestMethod result: 'passed'.
-					aJadeTestResult addPassed: gsTestMethod methodName]].
+					aJadeTestResult addPassed: gsTestMethod]].
 	aJadeTestResult setSummary.
 	self setColorFor: aJadeTestResult.
 	^aJadeTestResult!
 
 setColorFor: aJadeTestResult
-
 	textResultPresenter value: aJadeTestResult summary.
-	aJadeTestResult failures do: [:eachSymbol | testCasesPresenter model do: [:eachTest | (eachTest methodName = eachSymbol) ifTrue: [eachTest setFailure]]].
-	aJadeTestResult errors do: [:eachSymbol | testCasesPresenter model do: [:eachTest | (eachTest methodName = eachSymbol) ifTrue: [eachTest setError]]].
-	aJadeTestResult passed do: [:eachSymbol | testCasesPresenter model do: [:eachTest | (eachTest methodName = eachSymbol) ifTrue: [eachTest setPassed]]].
+
+	aJadeTestResult failures do: 
+			[:gsTestMethod |
+			testCasesPresenter model
+				do: [:eachTest | eachTest  == gsTestMethod ifTrue: [eachTest setFailure]]].
+	aJadeTestResult errors do: 
+			[:gsTestMethod |
+			testCasesPresenter model
+				do: [:eachTest | eachTest == gsTestMethod ifTrue: [eachTest setError]]].
+	aJadeTestResult passed do: 
+			[:gsTestMethod |
+			testCasesPresenter model
+				do: [:eachTest | eachTest == gsTestMethod ifTrue: [eachTest setPassed]]].
 	testCasesPresenter view invalidate.
-	textResultPresenter view backcolor: aJadeTestResult backgroundColor.! !
+	textResultPresenter view backcolor: aJadeTestResult backgroundColor! !
 !JadeSUnitAbstractPresenter categoriesFor: #abortTransaction!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #commitTransaction!public! !
 !JadeSUnitAbstractPresenter categoriesFor: #createComponents!public! !
