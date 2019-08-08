@@ -3117,7 +3117,7 @@ updateMethod
 		session: gciSession.
 	isReadOnly := gsMethod isReadOnly.	"current user has write permission for the class"
 	newSource := gsMethod source.
-	methodSourcePresenter view isModified ifTrue: [
+	methodSourcePresenter view isModified == true ifTrue: [
 		newSource = methodSource ifTrue: [^self].
 		(MessageBox confirm: 'Copy changes to clipboard?' caption: 'Method has unsaved changes!!') ifTrue: [
 			methodSourcePresenter value copyToClipboard.
@@ -3154,7 +3154,7 @@ updateMethod
 			categoryListPresenter view invalidate.
 		].
 	].
-	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
+	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP] ifNone:[^self]) model.
 	originalSourceLabel ifNil: [originalSourceLabel := listModel detect: [:each | each text  = 'Original Source']].
 	methodSourceLabel := listModel detect: [:each | each text = 'Method Source'].
 	(x := gsMethod originalSource) isEmpty ifTrue: [
@@ -3345,7 +3345,11 @@ updateSuperclassList
 
 	| tabs tabName tab list selected |
 	tabName := readStream nextLine.
-	(tabs := instanceClassTabs cards) isEmpty ifTrue: [^self].
+	(tabs := instanceClassTabs cards) isEmpty ifTrue: [
+		readStream nextLine.
+		readStream nextLine.
+		^self
+	].
 	tab := tabs 
 		detect: [:each | each name = tabName]
 		ifNone: [self error: 'None of ' , tabs printString , ' match ' , tabName printString].
