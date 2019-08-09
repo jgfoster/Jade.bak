@@ -13,6 +13,7 @@ package classNames
 	add: #JadeDebugger;
 	add: #JadeErrorShell;
 	add: #JadeFileIn;
+	add: #JadeFileOutEncodingPreference;
 	add: #JadeMethodExplorerPreference;
 	add: #JadePreferenceObject;
 	add: #JadePreferencesPresenter;
@@ -56,6 +57,7 @@ package methodNames
 	add: #JadeTextDocument -> #fileIn;
 	add: #JadeTextDocument -> #jadeInspect;
 	add: #JadeToolsToolBarPresenter -> #jadePreferences;
+	add: 'StdioFileStream class' -> #getEncodingNames;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -113,6 +115,11 @@ JadePreferenceObject subclass: #JadeAllSessionsPreference
 JadePreferenceObject subclass: #JadeCurrentSessionPreference
 	instanceVariableNames: ''
 	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePreferenceObject subclass: #JadeFileOutEncodingPreference
+	instanceVariableNames: ''
+	classVariableNames: 'JadeFileOutEncoding'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePreferenceObject subclass: #JadeMethodExplorerPreference
@@ -579,6 +586,12 @@ jadeInspect
 jadePreferences
 	JadePreferencesShell2 showOnSession: gciSession! !
 !JadeToolsToolBarPresenter categoriesFor: #jadePreferences!public! !
+
+!StdioFileStream class methodsFor!
+
+getEncodingNames
+	^ClassForEncoding keys asSortedCollection asArray! !
+!StdioFileStream class categoriesFor: #getEncodingNames!public! !
 
 "End of package definition"!
 

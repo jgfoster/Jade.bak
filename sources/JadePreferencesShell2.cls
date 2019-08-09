@@ -42,6 +42,7 @@ defaultModel
 		add: JadeAllSessionsPreference;
 		add: JadeCurrentSessionPreference;
 		add: JadeMethodExplorerPreference;
+		add: JadeFileOutEncodingPreference;
 		asArray;
 		yourself!
 

@@ -1112,24 +1112,25 @@ fileOutMethod
 !
 
 fileOutMethodOnPath: aString
-
 	| header file newSource index string |
-	string := environment printString , ' fileOutMethod' , Character tab asString , self behaviorIdentifier , Character tab asString , self selectedMethodName.
+	string := environment printString , ' fileOutMethod' , Character tab asString
+				, self behaviorIdentifier , Character tab asString
+				, self selectedMethodName.
 	string := self gciSession encode: string.
-	newSource := self gciSession 
-		serverPerform: #'systemBrowser:' 
-		with: string.
+	newSource := self gciSession serverPerform: #systemBrowser: with: string.
 	newSource := self gciSession decode: newSource.
 	index := newSource indexOf: Character lf.
 	newSource := newSource copyFrom: index + 1 to: newSource size.
 	header := self stuffToKeepFromPath: aString andAddTo: newSource.
-	file := FileStream write: aString mode: #'truncate' check: false type: #'utf8'.
-	[
-		file nextPutAll: header; nextPutAll: newSource.
-	] ensure: [
-		file close.
-	].
-!
+	file := FileStream
+				write: aString
+				mode: #truncate
+				check: false
+				type: JadeFileOutEncodingPreference jadeFileOutEncoding.
+	
+	[file
+		nextPutAll: header;
+		nextPutAll: newSource] ensure: [file close]!
 
 fileTypes
 
