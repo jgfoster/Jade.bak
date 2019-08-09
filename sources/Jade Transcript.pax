@@ -22,6 +22,7 @@ package methodNames
 	add: #JadeServer -> #allSessions;
 	add: #JadeServer -> #descriptionOfConfigOption:;
 	add: #JadeServer -> #descriptionOfErrorNumber:;
+	add: #JadeServer -> #gemCacheStatisticsForSessionId:;
 	add: #JadeServer -> #mySessionInfo;
 	add: #JadeServer -> #sendSigAbortToSession:;
 	add: #JadeServer -> #sendSigUsr1ToSession:;
@@ -153,7 +154,7 @@ _addSessionWithId: anInteger toStream: aStream
 		nextPutAll: ' voteState=';
 		nextPutAll: ((x := array at: 20) isNil ifTrue: [''] ifFalse: [x printString]) printString;
 		nextPutAll: ' cacheDesc=';
-		nextPutAll: ((x := (System gemCacheStatisticsForSessionId: anInteger) at: 1) isNil ifTrue: [''] ifFalse: [x]) printString;
+		nextPutAll: ((x := (self gemCacheStatisticsForSessionId: anInteger) at: 1) isNil ifTrue: [''] ifFalse: [x]) printString;
 		nextPutAll: ' />';
 		yourself.
 !
@@ -214,9 +215,8 @@ allSessions
 			_addSessionWithId: each
 			toStream: stream.
 	].
-	string := stream 
-		nextPutAll: '</sessions>';
-		contents.
+	stream nextPutAll: '</sessions>'.
+	string := stream contents.
 	^self _encodeString: string!
 
 descriptionOfConfigOption: aString
@@ -251,6 +251,10 @@ descriptionOfErrorNumber: anInteger
 	].
 	^self _encodeString: stream contents.
 !
+
+gemCacheStatisticsForSessionId: anInteger
+
+^System gemCacheStatisticsForSessionId: anInteger!
 
 mySessionInfo
 
@@ -323,6 +327,7 @@ stopSession: anInteger
 !JadeServer categoriesFor: #allSessions!public!Sessions! !
 !JadeServer categoriesFor: #descriptionOfConfigOption:!public!Transcript! !
 !JadeServer categoriesFor: #descriptionOfErrorNumber:!public!Sessions! !
+!JadeServer categoriesFor: #gemCacheStatisticsForSessionId:!public!Sessions! !
 !JadeServer categoriesFor: #mySessionInfo!public!Transcript! !
 !JadeServer categoriesFor: #sendSigAbortToSession:!public!Sessions! !
 !JadeServer categoriesFor: #sendSigUsr1ToSession:!public!Sessions! !

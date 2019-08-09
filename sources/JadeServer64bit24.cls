@@ -15,10 +15,15 @@ _isClientForwarder: anObject
 	^(Reflection classOf: anObject) name == #'ClientForwarder' 
 !
 
+gemCacheStatisticsForSessionId: anInteger
+
+^System cacheStatisticsForSessionId: anInteger!
+
 oopOf: anObject
 
 	^Reflection oopOf: anObject.
 ! !
 !JadeServer64bit24 categoriesFor: #_isClientForwarder:!private! !
+!JadeServer64bit24 categoriesFor: #gemCacheStatisticsForSessionId:!public!Sessions! !
 !JadeServer64bit24 categoriesFor: #oopOf:!private! !
 
