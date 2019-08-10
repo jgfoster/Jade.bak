@@ -153,6 +153,10 @@ executeString: aString fromContext: anObject environment: anInteger
 	].
 !
 
+gemCacheStatisticsForSessionId: anInteger
+
+^System gemCacheStatisticsForSessionId: anInteger!
+
 homeMethodFor: aGsMethod
 
 	| result |
@@ -180,6 +184,7 @@ nextPutAll: anObject
 !JadeServer64bit3x categoriesFor: #_methodSignatureForSelector:!private!System Browser! !
 !JadeServer64bit3x categoriesFor: #debugString:fromContext:environment:!public! !
 !JadeServer64bit3x categoriesFor: #executeString:fromContext:environment:!public! !
+!JadeServer64bit3x categoriesFor: #gemCacheStatisticsForSessionId:!public!Sessions! !
 !JadeServer64bit3x categoriesFor: #homeMethodFor:!private! !
 !JadeServer64bit3x categoriesFor: #nextPutAll:!public!Transcript! !
 
