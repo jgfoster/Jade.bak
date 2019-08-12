@@ -1007,6 +1007,7 @@ fileInCode
 		defaultExtension: self defaultFileExtension;
 		showModal.
 	path isNil ifTrue: [^self].
+	ignoreNextSetFocusEvent := true.
 	JadeFileIn new
 		fileInPath: path 
 		session: gciSession.
