@@ -1624,14 +1624,21 @@ methodListPresenter
 
 methodMenu: aMenu
 
-	| properSize |
-	properSize := self editMenuStrings size - 1.
-	[
-		properSize < aMenu items size.
-	] whileTrue: [
-		aMenu removeItemAt: aMenu items size.
-	].
-	self methodMenuBreak: aMenu.
+	| anEditMenuStrings |
+	(anEditMenuStrings := self editMenuStrings) isEmpty
+	ifFalse:
+		[aMenu text = (anEditMenuStrings at: 1)
+		ifTrue: 
+			[| properSize |
+			properSize := self editMenuStrings size - 1.
+			[
+				properSize < aMenu items size.
+			] whileTrue: [
+				aMenu removeItemAt: aMenu items size.
+			].
+			self methodMenuBreak: aMenu
+			]
+		].
 !
 
 methodMenuBreak: aMenu
