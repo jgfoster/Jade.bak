@@ -93,7 +93,7 @@ doIt: aString
 fileInPath: aString session: aGciSession
 
 	packageName := (aString subStrings: $\) last.
-	stream := FileStream read: aString type: #'utf8'.
+	stream := FileStream read: aString type: #'text'.
 	[
 		self
 			fileInStream: stream 

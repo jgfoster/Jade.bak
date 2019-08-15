@@ -1811,7 +1811,7 @@ systemBrowser: aString
 	] on: Error do: [:ex | 
 		[
 			| gsFile |
-			(ex isKindOf: (self objectInBaseNamed: #'CompileError')) ifTrue: [ex pass].
+			(ex isKindOf: (self objectInBaseNamed: #'CompilerError')) ifTrue: [ex pass].
 			gsFile := GsFile open: 'JadeServer.ERRORS' mode: 'a' onClient: true.
 			[
 				gsFile 
@@ -2345,26 +2345,31 @@ browseClasses
 !MCRepositoryBrowser methodsFor!
 
 compareVersion
+	"
+	2019-07-30 PeterMoe: fix for issue #222
+		- for the comparand method on AnsiString in Dolphin need a empty string, doesn't understand nil.
+		- but for patchFrom:to: we need the nil object because it does a nil check, an empty string is not nil.
+	"
 
-	| selections left right patch |
+	| selections left leftString right patch |
 	selections := versionListPresenter selections.
-	(selections isEmpty or: [2 < selections size]) ifTrue: [
-		MessageBox notify: 'Please select one or two versions!!'. 
-		^self.
-	].
+	(selections isEmpty or: [2 < selections size])
+		ifTrue: 
+			[MessageBox notify: 'Please select one or two versions!!'.
+			^self].
 	left := selections size = 1
-		ifTrue: [nil]
-		ifFalse: [packageListPresenter selection name , '-' , selections first name].
+				ifTrue: [nil]
+				ifFalse: [packageListPresenter selection name , '-' , selections first name].
 	right := packageListPresenter selection name , '-' , selections last name.
-	right < left ifTrue: [
-		| temp |
-		temp := right.
-		right := left.
-		left := temp.
-	].
+	left isNil ifTrue: [leftString := ''] ifFalse: [leftString := left].
+	right < leftString
+		ifTrue: 
+			[| temp |
+			temp := right.
+			right := left.
+			left := temp].
 	patch := repositoryListPresenter selection patchFrom: left to: right.
-	MCPatchDiffBrowser showOn: patch.
-! !
+	MCPatchDiffBrowser showOn: patch! !
 !MCRepositoryBrowser categoriesFor: #compareVersion!public!version actions! !
 
 "End of package definition"!
