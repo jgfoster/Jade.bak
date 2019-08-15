@@ -43,6 +43,8 @@ defaultModel
 		add: JadeCurrentSessionPreference;
 		add: JadeMethodExplorerPreference;
 		add: JadeFileOutEncodingPreference;
+		add: JadeAutoCompletationPreference default;
+		add: JadeAutoCompletationRegistryPreference default;
 		asArray;
 		yourself!
 
