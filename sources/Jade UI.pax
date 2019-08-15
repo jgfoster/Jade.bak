@@ -18,7 +18,6 @@ package classNames
 	add: #JadePreferenceObject;
 	add: #JadePreferencesPresenter;
 	add: #JadePreferencesShell;
-	add: #JadePreferencesShell2;
 	yourself.
 
 package methodNames
@@ -143,11 +142,6 @@ JadeValueDialog subclass: #JadeErrorShell
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeShell subclass: #JadePreferencesShell
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-JadeShell subclass: #JadePreferencesShell2
 	instanceVariableNames: 'preferencesPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -584,7 +578,7 @@ jadeInspect
 !JadeToolsToolBarPresenter methodsFor!
 
 jadePreferences
-	JadePreferencesShell2 showOnSession: gciSession! !
+	JadePreferencesShell showOnSession: gciSession! !
 !JadeToolsToolBarPresenter categoriesFor: #jadePreferences!public! !
 
 !StdioFileStream class methodsFor!
