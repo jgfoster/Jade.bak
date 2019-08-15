@@ -131,7 +131,6 @@ _describeMethod: aMethod
 		ifFalse: [selections at: #'methodWarnings' ifAbsent: ['']].
 	string isNil ifTrue: [string := ''].
 	writeStream nextPutAll: string; nextPut: $%; lf.
- UserGlobals at: #'James' put: 'h' -> writeStream contents.
 !
 
 _encodeString: aString
