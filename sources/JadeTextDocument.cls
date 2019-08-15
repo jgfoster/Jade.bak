@@ -168,7 +168,7 @@ executeSelectionOrLine
 		^true -> (gciSession 
 			executeString: self currentSelectionOrLine 
 			fromContext: self contextObject
-			 environment: environment).
+			environment: environment).
 	] on: GsCompileError do: [:ex | 
 		ex list notEmpty ifTrue: [^false -> ex list].
 		^nil -> ex description.

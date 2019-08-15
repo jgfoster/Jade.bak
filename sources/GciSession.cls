@@ -1088,11 +1088,14 @@ withExplanation: aString doA: aBlock
 	"The next block does the actual work. It is forked to a separate process so we can monitor it from the main process and handle the delay feedback."
 	[
 		[
-			result := self handlingClientForwarderSendDo: aBlock.
-		] on: GsInvalidSessionError do: [:ex | ex yourself].		"Ignore invalid session (logout!!)"
-		haveResult := true.
-		shouldRunEventLoop := false.
-		SessionManager inputState prod.
+			[
+				result := self handlingClientForwarderSendDo: aBlock.
+			] on: GsInvalidSessionError do: [:ex | ex yourself].		"Ignore invalid session (logout!!)"
+		] ensure: [
+			haveResult := true.
+			shouldRunEventLoop := false.
+			SessionManager inputState prod.
+		].
 	] newProcess name: 'GciSession>>withExplanation:doA: - 1'; resume.
 
 	"The following loop handles removing the wait dialog if we are in a ClientForwarderSend, then restoring it when we go back to the server."

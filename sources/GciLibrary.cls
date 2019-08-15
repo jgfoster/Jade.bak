@@ -275,6 +275,11 @@ softBreakSession: anInteger
 	self subclassResponsibility.
 !
 
+useNonBlocking
+
+	^true
+!
+
 version
 
 	self subclassResponsibility.
@@ -332,6 +337,7 @@ version
 !GciLibrary categoriesFor: #session:resolveSymbol:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #session:send:to:with:!public!Reserved OOPs!subclassResponsibility! !
 !GciLibrary categoriesFor: #softBreakSession:!public!subclassResponsibility! !
+!GciLibrary categoriesFor: #useNonBlocking!public! !
 !GciLibrary categoriesFor: #version!public!subclassResponsibility! !
 
 !GciLibrary class methodsFor!
