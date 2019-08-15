@@ -8,11 +8,17 @@ package basicPackageVersion: '0.204'.
 package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
 package classNames
+	add: #JadeAllSessionsPreference;
+	add: #JadeCurrentSessionPreference;
 	add: #JadeDebugger;
 	add: #JadeErrorShell;
 	add: #JadeFileIn;
+	add: #JadeFileOutEncodingPreference;
+	add: #JadeMethodExplorerPreference;
+	add: #JadePreferenceObject;
 	add: #JadePreferencesPresenter;
 	add: #JadePreferencesShell;
+	add: #JadePreferencesShell2;
 	yourself.
 
 package methodNames
@@ -51,6 +57,7 @@ package methodNames
 	add: #JadeTextDocument -> #fileIn;
 	add: #JadeTextDocument -> #jadeInspect;
 	add: #JadeToolsToolBarPresenter -> #jadePreferences;
+	add: 'StdioFileStream class' -> #getEncodingNames;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -60,19 +67,23 @@ package globalAliases: (Set new
 	yourself).
 
 package setPrerequisites: #(
+	'..\Core\Object Arts\Dolphin\IDE\Base\Development System'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Boolean\Dolphin Boolean Presenter'
+	'..\Core\Object Arts\Dolphin\MVP\Views\Cards\Dolphin Card Containers'
 	'..\Core\Object Arts\Dolphin\MVP\Views\Common Controls\Dolphin Common Controls'
 	'..\Core\Object Arts\Dolphin\MVP\Dialogs\Common\Dolphin Common Dialogs'
 	'..\Core\Object Arts\Dolphin\MVP\Views\Control Bars\Dolphin Control Bars'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Font\Dolphin Font Presenter'
 	'..\Core\Object Arts\Dolphin\MVP\Models\List\Dolphin List Models'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\ListTree\Dolphin List Tree Presenter'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
 	'..\Core\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter'
+	'..\Core\Object Arts\Dolphin\MVP\Models\Tree\Dolphin Tree Models'
 	'..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters'
 	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
 	'GemStone Objects'
@@ -88,6 +99,31 @@ package!
 
 Object subclass: #JadeFileIn
 	instanceVariableNames: 'gciSession stream line words text category className packageName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+Object subclass: #JadePreferenceObject
+	instanceVariableNames: ''
+	classVariableNames: 'GCISession'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePreferenceObject subclass: #JadeAllSessionsPreference
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePreferenceObject subclass: #JadeCurrentSessionPreference
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePreferenceObject subclass: #JadeFileOutEncodingPreference
+	instanceVariableNames: ''
+	classVariableNames: 'JadeFileOutEncoding'
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadePreferenceObject subclass: #JadeMethodExplorerPreference
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -108,6 +144,11 @@ JadeValueDialog subclass: #JadeErrorShell
 	classInstanceVariableNames: ''!
 JadeShell subclass: #JadePreferencesShell
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+JadeShell subclass: #JadePreferencesShell2
+	instanceVariableNames: 'preferencesPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -543,10 +584,14 @@ jadeInspect
 !JadeToolsToolBarPresenter methodsFor!
 
 jadePreferences
-
-	JadePreferencesShell showOnSession: gciSession.
-! !
+	JadePreferencesShell2 showOnSession: gciSession! !
 !JadeToolsToolBarPresenter categoriesFor: #jadePreferences!public! !
+
+!StdioFileStream class methodsFor!
+
+getEncodingNames
+	^ClassForEncoding keys asSortedCollection asArray! !
+!StdioFileStream class categoriesFor: #getEncodingNames!public! !
 
 "End of package definition"!
 

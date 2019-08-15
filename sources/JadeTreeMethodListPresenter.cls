@@ -25,6 +25,16 @@ addList
 
 	^node!
 
+addNode
+	| node |
+	node := Prompter prompt: 'Enter List Name'.
+	node ifNil: [^self].
+	node isEmpty ifTrue: [].
+	treeMethodsPresenter model add: node asChildOf: treeMethodsPresenter selectionOrNil.
+	treeMethodsPresenter expand: treeMethodsPresenter selectionOrNil.
+	treeMethodsMap at: node put: SortedCollection new.
+	^node!
+
 addTreeListRoot: methodName type: browseType
 	| node |
 
@@ -368,6 +378,7 @@ treeMethodsPresenter
 treeMethodsPresenter: anObject
 	treeMethodsPresenter := anObject! !
 !JadeTreeMethodListPresenter categoriesFor: #addList!public! !
+!JadeTreeMethodListPresenter categoriesFor: #addNode!public! !
 !JadeTreeMethodListPresenter categoriesFor: #addTreeListRoot:type:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browse:method:!public! !
 !JadeTreeMethodListPresenter categoriesFor: #browseImplementorsOf:!public! !
