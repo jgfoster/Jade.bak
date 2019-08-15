@@ -762,6 +762,28 @@ addGsStringForClass: aClass to: aStream
 '.
 !
 
+addRangeStopTo: stepPoints withSource: source
+ 1 to: stepPoints size do: [:stepPoint |
+		| range start char length |
+		range := (stepPoints at: stepPoint) key.
+		start := range start.
+		char := source at: start.
+		length := (char isAlphaNumeric or: [char = $_])
+			ifTrue: [(source copyFrom: start + 1 to: source size) findFirst: [:eachChar | (eachChar isAlphaNumeric or: [eachChar = $_ or: [eachChar = $:]]) not]]
+			ifFalse: [2].
+		length = 0 ifTrue: [length := source size - start].
+		[
+			2 < length and: [(source at: start) = $_].
+		] whileTrue: [
+			start := start + 1.
+			length := length - 1.
+		].
+		range
+			start: start;
+			stop: start + length - 1;
+			yourself.
+	].!
+
 classVarsForGemStone
 
 	^(self == JadeServer ifTrue: ['ExternalInteger GciError GsObject OopType32 OopType64'] ifFalse: ['']).
@@ -812,6 +834,7 @@ sessionStateCode
 
 	^'System _sessionStateAt: 3 put: server.'! !
 !JadeServer class categoriesFor: #addGsStringForClass:to:!public! !
+!JadeServer class categoriesFor: #addRangeStopTo:withSource:!public! !
 !JadeServer class categoriesFor: #classVarsForGemStone!public! !
 !JadeServer class categoriesFor: #gsClassDefinitionStringFor:!public! !
 !JadeServer class categoriesFor: #gsMethodClassName!public! !
