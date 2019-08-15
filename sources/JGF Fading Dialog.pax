@@ -53,14 +53,14 @@ DialogView subclass: #LayeredDialogView
 setLayeredWindowAttributes: hwnd _: crKey _: bAlpha _: dwFlags
 	"
 BOOL SetLayeredWindowAttributes(
-	HWND				hwnd,
+	HWND			hwnd,
 	COLORREF		crKey,
 	BYTE				bAlpha,
 	DWORD			dwFlags);"
 
 	<stdcall: bool SetLayeredWindowAttributes handle dword byte dword>
 	#JGF.
-	^self invalidCall! !
+	^self invalidCall: _failureCode! !
 !UserLibrary categoriesFor: #setLayeredWindowAttributes:_:_:_:!JGF!public! !
 
 !View methodsFor!

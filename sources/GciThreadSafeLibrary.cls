@@ -59,37 +59,34 @@ gciError: aGciErrSType
 GciTsAbort: session _: error
 
 	<cdecl: bool GciTsAbort GciSessionId lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsBegin: session _: error
 
 	<cdecl: bool GciTsBegin GciSessionId lpvoid>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsBreak: session _: isHard _: error
 
 	<cdecl: bool GciTsBreak GciSessionId bool lpvoid>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsCharToOop: myChar
 
 	<cdecl: OopType64 GciTsCharToOop dword>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsClearStack: session _: process _: error
 
 	<cdecl: bool GciTsClearStack GciSessionId OopType64 lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsCommit: session _: error
 
 	<cdecl: bool GciTsCommit GciSessionId lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsContinueWith: session _: gsProcess _: replaceTopOfStack _: continueWithError _: flags _: error
@@ -97,19 +94,18 @@ GciTsContinueWith: session _: gsProcess _: replaceTopOfStack _: continueWithErro
 	The actual result is sent to the callback."
 
 	<cdecl: OopType64 GciTsContinueWith GciSessionId OopType64 OopType64 lpvoid sdword lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsDoubleToOop: session _: double _: error
 
 	<cdecl: OopType64 GciTsDoubleToOop GciSessionId double lpvoid>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsDoubleToSmallDouble: aFloat
 
 	<cdecl: OopType64 GciTsDoubleToSmallDouble double>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsExecute: session _: sourceString _: sourceOop _: contextOop _: symbolListOop _: flags _: environment _: error
@@ -117,31 +113,31 @@ GciTsExecute: session _: sourceString _: sourceOop _: contextOop _: symbolListOo
 	The actual result is sent to the callback."
 
 	<cdecl: OopType64 GciTsExecute GciSessionId lpvoid OopType64 OopType64 OopType64 sdword word lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsFetchBytes: session _: theObject _: startIndex _: dest _: numBytes _: error
 
 	<cdecl: sqword GciTsFetchBytes GciSessionId OopType64 sqword lpvoid sqword lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsFetchChars: session _: theObject _: startIndex _: cString _: maxSize _: error
 
 	<cdecl: sqword GciTsFetchChars GciSessionId OopType64 sqword lpvoid sqword lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsFetchClass: session _: theObject _: error
 
 	<cdecl: OopType64 GciTsFetchClass GciSessionId OopType64 lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsFetchObjInfo: session _: objId _: addToExportSet _: result _: buffer _: bufsize _: error
 
 	<cdecl: sqword GciTsFetchObjInfo GciSessionId OopType64 bool lpvoid lpvoid sdword lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 "
 EXTERN_GCI_DEC(int64) GciTsFetchObjInfo(GciSession sess, OopType objId, 
 	BoolType addToExportSet, GciTsObjInfo *result, 
@@ -160,37 +156,36 @@ EXTERN_GCI_DEC(int64) GciTsFetchObjInfo(GciSession sess, OopType objId,
 GciTsFetchOops: session _: theObject _: startIndex _: theOops _: numOops _: error
 
 	<cdecl: sdword GciTsFetchOops GciSessionId OopType64 sqword OopType64Array* sdword lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsFetchSize: session _: theObject _: error
 
 	<cdecl: sqword GciTsFetchSize GciSessionId OopType64 lpvoid>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsFetchSpecialClass: anOop
 
 	<cdecl: OopType64 GciTsFetchSpecialClass OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsFetchVaryingSize: session _: theObject _: error
 
 	<cdecl: sqword GciTsFetchVaryingSize GciSessionId OopType64 lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsGemTrace: session _: enable _: error
 
 	<cdecl: sdword GciTsGemTrace GciSessionId sdword lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsI64ToOop: session _: anInteger _: error
 
 	<cdecl: OopType64 GciTsI64ToOop GciSessionId sqword lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsLogin: stoneName 
@@ -205,94 +200,87 @@ GciTsLogin: stoneName
 	_: gciErrSType 
 
 	<cdecl: GciSessionId GciTsLogin lpvoid lpvoid lpvoid bool lpvoid lpvoid lpvoid dword sdword lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsLogout: session _: error
 
 	<cdecl: bool GciTsLogout GciSessionId lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsNewString: session _: string _: error
 
 	<cdecl: OopType64 GciTsNewString GciSessionId lpstr lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsObjExists: session _: anOop
 
 	<cdecl: bool GciTsObjExists GciSessionId OopType64>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsOopIsSpecial: anOop
 
 	<cdecl: bool GciTsOopIsSpecial OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsOopToChar: anOop
 
 	<cdecl: sdword GciTsOopToChar OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsOopToDouble: session _: anOop _: result _: error
 
 	<cdecl: bool GciTsOopToDouble GciSessionId OopType64 lpvoid lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsOopToI64: session _: anOop _: result _: error
 
 	<cdecl: bool GciTsOopToI64 GciSessionId OopType64 lpvoid lpvoid>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsPerform: session _: reciverOop _: symbolOop _: selectorString _: argumentList _: argumentCount _: flags _: environment _: error
 	"Remember, this doesn't return an OopType64 but an error code on the thread fork attempt.
 	The actual result is sent to the callback."
 
 	<cdecl: OopType64 GciTsPerform GciSessionId OopType64 OopType64 lpvoid qword* sdword sdword word lpvoid>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsReleaseAllObjs: session _: error
 
 	<cdecl: bool GciTsReleaseAllObjs GciSessionId lpvoid>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsReleaseObjs: session _: oopList _: count _: error
 
 	<cdecl: bool GciTsReleaseAllObjs GciSessionId OopType64Array* sdword lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsResolveSymbol: session _: string _: anOop _: error
 
 	<cdecl: OopType64 GciTsResolveSymbol GciSessionId lpstr OopType64 lpvoid>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 GciTsResolveSymbolObj: session _: stringOop _: symbolListOop _: error
 
 	<cdecl: OopType64 GciTsResolveSymbolObj GciSessionId OopType64 OopType64 lpvoid>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsSessionIsRemote: sessionId
 
 	<cdecl: sdword GciTsSessionIsRemote GciSessionId>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 GciTsVersion: buffer _: size
 
 	<cdecl: dword GciTsVersion lpstr dword>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 hardBreakSession: session
 

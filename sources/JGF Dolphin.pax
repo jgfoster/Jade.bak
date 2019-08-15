@@ -87,7 +87,7 @@ exitWindowsEx: anInteger
 exitWindowsEx: uFlags _: dwReason
 
 	<stdcall: bool ExitWindowsEx dword sdword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 forceSystemLogoff

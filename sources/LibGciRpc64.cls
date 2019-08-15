@@ -18,26 +18,32 @@ errorStructureClass
 gciClearStack: processOop
 
 	<cdecl: void GciClearStack OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
+!
+
+gciContinueWith: process _: replaceTopOfStack _: flags _: error
+
+	<cdecl: void GciContinueWith OopType64 OopType64 sdword GciErrSType64*>
+	^self invalidCall: _failureCode
 !
 
 gciDbgEstablishToFile: aString
 	"BoolType GciDbgEstablishToFile( const char * fileName );"
 
 	<cdecl: bool GciDbgEstablishToFile lpstr>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciErr: errorReport
 
 	<cdecl: bool GciErr GciErrSType64*>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciExecuteStr: string _: symbolList
 
 	<cdecl: OopType64 GciExecuteStr lpstr OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciExecuteStr_: string _: symbolList _: environmentId
@@ -69,79 +75,85 @@ gciExecuteStr_: string _: symbolList _: environmentId
  *==============================================================================
 "
 	<cdecl: OopType64 GciExecuteStr_ lpstr OopType64 word>
-	^self invalidCall
+	^self invalidCall: _failureCode
+!
+
+gciExecuteStrFromContext: string _: context _: symbolList
+
+	<cdecl: OopType64 GciExecuteStrFromContext lpstr OopType64 OopType64>
+	^self invalidCall: _failureCode
 !
 
 gciFetchBytes: anOopType _: startIndex _: cString _: maxSize
 
 	<cdecl: sdword GciFetchBytes_ OopType64 sqword lpvoid qword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFetchChars: anOopType _: startIndex _: cString _: maxSize
 
 	<cdecl: sdword GciFetchChars_ OopType64 sqword lpstr qword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFetchClass: oop
 
 	<cdecl: OopType64 GciFetchClass OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFetchObjImpl: anObject
 
 	<cdecl: sdword GciFetchObjImpl OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFetchSize: anObject
 
 	<cdecl: sdword GciFetchSize_ OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFetchVaryingOops: anObject _: startIndex _: theOops _: numOops
 
 	<cdecl: sdword GciFetchVaryingOops OopType64 sqword OopType64Array* sdword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFltToOop: aFloat
 
 	<cdecl: OopType64 GciFltToOop double>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciI64ToOop: anInteger
 
 	<cdecl: OopType64 GciI64ToOop sdword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNbContinueWith: process _: replaceTopOfStack _: flags _: error
 
 	<cdecl: void GciNbContinueWith OopType64 OopType64 sdword GciErrSType64*>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNbExecuteStrFromContext: string _: context _: symbolList
 
 	<cdecl: OopType64 GciNbExecuteStrFromContext lpstr OopType64 OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNbExecuteStrFromContext_: string _: context _: symbolList _: anInteger
 
 	<cdecl: OopType64 GciNbExecuteStrFromContext_ lpstr OopType64 OopType64 word>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNbPerform: receiver _: selector _: args _: numArgs
 
 	<cdecl: void GciNbPerform OopType64 lpstr OopType64* dword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNbPerformNoDebug: receiver _: selector _: args _: numArgs
@@ -177,13 +189,13 @@ enum {
  };"
 
 	<cdecl: void GciNbPerformNoDebug OopType64 lpstr OopType64* dword dword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNewString: string
 
 	<cdecl: OopType64 GciNewString lpstr >
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciOopToChr: anObject
@@ -199,19 +211,55 @@ gciOopToChr32: anObject
 	"http://kermit.gemtalksystems.com/bug?bug=47915"
 
 	<cdecl: sdword GciOopToChr OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
+!
+
+gciPerform: receiver _: selector _: args _: numArgs
+
+	<cdecl: OopType64 GciPerform OopType64 lpvoid OopType64* sdword>
+	^self invalidCall: _failureCode
+!
+
+gciPerformNoDebug: receiver _: selector _: args _: numArgs _: flags
+"	/* bits in flags argument to GciPerformNoDebug.  */
+enum { 
+  GCI_PERFORM_FLAG_ENABLE_DEBUG = 1,  
+   /* make like GciPerform() with respect to debugging. default is debugger is
+    * disabled until GciPerformNoDebug returns */
+
+  GCI_PERFORM_FLAG_DISABLE_ASYNC_EVENTS = 2  ,
+   /* disable async events.  Used for GSI to be able to execute an exception
+    * block or method to service RT_ERR_SIGNAL_ABORT, 
+    *  RT_ERR_SIGNAL_GEMSTONE_SESSION, or ABORT_ERR_LOST_OT_ROOT */
+
+  GCI_PERFORM_FLAG_SINGLE_STEP = 4, 
+   /* place a single step break-point at the start of the method to be
+    * performed, and then execute to hit that breakpoint.
+    * if true, also implies GCI_PERFORM_FLAG_INTERPRETED
+    */
+
+  GCI_PERFORM_MAP_SYMBOLS = 8, // obsolete, not used
+
+  GCI_PERFORM_FLAG_INTERPRETED = 0x20, /* disable native code for the execution*/
+
+  GCI_PERFORM_RUBY = 0x40  /* for use by GciExecuteFromContextDbg*
+                            *   for implementing Ruby doit in ruby topaz */
+ };"
+
+	<cdecl: void GciPerformNoDebug OopType64 lpstr OopType64* dword dword>
+	^self invalidCall: _failureCode
 !
 
 gciReleaseOops: args _: numArgs
 
 	<cdecl: void GciReleaseOops OopType64* dword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciResolveSymbol: aString _: symbolList
 
 	<cdecl: OopType64 GciResolveSymbol lpstr OopType64>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 oopAsciiNul
@@ -367,13 +415,25 @@ sendInterpreted: aSymbol to: anOopType with: anArray session: anInteger
 
 	self critical: [
 		self gciSetSessionId: anInteger.
-		self
-			gciNbPerformNoDebug: anOopType 
-			_: aSymbol 
-			_: anArray 
-			_: anArray size
-			_: 16r21.		"GCI_PERFORM_FLAG_ENABLE_DEBUG + GCI_PERFORM_FLAG_INTERPRETED"
-		^self nbResult.
+		self useNonBlocking ifTrue: [
+			self
+				gciNbPerformNoDebug: anOopType 
+				_: aSymbol 
+				_: anArray 
+				_: anArray size
+				_: 16r21.		"GCI_PERFORM_FLAG_ENABLE_DEBUG + GCI_PERFORM_FLAG_INTERPRETED"
+			^self nbResult.
+		] ifFalse: [
+			| result |
+			result := self
+				gciPerformNoDebug: anOopType 
+				_: aSymbol 
+				_: anArray 
+				_: anArray size
+				_: 16r21.		"GCI_PERFORM_FLAG_ENABLE_DEBUG + GCI_PERFORM_FLAG_INTERPRETED"
+			self signalIfError.
+			^self valueOfOop: result
+		].
 	].
 !
 
@@ -395,10 +455,12 @@ specialFromOop: anOop
 ! !
 !LibGciRpc64 categoriesFor: #errorStructureClass!private! !
 !LibGciRpc64 categoriesFor: #gciClearStack:!private! !
+!LibGciRpc64 categoriesFor: #gciContinueWith:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciDbgEstablishToFile:!private! !
 !LibGciRpc64 categoriesFor: #gciErr:!private! !
 !LibGciRpc64 categoriesFor: #gciExecuteStr:_:!private! !
 !LibGciRpc64 categoriesFor: #gciExecuteStr_:_:_:!private! !
+!LibGciRpc64 categoriesFor: #gciExecuteStrFromContext:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciFetchBytes:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciFetchChars:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciFetchClass:!private! !
@@ -416,6 +478,8 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #gciNewString:!private! !
 !LibGciRpc64 categoriesFor: #gciOopToChr:!private! !
 !LibGciRpc64 categoriesFor: #gciOopToChr32:!private! !
+!LibGciRpc64 categoriesFor: #gciPerform:_:_:_:!private! !
+!LibGciRpc64 categoriesFor: #gciPerformNoDebug:_:_:_:_:!private! !
 !LibGciRpc64 categoriesFor: #gciReleaseOops:_:!private! !
 !LibGciRpc64 categoriesFor: #gciResolveSymbol:_:!private! !
 !LibGciRpc64 categoriesFor: #oopAsciiNul!public!Reserved OOPs! !

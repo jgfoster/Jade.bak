@@ -18,98 +18,116 @@ errorStructureClass
 gciClearStack: anOopType
 
 	<cdecl: void GciClearStack OopType32>
-	^self invalidCall
+	^self invalidCall: _failureCode
+!
+
+gciContinueWith: process _: replaceTopOfStack _: flags _: error
+
+	<cdecl: void GciContinueWith OopType32 OopType32 sdword GciErrSType32*>
+	^self invalidCall: _failureCode
 !
 
 gciErr: errorReport
 
 	<cdecl: bool GciErr GciErrSType32*>
-	^self invalidCall
+	^self invalidCall: _failureCode
 
+!
+
+gciExecuteStrFromContext: string _: context _: symbolList
+
+	<cdecl: OopType32 GciExecuteStrFromContext lpstr OopType32 OopType32>
+	^self invalidCall: _failureCode
 !
 
 gciFetchBytes: anOopType _: startIndex _: cString _: maxSize
 
 	<cdecl: sdword GciFetchBytes OopType32 sdword lpvoid dword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFetchChars: anOopType _: startIndex _: cString _: maxSize
 
 	<cdecl: sdword GciFetchChars OopType32 sdword lpstr dword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFetchClass: oop
 
 	<cdecl: OopType32 GciFetchClass OopType32>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFetchObjImpl: anObject
 
 	<cdecl: sdword GciFetchObjImpl OopType32>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFetchSize: anObject
 
 	<cdecl: sdword GciFetchSize OopType32>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciFetchVaryingOops: anObject _: startIndex _: theOops _: numOops
 
 	<cdecl: sdword GciFetchVaryingOops OopType32 sdword OopType32Array* sdword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciLongToOop: anInteger
 
 	<cdecl: OopType32 GciLongToOop sdword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNbContinueWith: process _: replaceTopOfStack _: flags _: error
 
 	<cdecl: void GciNbContinueWith OopType32 OopType32 sdword GciErrSType32*>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNbExecuteStrFromContext: string _: context _: symbolList
 
 	<cdecl: OopType32 GciNbExecuteStrFromContext lpstr OopType32 OopType32>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNbPerform: receiver _: selector _: args _: numArgs
 
 	<cdecl: void GciNbPerform OopType32 lpstr OopType32* dword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNewString: aString
 
 	<cdecl: OopType32 GciNewString lpstr >
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciOopToChr: anObject
 
 	<cdecl: sdword GciOopToChr OopType32>
-	^self invalidCall
+	^self invalidCall: _failureCode
+!
+
+gciPerform: receiver _: selector _: args _: numArgs
+
+	<cdecl: void GciPerform OopType32 lpstr OopType32* dword>
+	^self invalidCall: _failureCode
 !
 
 gciReleaseOops: args _: numArgs
 
 	<cdecl: void GciReleaseOops OopType32* dword>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciResolveSymbol: aString _: symbolList
 
 	<cdecl: OopType32 GciResolveSymbol lpstr OopType32>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 oopAsciiNul
@@ -256,7 +274,9 @@ specialFromOop: anOop
 ! !
 !Gcilw6x categoriesFor: #errorStructureClass!private! !
 !Gcilw6x categoriesFor: #gciClearStack:!private! !
+!Gcilw6x categoriesFor: #gciContinueWith:_:_:_:!private! !
 !Gcilw6x categoriesFor: #gciErr:!private! !
+!Gcilw6x categoriesFor: #gciExecuteStrFromContext:_:_:!private! !
 !Gcilw6x categoriesFor: #gciFetchBytes:_:_:_:!private! !
 !Gcilw6x categoriesFor: #gciFetchChars:_:_:_:!private! !
 !Gcilw6x categoriesFor: #gciFetchClass:!private! !
@@ -269,6 +289,7 @@ specialFromOop: anOop
 !Gcilw6x categoriesFor: #gciNbPerform:_:_:_:!private! !
 !Gcilw6x categoriesFor: #gciNewString:!private! !
 !Gcilw6x categoriesFor: #gciOopToChr:!private! !
+!Gcilw6x categoriesFor: #gciPerform:_:_:_:!private! !
 !Gcilw6x categoriesFor: #gciReleaseOops:_:!private! !
 !Gcilw6x categoriesFor: #gciResolveSymbol:_:!private! !
 !Gcilw6x categoriesFor: #oopAsciiNul!public!Reserved OOPs! !

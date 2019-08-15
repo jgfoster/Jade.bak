@@ -18,7 +18,7 @@ errorStructureClass
 gciErr: errorReport
 
 	<cdecl: bool GciErr GciErrSType64_31*>
-	^self invalidCall
+	^self invalidCall: _failureCode
 ! !
 !LibGciTs_3_3 categoriesFor: #errorStructureClass!private! !
 !LibGciTs_3_3 categoriesFor: #gciErr:!private! !

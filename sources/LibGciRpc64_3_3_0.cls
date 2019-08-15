@@ -25,19 +25,40 @@ fetchBytes: anOopType classOop: oopClass
 		fetchBytes: anOopType 
 		classOop: oopClass!
 
+gciExecute_: source _: symbolList _: environmentId
+	"GciNbExecute_(OopType source, OopType symbolList, ushort environmentId);"
+
+	<cdecl: OopType64 GciExecute_ OopType64 OopType64 word>
+	^self invalidCall: _failureCode
+!
+
 gciExecuteFromContextDbg_: source _: contextObject _: symbolList _: flags _: environmentId
 	"GciExecuteFromContextDbg_( OopType source, OopType contextObject,
   OopType symbolList , int flags,  ushort environmentId);"
 
 	<cdecl: OopType64 GciExecuteFromContextDbg_ OopType64 OopType64 OopType64 sdword word>
-	^self invalidCall
+	^self invalidCall: _failureCode
+!
+
+gciExecuteStrFromContextDbg_: source _: sourceSize _: sourceClass _: contextObject _: symbolList _: flags _: environmentId
+	"GciNbExecuteStrFromContextDbg_(
+		const char source[], 
+		int64 sourceSize, 
+		OopType sourceClass,
+		OopType contextObject, 
+		OopType symbolList ,
+		int flags /* same as flags to GciPerformNoDebug */, 
+		ushort environmentId );"
+
+	<cdecl: OopType64 GciExecuteStrFromContextDbg_ lpvoid sqword OopType64 OopType64 OopType64 sdword word>
+	^self invalidCall: _failureCode
 !
 
 gciNbExecute_: source _: symbolList _: environmentId
 	"GciNbExecute_(OopType source, OopType symbolList, ushort environmentId);"
 
 	<cdecl: OopType64 GciNbExecute_ OopType64 OopType64 word>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNbExecuteStrFromContextDbg_: source _: sourceSize _: sourceClass _: contextObject _: symbolList _: flags _: environmentId
@@ -51,21 +72,14 @@ gciNbExecuteStrFromContextDbg_: source _: sourceSize _: sourceClass _: contextOb
 		ushort environmentId );"
 
 	<cdecl: OopType64 GciNbExecuteStrFromContextDbg_ lpvoid sqword OopType64 OopType64 OopType64 sdword word>
-	^self invalidCall
+	^self invalidCall: _failureCode
 !
 
 gciNewUtf8String_: utf8data _: nBytes _: convertToUnicode
 	"OopType GciNewUtf8String_(const char* utf8data, size_t nBytes, BoolType convertToUnicode);"
 
 	<cdecl: OopType64 GciNewUtf8String_ lpvoid sqword bool>
- 	^self invalidCall
-!
-
-gciPerform: receiver _: selector _: args _: numArgs
-	"OopType GciPerform(OopType receiver, const char selector[], const OopType args[], int numArgs );"
-
-	<cdecl: OopType64 GciPerform OopType64 lpvoid OopType64 sdword>
- 	^self invalidCall
+ 	^self invalidCall: _failureCode
 !
 
 gsHasPragmas
@@ -86,15 +100,26 @@ session: session execute: aString context: contextOop environment: anInteger
 		self gciSetSessionId: session.
 		"http://kermit.gemtalksystems.com/bug?bug=47634 means that we can't use Gci*ExecuteStr*() for UTF-8."
 		(utf8 allSatisfy: [:each | each codePoint <= 127]) ifTrue: [
-			self
-				gciNbExecuteStrFromContextDbg_: utf8 
-				_: utf8 size
-				_: self oopClassString
-				_: contextOop 
-				_: self oopNil 
-				_: 1	"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
-				_: anInteger.
-			^self nbResult
+			self useNonBlocking ifTrue: [
+				self
+					gciNbExecuteStrFromContextDbg_: utf8 
+					_: utf8 size
+					_: self oopClassString
+					_: contextOop 
+					_: self oopNil 
+					_: 1	"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
+					_: anInteger.
+				^self nbResult
+			] ifFalse: [
+				^self valueOfOop: (self
+					gciExecuteStrFromContextDbg_: utf8 
+					_: utf8 size
+					_: self oopClassString
+					_: contextOop 
+					_: self oopNil 
+					_: 1	"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
+					_: anInteger).
+			].
 		].
 		oop1 := self 
 			gciNewUtf8String_: utf8 
@@ -107,13 +132,22 @@ session: session execute: aString context: contextOop environment: anInteger
 			_: 0.		"number of arguments"
 		"http://kermit.gemtalksystems.com/bug?bug=47648 means that we can't use the context during a non-blocking call"
 		contextOop isGsNil ifTrue: [
-			self 
-				gciNbExecute_: oop2 
-				_: self oopNil 
-				_: anInteger.
-			result := self nbResult.
-			self _releaseOops: (Array with: oop1 with: oop2).
-			^result
+			self useNonBlocking ifTrue: [
+				self 
+					gciNbExecute_: oop2 
+					_: self oopNil 
+					_: anInteger.
+				result := self nbResult.
+				self _releaseOops: (Array with: oop1 with: oop2).
+				^result
+			] ifFalse: [
+				result := self 
+					gciExecute_: oop2 
+					_: self oopNil 
+					_: anInteger.
+				self _releaseOops: (Array with: oop1 with: oop2).
+				^self valueOfOop: result
+			].
 		].
 		"Due to GemStone/S bugs #47634 and #47648 an execute of Unicode source in a context will be blocking!!"
 		result := self 
@@ -154,11 +188,12 @@ verifyEnvironment: anInteger
 !LibGciRpc64_3_3_0 categoriesFor: #decode:!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #encode:!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #fetchBytes:classOop:!public! !
+!LibGciRpc64_3_3_0 categoriesFor: #gciExecute_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciExecuteFromContextDbg_:_:_:_:_:!private! !
+!LibGciRpc64_3_3_0 categoriesFor: #gciExecuteStrFromContextDbg_:_:_:_:_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciNbExecute_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciNbExecuteStrFromContextDbg_:_:_:_:_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciNewUtf8String_:_:_:!private! !
-!LibGciRpc64_3_3_0 categoriesFor: #gciPerform:_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gsHasPragmas!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #oopClassUtf8!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #session:execute:context:environment:!public! !

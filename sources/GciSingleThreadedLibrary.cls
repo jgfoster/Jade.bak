@@ -189,20 +189,17 @@ fetchTwoByteString: anOopType
 gciAbort
 
 	<cdecl: void GciAbort>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciBegin
 
 	<cdecl: void GciBegin>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciCallInProgress
 
 	<cdecl: bool GciCallInProgress>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciClearStack: processOop
 
@@ -212,12 +209,19 @@ gciClearStack: processOop
 gciCommit
 
 	<cdecl: bool GciCommit>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
+
+gciContinueWith: process _: replaceTopOfStack _: flags _: error
+
+	self subclassResponsibility!
 
 gciErr: errorReport
 
 	self subclassResponsibility.!
+
+gciExecuteStrFromContext: string _: context _: symbolList
+
+	self subclassResponsibility!
 
 gciFetchBytes: anOopType _: startIndex _: cString _: maxSize
 
@@ -263,38 +267,32 @@ GciGemTrace(int level);"
 	"Interpreted as #int32 from #( #'int32' )"
 
 	<cdecl: sdword GciGemTrace sdword>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciGetSessionId
 
 	<cdecl: sdword GciGetSessionId>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciHardBreak
 
 	<cdecl: void GciHardBreak>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciInit
 
 	<cdecl: bool GciInit>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciLogin: userName _: password
 
 	<cdecl: bool GciLogin lpstr lpstr>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciLogout
 
 	<cdecl: void GciLogout>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciNbContinueWith: process _: replaceTopOfStack _: flags _: error
 
@@ -304,8 +302,7 @@ gciNbEnd: result
 	"GciNbProgressEType GciNbEnd(void ** result);"
 
 	<cdecl: sdword GciNbEnd lppvoid>
-	^self invalidCall
-
+	^self invalidCall: _failureCode
 "
 /* Nonblocking support */
 typedef enum {
@@ -350,11 +347,14 @@ gciOopToChr: anObject
 
 	self subclassResponsibility!
 
+gciPerform: receiver _: selector _: args _: numArgs
+
+	self subclassResponsibility!
+
 gciPollForSignal
 
 	<cdecl: bool GciPollForSignal>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciReleaseOops: args _: numArgs
 
@@ -367,9 +367,7 @@ gciResolveSymbol: aString _: symbolList
 gciSetNet: stoneName _: hostUserID _: hostPassword _: gemService
 
 	<cdecl: void GciSetNet lpstr lpstr lpstr lpstr>
-	^self invalidCall
-
-!
+	^self invalidCall: _failureCode!
 
 gciSetNet__: stoneName _: hostUserID _: hostPassword _: gemService _: passwordIsEncrypted _: errString _: maxErrSize _: netldiName
 	"GciSetNetEx__(const char *StoneName, const char *HostUserId,
@@ -378,33 +376,28 @@ gciSetNet__: stoneName _: hostUserID _: hostPassword _: gemService _: passwordIs
            char *errString, size_t maxErrSize, const char* netldiName);"
 
 	<cdecl: bool GciSetNetEx__ lpstr lpstr lpstr lpstr bool lpvoid qword lpstr>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciSetSessionId: anInteger
 
 	<cdecl: void GciSetSessionId sdword >
-	^self invalidCall
-
+	^self invalidCall: _failureCode
 !
 
 gciShutdown
 
 	<cdecl: void GciShutdown>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciSoftBreak
 
 	<cdecl: void GciSoftBreak>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gciVersion
 
 	<cdecl: lpstr GciVersion>
-	^self invalidCall
-!
+	^self invalidCall: _failureCode!
 
 gemTrace: anInteger
 
@@ -528,12 +521,23 @@ session: session continue: gsProcessOop withObject: anOop
 
 	self critical: [
 		self gciSetSessionId: session.
-		self
-			gciNbContinueWith: gsProcessOop
-			_: anOop
-			_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
-			_: nil.
-		^self nbResult.
+		self useNonBlocking ifTrue: [
+			self
+				gciNbContinueWith: gsProcessOop
+				_: anOop
+				_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
+				_: nil.
+			^self nbResult.
+		] ifFalse: [
+			| result |
+			result := self
+				gciContinueWith: gsProcessOop
+				_: anOop
+				_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
+				_: nil.
+			self signalIfError.
+			^self valueOfOop: result
+		].
 	].
 !
 
@@ -542,11 +546,21 @@ session: session execute: aString context: contextOop environment: anInteger
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
 	self critical: [
 		self gciSetSessionId: session.
-		self
-			gciNbExecuteStrFromContext: (self encode: aString)
-			_: contextOop
-			_: self oopNil.
-		^self nbResult.
+		self useNonBlocking ifTrue: [
+			self
+				gciNbExecuteStrFromContext: (self encode: aString)
+				_: contextOop
+				_: self oopNil.
+			^self nbResult.
+		] ifFalse: [
+			| result |
+			result := self
+				gciExecuteStrFromContext: (self encode: aString)
+				_: contextOop
+				_: self oopNil.
+			self signalIfError.
+			^self valueOfOop: result
+		].
 	].
 !
 
@@ -613,12 +627,23 @@ session: anInteger send: aString to: anOopType with: anArray
 
 	self critical: [
 		self gciSetSessionId: anInteger.
-		self
-			gciNbPerform: anOopType 
-			_: aString 
-			_: anArray 
-			_: anArray size.
-		^self nbResult.
+		self useNonBlocking ifTrue: [
+			self
+				gciNbPerform: anOopType 
+				_: aString 
+				_: anArray 
+				_: anArray size.
+			^self nbResult.
+		] ifFalse: [
+			| result |
+			result := self
+				gciPerform: anOopType 
+				_: aString 
+				_: anArray 
+				_: anArray size.
+			self signalIfError.
+			^self valueOfOop: result
+		].
 	].
 !
 
@@ -697,7 +722,9 @@ version
 !GciSingleThreadedLibrary categoriesFor: #gciCallInProgress!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciClearStack:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciCommit!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciContinueWith:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciErr:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciExecuteStrFromContext:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciFetchBytes:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciFetchChars:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciFetchClass:!private! !
@@ -718,6 +745,7 @@ version
 !GciSingleThreadedLibrary categoriesFor: #gciNbPerformNoDebug:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciNewString:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciOopToChr:!private! !
+!GciSingleThreadedLibrary categoriesFor: #gciPerform:_:_:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciPollForSignal!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciReleaseOops:_:!private! !
 !GciSingleThreadedLibrary categoriesFor: #gciResolveSymbol:_:!private! !
