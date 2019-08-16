@@ -20,6 +20,8 @@ package classNames
 	add: #JadePreferenceObject;
 	add: #JadePreferencesPresenter;
 	add: #JadePreferencesShell;
+	add: #JadePropertyInspector;
+	add: #JadeTwinLevelInspector;
 	yourself.
 
 package methodNames
@@ -156,6 +158,16 @@ JadeValueDialog subclass: #JadeErrorShell
 	classInstanceVariableNames: ''!
 JadeShell subclass: #JadePreferencesShell
 	instanceVariableNames: 'preferencesPresenter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+TwinLevelInspector subclass: #JadeTwinLevelInspector
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+PropertyInspector subclass: #JadePropertyInspector
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

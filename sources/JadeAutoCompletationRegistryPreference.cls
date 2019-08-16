@@ -255,6 +255,14 @@ mapToDisplay
 
 	^collection!
 
+openCustomPopUpFor: symbolName ifNone: aNiladicValuable 
+
+	(symbolName = #variableMap) ifTrue: [^JadeMapAutocompletationPresenter show].
+	(symbolName = #paramMap) ifTrue: [^JadeParamAutocompletationPresenter show].
+	(symbolName = #registry) ifTrue: [^JadeRegistryPresenter show].
+
+	^aNiladicValuable value!
+
 paramFor: methodName
 	"Answer the text for a parameter in the method named <methodName>, if none answer 'param' "
 
@@ -388,6 +396,7 @@ variableMap: anObject
 !JadeAutoCompletationRegistryPreference categoriesFor: #initializeParamMap!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #mapFor:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #mapToDisplay!public! !
+!JadeAutoCompletationRegistryPreference categoriesFor: #openCustomPopUpFor:ifNone:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #paramFor:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #paramFor:index:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #paramMap!accessing!private! !

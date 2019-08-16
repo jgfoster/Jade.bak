@@ -15,7 +15,7 @@ createComponents
 
 
 	super createComponents.
-	preferencesPresenter := self add: TwinLevelInspector new name: 'preferences'!
+	preferencesPresenter := self add: JadeTwinLevelInspector new name: 'preferences'!
 
 model: aListModelOfObjects
 

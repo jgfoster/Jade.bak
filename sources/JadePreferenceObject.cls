@@ -11,8 +11,12 @@ JadePreferenceObject comment: ''!
 !JadePreferenceObject methodsFor!
 
 gciSession
-	^self class gciSession! !
+	^self class gciSession!
+
+openCustomPopUpFor: selectionName ifNone: aNiladicValuable 
+	^aNiladicValuable value! !
 !JadePreferenceObject categoriesFor: #gciSession!public! !
+!JadePreferenceObject categoriesFor: #openCustomPopUpFor:ifNone:!public! !
 
 !JadePreferenceObject class methodsFor!
 
