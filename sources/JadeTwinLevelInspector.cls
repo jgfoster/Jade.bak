@@ -23,15 +23,7 @@ openCustomPopUpFor: aSymbol ifNone: aNiladicValuable
 
 	self selectionOrNil ifNil: [^self].
 
-	self selectionOrNil openCustomPopUpFor: aSymbol ifNone: aNiladicValuable !
-
-openCustomPopUpIfNone: aNiladicValuable 
-
-	self selectionOrNil ifNil: [^self].
-
-	self selectionOrNil openCustomPopUpFor: inspectorPresenter selection ifNone: aNiladicValuable 
-! !
+	self selectionOrNil openCustomPopUpFor: aSymbol ifNone: aNiladicValuable ! !
 !JadeTwinLevelInspector categoriesFor: #createComponents!private! !
 !JadeTwinLevelInspector categoriesFor: #openCustomPopUpFor:ifNone:!public! !
-!JadeTwinLevelInspector categoriesFor: #openCustomPopUpIfNone:!public! !
 

@@ -16,7 +16,7 @@ gciSession
 openCustomPopUpFor: selectionName ifNone: aNiladicValuable 
 	^aNiladicValuable value! !
 !JadePreferenceObject categoriesFor: #gciSession!public! !
-!JadePreferenceObject categoriesFor: #openCustomPopUpFor:ifNone:!public! !
+!JadePreferenceObject categoriesFor: #openCustomPopUpFor:ifNone:!custom shell!public! !
 
 !JadePreferenceObject class methodsFor!
 
@@ -25,7 +25,11 @@ gciSession
 
 gciSession: aGciSession
 
-	^GCISession := aGciSession! !
+	^GCISession := aGciSession!
+
+openCustomPopUpFor: selectionName ifNone: aNiladicValuable 
+	^aNiladicValuable value! !
 !JadePreferenceObject class categoriesFor: #gciSession!public! !
 !JadePreferenceObject class categoriesFor: #gciSession:!public! !
+!JadePreferenceObject class categoriesFor: #openCustomPopUpFor:ifNone:!custom shell!public! !
 

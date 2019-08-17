@@ -257,9 +257,9 @@ mapToDisplay
 
 openCustomPopUpFor: symbolName ifNone: aNiladicValuable 
 
-	(symbolName = #variableMap) ifTrue: [^JadeMapAutocompletationPresenter show].
-	(symbolName = #paramMap) ifTrue: [^JadeParamAutocompletationPresenter show].
-	(symbolName = #registry) ifTrue: [^JadeRegistryPresenter show].
+	(symbolName = #variableMap) ifTrue: [^self showVariableMapShell].
+	(symbolName = #paramMap) ifTrue: [^self showParamMapShell].
+	(symbolName = #registry) ifTrue: [^JadeRegistryPresenter show view topView extent: 335@512].
 
 	^aNiladicValuable value!
 
@@ -336,6 +336,30 @@ setAsDefault
 
 	^self class default: self!
 
+showParamMapShell
+	| shell |
+
+	shell := JadeParamAutocompletationPresenter show view topView.
+	shell 
+		caption: 'Config Param for Messages';
+		extent: 478@568!
+
+showRegistryShell
+	| shell |
+
+	shell := JadeRegistryPresenter show view topView.
+	shell 
+		caption: 'Registered GS Classes for Autocompletion';
+		extent: 450@512!
+
+showVariableMapShell
+	| shell |
+
+	shell := JadeMapAutocompletationPresenter show view topView.
+	shell 
+		caption: 'Map Variable Names with GS classes';
+		extent: 472@574!
+
 unregister: aString
 	"The receiver unregister the class JadeGsClassShape <jadeClass>"
 
@@ -396,7 +420,7 @@ variableMap: anObject
 !JadeAutoCompletationRegistryPreference categoriesFor: #initializeParamMap!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #mapFor:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #mapToDisplay!public! !
-!JadeAutoCompletationRegistryPreference categoriesFor: #openCustomPopUpFor:ifNone:!public! !
+!JadeAutoCompletationRegistryPreference categoriesFor: #openCustomPopUpFor:ifNone:!custom shell!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #paramFor:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #paramFor:index:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #paramMap!accessing!private! !
@@ -409,6 +433,9 @@ variableMap: anObject
 !JadeAutoCompletationRegistryPreference categoriesFor: #registry:!accessing!private! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #registryAsSortedCollection!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #setAsDefault!public! !
+!JadeAutoCompletationRegistryPreference categoriesFor: #showParamMapShell!custom shell!public! !
+!JadeAutoCompletationRegistryPreference categoriesFor: #showRegistryShell!custom shell!public! !
+!JadeAutoCompletationRegistryPreference categoriesFor: #showVariableMapShell!custom shell!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #unregister:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #unregisterClassNamed:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #unregisterMap:!public! !
