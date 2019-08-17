@@ -40,51 +40,24 @@ _semaphore
 
 abortSession: anInteger
 
-	self critical: [
-		self 
-			gciSetSessionId: anInteger;
-			gciAbort;
-			signalIfError;
-			yourself.
-	].
+	self 
+		activity: 'abort'
+		critical: [
+			self 
+				gciSetSessionId: anInteger;
+				gciAbort;
+				signalIfError;
+				yourself.
+		].
 !
 
-beginSession: anInteger
-
-	self critical: [
-		self 
-			gciSetSessionId: anInteger;
-			gciBegin;
-			signalIfError;
-			yourself.
-	].
-!
-
-close
-
-	[
-		self gciShutdown.
-	] on: Error do: [:ex | 
-		ex return.
-	].
-	^super close.
-!
-
-commitSession: anInteger
-
-	self critical: [
-		self gciSetSessionId: anInteger.
-		self gciCommit ifTrue: [^self].
-		self signalIfError.
-		GciCommitFailure signal.
-	].
-!
-
-critical: aBlock
+activity: aString critical: aBlock
 	"Previous implementation had a small window when semaphore could be acquired and then process terminated.
 	This should (!!) close that window."
 
 	| array result |
+	Transcript show: '
+' , (aString copyFrom: 1 to: (100 min: aString size)).
 	array := Array with: nil.
 	[
 		[
@@ -101,6 +74,41 @@ critical: aBlock
 		SessionManager current pause.
 		^result.
 	].
+!
+
+beginSession: anInteger
+
+	self 
+		activity: 'begin'
+		critical: [
+			self 
+				gciSetSessionId: anInteger;
+				gciBegin;
+				signalIfError;
+				yourself.
+		].
+!
+
+close
+
+	[
+		self gciShutdown.
+	] on: Error do: [:ex | 
+		ex return.
+	].
+	^super close.
+!
+
+commitSession: anInteger
+
+	self 
+		activity: 'commit' 
+		critical: [
+			self gciSetSessionId: anInteger.
+			self gciCommit ifTrue: [^self].
+			self signalIfError.
+			GciCommitFailure signal.
+		].
 !
 
 fetchBytes: anOopType
@@ -437,17 +445,19 @@ lastError
 
 loginAs: userName password: password
 
-	self critical: [
-		| success error |
-		success := self
-			gciLogin: userName
-			_: password.
-		success ifTrue: [^self gciGetSessionId].
-		error := self lastError.
-		GciLoginFailed 
-			signal: error message
-			with: error.
-	].
+	self 
+		activity: 'loginAs: ' , userName printString , ' password: XXX'
+		critical: [
+			| success error |
+			success := self
+				gciLogin: userName
+				_: password.
+			success ifTrue: [^self gciGetSessionId].
+			error := self lastError.
+			GciLoginFailed 
+				signal: error message
+				with: error.
+		].
 
 !
 
@@ -459,18 +469,20 @@ loginHostUser: hostUser hostPassword: hostPassword gsUser: gsUser gsPassword: gs
 
 logoutSession: anInteger
 
-	self critical: [
-		[
-			self 
-				gciSetSessionId: anInteger;
-				gciLogout;
-				signalIfError;
-				yourself.
-		] on: GciError do: [:ex | 
-			ex tag number == 4100 ifTrue: [ex return].
-			ex pass.
-		].
-	].!
+	self 
+		activity: 'logout' 
+		critical: [
+			[
+				self 
+					gciSetSessionId: anInteger;
+					gciLogout;
+					signalIfError;
+					yourself.
+			] on: GciError do: [:ex | 
+				ex tag number == 4100 ifTrue: [ex return].
+				ex pass.
+			].
+		].!
 
 nbResult
 
@@ -493,11 +505,13 @@ nbResult
 
 pollForSignalSession: anInteger
 
-	self critical: [
-		self gciSetSessionId: anInteger.
-		self gciPollForSignal ifFalse: [^self].
-		self signalLastError.
-	].
+	self 
+		activity: 'pollForSignal' 
+		critical: [
+			self gciSetSessionId: anInteger.
+			self gciPollForSignal ifFalse: [^self].
+			self signalLastError.
+		].
 !
 
 sendInterpreted: aSymbol to: anOopType with: anArray session: anInteger
@@ -511,148 +525,170 @@ sendInterpreted: aSymbol to: anOopType with: anArray session: anInteger
 
 session: session clearStack: processOop
 
-	self critical: [
-		self gciSetSessionId: session.
-		self gciClearStack: processOop.
-	].
+	self 
+		activity: 'clearStack: ' , processOop printString 
+		critical: [
+			self gciSetSessionId: session.
+			self gciClearStack: processOop.
+		].
 !
 
 session: session continue: gsProcessOop withObject: anOop
 
-	self critical: [
-		self gciSetSessionId: session.
-		self useNonBlocking ifTrue: [
-			self
-				gciNbContinueWith: gsProcessOop
-				_: anOop
-				_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
-				_: nil.
-			^self nbResult.
-		] ifFalse: [
-			| result |
-			result := self
-				gciContinueWith: gsProcessOop
-				_: anOop
-				_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
-				_: nil.
-			self signalIfError.
-			^self valueOfOop: result
+	self 
+		activity: 'continueWith: ' , anOop printString 
+		critical: [
+			self gciSetSessionId: session.
+			self useNonBlocking ifTrue: [
+				self
+					gciNbContinueWith: gsProcessOop
+					_: anOop
+					_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
+					_: nil.
+				^self nbResult.
+			] ifFalse: [
+				| result |
+				result := self
+					gciContinueWith: gsProcessOop
+					_: anOop
+					_: 1 "GCI_PERFORM_FLAG_ENABLE_DEBUG"
+					_: nil.
+				self signalIfError.
+				^self valueOfOop: result
+			].
 		].
-	].
 !
 
 session: session execute: aString context: contextOop environment: anInteger
 
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
-	self critical: [
-		self gciSetSessionId: session.
-		self useNonBlocking ifTrue: [
-			self
-				gciNbExecuteStrFromContext: (self encode: aString)
-				_: contextOop
-				_: self oopNil.
-			^self nbResult.
-		] ifFalse: [
-			| result |
-			result := self
-				gciExecuteStrFromContext: (self encode: aString)
-				_: contextOop
-				_: self oopNil.
-			self signalIfError.
-			^self valueOfOop: result
+	self 
+		activity: 'executeString: ' , aString printString 
+		critical: [
+			self gciSetSessionId: session.
+			self useNonBlocking ifTrue: [
+				self
+					gciNbExecuteStrFromContext: (self encode: aString)
+					_: contextOop
+					_: self oopNil.
+				^self nbResult.
+			] ifFalse: [
+				| result |
+				result := self
+					gciExecuteStrFromContext: (self encode: aString)
+					_: contextOop
+					_: self oopNil.
+				self signalIfError.
+				^self valueOfOop: result
+			].
 		].
-	].
 !
 
 session: anInteger fetchBytes: anOopType 
 
-	self critical: [
-		self gciSetSessionId: anInteger.
-		^self fetchBytes: anOopType.
-	].
+	self 
+		activity: 'fetchBytes ' , anOopType printString 
+		critical: [
+			self gciSetSessionId: anInteger.
+			^self fetchBytes: anOopType.
+		].
 !
 
 session: anInteger fetchObjects: anOopType 
 
 	anOopType isSpecial ifTrue: [^self specialFromOop: anOopType].
-	self critical: [
-		| type size array result |
-		self gciSetSessionId: anInteger.
-		(type := self fetchObjImpl: anOopType) = 0 ifFalse: [self error: 'Expected 0 but got ' , type printString].
-		size := self gciFetchSize: anOopType.
-		array := self oopTypeArrayClass new: size.
-		result := self 
-			gciFetchVaryingOops: anOopType
-			_: 1
-			_: array
-			_: size.
-		result = size ifTrue: [^array].
-		self signalLastError.
-	].
+	self 
+		activity: 'fetchObjects: ' , anOopType printString 
+		critical: [
+			| type size array result |
+			self gciSetSessionId: anInteger.
+			(type := self fetchObjImpl: anOopType) = 0 ifFalse: [self error: 'Expected 0 but got ' , type printString].
+			size := self gciFetchSize: anOopType.
+			array := self oopTypeArrayClass new: size.
+			result := self 
+				gciFetchVaryingOops: anOopType
+				_: 1
+				_: array
+				_: size.
+			result = size ifTrue: [^array].
+			self signalLastError.
+		].
 !
 
 session: session oopForInteger: anInteger
 
-	self critical: [
-		self gciSetSessionId: session.
-		^self oopForInteger: anInteger.
-	].
+	self 
+		activity: 'oopForInteger: ' , anInteger printString 
+		critical: [
+			self gciSetSessionId: session.
+			^self oopForInteger: anInteger.
+		].
 !
 
 session: session oopForString: aString
 
-	self critical: [
-		self gciSetSessionId: session.
-		^self gciNewString: aString.
-	].
+	self 
+		activity: 'oopForString: ' , aString printString 
+		critical: [
+			self gciSetSessionId: session.
+			^self gciNewString: aString.
+		].
 !
 
 session: anInteger releaseOops: anArray
 
-	self critical: [
-		self gciSetSessionId: anInteger.
-		self _releaseOops: anArray.
-	].
+	self 
+		activity: 'releaseOops ' , anArray printString 
+		critical: [
+			self gciSetSessionId: anInteger.
+			self _releaseOops: anArray.
+		].
 !
 
 session: anInteger resolveSymbol: aString
 
-	self critical: [
-		self gciSetSessionId: anInteger.
-		^self gciResolveSymbol: aString _: self oopNil.
-	].
+	self 
+		activity: 'resolveSymbol: ' , aString printString 
+		critical: [
+			self gciSetSessionId: anInteger.
+			^self gciResolveSymbol: aString _: self oopNil.
+		].
 !
 
 session: anInteger send: aString to: anOopType with: anArray 
 
-	self critical: [
-		self gciSetSessionId: anInteger.
-		self useNonBlocking ifTrue: [
-			self
-				gciNbPerform: anOopType 
-				_: aString 
-				_: anArray 
-				_: anArray size.
-			^self nbResult.
-		] ifFalse: [
-			| result |
-			result := self
-				gciPerform: anOopType 
-				_: aString 
-				_: anArray 
-				_: anArray size.
-			self signalIfError.
-			^self valueOfOop: result
+	self 
+		activity: 'send: ' , aString printString , ' to: ' , anOopType printString , ' with: ' , anArray printString
+		critical: [
+			self gciSetSessionId: anInteger.
+			self useNonBlocking ifTrue: [
+				self
+					gciNbPerform: anOopType 
+					_: aString 
+					_: anArray 
+					_: anArray size.
+				^self nbResult.
+			] ifFalse: [
+				| result |
+				result := self
+					gciPerform: anOopType 
+					_: aString 
+					_: anArray 
+					_: anArray size.
+				self signalIfError.
+				^self valueOfOop: result
+			].
 		].
-	].
 !
 
 session: session valueOfOop: anOopType
 
-	self critical: [
-		self gciSetSessionId: session.
-		^self valueOfOop: anOopType.
-	].
+	self 
+		activity: 'valueOfOop: ' , anOopType printString 
+		critical: [
+			self gciSetSessionId: session.
+			^self valueOfOop: anOopType.
+		].
 !
 
 signalIfError
@@ -706,10 +742,10 @@ version
 !GciSingleThreadedLibrary categoriesFor: #_releaseOops:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #_semaphore!private! !
 !GciSingleThreadedLibrary categoriesFor: #abortSession:!public!required! !
+!GciSingleThreadedLibrary categoriesFor: #activity:critical:!public! !
 !GciSingleThreadedLibrary categoriesFor: #beginSession:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #close!public! !
 !GciSingleThreadedLibrary categoriesFor: #commitSession:!public!required! !
-!GciSingleThreadedLibrary categoriesFor: #critical:!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchBytes:!not subclassResponsibility!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchBytes:class:!private! !
 !GciSingleThreadedLibrary categoriesFor: #fetchBytes:classOop:!not subclassResponsibility!private! !

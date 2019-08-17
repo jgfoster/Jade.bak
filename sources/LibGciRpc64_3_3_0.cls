@@ -95,83 +95,87 @@ session: session execute: aString context: contextOop environment: anInteger
 	| utf8 |
 	self verifyEnvironment: anInteger.
 	utf8 := aString asUtf8String.
-	self critical: [
-		| oop1 oop2 result | 
-		self gciSetSessionId: session.
-		"http://kermit.gemtalksystems.com/bug?bug=47634 means that we can't use Gci*ExecuteStr*() for UTF-8."
-		(utf8 allSatisfy: [:each | each codePoint <= 127]) ifTrue: [
-			self useNonBlocking ifTrue: [
-				self
-					gciNbExecuteStrFromContextDbg_: utf8 
-					_: utf8 size
-					_: self oopClassString
-					_: contextOop 
-					_: self oopNil 
-					_: 1	"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
-					_: anInteger.
-				^self nbResult
-			] ifFalse: [
-				^self valueOfOop: (self
-					gciExecuteStrFromContextDbg_: utf8 
-					_: utf8 size
-					_: self oopClassString
-					_: contextOop 
-					_: self oopNil 
-					_: 1	"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
-					_: anInteger).
+	self 
+		activity: 'executeString: ' , aString printString 
+		critical: [
+			| oop1 oop2 result | 
+			self gciSetSessionId: session.
+			"http://kermit.gemtalksystems.com/bug?bug=47634 means that we can't use Gci*ExecuteStr*() for UTF-8."
+			(utf8 allSatisfy: [:each | each codePoint <= 127]) ifTrue: [
+				self useNonBlocking ifTrue: [
+					self
+						gciNbExecuteStrFromContextDbg_: utf8 
+						_: utf8 size
+						_: self oopClassString
+						_: contextOop 
+						_: self oopNil 
+						_: 1	"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
+						_: anInteger.
+					^self nbResult
+				] ifFalse: [
+					^self valueOfOop: (self
+						gciExecuteStrFromContextDbg_: utf8 
+						_: utf8 size
+						_: self oopClassString
+						_: contextOop 
+						_: self oopNil 
+						_: 1	"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
+						_: anInteger).
+				].
 			].
-		].
-		oop1 := self 
-			gciNewUtf8String_: utf8 
-			_: utf8 size 
-			_: 1.		"the flag to return Unicode doesn't work so we get back UTF-8"
-		oop2 := self
-			gciPerform: oop1 
-			_: 'asUnicodeString' 
-			_: self oopNil 
-			_: 0.		"number of arguments"
-		"http://kermit.gemtalksystems.com/bug?bug=47648 means that we can't use the context during a non-blocking call"
-		contextOop isGsNil ifTrue: [
-			self useNonBlocking ifTrue: [
-				self 
-					gciNbExecute_: oop2 
-					_: self oopNil 
-					_: anInteger.
-				result := self nbResult.
-				self _releaseOops: (Array with: oop1 with: oop2).
-				^result
-			] ifFalse: [
-				result := self 
-					gciExecute_: oop2 
-					_: self oopNil 
-					_: anInteger.
-				self _releaseOops: (Array with: oop1 with: oop2).
-				^self valueOfOop: result
+			oop1 := self 
+				gciNewUtf8String_: utf8 
+				_: utf8 size 
+				_: 1.		"the flag to return Unicode doesn't work so we get back UTF-8"
+			oop2 := self
+				gciPerform: oop1 
+				_: 'asUnicodeString' 
+				_: self oopNil 
+				_: 0.		"number of arguments"
+			"http://kermit.gemtalksystems.com/bug?bug=47648 means that we can't use the context during a non-blocking call"
+			contextOop isGsNil ifTrue: [
+				self useNonBlocking ifTrue: [
+					self 
+						gciNbExecute_: oop2 
+						_: self oopNil 
+						_: anInteger.
+					result := self nbResult.
+					self _releaseOops: (Array with: oop1 with: oop2).
+					^result
+				] ifFalse: [
+					result := self 
+						gciExecute_: oop2 
+						_: self oopNil 
+						_: anInteger.
+					self _releaseOops: (Array with: oop1 with: oop2).
+					^self valueOfOop: result
+				].
 			].
-		].
-		"Due to GemStone/S bugs #47634 and #47648 an execute of Unicode source in a context will be blocking!!"
-		result := self 
-			gciExecuteFromContextDbg_: oop2
-			_: contextOop 
-			_: self oopNil  
-			_: 1			"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
-			_: anInteger.
-		self _releaseOops: (Array with: oop1 with: oop2).
-		^result
-	]
+			"Due to GemStone/S bugs #47634 and #47648 an execute of Unicode source in a context will be blocking!!"
+			result := self 
+				gciExecuteFromContextDbg_: oop2
+				_: contextOop 
+				_: self oopNil  
+				_: 1			"GCI_PERFORM_FLAG_ENABLE_DEBUG" 
+				_: anInteger.
+			self _releaseOops: (Array with: oop1 with: oop2).
+			^result
+		]
 !
 
 session: session oopForString: aString
 
 	| utf8 |
 	utf8 := aString asUtf8String.
-	self critical: [
-		self gciSetSessionId: session.
-		^self 
-			gciNewUtf8String_: utf8
-			_: utf8 size 
-			_: false
-	].
+	self 
+		activity: 'Utf8StringFor: ' , aString printString 
+		critical: [
+			self gciSetSessionId: session.
+			^self 
+				gciNewUtf8String_: utf8
+				_: utf8 size 
+				_: false
+		].
 !
 
 specialFromOop: anOop

@@ -411,32 +411,6 @@ oopZero
 	^OopType64 fromInteger: 2.
 !
 
-sendInterpreted: aSymbol to: anOopType with: anArray session: anInteger
-
-	self critical: [
-		self gciSetSessionId: anInteger.
-		self useNonBlocking ifTrue: [
-			self
-				gciNbPerformNoDebug: anOopType 
-				_: aSymbol 
-				_: anArray 
-				_: anArray size
-				_: 16r21.		"GCI_PERFORM_FLAG_ENABLE_DEBUG + GCI_PERFORM_FLAG_INTERPRETED"
-			^self nbResult.
-		] ifFalse: [
-			| result |
-			result := self
-				gciPerformNoDebug: anOopType 
-				_: aSymbol 
-				_: anArray 
-				_: anArray size
-				_: 16r21.		"GCI_PERFORM_FLAG_ENABLE_DEBUG + GCI_PERFORM_FLAG_INTERPRETED"
-			self signalIfError.
-			^self valueOfOop: result
-		].
-	].
-!
-
 specialFromOop: anOop
 
 	anOop isBoolean ifTrue: [
@@ -510,6 +484,5 @@ specialFromOop: anOop
 !LibGciRpc64 categoriesFor: #oopTypeClass!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopTypeWithOop:!public!Reserved OOPs! !
 !LibGciRpc64 categoriesFor: #oopZero!public!Reserved OOPs! !
-!LibGciRpc64 categoriesFor: #sendInterpreted:to:with:session:!public! !
 !LibGciRpc64 categoriesFor: #specialFromOop:!public! !
 
