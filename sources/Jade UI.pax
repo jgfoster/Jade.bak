@@ -110,7 +110,7 @@ Object subclass: #JadePreferenceObject
 	instanceVariableNames: ''
 	classVariableNames: 'GCISession'
 	poolDictionaries: ''
-	classInstanceVariableNames: ''!
+	classInstanceVariableNames: 'default'!
 JadePreferenceObject subclass: #JadeAllSessionsPreference
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -118,7 +118,7 @@ JadePreferenceObject subclass: #JadeAllSessionsPreference
 	classInstanceVariableNames: ''!
 JadePreferenceObject subclass: #JadeAutoCompletationPreference
 	instanceVariableNames: 'isEnabled logEnabled filterObjectMethods filterPrimitiveMethods hideClassVars hideInstClassVars hidePoolDictionaries'
-	classVariableNames: 'Default'
+	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePreferenceObject subclass: #JadeAutoCompletationRegistryPreference

@@ -2,7 +2,7 @@
 
 JadePreferenceObject subclass: #JadeAutoCompletationPreference
 	instanceVariableNames: 'isEnabled logEnabled filterObjectMethods filterPrimitiveMethods hideClassVars hideInstClassVars hidePoolDictionaries'
-	classVariableNames: 'Default'
+	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeAutoCompletationPreference guid: (GUID fromString: '{a4e50bc1-dc2a-45a1-95a7-fda7c959fa0d}')!
@@ -106,13 +106,4 @@ publishedAspects
 !JadeAutoCompletationPreference categoriesFor: #logEnabled!accessing!private! !
 !JadeAutoCompletationPreference categoriesFor: #logEnabled:!accessing!private! !
 !JadeAutoCompletationPreference categoriesFor: #publishedAspects!public! !
-
-!JadeAutoCompletationPreference class methodsFor!
-
-default
-
-	Default ifNil: [Default := super new initialize].
-
-	^Default! !
-!JadeAutoCompletationPreference class categoriesFor: #default!public! !
 

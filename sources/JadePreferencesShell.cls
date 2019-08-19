@@ -38,15 +38,8 @@ shellName
 !JadePreferencesShell class methodsFor!
 
 defaultModel
-	^OrderedCollection new
-		add: JadeAllSessionsPreference;
-		add: JadeCurrentSessionPreference;
-		add: JadeMethodExplorerPreference;
-		add: JadeFileOutEncodingPreference;
-		add: JadeAutoCompletationPreference default;
-		add: JadeAutoCompletationRegistryPreference default;
-		asArray;
-		yourself!
+	^OrderedCollection withAll: (JadePreferenceObject allSubclasses collect: [:each | each default])
+!
 
 resource_Default_view
 	"Answer the literal data from which the 'Default view' resource can be reconstituted.

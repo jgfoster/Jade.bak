@@ -446,17 +446,6 @@ variableMap: anObject
 
 !JadeAutoCompletationRegistryPreference class methodsFor!
 
-default
-
-	Default ifNil: [Default := super new initialize].
-
-	^Default!
-
-default: aJadeAutoCompletationRegistryPreference
-
-	^Default := aJadeAutoCompletationRegistryPreference
-!
-
 newFromFile: pathFile
 	| fileStream obj |
 
@@ -464,7 +453,5 @@ newFromFile: pathFile
 	obj := self binaryReadFrom: fileStream.
 	fileStream close.
 	^obj! !
-!JadeAutoCompletationRegistryPreference class categoriesFor: #default!public! !
-!JadeAutoCompletationRegistryPreference class categoriesFor: #default:!public! !
 !JadeAutoCompletationRegistryPreference class categoriesFor: #newFromFile:!public! !
 
