@@ -9,8 +9,6 @@ package basicScriptAt: #postinstall put: '''Loaded: Jade UI'' yourself.'.
 
 package classNames
 	add: #JadeAllSessionsPreference;
-	add: #JadeAutoCompletationPreference;
-	add: #JadeAutoCompletationRegistryPreference;
 	add: #JadeCurrentSessionPreference;
 	add: #JadeDebugger;
 	add: #JadeErrorShell;
@@ -91,7 +89,6 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
 	'GemStone Objects'
 	'GemStone Session'
-	'Jade Autocompletation'
 	'Jade Inspector'
 	'Jade Method Browser'
 	'Jade UI Base'
@@ -114,16 +111,6 @@ Object subclass: #JadePreferenceObject
 JadePreferenceObject subclass: #JadeAllSessionsPreference
 	instanceVariableNames: ''
 	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-JadePreferenceObject subclass: #JadeAutoCompletationPreference
-	instanceVariableNames: 'isEnabled logEnabled filterObjectMethods filterPrimitiveMethods hideClassVars hideInstClassVars hidePoolDictionaries'
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-JadePreferenceObject subclass: #JadeAutoCompletationRegistryPreference
-	instanceVariableNames: 'registry variableMap paramMap'
-	classVariableNames: 'Default'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadePreferenceObject subclass: #JadeCurrentSessionPreference

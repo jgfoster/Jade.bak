@@ -11,7 +11,7 @@ JadeAutoTextPresenter3 comment: ''!
 !JadeAutoTextPresenter3 methodsFor!
 
 autocompletationConfiguration
-	^JadeAutocompletationConfiguration default!
+	^JadeAutoCompletationPreference default!
 
 autocompleteForIdentifier
 
@@ -43,7 +43,7 @@ codePresenterIsMethod
 
 configuration
 
-	^JadeAutocompletationConfiguration default!
+	^JadeAutoCompletationPreference default!
 
 createSchematicWiring
 
@@ -386,7 +386,7 @@ processKeyPressed: aKeyEvent
 
 registry
 
-	^JadeAutocompletationRegistry default!
+	^JadeAutoCompletationRegistryPreference default!
 
 replaceKeyboardShortcut
 	| replacementDictionary replacementText caretPositionShift bracketsOccurrences |

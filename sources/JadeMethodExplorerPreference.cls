@@ -40,31 +40,8 @@ publishedAspects
 
 !JadeMethodExplorerPreference class methodsFor!
 
-displayString
-
-	^'Method Explorer'!
-
 icon
 
-	^Icon fromId: 'MethodBrowser.ico'!
-
-methodExplorerClass
-	^JadeMethodListPresenter getJadeMethodBrowserPresenterClass!
-
-methodExplorerClass: aJadeMethodListPresenterClass
-	JadeMethodListPresenter setJadeMethodBrowserPresenterClass: aJadeMethodListPresenterClass!
-
-publishedAspects
-	"Answer a <LookupTable> of the <Aspect>s published by the receiver."
-
-	| aspects |
-	aspects := super publishedAspects.
-	aspects
-		add: (Aspect choice: #methodExplorerClass from: (Array with: JadeMethodListPresenter with: JadeTreeMethodListPresenter)).
-	^aspects! !
-!JadeMethodExplorerPreference class categoriesFor: #displayString!public! !
+	^Icon fromId: 'MethodBrowser.ico'! !
 !JadeMethodExplorerPreference class categoriesFor: #icon!public! !
-!JadeMethodExplorerPreference class categoriesFor: #methodExplorerClass!public! !
-!JadeMethodExplorerPreference class categoriesFor: #methodExplorerClass:!public! !
-!JadeMethodExplorerPreference class categoriesFor: #publishedAspects!public! !
 

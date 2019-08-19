@@ -12,7 +12,7 @@ JadeAutoCompletationRegistryPreference comment: ''!
 
 configuration
 
-	^JadeAutocompletationConfiguration default!
+	^JadeAutoCompletationPreference default!
 
 defaultFileName
 

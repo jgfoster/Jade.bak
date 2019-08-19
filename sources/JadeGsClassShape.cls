@@ -17,7 +17,7 @@ The Autocompletation engine use instance of this class to show autocompletation 
 !JadeGsClassShape methodsFor!
 
 configuration
-	^JadeAutocompletationConfiguration default!
+	^JadeAutoCompletationPreference default!
 
 existInRegistry
 
@@ -126,7 +126,7 @@ name: anObject
 
 registry
 
-	^JadeAutocompletationRegistry default!
+	^JadeAutoCompletationRegistryPreference default!
 
 updateClassData
 	| previousShape |

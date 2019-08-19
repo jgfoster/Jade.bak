@@ -69,60 +69,8 @@ publishedAspects
 
 !JadeAllSessionsPreference class methodsFor!
 
-autoCommit
-
-	^self gciSession isAutoCommit!
-
-autoCommit: aBoolean
-	self gciSession isAutoCommit: aBoolean!
-
-autoMigrate
-	^self gciSession isAutoMigrate!
-
-autoMigrate: aBoolean
-
-	^self gciSession isAutoMigrate: aBoolean!
-
-displayString
-
-	^'All Sessions'!
-
 icon
 
-	^Icon fromId: 'ListView.ico'!
-
-isShowUnimplementedMessages
-	^self gciSession isShowUnimplementedMessages!
-
-isShowUnimplementedMessages: aBoolean
-	self gciSession isShowUnimplementedMessages: aBoolean!
-
-nativeCode
-	^self gciSession isNativeCode!
-
-nativeCode: aBoolean
-
-	^self gciSession isNativeCode: aBoolean!
-
-publishedAspects
-	"Answer a <LookupTable> of the <Aspect>s published by the receiver."
-
-	| aspects |
-	aspects := super publishedAspects.
-	self gciSession isNativeCode ifNotNil: [aspects add: (Aspect boolean: #nativeCode)].
-	self gciSession isAutoCommit ifNotNil: [aspects add: (Aspect boolean: #autoCommit)].
-	self gciSession isAutoMigrate ifNotNil: [aspects add: (Aspect boolean: #autoMigrate)].
-	self gciSession isShowUnimplementedMessages ifNotNil: [aspects add: (Aspect boolean: #isShowUnimplementedMessages)].
-	^aspects! !
-!JadeAllSessionsPreference class categoriesFor: #autoCommit!public! !
-!JadeAllSessionsPreference class categoriesFor: #autoCommit:!public! !
-!JadeAllSessionsPreference class categoriesFor: #autoMigrate!public! !
-!JadeAllSessionsPreference class categoriesFor: #autoMigrate:!public! !
-!JadeAllSessionsPreference class categoriesFor: #displayString!public! !
+	^Icon fromId: 'ListView.ico'! !
 !JadeAllSessionsPreference class categoriesFor: #icon!public! !
-!JadeAllSessionsPreference class categoriesFor: #isShowUnimplementedMessages!public! !
-!JadeAllSessionsPreference class categoriesFor: #isShowUnimplementedMessages:!public! !
-!JadeAllSessionsPreference class categoriesFor: #nativeCode!public! !
-!JadeAllSessionsPreference class categoriesFor: #nativeCode:!public! !
-!JadeAllSessionsPreference class categoriesFor: #publishedAspects!public! !
 

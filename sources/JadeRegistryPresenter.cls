@@ -40,7 +40,7 @@ model: aJadeAutocompletationRegistry
 
 defaultModel
 
-	^JadeAutocompletationRegistry default!
+	^JadeAutoCompletationRegistryPreference default!
 
 resource_Default_view
 	"Answer the literal data from which the 'Default view' resource can be reconstituted.
