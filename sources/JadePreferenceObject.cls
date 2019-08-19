@@ -17,7 +17,11 @@ default
 gciSession
 	^self class gciSession!
 
-openCustomPopUpFor: selectionName ifNone: aNiladicValuable 
+openCustomPopUpFor: symbolName ifNone: aNiladicValuable
+	"The receiver open a custom popup window for selection <symbolName> if there is no custom popup then evaluate <aNiladicValuable>.
+	Subclasses with normal options will follow Dolphin aspect mechanism to set options.
+	Subclasses with special options (can no be implemented using Dolphin Aspects mechanism) should rewrite this method  (see JadeAutoCompletationRegistryPreference)."
+
 	^aNiladicValuable value! !
 !JadePreferenceObject categoriesFor: #default!public! !
 !JadePreferenceObject categoriesFor: #gciSession!public! !
@@ -36,12 +40,8 @@ gciSession
 
 gciSession: aGciSession
 
-	^GCISession := aGciSession!
-
-openCustomPopUpFor: selectionName ifNone: aNiladicValuable 
-	^aNiladicValuable value! !
+	^GCISession := aGciSession! !
 !JadePreferenceObject class categoriesFor: #default!public! !
 !JadePreferenceObject class categoriesFor: #gciSession!public! !
 !JadePreferenceObject class categoriesFor: #gciSession:!public! !
-!JadePreferenceObject class categoriesFor: #openCustomPopUpFor:ifNone:!custom shell!public! !
 
