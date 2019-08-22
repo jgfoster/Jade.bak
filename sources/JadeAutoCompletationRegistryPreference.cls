@@ -259,7 +259,7 @@ openCustomPopUpFor: symbolName ifNone: aNiladicValuable
 
 	(symbolName = #variableMap) ifTrue: [^self showVariableMapShell].
 	(symbolName = #paramMap) ifTrue: [^self showParamMapShell].
-	(symbolName = #registry) ifTrue: [^JadeRegistryPresenter show view topView extent: 335@512].
+	(symbolName = #registry) ifTrue: [^self showRegistryShell].
 
 	^aNiladicValuable value!
 
