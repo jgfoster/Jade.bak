@@ -15,7 +15,7 @@ createComponents
 
 
 	super createComponents.
-	preferencesPresenter := self add: TwinLevelInspector new name: 'preferences'!
+	preferencesPresenter := self add: JadeTwinLevelInspector new name: 'preferences'!
 
 model: aListModelOfObjects
 
@@ -38,13 +38,8 @@ shellName
 !JadePreferencesShell class methodsFor!
 
 defaultModel
-	^OrderedCollection new
-		add: JadeAllSessionsPreference;
-		add: JadeCurrentSessionPreference;
-		add: JadeMethodExplorerPreference;
-		add: JadeFileOutEncodingPreference;
-		asArray;
-		yourself!
+	^OrderedCollection withAll: (JadePreferenceObject allSubclasses collect: [:each | each default])
+!
 
 resource_Default_view
 	"Answer the literal data from which the 'Default view' resource can be reconstituted.

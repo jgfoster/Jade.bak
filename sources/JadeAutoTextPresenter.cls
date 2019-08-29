@@ -17,7 +17,7 @@ see:
 !JadeAutoTextPresenter methodsFor!
 
 autocompletationConfiguration
-	^JadeAutocompletationConfiguration default!
+	^JadeAutoCompletationPreference default!
 
 autocompleteForAlphaNumeric
 	"This method is triggered when an alpha numeric key is pressed.
@@ -106,7 +106,7 @@ codePresenterIsMethod
 
 configuration
 
-	^JadeAutocompletationConfiguration default!
+	^JadeAutoCompletationPreference default!
 
 controlKeys
 	
@@ -329,7 +329,7 @@ processKeyPressed: aKeyEvent
 
 registry
 
-	^JadeAutocompletationRegistry default!
+	^JadeAutoCompletationRegistryPreference default!
 
 showAutoCompletionList: anOrdedCollection prefixLength: anInteger
 

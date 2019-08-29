@@ -8,7 +8,7 @@ JadePreferenceObject subclass: #JadeMethodExplorerPreference
 JadeMethodExplorerPreference guid: (GUID fromString: '{5e27df7e-d866-4172-87a4-ada1587a4b00}')!
 JadeMethodExplorerPreference comment: ''!
 !JadeMethodExplorerPreference categoriesForClass!Unclassified! !
-!JadeMethodExplorerPreference class methodsFor!
+!JadeMethodExplorerPreference methodsFor!
 
 displayString
 
@@ -32,9 +32,16 @@ publishedAspects
 	aspects
 		add: (Aspect choice: #methodExplorerClass from: (Array with: JadeMethodListPresenter with: JadeTreeMethodListPresenter)).
 	^aspects! !
-!JadeMethodExplorerPreference class categoriesFor: #displayString!public! !
+!JadeMethodExplorerPreference categoriesFor: #displayString!public! !
+!JadeMethodExplorerPreference categoriesFor: #icon!public! !
+!JadeMethodExplorerPreference categoriesFor: #methodExplorerClass!public! !
+!JadeMethodExplorerPreference categoriesFor: #methodExplorerClass:!public! !
+!JadeMethodExplorerPreference categoriesFor: #publishedAspects!public! !
+
+!JadeMethodExplorerPreference class methodsFor!
+
+icon
+
+	^Icon fromId: 'MethodBrowser.ico'! !
 !JadeMethodExplorerPreference class categoriesFor: #icon!public! !
-!JadeMethodExplorerPreference class categoriesFor: #methodExplorerClass!public! !
-!JadeMethodExplorerPreference class categoriesFor: #methodExplorerClass:!public! !
-!JadeMethodExplorerPreference class categoriesFor: #publishedAspects!public! !
 

@@ -32,7 +32,7 @@ model: anObject
 
 registry
 
-	^JadeAutocompletationRegistry default! !
+	^JadeAutoCompletationRegistryPreference default! !
 !JadeAutocompletationConfigurationShell categoriesFor: #createComponents!public! !
 !JadeAutocompletationConfigurationShell categoriesFor: #model:!public! !
 !JadeAutocompletationConfigurationShell categoriesFor: #registry!public! !

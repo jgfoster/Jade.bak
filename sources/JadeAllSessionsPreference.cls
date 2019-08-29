@@ -8,7 +8,7 @@ JadePreferenceObject subclass: #JadeAllSessionsPreference
 JadeAllSessionsPreference guid: (GUID fromString: '{546eb412-bc29-405c-b0f7-29f73e946fa4}')!
 JadeAllSessionsPreference comment: ''!
 !JadeAllSessionsPreference categoriesForClass!Unclassified! !
-!JadeAllSessionsPreference class methodsFor!
+!JadeAllSessionsPreference methodsFor!
 
 autoCommit
 
@@ -55,15 +55,22 @@ publishedAspects
 	self gciSession isAutoMigrate ifNotNil: [aspects add: (Aspect boolean: #autoMigrate)].
 	self gciSession isShowUnimplementedMessages ifNotNil: [aspects add: (Aspect boolean: #isShowUnimplementedMessages)].
 	^aspects! !
-!JadeAllSessionsPreference class categoriesFor: #autoCommit!public! !
-!JadeAllSessionsPreference class categoriesFor: #autoCommit:!public! !
-!JadeAllSessionsPreference class categoriesFor: #autoMigrate!public! !
-!JadeAllSessionsPreference class categoriesFor: #autoMigrate:!public! !
-!JadeAllSessionsPreference class categoriesFor: #displayString!public! !
+!JadeAllSessionsPreference categoriesFor: #autoCommit!public! !
+!JadeAllSessionsPreference categoriesFor: #autoCommit:!public! !
+!JadeAllSessionsPreference categoriesFor: #autoMigrate!public! !
+!JadeAllSessionsPreference categoriesFor: #autoMigrate:!public! !
+!JadeAllSessionsPreference categoriesFor: #displayString!public! !
+!JadeAllSessionsPreference categoriesFor: #icon!public! !
+!JadeAllSessionsPreference categoriesFor: #isShowUnimplementedMessages!public! !
+!JadeAllSessionsPreference categoriesFor: #isShowUnimplementedMessages:!public! !
+!JadeAllSessionsPreference categoriesFor: #nativeCode!public! !
+!JadeAllSessionsPreference categoriesFor: #nativeCode:!public! !
+!JadeAllSessionsPreference categoriesFor: #publishedAspects!public! !
+
+!JadeAllSessionsPreference class methodsFor!
+
+icon
+
+	^Icon fromId: 'ListView.ico'! !
 !JadeAllSessionsPreference class categoriesFor: #icon!public! !
-!JadeAllSessionsPreference class categoriesFor: #isShowUnimplementedMessages!public! !
-!JadeAllSessionsPreference class categoriesFor: #isShowUnimplementedMessages:!public! !
-!JadeAllSessionsPreference class categoriesFor: #nativeCode!public! !
-!JadeAllSessionsPreference class categoriesFor: #nativeCode:!public! !
-!JadeAllSessionsPreference class categoriesFor: #publishedAspects!public! !
 

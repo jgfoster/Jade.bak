@@ -8,7 +8,7 @@ JadePreferenceObject subclass: #JadeCurrentSessionPreference
 JadeCurrentSessionPreference guid: (GUID fromString: '{3fc7627f-1c65-46e7-86d3-cdff3b99d401}')!
 JadeCurrentSessionPreference comment: ''!
 !JadeCurrentSessionPreference categoriesForClass!Unclassified! !
-!JadeCurrentSessionPreference class methodsFor!
+!JadeCurrentSessionPreference methodsFor!
 
 codeFont
 	^CodeSourcePresenter codeFont!
@@ -44,13 +44,19 @@ publishedAspects
 		add: (Aspect font: #codeFont);
 		add: (Aspect boolean: #debug).
 	^aspects! !
-!JadeCurrentSessionPreference class categoriesFor: #codeFont!public! !
-!JadeCurrentSessionPreference class categoriesFor: #codeFont:!public! !
-!JadeCurrentSessionPreference class categoriesFor: #debug!public! !
-!JadeCurrentSessionPreference class categoriesFor: #debug:!public! !
-!JadeCurrentSessionPreference class categoriesFor: #defaultFont!public! !
-!JadeCurrentSessionPreference class categoriesFor: #defaultFont:!public! !
-!JadeCurrentSessionPreference class categoriesFor: #displayString!public! !
+!JadeCurrentSessionPreference categoriesFor: #codeFont!public! !
+!JadeCurrentSessionPreference categoriesFor: #codeFont:!public! !
+!JadeCurrentSessionPreference categoriesFor: #debug!public! !
+!JadeCurrentSessionPreference categoriesFor: #debug:!public! !
+!JadeCurrentSessionPreference categoriesFor: #defaultFont!public! !
+!JadeCurrentSessionPreference categoriesFor: #defaultFont:!public! !
+!JadeCurrentSessionPreference categoriesFor: #displayString!public! !
+!JadeCurrentSessionPreference categoriesFor: #icon!public! !
+!JadeCurrentSessionPreference categoriesFor: #publishedAspects!public! !
+
+!JadeCurrentSessionPreference class methodsFor!
+
+icon
+	^Icon fromId: 'SMALLTALKOPTIONSFOLDER.ICO'! !
 !JadeCurrentSessionPreference class categoriesFor: #icon!public! !
-!JadeCurrentSessionPreference class categoriesFor: #publishedAspects!public! !
 

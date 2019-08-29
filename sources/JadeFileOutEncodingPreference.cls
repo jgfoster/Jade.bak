@@ -8,7 +8,7 @@ JadePreferenceObject subclass: #JadeFileOutEncodingPreference
 JadeFileOutEncodingPreference guid: (GUID fromString: '{0468e6df-2d50-4ee7-b37a-b81ce2f159bd}')!
 JadeFileOutEncodingPreference comment: ''!
 !JadeFileOutEncodingPreference categoriesForClass!Unclassified! !
-!JadeFileOutEncodingPreference class methodsFor!
+!JadeFileOutEncodingPreference methodsFor!
 
 displayString
 	^'File Out Encoding'!
@@ -33,9 +33,15 @@ publishedAspects
 	aspects := super publishedAspects.
 	aspects add: (Aspect choice: #jadeFileOutEncoding from: StdioFileStream getEncodingNames).
 	^aspects! !
-!JadeFileOutEncodingPreference class categoriesFor: #displayString!public! !
+!JadeFileOutEncodingPreference categoriesFor: #displayString!public! !
+!JadeFileOutEncodingPreference categoriesFor: #icon!public! !
+!JadeFileOutEncodingPreference categoriesFor: #jadeFileOutEncoding!public! !
+!JadeFileOutEncodingPreference categoriesFor: #jadeFileOutEncoding:!public! !
+!JadeFileOutEncodingPreference categoriesFor: #publishedAspects!public! !
+
+!JadeFileOutEncodingPreference class methodsFor!
+
+icon
+	^String icon! !
 !JadeFileOutEncodingPreference class categoriesFor: #icon!public! !
-!JadeFileOutEncodingPreference class categoriesFor: #jadeFileOutEncoding!public! !
-!JadeFileOutEncodingPreference class categoriesFor: #jadeFileOutEncoding:!public! !
-!JadeFileOutEncodingPreference class categoriesFor: #publishedAspects!public! !
 
