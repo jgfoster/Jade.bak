@@ -971,7 +971,7 @@ editSaveMethod
 	] on: GsCompileError do: [:ex | 
 		self reportCompileError: ex list.
 	].
-	methodSourcePresenter view firstVisibleLine: firstVisibleLine.
+	methodSourcePresenter view lineScroll: firstVisibleLine.
 	methodSourcePresenter view goto: caretPosition.
 !
 
