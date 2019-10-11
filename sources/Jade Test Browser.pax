@@ -21,6 +21,7 @@ package methodNames
 	add: #JadeServer -> #getTestCaseClassesNamesOf:;
 	add: #JadeServer -> #getTestMethodsNamesOf:;
 	add: #JadeServer -> #runTestNamed:in:;
+	add: #JadeToolsToolBarPresenter -> #browseTests;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -160,6 +161,13 @@ runTestNamed: testName in: gsClass
 !JadeServer categoriesFor: #getTestCaseClassesNamesOf:!public!Test Browser! !
 !JadeServer categoriesFor: #getTestMethodsNamesOf:!public!Test Browser! !
 !JadeServer categoriesFor: #runTestNamed:in:!public!Test Browser! !
+
+!JadeToolsToolBarPresenter methodsFor!
+
+browseTests
+
+	JadeSUnitBrowser showOnSession: gciSession.! !
+!JadeToolsToolBarPresenter categoriesFor: #browseTests!public! !
 
 "End of package definition"!
 
