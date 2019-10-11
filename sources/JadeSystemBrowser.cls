@@ -123,6 +123,12 @@ isOkayToChange
 	^true.
 !
 
+jadeBrowseTests
+
+	JadeSUnitBrowser showOnSession: gciSession.
+
+!
+
 layoutFilePath
 
 	^SessionManager current imageBase , 'Jade System Browser Layout.stb'!
@@ -285,6 +291,7 @@ update
 !JadeSystemBrowser categoriesFor: #handleInvalidSession!public! !
 !JadeSystemBrowser categoriesFor: #initialize!public! !
 !JadeSystemBrowser categoriesFor: #isOkayToChange!public! !
+!JadeSystemBrowser categoriesFor: #jadeBrowseTests!public! !
 !JadeSystemBrowser categoriesFor: #layoutFilePath!public! !
 !JadeSystemBrowser categoriesFor: #logoutRequested:!public! !
 !JadeSystemBrowser categoriesFor: #maximizeCode!public! !
