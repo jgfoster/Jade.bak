@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 JadeBrowserPresenter subclass: #JadeSystemBrowserPresenter
-	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel historyList historyIndex ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodFilterTabs methodListPresenter methodSource methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter pragmaListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints sunitPresenter superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter'
+	instanceVariableNames: 'ancestorListPresenter breakPoints categoryListPresenter categoryVariableTabs classCategoryPresenter classCommentPresenter classDefinition classDefinitionPresenter classHierarchyPresenter classHierarchyTabs classListPresenter dictionaryListPresenter environment eventCount globalsPresenter globalsLabel historyList historyIndex ignoreNextSetFocusEvent instanceClassTabs inUpdate keystrokeTime methodCategory methodFilterTabs methodListPresenter methodSource methodSourcePresenter originalSourceLabel originalSourcePresenter overrideListPresenter packageDictionaryTabs packageInfoTab packageLabel packageListPresenter pragmaListPresenter readStream repositoryListPresenter selectedClassChanged selectedClassesAreTestCases selectedClassName selectedClassOop stepPoints sunitPresenter superclassListPresenter textAreaTabs unimplementedSelectors updateCount updateProcess variableListPresenter previousSelectedMethod'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -2903,7 +2903,7 @@ updateClassCategoryTree
 			item := items detect: [:each | each key = key] ifNone: [nil].
 			classCategoryPresenter expand: item.
 		].
-		classCategoryPresenter selection: item.
+		classCategoryPresenter selection: item ifAbsent: [].
 	].
 	classCategoryPresenter view ensureSelectionVisible.
 !
@@ -3208,6 +3208,9 @@ updateMethodFilter
 updateMethodList
 
 	| fullList selections |
+
+	previousSelectedMethod := methodListPresenter selections isEmpty ifTrue: [''] ifFalse: [self selectedMethodName].
+
 	fullList := (readStream nextParagraph subStrings: Character lf) collect: [:each | (each subStrings: Character tab) , #('' '' '' '' '')].
 	fullList := fullList do: [:each | 	"JadeServer>>#'sbUpdateMethods' "
 		each 
@@ -3232,7 +3235,10 @@ updateMethodList
 		].
 	].
 
-!
+	selectedClassChanged ifTrue: [ | matchMethod |
+		matchMethod := methodListPresenter model detect: [:array | (array at: 1) = previousSelectedMethod] ifNone: [^self].
+		[methodListPresenter selection: matchMethod ifAbsent: []] forkAt: 4 .
+	]!
 
 updateMethodStepPoints
 
