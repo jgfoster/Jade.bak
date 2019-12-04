@@ -1127,7 +1127,7 @@ fileOutMethodOnPath: aString
 				write: aString
 				mode: #truncate
 				check: false
-				type: JadeFileOutEncodingPreference jadeFileOutEncoding.
+				type: JadeFileOutEncodingPreference default jadeFileOutEncoding.
 	
 	[file
 		nextPutAll: header;

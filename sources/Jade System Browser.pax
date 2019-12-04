@@ -184,7 +184,6 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Tree\Dolphin Tree Presenter'
 	'..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters'
 	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
-	'..\Core\Object Arts\Dolphin\MVP\Gdiplus\Gdiplus'
 	'GemStone Objects'
 	'GemStone Session'
 	'Jade Autocompletation'
