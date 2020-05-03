@@ -1126,7 +1126,10 @@ withExplanation: aString doA: aBlock
 				].
 			].
 			proc terminate.
-			haveResult ifTrue: [^result].
+			haveResult ifTrue: [
+				(result isKindOf: Error) ifTrue: [self error: result description].
+				^result
+			].
 			isHandlingClientForwarderSend.
 		] whileTrue: [].
 
@@ -1148,6 +1151,7 @@ withExplanation: aString doA: aBlock
 		SessionManager inputState pumpMessages.
 		haveResult.	"Dialog may have been closed by a ClientForwarderSend"
 	] whileFalse.
+	(result isKindOf: Error) ifTrue: [self error: result description].
 	^result.
 ! !
 !GciSession categoriesFor: #_executeString:fromContextOop:environment:!private! !
