@@ -55,9 +55,9 @@ activity: aString critical: aBlock
 	"Previous implementation had a small window when semaphore could be acquired and then process terminated.
 	This should (!!) close that window."
 
-	| array result |
-	Transcript show: '
-' , (aString copyFrom: 1 to: (100 min: aString size)).
+	| array result string |
+	string := aString copyFrom: 1 to: (100 min: aString size).
+	Transcript show: string , Character cr asString , Character lf asString.
 	array := Array with: nil.
 	[
 		[

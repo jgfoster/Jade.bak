@@ -274,7 +274,7 @@ hasServer
 heartbeat: receiver arguments: arguments
 
 	| result |
-	(Delay forSeconds: 1) wait.
+	(Delay forSeconds: 5) wait.
 	self isValidSession ifFalse: [^self].
 	result := self returningResultOrErrorDo: [
 		library 
@@ -409,7 +409,8 @@ initializeServer
 "
 	GciSession allInstances first initializeServer.
 "
-	| jadeServerClassOop |
+	| crlf jadeServerClassOop |
+	crlf := Character cr asString , Character lf asString.
 	library ifNil: [^self].
 	[
 		jadeServerClassOop := library session: gciSessionId resolveSymbol: library jadeServerClass name.
@@ -422,7 +423,7 @@ initializeServer
 			(MessageBox confirm: 'Use built-in JadeServer version ' , version , '?') ifTrue: [^self].
 		].
 	] on: Error do: [:ex | 
-		MessageBox notify: 'Unable to use built-in JadeServer because ' , ex description.
+		MessageBox notify: 'Unable to use built-in JadeServer due to error:' , crlf , ex description.
 	].
 	[
 		| string |
@@ -1082,15 +1083,21 @@ withExplanation: aString do: aBlock
 withExplanation: aString doA: aBlock
 	"Here we manage the UI feedback"
 
-	| result haveResult shouldRunEventLoop dialog |
+	| crlf result haveResult shouldRunEventLoop dialog |
+	crlf := Character cr asString , Character lf asString.
 	haveResult := false.
-
 	"The next block does the actual work. It is forked to a separate process so we can monitor it from the main process and handle the delay feedback."
 	[
 		[
-			[
+			[[
 				result := self handlingClientForwarderSendDo: aBlock.
-			] on: GsInvalidSessionError do: [:ex | ex yourself].		"Ignore invalid session (logout!!)"
+			] on: GsInvalidSessionError do: [:ex | ex return: ex].	"Ignore invalid session (logout!!)"
+			] on: Error do: [:ex | 							"Close WaitOnGemStoneDialog"
+				result := ex.
+				haveResult := true.
+				shouldRunEventLoop := false.
+				ex pass.
+			].
 		] ensure: [
 			haveResult := true.
 			shouldRunEventLoop := false.
