@@ -16,6 +16,10 @@ package classNames
 	add: #JadeServerReadStream;
 	yourself.
 
+package methodNames
+	add: #String -> #nonEmptySubStrings:;
+	yourself.
+
 package binaryGlobalNames: (Set new
 	yourself).
 
@@ -66,6 +70,15 @@ ReadStream subclass: #JadeServerReadStream
 
 
 "Loose Methods"!
+
+!String methodsFor!
+
+nonEmptySubStrings: separatorOrSeparators
+	"Answer an array containing the substrings of the receiver separated by occurrences of the <Character> or <readableString> argument, separator.
+	Repeated separators produce empty strings in the array (cf. #subStrings). The separators are removed."
+
+	^(self subStrings: separatorOrSeparators) select: [:each | each notEmpty]! !
+!String categoriesFor: #nonEmptySubStrings:!copying!public! !
 
 "End of package definition"!
 
