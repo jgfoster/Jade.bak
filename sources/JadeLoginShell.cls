@@ -51,7 +51,6 @@ addLogin
 checkScintillaVersion
 
 	| expected actual |
-	ScintillaLibrary open: 'bin\SciLexer.dll'.
 	expected := ScintillaLibrary versionString.
 	actual := ScintillaLibrary versionInfo productVersionString.
 	expected = actual ifTrue: [^self].
