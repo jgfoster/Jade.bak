@@ -19,6 +19,7 @@ main
 "
 	JadeSessionManager basicNew main.
 "
+	ScintillaLibrary open: 'bin\SciLexer.dll'.		"Since this isn't adjacent to the executable, it needs a path to find it"
 	Keyboard default isShiftDown 
 		ifTrue: [self mainShellClass show: 'Compact view']
 		ifFalse: [self mainShellClass show].
@@ -55,11 +56,6 @@ mainShellClass
 	^JadeLoginShell.
 !
 
-sessionStarted
-
-	ScintillaLibrary open: 'bin\SciLexer.dll'.
-	GciLibrary sessionStarted.!
-
 setVersion
 
 	Version := self getVersion.!
@@ -72,7 +68,6 @@ version
 ! !
 !JadeSessionManager class categoriesFor: #getVersion!public! !
 !JadeSessionManager class categoriesFor: #mainShellClass!public! !
-!JadeSessionManager class categoriesFor: #sessionStarted!public! !
 !JadeSessionManager class categoriesFor: #setVersion!public! !
 !JadeSessionManager class categoriesFor: #version!public! !
 

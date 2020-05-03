@@ -389,6 +389,16 @@ onStartup2
 
 	default := nil.
 	ActiveLibrary := nil.
+	GciErrSType32 new.
+	GciErrSType64 new.
+	GciErrSType64_30 new.
+	GciErrSType64_31 new.
+	GciTsObjInfo new.
+	OopType32Array new.
+	OopType64Array new.
+	OopType32 new.
+	OopType64 new.
+
 !
 
 open: pathString
@@ -407,21 +417,6 @@ open: pathString
 	^result.
 !
 
-sessionStarted
-"
-	GciLibrary sessionStarted.
-"
-	GciErrSType32 new.
-	GciErrSType64 new.
-	GciErrSType64_30 new.
-	GciErrSType64_31 new.
-	GciTsObjInfo new.
-	OopType32Array new.
-	OopType64Array new.
-	OopType32 new.
-	OopType64 new.
-!
-
 withDisplayName: aString
 
 	^self allSubclasses detect: [:each | each displayName = aString].
@@ -433,6 +428,5 @@ withDisplayName: aString
 !GciLibrary class categoriesFor: #fileNameSearch!public! !
 !GciLibrary class categoriesFor: #onStartup2!public! !
 !GciLibrary class categoriesFor: #open:!public! !
-!GciLibrary class categoriesFor: #sessionStarted!public! !
 !GciLibrary class categoriesFor: #withDisplayName:!public! !
 
