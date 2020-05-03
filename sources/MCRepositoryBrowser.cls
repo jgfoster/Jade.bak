@@ -117,7 +117,7 @@ getLoadedVersionNames
 	| string list |
 	(string := gciSession serverPerform: #'mcLoadedVersionNames') isNil ifTrue: [^self].
 	loadedVersionNames := Dictionary new.
-	list := string subStrings: Character lf.
+	list := string nonEmptySubStrings: Character lf.
 	list := list collect: [:each | each subStrings: Character tab].
 	list do: [:each | 
 		| i name version |

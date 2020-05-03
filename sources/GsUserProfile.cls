@@ -53,7 +53,7 @@ groupList
 	string := gciSession
 		serverPerform: #'groupListFor:'
 		with: self.
-	list := string subStrings: Character lf.
+	list := string nonEmptySubStrings: Character lf.
 	list := list collect: [:each | each subStrings: Character tab].
 	list := list collect: [:each | Array with: self with: (each at: 1) with: ((each at: 2) = 'true')].
 	^list.
@@ -110,7 +110,7 @@ privilegeList
 	string := gciSession
 		serverPerform: #'privilegeListFor:'
 		with: self.
-	list := string subStrings: Character lf.
+	list := string nonEmptySubStrings: Character lf.
 	list := list collect: [:each | each subStrings: Character tab].
 	list := list collect: [:each | Array with: self with: (each at: 1) with: ((each at: 2) = 'true')].
 	^list.
@@ -128,7 +128,7 @@ symbolList
 		serverPerform: #'dictionaryListFor:'
 		with: self.
 	string := gciSession decode: string.
-	list := string subStrings: Character lf.
+	list := string nonEmptySubStrings: Character lf.
 	list := list collect: [:each | GsSymbolDictionary new initialize: each session: gciSession].
 	^list.
 ! !
@@ -153,7 +153,7 @@ allIn: aGciSession
 
 	| string list |
 	(string := aGciSession serverPerform: #'userList') isNil ifTrue: [^#()].
-	list := string subStrings: Character lf.
+	list := string nonEmptySubStrings: Character lf.
 	list := list collect: [:each | self new initialize: each session: aGciSession].
 	^list.
 ! !

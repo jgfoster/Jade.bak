@@ -192,7 +192,7 @@ findClassList
 		serverPerform: #'systemBrowser:' 
 		with: (self gciSession encode: '0 findClass').
 	string := self gciSession decode: string.
-	list := (string subStrings: Character lf) collect: [:each | each subStrings: Character tab].
+	list := (string nonEmptySubStrings: Character lf) collect: [:each | each subStrings: Character tab].
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
 	list := list collect: [:each | (each at: 1) -> each].
