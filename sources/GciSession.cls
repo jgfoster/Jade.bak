@@ -378,7 +378,7 @@ debugPath: debugPath
 	isNativeCode := true.
 	isShowUnimplementedMessages := true.
 	eventCount := 0.
-	stoneNRS := stoneString.
+	stoneNRS := String withAll: stoneString.
 	gemNRS := gemString.
 	userID := gsUserID.
 	list := stoneNRS subStrings: $!!.
