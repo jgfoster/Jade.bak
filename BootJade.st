@@ -87,6 +87,7 @@ JadeLoginShell show
 	position: 50@20;
 	yourself.
 Cursor wait showWhile: [
+	Object recompileAll. "https://github.com/dolphinsmalltalk/Dolphin/issues/852#issuecomment-623143858"
 	Transcript flush.	"don't clear Transcript; we want to see any errors"
 	SourceManager default compressSources.
 	(Delay forMilliseconds: 200) wait.

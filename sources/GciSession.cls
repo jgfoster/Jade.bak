@@ -1083,8 +1083,7 @@ withExplanation: aString do: aBlock
 withExplanation: aString doA: aBlock
 	"Here we manage the UI feedback"
 
-	| crlf result haveResult shouldRunEventLoop dialog |
-	crlf := Character cr asString , Character lf asString.
+	| result haveResult shouldRunEventLoop dialog |
 	haveResult := false.
 	"The next block does the actual work. It is forked to a separate process so we can monitor it from the main process and handle the delay feedback."
 	[
@@ -1127,7 +1126,7 @@ withExplanation: aString doA: aBlock
 			].
 			proc terminate.
 			haveResult ifTrue: [
-				(result isKindOf: Error) ifTrue: [self error: result description].
+				((result isKindOf: Error) and: [(result isKindOf: GciError) not and: [(result isKindOf: GsError) not]]) ifTrue: [self error: result description].
 				^result
 			].
 			isHandlingClientForwarderSend.
