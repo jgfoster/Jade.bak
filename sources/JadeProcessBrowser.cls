@@ -113,8 +113,8 @@ update
 	| string lines priorities |
 	string := gciSession serverPerform: #'processes'.
 	string ifNil: [^self].
-	lines := (string subStrings: Character lf) asOrderedCollection.
-	priorities := lines removeFirst subStrings: Character tab.
+	lines := (string nonEmptySubStrings: Character lf) asOrderedCollection.
+	priorities := lines removeFirst nonEmptySubStrings: Character tab.
 	priorities := priorities collect: [:each | | pieces | pieces := each subStrings: Character space. pieces first -> pieces last asNumber].
 	priorities := priorities asSortedCollection: [:a :b | a value > b value].
 	prioritiesPresenter model list: priorities.
