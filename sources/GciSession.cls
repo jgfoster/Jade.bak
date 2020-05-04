@@ -20,7 +20,8 @@ GciSoftBreak'!
 !GciSession methodsFor!
 
 _executeString: aString fromContextOop: anOopType environment: anInteger
-	^library 
+
+	^library 
 		session: gciSessionId
 		execute: aString
 		context: anOopType
@@ -125,7 +126,8 @@ clientForwardError: gciErrSType
 		isHandlingClientForwarderSend := true.
 		receiver := self valueOfOop: (gciErrSType args at: 2).
 		selector := self valueOfOop: (gciErrSType args at: 3).
-		args := self valueOfArrayOop: (gciErrSType args at: 4).		(receiver isNil or: [self clientForwarders size < receiver]) ifTrue: [^library oopNil].
+		args := self valueOfArrayOop: (gciErrSType args at: 4).
+		(receiver isNil or: [self clientForwarders size < receiver]) ifTrue: [^library oopNil].
 		receiver := self clientForwarders at: receiver.
 		SessionManager inputState pumpMessages.	"This seems to be necessary to allow #withExplanation:doA: to properly keep in synch."
 		^receiver
@@ -451,6 +453,8 @@ initializeServer
 	1 ~~ 1 ifTrue: [		"messasges that are sent by a ClientForwarderSend should not be stripped"
 		self 
 			signalConfirmationRequestUsing: nil;
+			signalInformRequestUsing: nil;
+			signalMultiLineTextRequestUsing: nil;
 			signalTextRequestUsing: nil;
 			message: 'messageString' caption: 'captionString' icon: 'alertSymbol' buttons: 'buttonsSymbol';
 			prompt: 'promptString' caption: 'captionString';
@@ -866,7 +870,8 @@ signalInformRequestUsing: anOopType64
 	MessageBox
 		notify: string 
 		caption: 'Server Inform Request'.
-	^library oopNil!
+	^library oopNil
+!
 
 signalMultiLineTextRequestUsing: anOopType64 
 
@@ -1095,6 +1100,7 @@ withExplanation: aString doA: aBlock
 				result := ex.
 				haveResult := true.
 				shouldRunEventLoop := false.
+				SessionManager inputState prod.
 				ex pass.
 			].
 		] ensure: [
@@ -1150,7 +1156,7 @@ withExplanation: aString doA: aBlock
 		SessionManager inputState pumpMessages.
 		haveResult.	"Dialog may have been closed by a ClientForwarderSend"
 	] whileFalse.
-	(result isKindOf: Error) ifTrue: [self error: result description].
+	((result isKindOf: Error) and: [(result isKindOf: GciError) not and: [(result isKindOf: GsError) not]]) ifTrue: [self error: result description].
 	^result.
 ! !
 !GciSession categoriesFor: #_executeString:fromContextOop:environment:!private! !
