@@ -246,8 +246,13 @@ loadData
 
 	| data |
 	[
-		| fileStream |
-		fileStream := FileStream read: self dataPath type: #'binary'.
+		| path tempPath fileStream |
+		path := self dataPath.
+		tempPath := self tempDataPath.
+		((File exists: path) not and: [File exists: tempPath]) ifTrue: [
+			File rename: tempPath to: path.
+		].
+		fileStream := FileStream read: path type: #'binary'.
 		data := Object binaryReadFrom: fileStream.
 		fileStream close.
 	] on: Error do: [:ex | 
@@ -435,13 +440,18 @@ saveData
 		add: JadePreferencesPresenter codeFont;
 		yourself.
 	[
+		| path tempPath |
+		path := self dataPath.
+		tempPath := self tempDataPath.
 		fileStream := FileStream 
-			write: self dataPath 
+			write: tempPath
 			mode: #'truncate' 
 			check: false 
 			type: #'binary'.
 		data binaryStoreOn: fileStream.
 		fileStream close.
+		(File exists: path) ifTrue: [File delete: path].
+		File rename: tempPath to: path.
 	] on: Error do: [:ex | 
 		MessageBox warning: ex description.
 		fileStream ifNotNil: [fileStream close].
@@ -483,6 +493,11 @@ showStoneNRS
 		on: (model generateStoneNRS; stoneNRS)
 		prompt: 'Stone NRS'
 		caption: 'Jade Login Info'.!
+
+tempDataPath
+
+	^self dataPath , '.new'
+!
 
 updateModel
 
@@ -542,7 +557,7 @@ updateView
 !JadeLoginShell categoriesFor: #copyXML!commands!public! !
 !JadeLoginShell categoriesFor: #createComponents!public! !
 !JadeLoginShell categoriesFor: #createSchematicWiring!public! !
-!JadeLoginShell categoriesFor: #dataPath!public! !
+!JadeLoginShell categoriesFor: #dataPath!public!user data! !
 !JadeLoginShell categoriesFor: #debugGCI!commands!public! !
 !JadeLoginShell categoriesFor: #editCopy!public! !
 !JadeLoginShell categoriesFor: #editCut!public! !
@@ -555,7 +570,7 @@ updateView
 !JadeLoginShell categoriesFor: #fillVersionList!public! !
 !JadeLoginShell categoriesFor: #initialize!public! !
 !JadeLoginShell categoriesFor: #isVersion:lessThanOrEqualTo:!public! !
-!JadeLoginShell categoriesFor: #loadData!public! !
+!JadeLoginShell categoriesFor: #loadData!public!user data! !
 !JadeLoginShell categoriesFor: #login!public! !
 !JadeLoginShell categoriesFor: #logout:!public! !
 !JadeLoginShell categoriesFor: #modified!public! !
@@ -570,12 +585,13 @@ updateView
 !JadeLoginShell categoriesFor: #predefinedLogin!commands!public! !
 !JadeLoginShell categoriesFor: #queryCommand:!public! !
 !JadeLoginShell categoriesFor: #removeLogin!commands!public! !
-!JadeLoginShell categoriesFor: #saveData!public! !
+!JadeLoginShell categoriesFor: #saveData!public!user data! !
 !JadeLoginShell categoriesFor: #selectionChanged!public! !
 !JadeLoginShell categoriesFor: #sendRequiredMessages!public! !
 !JadeLoginShell categoriesFor: #setWorkingDirectory!public! !
 !JadeLoginShell categoriesFor: #showGemNRS!commands!public! !
 !JadeLoginShell categoriesFor: #showStoneNRS!commands!public! !
+!JadeLoginShell categoriesFor: #tempDataPath!public!user data! !
 !JadeLoginShell categoriesFor: #updateModel!public! !
 !JadeLoginShell categoriesFor: #updateView!public! !
 
