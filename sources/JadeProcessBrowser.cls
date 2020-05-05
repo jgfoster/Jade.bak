@@ -109,18 +109,20 @@ terminate9
 !
 
 update
-
 	| string lines priorities |
-	string := gciSession serverPerform: #'processes'.
+	string := gciSession serverPerform: #processes.
 	string ifNil: [^self].
-	lines := (string nonEmptySubStrings: Character lf) asOrderedCollection.
-	priorities := lines removeFirst nonEmptySubStrings: Character tab.
-	priorities := priorities collect: [:each | | pieces | pieces := each subStrings: Character space. pieces first -> pieces last asNumber].
+	lines := (string subStringsTrimmingTrailingEmptyElement: Character lf) asOrderedCollection.
+	priorities := lines removeFirst subStringsTrimmingTrailingEmptyElement: Character tab.
+	priorities := priorities collect: 
+					[:each |
+					| pieces |
+					pieces := each subStrings: Character space.
+					pieces first -> pieces last asNumber].
 	priorities := priorities asSortedCollection: [:a :b | a value > b value].
 	prioritiesPresenter model list: priorities.
 	lines := lines collect: [:each | (each subStrings: Character tab) , #('?' '?')].
-	processesPresenter model list: lines.
-! !
+	processesPresenter model list: lines! !
 !JadeProcessBrowser categoriesFor: #createComponents!private! !
 !JadeProcessBrowser categoriesFor: #createSchematicWiring!private! !
 !JadeProcessBrowser categoriesFor: #debugProcess!private! !
