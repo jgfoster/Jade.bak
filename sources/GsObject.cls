@@ -135,12 +135,10 @@ fromXML: xmlElement session: gciSession
 !
 
 listFromString: aString session: aGciSession
-
 	| list |
-	list := aString nonEmptySubStrings: Character lf.
-	list := list collect: [:each | self fromString: each session:  aGciSession].
-	^list.
-!
+	list := aString subStringsTrimmingTrailingEmptyElement: Character lf.
+	list := list collect: [:each | self fromString: each session: aGciSession].
+	^list!
 
 xmlBaseName
 

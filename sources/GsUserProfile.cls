@@ -48,16 +48,17 @@ editPrivilege: anArray value: aBoolean
 !
 
 groupList
-
 	| string list |
-	string := gciSession
-		serverPerform: #'groupListFor:'
-		with: self.
-	list := string nonEmptySubStrings: Character lf.
+	string := gciSession serverPerform: #groupListFor: with: self.
+	list := string subStringsTrimmingTrailingEmptyElement: Character lf.
 	list := list collect: [:each | each subStrings: Character tab].
-	list := list collect: [:each | Array with: self with: (each at: 1) with: ((each at: 2) = 'true')].
-	^list.
-!
+	list := list collect: 
+					[:each |
+					Array
+						with: self
+						with: (each at: 1)
+						with: (each at: 2) = 'true'].
+	^list!
 
 initialize: aList
 
@@ -105,16 +106,17 @@ maxSessions
 !
 
 privilegeList
-
 	| string list |
-	string := gciSession
-		serverPerform: #'privilegeListFor:'
-		with: self.
-	list := string nonEmptySubStrings: Character lf.
+	string := gciSession serverPerform: #privilegeListFor: with: self.
+	list := string subStringsTrimmingTrailingEmptyElement: Character lf.
 	list := list collect: [:each | each subStrings: Character tab].
-	list := list collect: [:each | Array with: self with: (each at: 1) with: ((each at: 2) = 'true')].
-	^list.
-!
+	list := list collect: 
+					[:each |
+					Array
+						with: self
+						with: (each at: 1)
+						with: (each at: 2) = 'true'].
+	^list!
 
 remainingLogins
 
@@ -122,16 +124,12 @@ remainingLogins
 !
 
 symbolList
-
 	| string list |
-	string := gciSession
-		serverPerform: #'dictionaryListFor:'
-		with: self.
+	string := gciSession serverPerform: #dictionaryListFor: with: self.
 	string := gciSession decode: string.
-	list := string nonEmptySubStrings: Character lf.
+	list := string subStringsTrimmingTrailingEmptyElement: Character lf.
 	list := list collect: [:each | GsSymbolDictionary new initialize: each session: gciSession].
-	^list.
-! !
+	^list! !
 !GsUserProfile categoriesFor: #disabledReason!public! !
 !GsUserProfile categoriesFor: #editGroup:value:!public! !
 !GsUserProfile categoriesFor: #editPrivilege:value:!public! !
@@ -150,12 +148,10 @@ symbolList
 !GsUserProfile class methodsFor!
 
 allIn: aGciSession
-
 	| string list |
-	(string := aGciSession serverPerform: #'userList') isNil ifTrue: [^#()].
-	list := string nonEmptySubStrings: Character lf.
+	(string := aGciSession serverPerform: #userList) isNil ifTrue: [^#()].
+	list := string subStringsTrimmingTrailingEmptyElement: Character lf.
 	list := list collect: [:each | self new initialize: each session: aGciSession].
-	^list.
-! !
+	^list! !
 !GsUserProfile class categoriesFor: #allIn:!public! !
 

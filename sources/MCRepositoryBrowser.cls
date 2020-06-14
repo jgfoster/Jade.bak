@@ -113,27 +113,19 @@ fileTypes
 !
 
 getLoadedVersionNames
-
 	| string list |
-	(string := gciSession serverPerform: #'mcLoadedVersionNames') isNil ifTrue: [^self].
+	(string := gciSession serverPerform: #mcLoadedVersionNames) isNil ifTrue: [^self].
 	loadedVersionNames := Dictionary new.
-	list := string nonEmptySubStrings: Character lf.
+	list := string subStringsTrimmingTrailingEmptyElement: Character lf.
 	list := list collect: [:each | each subStrings: Character tab].
-	list do: [:each | 
-		| i name version |
-		string := each at: 1.
-		i := string findLast: [:char | char = $-].
-		name := i = 0 
-			ifTrue: [string]
-			ifFalse: [string copyFrom: 1 to: i - 1].
-		version := i = 0
-			ifTrue: ['']
-			ifFalse: [string copyFrom: i + 1 to: string size].
-		loadedVersionNames
-			at: name
-			put: version -> ((each at: 2) = 'Y').
-	].
-!
+	list do: 
+			[:each |
+			| i name version |
+			string := each at: 1.
+			i := string findLast: [:char | char = $-].
+			name := i = 0 ifTrue: [string] ifFalse: [string copyFrom: 1 to: i - 1].
+			version := i = 0 ifTrue: [''] ifFalse: [string copyFrom: i + 1 to: string size].
+			loadedVersionNames at: name put: version -> ((each at: 2) = 'Y')]!
 
 loadVersion
 

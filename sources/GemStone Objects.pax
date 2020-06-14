@@ -17,7 +17,7 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #String -> #nonEmptySubStrings:;
+	add: #String -> #subStringsTrimmingTrailingEmptyElement:;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -73,12 +73,19 @@ ReadStream subclass: #JadeServerReadStream
 
 !String methodsFor!
 
-nonEmptySubStrings: separatorOrSeparators
+subStringsTrimmingTrailingEmptyElement: separatorOrSeparators
 	"Answer an array containing the substrings of the receiver separated by occurrences of the <Character> or <readableString> argument, separator.
-	Repeated separators produce empty strings in the array (cf. #subStrings). The separators are removed."
+	Repeated separators produce empty strings in the array (cf. #subStrings). The separators are removed.
+	If the last element is empty then is removed"
+	| nonLastEmptyElementArray |
 
-	^(self subStrings: separatorOrSeparators) select: [:each | each notEmpty]! !
-!String categoriesFor: #nonEmptySubStrings:!copying!public! !
+	nonLastEmptyElementArray := self subStrings: separatorOrSeparators.
+	nonLastEmptyElementArray isEmpty ifTrue: [^nonLastEmptyElementArray].
+
+	nonLastEmptyElementArray last isEmpty ifTrue: [^nonLastEmptyElementArray allButLast].
+
+	^nonLastEmptyElementArray! !
+!String categoriesFor: #subStringsTrimmingTrailingEmptyElement:!copying!public! !
 
 "End of package definition"!
 
