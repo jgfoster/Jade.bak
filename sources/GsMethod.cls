@@ -81,7 +81,7 @@ initialize: readStream session: aGciSession
 	"breaks"
 	breakPoints := readStream nextLineAsList collect: [:each | each asNumber].
 	"add stop range to step points"
-	gciSession _library jadeServerClass addRangeStopTo: stepPoints withSource: source.
+	gciSession serverClass addRangeStopTo: stepPoints withSource: source.
 	originalSource := readStream nextParagraph.
 	warnings := readStream nextParagraph.
 !

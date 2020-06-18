@@ -81,7 +81,7 @@ fileOutJadeServer
 		caption: 'File Out JadeServer';
 		fileTypes: self fileTypes;
 		defaultExtension: self defaultFileExtension;
-		value: gciSession _library jadeServerClass name , '-' , version , '.gs';
+		value: gciSession serverClass name , '-' , version , '.gs';
 		overwritePrompt;
 		showModal.
 	path isNil ifTrue: [^self].

@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask server semaphore stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask server serverClass semaphore stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: 'debugLog'!
@@ -26,11 +26,6 @@ _executeString: aString fromContextOop: anOopType environment: anInteger
 		execute: aString
 		context: anOopType
 		environment: anInteger
-!
-
-_library
-
-	^library.
 !
 
 _send: aSymbol to: anObject withAll: anArray
@@ -415,7 +410,7 @@ initializeServer
 	crlf := Character cr asString , Character lf asString.
 	library ifNil: [^self].
 	[
-		jadeServerClassOop := library session: gciSessionId resolveSymbol: library jadeServerClass name.
+		jadeServerClassOop := library session: gciSessionId resolveSymbol: serverClass name.
 		jadeServerClassOop isOopIllegal ifFalse: [
 			| version |
 			server := self send: #'new' to: jadeServerClassOop.
@@ -429,7 +424,7 @@ initializeServer
 	].
 	[
 		| string |
-		string := library encode: library jadeServerClass gsString.
+		string := library encode: serverClass gsString.
 		server := self executeString: string.
 	] on: GsRuntimeError do: [:ex | 
 		| number notes |
@@ -547,6 +542,7 @@ loadLibrary: aClass debugPath: debugPath
 	others := others asSet reject: [:each | each = aClass displayName].
 	others isEmpty ifFalse: [self error: 'Unable to login to another version!!'].
 	library := aClass open: aClass fileName.
+	serverClass := library jadeServerClass.
 	debugPath notEmpty ifTrue: [
 		(self debugToFilePath: debugPath) ifFalse: [self error: 'Unable to open ' , debugPath printString , ' for GCI debugging'].
 		library gciGemTrace: 3.
@@ -743,6 +739,11 @@ serverArrayFor: anArray
 		array at: i put: (self oopTypeFor: (anArray at: i)).
 	].
 	^array.
+!
+
+serverClass
+
+	^serverClass
 !
 
 serverPerform: aSymbol
@@ -1159,7 +1160,6 @@ withExplanation: aString doA: aBlock
 	^result.
 ! !
 !GciSession categoriesFor: #_executeString:fromContextOop:environment:!private! !
-!GciSession categoriesFor: #_library!accessing!private! !
 !GciSession categoriesFor: #_send:to:withAll:!private! !
 !GciSession categoriesFor: #_server!private! !
 !GciSession categoriesFor: #abort!Jade convenience!public! !
@@ -1229,6 +1229,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #send:to:withAll:!Jade convenience!long running!public! !
 !GciSession categoriesFor: #sendInterpreted:to:withAll:!Jade convenience!long running!public! !
 !GciSession categoriesFor: #serverArrayFor:!Jade convenience!public! !
+!GciSession categoriesFor: #serverClass!accessing!public! !
 !GciSession categoriesFor: #serverPerform:!Jade convenience!public! !
 !GciSession categoriesFor: #serverPerform:with:!Jade convenience!public! !
 !GciSession categoriesFor: #serverPerform:with:with:!Jade convenience!public! !
