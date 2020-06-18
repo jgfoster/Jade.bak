@@ -307,7 +307,7 @@ modified
 
 onCloseRequested
 
-	GciSession log: 'JadeLoginShell>>onCloseRequested at ' , DateAndTime now printString.
+	JadeLog log: 'JadeLoginShell>>onCloseRequested at ' , DateAndTime now printString.
 	^super onCloseRequested!
 
 onViewOpened

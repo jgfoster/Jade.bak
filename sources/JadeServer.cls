@@ -763,7 +763,8 @@ addGsStringForClass: aClass to: aStream
 !
 
 addRangeStopTo: stepPoints withSource: source
- 1 to: stepPoints size do: [:stepPoint |
+
+	1 to: stepPoints size do: [:stepPoint |
 		| range start char length |
 		range := (stepPoints at: stepPoint) key.
 		start := range start.

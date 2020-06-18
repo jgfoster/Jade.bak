@@ -4,7 +4,7 @@ Object subclass: #GciSession
 	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask server serverClass semaphore stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: ''
 	poolDictionaries: ''
-	classInstanceVariableNames: 'debugLog'!
+	classInstanceVariableNames: ''!
 GciSession guid: (GUID fromString: '{c52a3e3c-b7f3-4c3c-ab3d-a925ecb8b114}')!
 GciSession comment: 'Permitted calls from within a non-blocking call:
 
@@ -160,11 +160,13 @@ debugToFilePath: aString
 !
 
 decode: aString
+	"asAnsiString before 3.3.0; asUtf8String from 3.3.0 on."
 
 	library ifNil: [GsInvalidSessionError signal].
 	^library decode: aString!
 
 encode: aString
+	"asAnsiString before 3.3.0; asUtf8String from 3.3.0 on."
 
 	library ifNil: [^GsInvalidSessionError signal].
 	^library encode: aString!
@@ -591,7 +593,7 @@ oopForString: aString
 	oop := library session: gciSessionId oopForString: aString.
 	log := 'Allocated oop ' , oop printString , ' for ' , (aString copyFrom: 1 to: (aString size min: 40)) printString.
 	log := log copyReplacing: Character lf withObject: $\.
-	GciSession log: log.
+	JadeLog log: log.
 	^oop!
 
 oopGemStoneError
@@ -1075,7 +1077,7 @@ withExplanation: aString do: aBlock
 	(result isKindOf: GsError) ifFalse: [^result].
 
 	error := result.
-	GciSession log: error description.
+	JadeLog log: error description.
 	result := error signal.
 	result = #'resume' ifFalse: [self error: 'Unrecognized response of ' , result printString].
 	^self
@@ -1266,22 +1268,6 @@ withExplanation: aString doA: aBlock
 
 !GciSession class methodsFor!
 
-debug: aBoolean
-
-	debugLog notNil == aBoolean ifTrue: [^self].
-	aBoolean ifTrue: [
-		debugLog := FileStream write: 'Jade.log' mode: #append.
-		self log: 'Enabled at ' , DateAndTime now printString.
-	] ifFalse: [
-		self log: 'Disabled at ' , DateAndTime now printString.
-		debugLog close. 
-		debugLog := nil.
-	].!
-
-debugFlag
-
-	^debugLog notNil!
-
 libraryClass: libraryClass 
 stoneNRS: stoneNRS 
 gemNRS: gemNRS 
@@ -1305,11 +1291,6 @@ debugPath: debugPath
 
 !
 
-log: aString
-
-	debugLog ifNotNil: [debugLog nextPutAll: Processor activeProcess id printString , ':' , Time millisecondClockValue printString , ':' , aString; cr; flush].
-!
-
 new
 
 	self error: 'use other instance creation protocol'.
@@ -1326,10 +1307,7 @@ publishedEventsOfInstances
     		yourself.
     
 ! !
-!GciSession class categoriesFor: #debug:!public! !
-!GciSession class categoriesFor: #debugFlag!public! !
 !GciSession class categoriesFor: #libraryClass:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:debugPath:!public! !
-!GciSession class categoriesFor: #log:!public! !
 !GciSession class categoriesFor: #new!public! !
 !GciSession class categoriesFor: #publishedEventsOfInstances!public! !
 

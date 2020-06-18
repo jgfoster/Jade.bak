@@ -35,7 +35,7 @@ addSystemBrowserForClass: anArray
 
 addSystemBrowserWithLayoutInfo: each
 
-	GciSession log: 'JadeSystemBrowserPresenter>>addSystemBrowserWithLayoutInfo:'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>addSystemBrowserWithLayoutInfo:'.
 	(JadeAutoSystemBrowserPresenter
 		createIn: cardsPresenter 
 		gciSession: gciSession)
@@ -251,7 +251,7 @@ saveLayoutAndContents
 
 selectClass: classString selector: methodString
 
-	GciSession log: 'JadeSystemBrowser>>selectClass - ' , classString , ' selector: ' , methodString.
+	JadeLog log: 'JadeSystemBrowser>>selectClass - ' , classString , ' selector: ' , methodString.
 	self currentCard
 		selectClass: classString 
 		selector: methodString.

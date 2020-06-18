@@ -59,7 +59,7 @@ addMethodCategory
 		nextPutAll: instanceClassTabs currentCard name; tab;
 		nextPutAll: string; tab; lf;
 		yourself.
-	GciSession log: 'JadeSystemBrowserPresenter>>addMethodCategory'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>addMethodCategory'.
 	self 
 		updateCommand: stream contents , self requestString
 		onSuccessDo: [methodSourcePresenter ensureVisible].
@@ -100,7 +100,7 @@ addMissingAccessors
 
 	| string |
 	string := 'addMissingAccessors' , Character tab asString , self behaviorIdentifier , Character lf asString , self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>addMissingAccessors'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>addMissingAccessors'.
 	self updateCommand: string.
 !
 
@@ -113,7 +113,7 @@ addPackage
 		nextPutAll: 'addPackage'; tab;
 		nextPutAll: string; tab;
 		lf.
-	GciSession log: 'JadeSystemBrowserPresenter>>addPackage'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>addPackage'.
 	self updateCommand: stream contents , self requestString.
 !
 
@@ -147,7 +147,7 @@ addRepository
 		yourself.
 	packageListPresenter selections do: [:each | stream tab; nextPutAll: each key].
 	stream lf.
-	GciSession log: 'JadeSystemBrowserPresenter>>addRepository'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>addRepository'.
 	self updateCommand: stream contents , self requestString.
 !
 
@@ -204,7 +204,7 @@ breakAt: anInteger operation: aString
 		nextPutAll: anInteger printString; tab;
 		nextPutAll: aString; tab;
 		lf.
-	GciSession log: 'JadeSystemBrowserPresenter>>breakAt: ' , anInteger printString , ' operation: ' , aString printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>breakAt: ' , anInteger printString , ' operation: ' , aString printString.
 	self updateCommand: stream contents , self requestString.
 !
 
@@ -212,7 +212,7 @@ browseClassReferences
 
 	| string |
 	string := 'browseClassReferences' , Character tab asString , self behaviorIdentifier , Character lf asString.
-	GciSession log: 'JadeSystemBrowserPresenter>>browseClassReferences'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>browseClassReferences'.
 	(string := self updateCommand: string) = 'browseClassReferences' ifFalse: [self error: 'Unrecognized response'].
 	self browseMethodsAndSelect: selectedClassName.!
 
@@ -220,7 +220,7 @@ browseGlobalReferences
 
 	| string |
 	string := 'browseGlobalReferences' , Character tab asString , (globalsPresenter selection at: 5) , Character lf asString.
-	GciSession log: 'JadeSystemBrowserPresenter>>browseGlobalReferences'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>browseGlobalReferences'.
 	(string := self updateCommand: string) = 'browseGlobalReferences' ifFalse: [self error: 'unrecognized response'].
 	self browseMethodsAndSelect: (globalsPresenter selection at: 1).
 !
@@ -262,7 +262,7 @@ browseImplementorsOf: aString
 
 	| string |
 	string := 'browseImplementors' , Character tab asString , aString , Character lf asString.
-	GciSession log: 'JadeSystemBrowserPresenter>>browseImplementorsOf: ' , aString printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>browseImplementorsOf: ' , aString printString.
 	(self updateCommand: string) = 'browseImplementors' ifFalse: [self error: 'unexpected response'].
 	self browseMethodsAndSelect: aString type: #definitions.
 !
@@ -271,7 +271,7 @@ browseMethodHistory
 
 	| string |
 	string := 'browseMethodHistory' , Character tab asString , self methodsIdentifier , Character lf asString.
-	GciSession log: 'JadeSystemBrowserPresenter>>browseMethodHistory'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>browseMethodHistory'.
 	(self updateCommand: string) = 'browseMethodHistory' ifFalse: [self error: 'unexpected response'].
 	readStream atEnd ifTrue: [
 		MessageBox notify: 'No history available!!'.
@@ -285,7 +285,7 @@ browseMethodHistory
 browseMethodPragmas
 
 	| commandString keyword keywords responseString |
-	GciSession log: 'JadeSystemBrowserPresenter>>browseMethodPragmas'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>browseMethodPragmas'.
 	responseString:= self updateCommand: 'listMethodPragmas'.
 	keywords := responseString subStrings: Character tab.
 	(keyword := ChoicePrompter choices: keywords) ifNil: [^self].
@@ -314,7 +314,7 @@ browseMethodsContaining
 	| searchString commandString |
 	(searchString := Prompter prompt: 'Enter string:') isNil ifTrue: [^self].
 	commandString := 'browseMethodsContaining' , Character tab asString , searchString , Character lf asString.
-	GciSession log: 'JadeSystemBrowserPresenter>>browseMethodsContaining - ' , searchString printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>browseMethodsContaining - ' , searchString printString.
 	(self updateCommand: commandString) = 'browseMethodsContaining' ifFalse: [self error: 'unexpected response'].
 	self browseMethodsAndSelect: searchString.
 !
@@ -347,7 +347,7 @@ browseSendersOf: aString
 
 	| string |
 	string := 'browseSenders' , Character tab asString , aString , Character lf asString.
-	GciSession log: 'JadeSystemBrowserPresenter>>browseSendersOf: ' , aString printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>browseSendersOf: ' , aString printString.
 	(self updateCommand: string) = 'browseSenders' ifFalse: [self error: 'unexpected response'].
 	self browseMethodsAndSelect: aString type: #references.
 !
@@ -475,7 +475,7 @@ compareAncestor
 		nextPutAll: (ancestorListPresenter selections first at: 2); tab;
 		nextPutAll: (repository at: 2); tab;
 		lf.
-	GciSession log: 'JadeSystemBrowserPresenter>>compareAncestor'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>compareAncestor'.
 	(self updateCommand: stream contents) = 'comparePackages' ifFalse: [self error: 'Unexpected response!!'].
 	patch := MCPatch
 		fromString: readStream upToEnd
@@ -876,7 +876,7 @@ editSaveClass
 		nextPutAll: string; lf;
 		yourself.
 	flag := false.
-	GciSession log: 'JadeSystemBrowserPresenter>>editSaveClass'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>editSaveClass'.
 	[
 		self 
 			updateCommand: stream contents , self requestString
@@ -913,7 +913,7 @@ editSaveClassA
 	(dict at: #recompileSubclasses) printOn: stream. 			stream tab.
 	(dict at: #migrateInstances) printOn: stream. 				stream tab.
 	(dict at: #removeFromClassHistory) printOn: stream. 	stream lf.
-	GciSession log: 'JadeSystemBrowserPresenter>>editSaveClassA'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>editSaveClassA'.
 	(answer := self updateCommand: stream contents , self requestString) isNil ifTrue: [^self].
 	[
 		answer = 'compileError'.
@@ -938,7 +938,7 @@ editSaveClassComment
 		nextPutAll: classCommentPresenter value trimBlanks; lf;
 		nextPut: $%; lf;
 		yourself.
-	GciSession log: 'JadeSystemBrowserPresenter>>editSaveClassComment'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>editSaveClassComment'.
 	self 
 		updateCommand: stream contents , self requestString
 		onSuccessDo: [classCommentPresenter view isModified: false].
@@ -963,7 +963,7 @@ editSaveMethod
 		nextPutAll: self currentMethodSource;
 		nextPut: $%; lf;
 		yourself.
-	GciSession log: 'JadeSystemBrowserPresenter>>editSaveMethod'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>editSaveMethod'.
 	[
 		self 
 			updateCommand: stream contents , self requestString
@@ -1313,7 +1313,7 @@ insertDictionary
 		lf;
 		nextPutAll: self requestString;
 		yourself.
-	GciSession log: 'JadeSystemBrowserPresenter>>insertDictionary'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>insertDictionary'.
 	self updateCommand: stream contents.
 !
 
@@ -1498,7 +1498,7 @@ jumpToHistoryIndex: anInteger
 	historyIndex := anInteger.
 	historyEntry := historyList at: anInteger.
 	commandString := historyEntry at: 3.
-	GciSession log: 'JadeSystemBrowserPresenter>>jumpToHistoryIndex: ' , anInteger printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>jumpToHistoryIndex: ' , anInteger printString.
 	self 
 		updateCommand: commandString;
 		updateMenuBar;
@@ -1517,7 +1517,7 @@ labelOfClass: oldName changedTo: newName
 		lf; nextPutAll: self requestString;
 		yourself.
 	self selectedClassName: newName.
-	GciSession log: 'JadeSystemBrowserPresenter>>labelOfClass: ' , oldName printString , ' changedTo: ' , newName printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>labelOfClass: ' , oldName printString , ' changedTo: ' , newName printString.
 	self updateCommand: stream contents.
 !
 
@@ -1531,7 +1531,7 @@ labelOfClass: oldName editedTo: newName accept: aValueHolder
 		nextPutAll: selectedClassOop printString; tab;
 		nextPutAll: newName; tab; lf;
 		yourself.
-	GciSession log: 'JadeSystemBrowserPresenter>>labelOfClass: ' , oldName printString , ' editedTo: ' , newName printString , ' accept: ' , aValueHolder printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>labelOfClass: ' , oldName printString , ' editedTo: ' , newName printString , ' accept: ' , aValueHolder printString.
 	(string := self updateCommand: stream contents) notEmpty ifTrue: [
 		MessageBox warning: string.
 	] ifFalse: [
@@ -1552,7 +1552,7 @@ layoutInfo: anArray
 
 	environment := (anArray size < 3) ifTrue: [0] ifFalse: [anArray at: 3].
 	view ensureVisible.
-	GciSession log: 'JadeSystemBrowserPresenter>>layoutInfo:'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>layoutInfo:'.
 	anArray isNil ifTrue: [
 		self updateAndSelect: nil.
 		^self.
@@ -1577,7 +1577,7 @@ loadLatestVersion
 	stream nextPutAll: 'loadLatestVersion'.
 	packageListPresenter selections do: [:each | stream tab; nextPutAll: each key].
 	stream lf; nextPutAll: self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>loadLatestVersion'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>loadLatestVersion'.
 	self updateCommand: stream contents.
 !
 
@@ -1917,7 +1917,7 @@ onDropClassesOnDictionary: aSession
 	stream lf.
 	classNames do: [:each | stream nextPutAll: each; tab].
 	stream lf; nextPutAll: self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>onDropClassesOnDictionary:'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>onDropClassesOnDictionary:'.
 	self updateCommand: stream contents.
 !
 
@@ -1957,7 +1957,7 @@ onDropMethodsOnClass: aString session: aSession
 		yourself.
 	selectors do: [:each | stream tab; nextPutAll: each].
 	stream lf; nextPutAll: self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>onDropMethodsOnClass: ' , aString printString , ' session: ' , aSession printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>onDropMethodsOnClass: ' , aString printString , ' session: ' , aSession printString.
 	self updateCommand: stream contents.
 !
 
@@ -1984,7 +1984,7 @@ onDropOnClassCategory: aSession
 	stream tab.
 	classNames do: [:each | stream nextPutAll: each; space].
 	stream lf; nextPutAll: self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>onDropOnClassCategory:'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>onDropOnClassCategory:'.
 	self updateCommand: stream contents.
 !
 
@@ -2020,7 +2020,7 @@ onDropOnMethodCategory: aSession
 		yourself.
 	selectors do: [:each | stream tab; nextPutAll: each].
 	stream lf; nextPutAll: self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>onDropOnMethodCategory:'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>onDropOnMethodCategory:'.
 	self updateCommand: stream contents.
 !
 
@@ -2045,7 +2045,7 @@ onSetFocus
 
 onSetFocus: aView stack: aString
 
-	GciSession log: 'JadeSystemBrowserPresenter>>onSetFocus:stack:'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>onSetFocus:stack:'.
 	[
 		(Delay forMilliseconds: 50) wait.
 		aView ~~ View active ifTrue: [^self].		"If view changed then there is no point in updating it!!"
@@ -2132,7 +2132,7 @@ pkgDictChanged
 	listModel := (textAreaTabs subViews detect: [:each | each class == TabViewXP]) model.
 	globalsLabel ifNil: [globalsLabel := listModel detect: [:each | each text = 'Globals']].
 	packageLabel ifNil: [packageLabel := listModel detect: [:each | each text = 'Package']].
-	GciSession log: 'JadeSystemBrowserPresenter>>pkgDictChanged'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>pkgDictChanged'.
 	self isPackageListTabSelected ifTrue: [
 		(listModel includes: packageLabel) ifFalse: [listModel addFirst: packageLabel].
 		packageInfoTab ensureVisible.
@@ -2260,7 +2260,7 @@ removeClass
 	self addPackageDictionaryInfoTo: stream.
 	list do: [:each | stream nextPutAll: each; tab].
 	stream lf; nextPutAll: self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>removeClass'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>removeClass'.
 	self updateCommand: stream contents.
 
 !
@@ -2282,7 +2282,7 @@ removeDictionary
 		stream nextPutAll: each; tab.
 	].
 	stream lf; nextPutAll: self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>removeDictionary'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>removeDictionary'.
 	self updateCommand: stream contents.
 !
 
@@ -2300,7 +2300,7 @@ removeGlobals
 		stream nextPutAll: each first; tab.
 	].
 	stream lf; nextPutAll: self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>removeGlobals'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>removeGlobals'.
 	self updateCommand: stream contents.
 !
 
@@ -2316,7 +2316,7 @@ removeMethodCategories
 		yourself.
 	categoryListPresenter selections do: [:each | stream tab; nextPutAll: each trimBlanks].
 	stream lf.
-	GciSession log: 'JadeSystemBrowserPresenter>>removeMethodCategories'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>removeMethodCategories'.
 	self updateCommand: stream contents , self requestString.
 !
 
@@ -2330,7 +2330,7 @@ removeMethods
 		caption: 'Remove the following method(s)?'.
 	result ifFalse: [^self].
 	string := 'removeMethods' , Character tab asString , self methodsIdentifier , Character lf asString , self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>removeMethods'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>removeMethods'.
 	self updateCommand: string.
 !
 
@@ -2342,7 +2342,7 @@ removePriorVersions
 	self addPackageDictionaryInfoTo: stream.
 	self selectedClasses do: [:each | stream nextPutAll: each; tab].
 	stream lf; nextPutAll: self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>removePriorVersions'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>removePriorVersions'.
 	self updateCommand: stream contents.
 !
 
@@ -2355,7 +2355,7 @@ removeRepository
 		yourself.
 	packageListPresenter selections do: [:each | stream tab; nextPutAll: each key].
 	stream lf.
-	GciSession log: 'JadeSystemBrowserPresenter>>removeRepository'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>removeRepository'.
 	self updateCommand: stream contents , self requestString.
 !
 
@@ -2415,7 +2415,7 @@ revertNewClass
 	self addPackageDictionaryInfoTo: stream.
 	stream nextPutAll: selectedClassName subStrings first.
 	stream lf; nextPutAll: self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>revertNewClass'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>revertNewClass'.
 	self updateCommand: stream contents.
 !
 
@@ -2460,7 +2460,7 @@ savePackage
 
 	| package string array dict stream |
 	package := packageListPresenter selections first.
-	GciSession log: 'JadeSystemBrowserPresenter>>savePackage'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>savePackage'.
 	string := self updateCommand: 'uniqueVersionName' , Character tab asString , package key.
 	string = 'uniqueVersionName' ifFalse: [self error: 'Unrecognized response'].
 	string := readStream nextLine.
@@ -2518,16 +2518,16 @@ selectClass: aString selector: methodString
 		updateProcess terminate.
 		updateProcess := nil.
 	].
-	GciSession log: 'JadeSystemBrowserPresenter>>selectClass - ' , aString , ' selector: ' , methodString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>selectClass - ' , aString , ' selector: ' , methodString.
 	string := environment printString , ' findClass'.
 	string := self gciSession encode: string.
 	string := self gciSession 
 		serverPerform: #'systemBrowser:' 
 		with: string.
 	string := self gciSession decode: string.
-	GciSession log: 'JadeSystemBrowserPresenter>>selectClass:selector: - string size ' , string size printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>selectClass:selector: - string size ' , string size printString.
 	list := (string subStrings: Character lf) collect: [:each | each subStrings: Character tab].
-	GciSession log: 'JadeSystemBrowserPresenter>>selectClass:selector: - list size ' , list size printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>selectClass:selector: - list size ' , list size printString.
 	list := list copyFrom: 2 to: list size.
 	list := list collect: [:each | each size < 3 ifTrue: [each , #('' '' '')] ifFalse: [each]].
 	className := aString.
@@ -2535,7 +2535,7 @@ selectClass: aString selector: methodString
 		className := className copyFrom: 1 to: className size - 6.
 	].
 	array := list detect: [:each | each first subStrings first = className].
-	GciSession log: 'JadeSystemBrowserPresenter>>selectClass:selector: - found match of ' , array printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>selectClass:selector: - found match of ' , array printString.
 	self 
 		updateAfterFindClass: array
 		isMeta: isMeta 
@@ -2575,7 +2575,7 @@ selectedClassNameWithoutVersion
 selectedMethodChanged
 
 	| historyEntry |
-	GciSession log: 'JadeSystemBrowserPresenter>>selectedMethodChanged'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>selectedMethodChanged'.
 	self updateAndSelect: methodSourcePresenter.
 	methodListPresenter selections size == 1 ifFalse: [^self].
 	"historyList := historyList copyFrom: 1 to: historyIndex."	"trim any forward options on an explicit manual selection"
@@ -2616,7 +2616,7 @@ setColorForUnsavedEdits
 setEnvironment: anInteger
 
 	environment := anInteger.
-	GciSession log: 'JadeSystemBrowserPresenter>>setEnvironment: ' , anInteger printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>setEnvironment: ' , anInteger printString.
 	self updateCommand: self requestStringForUpdate.
 !
 
@@ -2639,7 +2639,7 @@ setHomeDictionary
 
 	| string |
 	string := 'setHomeDictionary' , Character tab asString , dictionaryListPresenter selection key , Character lf asString , self requestString.
-	GciSession log: 'JadeSystemBrowserPresenter>>setHomeDictionary'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>setHomeDictionary'.
 	self updateCommand: string.
 !
 
@@ -2672,7 +2672,7 @@ showPackageChanges
 		nextPutAll: packageListPresenter selections first key; tab;	"package name"
 		nextPutAll: (repository at: 2); tab;		"repository name"
 		lf.
-	GciSession log: 'JadeSystemBrowserPresenter>>showPackageChanges'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>showPackageChanges'.
 	(self updateCommand: stream contents) = 'changesInPackage' ifFalse: [self error: 'Unexpected response!!'].
 	patch := MCPatch
 		fromString: readStream upToEnd
@@ -2764,7 +2764,7 @@ unloadPackage
 	| packageName |
 	packageName := packageListPresenter selections first key.
 	(MessageBox confirm: 'Do you want to unload ''' , packageName , '''?' caption: 'Confirm Unload') ifFalse: [^self].
-	GciSession log: 'JadeSystemBrowserPresenter>>unloadPackage'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>unloadPackage'.
 	self updateCommand: 'unloadPackage' , Character tab asString , packageName , Character lf asString , self requestString.
 !
 
@@ -2804,7 +2804,7 @@ updateAfterFindClass: anArray isMeta: aBoolean selector: aString
 		nextPutAll: aString; lf; 	"method names"
 		lf;		"override"
 		yourself.
-	GciSession log: 'JadeSystemBrowserPresenter>>updateAfterFindClass: ' , anArray printString , ' isMeta: ' , aBoolean printString , ' selector: ' , aString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>updateAfterFindClass: ' , anArray printString , ' isMeta: ' , aBoolean printString , ' selector: ' , aString.
 	self updateCommand: stream contents.
 !
 
@@ -2812,12 +2812,12 @@ updateAndSelect: aView
 
 	updateCount := updateCount + 1.
 	keystrokeTime < Time millisecondClockValue ifTrue: [
-		GciSession log: 'JadeSystemBrowserPresenter>>updateAndSelect:'.
+		JadeLog log: 'JadeSystemBrowserPresenter>>updateAndSelect:'.
 		self updateAndSelectA: aView.
 	] ifFalse: [
-		GciSession log: 'JadeSystemBrowserPresenter>>updateAndSelect: - a'.
+		JadeLog log: 'JadeSystemBrowserPresenter>>updateAndSelect: - a'.
 		[
-			GciSession log: 'JadeSystemBrowserPresenter>>updateAndSelect: - b'.
+			JadeLog log: 'JadeSystemBrowserPresenter>>updateAndSelect: - b'.
 			self updateAndSelectB: aView.
 		] fork.
 	].
@@ -2825,14 +2825,14 @@ updateAndSelect: aView
 
 updateAndSelect_: anAssociation
 
-	GciSession log: 'JadeSystemBrowserPresenter>>updateAndSelect_:' , anAssociation printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>updateAndSelect_:' , anAssociation printString.
 	self updateAndSelect: anAssociation key.
 !
 
 updateAndSelectA: aView
 
 	inUpdate ifTrue: [^self].
-	GciSession log: 'JadeSystemBrowserPresenter>>updateAndSelectA:'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>updateAndSelectA:'.
 	self updateCommand: self requestStringForUpdate.
 	self updateMenuBar.
 	aView notNil ifTrue: [aView ensureVisible].
@@ -2843,13 +2843,13 @@ updateAndSelectB: aView
 	| delay oldUpdateCount |
 	oldUpdateCount := updateCount.
 	delay := keystrokeTime - Time millisecondClockValue.
-	GciSession log: 'JadeSystemBrowserPresenter>>updateAndSelectB: - a - ' , delay printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>updateAndSelectB: - a - ' , delay printString.
 	(Delay forMilliseconds: delay) wait.
 	oldUpdateCount = updateCount ifTrue: [
-		GciSession log: 'JadeSystemBrowserPresenter>>updateAndSelectB: - b'.
+		JadeLog log: 'JadeSystemBrowserPresenter>>updateAndSelectB: - b'.
 		self updateAndSelectA: aView.
 	] ifFalse: [
-		GciSession log: 'JadeSystemBrowserPresenter>>updateAndSelectB: - c'.
+		JadeLog log: 'JadeSystemBrowserPresenter>>updateAndSelectB: - c'.
 	].
 !
 
@@ -2884,7 +2884,7 @@ updateClassCategoryTree
 		].
 	].
 	listA := (treeModel asBag collect: [:each | each key printString]) asSortedCollection asArray.
-	GciSession log: 'JadeSystemBrowserPresenter>>updateClassCategoryTree - ' , listA printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>updateClassCategoryTree - ' , listA printString.
 	listB := (classCategoryPresenter model asBag collect: [:each | each key printString]) asSortedCollection asArray.
 	listA = listB ifFalse: [
 		classCategoryPresenter
@@ -3005,7 +3005,7 @@ updateClassList
 	| fullList newSelections flags |
 	classListPresenter ensureVisible.
 	fullList := readStream nextLineAsList.
-	GciSession log: 'JadeSystemBrowserPresenter>>updateClassList - ' , fullList printString.
+	JadeLog log: 'JadeSystemBrowserPresenter>>updateClassList - ' , fullList printString.
 	newSelections := readStream nextLineAsList.
 	flags := readStream nextLineAsList.
 
@@ -3048,7 +3048,7 @@ updateCommand: aString
 
 updateCommand: aString onSuccessDo: aBlock
 
-	GciSession log: 'JadeSystemBrowserPresenter>>updateCommand: ' , aString printString , ' onSuccessDo: '.
+	JadeLog log: 'JadeSystemBrowserPresenter>>updateCommand: ' , aString printString , ' onSuccessDo: '.
 	[
 		| time1 time2 time3 string |
 		time1 := Time millisecondsToRun: [
@@ -3057,7 +3057,7 @@ updateCommand: aString onSuccessDo: aBlock
 				serverPerform: #'systemBrowser:' 
 				with: string.
 			string := self gciSession decode: string.
-			GciSession log: 'JadeSystemBrowserPresenter>>updateCommand:onSuccessDo:  - a - ' , string printString.
+			JadeLog log: 'JadeSystemBrowserPresenter>>updateCommand:onSuccessDo:  - a - ' , string printString.
 			eventCount := self gciSession eventCount.
 		].
 		time2 := Time millisecondsToRun: [
@@ -3286,7 +3286,7 @@ updatePackageDictionaryList
 
 	| next |
 	next := readStream nextLine.
-	GciSession log: 'JadeSystemBrowserPresenter>>updatePackageDictionaryList'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>updatePackageDictionaryList'.
 	next = 'dictionaryList' ifTrue: [^self updateDictionaryList].
 	next = 'packageList' ifTrue: [^self updatePackageList].
 	self error: 'Unexpected token'.
@@ -3308,7 +3308,7 @@ updatePackageInfo
 updatePackageList
 
 	| dictionary fullList selections old new |
-	GciSession log: 'JadeSystemBrowserPresenter>>updatePackageList'.
+	JadeLog log: 'JadeSystemBrowserPresenter>>updatePackageList'.
 	packageListPresenter ensureVisible.
 	dictionary := Dictionary new.
 	readStream nextLineAsList do: [:each | dictionary at: each put: false].

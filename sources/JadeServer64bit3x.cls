@@ -191,7 +191,8 @@ nextPutAll: anObject
 !JadeServer64bit3x class methodsFor!
 
 addRangeStopTo: stepPoints withSource: source
- 1 to: stepPoints size do: [:stepPoint |
+
+	1 to: stepPoints size do: [:stepPoint |
 		| range start char length |
 		range := (stepPoints at: stepPoint) key.
 		start := range start.

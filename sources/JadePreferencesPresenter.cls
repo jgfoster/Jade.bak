@@ -44,7 +44,7 @@ createSchematicWiring
 
 debugChanged
 
-	GciSession debug: debugPresenter model value.
+	JadeLog debug: debugPresenter model value.
 !
 
 nativeCodeChanged
@@ -107,7 +107,7 @@ update
 
 	codeFontPresenter	value: CodeSourcePresenter codeFont.
 	defaultFontPresenter	value: View desktop font.
-	debugPresenter		value: GciSession debugFlag.
+	debugPresenter		value: JadeLog debugFlag.
 	self gciSession updatePreferences.
 	self gciSession isAutoCommit
 		ifNil: [autoCommitPresenter view disable]

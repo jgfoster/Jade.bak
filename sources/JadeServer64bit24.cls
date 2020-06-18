@@ -30,14 +30,14 @@ oopOf: anObject
 !JadeServer64bit24 class methodsFor!
 
 addRangeStopTo: stepPoints withSource: source
+
 	| aNotAsciiCharIndexes |
 	aNotAsciiCharIndexes := OrderedCollection new.
-	1 to: source size do:
-		[:i |
-		(source at: i) isAscii
-		ifFalse:
-			[aNotAsciiCharIndexes add: i]
+	1 to: source size do: [:i |
+		(source at: i) isAscii ifFalse: [
+			aNotAsciiCharIndexes add: i.
 		].
+	].
 	1 to: stepPoints size do: [:stepPoint |
 		| range start char length utf8Offset |
 		range := (stepPoints at: stepPoint) key.

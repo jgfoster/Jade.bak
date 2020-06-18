@@ -17,10 +17,10 @@ codeFont: aFont
 	CodeSourcePresenter codeFont: aFont!
 
 debug
-	^GciSession debugFlag!
+	^JadeLog debugFlag!
 
 debug: aBoolean
-	^GciSession debug: aBoolean!
+	^JadeLog debug: aBoolean!
 
 defaultFont
 	^View desktop font!
