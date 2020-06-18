@@ -236,7 +236,7 @@ gemHost
 
 gsHasPragmas
 
-	^library gsHasPragmas!
+	^false!
 
 handlingClientForwarderSendDo: aBlock
 
@@ -612,8 +612,8 @@ oopTypeFor: anObject
 
 	anObject isNil 					ifTrue: [^library oopNil].
 	(anObject isKindOf: ExternalInteger) 	ifTrue: [^anObject].
-	(anObject isKindOf: Boolean) 		ifTrue: [^anObject ifTrue: [library oopTrue] ifFalse: [library oopFalse]].
-	(anObject isKindOf: SmallInteger) 	ifTrue: [^library session: gciSessionId oopForInteger: anObject].
+	(anObject isKindOf: Boolean) 			ifTrue: [^anObject ifTrue: [library oopTrue] ifFalse: [library oopFalse]].
+	(anObject isKindOf: SmallInteger) 		ifTrue: [^library session: gciSessionId oopForInteger: anObject].
 	(anObject isKindOf: GsObject) 		ifTrue: [^anObject oopType].
 	(anObject isKindOf: String)			ifTrue: [^self oopForString: anObject].
 	MessageBox notify: 'Sorry, we are not yet prepared to convert ' , anObject printString , ' to an OOP!!'.
@@ -1163,42 +1163,42 @@ withExplanation: aString doA: aBlock
 	((result isKindOf: Error) and: [(result isKindOf: GciError) not and: [(result isKindOf: GsError) not]]) ifTrue: [self error: result description].
 	^result.
 ! !
-!GciSession categoriesFor: #_executeString:fromContextOop:environment:!private! !
-!GciSession categoriesFor: #_send:to:withAll:!private! !
+!GciSession categoriesFor: #_executeString:fromContextOop:environment:!library-server!private! !
+!GciSession categoriesFor: #_send:to:withAll:!library-server!private! !
 !GciSession categoriesFor: #_server!private! !
 !GciSession categoriesFor: #abort!Jade convenience!public! !
 !GciSession categoriesFor: #addRangeStopTo:withSource:!accessing!public! !
 !GciSession categoriesFor: #begin!Jade convenience!public! !
-!GciSession categoriesFor: #beInvalidSession!public! !
+!GciSession categoriesFor: #beInvalidSession!library-client!public! !
 !GciSession categoriesFor: #briefDescription!public! !
-!GciSession categoriesFor: #clearStack:!Jade!public! !
-!GciSession categoriesFor: #clientForwardError:!public! !
+!GciSession categoriesFor: #clearStack:!Jade!library-server!public! !
+!GciSession categoriesFor: #clientForwardError:!library-client!public! !
 !GciSession categoriesFor: #clientForwarders!public! !
 !GciSession categoriesFor: #commit!Jade convenience!public! !
 !GciSession categoriesFor: #debugString:fromContext:environment:!long running!public! !
-!GciSession categoriesFor: #debugToFilePath:!Jade convenience!public! !
+!GciSession categoriesFor: #debugToFilePath:!Jade convenience!library-client!public! !
 !GciSession categoriesFor: #decode:!public! !
 !GciSession categoriesFor: #encode:!public! !
 !GciSession categoriesFor: #eventCount!public! !
 !GciSession categoriesFor: #executeString:!Jade convenience!public! !
 !GciSession categoriesFor: #executeString:fromContext:environment:!long running!public! !
-!GciSession categoriesFor: #fetchBytes:!private! !
+!GciSession categoriesFor: #fetchBytes:!library-server!private! !
 !GciSession categoriesFor: #forceLogout!Jade!public! !
 !GciSession categoriesFor: #gciSessionId!public! !
 !GciSession categoriesFor: #gciSessionId:!private! !
-!GciSession categoriesFor: #gciVersion!public! !
+!GciSession categoriesFor: #gciVersion!library-client!public! !
 !GciSession categoriesFor: #gemHost!accessing!public! !
 !GciSession categoriesFor: #gsHasPragmas!public! !
-!GciSession categoriesFor: #handlingClientForwarderSendDo:!long running!private! !
-!GciSession categoriesFor: #hardBreak!Jade!public! !
+!GciSession categoriesFor: #handlingClientForwarderSendDo:!library-server!long running!private! !
+!GciSession categoriesFor: #hardBreak!Jade!library-server!public! !
 !GciSession categoriesFor: #hasHeartbeat!heartbeat!public! !
 !GciSession categoriesFor: #hasServer!public! !
-!GciSession categoriesFor: #heartbeat:arguments:!heartbeat!private! !
+!GciSession categoriesFor: #heartbeat:arguments:!heartbeat!library-server!private! !
 !GciSession categoriesFor: #idleWarning!heartbeat!private! !
 !GciSession categoriesFor: #incrementEventCount!long running!private! !
 !GciSession categoriesFor: #indexOfClientForwarder:!public! !
-!GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:debugPath:!private! !
-!GciSession categoriesFor: #initializeServer!private! !
+!GciSession categoriesFor: #initializeLibrary:stoneNRS:gemNRS:userID:password:hostUserID:password:initials:debugPath:!library-server!private! !
+!GciSession categoriesFor: #initializeServer!library-server!private! !
 !GciSession categoriesFor: #isAutoCommit!accessing!public! !
 !GciSession categoriesFor: #isAutoCommit:!accessing!public! !
 !GciSession categoriesFor: #isAutoMigrate!accessing!public! !
@@ -1206,34 +1206,34 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #isLinkedGem!public! !
 !GciSession categoriesFor: #isNativeCode!accessing!public! !
 !GciSession categoriesFor: #isNativeCode:!accessing!public! !
-!GciSession categoriesFor: #isOopType:!public! !
+!GciSession categoriesFor: #isOopType:!library-client!public! !
 !GciSession categoriesFor: #isPackagePolicyEnabled!public! !
 !GciSession categoriesFor: #isRemoteGem!public! !
 !GciSession categoriesFor: #isShowUnimplementedMessages!accessing!public! !
 !GciSession categoriesFor: #isShowUnimplementedMessages:!accessing!public! !
 !GciSession categoriesFor: #isValidSession!public! !
-!GciSession categoriesFor: #libraryVersion!public! !
-!GciSession categoriesFor: #loadLibrary:debugPath:!public! !
-!GciSession categoriesFor: #logout!Jade!public! !
+!GciSession categoriesFor: #libraryVersion!library-client!public! !
+!GciSession categoriesFor: #loadLibrary:debugPath:!library-client!public! !
+!GciSession categoriesFor: #logout!Jade!library-server!public! !
 !GciSession categoriesFor: #logoutRequested!Jade!public! !
 !GciSession categoriesFor: #message:caption:icon:buttons:!OmniBrowser!public! !
 !GciSession categoriesFor: #netPort!accessing!public! !
 !GciSession categoriesFor: #netTask!accessing!public! !
-!GciSession categoriesFor: #oopForString:!public! !
-!GciSession categoriesFor: #oopGemStoneError!public! !
-!GciSession categoriesFor: #oopIllegal!public! !
-!GciSession categoriesFor: #oopTypeFor:!public! !
-!GciSession categoriesFor: #oopTypeWithOop:!public! !
+!GciSession categoriesFor: #oopForString:!library-server!public! !
+!GciSession categoriesFor: #oopGemStoneError!library-client!public! !
+!GciSession categoriesFor: #oopIllegal!library-client!public! !
+!GciSession categoriesFor: #oopTypeFor:!library-client!public! !
+!GciSession categoriesFor: #oopTypeWithOop:!library-client!public! !
 !GciSession categoriesFor: #postLoginAs:!private! !
 !GciSession categoriesFor: #printString:!Jade convenience!public! !
 !GciSession categoriesFor: #prompt:caption:!OmniBrowser!public! !
 !GciSession categoriesFor: #releaseOop:!Jade convenience!public! !
-!GciSession categoriesFor: #releaseOops:!Jade!public! !
+!GciSession categoriesFor: #releaseOops:!Jade!library-server!public! !
 !GciSession categoriesFor: #returningResultOrErrorDo:!long running!private! !
 !GciSession categoriesFor: #send:to:!Jade convenience!public! !
 !GciSession categoriesFor: #send:to:withAll:!Jade convenience!long running!public! !
-!GciSession categoriesFor: #sendInterpreted:to:withAll:!Jade convenience!long running!public! !
-!GciSession categoriesFor: #serverArrayFor:!Jade convenience!public! !
+!GciSession categoriesFor: #sendInterpreted:to:withAll:!Jade convenience!library-server!long running!public! !
+!GciSession categoriesFor: #serverArrayFor:!Jade convenience!library-server!public! !
 !GciSession categoriesFor: #serverClass!accessing!public! !
 !GciSession categoriesFor: #serverPerform:!Jade convenience!public! !
 !GciSession categoriesFor: #serverPerform:with:!Jade convenience!public! !
@@ -1245,11 +1245,11 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #serverPerformInterpreted:with:with:with:!Jade convenience!public! !
 !GciSession categoriesFor: #serverPerformInterpreted:withArguments:!Jade convenience!public! !
 !GciSession categoriesFor: #setInitials:!private! !
-!GciSession categoriesFor: #signalConfirmationRequestUsing:!OmniBrowser!public! !
-!GciSession categoriesFor: #signalInformRequestUsing:!OmniBrowser!public! !
-!GciSession categoriesFor: #signalMultiLineTextRequestUsing:!OmniBrowser!public! !
-!GciSession categoriesFor: #signalTextRequestUsing:!OmniBrowser!public! !
-!GciSession categoriesFor: #softBreak!Jade!public! !
+!GciSession categoriesFor: #signalConfirmationRequestUsing:!library-client!OmniBrowser!public! !
+!GciSession categoriesFor: #signalInformRequestUsing:!library-server!OmniBrowser!public! !
+!GciSession categoriesFor: #signalMultiLineTextRequestUsing:!library-server!OmniBrowser!public! !
+!GciSession categoriesFor: #signalTextRequestUsing:!library-server!OmniBrowser!public! !
+!GciSession categoriesFor: #softBreak!Jade!library-server!public! !
 !GciSession categoriesFor: #startHeartbeat!heartbeat!private! !
 !GciSession categoriesFor: #stepInto:inFrame:!public! !
 !GciSession categoriesFor: #stepOut:inFrame:!public! !
@@ -1264,9 +1264,9 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #updatePreferences!private! !
 !GciSession categoriesFor: #updatePreferencesFrom:!private! !
 !GciSession categoriesFor: #userID!public! !
-!GciSession categoriesFor: #valueOfArrayOop:!Jade convenience!public! !
-!GciSession categoriesFor: #valueOfOop:!Jade convenience!public! !
-!GciSession categoriesFor: #withExplanation:do:!long running!private! !
+!GciSession categoriesFor: #valueOfArrayOop:!Jade convenience!library-server!public! !
+!GciSession categoriesFor: #valueOfOop:!Jade convenience!library-server!public! !
+!GciSession categoriesFor: #withExplanation:do:!library-server!long running!private! !
 !GciSession categoriesFor: #withExplanation:doA:!long running!private! !
 
 !GciSession class methodsFor!

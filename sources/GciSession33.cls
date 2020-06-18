@@ -18,7 +18,12 @@ decode: aString
 encode: aString
 	"asAnsiString before 3.3.0; asUtf8String from 3.3.0 on."
 
-	^aString asUtf8String! !
+	^aString asUtf8String!
+
+gsHasPragmas
+
+	^true! !
 !GciSession33 categoriesFor: #decode:!public! !
 !GciSession33 categoriesFor: #encode:!public! !
+!GciSession33 categoriesFor: #gsHasPragmas!public! !
 

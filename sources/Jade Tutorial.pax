@@ -10,14 +10,12 @@ package classNames
 	yourself.
 
 package methodNames
-	add: #GciLibrary -> #isProfStefAvailable;
 	add: #GciSession -> #isProfStefAvailable;
+	add: #GciSession33 -> #isProfStefAvailable;
 	add: #JadeServer64bit32 -> #addProfStef;
 	add: #JadeServer64bit32 -> #newProfStefClass;
 	add: #JadeServer64bit32 -> #removeProfStef;
 	add: #JadeTranscript -> #profStef;
-	add: #LibGciRpc64_3_2_0 -> #isProfStefAvailable;
-	add: #LibGciRpc64_3_3_0 -> #isProfStefAvailable;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -31,7 +29,6 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
 	'..\Core\Object Arts\Dolphin\MVP\Icons\Dolphin Text Tile Icons'
-	'GemStone C Interface'
 	'GemStone Session'
 	'Jade Transcript'
 	'Jade UI Base'
@@ -58,19 +55,19 @@ JadeWorkspace subclass: #GsProfStef
 
 "Loose Methods"!
 
-!GciLibrary methodsFor!
-
-isProfStefAvailable
-
-	^false! !
-!GciLibrary categoriesFor: #isProfStefAvailable!public! !
-
 !GciSession methodsFor!
 
 isProfStefAvailable
 
-	^library notNil and: [library isProfStefAvailable]! !
+	^false! !
 !GciSession categoriesFor: #isProfStefAvailable!accessing!public! !
+
+!GciSession33 methodsFor!
+
+isProfStefAvailable
+
+	^true! !
+!GciSession33 categoriesFor: #isProfStefAvailable!accessing!public! !
 
 !JadeServer64bit32 methodsFor!
 
@@ -137,20 +134,6 @@ profStef
 
 	GsProfStef showOnSession: gciSession.! !
 !JadeTranscript categoriesFor: #profStef!event handling!public! !
-
-!LibGciRpc64_3_2_0 methodsFor!
-
-isProfStefAvailable
-
-	^true! !
-!LibGciRpc64_3_2_0 categoriesFor: #isProfStefAvailable!public! !
-
-!LibGciRpc64_3_3_0 methodsFor!
-
-isProfStefAvailable
-
-	^true! !
-!LibGciRpc64_3_3_0 categoriesFor: #isProfStefAvailable!public! !
 
 "End of package definition"!
 

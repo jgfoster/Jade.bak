@@ -74,10 +74,6 @@ gciNewUtf8String_: utf8data _: nBytes _: convertToUnicode
  	^self invalidCall: _failureCode
 !
 
-gsHasPragmas
-
-	^true!
-
 oopClassUtf8
 
 	^OopType64 fromInteger: 154113!
@@ -188,7 +184,6 @@ verifyEnvironment: anInteger
 !LibGciRpc64_3_3_0 categoriesFor: #gciNbExecute_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciNbExecuteStrFromContextDbg_:_:_:_:_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciNewUtf8String_:_:_:!private! !
-!LibGciRpc64_3_3_0 categoriesFor: #gsHasPragmas!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #oopClassUtf8!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #session:execute:context:environment:!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #session:oopForString:!public! !
