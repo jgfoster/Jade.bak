@@ -9,6 +9,9 @@ package basicScriptAt: #postinstall put: '''Loaded: GemStone Session'' yourself.
 
 package classNames
 	add: #GciSession;
+	add: #GciSession24;
+	add: #GciSession30;
+	add: #GciSession33;
 	add: #GsAnsiError;
 	add: #GsApplicationError;
 	add: #GsClientForwarderSend;
@@ -40,6 +43,7 @@ package classNames
 	yourself.
 
 package methodNames
+	add: #GciLibrary -> #jadeServerClass;
 	add: #Gcilw6x -> #jadeServerClass;
 	add: #LibGciRpc64 -> #jadeServerClass;
 	add: #LibGciRpc64_24 -> #jadeServerClass;
@@ -49,6 +53,10 @@ package methodNames
 	add: #LibGciRpc64_3_3_0 -> #jadeServerClass;
 	add: #LibGciRpc64_3_4_0 -> #jadeServerClass;
 	add: #LibGciTs_3_3 -> #jadeServerClass;
+	add: 'GciLibrary class' -> #gciSessionClass;
+	add: 'LibGciRpc64_24 class' -> #gciSessionClass;
+	add: 'LibGciRpc64_3_0 class' -> #gciSessionClass;
+	add: 'LibGciRpc64_3_3_0 class' -> #gciSessionClass;
 	yourself.
 
 package binaryGlobalNames: (Set new
@@ -179,6 +187,21 @@ Notification subclass: #TerminateProcess
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
+GciSession subclass: #GciSession24
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciSession24 subclass: #GciSession30
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciSession30 subclass: #GciSession33
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
 JadeServer subclass: #JadeServer32bit
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -230,6 +253,21 @@ TestCase subclass: #JadeServerTestCase
 
 "Loose Methods"!
 
+!GciLibrary methodsFor!
+
+jadeServerClass
+
+	self subclassResponsibility.
+! !
+!GciLibrary categoriesFor: #jadeServerClass!public!subclassResponsibility! !
+
+!GciLibrary class methodsFor!
+
+gciSessionClass
+
+	^GciSession! !
+!GciLibrary class categoriesFor: #gciSessionClass!public! !
+
 !Gcilw6x methodsFor!
 
 jadeServerClass
@@ -254,6 +292,14 @@ jadeServerClass
 ! !
 !LibGciRpc64_24 categoriesFor: #jadeServerClass!public! !
 
+!LibGciRpc64_24 class methodsFor!
+
+gciSessionClass
+
+	^GciSession24
+! !
+!LibGciRpc64_24 class categoriesFor: #gciSessionClass!public! !
+
 !LibGciRpc64_3_0 methodsFor!
 
 jadeServerClass
@@ -261,6 +307,14 @@ jadeServerClass
 	^JadeServer64bit3x
 ! !
 !LibGciRpc64_3_0 categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64_3_0 class methodsFor!
+
+gciSessionClass
+
+	^GciSession30
+! !
+!LibGciRpc64_3_0 class categoriesFor: #gciSessionClass!public! !
 
 !LibGciRpc64_3_1_0 methodsFor!
 
@@ -285,6 +339,14 @@ jadeServerClass
 	^JadeServer64bit33
 ! !
 !LibGciRpc64_3_3_0 categoriesFor: #jadeServerClass!public! !
+
+!LibGciRpc64_3_3_0 class methodsFor!
+
+gciSessionClass
+
+	^GciSession33
+! !
+!LibGciRpc64_3_3_0 class categoriesFor: #gciSessionClass!public! !
 
 !LibGciRpc64_3_4_0 methodsFor!
 

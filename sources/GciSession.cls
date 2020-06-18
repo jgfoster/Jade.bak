@@ -67,6 +67,10 @@ abort
 	self serverPerform: #'abort'.
 !
 
+addRangeStopTo: stepPoints withSource: source
+
+	GsMethod addRangeStopTo: stepPoints withSource: source.!
+
 begin
 
 	self serverPerform: #'beginTransaction'.
@@ -162,14 +166,12 @@ debugToFilePath: aString
 decode: aString
 	"asAnsiString before 3.3.0; asUtf8String from 3.3.0 on."
 
-	library ifNil: [GsInvalidSessionError signal].
-	^library decode: aString!
+	^aString asAnsiString!
 
 encode: aString
 	"asAnsiString before 3.3.0; asUtf8String from 3.3.0 on."
 
-	library ifNil: [^GsInvalidSessionError signal].
-	^library encode: aString!
+	^aString asAnsiString!
 
 eventCount
 
@@ -1165,6 +1167,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #_send:to:withAll:!private! !
 !GciSession categoriesFor: #_server!private! !
 !GciSession categoriesFor: #abort!Jade convenience!public! !
+!GciSession categoriesFor: #addRangeStopTo:withSource:!accessing!public! !
 !GciSession categoriesFor: #begin!Jade convenience!public! !
 !GciSession categoriesFor: #beInvalidSession!public! !
 !GciSession categoriesFor: #briefDescription!public! !

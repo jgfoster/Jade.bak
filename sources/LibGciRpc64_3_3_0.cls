@@ -10,14 +10,6 @@ LibGciRpc64_3_3_0 comment: ''!
 !LibGciRpc64_3_3_0 categoriesForClass!Unclassified! !
 !LibGciRpc64_3_3_0 methodsFor!
 
-decode: aString
-
-	^aString asUtf8String!
-
-encode: aString
-
-	^aString asUtf8String!
-
 fetchBytes: anOopType classOop: oopClass
 
 	oopClass = self oopClassUtf8 ifTrue: [^self fetchBytes: anOopType class: Utf8String].
@@ -189,8 +181,6 @@ specialFromOop: anOop
 verifyEnvironment: anInteger
 
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!!!!!!!'].! !
-!LibGciRpc64_3_3_0 categoriesFor: #decode:!public! !
-!LibGciRpc64_3_3_0 categoriesFor: #encode:!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #fetchBytes:classOop:!public! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciExecute_:_:_:!private! !
 !LibGciRpc64_3_3_0 categoriesFor: #gciExecuteFromContextDbg_:_:_:_:_:!private! !

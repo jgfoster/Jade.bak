@@ -230,8 +230,10 @@ lastLoginString
 
 login
 
-	^GciSession 
-		libraryClass: (GciLibrary withDisplayName: gemVersion)
+	| libraryClass |
+	libraryClass := GciLibrary withDisplayName: gemVersion.
+	^libraryClass gciSessionClass
+		libraryClass: libraryClass
 		stoneNRS: self stoneNRS
 		gemNRS: self gemNRS
 		userID: self gsUserID

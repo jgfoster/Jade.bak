@@ -81,7 +81,7 @@ initialize: readStream session: aGciSession
 	"breaks"
 	breakPoints := readStream nextLineAsList collect: [:each | each asNumber].
 	"add stop range to step points"
-	gciSession serverClass addRangeStopTo: stepPoints withSource: source.
+	gciSession addRangeStopTo: stepPoints withSource: source.
 	originalSource := readStream nextParagraph.
 	warnings := readStream nextParagraph.
 !
@@ -155,6 +155,62 @@ warnings
 
 !GsMethod class methodsFor!
 
+add24RangeStopTo: stepPoints withSource: source
+
+	| aNotAsciiCharIndexes |
+	aNotAsciiCharIndexes := OrderedCollection new.
+	1 to: source size do: [:i |
+		(source at: i) isAscii ifFalse: [
+			aNotAsciiCharIndexes add: i.
+		].
+	].
+	1 to: stepPoints size do: [:stepPoint |
+		| range start char length utf8Offset |
+		range := (stepPoints at: stepPoint) key.
+		start := range start.
+		utf8Offset := (aNotAsciiCharIndexes select: [:each | each < start]) size / 2.
+		start := start + utf8Offset.
+		char := source at: start.
+		length := (char isAlphaNumeric or: [char = $_])
+			ifTrue: [(source copyFrom: start + 1 to: source size) findFirst: [:eachChar | (eachChar isAlphaNumeric or: [eachChar = $_ or: [eachChar = $:]]) not]]
+			ifFalse: [2].
+		length = 0 ifTrue: [length := source size - start].
+		[
+			2 < length and: [(source at: start) = $_].
+		] whileTrue: [
+			start := start + 1.
+			length := length - 1.
+		].
+		range
+			start: start;
+			stop: start + length - 1;
+			yourself.
+	].!
+
+addRangeStopTo: stepPoints withSource: source
+	"Implementation for all except 2.4"
+
+	1 to: stepPoints size do: [:stepPoint |
+		| range start char length |
+		range := (stepPoints at: stepPoint) key.
+		start := range start.
+		char := source at: start.
+		length := (char isAlphaNumeric or: [char = $_])
+			ifTrue: [(source copyFrom: start + 1 to: source size) findFirst: [:eachChar | (eachChar isAlphaNumeric or: [eachChar = $_ or: [eachChar = $:]]) not]]
+			ifFalse: [2].
+		length = 0 ifTrue: [length := source size - start].
+		[
+			2 < length and: [(source at: start) = $_].
+		] whileTrue: [
+			start := start + 1.
+			length := length - 1.
+		].
+		range
+			start: start;
+			stop: start + length - 1;
+			yourself.
+	].!
+
 fromGsMethod2: aGsMethod2
 
 	| string |
@@ -166,5 +222,7 @@ fromGsMethod2: aGsMethod2
 		initialize: (JadeServerReadStream on: string)
 		session: aGsMethod2 gciSession
 ! !
+!GsMethod class categoriesFor: #add24RangeStopTo:withSource:!public! !
+!GsMethod class categoriesFor: #addRangeStopTo:withSource:!public! !
 !GsMethod class categoriesFor: #fromGsMethod2:!public! !
 
