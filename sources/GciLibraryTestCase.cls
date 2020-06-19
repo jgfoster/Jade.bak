@@ -234,16 +234,16 @@ test_fetchObjects
 	objects := library session: session fetchObjects: object.
 	self 
 		assert: objects class == Array;
-		assert: (objects at: 1) = library oopTrue;
-		assert: (objects at: 2) = library oopFalse;
-		assert: (objects at: 3) = library oopNil;
+		assert: (objects at: 1) = session oopTrue;
+		assert: (objects at: 2) = session oopFalse;
+		assert: (objects at: 3) = session oopNil;
 		yourself.
 !
 
 test_fetchSize
 
 	| x y |
-	x := library session: session fetchSize: library oopNil.
+	x := library session: session fetchSize: session oopNil.
 	self assert: x == 0.
 	x := library session: session execute: '(String new: 1005) atAllPut: $a; asOop'.
 	y := library session: session fetchSize: (OopType64 fromInteger: x).
@@ -314,7 +314,7 @@ test_fetchString
 test_fetchVaryingSize
 
 	| x y |
-	x := library session: session fetchSize: library oopNil.
+	x := library session: session fetchSize: session oopNil.
 	self assert: x == 0.
 
 	x := library session: session execute: 'Association new'.
@@ -379,7 +379,7 @@ test_objExists
 test_oopIsSpecial
 
 	| x |
-	x := library oopIsSpecial: library oopNil.
+	x := library oopIsSpecial: session oopNil.
 	self assert: x.
 	x := library session: session execute: 'AllUsers'.
 	x := library oopIsSpecial: x.

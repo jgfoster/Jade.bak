@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 GciLibrary subclass: #GciSingleThreadedLibrary
-	instanceVariableNames: 'semaphore'
+	instanceVariableNames: 'semaphore activity'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -41,48 +41,23 @@ _semaphore
 abortSession: anInteger
 
 	self 
-		activity: 'abort'
+		session: anInteger 
+		activity: 'abortTransaction'
 		critical: [
 			self 
-				gciSetSessionId: anInteger;
 				gciAbort;
 				signalIfError;
 				yourself.
 		].
 !
 
-activity: aString critical: aBlock
-	"Previous implementation had a small window when semaphore could be acquired and then process terminated.
-	This should (!!) close that window."
-
-	| array result string |
-	string := aString copyFrom: 1 to: (100 min: aString size).
-	Transcript show: string , Character cr asString , Character lf asString.
-	array := Array with: nil.
-	[
-		[
-			semaphore wait: -1 "INFINITE" ret: array.		"If we are successful, the Array will contain a non-nil value"
-			result := aBlock value.
-			self signalSemaphoreIfNeeded: array.
-		] ifCurtailed: [
-			self signalSemaphoreIfNeeded: array.
-		].
-		^result.
-	] on: Error do: [:ex | 
-		self signalSemaphoreIfNeeded: array.
-		result := ex pass.
-		SessionManager current pause.
-		^result.
-	].
-!
-
 beginSession: anInteger
 
 	self 
-		activity: 'begin'
+		session: anInteger 
+		activity: 'beginTransaction'
 		critical: [
 			self 
-				gciSetSessionId: anInteger;
 				gciBegin;
 				signalIfError;
 				yourself.
@@ -102,9 +77,9 @@ close
 commitSession: anInteger
 
 	self 
-		activity: 'commit' 
+		session: anInteger 
+		activity: 'commitTransaction' 
 		critical: [
-			self gciSetSessionId: anInteger.
 			self gciCommit ifTrue: [^self].
 			self signalIfError.
 			GciCommitFailure signal.
@@ -431,7 +406,10 @@ initialize
 	super initialize.
 	semaphore := Semaphore forMutualExclusion.
 	self gciInit ifFalse: [self error: 'GciInit() failed!!'].
-!
+	activity := OrderedCollection new.
+	activity when: #'changed' send: #'value' to: [
+		Transcript cr; show: activity printString; cr.
+	].!
 
 lastError
 
@@ -446,7 +424,8 @@ lastError
 loginAs: userName password: password
 
 	self 
-		activity: 'loginAs: ' , userName printString , ' password: XXX'
+		session: nil 
+		activity: 'loginAs: ' , userName printString
 		critical: [
 			| success error |
 			success := self
@@ -465,16 +444,17 @@ loginHostUser: hostUser hostPassword: hostPassword gsUser: gsUser gsPassword: gs
 
 	^self
 		gciSetNet: stoneString _: hostUser _: hostPassword _: gemString;
-		loginAs: gsUser password: gsPassword!
+		loginAs: gsUser password: gsPassword
+!
 
 logoutSession: anInteger
 
 	self 
+		session: anInteger 
 		activity: 'logout' 
 		critical: [
 			[
 				self 
-					gciSetSessionId: anInteger;
 					gciLogout;
 					signalIfError;
 					yourself.
@@ -506,39 +486,84 @@ nbResult
 pollForSignalSession: anInteger
 
 	self 
+		session: anInteger 
 		activity: 'pollForSignal' 
 		critical: [
-			self gciSetSessionId: anInteger.
 			self gciPollForSignal ifFalse: [^self].
 			self signalLastError.
 		].
 !
 
-sendInterpreted: aSymbol to: anOopType with: anArray session: anInteger
+session: anInteger activity: aString critical: aBlock
 
-	^self 
-		session: anInteger
-		send: aSymbol 
-		to: anOopType 
-		with: anArray 
+	| activityEntry result t1 t2 t3 trimString |
+	trimString := [:inString | 
+		| outString |
+		outString := inString copyFrom: 1 to: (50 min: inString size).
+		outString := outString copyReplaceAll: Character cr asString with: ''.
+		outString := outString copyReplaceAll: Character lf asString with: '\n'.
+		outString.
+	].
+	activity size > 100 ifTrue: [activity :=activity last: 99].
+	activityEntry := Array new: 6.
+	activityEntry 
+		at: 1 put: anInteger;
+		at: 2 put: Time now;
+		at: 3 put: (trimString value: aString);
+		yourself.
+	activity add: activityEntry; trigger: #'changed'.
+	t1 := Time millisecondClockValue.
+	semaphore critical: [
+		t2 := Time millisecondClockValue.
+		activityEntry at: 4 put: t2 - t1.
+		activity changed.
+		anInteger ifNotNil: [self gciSetSessionId: anInteger].
+		[[
+			result := aBlock value.
+			t3 := Time millisecondClockValue.
+			activityEntry
+				at: 5 put: t3 - t2;
+				at: 6 put: (trimString value: result printString);
+				yourself.
+			activity  trigger: #'changed'.
+		] ifCurtailed: [
+			t3 := Time millisecondClockValue.
+			activityEntry
+				at: 5 put: t3 - t2;
+				at: 6 put: 'returned';
+				yourself.
+			activity  trigger: #'changed'.
+		]
+		] on: Error do: [:ex | 
+			t3 := Time millisecondClockValue.
+			activityEntry
+				at: 5 put: t3 - t2;
+				at: 6 put: (trimString value: ex description);
+				yourself.
+			activity  trigger: #'changed'.
+			ex pass.
+		]
+	].
+	^result
+
 !
 
-session: session clearStack: processOop
+session: anInteger clearStack: processOop
 
 	self 
+		session: anInteger 
 		activity: 'clearStack: ' , processOop printString 
 		critical: [
-			self gciSetSessionId: session.
 			self gciClearStack: processOop.
 		].
 !
 
-session: session continue: gsProcessOop withObject: anOop
+session: anInteger continue: gsProcessOop withObject: anOop
 
 	self 
+		session: anInteger 
 		activity: 'continueWith: ' , anOop printString 
 		critical: [
-			self gciSetSessionId: session.
 			self useNonBlocking ifTrue: [
 				self
 					gciNbContinueWith: gsProcessOop
@@ -563,19 +588,19 @@ session: session execute: aString context: contextOop environment: anInteger
 
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
 	self 
+		session: session 
 		activity: 'executeString: ' , aString printString 
 		critical: [
-			self gciSetSessionId: session.
 			self useNonBlocking ifTrue: [
 				self
-					gciNbExecuteStrFromContext: (self encode: aString)
+					gciNbExecuteStrFromContext: aString
 					_: contextOop
 					_: self oopNil.
 				^self nbResult.
 			] ifFalse: [
 				| result |
 				result := self
-					gciExecuteStrFromContext: (self encode: aString)
+					gciExecuteStrFromContext: aString
 					_: contextOop
 					_: self oopNil.
 				self signalIfError.
@@ -587,9 +612,9 @@ session: session execute: aString context: contextOop environment: anInteger
 session: anInteger fetchBytes: anOopType 
 
 	self 
-		activity: 'fetchBytes ' , anOopType printString 
+		session: anInteger 
+		activity: 'fetchBytes: ' , anOopType printString 
 		critical: [
-			self gciSetSessionId: anInteger.
 			^self fetchBytes: anOopType.
 		].
 !
@@ -598,10 +623,10 @@ session: anInteger fetchObjects: anOopType
 
 	anOopType isSpecial ifTrue: [^self specialFromOop: anOopType].
 	self 
+		session: anInteger 
 		activity: 'fetchObjects: ' , anOopType printString 
 		critical: [
 			| type size array result |
-			self gciSetSessionId: anInteger.
 			(type := self fetchObjImpl: anOopType) = 0 ifFalse: [self error: 'Expected 0 but got ' , type printString].
 			size := self gciFetchSize: anOopType.
 			array := self oopTypeArrayClass new: size.
@@ -618,19 +643,19 @@ session: anInteger fetchObjects: anOopType
 session: session oopForInteger: anInteger
 
 	self 
+		session: anInteger 
 		activity: 'oopForInteger: ' , anInteger printString 
 		critical: [
-			self gciSetSessionId: session.
 			^self oopForInteger: anInteger.
 		].
 !
 
-session: session oopForString: aString
+session: anInteger oopForString: aString
 
 	self 
+		session: anInteger 
 		activity: 'oopForString: ' , aString printString 
 		critical: [
-			self gciSetSessionId: session.
 			^self gciNewString: aString.
 		].
 !
@@ -638,9 +663,9 @@ session: session oopForString: aString
 session: anInteger releaseOops: anArray
 
 	self 
+		session: anInteger 
 		activity: 'releaseOops ' , anArray printString 
 		critical: [
-			self gciSetSessionId: anInteger.
 			self _releaseOops: anArray.
 		].
 !
@@ -648,9 +673,9 @@ session: anInteger releaseOops: anArray
 session: anInteger resolveSymbol: aString
 
 	self 
+		session: anInteger 
 		activity: 'resolveSymbol: ' , aString printString 
 		critical: [
-			self gciSetSessionId: anInteger.
 			^self gciResolveSymbol: aString _: self oopNil.
 		].
 !
@@ -658,9 +683,9 @@ session: anInteger resolveSymbol: aString
 session: anInteger send: aString to: anOopType with: anArray 
 
 	self 
+		session: anInteger 
 		activity: 'send: ' , aString printString , ' to: ' , anOopType printString , ' with: ' , anArray printString
 		critical: [
-			self gciSetSessionId: anInteger.
 			self useNonBlocking ifTrue: [
 				self
 					gciNbPerform: anOopType 
@@ -684,9 +709,9 @@ session: anInteger send: aString to: anOopType with: anArray
 session: session valueOfOop: anOopType
 
 	self 
+		session: session 
 		activity: 'valueOfOop: ' , anOopType printString 
 		critical: [
-			self gciSetSessionId: session.
 			^self valueOfOop: anOopType.
 		].
 !
@@ -742,7 +767,6 @@ version
 !GciSingleThreadedLibrary categoriesFor: #_releaseOops:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #_semaphore!private! !
 !GciSingleThreadedLibrary categoriesFor: #abortSession:!public!required! !
-!GciSingleThreadedLibrary categoriesFor: #activity:critical:!public! !
 !GciSingleThreadedLibrary categoriesFor: #beginSession:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #close!public! !
 !GciSingleThreadedLibrary categoriesFor: #commitSession:!public!required! !
@@ -800,7 +824,7 @@ version
 !GciSingleThreadedLibrary categoriesFor: #logoutSession:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #nbResult!public!to investigate! !
 !GciSingleThreadedLibrary categoriesFor: #pollForSignalSession:!public! !
-!GciSingleThreadedLibrary categoriesFor: #sendInterpreted:to:with:session:!public! !
+!GciSingleThreadedLibrary categoriesFor: #session:activity:critical:!public! !
 !GciSingleThreadedLibrary categoriesFor: #session:clearStack:!public!required! !
 !GciSingleThreadedLibrary categoriesFor: #session:continue:withObject:!public! !
 !GciSingleThreadedLibrary categoriesFor: #session:execute:context:environment:!public!required! !

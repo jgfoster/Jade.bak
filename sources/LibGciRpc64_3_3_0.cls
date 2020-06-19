@@ -84,10 +84,10 @@ session: session execute: aString context: contextOop environment: anInteger
 	self verifyEnvironment: anInteger.
 	utf8 := aString asUtf8String.
 	self 
+		session: session 
 		activity: 'executeString: ' , aString printString 
 		critical: [
 			| oop1 oop2 result | 
-			self gciSetSessionId: session.
 			"http://kermit.gemtalksystems.com/bug?bug=47634 means that we can't use Gci*ExecuteStr*() for UTF-8."
 			(utf8 allSatisfy: [:each | each codePoint <= 127]) ifTrue: [
 				self useNonBlocking ifTrue: [
@@ -151,14 +151,14 @@ session: session execute: aString context: contextOop environment: anInteger
 		]
 !
 
-session: session oopForString: aString
+session: anInteger oopForString: aString
 
 	| utf8 |
 	utf8 := aString asUtf8String.
 	self 
+		session: anInteger 
 		activity: 'Utf8StringFor: ' , aString printString 
 		critical: [
-			self gciSetSessionId: session.
 			^self 
 				gciNewUtf8String_: utf8
 				_: utf8 size 

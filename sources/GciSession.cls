@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask server serverClass semaphore stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask server serverClass stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -23,7 +23,7 @@ _executeString: aString fromContextOop: anOopType environment: anInteger
 
 	^library 
 		session: gciSessionId
-		execute: aString
+		execute: (self encode: aString)
 		context: anOopType
 		environment: anInteger
 !
@@ -33,7 +33,7 @@ _send: aSymbol to: anObject withAll: anArray
 	| arguments oops result |
 	oops := OrderedCollection new.
 	arguments := anArray collect: [:each | 
-		(each isKindOf: Integer) ifTrue: [library session: gciSessionId oopForInteger: each] ifFalse: [
+		(each isKindOf: Integer) ifTrue: [self oopForInteger: each] ifFalse: [
 		(each isKindOf: String) ifTrue: [oops add: (self oopForString: each)] ifFalse: [
 		each]].
 	].
@@ -42,7 +42,7 @@ _send: aSymbol to: anObject withAll: anArray
 			result := library 
 				session: gciSessionId
 				send: aSymbol 
-				to: (self oopTypeFor: anObject) 
+				to: (self oopTypeFor: anObject)
 				with: (self serverArrayFor: arguments).
 		] on: GsRuntimeError do: [:ex | 
 			ex errorReport number == 2106 ifTrue: [
@@ -115,7 +115,8 @@ clearStack: anOopType
 
 	library
 		session: gciSessionId
-		clearStack: anOopType 
+		clearStack: anOopType.
+
 !
 
 clientForwardError: gciErrSType
@@ -126,7 +127,7 @@ clientForwardError: gciErrSType
 		receiver := self valueOfOop: (gciErrSType args at: 2).
 		selector := self valueOfOop: (gciErrSType args at: 3).
 		args := self valueOfArrayOop: (gciErrSType args at: 4).
-		(receiver isNil or: [self clientForwarders size < receiver]) ifTrue: [^library oopNil].
+		(receiver isNil or: [self clientForwarders size < receiver]) ifTrue: [^self oopNil].
 		receiver := self clientForwarders at: receiver.
 		SessionManager inputState pumpMessages.	"This seems to be necessary to allow #withExplanation:doA: to properly keep in synch."
 		^receiver
@@ -220,11 +221,6 @@ gciSessionId
 	^gciSessionId
 !
 
-gciSessionId: aGciSessionId
-
-	gciSessionId := aGciSessionId.
-!
-
 gciVersion
 
 	library ifNil: [^nil].
@@ -282,7 +278,7 @@ heartbeat: receiver arguments: arguments
 			session: gciSessionId
 			send: 'heartbeat' 
 			to: receiver
-			with: arguments
+			with: arguments.
 	].
 	[
 		result isKindOf: GciError.
@@ -372,7 +368,6 @@ initials: initials
 debugPath: debugPath
 
 	| list |
-	semaphore := Semaphore forMutualExclusion.
 	isAutoCommit := false.
 	isAutoMigrate := false.
 	isHandlingClientForwarderSend := false.
@@ -394,16 +389,16 @@ debugPath: debugPath
 		gemHost := ((list at: 1) subStrings: $@) at: 2.
 	].
 	self 
-		loadLibrary: libraryClass debugPath: debugPath;
-		gciSessionId: (library
-			loginHostUser: hostUserID 
-			hostPassword: hostPassword 
-			gsUser: gsUserID 
-			gsPassword: gsPassword 
-			gemNRS: gemNRS 
-			stoneNRS: stoneNRS) ;
-		postLoginAs: initials;
-		yourself.
+		loadLibrary: libraryClass 
+		debugPath: debugPath.
+	gciSessionId := library
+		loginHostUser: hostUserID 
+		hostPassword: hostPassword 
+		gsUser: gsUserID 
+		gsPassword: gsPassword 
+		gemNRS: gemNRS 
+		stoneNRS: stoneNRS.
+	self postLoginAs: initials.
 !
 
 initializeServer
@@ -428,7 +423,7 @@ initializeServer
 	].
 	[
 		| string |
-		string := library encode: serverClass gsString.
+		string := self encode: serverClass gsString.
 		server := self executeString: string.
 	] on: GsRuntimeError do: [:ex | 
 		| number notes |
@@ -588,10 +583,22 @@ netPort
 netTask
 	^netTask!
 
+oopFalse
+
+	^library oopFalse!
+
+oopForInteger: anInteger 
+	"Client-side for SmallInteger but server-side for LargeInteger"
+
+	^library 
+		session: gciSessionId 
+		oopForInteger: anInteger
+!
+
 oopForString: aString
 
 	| log oop |
-	aString isNil ifTrue: [^library oopNil].
+	aString isNil ifTrue: [^self oopNil].
 	oop := library session: gciSessionId oopForString: aString.
 	log := 'Allocated oop ' , oop printString , ' for ' , (aString copyFrom: 1 to: (aString size min: 40)) printString.
 	log := log copyReplacing: Character lf withObject: $\.
@@ -608,12 +615,20 @@ oopIllegal
 	^library oopIllegal.
 !
 
+oopNil
+
+	^library oopNil!
+
+oopTrue
+
+	^library oopTrue!
+
 oopTypeFor: anObject 
 
-	anObject isNil 					ifTrue: [^library oopNil].
+	anObject isNil 					ifTrue: [^self oopNil].
 	(anObject isKindOf: ExternalInteger) 	ifTrue: [^anObject].
-	(anObject isKindOf: Boolean) 			ifTrue: [^anObject ifTrue: [library oopTrue] ifFalse: [library oopFalse]].
-	(anObject isKindOf: SmallInteger) 		ifTrue: [^library session: gciSessionId oopForInteger: anObject].
+	(anObject isKindOf: Boolean) 			ifTrue: [^anObject ifTrue: [self oopTrue] ifFalse: [self oopFalse]].
+	(anObject isKindOf: SmallInteger) 		ifTrue: [^self oopForInteger: anObject].
 	(anObject isKindOf: GsObject) 		ifTrue: [^anObject oopType].
 	(anObject isKindOf: String)			ifTrue: [^self oopForString: anObject].
 	MessageBox notify: 'Sorry, we are not yet prepared to convert ' , anObject printString , ' to an OOP!!'.
@@ -657,6 +672,7 @@ releaseOops: anArray
 	library ifNil: [^self].
 	anArray isEmpty ifTrue: [^self].
 	library session: gciSessionId releaseOops: anArray.
+
 !
 
 returningResultOrErrorDo: aBlock
@@ -698,12 +714,10 @@ send: aSymbol to: anObject withAll: anArray
 	^self
 		withExplanation: stream contents 
 		do: [
-			semaphore critical: [
-				self
-					_send: aSymbol 
-					to: anObject 
-					withAll: anArray.
-			].
+			self
+				_send: aSymbol 
+				to: anObject 
+				withAll: anArray.
 		].
 !
 
@@ -727,10 +741,10 @@ sendInterpreted: aSymbol to: anObject withAll: anArray
 		withExplanation: stream contents 
 		do: [
 			library 
-				sendInterpreted: aSymbol 
+				session: gciSessionId
+				send: aSymbol 
 				to: (self oopTypeFor: anObject) 
-				with: arguments
-				session: gciSessionId.
+				with: arguments.
 		].
 !
 
@@ -862,7 +876,7 @@ signalConfirmationRequestUsing: anOopType64
 	answer := MessageBox
 		confirm: string 
 		caption: 'Server Confirmation Request'.
-	^answer ifTrue: [library oopTrue] ifFalse: [library oopFalse].
+	^answer ifTrue: [self oopTrue] ifFalse: [self oopFalse].
 !
 
 signalInformRequestUsing: anOopType64 
@@ -874,7 +888,7 @@ signalInformRequestUsing: anOopType64
 	MessageBox
 		notify: string 
 		caption: 'Server Inform Request'.
-	^library oopNil
+	^self oopNil
 !
 
 signalMultiLineTextRequestUsing: anOopType64 
@@ -891,7 +905,7 @@ signalMultiLineTextRequestUsing: anOopType64
 		on: template 
 		prompt: prompt 
 		caption: 'Server Text Request'.
-	answer ifNil: [^library oopNil].
+	answer ifNil: [^self oopNil].
 	oop := self oopForString: answer.
 	[
 		self releaseOop: oop.
@@ -913,7 +927,7 @@ signalTextRequestUsing: anOopType64
 		on: template 
 		prompt: prompt 
 		caption: 'Server Text Request'.
-	answer ifNil: [^library oopNil].
+	answer ifNil: [^self oopNil].
 	oop := self oopForString: answer.
 	[
 		self releaseOop: oop.
@@ -1066,7 +1080,8 @@ valueOfArrayOop: anOopType
 
 valueOfOop: anOopType
 
-	^library session: gciSessionId valueOfOop: anOopType.!
+	^library session: gciSessionId valueOfOop: anOopType.
+!
 
 withExplanation: aString do: aBlock
 	"Here we make the call and handle any error."
@@ -1084,9 +1099,11 @@ withExplanation: aString do: aBlock
 	result = #'resume' ifFalse: [self error: 'Unrecognized response of ' , result printString].
 	^self
 		withExplanation: aString 
-		do: [library
-			session: gciSessionId
-			continue: error errorReport contextOop].
+		do: [
+			library
+				session: gciSessionId
+				continue: error errorReport contextOop.
+		]
 !
 
 withExplanation: aString doA: aBlock
@@ -1172,7 +1189,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #beInvalidSession!library-client!public! !
 !GciSession categoriesFor: #briefDescription!public! !
 !GciSession categoriesFor: #clearStack:!Jade!library-server!public! !
-!GciSession categoriesFor: #clientForwardError:!library-client!public! !
+!GciSession categoriesFor: #clientForwardError:!public! !
 !GciSession categoriesFor: #clientForwarders!public! !
 !GciSession categoriesFor: #commit!Jade convenience!public! !
 !GciSession categoriesFor: #debugString:fromContext:environment:!long running!public! !
@@ -1185,7 +1202,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #fetchBytes:!library-server!private! !
 !GciSession categoriesFor: #forceLogout!Jade!public! !
 !GciSession categoriesFor: #gciSessionId!public! !
-!GciSession categoriesFor: #gciSessionId:!private! !
 !GciSession categoriesFor: #gciVersion!library-client!public! !
 !GciSession categoriesFor: #gemHost!accessing!public! !
 !GciSession categoriesFor: #gsHasPragmas!public! !
@@ -1219,9 +1235,13 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #message:caption:icon:buttons:!OmniBrowser!public! !
 !GciSession categoriesFor: #netPort!accessing!public! !
 !GciSession categoriesFor: #netTask!accessing!public! !
+!GciSession categoriesFor: #oopFalse!library-oops!public! !
+!GciSession categoriesFor: #oopForInteger:!library-server!public! !
 !GciSession categoriesFor: #oopForString:!library-server!public! !
 !GciSession categoriesFor: #oopGemStoneError!library-client!public! !
 !GciSession categoriesFor: #oopIllegal!library-client!public! !
+!GciSession categoriesFor: #oopNil!library-oops!public! !
+!GciSession categoriesFor: #oopTrue!library-oops!public! !
 !GciSession categoriesFor: #oopTypeFor:!library-client!public! !
 !GciSession categoriesFor: #oopTypeWithOop:!library-client!public! !
 !GciSession categoriesFor: #postLoginAs:!private! !
@@ -1233,7 +1253,7 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #send:to:!Jade convenience!public! !
 !GciSession categoriesFor: #send:to:withAll:!Jade convenience!long running!public! !
 !GciSession categoriesFor: #sendInterpreted:to:withAll:!Jade convenience!library-server!long running!public! !
-!GciSession categoriesFor: #serverArrayFor:!Jade convenience!library-server!public! !
+!GciSession categoriesFor: #serverArrayFor:!Jade convenience!library-oops!public! !
 !GciSession categoriesFor: #serverClass!accessing!public! !
 !GciSession categoriesFor: #serverPerform:!Jade convenience!public! !
 !GciSession categoriesFor: #serverPerform:with:!Jade convenience!public! !
@@ -1245,10 +1265,10 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #serverPerformInterpreted:with:with:with:!Jade convenience!public! !
 !GciSession categoriesFor: #serverPerformInterpreted:withArguments:!Jade convenience!public! !
 !GciSession categoriesFor: #setInitials:!private! !
-!GciSession categoriesFor: #signalConfirmationRequestUsing:!library-client!OmniBrowser!public! !
-!GciSession categoriesFor: #signalInformRequestUsing:!library-server!OmniBrowser!public! !
-!GciSession categoriesFor: #signalMultiLineTextRequestUsing:!library-server!OmniBrowser!public! !
-!GciSession categoriesFor: #signalTextRequestUsing:!library-server!OmniBrowser!public! !
+!GciSession categoriesFor: #signalConfirmationRequestUsing:!OmniBrowser!public! !
+!GciSession categoriesFor: #signalInformRequestUsing:!OmniBrowser!public! !
+!GciSession categoriesFor: #signalMultiLineTextRequestUsing:!OmniBrowser!public! !
+!GciSession categoriesFor: #signalTextRequestUsing:!OmniBrowser!public! !
 !GciSession categoriesFor: #softBreak!Jade!library-server!public! !
 !GciSession categoriesFor: #startHeartbeat!heartbeat!private! !
 !GciSession categoriesFor: #stepInto:inFrame:!public! !

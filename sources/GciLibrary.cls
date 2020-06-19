@@ -195,11 +195,6 @@ pollForSignalSession: anInteger
 	self subclassResponsibility.
 !
 
-sendInterpreted: aSymbol to: anOopType with: anArray session: anInteger
-
-	self subclassResponsibility.
-!
-
 session: session clearStack: processOop
 
 	self subclassResponsibility.
@@ -309,7 +304,6 @@ version
 !GciLibrary categoriesFor: #oopTypeWithOop:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #oopZero!public!Reserved OOPs!subclassResponsibility! !
 !GciLibrary categoriesFor: #pollForSignalSession:!public!subclassResponsibility! !
-!GciLibrary categoriesFor: #sendInterpreted:to:with:session:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #session:clearStack:!public!subclassResponsibility! !
 !GciLibrary categoriesFor: #session:continue:!public! !
 !GciLibrary categoriesFor: #session:continue:withObject:!public!subclassResponsibility! !

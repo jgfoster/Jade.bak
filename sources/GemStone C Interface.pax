@@ -159,7 +159,7 @@ ExternalLibrary subclass: #GciLibrary
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciLibrary subclass: #GciSingleThreadedLibrary
-	instanceVariableNames: 'semaphore'
+	instanceVariableNames: 'semaphore activity'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
