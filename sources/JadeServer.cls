@@ -387,7 +387,7 @@ addJadeServerToUserGlobals
 
 	| class |
 	class := self class.
-	[class notNil] whileTrue: [
+	[class ~~ Object] whileTrue: [
 		UserGlobals at: class name put: class.
 		class := class superclass.
 	].!
@@ -788,8 +788,8 @@ gsString
 		nextPutAll: 'methodClass := ';
 		nextPutAll: self gsMethodClassName;
 		nextPut: $.; lf;
-		nextPutAll: 'symbolList := System myUserProfile symbolList.'; lf;
-		nextPutAll: 'symbolList := (AllUsers userWithId: ''DataCurator'') symbolList.'; lf;
+		nextPutAll: 'symbolList := System myUserProfile symbolList copy.'; lf;
+		nextPutAll: 'symbolList addAll: (AllUsers userWithId: ''DataCurator'') symbolList.'; lf;
 		nextPutAll: 'symbolList := symbolList class new add: (symbolList detect: [:each | each name == #UserGlobals]); add: (symbolList detect: [:each | each name == #Globals]); yourself.'; lf;
 		nextPutAll: '[class := symbolList objectNamed: #Object.'; lf;
 		yourself.
