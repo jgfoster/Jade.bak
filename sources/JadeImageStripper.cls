@@ -131,7 +131,6 @@ requiredPackageNames
 		add: 'Jade Transcript';
 		add: 'Jade User Browser';
 		add: 'JGF Dolphin';
-		add: 'JGF Fading Dialog';
 		add: 'Jade UI';
 		add: 'Object Log Browser';
 		add: 'Jade Process Browser';
