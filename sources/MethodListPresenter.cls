@@ -187,7 +187,18 @@ selectMethod: aGsMethod
 
 showHistory
 
-	self halt.!
+	| readStream selection string |
+	selection := methodListPresenter selection.
+	string := self gciSession serverPerform: #'browseHistoryOfMethod:' with: selection.
+	readStream := ReadStream on: string.
+	readStream atEnd ifTrue: [
+		MessageBox notify: 'No history available!!'.
+		^self.
+	].
+	(JadeMethodHistoryBrowser showOnSession: self gciSession)
+		setContents: readStream;
+		yourself.
+!
 
 subMenuName
 

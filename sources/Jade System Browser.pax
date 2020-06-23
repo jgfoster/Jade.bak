@@ -18,6 +18,7 @@ package classNames
 package methodNames
 	add: #JadeBrowserPresenter -> #newMethodPresenter;
 	add: #JadeServer -> #_addMethodCategoryNamesToMethodFilters;
+	add: #JadeServer -> #_browseMethodHistoryOf:in:;
 	add: #JadeServer -> #_class:includesSelector:;
 	add: #JadeServer -> #_compiledMethodAt:inClass:;
 	add: #JadeServer -> #_isPackagePolicyEnabled;
@@ -249,6 +250,27 @@ newMethodPresenter
 _addMethodCategoryNamesToMethodFilters
 
 	classList do: [:each | methodFilters addAll: each categoryNames].
+!
+
+_browseMethodHistoryOf: aSelector in: aBehavior
+
+	| historyClass historyList |
+	historyClass := self objectInBaseNamed: #'MethodVersionHistory'.
+	historyClass isNil ifTrue: [^self].
+	historyList := historyClass uniqueInstance 
+		versionsOfMethod: aSelector 
+		in: aBehavior.
+	writeStream nextPutAll: 'browseMethodHistory'; nextPut: Character lf.
+	historyList do: [:each | " behavior selector changeStamp category source"
+		writeStream
+			nextPutAll: each category; tab;
+			nextPutAll: each changeStamp; tab;
+			nextPutAll: each source;
+			nextPut: Character lf;
+			nextPut: $%;
+			nextPut: Character lf;
+			yourself.
+	].
 !
 
 _class: aClass includesSelector: aSelector
@@ -507,25 +529,10 @@ sbBrowseImplementors: anOrderedCollection
 
 sbBrowseMethodHistory: anOrderedCollection
 
-	| behavior selector historyClass historyList |
-	historyClass := self objectInBaseNamed: #'MethodVersionHistory'.
-	historyClass isNil ifTrue: [^self].
+	| behavior selector |
 	behavior := self sbClassFrom: anOrderedCollection.
 	selector := anOrderedCollection removeFirst asSymbol.
-	historyList := historyClass uniqueInstance 
-		versionsOfMethod: selector 
-		in: behavior.
-	writeStream nextPutAll: 'browseMethodHistory'; nextPut: Character lf.
-	historyList do: [:each | " behavior selector changeStamp category source"
-		writeStream
-			nextPutAll: each category; tab;
-			nextPutAll: each changeStamp; tab;
-			nextPutAll: each source;
-			nextPut: Character lf;
-			nextPut: $%;
-			nextPut: Character lf;
-			yourself.
-	].
+	self _browseMethodHistoryOf: selector in: behavior.
 !
 
 sbBrowseMethodsContaining: anOrderedCollection
@@ -1867,6 +1874,7 @@ writeList: aList
 	writeStream lf.
 ! !
 !JadeServer categoriesFor: #_addMethodCategoryNamesToMethodFilters!private!System Browser! !
+!JadeServer categoriesFor: #_browseMethodHistoryOf:in:!private!System Browser! !
 !JadeServer categoriesFor: #_class:includesSelector:!Classes!private! !
 !JadeServer categoriesFor: #_compiledMethodAt:inClass:!private!System Browser! !
 !JadeServer categoriesFor: #_isPackagePolicyEnabled!private!System Browser! !

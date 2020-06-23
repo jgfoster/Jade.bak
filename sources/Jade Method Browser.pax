@@ -38,6 +38,7 @@ package methodNames
 	add: #JadeServer -> #_sendersOf:;
 	add: #JadeServer -> #_streamOfMethods:;
 	add: #JadeServer -> #_stringOfLineNumbersWithBreaksIn:;
+	add: #JadeServer -> #browseHistoryOfMethod:;
 	add: #JadeServer -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer -> #compileMethod:behavior:user:inCategory:;
 	add: #JadeServer -> #deleteMethod:;
@@ -345,6 +346,15 @@ _stringOfLineNumbersWithBreaksIn: aGsMethod
 	stream := self _writeStreamOnString.
 	lines do: [:each | each printOn: stream. stream space].
 	^self _encodeString: stream contents.
+!
+
+browseHistoryOfMethod: aGsMethod
+
+	writeStream := self _writeStreamOnString.
+	self 
+		_browseMethodHistoryOf: aGsMethod selector 
+		in: aGsMethod inClass.
+	^self _encodeString: writeStream contents
 !
 
 compileMethod: methodString behavior: aBehavior symbolList: aSymbolList inCategory: categorySymbol
@@ -667,6 +677,7 @@ streamOfMethods: aList
 !JadeServer categoriesFor: #_sendersOf:!Methods!private! !
 !JadeServer categoriesFor: #_streamOfMethods:!Methods!private! !
 !JadeServer categoriesFor: #_stringOfLineNumbersWithBreaksIn:!Methods!private! !
+!JadeServer categoriesFor: #browseHistoryOfMethod:!Methods!public! !
 !JadeServer categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!private!System Browser! !
 !JadeServer categoriesFor: #compileMethod:behavior:user:inCategory:!Methods!public! !
 !JadeServer categoriesFor: #deleteMethod:!Methods!public! !
