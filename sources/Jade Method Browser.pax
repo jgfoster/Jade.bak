@@ -40,6 +40,7 @@ package methodNames
 	add: #JadeServer -> #_stringOfLineNumbersWithBreaksIn:;
 	add: #JadeServer -> #compileMethod:behavior:symbolList:inCategory:;
 	add: #JadeServer -> #compileMethod:behavior:user:inCategory:;
+	add: #JadeServer -> #deleteMethod:;
 	add: #JadeServer -> #implementorsOf:;
 	add: #JadeServer -> #implementorsOf:startingAt:;
 	add: #JadeServer -> #methodsContaining:;
@@ -469,6 +470,12 @@ compileMethod: methodString behavior: aBehavior user: aUserProfileOrNil inCatego
 	^self _encodeString: stream contents
 !
 
+deleteMethod: aGsMethod
+
+	aGsMethod inClass removeSelector: aGsMethod selector.
+	^true.
+!
+
 implementorsOf: anObject
 
 	| result |
@@ -662,6 +669,7 @@ streamOfMethods: aList
 !JadeServer categoriesFor: #_stringOfLineNumbersWithBreaksIn:!Methods!private! !
 !JadeServer categoriesFor: #compileMethod:behavior:symbolList:inCategory:!Methods!private!System Browser! !
 !JadeServer categoriesFor: #compileMethod:behavior:user:inCategory:!Methods!public! !
+!JadeServer categoriesFor: #deleteMethod:!Methods!public! !
 !JadeServer categoriesFor: #implementorsOf:!Methods!public! !
 !JadeServer categoriesFor: #implementorsOf:startingAt:!public! !
 !JadeServer categoriesFor: #methodsContaining:!Methods!public! !
