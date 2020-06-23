@@ -39,7 +39,6 @@ package classNames
 	add: #JadeServer64bit3x;
 	add: #JadeServerTestCase;
 	add: #TerminateProcess;
-	add: #WaitOnGemStoneDialog;
 	yourself.
 
 package methodNames
@@ -68,19 +67,13 @@ package globalAliases: (Set new
 package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\IDE\Base\Development System'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin'
-	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin Basic Geometry'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin Legacy Date & Time'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
 	'..\Core\Object Arts\Dolphin\MVP\Dialogs\Progress\Dolphin Progress Dialog'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter'
-	'..\Core\Object Arts\Dolphin\MVP\Views\Scintilla\Dolphin Scintilla View'
-	'..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter'
-	'..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters'
-	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
 	'GemStone C Interface'
 	'GemStone Objects'
-	'JGF Fading Dialog'
 	'..\Core\Contributions\Camp Smalltalk\SUnit\SUnit').
 
 package!
@@ -234,11 +227,6 @@ JadeServer64bit32 subclass: #JadeServer64bit33
 	classInstanceVariableNames: ''!
 JadeServer64bit33 subclass: #JadeServer64bit34
 	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	classInstanceVariableNames: ''!
-FadingDialog subclass: #WaitOnGemStoneDialog
-	instanceVariableNames: 'busySeconds codePresenter busySecondsPresenter gciSession timerProcess'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

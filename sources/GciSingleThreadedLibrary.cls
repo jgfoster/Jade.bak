@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 GciLibrary subclass: #GciSingleThreadedLibrary
-	instanceVariableNames: 'semaphore activity'
+	instanceVariableNames: 'semaphore'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -406,10 +406,7 @@ initialize
 	super initialize.
 	semaphore := Semaphore forMutualExclusion.
 	self gciInit ifFalse: [self error: 'GciInit() failed!!'].
-	activity := OrderedCollection new.
-	activity when: #'changed' send: #'value' to: [
-		Transcript cr; show: activity printString; cr.
-	].!
+!
 
 lastError
 
@@ -496,51 +493,19 @@ pollForSignalSession: anInteger
 
 session: anInteger activity: aString critical: aBlock
 
-	| activityEntry result t1 t2 t3 trimString |
-	trimString := [:inString | 
-		| outString |
-		outString := inString copyFrom: 1 to: (50 min: inString size).
-		outString := outString copyReplaceAll: Character cr asString with: ''.
-		outString := outString copyReplaceAll: Character lf asString with: '\n'.
-		outString.
-	].
-	activity size > 100 ifTrue: [activity :=activity last: 99].
-	activityEntry := Array new: 6.
-	activityEntry 
-		at: 1 put: anInteger;
-		at: 2 put: Time now;
-		at: 3 put: (trimString value: aString);
-		yourself.
-	activity add: activityEntry; trigger: #'changed'.
-	t1 := Time millisecondClockValue.
+	| activityEntry result |
+	activityEntry := GciActivity newWithSessionId: anInteger description: aString.
 	semaphore critical: [
-		t2 := Time millisecondClockValue.
-		activityEntry at: 4 put: t2 - t1.
-		activity changed.
+		activityEntry gotSemaphore.
 		anInteger ifNotNil: [self gciSetSessionId: anInteger].
 		[[
 			result := aBlock value.
-			t3 := Time millisecondClockValue.
-			activityEntry
-				at: 5 put: t3 - t2;
-				at: 6 put: (trimString value: result printString);
-				yourself.
-			activity  trigger: #'changed'.
+			activityEntry result: (result == self ifTrue: [''] ifFalse: [result printString]).
 		] ifCurtailed: [
-			t3 := Time millisecondClockValue.
-			activityEntry
-				at: 5 put: t3 - t2;
-				at: 6 put: 'returned';
-				yourself.
-			activity  trigger: #'changed'.
+			activityEntry result: ''.
 		]
 		] on: Error do: [:ex | 
-			t3 := Time millisecondClockValue.
-			activityEntry
-				at: 5 put: t3 - t2;
-				at: 6 put: (trimString value: ex description);
-				yourself.
-			activity  trigger: #'changed'.
+			activityEntry result: ex description.
 			ex pass.
 		]
 	].
@@ -642,6 +607,7 @@ session: anInteger fetchObjects: anOopType
 
 session: session oopForInteger: anInteger
 
+	(anInteger isKindOf: SmallInteger) ifTrue: [^self oopForInteger: anInteger].
 	self 
 		session: anInteger 
 		activity: 'oopForInteger: ' , anInteger printString 

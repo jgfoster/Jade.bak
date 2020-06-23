@@ -174,6 +174,52 @@ encode: aString
 
 	^aString asAnsiString!
 
+evaluate: aBlock
+	"Here we make the call and handle any error."
+
+	| result error |
+	result := self evaluateA: aBlock.
+	self incrementEventCount.
+	(result isKindOf: GsError) ifFalse: [^result].
+
+	error := result.
+	JadeLog log: error description.
+	result := error signal.
+	result = #'resume' ifFalse: [self error: 'Unrecognized response of ' , result printString].
+	^self evaluate: [
+		library
+			session: gciSessionId
+			continue: error errorReport contextOop.
+	]
+!
+
+evaluateA: aBlock
+
+	| result shell waitFlag |
+	shell := View active.
+	shell disable.
+	waitFlag := true.
+	[
+		[
+			[
+				result := self handlingClientForwarderSendDo: aBlock.
+			] ensure: [
+				waitFlag := false.
+			].
+		] on: Error do: [:ex | 
+			result := ex.
+			ex return: nil.
+		].
+	] newProcess name: 'GciSession>>withExplanation:doB: - 1'; resume.
+	"waiting would be better done with a Semaphore, but we need to run the input loop anyway"
+	SessionManager inputState loopWhile: [waitFlag].
+	shell enable.
+	((result isKindOf: Error) and: [(result isKindOf: GciError) not and: [(result isKindOf: GsError) not]]) ifTrue: [
+		self error: result description.	"We want the error to be in the active process"
+	].
+	^result.
+!
+
 eventCount
 
 	^eventCount.
@@ -189,14 +235,12 @@ executeString: aString
 
 executeString: aString fromContext: anObject environment: anInteger
 
-	^self
-		withExplanation: aString 
-		do: [
-			self
-				_executeString: aString
-				fromContextOop: (self oopTypeFor: anObject)
-				environment: anInteger.
-		].
+	^self evaluate: [
+		self
+			_executeString: aString
+			fromContextOop: (self oopTypeFor: anObject)
+			environment: anInteger.
+	]
 !
 
 fetchBytes: anOopType
@@ -698,54 +742,25 @@ send: aSymbol to: anObject
 
 send: aSymbol to: anObject withAll: anArray
 
-	| stream |
-	stream := WriteStream on: String new.
-	stream 
-		nextPutAll: (anObject == server ifTrue: ['jadeServer'] ifFalse: [anObject printString]); cr;
-		nextPutAll: '	perform: #''';
-		nextPutAll: aSymbol;
-		nextPut: $'; cr;
-		nextPutAll: '	withAll: (Array';
-		yourself.
-	anArray do: [:each | 
-		stream cr; nextPutAll: '		with: '; print: each.
-	].
-	stream nextPut: $).
-	^self
-		withExplanation: stream contents 
-		do: [
-			self
-				_send: aSymbol 
-				to: anObject 
-				withAll: anArray.
-		].
+	^self evaluate: [
+		self
+			_send: aSymbol 
+			to: anObject 
+			withAll: anArray.
+	]
 !
 
 sendInterpreted: aSymbol to: anObject withAll: anArray
 
-	| stream arguments |
-	stream := WriteStream on: String new.
-	stream 
-		nextPutAll: (anObject == server ifTrue: ['jadeServer'] ifFalse: [anObject printString]); cr;
-		nextPutAll: '	performInterpreted: #''';
-		nextPutAll: aSymbol;
-		nextPut: $'; cr;
-		nextPutAll: '	withAll: (Array';
-		yourself.
-	anArray do: [:each | 
-		stream cr; nextPutAll: '		with: '; print: each.
-	].
-	stream nextPut: $).
+	| arguments |
 	arguments := self serverArrayFor: anArray.
-	^self
-		withExplanation: stream contents 
-		do: [
-			library 
-				session: gciSessionId
-				send: aSymbol 
-				to: (self oopTypeFor: anObject) 
-				with: arguments.
-		].
+	^self evaluate: [
+		library 
+			session: gciSessionId
+			send: aSymbol 
+			to: (self oopTypeFor: anObject) 
+			with: arguments.
+	]
 !
 
 serverArrayFor: anArray
@@ -1081,104 +1096,6 @@ valueOfArrayOop: anOopType
 valueOfOop: anOopType
 
 	^library session: gciSessionId valueOfOop: anOopType.
-!
-
-withExplanation: aString do: aBlock
-	"Here we make the call and handle any error."
-
-	| result error |
-	result := self
-		withExplanation: aString 
-		doA: aBlock.
-	self incrementEventCount.
-	(result isKindOf: GsError) ifFalse: [^result].
-
-	error := result.
-	JadeLog log: error description.
-	result := error signal.
-	result = #'resume' ifFalse: [self error: 'Unrecognized response of ' , result printString].
-	^self
-		withExplanation: aString 
-		do: [
-			library
-				session: gciSessionId
-				continue: error errorReport contextOop.
-		]
-!
-
-withExplanation: aString doA: aBlock
-	"Here we manage the UI feedback"
-
-	| result haveResult shouldRunEventLoop dialog |
-	haveResult := false.
-	"The next block does the actual work. It is forked to a separate process so we can monitor it from the main process and handle the delay feedback."
-	[
-		[
-			[[
-				result := self handlingClientForwarderSendDo: aBlock.
-			] on: GsInvalidSessionError do: [:ex | ex return: ex].	"Ignore invalid session (logout!!)"
-			] on: Error do: [:ex | 							"Close WaitOnGemStoneDialog"
-				result := ex.
-				haveResult := true.
-				shouldRunEventLoop := false.
-				SessionManager inputState prod.
-				ex pass.
-			].
-		] ensure: [
-			haveResult := true.
-			shouldRunEventLoop := false.
-			SessionManager inputState prod.
-		].
-	] newProcess name: 'GciSession>>withExplanation:doA: - 1'; resume.
-
-	"The following loop handles removing the wait dialog if we are in a ClientForwarderSend, then restoring it when we go back to the server."
-	[
-		shouldRunEventLoop := true.
-		"The next block shows the busy cursor for up to one second. The one second restarts if something happens on the client (ClientForwarderSend)."
-		[
-			| proc |
-			proc := [
-				(Delay forSeconds: 1) wait.
-				shouldRunEventLoop := false.
-				SessionManager inputState prod.
-			] newProcess name: 'GciSession>>withExplanation:doA: - 2'; resume.
-			isHandlingClientForwarderSend ifTrue: [
-				SessionManager inputState loopWhile: [shouldRunEventLoop].
-				shouldRunEventLoop := true.
-			] ifFalse: [
-				Cursor wait showWhile: [
-					SessionManager inputState loopWhile: [shouldRunEventLoop].
-					shouldRunEventLoop := true.
-				].
-			].
-			proc terminate.
-			haveResult ifTrue: [
-				((result isKindOf: Error) and: [(result isKindOf: GciError) not and: [(result isKindOf: GsError) not]]) ifTrue: [self error: result description].
-				^result
-			].
-			isHandlingClientForwarderSend.
-		] whileTrue: [].
-
-		"Now we have been on the server for at least a second and it is time to create a dialog for more detailed feedback (but it doesn't get shown quite yet)."
-		dialog := WaitOnGemStoneDialog
-			gciSession: self 
-			message: aString
-			havingWaited: 1.
-
-		"Watch to see when the main process (above) finishes. Once the work is done we close the wait dialog."
-		[
-			SessionManager inputState loopWhile: [shouldRunEventLoop and: [isHandlingClientForwarderSend not]].
-			dialog view close.
-		] newProcess name: 'GciSession>>withExplanation:doA: - 3'; resume.
-
-		"Show the dialog and wait till the dialog closes."
-		dialog showModal.
-		"The dialog has been closed (either by the background process since the main task finished, or for some other reason."
-		SessionManager inputState pumpMessages.
-		haveResult.	"Dialog may have been closed by a ClientForwarderSend"
-	] whileFalse.
-	((result isKindOf: Error) and: [(result isKindOf: GciError) not and: [(result isKindOf: GsError) not]]) ifTrue: [self error: result description].
-	^result.
 ! !
 !GciSession categoriesFor: #_executeString:fromContextOop:environment:!library-server!private! !
 !GciSession categoriesFor: #_send:to:withAll:!library-server!private! !
@@ -1196,6 +1113,8 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #debugToFilePath:!Jade convenience!library-client!public! !
 !GciSession categoriesFor: #decode:!public! !
 !GciSession categoriesFor: #encode:!public! !
+!GciSession categoriesFor: #evaluate:!library-server!long running!private! !
+!GciSession categoriesFor: #evaluateA:!long running!private! !
 !GciSession categoriesFor: #eventCount!public! !
 !GciSession categoriesFor: #executeString:!Jade convenience!public! !
 !GciSession categoriesFor: #executeString:fromContext:environment:!long running!public! !
@@ -1286,8 +1205,6 @@ withExplanation: aString doA: aBlock
 !GciSession categoriesFor: #userID!public! !
 !GciSession categoriesFor: #valueOfArrayOop:!Jade convenience!library-server!public! !
 !GciSession categoriesFor: #valueOfOop:!Jade convenience!library-server!public! !
-!GciSession categoriesFor: #withExplanation:do:!library-server!long running!private! !
-!GciSession categoriesFor: #withExplanation:doA:!long running!private! !
 
 !GciSession class methodsFor!
 
@@ -1324,8 +1241,8 @@ publishedEventsOfInstances
     	by instances of the receiver."
     
     	^super publishedEventsOfInstances
-			add: #'logoutPending';
-			add: #'logoutRequested:';
+		add: #'logoutPending';
+		add: #'logoutRequested:';
     		add: #'logout';
     		yourself.
     

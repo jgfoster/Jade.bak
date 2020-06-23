@@ -7,7 +7,6 @@ SmalltalkSystemShell allInstances first position: 20@50.
 | list |
 list := #(
 	'JGF Dolphin'
-	'JGF Fading Dialog'
 	'GemStone C Interface'
 	'GemStone Objects'
 	'GemStone Session'

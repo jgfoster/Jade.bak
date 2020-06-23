@@ -116,7 +116,6 @@ requiredClasses
 		addAll: StProgramNode withAllSubclasses;
 		addAll: StToken withAllSubclasses;
 		add: ScintillaIndicator;
-		add: WaitOnGemStoneDialog;
 		yourself!
 
 requiredPackageNames

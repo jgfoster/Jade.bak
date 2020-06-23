@@ -9,6 +9,7 @@ package basicScriptAt: #postinstall put: '''Loaded: GemStone C Interface'' yours
 
 package classNames
 	add: #DoubleByteString;
+	add: #GciActivity;
 	add: #GciCommitFailure;
 	add: #GciError;
 	add: #GciErrSType;
@@ -103,6 +104,11 @@ package!
 
 "Class Definitions"!
 
+Object subclass: #GciActivity
+	instanceVariableNames: 'index process sessionId time request msStart msSemaphore msResult response'
+	classVariableNames: 'Counter'
+	poolDictionaries: ''
+	classInstanceVariableNames: 'activity'!
 DWORDField subclass: #OopType32Field
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -159,7 +165,7 @@ ExternalLibrary subclass: #GciLibrary
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 GciLibrary subclass: #GciSingleThreadedLibrary
-	instanceVariableNames: 'semaphore activity'
+	instanceVariableNames: 'semaphore'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
