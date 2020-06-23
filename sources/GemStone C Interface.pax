@@ -98,6 +98,7 @@ package globalAliases: (Set new
 package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\Base\Dolphin'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin Legacy Date & Time'
+	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
 	'..\Core\Contributions\Camp Smalltalk\SUnit\SUnit').
 
 package!
@@ -105,7 +106,7 @@ package!
 "Class Definitions"!
 
 Object subclass: #GciActivity
-	instanceVariableNames: 'index process sessionId time request msStart msSemaphore msResult response'
+	instanceVariableNames: 'index process sessionId time request msStart msSemaphore msResult response window'
 	classVariableNames: 'Counter'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'activity'!

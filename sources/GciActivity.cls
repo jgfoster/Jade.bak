@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #GciActivity
-	instanceVariableNames: 'index process sessionId time request msStart msSemaphore msResult response'
+	instanceVariableNames: 'index process sessionId time request msStart msSemaphore msResult response window'
 	classVariableNames: 'Counter'
 	poolDictionaries: ''
 	classInstanceVariableNames: 'activity'!
@@ -15,6 +15,11 @@ canBreak
 	^msResult isNil
 !
 
+enableWindow
+
+	window enable.
+!
+
 gotSemaphore
 
 	msSemaphore := Time millisecondClockValue.
@@ -26,17 +31,18 @@ index
 	^index
 !
 
-initializeSessionId: anInteger description: aString
+initializeSessionId: anInteger description: aString window: aView
 
 	Counter ifNil: [Counter := 0].
 	index := Counter := Counter + 1.
 	sessionId := anInteger.
 	time := Time now.
 	process := Processor activeProcess id.
-	request := self trimString: aString.
+	request := aString.
 	self class activity add: self.
 	self triggerActivityChanged.
 	msStart := Time millisecondClockValue.
+	window := aView.
 !
 
 msForResponse
@@ -56,7 +62,7 @@ processId
 
 request
 
-	^request 
+	^self trimString: request 
 !
 
 response
@@ -148,9 +154,10 @@ writeOn: aStream
 		print: response; cr.
 ! !
 !GciActivity categoriesFor: #canBreak!public! !
+!GciActivity categoriesFor: #enableWindow!public! !
 !GciActivity categoriesFor: #gotSemaphore!public! !
 !GciActivity categoriesFor: #index!accessing!public! !
-!GciActivity categoriesFor: #initializeSessionId:description:!public! !
+!GciActivity categoriesFor: #initializeSessionId:description:window:!public! !
 !GciActivity categoriesFor: #msForResponse!accessing!public! !
 !GciActivity categoriesFor: #msForSemaphore!accessing!public! !
 !GciActivity categoriesFor: #processId!accessing!public! !
@@ -177,13 +184,13 @@ new
 	self error: 'use #newWithSessionId:description:'.
 !
 
-newWithSessionId: anInteger description: aString
+newWithSessionId: anInteger description: aString window: aView
 
 	^self basicNew
-		initializeSessionId: anInteger description: aString;
+		initializeSessionId: anInteger description: aString window: aView;
 		yourself
 ! !
 !GciActivity class categoriesFor: #activity!public! !
 !GciActivity class categoriesFor: #new!public! !
-!GciActivity class categoriesFor: #newWithSessionId:description:!public! !
+!GciActivity class categoriesFor: #newWithSessionId:description:window:!public! !
 

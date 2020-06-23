@@ -494,7 +494,7 @@ pollForSignalSession: anInteger
 session: anInteger activity: aString critical: aBlock
 
 	| activityEntry result |
-	activityEntry := GciActivity newWithSessionId: anInteger description: aString.
+	activityEntry := GciActivity newWithSessionId: anInteger description: aString window: View active.
 	semaphore critical: [
 		activityEntry gotSemaphore.
 		anInteger ifNotNil: [self gciSetSessionId: anInteger].
