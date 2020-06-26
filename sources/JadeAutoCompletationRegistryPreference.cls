@@ -297,6 +297,17 @@ paramsToDisplay
 
 	^collection!
 
+publishedAspects
+	"Answer a <LookupTable> of the <Aspect>s published by the receiver."
+
+	| aspects |
+	aspects := super publishedAspects.
+	aspects
+		add: (Aspect string: #variableMap);
+		add: (Aspect string: #paramMap);
+		add: (Aspect string: #registry).
+	^aspects!
+
 register: jadeClass
 	"The receiver register the JadeGsClassShape instance <jadeClass>.
 	- if there is a registered map for JadeGsClassShape instance <jadeClass> then update the class of the map with this new updated instance <jadeClass>.
@@ -426,6 +437,7 @@ variableMap: anObject
 !JadeAutoCompletationRegistryPreference categoriesFor: #paramMap!accessing!private! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #paramMap:!accessing!private! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #paramsToDisplay!public! !
+!JadeAutoCompletationRegistryPreference categoriesFor: #publishedAspects!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #register:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #registerMap:gsClassName:!public! !
 !JadeAutoCompletationRegistryPreference categoriesFor: #registerParamFor:param:!public! !
