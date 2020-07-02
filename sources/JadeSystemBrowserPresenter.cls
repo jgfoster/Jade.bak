@@ -767,12 +767,13 @@ dictionaryListPresenter
 dictsMenuStrings
 
 	false ifTrue: [
-		self browseDictionaryReferences; fileOutDictionary; findClass; insertDictionary; removeDictionary; setHomeDictionary; fileInCode.
+		self browseDictionaryReferences; fileOutDictionaryOne; fileOutDictionaryMany; findClass; insertDictionary; removeDictionary; setHomeDictionary; fileInCode.
 	].
 	^#(
 		'&Dictionaries'
 		'&Browse References//browseDictionaryReferences'
-		'&File Out Dictionary//fileOutDictionary'
+		'&File Out Dictionary as One File//fileOutDictionaryOne'
+		'&File Out Dictionary as Many Files//fileOutDictionaryMany'
 		'File In Code//fileInCode'
 		'&Find Class/Ctrl+Shift+F/findClass'
 		'&Insert Dictionary//insertDictionary'
@@ -1051,7 +1052,60 @@ fileOutClassOnPath: aString
 	].
 !
 
-fileOutDictionary
+fileOutDictionaryMany
+
+	| dictionaryName file index1 index2 isUTF marker partialPath path string type writeStream |
+	dictionaryName :=  dictionaryListPresenter selection key.
+	path := FileSaveDialog new
+		caption: 'File Out ' , dictionaryName;
+		fileTypes: self fileTypes;
+		defaultExtension: self defaultFileExtension;
+		value: dictionaryName , '.gs';
+		overwritePrompt;
+		showModal.
+	path isNil ifTrue: [^self].
+	string := environment printString , ' fileOutDictionary' , Character tab asString , dictionaryName.
+	string := self gciSession encode: string.
+	string := self gciSession 
+		serverPerform: #'systemBrowser:' 
+		with: string.
+	string := self gciSession decode: string.
+	index1 := string indexOf: Character lf.	string := string copyFrom: index1 + 1 to: string size.
+	isUTF := string anySatisfy: [:each | 127 < each codePoint].
+	type := isUTF ifTrue: [#'utf8'] ifFalse: [#'ansi'].
+	marker := '!! ------------------- Remove existing behavior from '.
+	index1 := string indexOfSubCollection: marker startingAt: 1 ifAbsent: [string size + 1].
+	writeStream := WriteStream on: String new.
+	writeStream nextPutAll: (string copyFrom: 1 to: index1 - 1).
+	index2 := path lastIndexOf: $\.
+	partialPath := path copyFrom: 1 to: index2.
+	[index1 < string size] whileTrue: [
+		| name |
+		index2 := string indexOf: Character lf startingAt: index1.
+		name := string copyFrom: index1 + marker size to: index2 - 1.
+		writeStream 
+			nextPutAll: 'input ';
+			nextPutAll: name;
+			nextPutAll: '.gs';
+			nextPut: Character lf.
+		index2 := string indexOfSubCollection: marker startingAt: index1 + 1 ifAbsent: [string size + 2].
+		file := FileStream write: partialPath , name , '.gs' mode: #'truncate' check: false type: type.
+		[
+			file nextPutAll: (string copyFrom: index1 to: index2 - 2).
+		] ensure: [
+			file close.
+		].
+		index1 := index2.
+	].
+	file := FileStream write: path mode: #'truncate' check: false type: type.
+	[
+		file nextPutAll: writeStream contents.
+	] ensure: [
+		file close.
+	].
+!
+
+fileOutDictionaryOne
 
 	| dictionaryName file index isUTF path string |
 	dictionaryName :=  dictionaryListPresenter selection key.
@@ -3513,7 +3567,8 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #fileInCode!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutClassOnPath:!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #fileOutDictionary!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #fileOutDictionaryMany!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #fileOutDictionaryOne!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutMethod!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutMethodOnPath:!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileTypes!menu handlers!public! !
