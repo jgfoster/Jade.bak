@@ -1054,7 +1054,7 @@ fileOutClassOnPath: aString
 
 fileOutDictionaryMany
 
-	| dictionaryName file index1 index2 isUTF marker partialPath path string type writeStream |
+	| classDefinitions dictionaryName file fileNames index1 index2 inputs isUTF marker partialPath path string type |
 	dictionaryName :=  dictionaryListPresenter selection key.
 	path := FileSaveDialog new
 		caption: 'File Out ' , dictionaryName;
@@ -1075,19 +1075,22 @@ fileOutDictionaryMany
 	type := isUTF ifTrue: [#'utf8'] ifFalse: [#'ansi'].
 	marker := '!! ------------------- Remove existing behavior from '.
 	index1 := string indexOfSubCollection: marker startingAt: 1 ifAbsent: [string size + 1].
-	writeStream := WriteStream on: String new.
-	writeStream nextPutAll: (string copyFrom: 1 to: index1 - 1).
+	classDefinitions := string copyFrom: 1 to: index1 - 1.
 	index2 := path lastIndexOf: $\.
 	partialPath := path copyFrom: 1 to: index2.
+	fileNames := Set new.
+	inputs := OrderedCollection new.
 	[index1 < string size] whileTrue: [
 		| name |
 		index2 := string indexOf: Character lf startingAt: index1.
 		name := string copyFrom: index1 + marker size to: index2 - 1.
-		writeStream 
-			nextPutAll: 'input ';
-			nextPutAll: name;
-			nextPutAll: '.gs';
-			nextPut: Character lf.
+		[
+			fileNames includes: name asUppercase.
+		] whileTrue: [
+			name := name , '_'.
+		].
+		fileNames add: name asUppercase.
+		inputs add: 'input ' , name , '.gs'.
 		index2 := string indexOfSubCollection: marker startingAt: index1 + 1 ifAbsent: [string size + 2].
 		file := FileStream write: partialPath , name , '.gs' mode: #'truncate' check: false type: type.
 		[
@@ -1099,7 +1102,10 @@ fileOutDictionaryMany
 	].
 	file := FileStream write: path mode: #'truncate' check: false type: type.
 	[
-		file nextPutAll: writeStream contents.
+		file nextPutAll: classDefinitions.
+		inputs asSortedCollection do: [:each | 
+			file nextPutAll: each; lf.
+		].
 	] ensure: [
 		file close.
 	].

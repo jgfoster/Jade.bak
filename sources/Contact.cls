@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Model subclass: #Contact
-	instanceVariableNames: 'oop name title phone'
+	instanceVariableNames: 'oop name title phone version'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -65,16 +65,18 @@ initialize
 	name 	:= ''.
 	title 		:= ''.
 	phone 	:= ''.
+	version	:= '0'.
 !
 
 initialize: aString
 
 	| list |
-	list := aString , '					' subStrings: Character tab.
+	list := aString , '						' subStrings: Character tab.
 	oop 		:= list at: 1.
 	name 	:= list at: 2.
 	title 		:= list at: 3.
 	phone 	:= list at: 4.
+	version	:= (list at: 5) isEmpty ifTrue: ['0'] ifFalse: [list at: 5].
 !
 
 name
@@ -102,11 +104,12 @@ saveUsing: gciSession
 | array |
 array := ContactList 
 	detect: [:each | each asOop = ' , oop , ']
-	ifNone: [ContactList add: (Array new: 3)].
+	ifNone: [ContactList add: (Array new: 4)].
 array
 	at: 1 put: ' , name printString , ';
 	at: 2 put: ' , title printString , ';
 	at: 3 put: ' , phone printString , ';
+	at: 4 put: ' , (version asNumber + 1) printString printString , ';
 	yourself.
 nil'.
 	result := gciSession executeString: string.
@@ -118,7 +121,14 @@ title
 	^title!
 
 title: anObject
-	title := anObject! !
+	title := anObject!
+
+version
+	^version!
+
+version: anInteger
+	version := anInteger.
+! !
 !Contact categoriesFor: #attemptLock:session:!public! !
 !Contact categoriesFor: #initialize!public! !
 !Contact categoriesFor: #initialize:!public! !
@@ -131,6 +141,8 @@ title: anObject
 !Contact categoriesFor: #saveUsing:!public! !
 !Contact categoriesFor: #title!accessing!public! !
 !Contact categoriesFor: #title:!accessing!public! !
+!Contact categoriesFor: #version!accessing!public! !
+!Contact categoriesFor: #version:!accessing!public! !
 
 !Contact class methodsFor!
 
@@ -152,10 +164,10 @@ fillListString
 		10 < i ifTrue: [nil error: ''Unable to create ContactList!!''].
 	].
 	stream := WriteStream on: String new.
-	(ContactsGlobals at: #ContactList) do: [:eachContact | 	"really (Array with: nameString with: titleString with: phoneString)" 
+	(ContactsGlobals at: #ContactList) do: [:eachContact | 	"really (Array with: nameString with: titleString with: phoneString with: version)" 
 		eachContact asOop printOn: stream.
 		eachContact do: [:each | 
-			stream tab; nextPutAll: each.
+			stream tab; nextPutAll: each asString.
 		].
 		stream nextPut: Character lf.
 	].

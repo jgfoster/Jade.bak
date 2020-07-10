@@ -396,6 +396,7 @@ beginTransaction
 
 	classOrganizers := Array new: 4.
 	System beginTransaction.
+	self _refreshSymbolList.
 !
 
 clearBreakAtStepPoint: anInteger inMethod: aGsMethod
@@ -405,8 +406,11 @@ clearBreakAtStepPoint: anInteger inMethod: aGsMethod
 
 commit
 
+	| flag |
 	classOrganizers := Array new: 4.
-	^System commitTransaction.
+	flag := System commitTransaction.
+	self _refreshSymbolList.
+	^flag
 !
 
 contents
