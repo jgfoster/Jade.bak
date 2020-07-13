@@ -31,7 +31,7 @@ compile: aString in: aJadeGsMethodShape
 	targetClass := aJadeGsMethodShape isInstanceMethod ifTrue: [aJadeGsMethodShape ownerClass] ifFalse: [aJadeGsMethodShape ownerClass, ' class'].
 
 	replacementString := 
-		aString ifNil: [aJadeGsMethodShape replacementSource: (parentPresenter gciSession executeString: self gemStoneReplacementCode). 
+		aString ifNil: [aJadeGsMethodShape replacementSource: (parentPresenter gciSession executeString: (self gemStoneReplacementCodeFor: aJadeGsMethodShape )). 
 				aJadeGsMethodShape replacementSource]
 		ifNotNil: [:value | value].
 
@@ -56,26 +56,26 @@ newLinesAfterMethodComment: 1;
 keepBlockInMessage: true;
 yourself.'!
 
-gemStoneReplacementCode
+gemStoneReplacementCodeFor: aJadeGsMethodShape
 
 	^parentPresenter isMethodPresenterValue 
-		ifTrue: [self gemStoneReplacementCodeForMethod] 
-		ifFalse: [self gemStoneReplacementCodeForExpression]!
+		ifTrue: [self gemStoneReplacementCodeForMethodFor: aJadeGsMethodShape] 
+		ifFalse: [self gemStoneReplacementCodeForExpressionFor: aJadeGsMethodShape]!
 
-gemStoneReplacementCodeForExpression
+gemStoneReplacementCodeForExpressionFor: aJadeGsMethodShape
 
 	^'| progamNode rewriter |
-	progamNode := RBParseTreeSearcher buildTree: ''', (parentPresenter quoteSourceCode: methodsPresenter selection source), ''' method: true.
+	progamNode := RBParseTreeSearcher buildTree: ''', (parentPresenter quoteSourceCode: aJadeGsMethodShape source), ''' method: true.
 	rewriter := RBParseTreeRewriter new.
 	rewriter replace: ''', parentPresenter currentRule , ''' with: ''', parentPresenter replaceText, '''.
 	rewriter executeTree: progamNode.
 	^', JadeRewriteToolPreference default formatterClass, ' new format: rewriter tree'
 	!
 
-gemStoneReplacementCodeForMethod
+gemStoneReplacementCodeForMethodFor: aJadeGsMethodShape
 
 	^'| progamNode rewriter |
-	progamNode := RBParseTreeSearcher buildTree: ''', (parentPresenter quoteSourceCode: methodsPresenter selection source), ''' method: true.
+	progamNode := RBParseTreeSearcher buildTree: ''', (parentPresenter quoteSourceCode: aJadeGsMethodShape source), ''' method: true.
 	rewriter := RBParseTreeRewriter new.
 	rewriter replaceMethod: ''', parentPresenter currentRule , ''' with: ''', parentPresenter replaceText, '''.
 	rewriter executeTree: progamNode.
@@ -90,7 +90,7 @@ onSelectorChanged
 
 	parentPresenter isReplacing ifFalse: [^self].
 
-	methodsPresenter selection replacementSource: (parentPresenter gciSession executeString: self gemStoneReplacementCode).
+	methodsPresenter selection replacementSource: (parentPresenter gciSession executeString: (self gemStoneReplacementCodeFor: methodsPresenter selection)).
 	differencePresenter afterText: methodsPresenter selection replacementSource.
 
 	differencePresenter refresh!
@@ -127,9 +127,9 @@ rollbackAll
 !JadeRewriteReplaceMethodsList categoriesFor: #compile:in:!code actions!public! !
 !JadeRewriteReplaceMethodsList categoriesFor: #createComponents!public! !
 !JadeRewriteReplaceMethodsList categoriesFor: #gemStoneConfigurableFormatterOptions!public! !
-!JadeRewriteReplaceMethodsList categoriesFor: #gemStoneReplacementCode!public! !
-!JadeRewriteReplaceMethodsList categoriesFor: #gemStoneReplacementCodeForExpression!public! !
-!JadeRewriteReplaceMethodsList categoriesFor: #gemStoneReplacementCodeForMethod!public! !
+!JadeRewriteReplaceMethodsList categoriesFor: #gemStoneReplacementCodeFor:!public! !
+!JadeRewriteReplaceMethodsList categoriesFor: #gemStoneReplacementCodeForExpressionFor:!public! !
+!JadeRewriteReplaceMethodsList categoriesFor: #gemStoneReplacementCodeForMethodFor:!public! !
 !JadeRewriteReplaceMethodsList categoriesFor: #onSelectorChanged!public! !
 !JadeRewriteReplaceMethodsList categoriesFor: #onViewOpened!public! !
 !JadeRewriteReplaceMethodsList categoriesFor: #rollback!code actions!public! !
