@@ -26,13 +26,18 @@ applyTo: aJadeGsMethodShape
 	self compile: aJadeGsMethodShape replacementSource in: aJadeGsMethodShape !
 
 compile: aString in: aJadeGsMethodShape 
-	| targetClass gsCommand |
+	| targetClass gsCommand replacementString |
 
 	targetClass := aJadeGsMethodShape isInstanceMethod ifTrue: [aJadeGsMethodShape ownerClass] ifFalse: [aJadeGsMethodShape ownerClass, ' class'].
 
+	replacementString := 
+		aString ifNil: [aJadeGsMethodShape replacementSource: (parentPresenter gciSession executeString: self gemStoneReplacementCode). 
+				aJadeGsMethodShape replacementSource]
+		ifNotNil: [:value | value].
+
 	gsCommand := String new writeStream.
 	gsCommand nextPutAll: targetClass, ' compile: ''';
-		nextPutAll: (parentPresenter quoteSourceCode: aString);
+		nextPutAll: (parentPresenter quoteSourceCode: replacementString);
 		nextPutAll:  '''.'.
 
 	^parentPresenter gciSession executeString: gsCommand contents!
