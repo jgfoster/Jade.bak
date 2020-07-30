@@ -3,6 +3,7 @@ package := Package name: 'Jade Rewrite tool'.
 package paxVersion: 1;
 	basicComment: ''.
 
+package basicScriptAt: #postinstall put: 'JadeRewriteToolPreference default formatterClass: ''RBFormatter''.'.
 
 package classNames
 	add: #JadeGsMethodShape;
