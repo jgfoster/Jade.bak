@@ -174,7 +174,7 @@ onViewOpened
 	self candidatesMethodsList: #().
 
 	"check if Rewrite classes are present in GemStone/S server if not --> Rewrite Tool is disabled"
-	(parentPresenter gciSession executeString: '(Smalltalk includesKey: #RBParseTreeSearcher) and: [Smalltalk includesKey: #RBParseTreeRewriter]')
+	(parentPresenter gciSession executeString: '(System myUserProfile objectNamed: #RBParseTreeSearcher) notNil and: [(System myUserProfile objectNamed:  #RBParseTreeRewriter) notNil]')
 	ifFalse: [searchTextPresenter value: 'This version of GEMSTONE does NOT include [RBParseTreeSearcher and RBParseTreeRewriter] classes.', String lineDelimiter, 'The Rewrite Tool has been disabled !!!!!!'.
 			view isEnabled: false ]!
 
