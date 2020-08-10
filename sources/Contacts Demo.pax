@@ -5,11 +5,22 @@ package paxVersion: 1;
 
 package basicPackageVersion: '0.021'.
 
-package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiAzIEYPFQAEAAAAQ29udGFjdHNJbWFnZVN0cmlwcGVyAAAAAFIAAAANAAAAQ29udGFjdHMg
-RGVtb1IAAAAUAAAAUnVudGltZVxDb250YWN0cy5leGWaAAAAUgAAAA0AAABDb250YWN0cyBEZW1v
-UgAAABYAAABDb250YWN0c1Nlc3Npb25NYW5hZ2Vy77clAFIAAABDAAAAc2VsZiBsb2FkSmFkZVNl
-cnZlclNvdXJjZUNhY2hlOyBjb3B5UnVudGltZUZpbGVzOyBjbG9zZUxvZ2luU2hlbGxzLgAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==').
+package imageStripperBytes: (ByteArray fromBase64String: 'IVNUQiA0IEYWFQAGAAAAQ29udGFjdHNJbWFnZVN0cmlwcGVyAAAAAFIAAAANAAAAQ29udGFjdHMg
+RGVtb1IAAAAUAAAAUnVudGltZVxDb250YWN0cy5leGWaAAAAEgEAAA0AAABDb250YWN0cyBEZW1v
+EgEAABYAAABDb250YWN0c1Nlc3Npb25NYW5hZ2Vy77clABIBAABDAAAAc2VsZiBsb2FkSmFkZVNl
+cnZlclNvdXJjZUNhY2hlOyBjb3B5UnVudGltZUZpbGVzOyBjbG9zZUxvZ2luU2hlbGxzLgYDDwBW
+ZXJzaW9uUmVzb3VyY2UGARAAVlNfRklYRURGSUxFSU5GT3IAAAA0AAAAvQTv/gAAAQAAAAEAAQAA
+AAAAAQABAAAAPwAAAAAAAAAEAAAAAgAAAAAAAAAAAAAAAAAAAOoAAADwAAAAYgAAAAIAAAASAQAA
+CAAAADA0MDkwNGIw6gAAAPAAAABiAAAADgAAABIBAAAOAAAATGVnYWxDb3B5cmlnaHQSAQAATgAA
+AENvcHlyaWdodCDCqSBHZW1UYWxrIFN5c3RlbXMgTExDOyBQb3J0aW9ucyBDb3B5cmlnaHQgwqkg
+T2JqZWN0IEFydHMgMTk5Ny0yMDE2LhIBAAAIAAAAQ29tbWVudHMSAQAAUQAAAENvbnRhY3RzIERl
+bW8gZm9yIEdlbVN0b25lL1MgRnVuZGFtZW50YWxzIFRyYWluaW5nLiBQb3dlcmVkIGJ5IERvbHBo
+aW4gU21hbGx0YWxrLhIBAAAPAAAARmlsZURlc2NyaXB0aW9uEgEAABcAAABHZW1TdG9uZSBDb250
+YWN0cyBEZW1vLhIBAAALAAAAUHJvZHVjdE5hbWUSAQAADQAAAENvbnRhY3RzIERlbW8SAQAACwAA
+AEZpbGVWZXJzaW9uEgEAAAoAAAAxLCAwLCAwLCAxEgEAABAAAABPcmlnaW5hbEZpbGVuYW1lEgEA
+AAwAAABDb250YWN0cy5leGUSAQAADgAAAFByb2R1Y3RWZXJzaW9uEgEAAAoAAAAxLCAwLCAwLCAx
+ygAAANAAAABiAAAAAQAAAAYCCgBEV09SREFycmF5cgAAAAQAAAAJBLAEAwAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==').
 
 package classNames
 	add: #Contact;
@@ -35,8 +46,10 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\List\Dolphin List Presenter'
 	'..\Core\Object Arts\Dolphin\Base\Dolphin Message Box'
 	'..\Core\Object Arts\Dolphin\MVP\Base\Dolphin MVP Base'
+	'..\Core\Object Arts\Dolphin\MVP\Presenters\Radio\Dolphin Radio Buttons'
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Text\Dolphin Text Presenter'
 	'..\Core\Object Arts\Dolphin\MVP\Type Converters\Dolphin Type Converters'
+	'..\Core\Object Arts\Dolphin\MVP\Models\Value\Dolphin Value Models'
 	'Jade Deployment'
 	'Jade Login').
 
@@ -50,7 +63,7 @@ JadeImageStripper subclass: #ContactsImageStripper
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Model subclass: #Contact
-	instanceVariableNames: 'oop name title phone'
+	instanceVariableNames: 'oop name title phone version'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -65,7 +78,7 @@ ContactsShell subclass: #ContactEditor
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 ContactsShell subclass: #ContactsBrowser
-	instanceVariableNames: 'listPresenter commitRecordPresenter'
+	instanceVariableNames: 'listPresenter beginPresenter listClassPresenter commitRecordPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

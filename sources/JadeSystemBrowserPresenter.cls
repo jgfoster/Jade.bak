@@ -1051,7 +1051,67 @@ fileOutClassOnPath: aString
 	].
 !
 
-fileOutDictionary
+fileOutDictionaryMany
+
+	| classDefinitions dictionaryName file fileNames index1 index2 inputs isUTF marker partialPath path string type |
+	dictionaryName :=  dictionaryListPresenter selection key.
+	path := FileSaveDialog new
+		caption: 'File Out ' , dictionaryName;
+		fileTypes: self fileTypes;
+		defaultExtension: self defaultFileExtension;
+		value: dictionaryName , '.gs';
+		overwritePrompt;
+		showModal.
+	path isNil ifTrue: [^self].
+	string := environment printString , ' fileOutDictionary' , Character tab asString , dictionaryName.
+	string := self gciSession encode: string.
+	string := self gciSession 
+		serverPerform: #'systemBrowser:' 
+		with: string.
+	string := self gciSession decode: string.
+	index1 := string indexOf: Character lf.
+	string := string copyFrom: index1 + 1 to: string size.
+	isUTF := string anySatisfy: [:each | 127 < each codePoint].
+	type := isUTF ifTrue: [#'utf8'] ifFalse: [#'ansi'].
+	marker := '!! ------------------- Remove existing behavior from '.
+	index1 := string indexOfSubCollection: marker startingAt: 1 ifAbsent: [string size + 1].
+	classDefinitions := string copyFrom: 1 to: index1 - 1.
+	index2 := path lastIndexOf: $\.
+	partialPath := path copyFrom: 1 to: index2.
+	fileNames := Set new.
+	inputs := OrderedCollection new.
+	[index1 < string size] whileTrue: [
+		| name |
+		index2 := string indexOf: Character lf startingAt: index1.
+		name := string copyFrom: index1 + marker size to: index2 - 1.
+		[
+			fileNames includes: name asUppercase.
+		] whileTrue: [
+			name := name , '_'.
+		].
+		fileNames add: name asUppercase.
+		inputs add: 'input ' , name , '.gs'.
+		index2 := string indexOfSubCollection: marker startingAt: index1 + 1 ifAbsent: [string size + 2].
+		file := FileStream write: partialPath , name , '.gs' mode: #'truncate' check: false type: type.
+		[
+			file nextPutAll: (string copyFrom: index1 to: index2 - 2).
+		] ensure: [
+			file close.
+		].
+		index1 := index2.
+	].
+	file := FileStream write: path mode: #'truncate' check: false type: type.
+	[
+		file nextPutAll: classDefinitions.
+		inputs asSortedCollection do: [:each | 
+			file nextPutAll: each; lf.
+		].
+	] ensure: [
+		file close.
+	].
+!
+
+fileOutDictionaryOne
 
 	| dictionaryName file index isUTF path string |
 	dictionaryName :=  dictionaryListPresenter selection key.
@@ -1069,7 +1129,8 @@ fileOutDictionary
 		serverPerform: #'systemBrowser:' 
 		with: string.
 	string := self gciSession decode: string.
-	index := string indexOf: Character lf.	string := string copyFrom: index + 1 to: string size.
+	index := string indexOf: Character lf.
+	string := string copyFrom: index + 1 to: string size.
 	isUTF := string anySatisfy: [:each | 127 < each codePoint].
 	file := FileStream write: path mode: #'truncate' check: false type: (isUTF ifTrue: [#'utf8'] ifFalse: [#'ansi']).
 	[
@@ -1460,7 +1521,8 @@ jadeExecuteAndDisplay: aBoolean
 		textView
 			caretPosition: selectionRange start + offset - 1;
 			replaceSelection: result;
-			selectionStart: textView caretPosition - result size length: result size.
+			selectionStart: textView caretPosition - result size length: result size.
+
 		^self
 	].
 !
@@ -1468,7 +1530,8 @@ jadeExecuteAndDisplay: aBoolean
 jadeInspect
 
 	| result |
-	result := self jadeExecuteAndDisplay: false.	result == self ifTrue: [^self].	"flag for compile error"
+	result := self jadeExecuteAndDisplay: false.
+	result == self ifTrue: [^self].	"flag for compile error"
 	JadeInspector showOn: result session: gciSession.
 !
 
