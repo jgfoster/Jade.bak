@@ -182,19 +182,19 @@ initializeFromXML: aString
 	element := (IXMLDOMDocument new loadText: aString) documentElement.
 	element baseName = 'JadeLogin' ifFalse: [self error: 'Invalid document!!'].
 	gemVersion	:= (element getAttribute: 'gemVersion'	) ifNil: [''].
-	stoneHost		:= (element getAttribute: 'stoneHost'		) ifNil: [''].
+	stoneHost	:= (element getAttribute: 'stoneHost'		) ifNil: [''].
 	stoneName	:= (element getAttribute: 'stoneName'		) ifNil: [''].
-	stoneNRS		:= (element getAttribute: 'stoneNRS'		) ifNil: [''].
+	stoneNRS	:= (element getAttribute: 'stoneNRS'		) ifNil: [''].
 	gemType		:= (element getAttribute: 'gemType'		) asSymbol.
 	gemHost		:= (element getAttribute: 'gemHost'		) ifNil: [''].
 	gemService	:= (element getAttribute: 'gemService'		) ifNil: [''].
 	gemNRS		:= (element getAttribute: 'gemNRS'		) ifNil: [''].
-	loginType		:= (element getAttribute: 'loginType'		) ifNil: [''].
-	loginType 		:= loginType isNil ifTrue: [#'guest'] ifFalse: [loginType asSymbol].
+	loginType	:= (element getAttribute: 'loginType'		) ifNil: [''].
+	loginType 	:= loginType isNil ifTrue: [#'guest'] ifFalse: [loginType asSymbol].
 	hostUserID	:= (element getAttribute: 'hostUserID'		) ifNil: [''].
 	hostPassword	:= (element getAttribute: 'hostPassword'	) ifNil: [''].
 	gsUserID		:= (element getAttribute: 'gsUserID'		) ifNil: [''].
-	gsPassword	:= (element getAttribute: 'gsPassword'	) ifNil: [''].
+	gsPassword	:= (element getAttribute: 'gsPassword'		) ifNil: [''].
 	initials		:= (element getAttribute: 'initials'			) ifNil: [''].
 !
 
@@ -381,16 +381,18 @@ transcript: aJadeTranscript
 !JadeLogin class methodsFor!
 
 default
+	"Edited to address https://github.com/jgfoster/Jade/issues/262"
 
-	| path stream string |
-	path := self defaultPath.
-	string := self defaultXML.
-	[
+	^[
+		| path stream string |
+		path := self defaultPath.
 		stream := FileStream read: path type: #'ansi'.
 		string := stream upToEnd.
 		stream close.
-	] on: Error do: [:ex | ].	"file doesn't exist or we have an error reading it"
-	^self fromXML: string.
+		self fromXML: string.
+	] on: Error do: [:ex | 	"file doesn't exist or we have an error reading it"
+		ex return: (self fromXML: self defaultXML).
+	].
 !
 
 defaultPath
