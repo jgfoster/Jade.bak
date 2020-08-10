@@ -224,8 +224,8 @@ restoreLayoutAndContentsFromFile
 		bytes := ByteArray new: file size.
 		file read: bytes; close.
 		data := Object fromBinaryStoreBytes: bytes.
-		(data at: 1) == 1 ifFalse: [self error: 'Wrong version!!'].
-		(data at: 2) top < 0 ifTrue: [self error: 'Invalid position!!'].
+		(data at: 1) == 1 ifFalse: [self error: 'Wrong version!!!!'].
+		(data at: 2) top < 0 ifTrue: [self error: 'Invalid position!!!!'].
 		self view rectangle: (data at: 2).
 		(data at: 3) do: [:each | 
 			self addSystemBrowserWithLayoutInfo: each.
