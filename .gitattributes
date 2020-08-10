@@ -4,5 +4,5 @@ text eol=crlf
 *.gs linguist-language=Smalltalk
 *.st linguist-language=Smalltalk
 *.tpz linguist-language=Smalltalk
-.cls linguist-language=Smalltalk
-.pax linguist-language=Smalltalk
+*.cls linguist-language=Smalltalk
+*.pax linguist-language=Smalltalk

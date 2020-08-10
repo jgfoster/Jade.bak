@@ -20,6 +20,13 @@ GsObject comment: ''!
 	^self class = aGsObject2 class and: [self oopType = aGsObject2 oopType].
 !
 
+finalize
+
+	oopType ifNotNil: [
+		gciSession releaseOop: oopType.
+	].
+!
+
 gciSession
 
 	^gciSession.
@@ -82,6 +89,7 @@ printOn: aStream
 ! !
 !GsObject categoriesFor: #<=!public! !
 !GsObject categoriesFor: #=!public! !
+!GsObject categoriesFor: #finalize!public! !
 !GsObject categoriesFor: #gciSession!public! !
 !GsObject categoriesFor: #gciSession:!public! !
 !GsObject categoriesFor: #hash!public! !
@@ -140,6 +148,12 @@ listFromString: aString session: aGciSession
 	list := list collect: [:each | self fromString: each session: aGciSession].
 	^list!
 
+new
+
+	^self basicNew
+		beFinalizable;
+		yourself!
+
 xmlBaseName
 
 	^self subclassResponsibility.
@@ -149,5 +163,6 @@ xmlBaseName
 !GsObject class categoriesFor: #fromStringXML:session:!public! !
 !GsObject class categoriesFor: #fromXML:session:!public! !
 !GsObject class categoriesFor: #listFromString:session:!public! !
+!GsObject class categoriesFor: #new!public! !
 !GsObject class categoriesFor: #xmlBaseName!public! !
 
