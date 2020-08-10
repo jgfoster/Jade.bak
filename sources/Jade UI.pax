@@ -330,7 +330,7 @@ _sourceForProcess: gsProcess frame: level
 		nextPutAll: '></source>';
 		nextPutAll: '</frame>'; lf;
 		yourself.
-	^self _encodeString: writeStream contents.
+	^writeStream contents.
 !
 
 _stepPointFromProcess: gsProcess frame: aFrame method: gsMethod level: anInteger
@@ -467,9 +467,9 @@ sourceForProcess: gsProcess frame: level
 		do: [:ex :cat :num :args | 
 			^self _asAsciiString: ('?????' , ex printString , ' - ' , num printString , ' - ' ,  args printString , 
 				Character cr asString , (GsProcess stackReportToLevel: 50))].
-	^self
+	^self _encodeString: (self
 		_sourceForProcess: gsProcess 
-		frame: level.
+		frame: level).
 ! !
 !JadeServer32bit categoriesFor: #_oopAndStringFor:!Debugger!private! !
 !JadeServer32bit categoriesFor: #_recompile:withSource:!Debugger!private! !
@@ -522,9 +522,9 @@ _trimStackOf: aGsProcess toLevel: anInteger
 sourceForProcess: gsProcess frame: level
 
 	^[
-		self
+		self _encodeString: (self
 			_sourceForProcess: gsProcess 
-			frame: level.
+			frame: level).
 	] on: Error do: [:ex | 
 			ex return: (self _asAsciiString: ('?????' , ex description , Character cr asString , (GsProcess stackReportToLevel: 50))).
 	].

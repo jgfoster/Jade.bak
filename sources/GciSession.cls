@@ -695,7 +695,7 @@ postLoginAs: aString
 printString: anOopType
 
 	^self
-		serverPerform: 'printStringOf:'
+		serverPerform: #'printStringOf:'
 		with: anOopType.
 !
 

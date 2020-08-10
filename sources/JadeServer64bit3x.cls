@@ -62,12 +62,12 @@ _inspectNamedInstanceVariablesOf: anObject on: aStream
 	aStream lf.
 	1 to: list size do: [:i | 
 		aStream nextPutAll: (list at: i); tab.
-		self print: (self oopOf: (anObject instVarAt: i)) on: aStream.
+		self _print: (self oopOf: (anObject instVarAt: i)) on: aStream.
 		aStream lf.
 	].
 	1 to: dynamic size do: [:i | 
 		aStream nextPutAll: (dynamic at: i); tab.
-		self print: (self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) on: aStream.
+		self _print: (self oopOf: (anObject dynamicInstVarAt: (dynamic at: i))) on: aStream.
 		aStream lf.
 	].
 !

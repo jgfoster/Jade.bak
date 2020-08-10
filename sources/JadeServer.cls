@@ -70,7 +70,7 @@ _defectiveTestsIn: aClass
 		class := each class whichClassIncludesSelector: selector.
 		stream nextPutAll: class name , ' debug: ' , each selector printString; lf.
 	].
-	^self _encodeString: stream contents.
+	^stream contents.
 !
 
 _describeMethod: aMethod
@@ -178,55 +178,6 @@ _initializeMoticello
 			autoCommit: false; 
 			autoMigrate: false.
 	]
-!
-
-_inspectDictionary: aDictionary on: aStream
-
-	| keys keyDict |
-	keys := self _keysForDictionary: aDictionary.
-	keyDict := Dictionary new.
-	keys do: [:each | 
-		| key |
-		key := each printString , '~' , (self oopOf: each) printString.
-		key := key collect: [:char | char asciiValue < 32 ifTrue: [$?] ifFalse: [char]].
-		keyDict
-			at: key
-			put: each.
-	].
-	keys size printOn: aStream.
-	aStream lf.
-	keyDict keys asSortedCollection do: [:each | 
-		| index keyString key value valueString |
-		index := each findLast: [:char | char = $~].
-		keyString := each copyFrom: 1 to: index - 1.
-		key := keyDict at: each.
-		value := aDictionary at: key. 
-		valueString := (self printStringOf: value to: 10).
-		valueString := self _decodeString: valueString.
-		aStream nextPutAll: keyString , '->' , valueString; tab.
-		self print: (self oopOf: value) on: aStream.
-		aStream lf.
-	].
-	^aStream 
-		lf; 
-		contents.
-!
-
-_inspectNamedInstanceVariablesOf: anObject on: aStream
-
-	| list size |
-	list := anObject class allInstVarNames.
-	size := list size.
-	anObject class format > 0 ifTrue: [
-		size := size + (anObject _basicSize min: 200).
-	].
-	size printOn: aStream.
-	aStream lf.
-	1 to: list size do: [:i | 
-		aStream nextPutAll: (list at: i); tab.
-		self print: (self oopOf: (anObject instVarAt: i)) on: aStream.
-		aStream lf.
-	].
 !
 
 _installTranscript
@@ -662,8 +613,6 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #_gsPackagePolicy!private! !
 !JadeServer categoriesFor: #_gsPackagePolicyClass!private! !
 !JadeServer categoriesFor: #_initializeMoticello!private! !
-!JadeServer categoriesFor: #_inspectDictionary:on:!private! !
-!JadeServer categoriesFor: #_inspectNamedInstanceVariablesOf:on:!private! !
 !JadeServer categoriesFor: #_installTranscript!private!Transcript! !
 !JadeServer categoriesFor: #_isClientForwarder:!Debugger!private! !
 !JadeServer categoriesFor: #_keysForDictionary:!private! !

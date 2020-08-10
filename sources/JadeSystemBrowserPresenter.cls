@@ -216,6 +216,11 @@ browseClassReferences
 	(string := self updateCommand: string) = 'browseClassReferences' ifFalse: [self error: 'Unrecognized response'].
 	self browseMethodsAndSelect: selectedClassName.!
 
+browseDictionaryReferences
+
+	self error: 'Not yet implemented'.
+!
+
 browseGlobalReferences
 
 	| string |
@@ -1070,7 +1075,8 @@ fileOutDictionaryMany
 		serverPerform: #'systemBrowser:' 
 		with: string.
 	string := self gciSession decode: string.
-	index1 := string indexOf: Character lf.	string := string copyFrom: index1 + 1 to: string size.
+	index1 := string indexOf: Character lf.
+	string := string copyFrom: index1 + 1 to: string size.
 	isUTF := string anySatisfy: [:each | 127 < each codePoint].
 	type := isUTF ifTrue: [#'utf8'] ifFalse: [#'ansi'].
 	marker := '!! ------------------- Remove existing behavior from '.
@@ -1129,7 +1135,8 @@ fileOutDictionaryOne
 		serverPerform: #'systemBrowser:' 
 		with: string.
 	string := self gciSession decode: string.
-	index := string indexOf: Character lf.	string := string copyFrom: index + 1 to: string size.
+	index := string indexOf: Character lf.
+	string := string copyFrom: index + 1 to: string size.
 	isUTF := string anySatisfy: [:each | 127 < each codePoint].
 	file := FileStream write: path mode: #'truncate' check: false type: (isUTF ifTrue: [#'utf8'] ifFalse: [#'ansi']).
 	[
@@ -2284,7 +2291,7 @@ queryCommand: aCommandQuery
 		aCommandQuery isEnabled: methodListPresenter selections size = 1. ^true].
 	(#(#'inspectGlobal' #'browseGlobalReferences') includes: command) ifTrue: [aCommandQuery isEnabled: globalsPresenter selections size = 1. ^true].
 	(#(#'removeGlobals') includes: command) ifTrue: [aCommandQuery isEnabled: globalsPresenter selections notEmpty. ^true].
-	(#(#'fileOutDictionary' ) includes: command) ifTrue: [aCommandQuery isEnabled: dictionaryListPresenter selections size = 1. ^true].
+	(#(#'fileOutDictionaryOne' #'fileOutDictionaryMany' ) includes: command) ifTrue: [aCommandQuery isEnabled: dictionaryListPresenter selections size = 1. ^true].
 	(#(#'setHomeDictionary') includes: command) ifTrue: [aCommandQuery isEnabled: (dictionaryListPresenter selections size = 1 and: [dictionaryListPresenter selection value not]). ^true].
 	(#(#'runMethodTests') includes: command) ifTrue: [aCommandQuery isEnabled: (methodListPresenter selections notEmpty and: [methodListPresenter selections first at: 3]). ^true].
 	(#(#'loadLatestVersion') includes: command) ifTrue: [
@@ -3504,6 +3511,7 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #behaviorIdentifier!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #breakAt:operation:!event handlers!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseClassReferences!menu handlers!public! !
+!JadeSystemBrowserPresenter categoriesFor: #browseDictionaryReferences!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseGlobalReferences!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementors!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #browseImplementorsOf!menu handlers!public! !

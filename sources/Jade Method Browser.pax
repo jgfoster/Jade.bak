@@ -345,7 +345,7 @@ _stringOfLineNumbersWithBreaksIn: aGsMethod
 	].
 	stream := self _writeStreamOnString.
 	lines do: [:each | each printOn: stream. stream space].
-	^self _encodeString: stream contents.
+	^stream contents.
 !
 
 browseHistoryOfMethod: aGsMethod
