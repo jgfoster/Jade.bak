@@ -25,7 +25,6 @@ package methodNames
 	add: #JadeServer64bit24 -> #_inspectClientForwarder:;
 	add: #JadeServer64bit24 -> #inspect:;
 	add: #JadeServer64bit33 -> #_printStringOf:;
-	add: #JadeServer64bit33 -> #_printStringOf:to:;
 	add: #JadeServer64bit3x -> #inspect:;
 	add: #Object -> #isJadeInspector;
 	yourself.
@@ -222,17 +221,8 @@ inspect: anObject
 _printStringOf: anObject
 
 	(anObject isKindOf: Utf8) ifTrue: [^anObject decodeToUnicode].
-	^super _printStringOf: anObject!
-
-_printStringOf: anObject to: anInteger
-
-	| string |
-	(string := self _printStringOf: anObject) size > anInteger ifTrue: [string := (string copyFrom: 1 to: anInteger) , '...'].
-	string := string collect: [:each | 32 <= each codePoint ifTrue: [each] ifFalse: [$?]].
-	^string.
-! !
+	^super _printStringOf: anObject! !
 !JadeServer64bit33 categoriesFor: #_printStringOf:!Inspector!public! !
-!JadeServer64bit33 categoriesFor: #_printStringOf:to:!Inspector!public! !
 
 !JadeServer64bit3x methodsFor!
 
