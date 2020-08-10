@@ -217,21 +217,24 @@ restoreLayoutAndContentsFromFile
 	| path file bytes data |
 	path := self layoutFilePath.
 	(File exists: path) ifFalse: [^false].
-	file := File 
-		open: path
-		mode: #read.
-	bytes := ByteArray new: file size.
-	file read: bytes; close.
-	data := Object fromBinaryStoreBytes: bytes.
-	(data isKindOf: OrderedCollection) ifFalse: [File delete: path. ^false].
-	(data at: 1) == 1 ifFalse: [File delete: path. ^false].
-	(data at: 2) top < 0 ifTrue: [File delete: path. ^false].	"Occasionally the position seems to be bad"
-	self view rectangle: (data at: 2).
-	(data at: 3) do: [:each | 
-		self addSystemBrowserWithLayoutInfo: each.
-	].
-	^true.
-!
+	[
+		file := File 
+			open: path
+			mode: #read.
+		bytes := ByteArray new: file size.
+		file read: bytes; close.
+		data := Object fromBinaryStoreBytes: bytes.
+		(data at: 1) == 1 ifFalse: [self error: 'Wrong version!!'].
+		(data at: 2) top < 0 ifTrue: [self error: 'Invalid position!!'].
+		self view rectangle: (data at: 2).
+		(data at: 3) do: [:each | 
+			self addSystemBrowserWithLayoutInfo: each.
+		].
+		^true.
+	] on: Error do: [:ex | 
+		File delete: path. 
+		^false
+	].!
 
 saveLayoutAndContents
 
