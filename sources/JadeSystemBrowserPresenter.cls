@@ -1079,7 +1079,7 @@ fileOutDictionaryMany
 	string := string copyFrom: index1 + 1 to: string size.
 	isUTF := string anySatisfy: [:each | 127 < each codePoint].
 	type := isUTF ifTrue: [#'utf8'] ifFalse: [#'ansi'].
-	marker := '!!!! ------------------- Remove existing behavior from '.
+	marker := '!! ------------------- Remove existing behavior from '.
 	index1 := string indexOfSubCollection: marker startingAt: 1 ifAbsent: [string size + 1].
 	classDefinitions := string copyFrom: 1 to: index1 - 1.
 	index2 := path lastIndexOf: $\.
@@ -3581,7 +3581,6 @@ viewActivated
 !JadeSystemBrowserPresenter categoriesFor: #fileInCode!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutClass!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutClassOnPath:!menu handlers!public! !
-!JadeSystemBrowserPresenter categoriesFor: #fileOutDictionary!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutDictionaryMany!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutDictionaryOne!menu handlers!public! !
 !JadeSystemBrowserPresenter categoriesFor: #fileOutMethod!menu handlers!public! !
