@@ -19,10 +19,15 @@ main
 "
 	JadeSessionManager basicNew main.
 "
-	ScintillaLibrary open: 'bin\SciLexer.dll'.		"Since this isn't adjacent to the executable, it needs a path to find it"
 	Keyboard default isShiftDown 
 		ifTrue: [self mainShellClass show: 'Compact view']
 		ifFalse: [self mainShellClass show].
+!
+
+onStartup: args 
+
+	ScintillaLibrary open: 'bin\SciLexer.dll'.		"Since this isn't adjacent to the executable, it needs a path to find it"
+	super onStartup: args .
 !
 
 pause
@@ -38,6 +43,7 @@ version
 ! !
 !JadeSessionManager categoriesFor: #defaultResLibPath!public! !
 !JadeSessionManager categoriesFor: #main!public! !
+!JadeSessionManager categoriesFor: #onStartup:!public! !
 !JadeSessionManager categoriesFor: #pause!public! !
 !JadeSessionManager categoriesFor: #version!public! !
 
