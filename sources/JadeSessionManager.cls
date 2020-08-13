@@ -50,7 +50,9 @@ windowSystemStartup
 !JadeSessionManager class methodsFor!
 
 getVersion
-
+"
+	JadeSessionManager getVersion.
+"
 	| string |
 	File workingDirectory: SessionManager current imageBase.
 	string := [SessionManager current class git: 'describe'] on: ExternalProcessExecuteError do: [:ex | ^'?<' , ex description , '>?'].
