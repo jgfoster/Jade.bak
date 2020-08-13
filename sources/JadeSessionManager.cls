@@ -24,12 +24,6 @@ main
 		ifFalse: [self mainShellClass show].
 !
 
-onStartup: args 
-
-	ScintillaLibrary open: 'bin\SciLexer.dll'.		"Since this isn't adjacent to the executable, it needs a path to find it"
-	super onStartup: args .
-!
-
 pause
 
 	Keyboard default isShiftDown ifTrue: [self error: 'Generate walkback!!'].
@@ -40,12 +34,18 @@ version
 	^Version notNil 
 		ifTrue: [Version]
 		ifFalse: ['(Development)'].
+!
+
+windowSystemStartup
+
+	ScintillaLibrary open: 'bin\SciLexer.dll'.		"Since this isn't adjacent to the executable, it needs a path to find it"
+	super windowSystemStartup.
 ! !
 !JadeSessionManager categoriesFor: #defaultResLibPath!public! !
 !JadeSessionManager categoriesFor: #main!public! !
-!JadeSessionManager categoriesFor: #onStartup:!public! !
 !JadeSessionManager categoriesFor: #pause!public! !
 !JadeSessionManager categoriesFor: #version!public! !
+!JadeSessionManager categoriesFor: #windowSystemStartup!public! !
 
 !JadeSessionManager class methodsFor!
 
