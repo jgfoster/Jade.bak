@@ -252,9 +252,9 @@ updateSaveMethodOop: anInteger
 
  	methodListPresenter primaryPresenter model remove: methodListPresenter selectedMethod ifAbsent: [].
 
-	methodSourcePresenter gsMethod: (GsMethod fromGsMethod2: newGsMethod).
+	methodSourcePresenter gsMethod: (GsMethod fromGsMethod2: newGsMethod). "fix #266"
 	methodListPresenter primaryPresenter selection: newGsMethod.
-	methodListPresenter primaryPresenter model list reSort.!
+	methodListPresenter primaryPresenter model list reSort. "to preserve the original order"!
 
 updateSource
 "
