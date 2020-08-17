@@ -145,7 +145,6 @@ fileSave
 !
 
 gsMethod: aGsMethod
-
 	gsMethod := aGsMethod.
 	self update.!
 
