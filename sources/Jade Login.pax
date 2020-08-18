@@ -52,7 +52,7 @@ Model subclass: #JadeLogin
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 Shell subclass: #JadeLoginShell
-	instanceVariableNames: 'activeLibraryPresenter activityListPresenter debugPathPresenter gemHostPresenter gemServicePresenter gemTaskPresenter gemTypePresenter hostPasswordPresenter hostUserIDPresenter initialsPresenter inUpdateView loginListPresenter loginTypePresenter passwordPresenter resetButtonPresenter stoneHostPresenter stoneNamePresenter userIDPresenter versionListPresenter'
+	instanceVariableNames: 'activeLibraryPresenter activityListMutex activityListPresenter debugPathPresenter gemHostPresenter gemServicePresenter gemTaskPresenter gemTypePresenter hostPasswordPresenter hostUserIDPresenter initialsPresenter inUpdateView loginListPresenter loginTypePresenter passwordPresenter recentActivity resetButtonPresenter stoneHostPresenter stoneNamePresenter userIDPresenter versionListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

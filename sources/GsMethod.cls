@@ -47,10 +47,13 @@ hash
 
 initialize: readStream session: aGciSession
 
+	| oop |
 	gciSession := aGciSession.
 	behavior := gciSession oopTypeWithOop: readStream upToTab asNumber.
 	behaviorName := readStream upToTab.
-	oopType := gciSession oopTypeWithOop: readStream upToTab asNumber.
+	(oop := readStream upToTab asNumber) ~~ 0 ifTrue: [
+		oopType := gciSession oopTypeWithOop: oop.
+	].
 	name := readStream upToTab.
 	category := readStream upToTab.
 	isReadOnly := readStream upToTab = 'false'.	"current user has write permission for the class"

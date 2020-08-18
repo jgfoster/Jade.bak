@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Shell subclass: #JadeLoginShell
-	instanceVariableNames: 'activeLibraryPresenter activityListPresenter debugPathPresenter gemHostPresenter gemServicePresenter gemTaskPresenter gemTypePresenter hostPasswordPresenter hostUserIDPresenter initialsPresenter inUpdateView loginListPresenter loginTypePresenter passwordPresenter resetButtonPresenter stoneHostPresenter stoneNamePresenter userIDPresenter versionListPresenter'
+	instanceVariableNames: 'activeLibraryPresenter activityListMutex activityListPresenter debugPathPresenter gemHostPresenter gemServicePresenter gemTaskPresenter gemTypePresenter hostPasswordPresenter hostUserIDPresenter initialsPresenter inUpdateView loginListPresenter loginTypePresenter passwordPresenter recentActivity resetButtonPresenter stoneHostPresenter stoneNamePresenter userIDPresenter versionListPresenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -274,7 +274,7 @@ initialize
 
 	super initialize.
 	inUpdateView := false.
-!
+	activityListMutex := Mutex new.!
 
 isVersion: a lessThanOrEqualTo: b
 
@@ -576,17 +576,30 @@ tempDataPath
 !
 
 updateActivity
+	"If we update in real time it seems to slow down other processing (like changing tabs in the System Browser.
+	The mutex is to ensure that only one process manipulates the UI at a time (otherwise we can hang)."
 
-	| list |
-	activeLibraryPresenter value: GciLibrary activeLibrary class name asString.
-	list := GciActivity activity.
-	[list size > 99] whileTrue: [list removeFirst].
-	list := list copy.
-	activityListPresenter  list: list.
-	list notEmpty ifTrue: [
-		activityListPresenter selection: list last.
-	].
-!
+	[
+		[
+			(Delay forMilliseconds: 100) wait.
+			activityListMutex critical: [
+				| list |
+				list := GciActivity activity.
+				((list isEmpty and: [recentActivity notNil]) or: [recentActivity ~~ list last]) ifTrue: [
+					activeLibraryPresenter value: GciLibrary activeLibrary class name asString.
+					[list size > 99] whileTrue: [list removeFirst].
+					list := list copy.
+					activityListPresenter list: list.
+					list isEmpty ifTrue: [
+						recentActivity := nil.
+					] ifFalse: [
+						recentActivity := list last.
+						activityListPresenter selection: recentActivity.
+					].
+				].
+			].
+		] on: Error do: [:ex | ex halt return].
+	] forkAt: Processor userBackgroundPriority.!
 
 updateModel
 

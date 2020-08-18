@@ -1,7 +1,7 @@
 ﻿"Filed out from Dolphin Smalltalk 7"!
 
 Object subclass: #GciSession
-	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask server serverClass stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
+	instanceVariableNames: 'briefDescription clientForwarders eventCount gciSessionId gemHost gemNRS heartbeatProcess isAutoCommit isAutoMigrate isHandlingClientForwarderSend isNativeCode isPackagePolicyEnabled isShowUnimplementedMessages library netPort netTask oopsToRelease server serverClass stoneHost stoneName stoneNRS stoneSerial stoneSessionID userID'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
@@ -315,7 +315,7 @@ hasServer
 heartbeat: receiver arguments: arguments
 
 	| result |
-	(Delay forSeconds: 5) wait.
+	(Delay forSeconds: 60) wait.
 	self isValidSession ifFalse: [^self].
 	result := self returningResultOrErrorDo: [
 		library 
@@ -432,6 +432,7 @@ debugPath: debugPath
 		netTask := ((list at: 3) subStrings: $!!) at: 2.
 		gemHost := ((list at: 1) subStrings: $@) at: 2.
 	].
+	oopsToRelease := IdentitySet new.
 	self 
 		loadLibrary: libraryClass 
 		debugPath: debugPath.
@@ -599,7 +600,7 @@ logout
 		library logoutSession: gciSessionId.
 		library := nil.
 	].
-	self trigger: #'logout'.
+	[self trigger: #'logout'] on: Error do: [:ex | ex return].
 	gciSessionId := nil.
 !
 
@@ -708,15 +709,24 @@ prompt: promptString caption: captionString
 
 releaseOop: anOopType
 
-	self releaseOops: (Array with: anOopType).
-!
+	oopsToRelease add: anOopType.
+	self releaseOopsInBackground.!
 
 releaseOops: anArray
 
-	library ifNil: [^self].
-	anArray isEmpty ifTrue: [^self].
-	library session: gciSessionId releaseOops: anArray.
+	oopsToRelease addAll: anArray.
+	self releaseOopsInBackground.!
 
+releaseOopsInBackground
+
+	[
+		| array |
+		(Delay forSeconds: 5) wait.
+		(library notNil and: [(array := oopsToRelease asArray) notEmpty]) ifTrue: [
+			oopsToRelease removeAll.
+			library session: gciSessionId releaseOops: array.
+		].
+	] forkAt: Processor userBackgroundPriority.
 !
 
 returningResultOrErrorDo: aBlock
@@ -1168,6 +1178,7 @@ valueOfOop: anOopType
 !GciSession categoriesFor: #prompt:caption:!OmniBrowser!public! !
 !GciSession categoriesFor: #releaseOop:!Jade convenience!public! !
 !GciSession categoriesFor: #releaseOops:!Jade!library-server!public! !
+!GciSession categoriesFor: #releaseOopsInBackground!Jade!library-server!public! !
 !GciSession categoriesFor: #returningResultOrErrorDo:!long running!private! !
 !GciSession categoriesFor: #send:to:!Jade convenience!public! !
 !GciSession categoriesFor: #send:to:withAll:!Jade convenience!long running!public! !
