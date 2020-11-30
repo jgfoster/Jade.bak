@@ -14,3 +14,5 @@ Jade.zip
 Jade.log
 gciDebug.log
 Contacts.exe
+runtime/bin/*
+

@@ -2,7 +2,7 @@
 
 JadeServer64bit24 subclass: #JadeServer64bit3x
 	instanceVariableNames: 'environment'
-	classVariableNames: 'Admonition ClientForwarderSend CompileError CompileWarning RubyHash SessionTemps Transcript'
+	classVariableNames: 'Admonition ClientForwarderSend CompileError CompileWarning SessionTemps Transcript'
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!
 JadeServer64bit3x guid: (GUID fromString: '{1dc3debb-81ec-4b7b-872e-82229e88781b}')!
@@ -85,7 +85,7 @@ _keysForDictionary: aDictionary
 	"Private - RubyHash does not implement #'keys' or #'keysDo:'!!"
 
 	| keys |
-	(aDictionary isKindOf: RubyHash) ifFalse: [^super _keysForDictionary: aDictionary].
+	(aDictionary class name ~~ #'RubyHash') ifTrue: [^super _keysForDictionary: aDictionary].
 	keys := Set new.
 	aDictionary keysAndValuesDo: [:eachKey :eachValue | keys add: eachKey].
 	^keys.
