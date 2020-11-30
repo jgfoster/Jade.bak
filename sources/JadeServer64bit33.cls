@@ -10,11 +10,11 @@ JadeServer64bit33 comment: ''!
 !JadeServer64bit33 categoriesForClass!Unclassified! !
 !JadeServer64bit33 methodsFor!
 
-_decodeString: aUtf8
+_decodeString: anObject
 
 	^StringConfiguration == String
-		ifTrue: [aUtf8 decodeToString]
-		ifFalse: [aUtf8 asUnicodeString]!
+		ifTrue: [(anObject isKindOf: Utf8) ifTrue: [anObject decodeToString] ifFalse: [anObject]]
+		ifFalse: [anObject asUnicodeString]!
 
 _encodeString: aString
 
