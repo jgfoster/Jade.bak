@@ -46,6 +46,7 @@ package setPrerequisites: #(
 	'GemStone Session'
 	'Jade Login'
 	'Jade Transcript'
+	'Jade UI'
 	'..\Core\Object Arts\Dolphin\Lagoon\Lagoon Image Stripper'
 	'..\Core\Object Arts\Dolphin\System\Compiler\Smalltalk Parser').
 

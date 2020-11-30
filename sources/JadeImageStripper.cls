@@ -116,6 +116,7 @@ requiredClasses
 		addAll: StProgramNode withAllSubclasses;
 		addAll: StToken withAllSubclasses;
 		add: ScintillaIndicator;
+		add: JadePreferenceObject withAllSubclasses;
 		yourself!
 
 requiredPackageNames
