@@ -92,6 +92,36 @@ logRemainingClasses
 		].
 	].!
 
+prepareExternalStructures
+	"https://github.com/dolphinsmalltalk/Dolphin/issues/1061"
+	"Private - Fully compile all ExternalStructure subclasses if required. They must already
+	have fully defined templates."
+
+	| structs |
+	structs := self externalStructureClasses.
+	self defineExternalStructures: structs.
+	self startElement: 'PrepareExternalStructures' attributes: #().
+	self compileExternalStructures ifTrue: [self compileExternalStructuresNow: structs].
+	"Having defined all the templates, we can now remove the methods used to define them"
+	structs do: 
+			[:each |
+			"Access the byteSize to ensure set (important if not compiling external structures)"
+			each byteSize].
+	"Remove the structure template definition and compiling mechanisms"
+	#('compiling' 'template definition') do: 
+			[:each |
+			self
+				removeMethods: (each asMethodCategory methodsInBehavior: ExternalStructure class)
+				reason: 'structure definition: ' , each
+				force: true].
+	structs do: 
+			[:each |
+			each class methodDictionary removeKey: #defineFields ifAbsent: []].
+	self endElement: true.
+	self
+		finishedWithAll: #(#compileExternalStructures #compileExternalStructuresNow: #defineExternalStructures: #prepareExternalStructures #externalStructureClasses)
+!
+
 prepareToStrip
 
 	Transcript view close.
@@ -144,6 +174,7 @@ requiredPackageNames
 !JadeImageStripper categoriesFor: #finishedWith:!public! !
 !JadeImageStripper categoriesFor: #loadJadeServerSourceCache!public! !
 !JadeImageStripper categoriesFor: #logRemainingClasses!public! !
+!JadeImageStripper categoriesFor: #prepareExternalStructures!private! !
 !JadeImageStripper categoriesFor: #prepareToStrip!public! !
 !JadeImageStripper categoriesFor: #requiredClasses!public! !
 !JadeImageStripper categoriesFor: #requiredPackageNames!public! !
