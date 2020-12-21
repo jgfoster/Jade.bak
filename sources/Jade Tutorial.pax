@@ -74,7 +74,7 @@ isProfStefAvailable
 addProfStef
 
 	| dictionary profStef symbolList |
-	symbolList := self transientSymbolList.
+	symbolList := self persistentSymbolList.
 	profStef := symbolList objectNamed: #'ProfStef'.
 	profStef notNil ifTrue: [^profStef].
 	profStef := self newProfStefClass.
@@ -117,7 +117,7 @@ newProfStefClass
 removeProfStef
 
 	| profStef symbolList |
-	symbolList := self transientSymbolList.
+	symbolList := self persistentSymbolList.
 	profStef := symbolList objectNamed: #'ProfStef'.
 	profStef isNil ifTrue: [^self].
 	(symbolList dictionariesAndSymbolsOf: profStef) do: [:each | 

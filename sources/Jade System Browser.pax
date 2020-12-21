@@ -115,11 +115,9 @@ package methodNames
 	add: #JadeServer -> #sbUpdatePackages;
 	add: #JadeServer -> #sbUpdatePackagesOrDictionaries;
 	add: #JadeServer -> #sbUpdateSuperclass;
-	add: #JadeServer -> #symbolList;
 	add: #JadeServer -> #systemBrowser:;
 	add: #JadeServer -> #systemBrowserA:;
 	add: #JadeServer -> #systemBrowserUpdate;
-	add: #JadeServer -> #transientSymbolList;
 	add: #JadeServer -> #writeList:;
 	add: #JadeServer32bit -> #systemBrowser:;
 	add: #JadeServer64bit -> #sbRemoveKey:fromDictionary:;
@@ -436,7 +434,6 @@ sbAddDictionary: anOrderedCollection
 	symbolList
 		createDictionaryNamed: newName
 		at: index.
-	self _refreshSymbolList.
 	selections at: #'dictionary' put: newName.
 	self systemBrowserUpdate.
 !
@@ -1129,7 +1126,6 @@ sbRemoveDictionaries: anOrderedCollection
 	anOrderedCollection do: [:each | 
 		self persistentSymbolList removeDictionaryNamed: each asSymbol.
 	].
-	self _refreshSymbolList.
 	self systemBrowserUpdate.
 !
 
@@ -1806,11 +1802,6 @@ sbUpdateSuperclass
 	writeStream lf.
 !
 
-symbolList
-
-	^self persistentSymbolList
-!
-
 systemBrowser: aString
 
 	[
@@ -1862,11 +1853,6 @@ systemBrowserUpdate
 		sbUpdateMethodFilter;
 		sbUpdateMethods;
 		yourself.
-!
-
-transientSymbolList
-
-	^GsSession currentSession symbolList
 !
 
 writeList: aList
@@ -1972,11 +1958,9 @@ writeList: aList
 !JadeServer categoriesFor: #sbUpdatePackages!private!System Browser! !
 !JadeServer categoriesFor: #sbUpdatePackagesOrDictionaries!private!System Browser! !
 !JadeServer categoriesFor: #sbUpdateSuperclass!private!System Browser! !
-!JadeServer categoriesFor: #symbolList!private!System Browser! !
 !JadeServer categoriesFor: #systemBrowser:!public!System Browser! !
 !JadeServer categoriesFor: #systemBrowserA:!private!System Browser! !
 !JadeServer categoriesFor: #systemBrowserUpdate!private!System Browser! !
-!JadeServer categoriesFor: #transientSymbolList!private!System Browser! !
 !JadeServer categoriesFor: #writeList:!private!System Browser! !
 
 !JadeServer32bit methodsFor!

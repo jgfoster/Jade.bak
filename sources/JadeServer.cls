@@ -285,11 +285,6 @@ _preferences
 	^stream contents
 !
 
-_refreshSymbolList
-
-	self transientSymbolList replaceElementsFrom: self persistentSymbolList.	"replace the transcient one with the persistent one"
-!
-
 _registerOBNotifications
 
 	| platform clientForwarder |
@@ -331,7 +326,6 @@ abort
 
 	classOrganizers := Array new: 4.
 	System abortTransaction.
-	self _refreshSymbolList.
 !
 
 addJadeServerToUserGlobals
@@ -347,7 +341,6 @@ beginTransaction
 
 	classOrganizers := Array new: 4.
 	System beginTransaction.
-	self _refreshSymbolList.
 !
 
 clearBreakAtStepPoint: anInteger inMethod: aGsMethod
@@ -360,7 +353,6 @@ commit
 	| flag |
 	classOrganizers := Array new: 4.
 	flag := System commitTransaction.
-	self _refreshSymbolList.
 	^flag
 !
 
@@ -381,7 +373,7 @@ debugString: aString fromContext: anObject environment: anInteger
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
 	^'nil halt. ' , (self _decodeString: aString)
 		evaluateInContext: anObject 
-		symbolList: self transientSymbolList. !
+		symbolList: self persistentSymbolList. !
 
 describeMethod: aGsNMethod
 	"Provide info needed to create a GsMethod in Jade client"
@@ -411,7 +403,7 @@ executeString: aString fromContext: anObject environment: anInteger
 	anInteger == 0 ifFalse: [self error: 'Only environment 0 is supported in this version!!'].
 	^(self _decodeString: aString)
 		evaluateInContext: anObject 
-		symbolList: self transientSymbolList. !
+		symbolList: self persistentSymbolList. !
 
 hasDirtyObjects
 
@@ -627,7 +619,6 @@ terminate: aGsProcess
 !JadeServer categoriesFor: #_nextLineAsList!private!System Browser! !
 !JadeServer categoriesFor: #_objectForOop:!private! !
 !JadeServer categoriesFor: #_preferences!private! !
-!JadeServer categoriesFor: #_refreshSymbolList!private! !
 !JadeServer categoriesFor: #_registerOBNotifications!private! !
 !JadeServer categoriesFor: #_registerOBNotificationsForPlatform:clientForwarder:!private! !
 !JadeServer categoriesFor: #_setSessionState!private! !

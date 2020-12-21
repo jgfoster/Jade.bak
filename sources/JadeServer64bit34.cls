@@ -28,7 +28,7 @@ debugString: aString fromContext: anObject environment: anInteger
 	[
 		^((self _decodeString: aString)
 			_compileInContext: anObject 
-			symbolList: self transientSymbolList 
+			symbolList: self persistentSymbolList 
 			oldLitVars: nil 
 			environmentId: anInteger 
 			flags: 0) 
@@ -45,7 +45,7 @@ executeString: aString fromContext: anObject environment: anInteger
 	[
 		^((self _decodeString: aString)
 			_compileInContext: anObject 
-			symbolList: self transientSymbolList 
+			symbolList: self persistentSymbolList 
 			oldLitVars: nil 
 			environmentId: anInteger 
 			flags: 0)
