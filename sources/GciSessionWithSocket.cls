@@ -1,6 +1,6 @@
-"Filed out from Dolphin Smalltalk 7"!
+﻿"Filed out from Dolphin Smalltalk 7"!
 
-GciSession subclass: #GciSessionWithSocket
+GciSession33 subclass: #GciSessionWithSocket
 	instanceVariableNames: 'socket'
 	classVariableNames: ''
 	poolDictionaries: ''

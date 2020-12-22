@@ -12,6 +12,7 @@ package classNames
 	add: #GciSession24;
 	add: #GciSession30;
 	add: #GciSession33;
+	add: #GciSessionWithSocket;
 	add: #GsAnsiError;
 	add: #GsApplicationError;
 	add: #GsClientForwarderSend;
@@ -74,6 +75,7 @@ package setPrerequisites: #(
 	'..\Core\Object Arts\Dolphin\MVP\Presenters\Prompters\Dolphin Prompter'
 	'GemStone C Interface'
 	'GemStone Objects'
+	'..\Core\Object Arts\Dolphin\Sockets\Sockets Connection'
 	'..\Core\Contributions\Camp Smalltalk\SUnit\SUnit').
 
 package!
@@ -192,6 +194,11 @@ GciSession24 subclass: #GciSession30
 	classInstanceVariableNames: ''!
 GciSession30 subclass: #GciSession33
 	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	classInstanceVariableNames: ''!
+GciSession33 subclass: #GciSessionWithSocket
+	instanceVariableNames: 'socket'
 	classVariableNames: ''
 	poolDictionaries: ''
 	classInstanceVariableNames: ''!

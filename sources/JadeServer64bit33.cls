@@ -59,14 +59,16 @@ acceptConnection
 
 add: anObject toByteStream: aStream
 
-	anObject == nil		ifTrue: [aStream nextPut: 0. ^self].
+	self isInDolphin ifTrue: [Utf8 := '' asUtf8String class].
+	anObject == nil	ifTrue: [aStream nextPut: 0. ^self].
 	anObject == true 	ifTrue: [aStream nextPut: 1. ^self].
 	anObject == false 	ifTrue: [aStream nextPut: 2. ^self].
-	(ExternalInteger notNil and: [anObject isKindOf: ExternalInteger]) ifTrue: [self addExternalInteger: anObject toByteStream: aStream. ^self].		"3 & 4"	(self isInDolphin and: [anObject isKindOf: GsObject]) ifTrue: [self addExternalInteger: anObject oopType toByteStream: aStream. ^self].			"3 & 4"
-	(anObject isKindOf: Symbol	) ifTrue: [self addSymbol: anObject toByteStream: aStream. ^self].	"5 & 6"
-	(anObject isKindOf: Integer	) ifTrue: [self addInteger: anObject toByteStream: aStream. ^self].	"7, 8, 9, & 10"
-	(anObject isKindOf: String		) ifTrue: [self addString: anObject toByteStream: aStream. ^self].	"11 & 12"
-	(anObject isKindOf: Array		) ifTrue: [self addArray: anObject toByteStream: aStream. ^self].	"13"
+	(ExternalInteger notNil 	and: [anObject isKindOf: ExternalInteger]) ifTrue: [self addExternalInteger: anObject 			toByteStream: aStream. 	^self].	"3 & 4"	(self isInDolphin 		and: [anObject isKindOf: GsObject		]) ifTrue: [self addExternalInteger: anObject oopType 	toByteStream: aStream. 	^self].	"3 & 4"
+	(anObject isKindOf: Symbol	) ifTrue: [self addSymbol: 	anObject toByteStream: aStream. ^self].	"5 & 6"
+	(anObject isKindOf: Integer	) ifTrue: [self addInteger:		anObject toByteStream: aStream. ^self].	"7, 8, 9, & 10"
+	(anObject isKindOf: String	) ifTrue: [self addString: 		anObject toByteStream: aStream. ^self].	"11 & 12"
+	(anObject isKindOf: Utf8		) ifTrue: [self addUtf8: 		anObject toByteStream: aStream. ^self].	"13 & 14"
+	(anObject isKindOf: Array	) ifTrue: [self addArray: 		anObject toByteStream: aStream. ^self].	"15"
 	self isInDolphin ifTrue: [self error: 'Attempt to encode an unsupported object'].
 	self addPositiveInteger: anObject toByteStream: aStream.
 !
@@ -74,7 +76,7 @@ add: anObject toByteStream: aStream
 addArray: anArray toByteStream: aStream
 
 	16rFF < anArray size ifTrue: [self error: 'Array is too large!!'].
-	aStream nextPut: 14; nextPut: anArray size.
+	aStream nextPut: 15; nextPut: anArray size.
 	anArray do: [:each | self add: each toByteStream: aStream].
 !
 
@@ -164,32 +166,55 @@ addSymbol: aSymbol toByteStream: aStream
 	self error: 'Object cannot be encoded'.
 !
 
+addUtf8: bytes toByteStream: aStream
+
+	| size |
+	(size := bytes size) < 16r100 ifTrue: [
+		aStream 
+			nextPut: 13; 
+			nextPut: size;
+			nextPutAll: bytes.
+		^self.
+	].
+	size < 16r1000000 ifTrue: [
+		aStream 
+			nextPut: 14; 
+			nextPut: (size bitAnd: 16rFF); 
+			nextPut: (size // 16r100 bitAnd: 16rFF); nextPut: (size // 16r10000 bitAnd: 16rFF);
+			nextPutAll: bytes.
+		^self.
+	].
+	self error: 'Object cannot be encoded'.
+!
+
 doSocketRequest
 	"We are in a forked process.
 	We provide the result or a description of an Exception on the stream."
 
 	| arguments process receiver selector semaphore stream |
 	Breakpoint trappable: true.
-	process			:= Processor activeProcess.
+	process		:= Processor activeProcess.
 	receiver 		:= process environmentAt: #'receiver'.
 	selector 		:= process environmentAt: #'selector'.
 	arguments 	:= process environmentAt: #'arguments'.
 	semaphore 	:= process environmentAt: #'semaphore'.
-	stream 			:= process environmentAt: #'stream'.
+	stream 		:= process environmentAt: #'stream'.
 	[
-		self add: (receiver perform: selector withArguments: arguments) toByteStream: stream.
+		| result |
+		result := receiver perform: selector withArguments: arguments.
+		self add: result toByteStream: stream.
 		semaphore signal.		"we are finished and the GCI process may resume"
 	] on: Exception do: [:ex | 
 		GsNMethod _clearAllStepBreaks.		"We are headed into a debugger so we either hit a breakpoint or we have an unrelated error"
 		stream nextPut: Character cr codePoint.
 		self
-			add: GemStoneError 			toByteStream: stream;
-			add: ex gsNumber 			toByteStream: stream;
+			add: GemStoneError 	toByteStream: stream;
+			add: ex gsNumber 		toByteStream: stream;
 			add: GsProcess _current 	toByteStream: stream;
-			add: ex 							toByteStream: stream;
-			add: ex class name 			toByteStream: stream;
-			add: ex description 			toByteStream: stream;
-			add: ex gsArguments 		toByteStream: stream;
+			add: ex 				toByteStream: stream;
+			add: ex class name 		toByteStream: stream;
+			add: ex description 	toByteStream: stream;
+			add: ex gsArguments 	toByteStream: stream;
 			add: (GsProcess stackReportToLevel: 100) toByteStream: stream;
 			yourself.
 		semaphore signal.		"GCI process may resume"
@@ -207,6 +232,11 @@ environmentAt: key
 environmentAt: key put: value
 
 	self error: 'method included to avoid unimplemented selector warning in Dolphin'.
+!
+
+initialize
+
+	self isInGemStone ifTrue: [super initialize].
 !
 
 isInDolphin
@@ -342,13 +372,19 @@ readObjectFrom: aStream errorClass: gciErrorSTypeClass
 		].
 		^x.
 	].
-	type == 13 ifTrue: [		"GciErrSType"
-		^self readExceptionFrom: aStream errorClass: gciErrorSTypeClass.
+	(type == 13 or: [type == 14]) ifTrue: [		"Utf8"
+		byteSize := (type == 13) 
+			ifTrue: [aStream next]	"size < 256"
+			ifFalse: [ aStream next + (aStream next * 16r100) + (aStream next * 16r10000)].	"size >= 256"
+		^(aStream next: byteSize) decodeFromUTF8
 	].
-	type == 14 ifTrue: [		"Array"
+	type == 15 ifTrue: [		"Array with size < 256"
 		x := Array new: aStream next.
 		1 to: x size do: [:i | x at: i put: (self readObjectFrom: aStream)].
 		^x.
+	].
+	type == 16 ifTrue: [		"GciErrSType"
+		^self readExceptionFrom: aStream errorClass: gciErrorSTypeClass.
 	].
 !
 
@@ -372,7 +408,7 @@ readSocket: anInteger
 		process 
 			environmentAt: #'receiver'		put: receiver;
 			environmentAt: #'selector'		put: selector;
-			environmentAt: #'arguments'	put: arguments;
+			environmentAt: #'arguments'		put: arguments;
 			environmentAt: #'semaphore'	put: (semaphore := Semaphore new);
 			environmentAt: #'stream'		put: (stream := WriteStream on: ByteArray new);
 			environmentAt: #'parent' 		put: Processor activeProcess;		"ignore me when returning a list of processes"
@@ -398,9 +434,11 @@ readSocket: anInteger
 !JadeServer64bit33 categoriesFor: #addPositiveInteger:toByteStream:code:size:!public!streaming! !
 !JadeServer64bit33 categoriesFor: #addString:toByteStream:!public!streaming! !
 !JadeServer64bit33 categoriesFor: #addSymbol:toByteStream:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #addUtf8:toByteStream:!public!streaming! !
 !JadeServer64bit33 categoriesFor: #doSocketRequest!public!Socket! !
 !JadeServer64bit33 categoriesFor: #environmentAt:!public!Socket! !
 !JadeServer64bit33 categoriesFor: #environmentAt:put:!public!Socket! !
+!JadeServer64bit33 categoriesFor: #initialize!public! !
 !JadeServer64bit33 categoriesFor: #isInDolphin!public!testing! !
 !JadeServer64bit33 categoriesFor: #isInGemStone!public!testing! !
 !JadeServer64bit33 categoriesFor: #makeListener!public! !

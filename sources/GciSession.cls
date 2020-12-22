@@ -71,6 +71,9 @@ addRangeStopTo: stepPoints withSource: source
 
 	GsMethod addRangeStopTo: stepPoints withSource: source.!
 
+attemptSocket
+	"default is to do nothing"!
+
 begin
 
 	self serverPerform: #'beginTransaction'.
@@ -235,12 +238,21 @@ executeString: aString
 
 executeString: aString fromContext: anObject environment: anInteger
 
-	^self evaluate: [
+	^server ifNil: [
+		self evaluate: [
+			self
+				_executeString: aString
+				fromContextOop: (self oopTypeFor: anObject)
+				environment: anInteger.
+		].
+	] ifNotNil: [
 		self
-			_executeString: aString
-			fromContextOop: (self oopTypeFor: anObject)
-			environment: anInteger.
-	]
+			serverPerform: #'executeString:fromContext:environment:'
+			with: aString
+			with: (self oopTypeFor: anObject)
+			with: anInteger.
+	].
+
 !
 
 fetchBytes: anOopType
@@ -320,7 +332,7 @@ heartbeat: receiver arguments: arguments
 	result := self returningResultOrErrorDo: [
 		library 
 			session: gciSessionId
-			send: 'heartbeat' 
+			send: #'heartbeat' 
 			to: receiver
 			with: arguments.
 	].
@@ -689,6 +701,7 @@ postLoginAs: aString
 
 	self 
 		initializeServer;
+		attemptSocket;
 		setInitials: aString;		"This gets back the session and serial number and some preferences"
 		startHeartbeat;
 		yourself.!
@@ -1112,6 +1125,7 @@ valueOfOop: anOopType
 !GciSession categoriesFor: #_server!private! !
 !GciSession categoriesFor: #abort!Jade convenience!public! !
 !GciSession categoriesFor: #addRangeStopTo:withSource:!accessing!public! !
+!GciSession categoriesFor: #attemptSocket!private! !
 !GciSession categoriesFor: #begin!Jade convenience!public! !
 !GciSession categoriesFor: #beInvalidSession!library-client!public! !
 !GciSession categoriesFor: #briefDescription!public! !

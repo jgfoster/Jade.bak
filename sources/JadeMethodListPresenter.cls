@@ -142,13 +142,6 @@ gciSession: aGciSession
 	methodSourcePresenter gciSession: aGciSession.
 !
 
-getOopToNewMethod
-	"The receiver answer <aOopType64> to the new method"
-
-	self halt.
-	^gciSession executeString: (self getSelectedClassName, ' perform: #compiledMethodAt: with: #',  self getSelectedMethodName)
-!
-
 getSelectedMethod
 
 	^methodListPresenter selectedMethod!
@@ -284,7 +277,6 @@ updateSource
 !JadeMethodListPresenter categoriesFor: #createSchematicWiring!public! !
 !JadeMethodListPresenter categoriesFor: #doSearch!public! !
 !JadeMethodListPresenter categoriesFor: #gciSession:!public! !
-!JadeMethodListPresenter categoriesFor: #getOopToNewMethod!public! !
 !JadeMethodListPresenter categoriesFor: #getSelectedMethod!public! !
 !JadeMethodListPresenter categoriesFor: #getSelectedMethodName!public! !
 !JadeMethodListPresenter categoriesFor: #jadeMenuStrings!public! !

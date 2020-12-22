@@ -91,6 +91,10 @@ package classNames
 	add: #Unicode7;
 	yourself.
 
+package methodNames
+	add: #ByteArray -> #decodeFromUTF8;
+	yourself.
+
 package binaryGlobalNames: (Set new
 	yourself).
 
@@ -517,6 +521,21 @@ GciLibraryTestResource subclass: #GciTsLibraryTestResource
 
 
 "Loose Methods"!
+
+!ByteArray methodsFor!
+
+decodeFromUTF8
+
+	| decoder readStream writeStream |
+	decoder := Utf8String new.
+	readStream := ReadStream on: self.
+	writeStream := WriteStream on: (Array new: self size).
+	[readStream atEnd not] whileTrue: [
+		writeStream nextPut: (decoder decodeNextFrom: readStream).
+	].
+	^Utf8String withAll: writeStream contents
+! !
+!ByteArray categoriesFor: #decodeFromUTF8!encode/decode!public! !
 
 "End of package definition"!
 

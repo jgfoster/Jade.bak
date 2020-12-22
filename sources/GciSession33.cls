@@ -10,6 +10,22 @@ GciSession33 comment: ''!
 !GciSession33 categoriesForClass!Unclassified! !
 !GciSession33 methodsFor!
 
+attemptSocket
+
+	| host port tempSocket time |
+	Keyboard default isShiftDown ifFalse: [^self].
+	host := ((gemNRS subStrings: $#) first subStrings: $@) at: 2.
+	(port := self serverPerform: #'makeListener') ifNil: [^self].
+	tempSocket := Socket port: port host: host.
+	tempSocket connectNoWait.
+	time := self serverPerform: #'acceptConnection'.
+	time ifNil: [
+		tempSocket close.
+		^self.
+	].
+	^self become: (GciSessionWithSocket from: self withSocket: tempSocket).
+!
+
 decode: aString
 	"asAnsiString before 3.3.0; asUtf8String from 3.3.0 on."
 
@@ -23,6 +39,7 @@ encode: aString
 gsHasPragmas
 
 	^true! !
+!GciSession33 categoriesFor: #attemptSocket!Jade!public! !
 !GciSession33 categoriesFor: #decode:!public! !
 !GciSession33 categoriesFor: #encode:!public! !
 !GciSession33 categoriesFor: #gsHasPragmas!public! !

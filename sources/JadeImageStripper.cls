@@ -52,14 +52,14 @@ createVersionResource
 		stringTables: (LookupTable new
 			at: '040904b0'
 			put: (LookupTable new
-				at: 'CompanyName' 		put: 'Foster Agile LLC';
+				at: 'CompanyName' 	put: 'Foster Agile LLC';
 				at: 'FileDescription' 		put: 'IDE for GemStone/S';
-				at: 'FileVersion' 			put: versionString;
+				at: 'FileVersion' 		put: versionString;
 				at: 'InternalName' 		put: 'Jade';
-				at: 'LegalCopyright' 		put: 'Copyright © James Foster 2001-2019';
-				at: 'OriginalFilename' 		put: 'Jade.exe';
+				at: 'LegalCopyright' 	put: 'Copyright © James Foster 2001-2021';
+				at: 'OriginalFilename' 	put: 'Jade.exe';
 				at: 'ProductName' 		put: 'Jade';
-				at: 'ProductVersion' 		put: versionString;
+				at: 'ProductVersion' 	put: versionString;
 				yourself);
 			yourself);
 		yourself.
