@@ -12,19 +12,19 @@ GciSession33 comment: ''!
 
 attemptSocket
 
-	| host port tempSocket time |
-	Keyboard default isShiftDown ifFalse: [^self].
-	host := ((gemNRS subStrings: $#) first subStrings: $@) at: 2.
-	(port := self serverPerform: #'makeListener') ifNil: [^self].
-	tempSocket := Socket port: port host: host.
-	tempSocket connectNoWait.
-	time := self serverPerform: #'acceptConnection'.
-	time ifNil: [
-		tempSocket close.
-		^self.
-	].
-	^self become: (GciSessionWithSocket from: self withSocket: tempSocket).
-!
+	Keyboard default isShiftDown ifTrue: [
+		| host port tempSocket time |
+		host := ((gemNRS subStrings: $#) first subStrings: $@) at: 2.
+		(port := self serverPerform: #'makeListener') ifNil: [^self].
+		tempSocket := Socket port: port host: host.
+		tempSocket connectNoWait.
+		time := self serverPerform: #'acceptConnection'.
+		time ifNil: [
+			tempSocket close.
+			^self.
+		].
+		^self become: (GciSessionWithSocket from: self withSocket: tempSocket).
+	]!
 
 decode: aString
 	"asAnsiString before 3.3.0; asUtf8String from 3.3.0 on."

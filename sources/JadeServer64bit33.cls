@@ -64,13 +64,15 @@ add: anObject toByteStream: aStream
 	anObject == true 	ifTrue: [aStream nextPut: 1. ^self].
 	anObject == false 	ifTrue: [aStream nextPut: 2. ^self].
 	(ExternalInteger notNil 	and: [anObject isKindOf: ExternalInteger]) ifTrue: [self addExternalInteger: anObject 			toByteStream: aStream. 	^self].	"3 & 4"	(self isInDolphin 		and: [anObject isKindOf: GsObject		]) ifTrue: [self addExternalInteger: anObject oopType 	toByteStream: aStream. 	^self].	"3 & 4"
-	(anObject isKindOf: Symbol	) ifTrue: [self addSymbol: 	anObject toByteStream: aStream. ^self].	"5 & 6"
-	(anObject isKindOf: Integer	) ifTrue: [self addInteger:		anObject toByteStream: aStream. ^self].	"7, 8, 9, & 10"
-	(anObject isKindOf: String	) ifTrue: [self addString: 		anObject toByteStream: aStream. ^self].	"11 & 12"
-	(anObject isKindOf: Utf8		) ifTrue: [self addUtf8: 		anObject toByteStream: aStream. ^self].	"13 & 14"
-	(anObject isKindOf: Array	) ifTrue: [self addArray: 		anObject toByteStream: aStream. ^self].	"15"
+	(anObject isKindOf: Symbol		) ifTrue: [self addSymbol: 	anObject toByteStream: aStream. ^self].	"5 & 6"
+	(anObject isKindOf: Integer		) ifTrue: [self addInteger:		anObject toByteStream: aStream. ^self].	"7, 8, 9, & 10"
+	(anObject isKindOf: String		) ifTrue: [self addString: 		anObject toByteStream: aStream. ^self].	"11 & 12"
+	(anObject isKindOf: Utf8			) ifTrue: [self addUtf8: 		anObject toByteStream: aStream. ^self].	"13 & 14"
+	(anObject isKindOf: Array		) ifTrue: [self addArray: 		anObject toByteStream: aStream. ^self].	"15"
+	(anObject isKindOf: Exception	) ifTrue: [self addException:	anObject toByteStream: aStream. ^self].	"16"
 	self isInDolphin ifTrue: [self error: 'Attempt to encode an unsupported object'].
 	self addPositiveInteger: anObject toByteStream: aStream.
+UserGlobals at: #'James' put: anObject.
 !
 
 addArray: anArray toByteStream: aStream
@@ -78,6 +80,18 @@ addArray: anArray toByteStream: aStream
 	16rFF < anArray size ifTrue: [self error: 'Array is too large!!'].
 	aStream nextPut: 15; nextPut: anArray size.
 	anArray do: [:each | self add: each toByteStream: aStream].
+!
+
+addException: anException toByteStream: aStream
+
+	| size string |
+	string := anException printString.
+	size := string size.
+	aStream 
+		nextPut: 16; 
+		nextPut: (size bitAnd: 16rFF); nextPut: (size // 16r100 bitAnd: 16rFF); nextPut: (size // 16r10000 bitAnd: 16rFF);
+		yourself.
+	string do: [:each | aStream nextPut: each asciiValue].
 !
 
 addExternalInteger: anObject toByteStream: aStream
@@ -275,13 +289,18 @@ processAction: arguments
 	self error: 'Unrecognized command!!'.
 !
 
+readExceptionFrom: aStream
+
+	self halt.
+!
+
 readExceptionFrom: aStream errorClass: gciErrorSTypeClass
 
 	| category number context exception name message arguments stack gciErrSType |
 	category		:= self readObjectFrom: aStream.	number		:= self readObjectFrom: aStream.
 	context 		:= self readObjectFrom: aStream.
-	exception 		:= self readObjectFrom: aStream.
-	name 		:= self readObjectFrom: aStream.	name yourself.
+	exception 	:= self readObjectFrom: aStream.
+	name 		:= self readObjectFrom: aStream.	name yourself.	"Otherwise, an unused variable!!"
 	message 		:= self readObjectFrom: aStream.
 	arguments 	:= self readObjectFrom: aStream.
 	stack 		:= self readObjectFrom: aStream.
@@ -383,8 +402,8 @@ readObjectFrom: aStream errorClass: gciErrorSTypeClass
 		1 to: x size do: [:i | x at: i put: (self readObjectFrom: aStream)].
 		^x.
 	].
-	type == 16 ifTrue: [		"GciErrSType"
-		^self readExceptionFrom: aStream errorClass: gciErrorSTypeClass.
+	type == 16 ifTrue: [		"Exception"
+		^self readExceptionFrom: aStream.
 	].
 !
 
@@ -428,6 +447,7 @@ readSocket: anInteger
 !JadeServer64bit33 categoriesFor: #acceptConnection!public! !
 !JadeServer64bit33 categoriesFor: #add:toByteStream:!public!streaming! !
 !JadeServer64bit33 categoriesFor: #addArray:toByteStream:!public!streaming! !
+!JadeServer64bit33 categoriesFor: #addException:toByteStream:!public!streaming! !
 !JadeServer64bit33 categoriesFor: #addExternalInteger:toByteStream:!public!streaming! !
 !JadeServer64bit33 categoriesFor: #addInteger:toByteStream:!public!streaming! !
 !JadeServer64bit33 categoriesFor: #addPositiveInteger:toByteStream:!public!streaming! !
@@ -443,7 +463,8 @@ readSocket: anInteger
 !JadeServer64bit33 categoriesFor: #isInGemStone!public!testing! !
 !JadeServer64bit33 categoriesFor: #makeListener!public! !
 !JadeServer64bit33 categoriesFor: #processAction:!public!Socket! !
-!JadeServer64bit33 categoriesFor: #readExceptionFrom:errorClass:!public!Socket! !
+!JadeServer64bit33 categoriesFor: #readExceptionFrom:!public!Socket!streaming! !
+!JadeServer64bit33 categoriesFor: #readExceptionFrom:errorClass:!public!Socket!streaming! !
 !JadeServer64bit33 categoriesFor: #readObjectFrom:!public!streaming! !
 !JadeServer64bit33 categoriesFor: #readObjectFrom:errorClass:!public!streaming! !
 !JadeServer64bit33 categoriesFor: #readSocket:!public!Socket! !
