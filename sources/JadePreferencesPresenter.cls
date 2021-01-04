@@ -154,7 +154,9 @@ defaultFont
 
 defaultFont: aFont
 
-	View desktop font: aFont.
+	(View desktop font = aFont) ifFalse: [ 
+		View desktop font: aFont. 
+	].
 !
 
 resource_Default_view

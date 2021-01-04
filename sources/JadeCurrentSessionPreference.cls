@@ -26,7 +26,9 @@ defaultFont
 	^View desktop font!
 
 defaultFont: aFont
-	View desktop font: aFont!
+	(View desktop font = aFont) ifFalse: [
+		View desktop font: aFont
+	].!
 
 displayString
 	^'Current Session'!
