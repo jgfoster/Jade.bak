@@ -540,11 +540,12 @@ selectionChanged
 	!
 
 sendRequiredMessages
-	"The ImageStripper seems to think these messages aren't needed, but we die during runtime packaging with a MessageNotUnderstood."
-"
-	'string1' equals: 'string2'.
-	1 isImmediate.
-"!
+	"The ImageStripper seems to think these messages aren't needed, without them we have problems."
+
+	false ifTrue: [
+		self onShutdown.	"https://github.com/dolphinsmalltalk/Dolphin/issues/1103"
+	].
+!
 
 setWorkingDirectory
 
