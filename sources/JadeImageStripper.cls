@@ -53,7 +53,7 @@ createVersionResource
 			at: '040904b0'
 			put: (LookupTable new
 				at: 'CompanyName' 	put: 'Foster Agile LLC';
-				at: 'FileDescription' 		put: 'IDE for GemStone/S';
+				at: 'FileDescription' 		put: 'Jade - IDE for GemStone/S';
 				at: 'FileVersion' 		put: versionString;
 				at: 'InternalName' 		put: 'Jade';
 				at: 'LegalCopyright' 	put: 'Copyright © James Foster 2001-2021';

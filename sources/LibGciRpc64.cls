@@ -413,18 +413,10 @@ oopZero
 
 specialFromOop: anOop
 
-	anOop isBoolean ifTrue: [
-		^anOop = self oopTrue.
-	].
-	anOop isCharacter ifTrue: [
-		^Character value: (self gciOopToChr: anOop).
-	].
-	anOop isSmallInteger ifTrue: [
-		^anOop asSmallInteger.
-	].
-	anOop isSmallDouble ifTrue: [
-		^anOop smallDoubleAsFloat.
-	].
+	anOop isBoolean 		ifTrue: [^anOop = self oopTrue].
+	anOop isCharacter 		ifTrue: [^Character value: (self gciOopToChr: anOop)].
+	anOop isSmallInteger 	ifTrue: [^anOop asSmallInteger].
+	anOop isSmallDouble 	ifTrue: [^anOop smallDoubleAsFloat].
 	^nil.
 ! !
 !LibGciRpc64 categoriesFor: #errorStructureClass!private! !

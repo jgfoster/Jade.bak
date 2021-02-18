@@ -29,6 +29,64 @@ OopType64 comment: '#define OOP_TAG_RAM_OOP     0x0 /* 2r000  memory pointer Obj
 		self value = anOopType64 value]	"Don't use == since OopType might not be a SmallInteger"
 !
 
+asDate
+	"Delegate is assumed to represent a server SmallDate. 
+	 Answer the corresponding local Date.
+
+	SmallDate represents instances of Date with year representable in 47 bits
+	The bit format of an instance is
+	yyyyyyyy|yyyyyyyy|yyyyyyyy|yyyyyyyy|yyyyyyyy|yyyyyyyd|dddddddd|01001100
+	bits d 9 bits unsigned integer dayOfYear
+	bits y 47 bits signed, holding a 31 bit signed integer year.
+
+	This means that oop byte 1 can be ignored, since it just contains redundant sign bits."
+
+	| myBytes highByte splitByte day year |
+	myBytes := bytes reverse.
+	highByte := myBytes at: 2.	"If the sign bit is negative, start it with a pre-shifted -1, otherwise with a pre-shifted 0, which is 0"
+	splitByte := myBytes at: 6.
+	year := ((((highByte ~~ 0 ifTrue: [-16r1] ifFalse: [0]) * 16r100
+				+ (myBytes at: 3)) * 16r100
+				+ (myBytes at: 4)) * 16r100
+				+ (myBytes at: 5)) * 16r80
+				+ (splitByte bitShift: -1).
+	day := (splitByte bitAnd: 16r1) * 16r100 + (myBytes at: 7).
+	^Date newDay: day year: year.
+!
+
+asDateAndTime
+	"OOP is assumed to represent a server SmallDateAndTime. 
+	 Answer the corresponding local DateAndTime.
+
+	A SmallDateAndTime is a DateAndTime whose offset in hours is in the range -16..15
+	and whose time is in the range 2001 to 2072 .
+	The resolution is 1 microsecond.
+
+	The bit format of an instance is
+	tttttttt|tttttttt|tttttttt|tttttttt|tttttttt|tttttttt|tttooooo|00111100
+	bits o   5 bits signed  offset  from UTC in hours
+	bits t  51 bits unsigned time since 2001 in units of microseconds."
+
+	| myBytes oneCenturyMilliseconds microseconds byte0 offset |
+	myBytes := bytes reverse.
+	oneCenturyMilliseconds := 3155760000000000.	"100 y x 365.25d/y x 86400 s/d x 1000000 ms/s"
+	byte0 := myBytes at: 7.
+	offset := byte0 bitAnd: 2r11111.
+	"Convert 5 bits two's complement back to signed integer."
+	offset > 15 ifTrue: [offset := (offset - 1 bitXor: 2r11111) negated].
+	microseconds := ((((((
+				(myBytes at: 1)) * 16r100
+				+ (myBytes at: 2)) * 16r100
+				+ (myBytes at: 3)) * 16r100
+				+ (myBytes at: 4)) * 16r100
+				+ (myBytes at: 5)) * 16r100
+				+ (myBytes at: 6)) * 16r8
+				+ (byte0 bitShift: -5).
+	^DateAndTime
+		utcSeconds: microseconds + oneCenturyMilliseconds / 1000000
+		offset: offset * 3600.
+!
+
 asFraction
 	"SmallFractions are special objects that can represent Fractions
 	  with   -268435456 <= numerator   <= 268435455
@@ -55,6 +113,34 @@ asFraction
 	^fraction
 !
 
+asScaledDecimal
+	"Oop is assumed to represent a server SmallScaledDecimal. 
+	 Answer the corresponding local ScaledDecimal.
+
+	SmallScaledDecimal is used to represent ScaledDecimals that have 
+	scale <= 31 and mantissa in the range -1125899906842624..1125899906842623 .
+ 	The bit format of an instances is
+   	mmmmmmmm|mmmmmmmm|mmmmmmmm|mmmmmmmm|mmmmmmmm|mmmmmmmm|mmmsssss|00110100
+	bits m 51 bit signed integer mantissa
+	s 5 bit unsigned scale."
+
+	| myBytes highByte lowByte mantissa scale |
+	myBytes := bytes reverse.
+	highByte := myBytes at: 1.	"If the sign bit is negative, start it with a pre-shifted -1, otherwise with a pre-shifted 0, which is 0"
+	lowByte := myBytes at: 7.
+	mantissa := ((((((((highByte bitAnd: 16r80) ~~ 0
+				ifTrue: [-16r100]
+				ifFalse: [0]) + highByte)
+				* 16r100 + (myBytes at: 2))
+				* 16r100 + (myBytes at: 3))
+				* 16r100 + (myBytes at: 4))
+				* 16r100 + (myBytes at: 5))
+				* 16r100 + (myBytes at: 6))
+				* 16r8 + (lowByte bitShift: -5).
+	scale := lowByte bitAnd: 16r1F.
+	^ScaledDecimal newFromNumber: mantissa / (10 raisedTo: scale) scale: scale
+!
+
 asSmallInteger
 
 	| value myBytes |
@@ -66,6 +152,27 @@ asSmallInteger
 	value := myBytes sqwordAtOffset: 0.
 	^value >> 3.
 !
+
+asTime
+	"OOP is assumed to represent a server SmallTime. 
+	 Answer the corresponding local Time.
+
+	The bit format of an instance is
+	tttttttt|tttttttt|tttttttt|tttttttt|tttttttt |tttttttt|tttttttt| 01000100
+	bits t  56 bits unsigned integer , local time since midnight  , units microseconds
+	The maximum value of local time is  86399999999 .
+
+	Thus, the upper two bytes will always be zero and can be ignored here."
+
+	| myBytes microseconds |
+	myBytes := bytes reverse.
+	microseconds := (((
+				(myBytes at: 3) * 16r100
+				+ (myBytes at: 4)) * 16r100
+				+ (myBytes at: 5)) * 16r100
+				+ (myBytes at: 6)) * 16r100
+				+ (myBytes at: 7).
+	^Time fromSeconds: microseconds / 1000000!
 
 isBoolean
 "#define OOP_FALSE           ((OopType)0x0C)
@@ -93,6 +200,16 @@ isOopIllegal
 	^self  value = 1.
 !
 
+isSmallDate
+
+	^(self value bitAnd: 16rFF) = 2r01001100
+!
+
+isSmallDateAndTime
+
+	^(self value bitAnd: 16rFF) = 2r00111100
+!
+
 isSmallDouble
 
 	^(self value bitAnd: 7) = 6.
@@ -100,13 +217,23 @@ isSmallDouble
 
 isSmallFraction
 
-	^(self value bitAnd: 16rFF) = 16r2C.
+	^(self value bitAnd: 16rFF) = 2r00101100 "16r2C"
 !
 
 isSmallInteger
 
 	^(self value bitAnd: 7) = 2.
 
+!
+
+isSmallScaledDecimal
+
+	^(self value bitAnd: 16rFF) = 2r00110100
+!
+
+isSmallTime
+
+	^(self value bitAnd: 16rFF) = 2r01000100
 !
 
 isSpecial
@@ -143,19 +270,27 @@ smallDoubleAsFloat
 	^(frac + 16r8000000000000 / 16r8000000000000 * (2 raisedTo: expn - 127) * sign) asFloat.
 ! !
 !OopType64 categoriesFor: #=!public! !
-!OopType64 categoriesFor: #asFraction!public! !
-!OopType64 categoriesFor: #asSmallInteger!public! !
-!OopType64 categoriesFor: #isBoolean!public! !
-!OopType64 categoriesFor: #isCharacter!public! !
-!OopType64 categoriesFor: #isGsNil!public! !
-!OopType64 categoriesFor: #isImmediate!public! !
-!OopType64 categoriesFor: #isOopIllegal!public! !
-!OopType64 categoriesFor: #isSmallDouble!public! !
-!OopType64 categoriesFor: #isSmallFraction!public! !
-!OopType64 categoriesFor: #isSmallInteger!public! !
-!OopType64 categoriesFor: #isSpecial!public! !
+!OopType64 categoriesFor: #asDate!converting!public! !
+!OopType64 categoriesFor: #asDateAndTime!converting!public! !
+!OopType64 categoriesFor: #asFraction!converting!public! !
+!OopType64 categoriesFor: #asScaledDecimal!converting!public! !
+!OopType64 categoriesFor: #asSmallInteger!converting!public! !
+!OopType64 categoriesFor: #asTime!converting!public! !
+!OopType64 categoriesFor: #isBoolean!public!testing! !
+!OopType64 categoriesFor: #isCharacter!public!testing! !
+!OopType64 categoriesFor: #isGsNil!public!testing! !
+!OopType64 categoriesFor: #isImmediate!public!testing! !
+!OopType64 categoriesFor: #isOopIllegal!public!testing! !
+!OopType64 categoriesFor: #isSmallDate!public!testing! !
+!OopType64 categoriesFor: #isSmallDateAndTime!public!testing! !
+!OopType64 categoriesFor: #isSmallDouble!public!testing! !
+!OopType64 categoriesFor: #isSmallFraction!public!testing! !
+!OopType64 categoriesFor: #isSmallInteger!public!testing! !
+!OopType64 categoriesFor: #isSmallScaledDecimal!public!testing! !
+!OopType64 categoriesFor: #isSmallTime!public!testing! !
+!OopType64 categoriesFor: #isSpecial!public!testing! !
 !OopType64 categoriesFor: #objectInfo!accessing!public! !
 !OopType64 categoriesFor: #objectInfo:!accessing!public! !
 !OopType64 categoriesFor: #printOn:!public! !
-!OopType64 categoriesFor: #smallDoubleAsFloat!public! !
+!OopType64 categoriesFor: #smallDoubleAsFloat!converting!public! !
 

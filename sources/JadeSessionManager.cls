@@ -53,10 +53,23 @@ getVersion
 "
 	JadeSessionManager getVersion.
 "
-	| string |
+	| string1 string2 |
 	File workingDirectory: SessionManager current imageBase.
-	string := [SessionManager current class git: 'describe'] on: ExternalProcessExecuteError do: [:ex | ^'?<' , ex description , '>?'].
-	^(ReadStream on: string) nextLine
+	string1 := [self gitDescribe: '.'] on: ExternalProcessExecuteError do: [:ex | ex return: '???'].
+	string2 := [self gitDescribe: '..'] on: ExternalProcessExecuteError do: [:ex | ex return: '???'].
+	^(ReadStream on: string1) nextLine , ' (Dolphin ' , (ReadStream on: string2) nextLine , ')'
+!
+
+gitDescribe: directoryString
+
+	| outputPipe process |
+	process := ExternalProcess new.
+	process directory: directoryString.
+	process commandLine: 'git describe'.
+	outputPipe := process stdoutPipe.
+	process executeSync.
+	[process isTerminated] whileFalse: [].
+	^outputPipe readStream contents
 !
 
 mainShellClass
@@ -75,6 +88,7 @@ version
 		ifFalse: ['Development'].
 ! !
 !JadeSessionManager class categoriesFor: #getVersion!public! !
+!JadeSessionManager class categoriesFor: #gitDescribe:!public! !
 !JadeSessionManager class categoriesFor: #mainShellClass!public! !
 !JadeSessionManager class categoriesFor: #setVersion!public! !
 !JadeSessionManager class categoriesFor: #version!public! !

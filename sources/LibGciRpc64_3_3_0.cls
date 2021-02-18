@@ -168,9 +168,7 @@ session: anInteger oopForString: aString
 
 specialFromOop: anOop
 
-	anOop isSmallFraction ifTrue: [
-		^anOop asFraction.
-	].
+	anOop isSmallFraction ifTrue: [^anOop asFraction].
 	^super specialFromOop: anOop
 !
 
