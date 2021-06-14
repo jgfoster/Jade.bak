@@ -32,7 +32,8 @@ createSchematicWiring
 
 displayObject
 
-	| result stream className oop size instVarNames |	(model isKindOf: ExternalInteger) ifFalse: [^self].
+	| result stream className oop size instVarNames |
+	(model isKindOf: ExternalInteger) ifFalse: [^self].
 	result := gciSession 
 		serverPerform: #'inspect:' 
 		with: model.
@@ -133,34 +134,9 @@ setDocumentPresenterLabel
 		self view caption: model class name , ' (' , model size printString , ' bytes)'.
 		^self.
 	].
-	(model isKindOf: Integer) ifTrue: [
+	(#(Boolean Character Date DateAndTime Integer Float Fraction UndefinedObject) includes: model class name) ifTrue: [
+		self view caption: model class name.
 		documentPresenter value: model printString.
-		self view caption: 'Integer'.
-		^self.
-	].
-	model isNil ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'UndefinedObject'.
-		^self.
-	].
-	(model isKindOf: Boolean) ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'Boolean'.
-		^self.
-	]. 
-	(model isKindOf: Character) ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'Character'.
-		^self.
-	]. 
-	(model isKindOf: Float) ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'Float'.
-		^self.
-	].
-	(model isKindOf: Fraction) ifTrue: [
-		documentPresenter value: model printString.
-		self view caption: 'Fraction'.
 		^self.
 	].
 !
