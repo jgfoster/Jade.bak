@@ -252,7 +252,6 @@ executeString: aString fromContext: anObject environment: anInteger
 			with: (self oopTypeFor: anObject)
 			with: anInteger.
 	].
-
 !
 
 fetchBytes: anOopType

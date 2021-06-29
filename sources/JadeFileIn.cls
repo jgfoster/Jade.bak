@@ -163,17 +163,17 @@ processLine
 	| ucLine |
 	(line isEmpty or: [line first = $!!]) ifTrue: [^self].
 	ucLine := line asUppercase.
-	(ucLine beginsWith: 'CATEGORY:'					) ifTrue: [^self setCategory					].
+	(ucLine beginsWith: 'CATEGORY:'					) ifTrue: [^self setCategory				].
 	(ucLine beginsWith: 'CLASSMETHOD:'				) ifTrue: [^self defineClassMethod			].
-	(ucLine beginsWith: 'COMMIT'					) ifTrue: [^self readCommit					].
+	(ucLine beginsWith: 'COMMIT'					) ifTrue: [^self readCommit				].
 	(ucLine beginsWith: 'DOIT'						) ifTrue: [^self readDoIt					].
 	(ucLine beginsWith: 'ENV'						) ifTrue: [^self readSetCompileEnv			].
-	(ucLine beginsWith: 'ERRORCOUNT'				) ifTrue: [^self readErrorCount				].
-	(ucLine beginsWith: 'EXPECTVALUE'				) ifTrue: [^self readExpectValue				].
-	(ucLine beginsWith: 'INPUT'					) ifTrue: [^self readInput					].
-	(ucLine beginsWith: 'METHOD:'					) ifTrue: [^self defineInstanceMethod			].
+	(ucLine beginsWith: 'ERRORCOUNT'				) ifTrue: [^self readErrorCount			].
+	(ucLine beginsWith: 'EXPECTVALUE'				) ifTrue: [^self readExpectValue			].
+	(ucLine beginsWith: 'INPUT'						) ifTrue: [^self readInput					].
+	(ucLine beginsWith: 'METHOD:'					) ifTrue: [^self defineInstanceMethod		].
 	(ucLine beginsWith: 'RUN'						) ifTrue: [^self readDoIt					].
-	(ucLine beginsWith: 'REMOVEALLMETHODS'		) ifTrue: [^self readRemoveAllMethods		].
+	(ucLine beginsWith: 'REMOVEALLMETHODS'			) ifTrue: [^self readRemoveAllMethods		].
 	(ucLine beginsWith: 'REMOVEALLCLASSMETHODS'	) ifTrue: [^self readRemoveAllClassMethods	].
 	(ucLine beginsWith: 'SEND'						) ifTrue: [^self readSend 					].
 	(ucLine beginsWith: 'SET CLASS'					) ifTrue: [^self readSetClass				].
@@ -185,10 +185,20 @@ processLine
 
 read
 
-	stream reset.
-	ProgressDialog showModalWhile: [:progress |
-		self readWithProgress: progress.
-	].
+	| semaphore |
+	semaphore := Semaphore new.
+	[
+		stream reset.
+		[
+			ProgressDialog showModalWhile: [:progress |
+				self readWithProgress: progress.
+				semaphore signal.
+			].
+		] ifCurtailed: [
+			semaphore signal.
+		].
+	] forkAt: Processor userBackgroundPriority.
+	semaphore wait.
 !
 
 readCommit
@@ -218,7 +228,9 @@ readInput
 	path := path
 		copyReplaceAll: '/'
 		with: '\'.
-	self fileInPath: path.
+	self class new 
+		fileInPath: path
+		session: gciSession.
 !
 
 readRemoveAllClassMethods
@@ -289,10 +301,12 @@ readWithProgressA: progress
 		stream atEnd not.
 	] whileTrue: [
 		line := stream nextLine.
-		progress 
-			value: stream position * 100 // stream size;
-			text: line;
-			yourself.
+		[
+			progress 
+				value: stream position * 100 // stream size;
+				text: line;
+				yourself.
+		] forkAt: Processor userSchedulingPriority.
 		[
 			self processLine.
 		] on: TerminateProcess do: [:ex | 

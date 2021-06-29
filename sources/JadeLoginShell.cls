@@ -274,7 +274,8 @@ initialize
 
 	super initialize.
 	inUpdateView := false.
-	activityListMutex := Mutex new.!
+	activityListMutex := Semaphore forMutualExclusion.
+!
 
 isVersion: a lessThanOrEqualTo: b
 
@@ -348,7 +349,9 @@ login
 	session
 		when: #logout
 		send: #firstCard
-		to: cardContainerView.!
+		to: cardContainerView.
+	activeLibraryPresenter value: GciLibrary activeLibrary class name asString.
+!
 
 logout: aLogin
 
@@ -577,25 +580,31 @@ tempDataPath
 !
 
 updateActivity
-	"If we update in real time it seems to slow down other processing (like changing tabs in the System Browser.
+	"If we update in real time it seems to slow down other processing (like changing tabs in the System Browser).
 	The mutex is to ensure that only one process manipulates the UI at a time (otherwise we can hang)."
 
+	activityListMutex excessSignals == 0 ifTrue: [^self].
 	[
 		[
 			(Delay forMilliseconds: 100) wait.
 			activityListMutex critical: [
 				| list |
 				list := GciActivity activity.
-				((list isEmpty and: [recentActivity notNil]) or: [recentActivity ~~ list last]) ifTrue: [
-					activeLibraryPresenter value: GciLibrary activeLibrary class name asString.
+				((list isEmpty and: [recentActivity notNil]) or: [list notEmpty and: [recentActivity ~~ list last]]) ifTrue: [
 					[list size > 99] whileTrue: [list removeFirst].
 					list := list copy.
-					activityListPresenter list: list.
+					[
+						activityListPresenter list: list.
+					] forkAt: Processor userSchedulingPriority.
+					Processor yield.
 					list isEmpty ifTrue: [
 						recentActivity := nil.
 					] ifFalse: [
 						recentActivity := list last.
-						activityListPresenter selection: recentActivity.
+						[
+							activityListPresenter selection: recentActivity.
+						] forkAt: Processor userSchedulingPriority.
+						Processor yield.
 					].
 				].
 			].
@@ -607,20 +616,20 @@ updateModel
 	inUpdateView ifTrue: [^self].
 	self model ifNil: [^self].
 	self model
-		gemVersion:	versionListPresenter 		selection;
-		stoneHost: 	stoneHostPresenter 		value trimBlanks;
-		stoneName: 	stoneNamePresenter 		value trimBlanks;
+		gemVersion:	versionListPresenter 	selection;
+		stoneHost: 	stoneHostPresenter 	value trimBlanks;
+		stoneName: 	stoneNamePresenter 	value trimBlanks;
 		gemType: 	gemTypePresenter 		value;
-		gemHost: 		gemHostPresenter 		value trimBlanks;
+		gemHost: 	gemHostPresenter 		value trimBlanks;
 		gemService: 	gemServicePresenter 	value trimBlanks;
 		gemTask: 	gemTaskPresenter 		value trimBlanks;
-		gsUserID: 		userIDPresenter 		value trimBlanks;
-		gsPassword: 	passwordPresenter 		value trimBlanks;
-		loginType: 	loginTypePresenter 		value;
-		hostUserID:	hostUserIDPresenter		value trimBlanks;
+		gsUserID: 	userIDPresenter 		value trimBlanks;
+		gsPassword: 	passwordPresenter 	value trimBlanks;
+		loginType: 	loginTypePresenter 	value;
+		hostUserID:	hostUserIDPresenter	value trimBlanks;
 		hostPassword:	hostPasswordPresenter	value trimBlanks;
 		initials:		initialsPresenter		value trimBlanks;
-		debugPath: 	debugPathPresenter		value trimBlanks;
+		debugPath: 	debugPathPresenter	value trimBlanks;
 		yourself.
 !
 
