@@ -1,8 +1,0 @@
-text eol=crlf
-
-# inform linguist that files with these extensions are indeed smalltalk files
-*.gs linguist-language=Smalltalk
-*.st linguist-language=Smalltalk
-*.tpz linguist-language=Smalltalk
-*.cls linguist-language=Smalltalk
-*.pax linguist-language=Smalltalk
